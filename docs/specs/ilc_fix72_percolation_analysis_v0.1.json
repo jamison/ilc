@@ -1,0 +1,4137 @@
+{
+  "analysis_only": true,
+  "current_low_pagerank_overlap_count": 220,
+  "fix45_deferred_source": "docs/specs/ilc_fix46_manual_semantic_annotation_queue_v0.1.json",
+  "fix45_source_counts": {
+    "entry_count": 382
+  },
+  "missing_node_count": 0,
+  "missing_nodes": [],
+  "phase": "phase_1545p_fix72",
+  "resolved_by_any_semantic_degree_count": 135,
+  "resolved_by_prompt_indegree_count": 0,
+  "resolved_count": 135,
+  "resolved_sample": [
+    {
+      "candidate_id": "repo:file:7d427265062269b1:docs_specs_ilc_llm_repo_workflow_policy_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_llm_repo_workflow_policy_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file:e40d2e1d1b735718:docs_specs_sponsor_clustering_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/sponsor_clustering.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_treasury_objective_function_and_observables_contract_451_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_treasury_objective_function_and_observables_contract_451_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_epistemic_node_submission_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epistemic/node_submission_runtime.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "target:ilc_core_epistemic",
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/epistemic/",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file:109e5841f3c287c4:tests_fixtures_cluster_a_replay_proof_batch_ops_v0_1_report_schema_invalid_json",
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/report_schema_invalid.json",
+      "semantic_edge_type_counts": {
+        "SOURCE_TREE_MEMBER": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file:d405f7b0955d32b3:tests_fixtures_cluster_a_replay_proof_batch_v0_1_manifest_valid_then_tampered_txt",
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1/manifest_valid_then_tampered.txt",
+      "semantic_edge_type_counts": {
+        "SOURCE_TREE_MEMBER": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file:298af6efe05306e7:tests_test_phase_m019_adversarial_hardening_results_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_M019_adversarial_hardening_results.py",
+      "semantic_edge_type_counts": {
+        "NEGATIVE_ASSERTS": 1,
+        "TESTS": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_adr_0023_cdl_scoping_analysis_522_v0_1_md",
+      "original_reason": "multiple_existing_adr_targets",
+      "repo_path": "docs/specs/ilc_adr_0023_cdl_scoping_analysis_522_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 4
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_genesis_accrual_governor_contract_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_accrual_governor_contract_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_genesis_accumulation_dynamics_analysis_298_v0_3_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.3.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 8
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 8,
+      "semantic_total_degree": 8
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_593_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_593_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 7
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 7,
+      "semantic_total_degree": 7
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2_schema_baseline_runtime_handoff_310_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2_schema_baseline_runtime_handoff_310_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_epoch_snapshot_runtime_handoff_314_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_epoch_snapshot_runtime_handoff_314_v0.1.md",
+      "semantic_edge_type_counts": {
+        "DERIVED_FROM": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_890_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_890_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_d2e_query_truth_cli_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/d2e_query_truth_cli.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_485_494_sequence_lock_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_485_494_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1,
+        "NEGATIVE_ASSERTS": 1,
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_485_494_candidate_phase_grouping_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_485_494_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1,
+        "NEGATIVE_ASSERTS": 1,
+        "REFERENCES_AUTHORITY": 4
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 6,
+      "semantic_total_degree": 6
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_485_494_handoff_494_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_485_494_handoff_494_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1,
+        "EVIDENCES": 1,
+        "NEGATIVE_ASSERTS": 1,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_adr_0023_simulation_synthesis_528_v0_1_md",
+      "original_reason": "multiple_existing_adr_targets",
+      "repo_path": "docs/specs/ilc_adr_0023_simulation_synthesis_528_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1,
+        "REFERENCES_AUTHORITY": 4
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_clause_binding_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_clause_binding.py",
+      "semantic_edge_type_counts": {
+        "DERIVED_FROM": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_6_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.6.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1,
+        "NEGATIVE_ASSERTS": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_533_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_533_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_5_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.5.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_economic_architecture_comprehensive_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_economic_architecture_comprehensive_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 3,
+        "REFERENCES_AUTHORITY": 5
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 8,
+      "semantic_total_degree": 8
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_8_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.8.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cil_window_336_node_schema_session_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cil_window_336_node_schema_session_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_code_health_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_code_health.py",
+      "semantic_edge_type_counts": {
+        "TESTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_58_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.58.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_compare_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_epoch_boundary_witness_opening_stub_509_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_epoch_boundary_witness_opening_stub_509_v0.1.md",
+      "semantic_edge_type_counts": {
+        "NEGATIVE_ASSERTS": 4,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_canon_bundle_replay_verify_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_replay_verify.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_canon_export_bundle_report_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_report.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1,
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl096_eligibility_checkpoint_1509p_v0_1_json",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cdl096_eligibility_checkpoint_1509p_v0.1.json",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_runtime_integration_over_receipt_boundary_591_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_runtime_integration_over_receipt_boundary_591_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_sync_state_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync_state.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_receipt_envelope_and_payout_trace_contract_candidate_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_receipt_envelope_and_payout_trace_contract_candidate_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_epoch_endorsement_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/epoch_endorsement_runtime.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_genesis_record_schema_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/genesis_record_schema.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_security_runtime_window_closure_240_248_phase_249_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_security_runtime_window_closure_240_248_phase_249.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0_1_md",
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_056_validator_trust_tier_elevation_opening_stub_499_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 4
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "target:ilc_core_genesis_py",
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/genesis.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0_1_md",
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_055_validator_staking_and_liveness_enforcement_prelock_hardening_493_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_rc_source_allowlist_export_rehearsal_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/source_allowlist_export_rehearsal.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "IMPLEMENTS": 2,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_schema_d2_schema_baseline_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/d2_schema_baseline_runtime.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_economics_reward_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/economics/reward.py",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_503_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_503_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 4
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_endorsement_packet_schema_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/endorsement_packet_schema.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2e_05_query_subsystem_handoff_300_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_05_query_subsystem_handoff_300_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1,
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_cluster_a_replay_proof_ci_gate_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_cluster_a_replay_proof_ci_gate.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_cluster_a_replay_proof_release_gate_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_cluster_a_replay_proof_release_gate.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_domain_exception_migration_guardrails_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_domain_exception_migration_guardrails.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_non_replay_domain_exception_migration_guardrails_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_non_replay_domain_exception_migration_guardrails.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_track1_closure_guardrails_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_track1_closure_guardrails.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_ops_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_ops.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_star_map_route_index_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/star_map/route_index.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_ecu_ilc_lifecycle_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 2,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_exact_numeric_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/exact_numeric.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 2,
+        "IMPLEMENTS": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_495_504_handoff_504_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_495_504_handoff_504_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_rc_package_profile_ci_gate_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/package_profile_ci_gate.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 2,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 4,
+      "semantic_total_degree": 4
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_commit_epoch_audit_1234_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_commit_epoch_audit_1234_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_testbed_phase1360_multiop_control_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/phase1360_multiop_control.sh",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_run_window_631_636_numeric_determinism_gate_phase_636_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_window_631_636_numeric_determinism_gate_phase_636.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_mcp_node_service_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/mcp/node_service.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_d2d_gossip_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/gossip.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 2,
+        "IMPLEMENTS": 1,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_d2d_interface_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/interface.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_sybil_resistance_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/identity/sybil_resistance_runtime.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 2,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_rc0_1_release_gate_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_rc0_1_release_gate.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_run_rc0_1_release_gate_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_rc0_1_release_gate.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_testbed_check_phase_595_rc0_1_strike_force_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/check_phase_595_rc0_1_strike_force.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_privacy_public_legitimacy_threat_model_678_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_privacy_public_legitimacy_threat_model_678_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_legitimacy_observability_budget_679_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_legitimacy_observability_budget_679_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_834_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_834_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_run_window_637_641_residual_numeric_gate_phase_641_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_window_637_641_residual_numeric_gate_phase_641.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0_1_md",
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0.1.md",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_freshness_gate_invariants_phase_217_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_freshness_gate_invariants_phase_217.sh",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_window_767_774_integration_gate_772_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_window_767_774_integration_gate_772.py",
+      "semantic_edge_type_counts": {
+        "TESTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0_1_json",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_path_sidecar_activation_or_exclusion_gate_1337_v0.1.json",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_phase_606_mempalace_adoption_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_phase_606_mempalace_adoption.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_rc_release_keys_envelopes_generation_gate_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/rc/release_keys_envelopes_generation_gate.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1,
+        "IMPLEMENTS": 1,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_epistemic_aesthetic_panel_runtime_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epistemic/aesthetic_panel_runtime.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_run_phase_252_security_ratification_gate_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_phase_252_security_ratification_gate.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_run_phase_236_preflight_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/run_phase_236_preflight.py",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_crypto_surface_inventory_lock_280_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_crypto_surface_inventory_lock_280_v0.1.md",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_ledger_canon_bundle_utils_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/ledger/canon_bundle_utils.py",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 2,
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_945_952_sequence_lock_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_945_952_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sim_reuse_01_attribution_rate_results_synthesis_941_v0.1.md",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0_1_json",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_atlas_g_004_005_high_authority_dependency_bridge_1254_v0.1.json",
+      "semantic_edge_type_counts": {
+        "EVIDENCES": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0_1_json",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0.1.json",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_mempalace_render_retrieval_brief_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/mempalace/render_retrieval_brief.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_harness_interfaces_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/harness_interfaces.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "REFERENCES_AUTHORITY": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_crypto_bundle_registry_completion_handoff_284_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_crypto_bundle_registry_completion_handoff_284_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 2
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_main_track_return_preflight_193_199_sh",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_main_track_return_preflight_193_199.sh",
+      "semantic_edge_type_counts": {
+        "CARRIES_FORWARD": 5
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 5,
+      "semantic_total_degree": 5
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_genesis_genesis_authority_assertion_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/genesis/genesis_authority_assertion.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 2,
+        "IMPLEMENTS": 2,
+        "REFERENCES_AUTHORITY": 3
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 8,
+      "semantic_total_degree": 8
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_consensus_reputation_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/consensus/reputation.py",
+      "semantic_edge_type_counts": {
+        "IMPLEMENTS": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_governance_weighted_decision_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/governance_weighted_decision.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "EVIDENCES": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 3,
+      "semantic_total_degree": 3
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_atlas_g_1241_plus_candidate_phase_grouping_v0_1_md",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_atlas_g_1241_plus_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 1,
+      "semantic_total_degree": 1
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_schema_petition_node_type_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/petition_node_type.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_schema_verdict_record_schema_py",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/schema/verdict_record_schema.py",
+      "semantic_edge_type_counts": {
+        "CLASSIFIED_BY": 1,
+        "REFERENCES_AUTHORITY": 1
+      },
+      "semantic_indegree": 0,
+      "semantic_outdegree": 2,
+      "semantic_total_degree": 2
+    }
+  ],
+  "schema_version": "fix72_percolation_analysis.v0.1",
+  "still_unresolved_count": 247,
+  "still_unresolved_nodes": [
+    {
+      "candidate_id": "repo:file:7f776ac53614e4fc:tests_fixtures_cluster_a_replay_proof_batch_ops_v0_1_manifest_txt",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": "test_evidence_node",
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/cluster_a_replay_proof_batch_ops_v0_1/manifest.txt"
+    },
+    {
+      "candidate_id": "repo:file:f1d8b5eb1aa63046:tests_fixtures_cluster_a_replay_proof_batch_v0_1_contract_valid_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": "test_evidence_node",
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1/contract_valid.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1/contract_valid.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2e_04_identity_subsystem_contract_293_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_04_identity_subsystem_contract_293_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_d2e_04_identity_subsystem_contract_293_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_schemas_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": "runtime_schema_file_node",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_report_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_report_v0.1.json"
+    },
+    {
+      "candidate_id": "target:tests_fixtures_cluster_a_replay_proof_batch_v0_1",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/cluster_a_replay_proof_batch_v0_1"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2e_economic_risk_monitoring_baseline_305_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_economic_risk_monitoring_baseline_305_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_d2e_economic_risk_monitoring_baseline_305_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_agent_sdk_boundary_contract_draft_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_agent_sdk_boundary_contract_draft_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_claude_extraction_brief_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_claude_extraction_brief_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_claude_extraction_brief_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_475_484_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_475_484_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_475_484_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_475_484_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_475_484_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_475_484_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_475_484_handoff_484_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_475_484_handoff_484_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_475_484_handoff_484_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_483_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_483_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_483_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_068_topology_shuffle_authorization_opening_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_068_topology_shuffle_authorization_opening_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_068_topology_shuffle_authorization_opening_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_epoch_epoch_boundary_witness_runtime_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/epoch/epoch_boundary_witness_runtime.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/epoch/epoch_boundary_witness_runtime.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_transport_operationalization_boundary_lock_566_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transport_operationalization_boundary_lock_566_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_transport_operationalization_boundary_lock_566_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_6_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.6.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.6.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v1_8_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v1.8.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v1.8.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_439_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_439_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_439_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_node_value_policy_migration_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/node_value_policy_migration.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/node_value_policy_migration.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_0_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.0.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v3.0.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_631_window_631_636_sequence_lock_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_631_window_631_636_sequence_lock.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_631_window_631_636_sequence_lock.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_post_genesis_readiness_package_238_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_post_genesis_readiness_package_238_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_post_genesis_readiness_package_238_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_graph_edges_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_graph_edges.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_graph_edges.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_refutation_criterion_schema_specification_462_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_refutation_criterion_schema_specification_462_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_refutation_criterion_schema_specification_462_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_distribution_package_profiles_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/distribution/package_profiles.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/distribution/package_profiles.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_1440_claimability_integration_tests_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1440_claimability_integration_tests.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_1440_claimability_integration_tests.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_226_decision_log_backlog_queue_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_226_decision_log_backlog_queue_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_226_decision_log_backlog_queue_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_5_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.5.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.5.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_706_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_706_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_706_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_766_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_766_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_766_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_invitation_provenance_chain_spec_1493p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_invitation_provenance_chain_spec_1493p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_invitation_provenance_chain_spec_1493p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_issuance_evidence_closure_a_266_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_issuance_evidence_closure_a_266_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_issuance_evidence_closure_a_266_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v1_9_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v1.9.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v1.9.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_genesis_agent1_keygen_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/genesis_agent1_keygen.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/genesis_agent1_keygen.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_wire_transport_runtime_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/wire_transport_runtime.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/network/wire_transport_runtime.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_3_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.3.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v2.3.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_boolean_token_census_600_plus_1556_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_boolean_token_census_600_plus_1556_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_boolean_token_census_600_plus_1556_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_fixtures_cluster_a_replay_proof_ci_gate_v0_1_release_v0_1_baseline_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1/release_v0_1_baseline.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_check_replay_proof_schema_parity_sh",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/check_replay_proof_schema_parity.sh",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/check_replay_proof_schema_parity.sh"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v2_9_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v2.9.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v2.9.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_563_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_563_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_563_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_rc_frontier_gap_audit_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/rc_frontier_gap_audit.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/rc_frontier_gap_audit.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_1411_vrf_proof_verifier_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1411_vrf_proof_verifier.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_1411_vrf_proof_verifier.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_1412_vrf_integration_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_1412_vrf_integration.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_1412_vrf_integration.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2e_06_verify_subsystem_handoff_302_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_06_verify_subsystem_handoff_302_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_d2e_06_verify_subsystem_handoff_302_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_63p_private_1489p_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.63p_private_1489p.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.63p_private_1489p.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_consolidated_obligation_and_window_plan_1489p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consolidated_obligation_and_window_plan_1489p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_consolidated_obligation_and_window_plan_1489p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_1489p_coherence_1496p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_1489p_coherence_1496p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_1489p_coherence_1496p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_4_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.4.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v3.4.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_460_468_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_460_468_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_460_468_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_460_468_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_468_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_460_468_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_460_468_handoff_468_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_468_handoff_468_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_460_468_handoff_468_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_460_plus_consensus_follow_on_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_460_plus_consensus_follow_on_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_460_plus_consensus_follow_on_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_tier0_exact_numeric_runtime_migration_635_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_tier0_exact_numeric_runtime_migration_635_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_tier0_exact_numeric_runtime_migration_635_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_schemas_commit_epoch_event_schema_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": "runtime_schema_file_node",
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_580_panel_live_submission_integration_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_580_panel_live_submission_integration.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_580_panel_live_submission_integration.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_testbed_check_phase_581_settlement_wallet_query_integration_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/check_phase_581_settlement_wallet_query_integration.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/testbed/check_phase_581_settlement_wallet_query_integration.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_testbed_run_phase_581_settlement_wallet_query_integration_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/run_phase_581_settlement_wallet_query_integration.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/testbed/run_phase_581_settlement_wallet_query_integration.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_515_524_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_515_524_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_515_524_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_515_524_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_515_524_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_515_524_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_515_524_handoff_524_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_515_524_handoff_524_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_515_524_handoff_524_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_sim_harness_closed_loop_controllers_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sim/harness_closed_loop_controllers.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/sim/harness_closed_loop_controllers.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_cw6_convergence_window_closure_gate_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_cw6_convergence_window_closure_gate.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_cw6_convergence_window_closure_gate.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_763_window_763_766_sequence_lock_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_763_window_763_766_sequence_lock.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_763_window_763_766_sequence_lock.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_0_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.0.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.0.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_4_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.4.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.4.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_700_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_700_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_700_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_694_700_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_694_700_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_694_700_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_693_700_closure_gate_700_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_693_700_closure_gate_700_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_693_700_closure_gate_700_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_694_700_track_a_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_694_700_track_a_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_694_700_track_a_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1198_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1198_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_1198_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_495_504_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_495_504_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_495_504_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_495_504_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_495_504_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_495_504_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_consensus_circuit_breaker_interface_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/consensus/circuit_breaker_interface.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/consensus/circuit_breaker_interface.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_sidecars_local_graph_memory_projection_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sidecars/local_graph_memory_projection.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/sidecars/local_graph_memory_projection.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_canon_bundle_key_registry_signing_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_signing.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_canon_bundle_key_registry_signing.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_canon_export_bundle_sign_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_export_bundle_sign.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_canon_export_bundle_sign.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_consensus_diversity_floor_finality_runtime_handoff_470_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_diversity_floor_finality_runtime_handoff_470_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_consensus_diversity_floor_finality_runtime_handoff_470_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_447_consensus_adversarial_regression_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_447_consensus_adversarial_regression.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_447_consensus_adversarial_regression.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_49_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.49.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.49.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_227_blocker_remediation_package_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_227_blocker_remediation_package_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_227_blocker_remediation_package_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_5_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.5.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v3.5.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_tier0_numeric_hardening_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_tier0_numeric_hardening.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_tier0_numeric_hardening.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_v5_schema_epoch_translation_ratification_evidence_333_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_existing_cdl_target",
+      "repo_path": "docs/specs/ilc_cdl_v5_schema_epoch_translation_ratification_evidence_333_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_v5_schema_epoch_translation_ratification_evidence_333_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_328_337_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_328_337_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_328_337_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_328_337_handoff_337_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_328_337_handoff_337_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_328_337_handoff_337_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_cdl_v4_v6_dual_ratification_334_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_existing_cdl_target",
+      "repo_path": "tests/test_cdl_v4_v6_dual_ratification_334.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_cdl_v4_v6_dual_ratification_334.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_cdl_v5_ratification_333_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_existing_cdl_target",
+      "repo_path": "tests/test_cdl_v5_ratification_333.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_cdl_v5_ratification_333.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_cdl_v_batch_b_open_and_evidence_prelock_325_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_cdl_v_batch_b_open_and_evidence_prelock_325.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_cdl_v_batch_b_open_and_evidence_prelock_325.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_38_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.38.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.38.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1137_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1137_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_1137_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_public_claimability_api_activation_or_carry_forward_gate_1336_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1207_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1207_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_1207_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_d2d_openclaw_p2p_relay_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/openclaw_p2p_relay.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/network/d2d/openclaw_p2p_relay.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_sidecars_public_path_activation_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sidecars/public_path_activation.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/sidecars/public_path_activation.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_rc0_1_readiness_checklist_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_rc0_1_readiness_checklist_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_testbed_run_phase_595_rc0_1_strike_force_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/testbed/run_phase_595_rc0_1_strike_force.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/testbed/run_phase_595_rc0_1_strike_force.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_096_prelock_1552p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_096_prelock_1552p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_096_prelock_1552p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_096_ratification_evidence_1553p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_096_ratification_evidence_1553p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_096_ratification_evidence_1553p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_d2e_03_prototype_handoff_265_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_d2e_03_prototype_handoff_265_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_d2e_03_prototype_handoff_265_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_3_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.3.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.3.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_option_b_graduation_checklist_state_682_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_option_b_graduation_checklist_state_682_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_option_b_graduation_checklist_state_682_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_620_622_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_620_622_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_620_622_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_620_622_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_620_622_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_620_622_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_565_574_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_565_574_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_565_574_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_565_574_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_565_574_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_565_574_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_565_574_handoff_574_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_565_574_handoff_574_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_565_574_handoff_574_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_light_cone_kpis_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/light_cone_kpis.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/light_cone_kpis.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_047_treasury_governance_ratification_evidence_418_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_047_treasury_governance_ratification_evidence_418_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_047_treasury_governance_ratification_evidence_418_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_15_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.15.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.15.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_6_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.6.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v3.6.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_residual_numeric_hardening_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_residual_numeric_hardening.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_residual_numeric_hardening.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_adaptive_fee_burn_ratio_spec_1549p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_adaptive_fee_burn_ratio_spec_1549p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_adaptive_fee_burn_ratio_spec_1549p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v0_9_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.9.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v0.9.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_434_440_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_434_440_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_434_440_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_434_440_handoff_440_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_440_handoff_440_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_434_440_handoff_440_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_434_plus_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_plus_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_434_plus_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_434_runtime_tranche_intake_434_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_434_runtime_tranche_intake_434_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_434_runtime_tranche_intake_434_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_node_node_dissemination_runtime_362_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/node/node_dissemination_runtime_362.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/node/node_dissemination_runtime_362.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_ecu_active_layer_runtime_hardening_gate_629_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_ecu_active_layer_runtime_hardening_gate_629_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_ecu_active_layer_runtime_hardening_gate_629_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_commons_dedication_and_treasury_routing_note_720_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_commons_dedication_and_treasury_routing_note_720_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_commons_dedication_and_treasury_routing_note_720_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_leasehold_duration_and_reversion_calibration_note_720_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_leasehold_duration_and_reversion_calibration_note_720_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_leasehold_duration_and_reversion_calibration_note_720_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_739_744_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_739_744_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_739_744_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_739_744_closure_gate_744_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_739_744_closure_gate_744_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_739_744_closure_gate_744_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_739_744_guidance_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_739_744_guidance_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_739_744_guidance_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_767_774_closure_gate_774_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_767_774_closure_gate_774_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_767_774_closure_gate_774_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_745_748_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_745_748_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_745_748_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_745_748_closure_gate_748_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_745_748_closure_gate_748_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_745_748_closure_gate_748_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_745_748_guidance_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_745_748_guidance_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_745_748_guidance_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_star_map_star_map_route_index_runtime_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/star_map/star_map_route_index_runtime.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/network/star_map/star_map_route_index_runtime.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_21_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.21.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.21.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_852_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_852_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_852_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_stress_and_cohesion_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/stress_and_cohesion.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/stress_and_cohesion.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_wallet_ecu_ilc_activation_or_carry_forward_gate_1338_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_ep_task_cli_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/ep_task_cli.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/ep_task_cli.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_security_cdl_ratification_251_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_security_cdl_ratification_251.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_security_cdl_ratification_251.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_security_runtime_cross_cdl_interactions_244_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_security_runtime_cross_cdl_interactions_244.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_security_runtime_cross_cdl_interactions_244.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_9_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.9.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.9.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_726_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_726_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_726_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_genesis_accrual_governor_phase_218_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_genesis_accrual_governor_phase_218.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_genesis_accrual_governor_phase_218.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_sphincs_shamir_split_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/sphincs_shamir_split.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/sphincs_shamir_split.py"
+    },
+    {
+      "candidate_id": "target:tests_fixtures_cluster_a_replay_proof_ci_gate_v0_1",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/cluster_a_replay_proof_ci_gate_v0_1"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_659_664_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_659_664_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_659_664_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_659_664_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_659_664_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_659_664_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_659_664_handoff_664_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_659_664_handoff_664_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_659_664_handoff_664_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_sequestered_financial_shard_eligibility_prefilter_724_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_sequestered_financial_shard_eligibility_prefilter_724_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_sequestered_financial_shard_eligibility_prefilter_724_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_devnet_multi_epoch_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_devnet_multi_epoch.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_devnet_multi_epoch.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_canon_bundle_pipeline_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_pipeline.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/canon_bundle_pipeline.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_canon_bundle_replay_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_replay.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/canon_bundle_replay.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_canon_bundle_validate_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_bundle_validate.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/canon_bundle_validate.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_compare_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_compare_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cluster_a_replay_proof_batch_compare_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_ops_contract_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_batch_report_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cluster_a_replay_proof_batch_report_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cluster_a_replay_proof_ci_gate_report_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cluster_a_replay_proof_ci_gate_report_v0.1.json"
+    },
+    {
+      "candidate_id": "target:ilc_core_protocol_schemas",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/protocol/schemas",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/protocol/schemas"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_32_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.32.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.32.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_33_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.33.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.33.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_integration_coherence_report_1100_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_integration_coherence_report_1100_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_integration_coherence_report_1100_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_945_952_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_945_952_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_945_952_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_gap14_package_profile_audit_1251_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_gap14_package_profile_audit_1251_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_network_transport_identity_and_value_path_forward_planning_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_network_transport_identity_and_value_path_forward_planning_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_path_lift_counterfactual_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/path_lift_counterfactual.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/path_lift_counterfactual.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_7_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.7.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.7.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_716_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_716_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_716_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_genesis_validator_bootstrap_specification_479_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_validator_bootstrap_specification_479_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_genesis_validator_bootstrap_specification_479_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_validator_enhancement_roadmap_479_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_validator_enhancement_roadmap_479_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_validator_enhancement_roadmap_479_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_censorship_resistance_threat_model_672_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_censorship_resistance_threat_model_672_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_censorship_resistance_threat_model_672_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_671_676_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_671_676_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_671_676_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_rows_7_8_ratification_or_threshold_decision_675_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rows_7_8_ratification_or_threshold_decision_675_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_rows_7_8_ratification_or_threshold_decision_675_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_rows_7_8_selection_criteria_lock_675_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_rows_7_8_selection_criteria_lock_675_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_rows_7_8_selection_criteria_lock_675_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_671_676_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_671_676_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_671_676_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_671_676_handoff_676_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_671_676_handoff_676_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_671_676_handoff_676_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_closure_handoff_doc_schema_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_guidance_doc_schema_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_guidance_doc_schema_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_guidance_doc_schema_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_genesis_authority_sunset_spec_1547p_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_authority_sunset_spec_1547p_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_genesis_authority_sunset_spec_1547p_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_555_564_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_555_564_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_555_564_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_signal_floor_policy_consistency_scoping_547_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_signal_floor_policy_consistency_scoping_547_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_signal_floor_policy_consistency_scoping_547_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_555_564_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_555_564_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_555_564_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_555_564_handoff_564_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_555_564_handoff_564_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_555_564_handoff_564_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_559_gossip_transport_hardening_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_559_gossip_transport_hardening.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_559_gossip_transport_hardening.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_genesis_serving_receiver_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/genesis_serving_receiver.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/genesis_serving_receiver.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_claimability_verifier_api_boundary_preflight_1284_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_claimability_verifier_api_boundary_preflight_1284_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_public_claimability_verifier_api_boundary_preflight_1284_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_server_instance_isolation_phase_199_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_server_instance_isolation_phase_199.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_server_instance_isolation_phase_199.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_v7_popperian_gate_runtime_handoff_398_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "multiple_existing_cdl_targets",
+      "repo_path": "docs/specs/ilc_cdl_v7_popperian_gate_runtime_handoff_398_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_v7_popperian_gate_runtime_handoff_398_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_jury_epoch_work_prompt_hardening_audit_1391_1398_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v0_9_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v0.9.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v0.9.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_open_requirements_and_unknown_unknowns_analysis_354_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_open_requirements_and_unknown_unknowns_analysis_354_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_reputation_and_agent_profile_adjoint_contract_345_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_reputation_and_agent_profile_adjoint_contract_345_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_reputation_and_agent_profile_adjoint_contract_345_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_adm_003_role_resolution_339_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_adm_003_role_resolution_339.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_adm_003_role_resolution_339.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_d2d_routing_reputation_runtime_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/routing_reputation_runtime.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/network/d2d/routing_reputation_runtime.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_dynamic_epistemic_traversal_engine_forward_planning_1241_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_public_rc_runway_pre_sequence_plan_1241_plus_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_genesis_packaging_distribution_sequence_222_229_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_genesis_packaging_distribution_sequence_222_229_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_genesis_packaging_distribution_sequence_222_229_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_row_5_mechanism_proof_mysticeti_697_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_row_5_mechanism_proof_mysticeti_697_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_row_5_mechanism_proof_mysticeti_697_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli__cli_error_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/_cli_error.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/_cli_error.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_fixtures_antigravity_prompt__phase_1546p_g10_block5_init_descent_v1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_fixtures_antigravity_prompt__phase_1546p_g10_block5_init_descent_v2_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v2.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/antigravity_prompt__phase_1546p_g10_block5_init_descent_v2.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_evaluators_phase_prompt_evaluator_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/evaluators/phase_prompt_evaluator.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/evaluators/phase_prompt_evaluator.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_canon_bundle_key_registry_bundle_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_bundle.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_canon_bundle_key_registry_bundle.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_canon_bundle_key_registry_channel_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_channel.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_canon_bundle_key_registry_channel.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_canon_bundle_key_registry_promotion_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_canon_bundle_key_registry_promotion.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_canon_bundle_key_registry_promotion.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_reuse_diversity_invariants_phase_216_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_reuse_diversity_invariants_phase_216.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_reuse_diversity_invariants_phase_216.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_public_rc_publication_claim_gate_1341_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_public_rc_publication_claim_gate_1341_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_public_rc_publication_claim_gate_1341_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_adr_stale_reconciliation_strike_force_1156_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_adr_stale_reconciliation_strike_force_1156_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_adr_stale_reconciliation_strike_force_1156_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v3_7_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v3.7.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v3.7.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_openclaw_nemoclaw_claimable_profile_full_dry_run_1323_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_migrate_known_records_hash_mode_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/migrate_known_records_hash_mode.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/migrate_known_records_hash_mode.py"
+    },
+    {
+      "candidate_id": "target:docs_specs_ilc_window_665_670_historical_recovery_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "docs/specs/ilc_window_665_670_historical_recovery_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_665_670_historical_recovery_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_sim_sim_fetch_01_werner_capture_sim_fetch_rerun_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_task_routing_suggestions_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/task_routing_suggestions.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/task_routing_suggestions.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_option_b_graduation_checklist_state_670_v0_1_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_option_b_graduation_checklist_state_670_v0.1.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_option_b_graduation_checklist_state_670_v0.1.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_row_8_mysticeti_sovereign_config_699_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_row_8_mysticeti_sovereign_config_699_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_row_8_mysticeti_sovereign_config_699_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v4_8_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v4.8.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v4.8.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_722_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_722_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_722_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_transfer_economics_cdl_opening_recommendation_or_deferment_721_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transfer_economics_cdl_opening_recommendation_or_deferment_721_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_transfer_economics_cdl_opening_recommendation_or_deferment_721_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_transfer_tax_cooling_and_leasehold_simulation_replay_contract_721_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_transfer_tax_cooling_and_leasehold_simulation_replay_contract_721_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_transfer_tax_cooling_and_leasehold_simulation_replay_contract_721_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_migrate_node_ids_to_canonical_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/migrate_node_ids_to_canonical.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/migrate_node_ids_to_canonical.py"
+    },
+    {
+      "candidate_id": "target:ilc_core_economics",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "target_nodes_have_no_deterministic_authority_rule_in_fix45",
+      "repo_path": "ilc_core/economics/",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/economics/"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_550_passive_ecu_attribution_runtime_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_550_passive_ecu_attribution_runtime.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_550_passive_ecu_attribution_runtime.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_20_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.20.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.20.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_node_value_input_canon_phase_203_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_node_value_input_canon_phase_203.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_node_value_input_canon_phase_203.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_node_value_policy_migration_phase_209_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_node_value_policy_migration_phase_209.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_node_value_policy_migration_phase_209.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_network_d2d_spectral_beacon_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/network/d2d/spectral_beacon.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/network/d2d/spectral_beacon.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_bundle_bundle_verifier_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/bundle/bundle_verifier.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/bundle/bundle_verifier.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_fixtures_adr_0009_bundle_four_layer_chain_valid_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/adr_0009/bundle_four_layer_chain_valid.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/adr_0009/bundle_four_layer_chain_valid.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_fixtures_adr_0009_bundle_layer0_valid_json",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "fixture_file_low_semantic_value_for_algorithmic_authority_targeting",
+      "repo_path": "tests/fixtures/adr_0009/bundle_layer0_valid.json",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/fixtures/adr_0009/bundle_layer0_valid.json"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_consensus_runtime_finality_evaluator_handoff_445_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_consensus_runtime_finality_evaluator_handoff_445_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_consensus_runtime_finality_evaluator_handoff_445_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_phase_441_449_sequence_lock_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_phase_441_449_sequence_lock_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_phase_441_449_sequence_lock_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_441_449_handoff_449_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_441_449_handoff_449_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_441_449_handoff_449_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_window_441_plus_candidate_phase_grouping_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_window_441_plus_candidate_phase_grouping_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_window_441_plus_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_436_runtime_tranche_benchmark_harness_and_tranche_completion.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_444_consensus_runtime_i_epoch_state_and_quorum_record_surfaces.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tests/test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tests/test_phase_445_consensus_runtime_ii_finality_evaluator_and_fork_resolution.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_lineage_lifecycle_event_schema_v0_2_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_lineage_lifecycle_event_schema_v0.2.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_cli_canon_export_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/cli/canon_export.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/cli/canon_export.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_antigravity_context_capsule_v5_6_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.6.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_antigravity_context_capsule_v5.6.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_coherence_report_773_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_coherence_report_773_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_coherence_report_773_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_competency_kpis_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/competency_kpis.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/competency_kpis.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_merkle_laplacian_v02_canonicalization_and_posk_transcript_spec_v0.1.md"
+    },
+    {
+      "candidate_id": "repo:file_ref:tools_sim_sim_merkle_laplacian_v02_followon_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "tools/sim/sim_merkle_laplacian_v02_followon.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "tools/sim/sim_merkle_laplacian_v02_followon.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_analysis_stress_response_kpis_py",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "ilc_core/analysis/stress_response_kpis.py",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "ilc_core/analysis/stress_response_kpis.py"
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_cdl_ratification_window_270_279_handoff_v0_1_md",
+      "deterministic_metadata_only_annotation": false,
+      "node_kind": null,
+      "original_reason": "no_deterministic_filename_or_membership_rule_matched",
+      "repo_path": "docs/specs/ilc_cdl_ratification_window_270_279_handoff_v0.1.md",
+      "semantic_edge_type_counts": {},
+      "semantic_indegree": 0,
+      "semantic_outdegree": 0,
+      "semantic_total_degree": 0,
+      "source_path": "docs/specs/ilc_cdl_ratification_window_270_279_handoff_v0.1.md"
+    }
+  ],
+  "write_policy": "no_edges_written_analysis_only"
+}

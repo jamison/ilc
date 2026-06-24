@@ -1,0 +1,435 @@
+{
+  "phase": "phase_1545p_fix72",
+  "schema_version": "fix72_authority_sim_battery.v0.1",
+  "suite_a_cdl_reachability": {
+    "cdl_node_count": 132,
+    "unreachable_cdl_count": 31,
+    "unreachable_cdls": [
+      "cdl:001",
+      "cdl:001_trust_root_runtime",
+      "cdl:002",
+      "cdl:007",
+      "cdl:021",
+      "cdl:028",
+      "cdl:029_allocation_split",
+      "cdl:039_open_and_promotion_continuity",
+      "cdl:047_treasury_reserve",
+      "cdl:053_werner_local_productive_credit",
+      "cdl:055_validator_staking_liveness",
+      "cdl:056_trust_tier_boundary",
+      "cdl:057_epoch_boundary_witness",
+      "cdl:060",
+      "cdl:060_gossip_hop_limit",
+      "cdl:061",
+      "cdl:061_gossip_runtime_boundary",
+      "cdl:062_sovereign_substrate_research_lane",
+      "cdl:068_topology_shuffle_vrf",
+      "cdl:077",
+      "cdl:081_hyperedge_attribution",
+      "cdl:084_provenance_chain",
+      "cdl:085",
+      "cdl:085_opening_phase_1172",
+      "cdl:085_prelock_historical_opening_and_prelock_state",
+      "cdl:085_prelock_spec",
+      "cdl:085_ratification_phase_1185",
+      "cdl:087",
+      "cdl:096_werner_flow_governor_lane",
+      "cdl:v3_diversity_floor",
+      "cdl:v7_popperian_gate"
+    ]
+  },
+  "suite_b_governs_cycles": {
+    "cycle_count": 0,
+    "cycle_sample": []
+  },
+  "suite_c_gap_closure": {
+    "epistemic_gap_count": 1,
+    "gaps": [
+      {
+        "candidate_id": "gap:cdac6b50b1a118906055deb6",
+        "candidate_targets": [],
+        "resolvable_candidate_targets": [],
+        "status": "open",
+        "target_hint": "cdl:"
+      }
+    ],
+    "resolvable_gap_count": 0
+  },
+  "suite_d_runtime_binding_coverage": {
+    "implementation_dark_cdl_count": 89,
+    "implementation_dark_cdls": [
+      "cdl:001",
+      "cdl:001_trust_root_runtime",
+      "cdl:002",
+      "cdl:003_founder_fade_out_mechanics",
+      "cdl:004_founder_operational_caps",
+      "cdl:005_issuance_cap_constitutional_wording",
+      "cdl:006",
+      "cdl:007",
+      "cdl:008_layer_fixed_core_vs_loaded_layers",
+      "cdl:009_fork_legitimacy",
+      "cdl:010_pseudonymity_accountability_balance",
+      "cdl:011_node_usefulness_formula_ratification_ew",
+      "cdl:012_utility_flow_reward_linkage_uf",
+      "cdl:014_path_level_marginal_contribution_method",
+      "cdl:015_implementation_order_lock_refactor_avoidance",
+      "cdl:017_validator_admission_ejection",
+      "cdl:019_multiplier_governance_surface",
+      "cdl:022_genesis_state_bundle_specification_signing_ceremony",
+      "cdl:023_epoch_snapshot_contract",
+      "cdl:025_terminal_issuance_model",
+      "cdl:026_cmax_cap",
+      "cdl:027_epoch_issuance_boundary",
+      "cdl:027_epoch_length",
+      "cdl:028",
+      "cdl:028_fee_burn_split",
+      "cdl:029_80_15_5_allocation_distribution",
+      "cdl:029_allocation_split",
+      "cdl:030_ecu_price_clamp_runtime",
+      "cdl:032",
+      "cdl:033",
+      "cdl:039_open_and_promotion_continuity",
+      "cdl:041_shard_lifecycle_operations_creation_merge_split_partition_privacy",
+      "cdl:043_storage_economics_graph_pruning_active_graph_retention_constraints",
+      "cdl:044_local_first_wallet_surface",
+      "cdl:047_treasury_governance",
+      "cdl:047_treasury_reserve",
+      "cdl:048_activation_counsel_clearance",
+      "cdl:048_mandatory_conversion",
+      "cdl:049_bounded_existential_alignment",
+      "cdl:050_treasury_ecu_governor_lane",
+      "cdl:053_werner_local_productive_credit",
+      "cdl:053_werner_local_productive_credit_future_vehicle",
+      "cdl:054_validator_reward_pool_routing",
+      "cdl:055_validator_staking_liveness",
+      "cdl:055_validator_staking_liveness_runtime",
+      "cdl:056_trust_tier_boundary",
+      "cdl:056_validator_trust_tier_elevation",
+      "cdl:057_epoch_boundary_witness",
+      "cdl:058_validator_re_admission_bounded_cooldown_based_re_entry",
+      "cdl:060",
+      "cdl:060_gossip_hop_limit",
+      "cdl:061",
+      "cdl:061_gossip_runtime_boundary",
+      "cdl:063_ecu_directed_commission",
+      "cdl:065_coupling_invariants_governance_lock",
+      "cdl:066_chosen_substrate_legitimacy",
+      "cdl:067_settlement_substrate_governance",
+      "cdl:068_topology_shuffle_vrf",
+      "cdl:068_topology_shuffle_vrf_runtime",
+      "cdl:071_temporal_tier_reconciliation",
+      "cdl:072_bound_b_formula_amendment",
+      "cdl:077",
+      "cdl:081_hyperedge_attribution",
+      "cdl:082",
+      "cdl:083_panel_quorum_refutation",
+      "cdl:084_provenance_chain",
+      "cdl:085",
+      "cdl:085_opening_phase_1172",
+      "cdl:085_prelock_historical_opening_and_prelock_state",
+      "cdl:085_prelock_spec",
+      "cdl:085_ratification_phase_1185",
+      "cdl:085_werner_phi_bound",
+      "cdl:086",
+      "cdl:087",
+      "cdl:087_canonical_fetch_distribution_policy",
+      "cdl:088_public_claimability",
+      "cdl:089_blocking_authority",
+      "cdl:090_identity_bootstrap",
+      "cdl:091_jury_incentive",
+      "cdl:092_capproof_content_addressing_capability_vector_signing_chain_bounded",
+      "cdl:093_maintenance_lottery",
+      "cdl:096_werner_global_tier_authority",
+      "cdl:v2_sybil_resistance",
+      "cdl:v3_diversity_floor",
+      "cdl:v4_minority_dissent_appeal_reopening_ratified_cdl_decisions",
+      "cdl:v5_schema_epoch_markers_cross_version_translation_centrality_comparability",
+      "cdl:v6_genesis_intervention",
+      "cdl:v7_agent_decomposition",
+      "cdl:v7_popperian_gate"
+    ],
+    "implements_by_cdl_sample": {
+      "cdl:001_signer_lineage_trust_root": [
+        "repo:file:da9be2755c01a9e0:ilc_core_security_signer_lineage_runtime_py"
+      ],
+      "cdl:002_key_compromise_response": [
+        "repo:file:7de2753dced59253:ilc_core_security_key_compromise_runtime_py"
+      ],
+      "cdl:007_rollback_resistance": [
+        "repo:file:864ec5f4de595c6d:ilc_core_security_rollback_resistance_runtime_py"
+      ],
+      "cdl:013_governance_weight": [
+        "repo:file:c4db6527114d1bb9:ilc_core_analysis_governance_weight_py"
+      ],
+      "cdl:020": [
+        "repo:file:58b7f086fb239b08:ilc_core_schema_d2_schema_baseline_runtime_py"
+      ],
+      "cdl:024": [
+        "repo:file:34eabbdfef8de751:ilc_core_network_wire_transport_runtime_py"
+      ],
+      "cdl:031_dynamic_ranking_policy": [
+        "repo:file:74e968d8b48a5646:ilc_core_economics_dynamic_ranking_multiplier_runtime_py"
+      ],
+      "cdl:034_node_schema_core_runtime": [
+        "repo:file:b44a561e82feb8f8:ilc_core_node_node_schema_core_runtime_360_py"
+      ],
+      "cdl:035_validation_lifecycle": [
+        "repo:file:7c922355999b8659:ilc_core_node_validation_lifecycle_runtime_361_py"
+      ],
+      "cdl:036_node_dissemination_runtime": [
+        "repo:file:b82c0d27eda2bd62:ilc_core_node_node_dissemination_runtime_362_py"
+      ],
+      "cdl:037_executable_node_descriptor_safety_agent_side_sandboxing": [
+        "repo:file:5772e529e62fb467:ilc_core_node_executable_descriptor_runtime_363_py"
+      ],
+      "cdl:038_private_to_public_promotion": [
+        "repo:file:652e7835fc927567:ilc_core_node_promotion_continuity_runtime_364_py"
+      ],
+      "cdl:039_topology_shuffling_authorization": [
+        "repo:file_ref:ilc_core_network_d2d_gossip_py",
+        "repo:file_ref:ilc_core_network_d2d_interface_py"
+      ],
+      "cdl:040_admission_control_identity_envelope": [
+        "target:ilc_core_genesis_py"
+      ],
+      "cdl:042_agent_id_flat_namespace": [
+        "repo:file:b8ee392f31b19c36:ilc_core_cli_d2e_agent_cli_py"
+      ],
+      "cdl:045_circuit_breaker": [
+        "repo:file:509efee73ecad13a:ilc_core_consensus_circuit_breaker_interface_py"
+      ],
+      "cdl:046_timed_out_validation_state_amendment_churn_orphan_recovery": [
+        "repo:file:319815fafd56a988:ilc_core_cli_d2e_lifecycle_cli_py",
+        "repo:file:e3ca9be03f1e35c4:ilc_core_node_timed_out_lifecycle_runtime_411_py"
+      ],
+      "cdl:051_epoch_state_quorum": [
+        "repo:file:9b5b760bacfb4afe:ilc_core_consensus_epoch_state_runtime_py",
+        "target:ilc_core_genesis_py"
+      ],
+      "cdl:052_epistemic_evaluation_contract": [
+        "repo:file_ref:ilc_core_epistemic_node_submission_runtime_py"
+      ],
+      "cdl:057_blocking_authority_activation": [
+        "repo:file:0a599e8402d000f6:ilc_core_epoch_epoch_boundary_witness_runtime_py"
+      ],
+      "cdl:059_quality_signal_architecture": [
+        "repo:file_ref:ilc_core_epistemic_aesthetic_panel_runtime_py"
+      ],
+      "cdl:060_gossip_centrality_extension": [
+        "repo:file:8393f088a3ff70fd:ilc_core_network_d2d_centrality_delta_gossip_runtime_py"
+      ],
+      "cdl:061_gossip_http_envelope": [
+        "repo:file:7cbf97be6925fd67:ilc_core_network_d2d_http_gossip_transport_runtime_py"
+      ],
+      "cdl:064_exact_numeric_representation": [
+        "repo:file:007bf60768b6443c:ilc_core_ledger_settlement_verification_py",
+        "repo:file:16cd523a5da66375:ilc_core_consensus_engine_py",
+        "repo:file:2145733e34561f1f:ilc_core_analysis_stress_response_kpis_py",
+        "repo:file:29f1ccf20e151688:ilc_core_ledger_exact_numeric_py",
+        "repo:file:2fefff2af2210755:ilc_core_ledger_canon_bundle_audit_artifact_py",
+        "repo:file:315fbce0f1844a3b:ilc_core_ledger_lmdb_backend_py",
+        "repo:file:31e3d5988c063cd2:ilc_core_server_py",
+        "repo:file:3a03f06a69e1e34e:ilc_core_epoch_epoch_emission_production_path_py",
+        "repo:file:3e127f532920d852:ilc_core_agent_py",
+        "repo:file:4238f280d5e056e2:ilc_core_ledger_canon_export_format_py",
+        "repo:file:49b2b628b1505fa8:ilc_core_sidecars_registry_manifest_py",
+        "repo:file:49eceab16a66b177:ilc_core_storage_lmdb_graph_pruning_runtime_py",
+        "repo:file:4be357485da53970:ilc_core_genesis_genesis_authority_assertion_py",
+        "repo:file:66462d95d5523cc8:ilc_core_economics_epoch_ledger_py",
+        "repo:file:6a43d2c3972bb6f7:ilc_core_harness_idle_capacity_scheduler_py",
+        "repo:file:7292d5779648394d:ilc_core_protocol_mapper_py",
+        "repo:file:7763e938b17af593:ilc_core_analysis_econ_accounting_py",
+        "repo:file:7b41ab22eea96259:ilc_core_economics_rl_agents_py",
+        "repo:file:81476fd48d2393f2:ilc_core_ledger_canon_export_bundle_validate_py",
+        "repo:file:8a8f7597328a83e8:ilc_core_protocol_event_log_py"
+      ],
+      "cdl:069_pq_identity_epoch_endorsement": [
+        "repo:file:4af581eccab66375:ilc_core_identity_genesis_record_schema_py",
+        "repo:file:50c562f9f9bd98ef:ilc_core_identity_epoch_endorsement_runtime_py"
+      ],
+      "cdl:073_homoiconic_bootstrap_schema": [
+        "target:ilc_core_genesis_py"
+      ],
+      "cdl:074_truth_primitive_runtime": [
+        "repo:file:cd9fa4d75ca15baf:ilc_core_cli_d2e_submit_cli_py"
+      ],
+      "cdl:075_truth_primitive_graph_persistence": [
+        "repo:file:3a00ff2ff954b327:ilc_core_cli_d2e_query_truth_cli_py",
+        "repo:file:49eceab16a66b177:ilc_core_storage_lmdb_graph_pruning_runtime_py",
+        "repo:file:540960e0313fbe8a:ilc_core_ledger_init_py",
+        "repo:file:8d90e78a09acbd6b:ilc_core_rc_init_py",
+        "repo:file:9455484672f303a4:ilc_core_storage_lmdb_public_runtime_py",
+        "repo:file:bb9ffb96d148586e:ilc_core_storage_init_py",
+        "repo:file:cd9fa4d75ca15baf:ilc_core_cli_d2e_submit_cli_py",
+        "repo:file_ref:ilc_core_cli_d2e_query_truth_cli_py",
+        "repo:file_ref:ilc_core_storage_genesis_atlas_lmdb_writer_py"
+      ],
+      "cdl:076_truth_primitive_announcement_gossip_lightweight_truth_primitive_announcement": [
+        "repo:file:402c39717341cd7d:ilc_core_network_d2d_truth_primitive_gossip_runtime_py",
+        "repo:file:cd9fa4d75ca15baf:ilc_core_cli_d2e_submit_cli_py"
+      ],
+      "cdl:077_want_have_want_block_fetch": [
+        "repo:file:05ef1457c7a3d594:ilc_core_ledger_canon_bundle_key_registry_fetch_py",
+        "repo:file:25264d5f5b80b81a:ilc_core_cli_canon_bundle_key_registry_fetch_py",
+        "repo:file:4ce8b0977b0d4701:ilc_core_network_d2d_truth_primitive_fetch_runtime_py",
+        "repo:file:5e155771a62cd3b1:ilc_core_cli_ep_task_cli_py",
+        "repo:file:89ba5d036c5b5003:ilc_core_rc_local_skill_preview_py",
+        "repo:file:901f11bfafeb4a30:ilc_core_ledger_canon_bundle_key_registry_sync_py",
+        "repo:file:d5debcc446c0edd8:ilc_core_network_d2d_persistent_fetch_rate_limiter_runtime_py",
+        "repo:file:e3b0c44298fc1c14:ilc_core_sim_sim_fetch_01_init_py"
+      ],
+      "cdl:078_relay_incentive_constitutional_lock": [
+        "repo:file:e633fb52310b57e5:ilc_core_network_d2d_routing_reputation_runtime_py",
+        "repo:file:e8a216ea075c1426:ilc_core_network_d2d_openclaw_p2p_relay_py"
+      ],
+      "cdl:079_hb_002_p2p_bootstrap_distribution_bootstrap_bundle_signed": [
+        "repo:file:539df515c870499b:ilc_core_genesis_invitation_provenance_record_py",
+        "repo:file:581241d2e82c610c:ilc_core_node_node_startup_runtime_py",
+        "repo:file:9fd7c8949d81c6cd:ilc_core_genesis_init_py",
+        "repo:file:c798e650e285d6ef:ilc_core_network_d2d_bootstrap_fetch_runtime_py"
+      ],
+      "cdl:080_star_map_n_gram_route_index": [
+        "repo:file:14adc0832ab6ac35:ilc_core_network_d2d_peer_fingerprint_cache_py",
+        "repo:file:29c409c193721a73:ilc_core_privacy_init_py",
+        "repo:file:742b73e711df7fcf:ilc_core_star_map_init_py",
+        "repo:file:7f5c910ce6dc1f21:ilc_core_epoch_init_py",
+        "repo:file:829e8c8edb3e1b9b:ilc_core_star_map_debruijn_harness_py",
+        "repo:file:b2e1b23e27227d3c:ilc_core_network_d2d_spectral_routing_runtime_py",
+        "repo:file:f5e5ee324d5b9166:ilc_core_analysis_routed_tasks_export_py",
+        "repo:file:f734b86012fc2570:ilc_core_privacy_transfer_mixing_framework_py",
+        "repo:file:fe9dbbb6011b2e72:ilc_core_network_star_map_init_py",
+        "repo:file_ref:ilc_core_star_map_route_index_py"
+      ],
+      "cdl:081_hyperedge_ecu_attribution": [
+        "repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py"
+      ],
+      "cdl:084_provenance_chain_attribution": [
+        "repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py"
+      ],
+      "cdl:094_transport_principal_admission_wire": [
+        "repo:file:52a4b6bcf8c73a38:ilc_core_network_d2d_transport_principal_pre_public_path_py"
+      ],
+      "cdl:095_jury_finality_petition_runtime": [
+        "repo:file:7c90126e8dbb7227:ilc_core_schema_petition_node_type_py",
+        "repo:file:f2f72c604ef8fe88:ilc_core_schema_verdict_record_schema_py"
+      ],
+      "cdl:096_werner_flow_governor_lane": [
+        "repo:file_ref:ilc_core_sim_sim_fetch_01_werner_topology_capture_schema_py"
+      ],
+      "cdl:097_type_definition_node_authority": [
+        "repo:file:9ce953447831924e:ilc_core_protocol_primitive_type_registry_py"
+      ],
+      "cdl:v1_temporal_decay": [
+        "repo:file:5d3e6efa7758a93b:ilc_core_reputation_temporal_decay_runtime_py"
+      ],
+      "cdl:v3_quorum_diversity": [
+        "repo:file:d20cbf4309ddd089:ilc_core_consensus_diversity_floor_runtime_py"
+      ]
+    },
+    "ratified_cdl_basis": {
+      "cdl_register_ratified_numbers": [
+        "001",
+        "002",
+        "003",
+        "004",
+        "005",
+        "006",
+        "007",
+        "008",
+        "009",
+        "010",
+        "011",
+        "012",
+        "013",
+        "014",
+        "015",
+        "017",
+        "019",
+        "020",
+        "022",
+        "023",
+        "024",
+        "025",
+        "026",
+        "027",
+        "028",
+        "029",
+        "030",
+        "031",
+        "032",
+        "033",
+        "034",
+        "035",
+        "036",
+        "037",
+        "038",
+        "039",
+        "040",
+        "041",
+        "042",
+        "043",
+        "044",
+        "045",
+        "046",
+        "047",
+        "048",
+        "049",
+        "050",
+        "051",
+        "052",
+        "053",
+        "054",
+        "055",
+        "056",
+        "057",
+        "058",
+        "059",
+        "060",
+        "061",
+        "063",
+        "064",
+        "065",
+        "066",
+        "067",
+        "068",
+        "069",
+        "071",
+        "072",
+        "073",
+        "074",
+        "075",
+        "076",
+        "077",
+        "078",
+        "079",
+        "080",
+        "081",
+        "082",
+        "083",
+        "084",
+        "085",
+        "086",
+        "087",
+        "088",
+        "089",
+        "090",
+        "091",
+        "092",
+        "093",
+        "094",
+        "095",
+        "096",
+        "097",
+        "V1",
+        "V2",
+        "V3",
+        "V4",
+        "V5",
+        "V6",
+        "V7"
+      ],
+      "metadata_canonicality_tier": "ratified_cdl"
+    },
+    "ratified_cdl_node_count": 130
+  }
+}

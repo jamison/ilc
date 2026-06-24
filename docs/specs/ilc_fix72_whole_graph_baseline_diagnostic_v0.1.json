@@ -1,0 +1,123 @@
+{
+  "edge_count": 94414,
+  "genesis_root": "artifact:genesis_intent_attestation_init_authority_map",
+  "node_count": 17033,
+  "phase": "phase_1545p_fix72",
+  "schema_version": "fix72_whole_graph_baseline_diagnostic.v0.1",
+  "top_indegree": {
+    "GOVERNS": [
+      {
+        "in_degree": 3,
+        "node_id": "policy:genesis_theta_hard_0_05"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "repo:file:8363bf4570f883e2:ilc_core_types_py"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "invariant:adr0036_adr0037_acceptance_lineage_pec_equivalence_domains_and_scope_boundary"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "cdl:074_truth_primitive_runtime"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "policy:reuse_attribution_rate_0_20"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "policy:genesis_theta_soft_exp_minus_3"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "artifact:canonical_self_describing_bootstrap_boundary"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "policy:edge_mint_phi_bound_0_60"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "artifact:genesis_state_bundle"
+      },
+      {
+        "in_degree": 2,
+        "node_id": "policy:provenance_decay_alpha_0_45"
+      }
+    ],
+    "REFERENCES_AUTHORITY": [
+      {
+        "in_degree": 1403,
+        "node_id": "repo:file:dc0bea532d0259dc:docs_specs_ilc_constitutional_decision_log_v0_1_md"
+      },
+      {
+        "in_degree": 1361,
+        "node_id": "repo:file:8333970235868ac4:docs_phases_status_md"
+      },
+      {
+        "in_degree": 660,
+        "node_id": "artifact:genesis_intent_attestation_init_authority_map"
+      },
+      {
+        "in_degree": 431,
+        "node_id": "repo:file:24535aba5db0be64:docs_specs_ilc_cdl_088_prelock_spec_1375_v0_1_md"
+      },
+      {
+        "in_degree": 398,
+        "node_id": "cdl:025_terminal_issuance_model"
+      },
+      {
+        "in_degree": 381,
+        "node_id": "cdl:029_80_15_5_allocation_distribution"
+      },
+      {
+        "in_degree": 350,
+        "node_id": "repo:file:ae50f47199fc7756:docs_research_ilc_cdl_050_blocker_map_and_reframing_memo_v0_1_md"
+      },
+      {
+        "in_degree": 350,
+        "node_id": "repo:file:1202683b619df5f5:docs_specs_ilc_cdl_039_adversarial_review_and_evidence_freeze_373_v0_1_md"
+      },
+      {
+        "in_degree": 346,
+        "node_id": "repo:file:69c364b2b6d0c975:docs_specs_ilc_cdl_053_werner_local_productive_credit_opening_1407_fix0_v0_1_md"
+      },
+      {
+        "in_degree": 333,
+        "node_id": "repo:file:78182b14d1ba3c12:docs_specs_ilc_cdl_v3_diversity_floor_runtime_handoff_397_v0_1_md"
+      }
+    ]
+  },
+  "traversals": {
+    "authority_control_forward": {
+      "coverage_fraction": 0.025362531556,
+      "edge_types": [
+        "CARRIES_FORWARD",
+        "GOVERNS"
+      ],
+      "reachable_count": 432,
+      "unreachable_count": 16601
+    },
+    "authority_reference_reverse": {
+      "edge_type": "REFERENCES_AUTHORITY",
+      "ilc_core_reachable_count": 471,
+      "ilc_core_total": 734,
+      "reachable_count": 7123,
+      "reachable_fraction": 0.418188222862
+    },
+    "implementation_reverse": {
+      "edge_type": "IMPLEMENTS",
+      "ilc_core_reachable_count": 184,
+      "ilc_core_total": 734,
+      "reachable_count": 445,
+      "reachable_fraction": 0.026125755886
+    },
+    "undirected_connectivity": {
+      "component_count": 1,
+      "giant_component_fraction": 1.0,
+      "largest_component_count": 17033
+    }
+  }
+}
