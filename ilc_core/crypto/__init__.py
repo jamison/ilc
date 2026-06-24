@@ -6,7 +6,8 @@ This module provides cryptographic primitives for ILC attestations:
 - COSE_Sign1 attestation blocks (Ed25519)
 - Canonical CBOR encoding for COSE structures
 
-Dependencies: cbor2>=5.0.0, cryptography>=41.0.0
+Dependency versions are declared in pyproject.toml package metadata; do not
+hardcode runtime pins in this module.
 """
 
 from .cose_sign1 import (
