@@ -33,7 +33,7 @@ def load_governance_config(path: str | None = None) -> GovernanceConfig:
     """
     Load Governance config from YAML/JSON.
 
-    If path is None, default to config/governance_mvp.yaml relative to project root.
+    If path is None, default to config/governance_mvp.json relative to project root.
     """
     user_supplied = path is not None
     if path is None:

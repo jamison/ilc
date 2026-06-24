@@ -48,6 +48,9 @@ Files are named: `ADR_NNNN_Short_Description.md`
 | [ADR-0031](ADR_0031_Subgraph_Homomorphism_Query_Contract.md) | Subgraph Homomorphism Query Contract (gRPC EdgeRecord — pre-M-018 gate) | Accepted |
 | [ADR-0032](ADR_0032_Temporal_Hypergraph_Epoch_Stamped_Incidence.md) | Temporal Hypergraph Epoch-Stamped Incidence | Accepted |
 | [ADR-0033](ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md) | Star Map Homoiconic Epistemiological Entity | Accepted |
+| [ADR-0035](ADR_0035_Homoiconic_Type_Definition_System.md) | Homoiconic Type Definition System | Accepted |
+| [ADR-0036](ADR_0036_Operational_Release_Key_Genesis_Binding.md) | Operational Release Key Genesis Binding | Accepted |
+| [ADR-0037](ADR_0037_Genesis_Canonical_Lineage_Contract.md) | Genesis Canonical Lineage Contract | Accepted |
 | [ADR-0038](ADR_0038_Agent_Birth_Attestation.md) | Agent Birth Attestation | Accepted |
 | [ADR-0039](ADR_0039_Validator_Endpoint_Registry.md) | Validator Endpoint Registry | Accepted |
 | [ADR-0040](ADR_0040_Jury_Eligibility_Assignment.md) | Jury Eligibility and Assignment | Accepted |
