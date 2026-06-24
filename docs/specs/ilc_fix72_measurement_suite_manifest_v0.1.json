@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "bytes": 23899,
+      "committed": true,
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix72_g10_post_repair_measurement_suite.md",
+      "purpose": "phase prompt",
+      "sha256": "efb3541824a3968d7da654ee323978b7884e9d0506423b88fa3dfe849c0960f4"
+    },
+    {
+      "bytes": 4067,
+      "committed": true,
+      "path": "docs/phases/phase_1545p_fix72_measurement_suite_walkthrough.md",
+      "purpose": "walkthrough",
+      "sha256": "6ab37187bf38a0a4d5b355942793c5965c5ef3822efa2a24527148d7a34aa8cd"
+    },
+    {
+      "bytes": 3545,
+      "committed": true,
+      "path": "docs/specs/ilc_fix72_whole_graph_baseline_diagnostic_v0.1.json",
+      "purpose": "whole graph baseline diagnostic",
+      "sha256": "aaa7e38f91663090991d2c74ce4e57496c242803cfc89d7e32bc1fa4c965e00c"
+    },
+    {
+      "bytes": 182960,
+      "committed": true,
+      "path": "docs/specs/ilc_fix72_percolation_analysis_v0.1.json",
+      "purpose": "percolation analysis report",
+      "sha256": "fbfa77938d2b45cbca9535ec7a28fab8b6a975bcdee57be4ee178277d120c431"
+    },
+    {
+      "bytes": 16612,
+      "committed": true,
+      "path": "docs/specs/ilc_fix72_authority_sim_battery_v0.1.json",
+      "purpose": "authority SIM battery",
+      "sha256": "ffab62802f5e67902252537726068765149d3eb3f57584ba59fb372519e4f0b6"
+    },
+    {
+      "bytes": 50215,
+      "committed": true,
+      "path": "tools/evaluators/sim_genesis_atlas_fix72_post_repair_measurement_suite.py",
+      "purpose": "measurement suite evaluator",
+      "sha256": "23884bb63fc840e1273ac1d059ac7473b2329fabc0a761be288c44d54fb68e7c"
+    },
+    {
+      "bytes": 4258,
+      "committed": true,
+      "path": "tests/test_phase_1545p_fix72_measurement_suite.py",
+      "purpose": "phase regression tests",
+      "sha256": "479a369878dc8b45f97cff58ebaff6e323814eaeb94adad3781203044dd06e0e"
+    },
+    {
+      "bytes": 2681630,
+      "committed": true,
+      "path": "docs/phases/STATUS.md",
+      "purpose": "phase status token record",
+      "sha256": "785b5d195a13fd5ab93fa838bb6bcf95dd7226f9876b89e885162c7fc642cb0c"
+    },
+    {
+      "bytes": 43257,
+      "committed": false,
+      "path": "out/genesis_atlas_fix72_fiedler_all_local_v0.1.json",
+      "purpose": "projection-aware Fiedler report",
+      "sha256": "41963fb4359d83818436b3ad1fad8a5cdf002679ce9fdc8b551eec9f8682d5bf"
+    },
+    {
+      "bytes": 1225,
+      "committed": false,
+      "path": "out/genesis_atlas_fix72_fiedler_authority_only_minority_v0.1.json",
+      "purpose": "authority-only isolated/minority report",
+      "sha256": "4bca08a8327df6e11cac41921739716d168041415ef3777080dc46d442760ec7"
+    },
+    {
+      "bytes": 40275,
+      "committed": false,
+      "path": "out/genesis_atlas_fix72_fiedler_authority_binding_surface_v0.1.json",
+      "purpose": "authority binding surface report",
+      "sha256": "c4b054afe1c6588cfbae8542620188659d069fda9e7202cb02b901455e4c496e"
+    },
+    {
+      "bytes": 31041,
+      "committed": false,
+      "path": "out/genesis_base_graph_spectral_post_fix69.json",
+      "purpose": "spectral diagnostics",
+      "sha256": "15133d6d36048580546805d8630c42954c4a36e525116fb1e1b8a22f28831a30"
+    },
+    {
+      "bytes": 30510,
+      "committed": false,
+      "path": "out/genesis_base_graph_pagerank_post_fix69.json",
+      "purpose": "PageRank diagnostics",
+      "sha256": "54d06b49b9a7be783d1647c63aaf3b3907a0dff86a5730e3632ca42ee2d5d75b"
+    },
+    {
+      "bytes": 138264,
+      "committed": false,
+      "path": "out/genesis_base_graph_fix72_low_pagerank_queue.json",
+      "purpose": "bottom-PageRank queue",
+      "sha256": "791e851cc1964c068ac9a5342c76a4af164b7c3742e4cfaedb0a7b8c7947aa08"
+    }
+  ],
+  "manifest_self_hash_policy": "self_hash_excluded_to_avoid_fixed_point_manifest_loop",
+  "phase": "phase_1545p_fix72",
+  "schema_version": "fix72_measurement_suite_manifest.v0.1"
+}
