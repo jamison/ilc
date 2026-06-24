@@ -844,6 +844,40 @@ fix(atlas): Fix78-P7 lifecycle alias cleanup — wire lifecycle nodes to canonic
 
 ---
 
+## Atlas Hot/Cold Path Carry-Forward (Post-Fix78, Non-Blocking)
+
+The current Genesis Atlas safe writer (`AtlasLmdbSafeWriter`) is a
+correctness-first maintenance and cold-path tool. It is not the public agent
+or network ingestion hot path and must not be treated as such.
+
+**Current state (correct for pre-RC Genesis curation):**
+- Source SHA-256 is recomputed at file registration time
+- Graph payload and indexes are rebuilt after every write
+- Dangling edge, edge-ID, duplicate, and payload/index consistency checks run on each apply
+- Fix72a adds semantic edge-type allowlist validation
+
+**Architecture already in canon for the hot path:**
+- CDL-077 (WANT-HAVE/WANT-BLOCK content-addressed fetch)
+- CDL-079 (bootstrap via signed peer list + Genesis CID)
+- CDL-087 (canonical fetch with content-hash + Genesis-lineage validity)
+- ADR-0009 Layer 0–3 bundle distribution (CID/DAG-CBOR/COSE)
+- ADR-0030 (LMDB keeps embedding cache-invalidation metadata at mainnet scale; vectors move to sidecar)
+
+The canonical model is: hash once at content ingress, address by CID, fetch via WANT-HAVE/WANT-BLOCK or snapshot, verify locally, cache aggressively, and use LMDB indexes for read/query speed.
+
+**Post-RC work items (do not block public RC on these):**
+- Delta graph writes instead of full `graph_payload` rebuilds on every safe write
+- Source-hash memoization keyed by `(path, mtime, size)` so unchanged files are not rehashed on routine registrations
+- Adjacency/endpoint indexes optimized for graph traversal and public-agent fetch
+- Append-only Atlas write receipts as first-class audit log, separate from full graph materialization
+- `graph_payload` snapshot/rebuild cadence: explicit policy for when to rebuild full payload vs. append deltas
+- Performance/SLO tests for Atlas writer and graph bootstrap under large agent counts
+- Public canonical fetch end-to-end for the Genesis Atlas graph itself (gated by public-RC path opening)
+
+**Block 6 watchpoint:** If Block 6 rehearsal exposes material latency or correctness friction in LMDB registration, source hashing, graph export, or bootstrap verification, escalate the relevant item from the list above before Genesis v0.4 signing/publication. The rehearsal is the natural forcing function — do not promote these items speculatively before that signal exists.
+
+---
+
 ## Gap Categories Requiring No Fix Phase
 
 **P5/P6 (452 rows — economic activation and public RC gates):** Not bugs. Confirmed working default-off guards. Use the Fix71 gap ledger as a living release-gate checklist. At each future activation GO decision, query the ledger and confirm guards are intact before opening the gate.
