@@ -1,0 +1,71 @@
+{
+  "artifact": "ilc_fix71_ilc_core_classification_audit_v0.1",
+  "candidate_status": "support_only_migration_receipt",
+  "created_phase": "phase_1545p_fix71",
+  "edge_breakdown": {
+    "CARRIES_FORWARD": 13,
+    "CLASSIFIED_BY": 307,
+    "DERIVED_FROM": 201,
+    "EVIDENCES": 1460,
+    "GOVERNS": 32,
+    "IMPLEMENTS": 516,
+    "IMPORTS_MODULE": 43,
+    "RATIFICATION_EVIDENCE_FOR": 3,
+    "REFERENCES_AUTHORITY": 1303,
+    "SAME_SOURCE": 27,
+    "TESTS": 139
+  },
+  "fix71_classified_nodes": 1052,
+  "fix71_classified_source_paths": 663,
+  "fix71_edge_batches": 137,
+  "fix71_edges": 4044,
+  "fix71_ilc_core_source_paths": 407,
+  "integrity": {
+    "dangling_edges": 0,
+    "missing_edge_id": 0,
+    "orphaned_phase_nodes": 0,
+    "public_path_classified_by_fan_in": 1,
+    "remaining_unread_ilc_core_repo_file_nodes": 0
+  },
+  "lmdb": {
+    "classification_pass_edge_count": 94160,
+    "classification_pass_node_count": 16887,
+    "edge_count": 94165,
+    "node_count": 16891,
+    "path": "out/genesis_base_graph_v0.4_unified.lmdb"
+  },
+  "lmdb_file_registration": {
+    "edge_count_added": 5,
+    "node_count_added": 4,
+    "registered_files": [
+      "docs/phases/phase_1545p_fix71_ilc_core_classification_walkthrough.md",
+      "docs/specs/ilc_fix71_ilc_core_classification_audit_v0.1.json",
+      "docs/phases/STATUS.md",
+      "Glossary.md"
+    ]
+  },
+  "non_claims": [
+    "no_genesis_signing",
+    "no_public_rc_activation",
+    "no_mainnet_activation",
+    "no_public_p2p_activation",
+    "no_production_minting",
+    "no_economic_settlement",
+    "no_canonical_public_promotion"
+  ],
+  "public_rc_notes": [
+    {
+      "file": "ilc_core/types.py",
+      "note": "WeightParams contains provisional float-like weighting fields; keep as a public-RC watch item pending ratification or Decimal hardening."
+    },
+    {
+      "file": "ilc_core/validator/staking_liveness_runtime.py",
+      "note": "Stake input type hint allows str while runtime rejects string stakes; clarify expected API behavior or add boundary coverage."
+    },
+    {
+      "file": "ilc_core/work/task_queue.py",
+      "note": "Task queue is intentionally in-memory and sandbox-scoped; durable or distributed routing remains future work."
+    }
+  ],
+  "summary": "Fix71 direct-read classified the remaining high-value repo-file surface and completed the explicit ilc_core continuation queue. The unified LMDB remained free of dangling edges and edge-id debt, and the public-path CLASSIFIED_BY fan-in stayed at 1."
+}
