@@ -15,9 +15,9 @@ from pathlib import Path
 
 
 FILENAME_RE = re.compile(
-    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]?(?:_fix\d+)?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
+    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]?(?:_fix\d+[a-z]?)?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
 )
-H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]?(?:[_-]Fix\d+)?)-G(?P<group>\d+)\b", re.IGNORECASE)
+H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]?(?:[_-]Fix\d+[a-z]?)?)-G(?P<group>\d+)\b", re.IGNORECASE)
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
 UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR = 1249
 UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
