@@ -191,7 +191,12 @@ def canonical_evidence_contract_digest(evidence: Dict[str, Any]) -> str:
     # Strict JSON serialization
     # separators=(',', ':') removes whitespace
     # sort_keys=True ensures key order
-    payload = json.dumps(canonical, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    payload = json.dumps(
+        canonical,
+        separators=(",", ":"),
+        sort_keys=True,
+        allow_nan=False,
+    ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
 def validate_evidence_schema(evidence: Dict[str, Any]) -> List[str]:

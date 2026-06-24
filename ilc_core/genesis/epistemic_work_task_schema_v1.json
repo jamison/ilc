@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "EpistemicWorkTask",
+    "type": "object",
+    "properties": {
+        "task_id": {
+            "type": "string"
+        },
+        "task_class": {
+            "type": "string",
+            "enum": [
+                "star.map.embedding",
+                "contradiction.sweep",
+                "graph.compression",
+                "stability.simulation",
+                "custom"
+            ]
+        },
+        "agent_id": {
+            "type": "string"
+        },
+        "region_scope": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "difficulty_factor": {
+            "type": "number"
+        },
+        "input_data": {
+            "type": "object"
+        },
+        "output_hash": {
+            "type": "string"
+        },
+        "verification_method": {
+            "type": "string",
+            "enum": [
+                "hash-match",
+                "signature",
+                "zk-proof",
+                "peer-audit",
+                "replayable-simulation"
+            ]
+        },
+        "bounty_id": {
+            "type": "string"
+        },
+        "staking_beneficiary": {
+            "type": "string"
+        },
+        "ecu.estimate": {
+            "type": "number"
+        },
+        "task_state": {
+            "type": "string",
+            "enum": [
+                "proposed",
+                "claimed",
+                "completed",
+                "audited",
+                "rewarded",
+                "expired"
+            ]
+        },
+        "timestamp_created": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "task_id",
+        "task_class",
+        "agent_id",
+        "region_scope",
+        "verification_method",
+        "task_state",
+        "timestamp_created"
+    ]
+}

@@ -115,6 +115,7 @@ include = ["ilc_core*"]
 
 [tool.setuptools.package-data]
 "ilc_core.mcp.schemas" = ["*.json"]
+"ilc_core.genesis" = ["*.json"]
 "ilc_core.protocol.schemas" = ["*.json"]
 
 [project.scripts]

@@ -123,6 +123,17 @@ def test_deterministic_output_for_repeated_identical_input_vectors() -> None:
     assert verify_wire_transport_envelope(one) == verify_wire_transport_envelope(two)
 
 
+def test_canonical_wire_transport_digest_rejects_non_finite_payload_values() -> None:
+    vector = canonical_wire_transport_vectors()[0]
+    vector["envelope"]["payload"]["non_finite"] = float("nan")
+
+    try:
+        generate_wire_transport_envelope(vector)
+        raise AssertionError("expected_wire_transport_non_finite_rejection")
+    except ValueError as exc:
+        assert "Out of range float values" in str(exc)
+
+
 def test_invalid_header_or_payload_inputs_fail_with_deterministic_tokens() -> None:
     invalid_headers = {
         "envelope": {

@@ -113,12 +113,12 @@ def _handle_demo(client: HttpClientLike) -> int:
             "task_class": "star.map.embedding",
             "agent_id": "agent:cli",
             "region_scope": ["global"],
-            "difficulty_factor": 1.0,
+            "difficulty_factor": "1.0",  # string - float literals not valid at protocol boundaries
             "input_data": {"demo": True},
             "verification_method": "hash-match",
             "task_state": "proposed",
             "timestamp_created": 1700000000,
-            "ecu.estimate": 0.1,
+            "ecu.estimate": "0.1",  # string - float literals not valid at protocol boundaries
         }
         print("Submitting demo task...")
         res = client.post("/v1/protocol/ep_task", json=payload)
