@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +26,60 @@ from ilc_core.storage.lmdb_public_runtime import DEFAULT_MAP_SIZE_BYTES
 
 GENESIS_ATLAS_LMDB_WRITER_VERSION = "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
 DEFAULT_PUBLIC_PATH_POLICY = "policy:public_path_still_blocked_phase_1545p"
+_KNOWN_EDGE_TYPES: frozenset[str] = frozenset(
+    {
+        "ATTESTATION",
+        "CARRIES_FORWARD",
+        "CLASSIFIED_BY",
+        "CONSTRAINS",
+        "CONTAINS_FILE",
+        "CONTAINS_GROUP",
+        "CONTAINS_PARTITION",
+        "COVERS_COMMAND_CONTRACT",
+        "COVERS_SYMBOL",
+        "DERIVED_FROM",
+        "EVIDENCES",
+        "EXPECTS_RESOLUTION",
+        "GOVERNS",
+        "IMPLEMENTS",
+        "IMPLEMENTS_MODULE",
+        "IMPORTS_MODULE",
+        "NEGATIVE_ASSERTS",
+        "OPENED_FOR",
+        "PRELOCK_FOR",
+        "PRIMITIVE_INVOCATION",
+        "PROPOSES_CHANGE_TO",
+        "PROVENANCE",
+        "RATIFICATION_EVIDENCE_FOR",
+        "REFERENCES",
+        "REFERENCES_AUTHORITY",
+        "REGRESSES",
+        "REQUIRES_PROFILE",
+        "RESOLVED_BY",
+        "SAME_AUTHORITY",
+        "SAME_SOURCE",
+        "SIM_EVIDENCE",
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDED_BY",
+        "TESTS",
+        "TESTS_STORAGE",
+        "USES",
+    }
+)
+_AUTHORITY_ID_PREFIXES = ("cdl:", "adr:", "artifact:genesis", "artifact:full_repo_genesis")
+_AUTHORITY_NODE_KINDS = {
+    "adr_node",
+    "authority_map",
+    "cdl_node",
+    "genesis_artifact_node",
+    "genesis_intent_node",
+    "genesis_root_node",
+    "invariant_node",
+    "phase_node",
+}
+_RUNTIME_REPO_PREFIXES = ("repo:", "target:", "sim:")
+_SOURCE_TREE_GROUP_PREFIXES = ("repo:group:", "repo:partition:")
+_CLASSIFIED_BY_FANIN_CAP = 100
 
 
 @dataclass(frozen=True)
@@ -185,12 +240,23 @@ class AtlasLmdbSafeWriter:
             extra_nodes=extra_nodes,
         )
         receipt = self.apply_plan(plan)
-        identity_updates = {
-            repo_file_ref_id(Path(registration.path).as_posix()): _file_identity_fields(
-                Path(registration.path).as_posix()
-            )
-            for registration in registrations
-        }
+        identity_updates: dict[str, dict[str, Any]] = {}
+        desired_same_source_targets: dict[str, str] = {}
+        for registration in registrations:
+            repo_path = Path(registration.path).as_posix()
+            file_ref_id = repo_file_ref_id(repo_path)
+            identity_fields = _file_identity_fields(repo_path)
+            existing = self.store.get_node(file_ref_id)
+            if (
+                existing
+                and existing.get("source_identity_status") == "content_addressed_by_fix64"
+                and identity_fields.get("source_identity_status") == "content_addressed_at_registration"
+            ):
+                identity_fields["source_identity_status"] = "content_addressed_by_fix64"
+            identity_updates[file_ref_id] = identity_fields
+            repo_file_node = _repo_file_node_from_registration(registration, phase=phase)
+            if repo_file_node is not None:
+                desired_same_source_targets[file_ref_id] = _candidate_id(repo_file_node)
         receipt["file_identity_update_count"] = len(identity_updates)
         if not dry_run and identity_updates:
             receipt["file_identity_update_receipt"] = self.update_node_fields(
@@ -198,6 +264,24 @@ class AtlasLmdbSafeWriter:
                 phase=f"{phase}:phase_file_identity",
                 dry_run=False,
             )
+        if not dry_run and desired_same_source_targets:
+            stale_same_source_semantics: list[tuple[str, str, str]] = []
+            for edge in self.store.iter_edges():
+                if _edge_type(edge) != "SAME_SOURCE":
+                    continue
+                source = _edge_source(edge)
+                target = _edge_target(edge)
+                desired_target = desired_same_source_targets.get(source)
+                if desired_target is not None and target != desired_target:
+                    stale_same_source_semantics.append((source, "SAME_SOURCE", target))
+            receipt["stale_same_source_removed_count"] = len(stale_same_source_semantics)
+            if stale_same_source_semantics:
+                receipt["stale_same_source_removal_receipt"] = self.remove_edges_by_semantic(
+                    stale_same_source_semantics,
+                    phase=f"{phase}:phase_file_same_source_refresh",
+                    dry_run=False,
+                    metadata={"operation": "phase_file_same_source_refresh"},
+                )
         return receipt
 
     def build_phase_file_registration_plan(
@@ -242,6 +326,18 @@ class AtlasLmdbSafeWriter:
             file_node = _file_node_from_registration(registration, phase=phase)
             _append_if_missing(nodes_to_add, current_node_ids, file_node)
             file_id = _candidate_id(file_node)
+            repo_file_node = _repo_file_node_from_registration(registration, phase=phase)
+            if repo_file_node is not None:
+                _append_if_missing(nodes_to_add, current_node_ids, repo_file_node)
+                edges_to_add.append(
+                    _edge(
+                        source=file_id,
+                        edge_type="SAME_SOURCE",
+                        target=_candidate_id(repo_file_node),
+                        phase=phase,
+                        candidate_status="phase_file_registration_content_addressed_same_source",
+                    )
+                )
             # Routine phase-file registration must not create a high-fan-in
             # public-path classification hub. Public-path tagging history is
             # tracked by Fix67's migration receipt instead of canonical topology.
@@ -979,6 +1075,12 @@ def _validate_plan(
             )
             continue
         semantic = (source, edge_type, target)
+        _validate_edge_semantics(
+            edge=normalized,
+            node_by_id=node_by_id,
+            all_edges=[*current_edges, *accepted_edges],
+            plan_metadata=plan.metadata,
+        )
         if semantic in existing_edge_semantics or edge_id in edge_by_id or semantic in plan_edge_semantics:
             skipped_edges.append(
                 {
@@ -1133,6 +1235,82 @@ def _edge_type(edge: dict[str, Any]) -> str:
     return value
 
 
+def _validate_edge_semantics(
+    *,
+    edge: dict[str, Any],
+    node_by_id: Mapping[str, dict[str, Any]],
+    all_edges: Sequence[dict[str, Any]],
+    plan_metadata: Mapping[str, Any],
+) -> None:
+    edge_type = _edge_type(edge)
+    source = _edge_source(edge)
+    target = _edge_target(edge)
+    source_node = node_by_id.get(source)
+    target_node = node_by_id.get(target)
+    override = plan_metadata.get("allowlist_override") is True
+    migration_phase = str(plan_metadata.get("migration_phase", ""))
+    if override and not migration_phase:
+        raise ValueError("allowlist_override_requires_migration_phase_token")
+    if edge_type not in _KNOWN_EDGE_TYPES and not override:
+        raise ValueError(f"unknown_edge_type_rejected:{edge_type}")
+    if override:
+        return
+
+    if edge_type == "GOVERNS":
+        if not _is_authority_like(source, source_node):
+            raise ValueError(f"governs_source_not_authority_like:{source}")
+    elif edge_type == "SAME_SOURCE":
+        if not (_is_file_ref(source) and _is_repo_file(target)):
+            raise ValueError(f"same_source_requires_file_ref_to_repo_file:{source}->{target}")
+    elif edge_type == "REFERENCES_AUTHORITY":
+        if _is_runtime_or_repo(target):
+            raise ValueError(f"references_authority_target_must_not_be_repo_or_runtime:{target}")
+    elif edge_type == "SOURCE_TREE_MEMBER":
+        if not (
+            (_is_source_tree_container(source) or _is_repo_file(source) or _is_file_ref(source))
+            and (_is_source_tree_container(target) or _is_repo_file(target) or _is_file_ref(target))
+        ):
+            raise ValueError(f"source_tree_member_requires_source_tree_endpoints:{source}->{target}")
+    elif edge_type == "CLASSIFIED_BY":
+        existing_fanin = sum(
+            1
+            for existing in all_edges
+            if _edge_type(existing) == "CLASSIFIED_BY" and _edge_target(existing) == target
+        )
+        allowlisted_targets = {
+            str(candidate_id)
+            for candidate_id in plan_metadata.get("classified_by_fanin_allowlist", [])
+        }
+        if existing_fanin >= _CLASSIFIED_BY_FANIN_CAP and target not in allowlisted_targets:
+            raise ValueError(f"classified_by_fanin_cap_exceeded:{target}:{existing_fanin}")
+    if edge_type == "GOVERNS" and target_node is None:
+        raise ValueError(f"governs_target_missing:{target}")
+
+
+def _is_authority_like(candidate_id: str, node_record: Mapping[str, Any] | None) -> bool:
+    if any(candidate_id.startswith(prefix) for prefix in _AUTHORITY_ID_PREFIXES):
+        return True
+    if node_record and str(node_record.get("node_kind", "")) in _AUTHORITY_NODE_KINDS:
+        return True
+    return False
+
+
+def _is_runtime_or_repo(candidate_id: str) -> bool:
+    return any(candidate_id.startswith(prefix) for prefix in _RUNTIME_REPO_PREFIXES)
+
+
+def _is_file_ref(candidate_id: str) -> bool:
+    return candidate_id.startswith("repo:file_ref:")
+
+
+def _is_repo_file(candidate_id: str) -> bool:
+    return candidate_id.startswith("repo:file:")
+
+
+def _is_source_tree_container(candidate_id: str) -> bool:
+    return any(candidate_id.startswith(prefix) for prefix in _SOURCE_TREE_GROUP_PREFIXES)
+
+
 def _normalize_edge(edge: dict[str, Any], *, phase: str) -> dict[str, Any]:
     source = _edge_source(edge)
     target = _edge_target(edge)
@@ -1208,6 +1386,60 @@ def _file_node_from_registration(registration: AtlasPhaseFileRegistration, *, ph
     }
     node.update(_file_identity_fields(repo_path))
     return node
+
+
+def _repo_file_node_from_registration(
+    registration: AtlasPhaseFileRegistration,
+    *,
+    phase: str,
+) -> dict[str, Any] | None:
+    repo_path = Path(registration.path).as_posix()
+    path = Path(repo_path)
+    if not path.is_file():
+        return None
+    source_sha256 = _file_sha256(path)
+    return {
+        "annotation_method": "phase_file_lmdb_registration_content_addressing",
+        "annotation_phase": _phase_token(phase),
+        "candidate_id": _repo_file_node_id(repo_path, source_sha256),
+        "candidate_status": "phase_file_registration_content_addressed_repo_file",
+        "creator_agent_id": "genesis_agent:01",
+        "genesis_attested": False,
+        "graph_delta": registration.graph_delta,
+        "graph_projection": registration.graph_projection,
+        "label": repo_path,
+        "node_kind": _repo_file_node_kind(repo_path),
+        "size_bytes": path.stat().st_size,
+        "source_path": repo_path,
+        "source_sha256": source_sha256,
+        "source_identity_status": "content_addressed_at_registration",
+        "tier": "support_candidate",
+    }
+
+
+def _repo_file_node_id(repo_path: str, source_sha256: str) -> str:
+    return f"repo:file:{source_sha256[:16]}:{_path_slug(repo_path)}"
+
+
+def _repo_file_node_kind(repo_path: str) -> str:
+    path = Path(repo_path)
+    if repo_path.startswith("ilc_core/") and path.suffix == ".py":
+        return "runtime_source_file_node"
+    if repo_path.startswith("tests/") and path.suffix == ".py":
+        return "test_evidence_node"
+    if repo_path.startswith("tools/") and path.suffix == ".py":
+        return "tooling_source_file_node"
+    if repo_path.startswith("docs/adr/") and path.suffix == ".md":
+        return "adr_document_node"
+    if repo_path.startswith("docs/") and path.suffix == ".md":
+        return "spec_document_node"
+    if repo_path.startswith("docs/") and path.suffix == ".json":
+        return "spec_data_node"
+    return "repo_material_node"
+
+
+def _path_slug(repo_path: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "_", repo_path.lower()).strip("_")
 
 
 def _file_identity_fields(repo_path: str) -> dict[str, Any]:
