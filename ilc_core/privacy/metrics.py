@@ -30,6 +30,8 @@ from ilc_core.privacy.lane import ReleaseGroup
 LEAKAGE_METRICS_VERSION = "leakage_metrics_833.v0.1"
 CDL_072_DEPENDENCY = "cdl_072_bound_b_formula_amendment_ratified_846.v0.1"
 
+# SIM_LEAKAGE bounds are simulation/telemetry constants only. They must never
+# enter economic state, ECU computation, or settlement logic.
 # The bounds SIM-LEAKAGE-03 must satisfy (informational — checked in Phase 834).
 SIM_LEAKAGE_03_BOUND_A: float = 0.15   # max fill-failure rate
 SIM_LEAKAGE_03_BOUND_B: float = 0.15   # retained for historical reference (Phase 845 structural finding)

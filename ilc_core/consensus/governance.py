@@ -123,6 +123,9 @@ class Governance:
         agent_potentials : List[float]
             A list of benchmark scores (e.g., tokens/sec, FLOPs/sec
             normalized, or a composite "potential" metric) reported by agents.
+            Callers must supply float values for potential here as this is an
+            analysis surface; these values must NOT be used as direct ECU or
+            settlement inputs without conversion to Decimal.
 
         Behavior
         --------

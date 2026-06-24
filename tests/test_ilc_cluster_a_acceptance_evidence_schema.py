@@ -76,6 +76,14 @@ def test_canonical_digest_includes_contract_fields(valid_evidence):
     
     assert d1 != d2
 
+
+def test_canonical_digest_rejects_non_finite_contract_values(valid_evidence):
+    valid_evidence["constitution_checks"][0]["details"] = {"score": float("nan")}
+
+    with pytest.raises(ValueError, match="Out of range float values"):
+        canonical_evidence_contract_digest(valid_evidence)
+
+
 def test_builder_enforces_schema():
     # Helper to test builder raises on bad schema if we were to somehow inject junk
     # But builder is typed and controlled. 
