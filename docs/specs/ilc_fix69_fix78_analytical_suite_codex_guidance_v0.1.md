@@ -2,7 +2,7 @@
 
 **PUBLIC_RC_EXCLUDE: local Atlas graph repair completion, gap hardening, and diagnostic re-run suite**
 
-**Version:** v0.3 — revised per Codex review (phase naming, traversal semantics, Fix45-R scope, sequence reorder, output-manifest discipline)
+**Version:** v0.4 — revised per Codex review (phase naming, traversal semantics, Fix45-R scope, sequence reorder, output-manifest discipline, Fix72a safe-writer semantic allowlist)
 
 ---
 
@@ -59,6 +59,9 @@ Fix72    ← read-only measurement suite: Fiedler, baseline, spectral/PageRank,
            percolation analysis, authority SIM battery (NO edge writes except
            registering output docs)
   ↓
+Fix72a   ← safe-writer edge-type semantic allowlist (central write-path hardening;
+           no LMDB graph-content mutation)
+  ↓
 Fix73    ← runtime-to-governance trace study (read-only)
   ↓
 Fix74    ← P1+P1b: pre-public-RC code hardening + doc cleanup (18 items)
@@ -72,7 +75,7 @@ Fix77    ← P4: crypto-boundary map (48 rows)
 Fix78    ← P7: LMDB lifecycle/alias cleanup (14 rows)
 ```
 
-**Sequencing rationale:** Fix72 measurement runs immediately after Fix69 (the last structural repair) before any code/doc phases (Fix74+) add new support nodes and perturb counts. Every analytical report in Fix72 and Fix73 must state: "post-Fix69 LMDB state." If P1 urgency requires Fix74 to run before Fix72, every analytical report must instead state "post-Fix74 LMDB state" — the two states must not be conflated.
+**Sequencing rationale:** Fix72 measurement runs immediately after Fix69 (the last structural repair) before any code/doc phases (Fix74+) add new support nodes and perturb counts. Fix72a lands immediately after Fix72 because it is central write-path hardening: Fix72's own closeout registration is the last acceptable safe-writer invocation before the semantic allowlist is installed. Every analytical report in Fix72 and Fix73 must state: "post-Fix69 LMDB state." If P1 urgency requires Fix74 to run before Fix72, every analytical report must instead state "post-Fix74 LMDB state" — the two states must not be conflated.
 
 **P5/P6 rows (452 total):** Not a work queue. Confirmed working default-off guards archived in the ledger as permanent release-gate assertions. No Fix phase.
 
@@ -413,9 +416,123 @@ analysis(atlas): Fix72 post-repair measurement suite — Fiedler, baseline, spec
 
 ---
 
-## Fix73 — Runtime-to-Governance Trace Study (New — First-Ever)
+## Fix72a — Safe-Writer Edge-Type Semantic Allowlist
 
 **Required token:** `fix72_complete`
+
+**Purpose:** Install central semantic edge validation in
+`ilc_core/storage/genesis_atlas_lmdb_writer.py` before Fix73 and later phases
+perform any further safe-writer registrations or semantic graph writes. The
+existing safe writer enforces baseline structural integrity (no dangling edges,
+edge IDs, duplicate controls, payload/index consistency). Fix72a adds semantic
+edge-shape validation so structurally valid but semantically invalid edges are
+rejected before write.
+
+**Non-claims:**
+- Does not mutate existing LMDB graph content.
+- Does not rewrite historical edges.
+- Does not sign or promote Genesis material.
+- Does not claim all existing historical edges satisfy the new policy.
+- Does not replace manual-read evidence requirements for future semantic edges.
+
+**Output tokens:**
+```
+fix72a_safe_writer_edge_type_allowlist_committed
+fix72a_unknown_edge_types_default_denied
+fix72a_authority_edge_gates_enforced
+fix72a_complete
+```
+
+### Implementation Requirements
+
+Add an edge-type policy layer inside `AtlasLmdbSafeWriter` and call it from
+`validate_plan()` before an edge can be accepted. The validator must inspect:
+
+- edge type
+- source candidate ID
+- target candidate ID
+- source node record, when present
+- target node record, when present
+- write-plan metadata, for explicitly documented historical migration overrides
+
+Default behavior:
+
+- Unknown edge types are rejected by default.
+- Missing source/target nodes remain rejected by existing dangling-edge checks.
+- Existing accepted Fix69/Fix71-style support edges must continue to pass.
+- Historical migration overrides must be explicit and auditable; they must not
+  become a general bypass.
+
+Minimum policy table:
+
+| Edge type | Allow rule |
+|---|---|
+| `GOVERNS` | Source must be genesis/CDL/ADR authority-like. Runtime, repo, policy-support, target, sim, and file-ref sources are rejected. Live write requires explicit authority env gate already used by the Atlas write CLI where applicable. |
+| `SAME_SOURCE` | Source must be `repo:file_ref:*`; target must be `repo:file:*`. |
+| `REFERENCES_AUTHORITY` | Target must be authority-like (`cdl:*`, `adr:*`, trusted `artifact:*`, or explicitly allowlisted authority-policy nodes). Target must not be `repo:*`. |
+| `IMPLEMENTS` | Source must be runtime/source/test/tool/support implementation material; target must be CDL/ADR/phase/invariant authority or implementation target. Reject authority-to-runtime `IMPLEMENTS`. |
+| `TESTS` | Source must be test file/test node or accepted test harness material; target may be phase, module, invariant, runtime/source node, CDL/ADR, or security/doc artifact under direct evidence. |
+| `EVIDENCES` | Source must be file/doc/test/sim/invariant/support material; target must be phase, invariant, CDL/ADR, policy, artifact, or other evidence-bearing support endpoint. |
+| `CARRIES_FORWARD` | Source and target must be phase/support/doc/policy/artifact endpoints or file-registration support nodes. Reject runtime module to authority misuse. |
+| `CLASSIFIED_BY` | Reject writes that would create target fan-in above `100` unless the target is explicitly allowlisted in plan metadata. Never use as a public-path routine file tag. |
+| `SOURCE_TREE_MEMBER` | Not a generic fallback. Allow only for actual source-tree containment semantics where source and target node kinds/prefixes are source-tree/file/group endpoints. |
+| `CONTAINS_FILE`, `CONTAINS_GROUP`, `CONTAINS_PARTITION` | Allow only from repo/source-tree group or manifest nodes to repo/file/group/partition endpoints. |
+| `OPENED_FOR`, `PRELOCK_FOR`, `RATIFICATION_EVIDENCE_FOR`, `PROPOSES_CHANGE_TO`, `RESOLVED_BY`, `SAME_AUTHORITY`, `DERIVED_FROM` | Allow lifecycle/identity/provenance edges only between CDL/ADR/lifecycle/support authority endpoints. Reject repo-file sources unless explicitly backed by a lifecycle document node. |
+
+Authority-like source/target checks must be helper functions, not repeated inline
+string fragments. Use candidate-ID prefixes and node metadata (`node_kind`,
+`graph_projection`, `tier`) conservatively. A false reject is preferable to a
+false accept; migration phases can add a documented override with human review.
+
+### Historical Migration Override
+
+Add a narrow override path for historical repair phases. It must require all of:
+
+- `plan.metadata["allowlist_override"] is True`
+- `plan.metadata["migration_phase"]` is a non-empty string
+- every overridden edge receives an `allowlist_override_reason`
+- the receipt reports overridden edge count and edge semantics
+
+Overrides must not be permitted for `GOVERNS` unless the authority environment
+gate is also satisfied.
+
+### Tests
+
+Add or extend tests under `tests/` with at least:
+
+- Reject `repo:file:* --GOVERNS--> cdl:*`
+- Reject `policy:* --GOVERNS--> invariant:*` unless the policy is explicitly
+  authority-like and env-gated
+- Reject unknown edge types by default
+- Accept `repo:file_ref:* --SAME_SOURCE--> repo:file:*`
+- Reject `repo:file:* --SAME_SOURCE--> repo:file_ref:*`
+- Accept `repo:file:* --REFERENCES_AUTHORITY--> cdl:*`
+- Reject `repo:file:* --REFERENCES_AUTHORITY--> repo:file:*`
+- Accept valid `CARRIES_FORWARD`, `EVIDENCES`, and `TESTS` phase-file
+  registration edges
+- Reject routine `CLASSIFIED_BY` writes that would recreate a high-fan-in
+  public-path or support-policy hub
+- Preserve existing Fix69/Fix71-style support-edge plans under the new policy
+
+Also add one regression test that constructs an otherwise structurally valid
+edge with invalid semantics and proves `validate_plan()` rejects it before
+`apply_plan(dry_run=False)` can mutate LMDB.
+
+### Fix72a Commit
+
+Register modified committed files in LMDB before closure. The closeout
+registration itself must pass the new allowlist.
+
+Commit message:
+```
+fix(atlas): Fix72a enforce safe-writer edge-type semantic allowlist
+```
+
+---
+
+## Fix73 — Runtime-to-Governance Trace Study (New — First-Ever)
+
+**Required token:** `fix72a_complete`
 
 **This phase is read-only against graph content.** No semantic node/edge mutations are permitted. The only LMDB writes allowed are support-only registrations for committed report/walkthrough artifacts.
 
