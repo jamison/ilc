@@ -39,6 +39,7 @@ def test_fix63e_governance_edge_type_contract() -> None:
     assert "OPENED_FOR" in graph_viz_export.GOVERNANCE_EDGE_TYPES
     assert "RESOLVED_BY" in graph_viz_export.GOVERNANCE_EDGE_TYPES
     assert "DERIVED_FROM" in graph_viz_export.GOVERNANCE_EDGE_TYPES
+    assert "CARRIES_FORWARD" in graph_viz_export.GOVERNANCE_EDGE_TYPES
     assert "CONTAINS_FILE" not in graph_viz_export.GOVERNANCE_EDGE_TYPES
     assert "CONTAINS_GROUP" not in graph_viz_export.GOVERNANCE_EDGE_TYPES
     assert "CONTAINS_PARTITION" not in graph_viz_export.GOVERNANCE_EDGE_TYPES
@@ -111,6 +112,21 @@ def test_fix63e_governance_export_contains_m012_classified_edge(tmp_path: Path) 
     assert "lmdb_digest_sha256" in graph["metadata"]
     assert all(isinstance(node["degree_lmdb_total"], int) for node in graph["nodes"])
     assert all("directed_hop_from_root" in node for node in graph["nodes"])
+
+
+def test_fix63e_carries_forward_in_governance_export(tmp_path: Path) -> None:
+    if not LMDB_ROOT.exists() or not DIGEST_MANIFEST.exists():
+        pytest.skip("local unified LMDB or digest manifest not available")
+    exported = graph_viz_export.export_views(
+        lmdb_root=LMDB_ROOT,
+        digest_manifest_path=DIGEST_MANIFEST,
+        output_dir=tmp_path,
+        view="governance",
+        omit_export_time=True,
+    )
+    graph = json.loads(exported["governance"].read_text(encoding="utf-8"))
+    carries_forward_edges = [edge for edge in graph["edges"] if edge["type"] == "CARRIES_FORWARD"]
+    assert carries_forward_edges, "governance export must contain at least one CARRIES_FORWARD edge"
 
 
 def test_fix63e_html_contains_source_bar_and_popup_diagnostics() -> None:

@@ -66,6 +66,7 @@ GOVERNANCE_EDGE_TYPES = frozenset(
         "PROPOSES_CHANGE_TO",
         "RESOLVED_BY",
         "DERIVED_FROM",
+        "CARRIES_FORWARD",
     }
 )
 TEST_EDGE_TYPES = frozenset({"TESTS", "COVERS_SYMBOL", "IMPLEMENTS", "IMPORTS_MODULE"})
