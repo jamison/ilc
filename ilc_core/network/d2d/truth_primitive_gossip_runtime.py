@@ -27,6 +27,10 @@ from typing import Any
 
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+from ilc_core.network.d2d.tls_policy import (
+    D2D_INSECURE_SKIP_TLS_VERIFY_ENV,
+    should_disable_tls_verification,
+)
 
 TRUTH_PRIMITIVE_GOSSIP_RUNTIME_VERSION = "truth_primitive_gossip_runtime_894.v0.1"
 CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
@@ -38,7 +42,7 @@ TRUTH_PRIMITIVE_GOSSIP_CHANNEL = (
 )
 _GOSSIP_TIMEOUT_SECONDS = 2.0
 _UNSIGNED_SIGNATURE = "UNSIGNED"
-_GOSSIP_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
+_GOSSIP_TLS_INSECURE_ENV = D2D_INSECURE_SKIP_TLS_VERIFY_ENV
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
     raise RuntimeError(
@@ -109,9 +113,12 @@ def _build_announcement_payload(write_receipt: dict[str, Any], envelope: dict[st
 
 
 def _client_ssl_context() -> ssl.SSLContext:
-    """Outbound TLS context. Verification is disabled only by explicit testbed opt-out."""
+    """Outbound TLS context with public-mode fail-closed verification."""
     context = ssl.create_default_context()
-    if os.environ.get(_GOSSIP_TLS_INSECURE_ENV) == "1":
+    if should_disable_tls_verification(
+        insecure_requested=os.environ.get(_GOSSIP_TLS_INSECURE_ENV) == "1",
+        stacklevel=2,
+    ):
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
     return context
