@@ -103,7 +103,7 @@
     }
   ],
   "graph_delta": "graph_delta=load_bearing_artifact_added:out/release_artifacts/phase_1334/ilc-source-release-phase-1334.tar.gz -> public-rc/release-artifact-candidate",
-  "manifest_hash": "b234d5316dfe8bd2c491f5416cbbc9cb83af42cf43f1a54e149618389e60d2b3",
+  "manifest_hash": "5ee0bffa6c51a236777ff9d465341a4c6c86f3f7584e274e0be80a03e13b689e",
   "mode": "release_artifact_production_gate",
   "next_phase": "phase_1335_release_keys_envelopes_generation_gate_next",
   "non_authorization_floor": {
@@ -176,6 +176,7 @@
   ],
   "result": "artifacts_produced_unsigned",
   "schema_version": "release_artifact_production_gate_phase_1334.v0.1",
+  "signed": false,
   "unsigned_artifact_policy": {
     "all_artifacts_unsigned": true,
     "keys_generated": false,
@@ -185,3 +186,4 @@
     "token": "release_artifacts_unsigned_by_default_phase_1334"
   }
 }
+

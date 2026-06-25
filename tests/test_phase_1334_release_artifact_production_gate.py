@@ -70,6 +70,7 @@ def test_phase_1334_produces_deterministic_unsigned_source_tarball(tmp_path: Pat
     assert first["artifact_manifests"][0]["signing_status"] == "unsigned"
     assert first["artifact_manifests"][0]["artifact_type"] == "source_release_tarball"
     assert first["artifacts"][0]["canonical_hash"] == second["artifacts"][0]["canonical_hash"]
+    assert first["signed"] is False
     assert first["public_rc_remains_blocked"] is True
     assert first["non_authorization_floor"]["signing_authorized"] is False
 

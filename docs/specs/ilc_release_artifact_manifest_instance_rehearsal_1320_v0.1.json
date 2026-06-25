@@ -148,7 +148,7 @@
     {
       "hash_classification": "existing_rehearsal_input_not_produced_artifact_checksum",
       "path": "docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
-      "sha256": "4db85eb5fc89fa8d7167b911393bf826826c12ad1641e7eb87aa521855511dcd",
+      "sha256": "2b16a9b10a3a69a6e8796269998829a11a671bd9e837d80fd8a5e02222cabdd0",
       "source": "phase_1319_rehearsal_output"
     }
   ],
@@ -156,7 +156,7 @@
     "artifact_hash_algorithm_for_real_artifacts": "sha256",
     "canonical_json": "json.dumps(..., sort_keys=True, allow_nan=False, separators=(\",\", \":\"))",
     "machine_content_must_not_include_current_timestamps": true,
-    "phase_1320_rehearsal_manifest_hash": "9be55eb019ce88a2ac10eabd634f32a769a8ff6e26e9cf3e90bff605cc5f9e85"
+    "phase_1320_rehearsal_manifest_hash": "5d1fbb05d5cc06f7cff6ee8868e69a231c2ccc8f78eec65670c521c2f838d20b"
   },
   "mode": "dry_run_rehearsal_only",
   "negative_evidence": {
@@ -217,18 +217,20 @@
   ],
   "result": "pass",
   "schema_version": "release_artifact_manifest_instance_rehearsal_phase_1320.v0.1",
+  "signed": false,
   "source_tree_rehearsal_input": {
     "clean_export_evidence_dependency": "phase_1319_rehearsal_only_not_export",
     "counts": {
       "blocked_ambiguities": 0,
       "dependency_hits": 0,
-      "included_files": 335,
+      "included_files": 381,
       "marker_hits": 0
     },
-    "expected_manifest_hash": "b6f747b7ada90efa70358f11aa17243bc70ca35f3d32577a35380e3324915280",
+    "expected_manifest_hash": "cd437aa90da87933d98b2507c84be647487eccccc528f899d0802dcfb1cdce92",
     "path": "docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "result": "pass",
     "schema_version": "deterministic_source_allowlist_export_rehearsal_phase_1319.v0.1",
     "source_tree_status": "dry_run_only_no_clean_public_tree_materialized"
   }
 }
+

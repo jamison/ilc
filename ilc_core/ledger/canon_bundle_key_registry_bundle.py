@@ -164,6 +164,7 @@ def build_registry_bundle(
         "sig_alg": sig_data.get("sig_alg", "hmac-sha256"),
         "key_id": sig_data.get("key_id"),
         "registry_version": registry_version,
+        "signed": False,
         "sig_hash": sig_hash,
     }
     
