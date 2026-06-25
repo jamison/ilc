@@ -1,0 +1,578 @@
+{
+  "changed_profile_row_count": 0,
+  "changed_profile_rows": [],
+  "dry_run": false,
+  "edge_addition_receipt": {
+    "accepted_edge_count": 1,
+    "accepted_edges": [
+      {
+        "edge_id": "edge:2e6aad106af129c9",
+        "edge_type": "SAME_SOURCE",
+        "source": "repo:file_ref:ilc_core_cli_main_py",
+        "target": "repo:file:6cdf658dc4663927:ilc_core_cli_main_py"
+      }
+    ],
+    "accepted_node_count": 1,
+    "accepted_nodes": [
+      {
+        "candidate_id": "repo:file:6cdf658dc4663927:ilc_core_cli_main_py",
+        "graph_projection": "public_protocol_graph",
+        "node_kind": "runtime_source_file_node",
+        "source_path": "ilc_core/cli/main.py"
+      }
+    ],
+    "dry_run": false,
+    "metadata": {
+      "operation": "fix83_materialization_profile_lmdb_sync"
+    },
+    "mutated": true,
+    "phase": "1545p-Fix83:profile_lmdb_sync",
+    "post_invariants": {
+      "no_dangling_edges": true,
+      "payload_edge_count_matches_rows": true,
+      "payload_node_count_matches_rows": true,
+      "source_path_index_matches_rows": true,
+      "tier_group_index_matches_rows": true,
+      "tier_index_matches_rows": true
+    },
+    "post_lmdb_counts": {
+      "edges": 87978,
+      "nodes": 17437,
+      "payload_edges": 87978,
+      "payload_nodes": 17437
+    },
+    "pre_counts": {
+      "edges": 87977,
+      "nodes": 17436
+    },
+    "projected_counts": {
+      "edges": 87978,
+      "nodes": 17437
+    },
+    "projected_dangling_edge_count": 0,
+    "projected_dangling_edges": [],
+    "rejected_edge_count": 0,
+    "rejected_edges": [],
+    "skipped_edge_count": 487,
+    "skipped_edges": [
+      {
+        "edge_id": "edge:c95e0b2510d16771",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:security_md",
+        "target": "repo:file:a5e00e6b4bed716e:security_md"
+      },
+      {
+        "edge_id": "edge:a63b8c05df21a8d8",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0001_canonical_encoding_and_mcp_mvp_md",
+        "target": "repo:file:b6da92770e1ff695:docs_adr_adr_0001_canonical_encoding_and_mcp_mvp_md"
+      },
+      {
+        "edge_id": "edge:fb43b597facffdb9",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0002_ndjson_bundle_transport_md",
+        "target": "repo:file:3fd9e2ab189f2f8f:docs_adr_adr_0002_ndjson_bundle_transport_md"
+      },
+      {
+        "edge_id": "edge:f102b4ebb6dc90a0",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0003_star_map_ngram_route_index_md",
+        "target": "repo:file:5498eca0a1b7386a:docs_adr_adr_0003_star_map_ngram_route_index_md"
+      },
+      {
+        "edge_id": "edge:bd4dc84509727e58",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0004_genesis_primitive_commit_epoch_md",
+        "target": "repo:file:45fb0217b4e45eb9:docs_adr_adr_0004_genesis_primitive_commit_epoch_md"
+      },
+      {
+        "edge_id": "edge:14ab32c048d37cd3",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0005_star_map_observational_feeds_md",
+        "target": "repo:file:784e90ff33d31678:docs_adr_adr_0005_star_map_observational_feeds_md"
+      },
+      {
+        "edge_id": "edge:864b5d278c5168ab",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0006_eve_canonical_capsule_integrity_md",
+        "target": "repo:file:e93adeb14a01d953:docs_adr_adr_0006_eve_canonical_capsule_integrity_md"
+      },
+      {
+        "edge_id": "edge:a4917107ef1a9577",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0007_constitutional_baseline_and_ratification_process_md",
+        "target": "repo:file:e4d86877076cd034:docs_adr_adr_0007_constitutional_baseline_and_ratification_process_md"
+      },
+      {
+        "edge_id": "edge:38af7cf9dc83dc21",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0008_node_usefulness_vs_governance_weight_and_genesis_dilution_md",
+        "target": "repo:file:e56edfbdca93860e:docs_adr_adr_0008_node_usefulness_vs_governance_weight_and_genesis_dilution_md"
+      },
+      {
+        "edge_id": "edge:f879b723b1f703c9",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0009_four_layer_protocol_native_bundle_distribution_md",
+        "target": "repo:file:d18386b89a374d45:docs_adr_adr_0009_four_layer_protocol_native_bundle_distribution_md"
+      },
+      {
+        "edge_id": "edge:412615aba0ea4942",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0010_communication_plane_separation_and_performance_boundaries_md",
+        "target": "repo:file:1e352a2539fb773c:docs_adr_adr_0010_communication_plane_separation_and_performance_boundaries_md"
+      },
+      {
+        "edge_id": "edge:efe7c7ae7b88806c",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0011_native_p2p_transport_baseline_for_agent_communication_md",
+        "target": "repo:file:965218a180c5d7a0:docs_adr_adr_0011_native_p2p_transport_baseline_for_agent_communication_md"
+      },
+      {
+        "edge_id": "edge:f3e38c7b70010064",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0012_ecu_ilc_graph_coupling_and_anti_reflexivity_md",
+        "target": "repo:file:3107fb528d3e6a08:docs_adr_adr_0012_ecu_ilc_graph_coupling_and_anti_reflexivity_md"
+      },
+      {
+        "edge_id": "edge:0d95934f7af9ce2c",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0013_external_payment_boundary_and_third_party_independence_md",
+        "target": "repo:file:bc03076d4a821986:docs_adr_adr_0013_external_payment_boundary_and_third_party_independence_md"
+      },
+      {
+        "edge_id": "edge:1ed9cfc7774f1ad6",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0014_identity_sybil_and_admission_control_envelope_md",
+        "target": "repo:file:231a7accb154996d:docs_adr_adr_0014_identity_sybil_and_admission_control_envelope_md"
+      },
+      {
+        "edge_id": "edge:65aaa06243690178",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0015_node_transfer_economics_md",
+        "target": "repo:file:daca779d487b1e89:docs_adr_adr_0015_node_transfer_economics_md"
+      },
+      {
+        "edge_id": "edge:6b0f11fc6dde403c",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0016_productive_ecu_expansion_bounty_mechanism_md",
+        "target": "repo:file:cdd621897b506a12:docs_adr_adr_0016_productive_ecu_expansion_bounty_mechanism_md"
+      },
+      {
+        "edge_id": "edge:789079aad6055798",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0017_post_issuance_economic_transition_md",
+        "target": "repo:file:366c355f69b28165:docs_adr_adr_0017_post_issuance_economic_transition_md"
+      },
+      {
+        "edge_id": "edge:3f26865e2414c5e6",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0018_sequestered_financial_shard_md",
+        "target": "repo:file:bc3c1a392dd6ee2d:docs_adr_adr_0018_sequestered_financial_shard_md"
+      },
+      {
+        "edge_id": "edge:c821d8ab6c47c7bb",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0019_graph_native_governance_compilation_boundary_md",
+        "target": "repo:file:9ab2af58c1c6bfb6:docs_adr_adr_0019_graph_native_governance_compilation_boundary_md"
+      },
+      {
+        "edge_id": "edge:140e9b0ead01cd78",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0020_knowledge_node_first_design_principle_md",
+        "target": "repo:file:dc52426bdf6cc0a4:docs_adr_adr_0020_knowledge_node_first_design_principle_md"
+      },
+      {
+        "edge_id": "edge:906d912d5239b199",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0022_local_first_private_use_and_publication_bound_economics_md",
+        "target": "repo:file:05dd301febfa052f:docs_adr_adr_0022_local_first_private_use_and_publication_bound_economics_md"
+      },
+      {
+        "edge_id": "edge:fb01b832c2061f62",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0023_multi_layer_quality_signal_architecture_md",
+        "target": "repo:file:335ab4ade1b1c084:docs_adr_adr_0023_multi_layer_quality_signal_architecture_md"
+      },
+      {
+        "edge_id": "edge:18aaed09a3815678",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0024_agent_skills_infrastructure_md",
+        "target": "repo:file:c54b4dfc4377a6b6:docs_adr_adr_0024_agent_skills_infrastructure_md"
+      },
+      {
+        "edge_id": "edge:fce2aa3f3de30053",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0026_protocol_vs_harness_product_boundary_md",
+        "target": "repo:file:a6d75113593adfde:docs_adr_adr_0026_protocol_vs_harness_product_boundary_md"
+      },
+      {
+        "edge_id": "edge:7acb0ddeef1f3002",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0027_canonical_self_describing_bootstrap_and_receipt_boundary_md",
+        "target": "repo:file:e239e2fcd72f474a:docs_adr_adr_0027_canonical_self_describing_bootstrap_and_receipt_boundary_md"
+      },
+      {
+        "edge_id": "edge:19a7b564c1d819d5",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0028_settlement_substrate_graduation_and_governance_route_md",
+        "target": "repo:file:bf68fac8d17be56b:docs_adr_adr_0028_settlement_substrate_graduation_and_governance_route_md"
+      },
+      {
+        "edge_id": "edge:e40bb962c3ee8c3b",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0029_hypergraph_substrate_md",
+        "target": "repo:file:0cae87c5ab67fc18:docs_adr_adr_0029_hypergraph_substrate_md"
+      },
+      {
+        "edge_id": "edge:0b4aff40d879d89d",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0030_node_embedding_substrate_and_content_typing_md",
+        "target": "repo:file:bb7fcf3985009733:docs_adr_adr_0030_node_embedding_substrate_and_content_typing_md"
+      },
+      {
+        "edge_id": "edge:89f7c810fef040e2",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0031_subgraph_homomorphism_query_contract_md",
+        "target": "repo:file:3b6c1b17384448e8:docs_adr_adr_0031_subgraph_homomorphism_query_contract_md"
+      },
+      {
+        "edge_id": "edge:c63e474c59901be8",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0032_temporal_hypergraph_epoch_stamped_incidence_md",
+        "target": "repo:file:08705cef617066f6:docs_adr_adr_0032_temporal_hypergraph_epoch_stamped_incidence_md"
+      },
+      {
+        "edge_id": "edge:91a783e9c1b50187",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0033_star_map_homoiconic_epistemiological_entity_md",
+        "target": "repo:file:e946c52a52b05fca:docs_adr_adr_0033_star_map_homoiconic_epistemiological_entity_md"
+      },
+      {
+        "edge_id": "edge:62865159a2080200",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0034_d2d_sealed_sender_mechanism_md",
+        "target": "repo:file:3473a39873a54141:docs_adr_adr_0034_d2d_sealed_sender_mechanism_md"
+      },
+      {
+        "edge_id": "edge:f5f2dc1f22277993",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0035_homoiconic_type_definition_system_md",
+        "target": "repo:file:0963b0811c5f13e6:docs_adr_adr_0035_homoiconic_type_definition_system_md"
+      },
+      {
+        "edge_id": "edge:c73ab39c5610f53e",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0036_operational_release_key_genesis_binding_md",
+        "target": "repo:file:6e41b8d345b26459:docs_adr_adr_0036_operational_release_key_genesis_binding_md"
+      },
+      {
+        "edge_id": "edge:7ca025e475e399a5",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0037_genesis_canonical_lineage_contract_md",
+        "target": "repo:file:17d006d50d72b46d:docs_adr_adr_0037_genesis_canonical_lineage_contract_md"
+      },
+      {
+        "edge_id": "edge:7967d8e1c6c5c3f6",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0038_agent_birth_attestation_md",
+        "target": "repo:file:cad647d05984363d:docs_adr_adr_0038_agent_birth_attestation_md"
+      },
+      {
+        "edge_id": "edge:7ffdcff6125fb2b6",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0039_validator_endpoint_registry_md",
+        "target": "repo:file:4be0a6b74cdec320:docs_adr_adr_0039_validator_endpoint_registry_md"
+      },
+      {
+        "edge_id": "edge:6a1565515c5c1311",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0040_jury_eligibility_assignment_md",
+        "target": "repo:file:ac5ba2279e25066b:docs_adr_adr_0040_jury_eligibility_assignment_md"
+      },
+      {
+        "edge_id": "edge:4a574562e967e10c",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0041_agent_init_and_ingestion_protocol_md",
+        "target": "repo:file:99e94051e54e1d70:docs_adr_adr_0041_agent_init_and_ingestion_protocol_md"
+      },
+      {
+        "edge_id": "edge:3a6610fbce4e8185",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0042_vrf_proof_verifier_md",
+        "target": "repo:file:811e30615f78c8ca:docs_adr_adr_0042_vrf_proof_verifier_md"
+      },
+      {
+        "edge_id": "edge:7268421681c00eb8",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0043_review_lane_t0_5_to_t1_promotion_md",
+        "target": "repo:file:1f637a69c16c4f46:docs_adr_adr_0043_review_lane_t0_5_to_t1_promotion_md"
+      },
+      {
+        "edge_id": "edge:a6ca3144a2cabfdc",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0044_anti_capture_diversity_verification_md",
+        "target": "repo:file:266976b745c0f91b:docs_adr_adr_0044_anti_capture_diversity_verification_md"
+      },
+      {
+        "edge_id": "edge:475b2bdbeddb0789",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_readme_md",
+        "target": "repo:file:d82bdf4a33409338:docs_adr_readme_md"
+      },
+      {
+        "edge_id": "edge:f7cc2243afd288c2",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0036_acceptance_review_1173_v0_1_md",
+        "target": "repo:file:2f66965e6aa4b258:docs_adr_adr_0036_acceptance_review_1173_v0_1_md"
+      },
+      {
+        "edge_id": "edge:0061b4664a651f81",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_adr_adr_0037_acceptance_review_1173_v0_1_md",
+        "target": "repo:file:fef7d598be86ed30:docs_adr_adr_0037_acceptance_review_1173_v0_1_md"
+      },
+      {
+        "edge_id": "edge:107820668f6077d7",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_architecture_glossary_candidate_reconciliation_report_md",
+        "target": "repo:file:948327c1a0903bf2:docs_architecture_glossary_candidate_reconciliation_report_md"
+      },
+      {
+        "edge_id": "edge:0f98c40b86cdd62a",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_architecture_glossary_term_elevation_matrix_v0_1_md",
+        "target": "repo:file:7239f705fc9242aa:docs_architecture_glossary_term_elevation_matrix_v0_1_md"
+      },
+      {
+        "edge_id": "edge:9b5eeab1c9d294cd",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_architecture_glossary_term_elevation_matrix_v0_2_md",
+        "target": "repo:file:5ad07ff29995c6c3:docs_architecture_glossary_term_elevation_matrix_v0_2_md"
+      },
+      {
+        "edge_id": "edge:f7465d9c8d238bd1",
+        "edge_type": "SAME_SOURCE",
+        "reason": "duplicate_edge_semantic",
+        "source": "repo:file_ref:docs_architecture_glossary_term_normalization_scan_v0_1_md",
+        "target": "repo:file:f73e5bca9d95e687:docs_architecture_glossary_term_normalization_scan_v0_1_md"
+      }
+    ],
+    "skipped_node_count": 0,
+    "skipped_nodes": [],
+    "status": "PASS",
+    "version": "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
+  },
+  "file_ref_update_receipt": {
+    "dry_run": {
+      "accepted_update_count": 1,
+      "accepted_updates": [
+        {
+          "candidate_id": "repo:file_ref:ilc_core_cli_main_py",
+          "changed_fields": [
+            "content_node_id",
+            "size_bytes",
+            "source_identity_status",
+            "source_sha256"
+          ]
+        }
+      ],
+      "dry_run": true,
+      "metadata": {
+        "operation": "fix83_profile_file_ref_identity_refresh"
+      },
+      "mutated": false,
+      "phase": "1545p-Fix83:profile_file_ref_identity_refresh",
+      "pre_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "projected_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "rejected_update_count": 0,
+      "rejected_updates": [],
+      "updated_field_count": 4,
+      "version": "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
+    },
+    "live": {
+      "accepted_update_count": 1,
+      "accepted_updates": [
+        {
+          "candidate_id": "repo:file_ref:ilc_core_cli_main_py",
+          "changed_fields": [
+            "content_node_id",
+            "size_bytes",
+            "source_identity_status",
+            "source_sha256"
+          ]
+        }
+      ],
+      "dry_run": false,
+      "metadata": {
+        "operation": "fix83_profile_file_ref_identity_refresh"
+      },
+      "mutated": true,
+      "phase": "1545p-Fix83:profile_file_ref_identity_refresh",
+      "post_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "post_invariants": {
+        "no_dangling_edges": true,
+        "payload_edge_count_matches_rows": true,
+        "payload_node_count_matches_rows": true,
+        "source_path_index_matches_rows": true,
+        "tier_group_index_matches_rows": true,
+        "tier_index_matches_rows": true
+      },
+      "pre_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "rejected_update_count": 0,
+      "rejected_updates": [],
+      "status": "PASS",
+      "updated_field_count": 4,
+      "version": "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
+    }
+  },
+  "final_lmdb_counts": {
+    "dangling": 0,
+    "edges": 87978,
+    "missing_edge_id": 0,
+    "nodes": 17437
+  },
+  "missing_profile_path_count": 0,
+  "missing_profile_paths": [],
+  "phase": "1545p-Fix83",
+  "profile_file_count": 488,
+  "profile_path": "docs/specs/ilc_public_rc_package_profile_v0.1.json",
+  "stale_same_source_removal_receipt": {
+    "dry_run": {
+      "dry_run": true,
+      "metadata": {
+        "operation": "fix83_remove_stale_same_source_edges"
+      },
+      "missing_semantic_count": 0,
+      "missing_semantics": [],
+      "mutated": false,
+      "phase": "1545p-Fix83:profile_stale_same_source",
+      "pre_counts": {
+        "edges": 87978,
+        "nodes": 17436
+      },
+      "projected_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "removed_edge_count": 1,
+      "removed_edges": [
+        {
+          "annotation_method": "fix83_materialization_profile_lmdb_sync",
+          "annotation_phase": "phase_1545p_fix83",
+          "candidate_status": "fix83_public_rc_profile_same_source",
+          "edge_id": "edge:d18f9a30984bec58",
+          "edge_type": "SAME_SOURCE",
+          "source": "repo:file_ref:ilc_core_cli_main_py",
+          "src": "repo:file_ref:ilc_core_cli_main_py",
+          "target": "repo:file:9390ad488129bc80:ilc_core_cli_main_py",
+          "tgt": "repo:file:9390ad488129bc80:ilc_core_cli_main_py"
+        }
+      ],
+      "version": "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
+    },
+    "live": {
+      "dry_run": false,
+      "metadata": {
+        "operation": "fix83_remove_stale_same_source_edges"
+      },
+      "missing_semantic_count": 0,
+      "missing_semantics": [],
+      "mutated": true,
+      "phase": "1545p-Fix83:profile_stale_same_source",
+      "post_counts": {
+        "edges": 87977,
+        "nodes": 17436
+      },
+      "post_invariants": {
+        "no_dangling_edges": true,
+        "payload_edge_count_matches_rows": true,
+        "payload_node_count_matches_rows": true,
+        "source_path_index_matches_rows": true,
+        "tier_group_index_matches_rows": true,
+        "tier_index_matches_rows": true
+      },
+      "pre_counts": {
+        "edges": 87978,
+        "nodes": 17436
+      },
+      "removed_edge_count": 1,
+      "removed_edges": [
+        {
+          "annotation_method": "fix83_materialization_profile_lmdb_sync",
+          "annotation_phase": "phase_1545p_fix83",
+          "candidate_status": "fix83_public_rc_profile_same_source",
+          "edge_id": "edge:d18f9a30984bec58",
+          "edge_type": "SAME_SOURCE",
+          "source": "repo:file_ref:ilc_core_cli_main_py",
+          "src": "repo:file_ref:ilc_core_cli_main_py",
+          "target": "repo:file:9390ad488129bc80:ilc_core_cli_main_py",
+          "tgt": "repo:file:9390ad488129bc80:ilc_core_cli_main_py"
+        }
+      ],
+      "status": "PASS",
+      "version": "genesis_atlas_lmdb_writer_1545p_fix59b.v0.1"
+    }
+  },
+  "status": "PASS"
+}
