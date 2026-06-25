@@ -54,6 +54,23 @@ Content-Type:     application/cbor
 - Single-hop lane: `ILC-Hop-Count: 1` is the only permitted value under the ratified CDL-060 scope
 - Requests with `ILC-Hop-Count` absent or `> 1` are rejected with `400 Bad Request`
 
+### TLS verification requirement (Fix81 amendment)
+
+Production and public-RC D2d deployments MUST verify peer TLS certificates.
+Development and private testbed runtimes MAY expose an explicit local escape
+hatch for self-signed certificates, but that escape hatch MUST be inoperative
+when public mode is enabled.
+
+The canonical public-mode guard is:
+
+- `ILC_D2D_PUBLIC_MODE=1` unconditionally requires TLS verification.
+- `ILC_D2D_INSECURE_SKIP_TLS_VERIFY=1` is permitted only for local dev/test
+  contexts and MUST NOT disable verification when `ILC_D2D_PUBLIC_MODE=1`.
+- `verify=False`, `ssl=False`, `check_hostname=False`, `ssl.CERT_NONE`, or
+  equivalent bypasses are forbidden in public or production D2d paths.
+- Certificate trust failures must be fixed by configuring the CA bundle or
+  certificate store, not by disabling TLS verification.
+
 ### HTTP status code semantics
 
 The gossip receiver communicates protocol state using standard HTTP status codes:
