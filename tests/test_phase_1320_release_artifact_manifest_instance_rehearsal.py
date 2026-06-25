@@ -95,6 +95,7 @@ def test_phase_1320_current_repo_rehearsal_passes_and_is_canonical() -> None:
     assert manifest["required_tokens"] == phase_1320_required_tokens()
     assert manifest["result"] == "pass"
     assert manifest["mode"] == "dry_run_rehearsal_only"
+    assert manifest["signed"] is False
     assert manifest["public_rc_remains_blocked"] is True
     assert manifest["source_tree_rehearsal_input"]["result"] == "pass"
     assert manifest["source_tree_rehearsal_input"]["counts"]["marker_hits"] == 0

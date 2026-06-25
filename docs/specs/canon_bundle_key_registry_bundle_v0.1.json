@@ -8,5 +8,6 @@
     "sig_alg": "hmac-sha256",
     "key_id": "a1b2c3d4e5f6a7b8",
     "registry_version": "v0.1",
-    "sig_hash": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592"
+    "sig_hash": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
+    "signed": false
 }
