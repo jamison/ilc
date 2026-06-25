@@ -1,0 +1,962 @@
+{
+  "classification_summary": {
+    "ambiguous": 0,
+    "hmac_example_annotation_rows": 8,
+    "key_custody_required": 10,
+    "no_source_path": 1,
+    "schema_validation_only": 34,
+    "security_flagged_rows": 1,
+    "signature_verification": 4
+  },
+  "hard_gate_status": {
+    "code_changes_made": false,
+    "hardcoded_credential": "not_found_in_p4_direct_reads",
+    "private_key_at_rest": "not_found_in_p4_direct_reads",
+    "tls_bypass": "FOUND_OPT_OUT_PATHS_RECORDED_FOR_ESCALATION"
+  },
+  "hmac_example_annotation_summary": {
+    "annotation_text": "HMAC/example values are compatibility records only, not live signing artifacts.",
+    "comment_added_to_source_files": false,
+    "reason_no_source_comments_added": "Fix77 mission and GO briefing are document-only; HMAC/example clarification is recorded in this map and walkthrough for follow-up instead of modifying crypto code.",
+    "rows_annotated_in_map": 8
+  },
+  "modules": [
+    {
+      "candidate_id": "repo:file:1d34bc123a36d751:tests_test_phase_1545p_fix24_whole_graph_atlas_objective_contract_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "docs/specs/ilc_fix71_manual_read_gap_ledger_v0.1.json:row cryptography_signature_or_keying_gap without source_path"
+      ],
+      "fix71_batch": "batch096_tests_public_rc_atlas_genesis_state_verifier_cluster",
+      "gap_note": "Records that lambda2/Merkle/rootedness objectives are insufficient alone for authority; preserve this as objective contract evidence, not signing authority.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: validates whole-graph Atlas objective contract JSON/spec surfaces, rootedness standard, hard invariants versus optimization objectives, no signing/non-claims, and scope mismatch recording.",
+      "rationale": "No source_path in ledger; gap_note records an objective-contract/test boundary and explicitly says it is not signing authority.",
+      "role": "whole_graph_atlas_objective_contract_test",
+      "row_index": 1,
+      "security_flag": false,
+      "source_path": "",
+      "source_path_present": false
+    },
+    {
+      "candidate_id": "repo:file:65c88e47d44decda:docs_planning_index_md",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "docs/PLANNING_INDEX.md:3",
+        "docs/PLANNING_INDEX.md:48"
+      ],
+      "fix71_batch": "batch093_planning_bootstrap_release_context_docs",
+      "gap_note": "Planning index carries Fix65+ requirement that build/package membership, root-pointer hydration, and end-to-end homoiconic rebuild verification must route before full-repo signing readiness.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Active planning index carrying Block 6 routing plus the 2026-06-22 Atlas LMDB data carry-forward gate: safe writer, committed-file node registration, content identity, duplicate ref resolution, deterministic edge IDs, preimage refresh/blocker, and viz source/digest/degree diagnostics.",
+      "rationale": "Planning index records package/root-pointer/homoiconic graph requirements and blockers; it performs no crypto operation.",
+      "role": "current_planning_index_and_atlas_lmdb_discipline_anchor",
+      "row_index": 2,
+      "security_flag": false,
+      "source_path": "docs/PLANNING_INDEX.md",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_planning_index_md",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "docs/PLANNING_INDEX.md:3",
+        "docs/PLANNING_INDEX.md:48"
+      ],
+      "fix71_batch": "batch093_planning_bootstrap_release_context_docs",
+      "gap_note": "Planning index carries Fix65+ requirement that build/package membership, root-pointer hydration, and end-to-end homoiconic rebuild verification must route before full-repo signing readiness.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Active planning index carrying Block 6 routing plus the 2026-06-22 Atlas LMDB data carry-forward gate: safe writer, committed-file node registration, content identity, duplicate ref resolution, deterministic edge IDs, preimage refresh/blocker, and viz source/digest/degree diagnostics.",
+      "rationale": "Planning index records package/root-pointer/homoiconic graph requirements and blockers; it performs no crypto operation.",
+      "role": "current_planning_index_and_atlas_lmdb_discipline_anchor_file_ref",
+      "row_index": 3,
+      "security_flag": false,
+      "source_path": "docs/PLANNING_INDEX.md",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md:88-100",
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md:1708-1726"
+      ],
+      "fix71_batch": "batch093_planning_bootstrap_release_context_docs",
+      "gap_note": "Roadmap still records multiple public-RC blockers: publication/signing/source-export/package/P2P gates remain distinct from local Atlas graph completion.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Controlling launch roadmap and blocker map for the three-machine/seven-agent path; records public-RC, sidecar, source-export, packaging, P2P, and release-gate posture without activation.",
+      "rationale": "Roadmap records public-RC publication/signing blockers and non-claims; it performs no crypto operation.",
+      "role": "launch_roadmap_public_rc_blocker_and_sidecar_plan",
+      "row_index": 4,
+      "security_flag": false,
+      "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md:88-100",
+        "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md:1708-1726"
+      ],
+      "fix71_batch": "batch093_planning_bootstrap_release_context_docs",
+      "gap_note": "Roadmap still records multiple public-RC blockers: publication/signing/source-export/package/P2P gates remain distinct from local Atlas graph completion.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Controlling launch roadmap and blocker map for the three-machine/seven-agent path; records public-RC, sidecar, source-export, packaging, P2P, and release-gate posture without activation.",
+      "rationale": "Roadmap records public-RC publication/signing blockers and non-claims; it performs no crypto operation.",
+      "role": "launch_roadmap_public_rc_blocker_and_sidecar_plan_file_ref",
+      "row_index": 5,
+      "security_flag": false,
+      "source_path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:05b0db8d431e5563:ilc_core_cli_key_utils_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/_key_utils.py:9-24"
+      ],
+      "fix71_batch": "batch114_ilc_core_bundle_ccss_cli_utility_boundary",
+      "gap_note": "Raw fallback preserves existing CLI behavior; callers must still enforce expected key size/type at the cryptographic boundary.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "CLI helper that loads key bytes with strict base64 preference and raw-byte fallback for legacy key-registry files.",
+      "rationale": "Key utility reads operator-provided key bytes and preserves raw-byte fallback; it is a key management boundary even though it does not sign by itself.",
+      "role": "cli_key_material_loader_compat",
+      "row_index": 6,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/_key_utils.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:6ac9f757ac684a24:ilc_core_cli_canon_bundle_key_registry_channel_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_key_registry_channel.py:75-150"
+      ],
+      "fix71_batch": "batch115_ilc_core_atlas_lmdb_and_canon_key_registry_cli",
+      "gap_note": "Channel mutation is local file management and must remain paired with signature/rollback checks for public use.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "CLI for channel file validation, listing, setting current channel, and optional channel-file creation.",
+      "rationale": "Channel CLI validates/lists/sets local channel files and does not load keys, sign, or verify signatures.",
+      "role": "canon_key_registry_channel_cli_manage",
+      "row_index": 7,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_key_registry_channel.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:a54db7486b068d64:ilc_core_cli_canon_bundle_key_registry_channel_sign_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_key_registry_channel_sign.py:45-65"
+      ],
+      "fix71_batch": "batch115_ilc_core_atlas_lmdb_and_canon_key_registry_cli",
+      "gap_note": "Local signing tool only; authority depends on accepted channel key and signature verification path.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "CLI for detached channel signature creation using the shared key loader and channel signing ledger helper.",
+      "rationale": "Signing CLI requires --key-file, loads key bytes, and calls sign_channel_file.",
+      "role": "canon_key_registry_channel_sign_cli",
+      "row_index": 8,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_key_registry_channel_sign.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:278c7f98d8ad4997:ilc_core_cli_canon_bundle_key_registry_channel_verify_py",
+      "classification": "signature_verification",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_key_registry_channel_verify.py:45-65",
+        "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py:220-260"
+      ],
+      "fix71_batch": "batch115_ilc_core_atlas_lmdb_and_canon_key_registry_cli",
+      "gap_note": "Validation fails closed on signature/key problems but does not itself define channel authority.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "CLI for detached channel signature verification using shared key loading and channel signing ledger helper.",
+      "rationale": "Verification CLI requires a verification key and calls verify_channel_file_signature; it does not create or store private keys.",
+      "role": "canon_key_registry_channel_verify_cli",
+      "row_index": 9,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_key_registry_channel_verify.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:f637b87a3274bcac:ilc_core_cli_canon_bundle_pipeline_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_pipeline.py:107-162"
+      ],
+      "fix71_batch": "batch115_ilc_core_atlas_lmdb_and_canon_key_registry_cli",
+      "gap_note": "Report/audit writes are local artifacts; signing authority depends on provided key and canon bundle validation.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Pipeline CLI validates canon export bundles, signs/verifies manifest signatures, and writes Markdown/audit reports with deterministic JSON output.",
+      "rationale": "Pipeline can load a key file, sign the manifest, and verify the resulting signature; signing path makes it a custody surface.",
+      "role": "canon_bundle_pipeline_cli",
+      "row_index": 10,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_pipeline.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:ea9f3330e30a94b6:ilc_core_cli_canon_bundle_sign_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_sign.py:35-44"
+      ],
+      "fix71_batch": "batch116_ilc_core_canon_replay_export_ccss_d2e_cli",
+      "gap_note": "Signing tool depends on operator-provided key; not authority without accepted key provenance.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Signs canon export bundle manifests with fail-closed missing/invalid key and no-overwrite behavior.",
+      "rationale": "Signing CLI requires --key-file and calls sign_manifest with loaded key bytes.",
+      "role": "canon_bundle_sign_cli",
+      "row_index": 11,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_sign.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:5f4fe7aa87a1e772:ilc_core_cli_canon_bundle_validate_py",
+      "classification": "signature_verification",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_bundle_validate.py:17",
+        "ilc_core/cli/canon_bundle_validate.py:33-47"
+      ],
+      "fix71_batch": "batch116_ilc_core_canon_replay_export_ccss_d2e_cli",
+      "gap_note": "Signature verification is optional; public use should require the verify-signature path.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Validates canon export bundles and optionally verifies manifest signature with a provided key.",
+      "rationale": "Validation CLI optionally enforces --verify-signature and calls verify_manifest_signature against the supplied key.",
+      "role": "canon_bundle_validate_cli",
+      "row_index": 12,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_bundle_validate.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:6f4c03b053013bea:ilc_core_cli_canon_cli_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/cli/canon_cli.py:6-18"
+      ],
+      "fix71_batch": "batch116_ilc_core_canon_replay_export_ccss_d2e_cli",
+      "gap_note": "Support verification wrapper only; no export, signing, or graph mutation.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Minimal CLI for verifying canon_state.json through canon_loader and optionally printing hashes.",
+      "rationale": "CLI calls verify_canon_state and prints hash/validation report; no key loading or signature verification is performed in this wrapper.",
+      "role": "canon_state_verify_cli",
+      "row_index": 13,
+      "security_flag": false,
+      "source_path": "ilc_core/cli/canon_cli.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:021a4adee3d89ef6:ilc_core_crypto_cose_sign1_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/crypto/cose_sign1.py:34-79",
+        "ilc_core/crypto/cose_sign1.py:166-222"
+      ],
+      "fix71_batch": "batch119_ilc_core_crypto_distribution_economics_direct_read",
+      "gap_note": "Crypto shape is strong; key custody and signing authority remain outside this module and must be supplied by the caller.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read COSE_Sign1 runtime: canonical CBOR validation, strict DAG-CBOR payload checks, Ed25519 Sign1 signing/verification, and NodeID derivation from payload bytes.",
+      "rationale": "Module implements both COSE_Sign1 signing with an Ed25519 private key and verification with a public key; highest-label rule classifies it as key_custody_required.",
+      "role": "cose_sign1_attestation_runtime",
+      "row_index": 14,
+      "security_flag": false,
+      "source_path": "ilc_core/crypto/cose_sign1.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_crypto_cose_sign1_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/crypto/cose_sign1.py:34-79",
+        "ilc_core/crypto/cose_sign1.py:166-222"
+      ],
+      "fix71_batch": "batch119_ilc_core_crypto_distribution_economics_direct_read",
+      "gap_note": "Crypto shape is strong; key custody and signing authority remain outside this module and must be supplied by the caller.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read COSE_Sign1 runtime: canonical CBOR validation, strict DAG-CBOR payload checks, Ed25519 Sign1 signing/verification, and NodeID derivation from payload bytes.",
+      "rationale": "Module implements both COSE_Sign1 signing with an Ed25519 private key and verification with a public key; highest-label rule classifies it as key_custody_required.",
+      "role": "cose_sign1_attestation_runtime",
+      "row_index": 15,
+      "security_flag": false,
+      "source_path": "ilc_core/crypto/cose_sign1.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:dda59e3dd91d1ee1:ilc_core_genesis_assertion_schema_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/genesis/assertion_schema.py:1-20"
+      ],
+      "fix71_batch": "batch073_ilc_core_residual_genesis_governance_graph",
+      "gap_note": "Structural schema validation only; cryptographic ML-DSA signature verification remains delegated to Rust/PQ path.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: Phase 858/HB-001 structural schema for genesis authority assert.truth payloads, canonical JSON signing bytes, ML-DSA-65 key fields, validator entries, exact decimal stake strings, and BFT f constraint; explicitly does not verify ML-DSA signatures.",
+      "rationale": "Module states it validates genesis assertion schema/canonical encoding only and delegates ML-DSA verification to Rust/PQ path.",
+      "role": "hb001_genesis_assertion_schema_runtime",
+      "row_index": 16,
+      "security_flag": false,
+      "source_path": "ilc_core/genesis/assertion_schema.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_genesis_assertion_schema_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/genesis/assertion_schema.py:1-20"
+      ],
+      "fix71_batch": "batch073_ilc_core_residual_genesis_governance_graph",
+      "gap_note": "Structural schema validation only; cryptographic ML-DSA signature verification remains delegated to Rust/PQ path.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: Phase 858/HB-001 structural schema for genesis authority assert.truth payloads, canonical JSON signing bytes, ML-DSA-65 key fields, validator entries, exact decimal stake strings, and BFT f constraint; explicitly does not verify ML-DSA signatures.",
+      "rationale": "Module states it validates genesis assertion schema/canonical encoding only and delegates ML-DSA verification to Rust/PQ path.",
+      "role": "hb001_genesis_assertion_schema_runtime",
+      "row_index": 17,
+      "security_flag": false,
+      "source_path": "ilc_core/genesis/assertion_schema.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:47c91b44865a57ec:ilc_core_identity_endorsement_packet_schema_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/identity/endorsement_packet_schema.py:21-30"
+      ],
+      "fix71_batch": "batch075_ilc_core_residual_identity_ledger_entrypoints",
+      "gap_note": "COSE/ML-DSA signing serialization remains external; this module builds/validates signing payload schema only.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: CDL-069 epoch endorsement packet schema; validates 96-hex agent ID, epoch/sequence/window fields, BLS ephemeral key, liveness assertion, agent_state_root, optional canonical root key/capability/stake intent, and canonical COSE signing payload bytes; signing layer external.",
+      "rationale": "Module builds and validates endorsement packet signing payload schema; actual COSE serialization/signing is external.",
+      "role": "cdl069_endorsement_packet_schema",
+      "row_index": 18,
+      "security_flag": false,
+      "source_path": "ilc_core/identity/endorsement_packet_schema.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_endorsement_packet_schema_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/identity/endorsement_packet_schema.py:21-30"
+      ],
+      "fix71_batch": "batch075_ilc_core_residual_identity_ledger_entrypoints",
+      "gap_note": "COSE/ML-DSA signing serialization remains external; this module builds/validates signing payload schema only.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: CDL-069 epoch endorsement packet schema; validates 96-hex agent ID, epoch/sequence/window fields, BLS ephemeral key, liveness assertion, agent_state_root, optional canonical root key/capability/stake intent, and canonical COSE signing payload bytes; signing layer external.",
+      "rationale": "Module builds and validates endorsement packet signing payload schema; actual COSE serialization/signing is external.",
+      "role": "cdl069_endorsement_packet_schema",
+      "row_index": 19,
+      "security_flag": false,
+      "source_path": "ilc_core/identity/endorsement_packet_schema.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:50c562f9f9bd98ef:ilc_core_identity_epoch_endorsement_runtime_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/identity/epoch_endorsement_runtime.py:1-21",
+        "ilc_core/identity/epoch_endorsement_runtime.py:50-130"
+      ],
+      "fix71_batch": "batch075_ilc_core_residual_identity_ledger_entrypoints",
+      "gap_note": "ML-DSA signature verification is explicitly external to Rust/PQ layer; runtime handles logic and cache enforcement only.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: CDL-069 protocol runtime for endorsement packets, epoch close attestations, liveness assertions, ECU commitments with epoch nonce, validator endorsement cache, supersession and freeze rules; ML-DSA verification external.",
+      "rationale": "Runtime explicitly says ML-DSA signing is performed by Rust/PQ tooling and this module handles protocol logic, hashes, and rule enforcement only.",
+      "role": "cdl069_epoch_endorsement_runtime",
+      "row_index": 20,
+      "security_flag": false,
+      "source_path": "ilc_core/identity/epoch_endorsement_runtime.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_identity_epoch_endorsement_runtime_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/identity/epoch_endorsement_runtime.py:1-21",
+        "ilc_core/identity/epoch_endorsement_runtime.py:50-130"
+      ],
+      "fix71_batch": "batch075_ilc_core_residual_identity_ledger_entrypoints",
+      "gap_note": "ML-DSA signature verification is explicitly external to Rust/PQ layer; runtime handles logic and cache enforcement only.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: CDL-069 protocol runtime for endorsement packets, epoch close attestations, liveness assertions, ECU commitments with epoch nonce, validator endorsement cache, supersession and freeze rules; ML-DSA verification external.",
+      "rationale": "Runtime explicitly says ML-DSA signing is performed by Rust/PQ tooling and this module handles protocol logic, hashes, and rule enforcement only.",
+      "role": "cdl069_epoch_endorsement_runtime",
+      "row_index": 21,
+      "security_flag": false,
+      "source_path": "ilc_core/identity/epoch_endorsement_runtime.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:402c39717341cd7d:ilc_core_network_d2d_truth_primitive_gossip_runtime_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py:40",
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py:115-116",
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py:131"
+      ],
+      "fix71_batch": "batch126_ilc_core_d2d_network_runtime_direct_read",
+      "gap_note": "Uses UNSIGNED placeholder signature for announcements; must not be treated as signed public gossip authority.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Implements CDL-076 lightweight truth primitive announcement gossip over CDL-061 headers, outbound only, no full payload push.",
+      "rationale": "Gossip runtime emits unsigned placeholder announcements and no signature verification; direct read found TLS verification opt-out behind explicit environment variable.",
+      "role": "cdl076_truth_primitive_gossip_runtime",
+      "row_index": 22,
+      "security_flag": true,
+      "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:1002e8ff25012a59:ilc_core_protocol_ilc_cluster_a_ingest_py",
+      "classification": "signature_verification",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_ingest.py:240-272",
+        "ilc_core/protocol/ilc_cluster_a_ingest.py:356-444"
+      ],
+      "fix71_batch": "batch081_ilc_core_residual_protocol_cluster_a",
+      "gap_note": "Signature verification depends on supplied governance keyring context; missing keyring fails closed.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: deterministic ingest/dispatch for wire, receipt, transcript, and governance records; canonical governance record digesting; Ed25519 signature verification; known-record hash-mode fail-closed behavior.",
+      "rationale": "Cluster A ingest validates schema and performs Ed25519 governance signature verification against supplied public keyring context; missing keyring fails closed.",
+      "role": "cluster_a_artifact_ingest_and_governance_record_apply_runtime",
+      "row_index": 23,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_ingest.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_ingest_py",
+      "classification": "signature_verification",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_ingest.py:240-272",
+        "ilc_core/protocol/ilc_cluster_a_ingest.py:356-444"
+      ],
+      "fix71_batch": "batch081_ilc_core_residual_protocol_cluster_a",
+      "gap_note": "Signature verification depends on supplied governance keyring context; missing keyring fails closed.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: deterministic ingest/dispatch for wire, receipt, transcript, and governance records; canonical governance record digesting; Ed25519 signature verification; known-record hash-mode fail-closed behavior.",
+      "rationale": "Cluster A ingest validates schema and performs Ed25519 governance signature verification against supplied public keyring context; missing keyring fails closed.",
+      "role": "cluster_a_artifact_ingest_and_governance_record_apply_runtime",
+      "row_index": 24,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_ingest.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:d2eb9d7cfde03d9e:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_compare_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py:31-63",
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py:178-193"
+      ],
+      "fix71_batch": "batch081_ilc_core_residual_protocol_cluster_a",
+      "gap_note": "Comparison result is verifier evidence; promotion/signing remains separate.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: schema-backed deterministic structural comparison for Cluster A replay batch reports using JSON Pointer paths and stable mismatch sorting.",
+      "rationale": "Batch compare validates report schema and compares deterministic fields; it performs no signing or signature verification.",
+      "role": "cluster_a_replay_batch_report_comparator",
+      "row_index": 25,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_compare_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py:31-63",
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py:178-193"
+      ],
+      "fix71_batch": "batch081_ilc_core_residual_protocol_cluster_a",
+      "gap_note": "Comparison result is verifier evidence; promotion/signing remains separate.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: schema-backed deterministic structural comparison for Cluster A replay batch reports using JSON Pointer paths and stable mismatch sorting.",
+      "rationale": "Batch compare validates report schema and compares deterministic fields; it performs no signing or signature verification.",
+      "role": "cluster_a_replay_batch_report_comparator",
+      "row_index": 26,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_batch_compare.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:c74bb1f5f518d40b:ilc_core_protocol_ilc_cluster_a_replay_proof_package_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py:44-53",
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py:177-276"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Evidence/verifier package tooling only; promotion/signing remains separate.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: deterministic replay-proof package builder/verifier checking canonical package hash, evidence contract hash, governance record digest, and replay attestation.",
+      "rationale": "Replay proof package verifies hashes, schema, and replay evidence consistency; it excludes governance signatures from digesting and does not cryptographically verify signatures.",
+      "role": "cluster_a_replay_proof_package_builder_verifier",
+      "row_index": 27,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_package_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py:44-53",
+        "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py:177-276"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Evidence/verifier package tooling only; promotion/signing remains separate.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: deterministic replay-proof package builder/verifier checking canonical package hash, evidence contract hash, governance record digest, and replay attestation.",
+      "rationale": "Replay proof package verifies hashes, schema, and replay evidence consistency; it excludes governance signatures from digesting and does not cryptographically verify signatures.",
+      "role": "cluster_a_replay_proof_package_builder_verifier",
+      "row_index": 28,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_cluster_a_replay_proof_package.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:255661c33f14a438:ilc_core_protocol_ilc_governance_record_validate_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_governance_record_validate.py:3-7",
+        "ilc_core/protocol/ilc_governance_record_validate.py:79-85"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Schema validation confirms shape/signature presence, not cryptographic signature verification by itself.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: JSON Schema validator for governance record schema v0.1 with stable mapped schema/value error tokens and file/object input support.",
+      "rationale": "Validator enforces JSON schema and signature presence, not cryptographic signature verification.",
+      "role": "cluster_a_governance_record_schema_validator",
+      "row_index": 29,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_governance_record_validate.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ilc_governance_record_validate_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ilc_governance_record_validate.py:3-7",
+        "ilc_core/protocol/ilc_governance_record_validate.py:79-85"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Schema validation confirms shape/signature presence, not cryptographic signature verification by itself.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: JSON Schema validator for governance record schema v0.1 with stable mapped schema/value error tokens and file/object input support.",
+      "rationale": "Validator enforces JSON schema and signature presence, not cryptographic signature verification.",
+      "role": "cluster_a_governance_record_schema_validator",
+      "row_index": 30,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ilc_governance_record_validate.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:705c433c73de8348:ilc_core_protocol_ndjson_bundle_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ndjson_bundle.py:12-18",
+        "ilc_core/protocol/ndjson_bundle.py:187-219",
+        "ilc_core/protocol/ndjson_bundle.py:422-426"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Transport is untrusted until commitment/signature verification; default header uses UUID/time unless caller supplies deterministic values.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: bounded NDJSON bundle transport for COSE_Sign1 records with deterministic JSON, strict ordering, size limits, footer digest, base64url checks, and CIDv1 node_id parsing.",
+      "rationale": "NDJSON bundle transport validates record/header/footer structure, base64url COSE bytes, and footer digest; it binds transport records but does not verify COSE signatures.",
+      "role": "ndjson_cose_bundle_transport_format",
+      "row_index": 31,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ndjson_bundle.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_protocol_ndjson_bundle_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/ndjson_bundle.py:12-18",
+        "ilc_core/protocol/ndjson_bundle.py:187-219",
+        "ilc_core/protocol/ndjson_bundle.py:422-426"
+      ],
+      "fix71_batch": "batch082_ilc_core_residual_protocol_public_surfaces",
+      "gap_note": "Transport is untrusted until commitment/signature verification; default header uses UUID/time unless caller supplies deterministic values.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: bounded NDJSON bundle transport for COSE_Sign1 records with deterministic JSON, strict ordering, size limits, footer digest, base64url checks, and CIDv1 node_id parsing.",
+      "rationale": "NDJSON bundle transport validates record/header/footer structure, base64url COSE bytes, and footer digest; it binds transport records but does not verify COSE signatures.",
+      "role": "ndjson_cose_bundle_transport_format",
+      "row_index": 32,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/ndjson_bundle.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:1a8737ca8c8ba4b6:ilc_core_protocol_schemas_canon_bundle_key_registry_bundle_v0_1_json",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/schemas/canon_bundle_key_registry_bundle_v0.1.json:4-9"
+      ],
+      "fix71_batch": "batch083_ilc_core_protocol_schema_documents",
+      "gap_note": "Contains HMAC/example values; not final signing authority.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Direct-read: canon bundle key registry bundle record example with registry path/hash/size, HMAC signature path/alg/key id, and bundle timestamps.",
+      "rationale": "Schema/example bundle carries HMAC compatibility fields and example values only; it is not a live signing artifact.",
+      "role": "canon_bundle_key_registry_bundle_example_schema",
+      "row_index": 33,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/schemas/canon_bundle_key_registry_bundle_v0.1.json",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:fca43bd1c4405ebe:ilc_core_protocol_schemas_canon_bundle_key_registry_v0_1_json",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/schemas/canon_bundle_key_registry_v0.1.json:2-12",
+        "ilc_core/protocol/schemas/canon_bundle_key_registry_v0.1.json:28-50"
+      ],
+      "fix71_batch": "batch083_ilc_core_protocol_schema_documents",
+      "gap_note": "Schema covers key ID lists only; signing algorithm authority is elsewhere.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: Draft-07 schema for canon bundle key registry current/previous/deprecated key IDs and registry metadata.",
+      "rationale": "Schema lists signing key ID arrays and does not contain live signing material or crypto operations.",
+      "role": "canon_bundle_key_registry_json_schema",
+      "row_index": 34,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/schemas/canon_bundle_key_registry_v0.1.json",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:75923446b176b020:ilc_core_protocol_schemas_ilc_cluster_a_replay_proof_batch_compare_v0_1_json",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_compare_v0.1.json:2-3",
+        "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_compare_v0.1.json:60-61"
+      ],
+      "fix71_batch": "batch084_ilc_core_protocol_schema_rc_discipline",
+      "gap_note": "Verifier report schema only, not authority or signing.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: Draft-07 schema for replay batch compare reports with stable mismatch reasons and left/right report versions.",
+      "rationale": "Verifier report schema only; no signing or signature verification behavior.",
+      "role": "cluster_a_replay_batch_compare_schema",
+      "row_index": 35,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_compare_v0.1.json",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:c2f6e827dd15d3aa:ilc_core_protocol_schemas_ilc_cluster_a_replay_proof_batch_ops_contract_v0_1_json",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json:2-3"
+      ],
+      "fix71_batch": "batch084_ilc_core_protocol_schema_rc_discipline",
+      "gap_note": "Verifier ops schema only; no publication/signing authority.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: schema for batch ops contract output with batch/compare report paths, booleans, bounded exit code, and error token.",
+      "rationale": "Verifier ops schema only; no signing or signature verification behavior.",
+      "role": "cluster_a_replay_batch_ops_contract_schema",
+      "row_index": 36,
+      "security_flag": false,
+      "source_path": "ilc_core/protocol/schemas/ilc_cluster_a_replay_proof_batch_ops_contract_v0.1.json",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:864ec5f4de595c6d:ilc_core_security_rollback_resistance_runtime_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/security/rollback_resistance_runtime.py:33-70",
+        "ilc_core/security/rollback_resistance_runtime.py:82-88"
+      ],
+      "fix71_batch": "batch130_ilc_core_protocol_rc_security_direct_read",
+      "gap_note": "Rollback authority depends on signer lineage registry state; keep explicit Genesis/canonical authority verification in any public signing path.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Implements rollback supersession event validation and application, requiring canonical authority verification through signer lineage and preventing replay/conflicting supersession chains.",
+      "rationale": "Rollback runtime validates supersession event fields and delegates signer-lineage authority checks; it does not perform cryptographic signature verification or key loading.",
+      "role": "cdl007_rollback_resistance_runtime",
+      "row_index": 37,
+      "security_flag": false,
+      "source_path": "ilc_core/security/rollback_resistance_runtime.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_security_rollback_resistance_runtime_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/security/rollback_resistance_runtime.py:33-70",
+        "ilc_core/security/rollback_resistance_runtime.py:82-88"
+      ],
+      "fix71_batch": "batch130_ilc_core_protocol_rc_security_direct_read",
+      "gap_note": "Rollback authority depends on signer lineage registry state; keep explicit Genesis/canonical authority verification in any public signing path.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Implements rollback supersession event validation and application, requiring canonical authority verification through signer lineage and preventing replay/conflicting supersession chains.",
+      "rationale": "Rollback runtime validates supersession event fields and delegates signer-lineage authority checks; it does not perform cryptographic signature verification or key loading.",
+      "role": "cdl007_rollback_resistance_runtime",
+      "row_index": 38,
+      "security_flag": false,
+      "source_path": "ilc_core/security/rollback_resistance_runtime.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:feee78237fb90125:ilc_core_star_map_route_index_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/star_map/route_index.py:292-311"
+      ],
+      "fix71_batch": "batch134_ilc_core_werner_star_map_storage_direct_read",
+      "gap_note": "Build/verification-critical route-index tooling; timestamped payload creation must be governed by signing/preimage rules when used for signed artifacts.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct read: deterministic star-map n-gram route-index implementation with NFKC/casefold canonicalization, token guardrails, SHA256 bucket keys, DAG-CBOR node IDs, and COSE Sign1 wrapper.",
+      "rationale": "Route index builder exposes a COSE_Sign1 signing function that accepts an Ed25519 private key and calls cose_sign1_sign.",
+      "role": "star_map_ngram_route_index_builder_and_signer",
+      "row_index": 39,
+      "security_flag": false,
+      "source_path": "ilc_core/star_map/route_index.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:ilc_core_star_map_route_index_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "ilc_core/star_map/route_index.py:292-311"
+      ],
+      "fix71_batch": "batch134_ilc_core_werner_star_map_storage_direct_read",
+      "gap_note": "Build/verification-critical route-index tooling; timestamped payload creation must be governed by signing/preimage rules when used for signed artifacts.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct read: deterministic star-map n-gram route-index implementation with NFKC/casefold canonicalization, token guardrails, SHA256 bucket keys, DAG-CBOR node IDs, and COSE Sign1 wrapper.",
+      "rationale": "Route index builder exposes a COSE_Sign1 signing function that accepts an Ed25519 private key and calls cose_sign1_sign.",
+      "role": "star_map_ngram_route_index_builder_and_signer",
+      "row_index": 40,
+      "security_flag": false,
+      "source_path": "ilc_core/star_map/route_index.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:c13f9ee79a9ef64f:tests_test_canon_bundle_audit_artifact_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_canon_bundle_audit_artifact.py:42-54",
+        "tests/test_canon_bundle_audit_artifact.py:98-110"
+      ],
+      "fix71_batch": "batch107_tests_conftest_backlog_bootstrap_canon_key_registry",
+      "gap_note": "Canon bundle test support; uses test signing key and fixture bundle, not a public release signing action.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Direct-read canon bundle audit artifact test: verifies canon bundle pipeline audit JSON creation, expected keys, manifest/signature/report hashes, pipeline stdout capture, missing-signature behavior, report directory resolution, and failure audit output.",
+      "rationale": "Test exercises canon bundle pipeline with temp key files and signature hashes; key material is test-only, not public signing authority.",
+      "role": "test_canon_bundle_audit_artifact",
+      "row_index": 41,
+      "security_flag": false,
+      "source_path": "tests/test_canon_bundle_audit_artifact.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py",
+      "classification": "key_custody_required",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_canon_bundle_sign_cli.py:20-33",
+        "tests/test_canon_bundle_sign_cli.py:69-88"
+      ],
+      "fix71_batch": "batch109_tests_canon_bundle_pipeline_replay_consumer",
+      "gap_note": "No public-RC blocker; signing uses temp keys and does not activate public signing.",
+      "hmac_example_annotation": true,
+      "hmac_example_note": "HMAC/example values are compatibility records only, not live signing artifacts.",
+      "manual_read_summary": "Direct-read test for canon bundle signing CLI: manifest signing, missing bundle/manifest/key errors, no-overwrite and overwrite behavior.",
+      "rationale": "Test directly exercises signing CLI with temporary key files; this is test-only key custody.",
+      "role": "test_canon_bundle_sign_cli",
+      "row_index": 42,
+      "security_flag": false,
+      "source_path": "tests/test_canon_bundle_sign_cli.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:4c878109112111c0:tests_test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py:101-131"
+      ],
+      "fix71_batch": "batch097_tests_release_public_rc_graph_gate_verifier_cluster",
+      "gap_note": "Readiness preflight only; confirms release allowlist/artifact work remains blocked until later materialization/signing authority.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: validates release allowlist artifact Genesis readiness preflight, binds allowlist/manifest/Atlas/packaging sources, and records no export, no artifact, no keys, no signing, no public RC claim.",
+      "rationale": "Readiness preflight asserts release keys, Genesis Atlas signing, and public publication remain blocked; it performs no crypto operation.",
+      "role": "release_allowlist_artifact_genesis_readiness_preflight_test",
+      "row_index": 43,
+      "security_flag": false,
+      "source_path": "tests/test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:1556955f352ed97b:tests_test_phase_1545p_fix21_atlas_candidate_strike_force_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_phase_1545p_fix21_atlas_candidate_strike_force.py:69-88"
+      ],
+      "fix71_batch": "batch098_tests_public_rc_export_activation_economics_bundle_atlas_cluster",
+      "gap_note": "Historical Atlas candidate research-only outputs; do not use maximal research candidate as signing target.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read: validates Fix21 Atlas candidate research outputs, candidate queue/reducer, endpoint-valid variants, unsigned support-only boundary, and human review packet Block6 signing boundary.",
+      "rationale": "Historical Atlas candidate test asserts unsigned support-only candidate and non-claims; no signing operation.",
+      "role": "atlas_candidate_strike_force_test",
+      "row_index": 44,
+      "security_flag": false,
+      "source_path": "tests/test_phase_1545p_fix21_atlas_candidate_strike_force.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:2e2ef776557315db:tests_test_phase_1545p_fix61_projection_export_package_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_phase_1545p_fix61_projection_export_package.py:32-49",
+        "tests/test_phase_1545p_fix61_projection_export_package.py:51-66"
+      ],
+      "fix71_batch": "batch088_tests_lmdb_graph_fix_verifier_cluster",
+      "gap_note": "Projection export validation only; exported JSONs are unsigned/public-eligible artifacts, not signing/publication.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read test verifies Fix61 exported core star map, authority projection, base graph, projection summary, privacy exclusion, subset relationships, and LMDB preimage count consistency.",
+      "rationale": "Projection export test validates unsigned graph exports and private-node exclusions; no signature verification or key custody.",
+      "role": "projection_export_package_regression_test",
+      "row_index": 45,
+      "security_flag": false,
+      "source_path": "tests/test_phase_1545p_fix61_projection_export_package.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file_ref:tests_test_phase_1545p_fix61_projection_export_package_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tests/test_phase_1545p_fix61_projection_export_package.py:32-49",
+        "tests/test_phase_1545p_fix61_projection_export_package.py:51-66"
+      ],
+      "fix71_batch": "batch088_tests_lmdb_graph_fix_verifier_cluster",
+      "gap_note": "Projection export validation only; exported JSONs are unsigned/public-eligible artifacts, not signing/publication.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Direct-read test verifies Fix61 exported core star map, authority projection, base graph, projection summary, privacy exclusion, subset relationships, and LMDB preimage count consistency.",
+      "rationale": "Projection export test validates unsigned graph exports and private-node exclusions; no signature verification or key custody.",
+      "role": "projection_export_package_regression_test",
+      "row_index": 46,
+      "security_flag": false,
+      "source_path": "tests/test_phase_1545p_fix61_projection_export_package.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:c1557d99ce3a092c:tools_build_genesis_attestation_manifest_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tools/build_genesis_attestation_manifest.py:16-34",
+        "tools/build_genesis_attestation_manifest.py:73-87"
+      ],
+      "fix71_batch": "batch094_tools_genesis_manifest_agent_loop_ccss_cluster",
+      "gap_note": "Historical v0.1 star-map manifest builder; current v0.4 signing should use the unified graph/star-map pipeline, not this older input path by default.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Builds canonical SHA-256 manifest for the 32 genesis-attested v0.1 star-map nodes, excluding mutable signature envelope fields and binding issuer/public key references.",
+      "rationale": "Tool builds canonical hashes and references a public key record; it does not load private keys or sign.",
+      "role": "genesis_node_attestation_manifest_builder",
+      "row_index": 47,
+      "security_flag": false,
+      "source_path": "tools/build_genesis_attestation_manifest.py",
+      "source_path_present": true
+    },
+    {
+      "candidate_id": "repo:file:a139958cd020a975:tools_build_genesis_signing_root_envelope_py",
+      "classification": "schema_validation_only",
+      "comment_added": false,
+      "evidence": [
+        "tools/build_genesis_signing_root_envelope.py:44-71"
+      ],
+      "fix71_batch": "batch094_tools_genesis_manifest_agent_loop_ccss_cluster",
+      "gap_note": "Uses whole-file manifest reads and emits unsigned out/ envelope; signing/promotion must remain a separate explicit phase gate.",
+      "hmac_example_annotation": false,
+      "manual_read_summary": "Builds root envelope binding node-attestation, toolchain, and reference-implementation manifests under the Genesis signing context and public-key reference.",
+      "rationale": "Tool builds unsigned root envelope metadata and hash, including public key reference and signing algorithm declaration; it does not sign.",
+      "role": "genesis_signing_root_envelope_builder",
+      "row_index": 48,
+      "security_flag": false,
+      "source_path": "tools/build_genesis_signing_root_envelope.py",
+      "source_path_present": true
+    }
+  ],
+  "phase": "1545p-Fix77",
+  "phase_title": "Crypto-Boundary Audit (P4)",
+  "security_flags": [
+    {
+      "evidence": "If ILC_D2D_INSECURE_SKIP_TLS_VERIFY=1, the client SSL context sets check_hostname=False and verify_mode=ssl.CERT_NONE.",
+      "flag_type": "tls_verification_bypass_opt_out_path",
+      "line_refs": [
+        "ilc_core/network/d2d/truth_primitive_gossip_runtime.py:115-116"
+      ],
+      "recommended_followup": "Public RC launch checks must fail closed if the insecure TLS opt-out environment variable is set outside local testbed context.",
+      "severity": "escalate_before_public_rc",
+      "source_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+      "source_scope": "p4_row_direct_read",
+      "status": "recorded_no_code_change_in_fix77"
+    },
+    {
+      "evidence": "If ILC_D2D_INSECURE_SKIP_TLS_VERIFY=1, the client SSL context sets check_hostname=False and verify_mode=ssl.CERT_NONE.",
+      "flag_type": "tls_verification_bypass_opt_out_path",
+      "line_refs": [
+        "ilc_core/network/d2d/truth_primitive_fetch_runtime.py:94-95"
+      ],
+      "recommended_followup": "Same fail-closed public RC environment check should cover fetch runtime as well as gossip runtime.",
+      "severity": "escalate_before_public_rc",
+      "source_path": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+      "source_scope": "global_security_scan_discovered_during_fix77",
+      "status": "recorded_no_code_change_in_fix77"
+    }
+  ],
+  "source_ledger": "docs/specs/ilc_fix71_manual_read_gap_ledger_v0.1.json",
+  "source_ledger_filter": {
+    "category": "cryptography_signature_or_keying_gap"
+  }
+}
