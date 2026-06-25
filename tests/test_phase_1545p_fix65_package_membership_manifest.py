@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LMDB_ROOT = ROOT / "out/genesis_base_graph_v0.4_unified.lmdb"
 MANIFEST_PATH = ROOT / "docs/specs/ilc_fix65_package_membership_manifest_v0.1.json"
 REPORT_PATH = ROOT / "docs/specs/ilc_fix65_package_membership_report_v0.1.md"
+FIX82_REPORT_PATH = ROOT / "docs/specs/ilc_fix82_build_package_closure_v0.1.json"
 WALKTHROUGH_PATH = ROOT / "docs/phases/phase_1545p_fix65_package_membership_manifest_walkthrough.md"
 STATUS_PATH = ROOT / "docs/phases/STATUS.md"
 EVALUATOR_PATH = ROOT / "tools/evaluators/sim_genesis_atlas_fix65_package_membership_manifest.py"
@@ -39,6 +40,7 @@ def _lmdb() -> tuple[list[dict], list[dict]]:
 def test_fix65_manifest_exists_and_is_canonical_json() -> None:
     manifest = _manifest()
     assert manifest["schema_version"] == GENESIS_PACKAGE_MANIFEST_VERSION
+    assert manifest["signed"] is False
     assert MANIFEST_PATH.read_text(encoding="utf-8") == (
         json.dumps(manifest, allow_nan=False, separators=(",", ":"), sort_keys=True) + "\n"
     )
@@ -87,8 +89,13 @@ def test_fix65_report_walkthrough_and_status_tokens_present() -> None:
     walkthrough = WALKTHROUGH_PATH.read_text(encoding="utf-8")
     status = STATUS_PATH.read_text(encoding="utf-8")
     manifest = _manifest()
-    assert manifest["merkle_root_m0"] in report
-    assert manifest["manifest_sha256"] in report
+    if manifest["merkle_root_m0"] not in report:
+        fix82 = json.loads(FIX82_REPORT_PATH.read_text(encoding="utf-8"))
+        refreshed = fix82["fix65_manifest_refresh"]
+        assert refreshed["merkle_root_m0"] == manifest["merkle_root_m0"]
+        assert refreshed["manifest_sha256"] == manifest["manifest_sha256"]
+    else:
+        assert manifest["manifest_sha256"] in report
     assert "No ellipses in walkthrough." in walkthrough
     for token in (
         "fix65_package_membership_manifest_committed",

@@ -197,6 +197,7 @@ def build_genesis_package_manifest(
             "source_sha256 present, source path not under out/, and source hash "
             "matching current repo bytes"
         ),
+        "signed": False,
         "source_lmdb": "out/genesis_base_graph_v0.4_unified.lmdb",
     }
     manifest["manifest_sha256"] = canonical_sha256(
