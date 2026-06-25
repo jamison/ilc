@@ -67,6 +67,7 @@ class TestBuildRegistryBundle:
         assert "sig_alg" in manifest
         assert "key_id" in manifest
         assert manifest["registry_version"] == "v0.1"
+        assert manifest["signed"] is False
         assert "sig_hash" in manifest
     
     def test_build_fails_without_force_if_exists(self, tmp_path):
