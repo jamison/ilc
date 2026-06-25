@@ -144,6 +144,19 @@ include = ["ilc_core*"]
 "ilc_core.genesis" = ["*.json"]
 "ilc_core.protocol.schemas" = ["*.json"]
 
+[tool.ilc.genesis-package-membership]
+fix82_public_protocol_graph_additions = [
+    "docs/specs/ilc_open_obligation_register_v0.1.md",
+    "ilc_core/distribution/genesis_package_manifest.py",
+    "tests/test_phase_1545p_fix65_package_membership_manifest.py",
+    "tools/build_fix40_post_fix38_integrity_coverage.py",
+    "tools/build_genesis_claim_composition_projection.py",
+    "tools/build_genesis_implementation_manifest.py",
+    "tools/build_genesis_toolchain_manifest.py",
+    "tools/build_test_registry_frontier_report.py",
+    "tools/evaluators/sim_genesis_atlas_fix66_hub_artifact_removal.py",
+]
+
 [project.scripts]
 ilc = "ilc_core.cli.main:main"
 ilc-mcp = "ilc_core.cli.mcp_cli:main"
