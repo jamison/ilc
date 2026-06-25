@@ -57,7 +57,9 @@ class OnboardingVault:
 def _onboarding_decimal(value: object, token: str) -> Decimal:
     if isinstance(value, bool):
         raise ValueError(token)
-    if not isinstance(value, (Decimal, int, float, str)):
+    if isinstance(value, float):
+        raise ValueError(token)
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(token)
     try:
         amount = value if isinstance(value, Decimal) else Decimal(str(value))

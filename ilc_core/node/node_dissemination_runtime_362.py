@@ -69,7 +69,7 @@ class NodeDisseminationRuntimeError(ValueError):
 
 
 def _stable_json(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def _stable_sha256(value: Any) -> str:
