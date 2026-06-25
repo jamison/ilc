@@ -10,6 +10,7 @@ validation to `gossip_transport.py`.
 from __future__ import annotations
 
 import collections
+import os
 import socket
 import ssl
 import threading
@@ -23,6 +24,10 @@ from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import (
     GOSSIP_PEER_REGISTRY_VERSION as _GOSSIP_PEER_REGISTRY_CHECK,
     validate_peer_endpoint,
+)
+from ilc_core.network.d2d.tls_policy import (
+    D2D_PUBLIC_MODE_ENV,
+    should_disable_tls_verification,
 )
 
 
@@ -240,11 +245,17 @@ class HttpGossipTransportRuntime:
             "tls_key_path_not_found",
         )
         context = ssl.create_default_context()
-        if not self.config.verify_peer_tls:
-            # Explicit RC/testbed escape hatch for self-signed local peers. Production
-            # configs must leave verification enabled.
+        if should_disable_tls_verification(
+            insecure_requested=not self.config.verify_peer_tls,
+            stacklevel=2,
+        ):
             context.check_hostname = False
             context.verify_mode = ssl.CERT_NONE
+        elif not self.config.verify_peer_tls and os.environ.get(D2D_PUBLIC_MODE_ENV) == "1":
+            self._record(
+                "tls_insecure_bypass_ignored",
+                reason="public_mode_requires_tls_verification",
+            )
         return context
 
     def start(self) -> None:
