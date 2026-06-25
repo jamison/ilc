@@ -420,15 +420,155 @@
       "queue_index_end": 300,
       "queue_index_start": 291,
       "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 31,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 310,
+      "queue_index_start": 301,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 32,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 320,
+      "queue_index_start": 311,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 33,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 330,
+      "queue_index_start": 321,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 34,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 340,
+      "queue_index_start": 331,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 35,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 350,
+      "queue_index_start": 341,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 36,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 360,
+      "queue_index_start": 351,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 37,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 370,
+      "queue_index_start": 361,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 38,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 380,
+      "queue_index_start": 371,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 39,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 390,
+      "queue_index_start": 381,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 40,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 400,
+      "queue_index_start": 391,
+      "status": "complete_no_edges_to_apply"
     }
   ],
-  "batches_completed": 30,
+  "batches_completed": 40,
   "disposition_summary": {
     "add_edge": 0,
     "human_escalation": 0,
     "missing_canonical_target": 0,
     "same_authority_or_lifecycle": 0,
-    "support_leaf_no_wiring_required": 300
+    "support_leaf_no_wiring_required": 400
   },
   "dispositions": [
     {
@@ -8639,6 +8779,2754 @@
       "source_path": "",
       "target_node": null,
       "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:717",
+          "in CLASSIFIED_BY repo:file:4d859fe612b91320:tests_test_phase_717_window_717_722_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase717_window717_722_adr0015_family_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 301,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:718",
+          "in CLASSIFIED_BY repo:file:300ad0fe09cb0d9e:tests_test_phase_718_adr_0015_inventory_and_scoping_py"
+        ]
+      },
+      "node_id": "policy:phase718_adr0015_family_inventory_and_scope",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 302,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:720",
+          "in CLASSIFIED_BY repo:file:09cde3f58125cb53:tests_test_phase_720_commons_dedication_and_leasehold_reversion_calibration_py"
+        ]
+      },
+      "node_id": "policy:phase720_commons_dedication_launch_bound_leasehold_deferred",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 303,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:722",
+          "in CLASSIFIED_BY repo:file:2de1d9e38e20d105:tests_test_phase_722_coherence_report_capsule_v4_8_and_window_717_722_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase722_window717_722_adr0015_family_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 304,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:732",
+          "in CLASSIFIED_BY repo:file:cb6e41a89bb47256:tests_test_phase_732_capsule_v5_0_and_window_727_732_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase732_window727_732_adjacent_gated_economy_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 305,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:735",
+          "in CLASSIFIED_BY repo:file:9d86d180fbba8afe:tests_test_phase_735_sim_topology_01_results_py"
+        ]
+      },
+      "node_id": "policy:phase735_sim_topology_01_topology_shuffle_results",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 306,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:739",
+          "in CLASSIFIED_BY repo:file:879c97996598908e:tests_test_phase_739_window_739_744_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase739_window739_744_rows5_7_runtime_packaging_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 307,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:745",
+          "in REFERENCES_AUTHORITY repo:file:3b34b492b4271a60:tests_test_phase_749_window_749_752_sequence_lock_py",
+          "in CLASSIFIED_BY repo:file:19c99cf9fc7c597d:tests_test_phase_745_window_745_748_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase745_window745_748_convergence_commissioning_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 308,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:749",
+          "in REFERENCES_AUTHORITY repo:file:01224a9c4b7b7896:tests_test_phase_750_master_completion_roadmap_and_m_series_lane_update_py",
+          "in CLASSIFIED_BY repo:file:3b34b492b4271a60:tests_test_phase_749_window_749_752_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase749_window749_752_planning_consolidation_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 309,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 31,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:750",
+          "in REFERENCES_AUTHORITY repo:file:e21cc28839194391:tests_test_phase_751_stale_planning_doc_archival_and_planning_index_advance_py",
+          "in CLASSIFIED_BY repo:file:01224a9c4b7b7896:tests_test_phase_750_master_completion_roadmap_and_m_series_lane_update_py"
+        ]
+      },
+      "node_id": "policy:phase750_master_completion_roadmap_m_series_update",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 310,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:776",
+          "in REFERENCES_AUTHORITY repo:file:a1ed0d4a25580ae4:tests_test_phase_777_sim_run1_py",
+          "in CLASSIFIED_BY repo:file:248be1382a98b91f:tests_test_phase_776_layer1_log_hygiene_py"
+        ]
+      },
+      "node_id": "policy:phase776_layer1_agentid_log_hygiene",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 311,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:777",
+          "in CLASSIFIED_BY repo:file:ab844398c14fd9f7:tools_testbed_ilc_sim_leakage_01_harness_py",
+          "in CLASSIFIED_BY repo:file:a1ed0d4a25580ae4:tests_test_phase_777_sim_run1_py"
+        ]
+      },
+      "node_id": "policy:phase777_sim_leakage_01_post_layer1_results",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 312,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:778",
+          "in REFERENCES_AUTHORITY repo:file:5c4f05dcb270b16c:tests_test_phase_779_sim_run2_py"
+        ]
+      },
+      "node_id": "policy:phase778_layer2_relay_forwarding_testnet_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 313,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=2, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:ab844398c14fd9f7:tools_testbed_ilc_sim_leakage_01_harness_py",
+          "out CARRIES_FORWARD phase:779",
+          "in CLASSIFIED_BY repo:file:5c4f05dcb270b16c:tests_test_phase_779_sim_run2_py",
+          "in REFERENCES_AUTHORITY repo:file:7fe4961302e7cfae:tests_test_phase_780_row5_evaluation_py"
+        ]
+      },
+      "node_id": "policy:phase779_sim_leakage_01_run2_post_both_layers",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 314,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:780",
+          "in REFERENCES_AUTHORITY repo:file:b84f6282cb96830e:tests_test_phase_781_coherence_and_capsule_py",
+          "in CLASSIFIED_BY repo:file:7fe4961302e7cfae:tests_test_phase_780_row5_evaluation_py"
+        ]
+      },
+      "node_id": "policy:phase780_row5_honest_nonclosure_bands_not_met",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 315,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:781",
+          "in CLASSIFIED_BY repo:file:b84f6282cb96830e:tests_test_phase_781_coherence_and_capsule_py"
+        ]
+      },
+      "node_id": "policy:phase781_coherence_capsule_v57_row5_nonclosure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 316,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=2, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:832",
+          "in CLASSIFIED_BY repo:file:47dbc07c421c036b:ilc_core_privacy_monitor_py",
+          "in REFERENCES_AUTHORITY repo:file:fbe3db4d9ffeb570:tests_test_phase_833_row5_b_impl_obligation_6_sim_leakage_03_py",
+          "in CLASSIFIED_BY repo:file:8212f6c51f3fdc88:tests_test_phase_832_row5_b_impl_obligations_4_5_py"
+        ]
+      },
+      "node_id": "policy:phase832_row5_b_impl_obligations_4_5_monitoring_notifications",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 317,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:e7bfbf469d7bf001:ilc_core_privacy_metrics_py",
+          "out CARRIES_FORWARD phase:833",
+          "in CLASSIFIED_BY repo:file:fbe3db4d9ffeb570:tests_test_phase_833_row5_b_impl_obligation_6_sim_leakage_03_py"
+        ]
+      },
+      "node_id": "policy:phase833_row5_b_impl_obligation_6_sim_leakage_03_metrics",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 318,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:838b",
+          "in CLASSIFIED_BY repo:file:a50b374c80838cda:tests_test_phase_838b_sphincs_shamir_split_py"
+        ]
+      },
+      "node_id": "policy:phase838b_sphincs_recovery_seed_shamir_split_stdin_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 319,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 32,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:838d",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_identity_agent_id_runtime_py",
+          "in CLASSIFIED_BY repo:file:295b9892d20a8c12:tests_test_phase_838d_agent_id_runtime_v2_py"
+        ]
+      },
+      "node_id": "policy:phase838d_agent_id_runtime_v2_identity_seed_sha384",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 320,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:845",
+          "in CLASSIFIED_BY repo:file:6ed9afef5ca9d8de:tests_test_phase_845_sim_leakage_03_live_run_py"
+        ]
+      },
+      "node_id": "policy:phase845_sim_leakage_03_live_run_honest_nonclosure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 321,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:847",
+          "in CLASSIFIED_BY repo:file:5fc7b4d8c6cc783e:tests_test_phase_847_window_844_847_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase847_window_844_847_closure_row5_runtime_closed",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 322,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:849",
+          "in REFERENCES_AUTHORITY repo:file:4a9caaed1a24e985:tests_test_phase_852_window_848_852_closure_gate_py",
+          "in CLASSIFIED_BY repo:file:55f3a6cab2a1fd10:tests_test_phase_849_graduation_checklist_v0_3_py"
+        ]
+      },
+      "node_id": "policy:phase849_option_b_graduation_checklist_v03",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 323,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:852",
+          "in CLASSIFIED_BY repo:file:4a9caaed1a24e985:tests_test_phase_852_window_848_852_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase852_window_848_852_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 324,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:932",
+          "in CLASSIFIED_BY repo:file:3494845324c07fde:tests_test_phase_932_933_h013_spectral_beacon_py"
+        ]
+      },
+      "node_id": "policy:phase932_933_h013_spectral_beacon_tests",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 325,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1213",
+          "in REFERENCES_AUTHORITY repo:file:f924f040c003649c:tests_test_phase_1334_release_artifact_production_gate_py"
+        ]
+      },
+      "node_id": "policy:phase_1213_artifact_manifest_shape",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 326,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1332_fix4",
+          "in REFERENCES_AUTHORITY repo:file:dcc1b3fa211b4a26:tests_test_phase_1332_fix4_pre_1333_hardening_py"
+        ]
+      },
+      "node_id": "policy:phase_1332_fix4_pre_1333_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 327,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1366",
+          "in REFERENCES_AUTHORITY repo:file:95bff81ed6d87d32:tests_test_phase_1367_pre_gate_fix_pass_py"
+        ]
+      },
+      "node_id": "policy:phase_1366_treasury_epoch_budget_binding_verified",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 328,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1369_fix1",
+          "in REFERENCES_AUTHORITY repo:file:82203e7adfe94179:tests_test_phase_1369_fix1_numeric_hardening_py"
+        ]
+      },
+      "node_id": "policy:phase_1369_fix1_authorized_numeric_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 329,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 33,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1558",
+          "in CLASSIFIED_BY repo:file:b51d18924d062968:tests_test_phase_1558_hb003_layer0_truth_primitive_schemas_py"
+        ]
+      },
+      "node_id": "policy:phase_1558_private_runtime_selftest",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 330,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:4fb6a05879660632:ilc_core_testing_phase_commit_manifest_py",
+          "in REFERENCES_AUTHORITY repo:file:17e11833ab0d0f46:tests_test_phase_commit_manifest_296_py"
+        ]
+      },
+      "node_id": "policy:phase_commit_manifest_296_phase_history_stabilization",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 331,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:ca6eab39a0ff7c0f:tests_test_phase_high002_phase_b_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase_high002_phase_b_closure_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 332,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:136977d5974ba41c:tests_test_phase_M009_mysticeti_testnet_setup_py"
+        ]
+      },
+      "node_id": "policy:phase_m009_mysticeti_testnet_setup",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 333,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:db1062ec869e4521:tests_test_phase_M012_full_bft_transfer_py"
+        ]
+      },
+      "node_id": "policy:phase_m012_full_bft_transfer_binary_complete",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 334,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:b3379e1c8e118812:tests_test_phase_M014_workload_b_results_py"
+        ]
+      },
+      "node_id": "policy:phase_m014_workload_b_censorship_resistance_results",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 335,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:55221e229115d09a:tests_test_phase_M015_workload_c_results_py"
+        ]
+      },
+      "node_id": "policy:phase_m015_workload_c_tier2_partition_recovery",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 336,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:92003bff358673e5:tests_test_phase_M016_workload_d_results_py"
+        ]
+      },
+      "node_id": "policy:phase_m016_workload_d_replayability_state_extraction",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 337,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:TESTS:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in TESTS repo:file:298af6efe05306e7:tests_test_phase_m019_adversarial_hardening_results_py",
+          "in CLASSIFIED_BY repo:file:298af6efe05306e7:tests_test_phase_M019_adversarial_hardening_results_py"
+        ]
+      },
+      "node_id": "policy:phase_m019_adversarial_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 338,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:03af125ee8e1215d:tools_evaluators_phase_prompt_evaluator_py",
+          "in CLASSIFIED_BY repo:file:42a126055024725f:tests_test_validate_phase_prompt_alpha_subphase_py"
+        ]
+      },
+      "node_id": "policy:phase_prompt_schema_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 339,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 34,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1410_fix1",
+          "in REFERENCES_AUTHORITY repo:file:c22610ab02e5f7f7:tests_test_phase_1410_fix1_pre_vrf_hardening_py"
+        ]
+      },
+      "node_id": "policy:pre_vrf_hardening_phase_1410_fix1",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 340,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1535p",
+          "in CLASSIFIED_BY repo:file:c53dda7d90b79833:tests_test_phase_1535p_obl020_economic_round_trip_py"
+        ]
+      },
+      "node_id": "policy:production_emission_not_activated_phase_1535p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 341,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:5759a30b814bac6f:tests_test_refutation_profitability_invariant_gate_phase_212_py"
+        ]
+      },
+      "node_id": "policy:refutation_profitability_gate_script_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 342,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:446637b6c976acc8:tests_test_refutation_profitability_invariant_phase_212_py"
+        ]
+      },
+      "node_id": "policy:refutation_profitability_runtime_invariant",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 343,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1317",
+          "in REFERENCES_AUTHORITY repo:file:c3e1fd00ac0f37bf:tests_test_phase_1317_window_1317_1329_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:release_dry_run_private_only_sequence_locked_phase_1317",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 344,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 7 total; in:CLASSIFIED_BY:repo=5, in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=5",
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 7,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_schemas_py",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_ops_py",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_compare_py",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_protocol_ilc_cluster_a_replay_proof_batch_py",
+          "in REFERENCES_AUTHORITY repo:file:9aae5d044ff900d9:ilc_core_cli_canon_cluster_a_replay_proof_py"
+        ]
+      },
+      "node_id": "policy:replay_proof_schema_parity_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 345,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:079b1103f119f2fe:tools_scan_duplicates_py",
+          "in REFERENCES_AUTHORITY repo:file:b1d5de40b7d788fc:tests_test_duplicate_definitions_py"
+        ]
+      },
+      "node_id": "policy:repo_hygiene_duplicate_definition_and_line_guardrail",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 346,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:c975de8f39909158:tests_test_reuse_diversity_invariants_gate_phase_216_py"
+        ]
+      },
+      "node_id": "policy:reuse_diversity_gate_script_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 347,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:bbe94cc3725d3d62:ilc_core_analysis_reuse_diversity_invariants_py",
+          "in CLASSIFIED_BY repo:file:7f335e4d6d3e1229:tests_test_reuse_diversity_invariants_phase_216_py"
+        ]
+      },
+      "node_id": "policy:reuse_diversity_runtime_invariant",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 348,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in EVIDENCES repo:file:6395fbb98ba814ff:ilc_core_epistemic_review_lane_admission_runtime_py",
+          "out CARRIES_FORWARD phase:1416",
+          "in CLASSIFIED_BY repo:file:6395fbb98ba814ff:ilc_core_epistemic_review_lane_admission_runtime_py",
+          "in REFERENCES_AUTHORITY repo:file:b479e5c8d225a782:tests_test_phase_1416_review_lane_dedup_payment_stub_py"
+        ]
+      },
+      "node_id": "policy:review_lane_payment_not_activated_phase_1416",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 349,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 35,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1417",
+          "in REFERENCES_AUTHORITY repo:file:40ebffb6241c3995:tests_test_phase_1417_review_lane_integration_py"
+        ]
+      },
+      "node_id": "policy:review_lane_wiring_complete_phase_1417",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 350,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:9a5345c4861990b0:tests_test_window_b_scope_b5_lock_and_commissioning_py"
+        ]
+      },
+      "node_id": "policy:row5_b_impl_commissioning",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 351,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:8f21c1ff5bcf8969:tests_test_window_b_scope_b1_b4_holdpoint_py"
+        ]
+      },
+      "node_id": "policy:row5_b_scope_b1_b4_holdpoint",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 352,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:9a5345c4861990b0:tests_test_window_b_scope_b5_lock_and_commissioning_py"
+        ]
+      },
+      "node_id": "policy:row5_b_scope_b5_lock_and_commissioning",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 353,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:d0024aab90a7f311:ilc_core_privacy_lane_py",
+          "in REFERENCES_AUTHORITY repo:file:9a5345c4861990b0:tests_test_window_b_scope_b5_lock_and_commissioning_py"
+        ]
+      },
+      "node_id": "policy:row5_k_anonymity_jitter3_primary_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 354,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:298af6efe05306e7:tests_test_phase_M019_adversarial_hardening_results_py"
+        ]
+      },
+      "node_id": "policy:row7_liveness",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 355,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:92003bff358673e5:tests_test_phase_M016_workload_d_results_py"
+        ]
+      },
+      "node_id": "policy:row7_replayability_exitability",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 356,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:d1989972a551cfc5:tests_test_runtime_logging_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:runtime_logging_closure_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 357,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:1b25962b7ac74932:ilc_core_network_rust_p2p_bridge_py",
+          "out CARRIES_FORWARD phase:1483p",
+          "in CLASSIFIED_BY repo:file:de2fab4e355f8aea:tests_test_phase_1483p_rust_p2p_bridge_py"
+        ]
+      },
+      "node_id": "policy:rust_p2p_bridge_not_activated_phase_1483p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 358,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:ca6eab39a0ff7c0f:tests_test_phase_high002_phase_b_closure_gate_py",
+          "in REFERENCES_AUTHORITY repo:file:298af6efe05306e7:tests_test_phase_M019_adversarial_hardening_results_py"
+        ]
+      },
+      "node_id": "policy:safety_no_dual_cert",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 359,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 36,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file_ref:tools_tla_ilc_ecu_fast_path_bcast_tlc_out",
+          "in REFERENCES_AUTHORITY repo:file:916e55840875464c:tests_test_phase_1385_tla_safetynodualcert_disposition_py"
+        ]
+      },
+      "node_id": "policy:safetynodualcert_deferred_to_spec_d_epoch_checkpoint_scope",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 360,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file_ref:docs_specs_ilc_sdk_boundary_contract_234_v0_1_md",
+          "in REFERENCES_AUTHORITY repo:file:3c71c862fc147454:tests_test_signing_provider_interface_262_py"
+        ]
+      },
+      "node_id": "policy:sdk_boundary_contract_signing_provider",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 361,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:55221e229115d09a:tests_test_phase_M015_workload_c_results_py"
+        ]
+      },
+      "node_id": "policy:sec008_missing_epoch_recovery_cursor",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 362,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:0baf2cb4a0efc674:tests_test_phase_M018_workload_f_results_py"
+        ]
+      },
+      "node_id": "policy:sec009_bls_epoch_auditability",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 363,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:61bdeb30383fcdba:ilc_core_testing_ratification_mutation_scope_guardrail_py",
+          "in REFERENCES_AUTHORITY repo:file:32133868845dc673:tests_test_window_767_774_integration_gate_772_py"
+        ]
+      },
+      "node_id": "policy:sec_004_m007_activation_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 364,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:ef3dcf1d9f1db775:tests_test_server_app_factory_phase_1001_py"
+        ]
+      },
+      "node_id": "policy:server_app_factory_runtime_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 365,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:09d9baf88a13876a:tests_test_server_lifecycle_phase_198_py"
+        ]
+      },
+      "node_id": "policy:server_lifecycle_runtime_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 366,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1387",
+          "in REFERENCES_AUTHORITY repo:file:ddb2876261f60e6e:tests_test_phase_1387i_synthesis_report_py"
+        ]
+      },
+      "node_id": "policy:sim_graphopt_01_forward_optimization_phase_1387i",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 367,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 9 total; in:CLASSIFIED_BY:repo=8, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=8",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 9,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:f32d902bac6d01e3:ilc_core_sim_devnet_experiments_py",
+          "in CLASSIFIED_BY repo:file:354507792ebc6f20:ilc_core_sim_phase_1511p_economic_parameter_sims_py",
+          "in CLASSIFIED_BY repo:file:f5392e63a7fa047a:ilc_core_sim_harness_econ_scenarios_py",
+          "in CLASSIFIED_BY repo:file:5075f2bde31f146f:ilc_core_sim_devnet_epoch_orchestrator_py",
+          "in CLASSIFIED_BY repo:file:53109e849b57ec56:ilc_core_sim_devnet_scenarios_py"
+        ]
+      },
+      "node_id": "policy:simulation_only_deterministic_rng_allowed",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 368,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:18d0c2a287f88f0f:tests_test_phase_715_partition_repair_benchmark_pack_and_missing_signal_doctrine_py",
+          "in REFERENCES_AUTHORITY repo:file:27307dc888db944a:tests_test_phase_665_window_665_670_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:static_peer_registry_v1",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 369,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 37,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:7cb972353ae768da:ilc_core_node_tier3_runtime_linkage_runtime_py",
+          "in REFERENCES_AUTHORITY repo:file:595ccdb8d7ae59d9:tests_test_phase_1195_tier3_runtime_linkage_py"
+        ]
+      },
+      "node_id": "policy:tier3_runtime_linkage",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 370,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:550ed92ed794dc23:tests_test_track1_closure_guardrail_gate_ops_py"
+        ]
+      },
+      "node_id": "policy:track1_ci_release_guardrail_presteps",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 371,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file_ref:tools_check_track1_closure_guardrails_sh",
+          "in REFERENCES_AUTHORITY repo:file:550ed92ed794dc23:tests_test_track1_closure_guardrail_gate_ops_py"
+        ]
+      },
+      "node_id": "policy:track1_closure_guardrail_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 372,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:EVIDENCES:repo=2, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:8a72e28798f08a37:ilc_core_graph_sidecar_public_path_preflight_py",
+          "in EVIDENCES repo:file:52a4b6bcf8c73a38:ilc_core_network_d2d_transport_principal_pre_public_path_py",
+          "in REFERENCES_AUTHORITY repo:file:69be03aac086167a:tests_test_phase_1268_sidecar_loopback_projection_endpoint_boundary_py"
+        ]
+      },
+      "node_id": "policy:transport_principal_required_before_non_loopback_projection",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 373,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1540p",
+          "in EVIDENCES repo:file:74515fad25b26bff:ilc_core_epoch_treasury_validator_reward_production_path_py",
+          "in CLASSIFIED_BY repo:file:a342b38a58686ef1:tests_test_phase_1540p_obl022_treasury_validator_reward_py"
+        ]
+      },
+      "node_id": "policy:treasury_distribution_not_activated_phase_1540p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 374,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:c6fd1b857a4e9b08:ilc_core_analysis_utility_flow_rewards_py",
+          "in CLASSIFIED_BY repo:file:96fae42115c0d4ff:ilc_core_economics_reward_py",
+          "in CLASSIFIED_BY repo:file:83d8e7bf5a13465c:tests_test_utility_flow_rewards_phase_208_py"
+        ]
+      },
+      "node_id": "policy:utility_flow_reward_runtime_invariant",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 375,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1508p",
+          "in EVIDENCES repo:file:633691fbe11109f5:ilc_core_sim_sim_fetch_01_werner_topology_capture_run_py",
+          "in CLASSIFIED_BY repo:file:bf872bc55b4e2535:ilc_core_sim_sim_fetch_01_werner_capture_sim_fetch_rerun_py",
+          "in REFERENCES_AUTHORITY repo:file:bf872bc55b4e2535:ilc_core_sim_sim_fetch_01_werner_capture_sim_fetch_rerun_py",
+          "in REFERENCES_AUTHORITY repo:file:815e6a4d04739f18:tests_test_phase_1508p_werner_sim_fetch_rerun_py"
+        ]
+      },
+      "node_id": "policy:werner_condition_1_topology_pressure_covered_phase_1508p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 376,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:c9b6d40510a8c982:tests_test_window_1257_1264_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1257_1264_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 377,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:c9b6d40510a8c982:tests_test_window_1257_1264_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1257_1264_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 378,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:01ddb183236b9398:tests_test_window_1265_1272_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1265_1272_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 379,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 38,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:01ddb183236b9398:tests_test_window_1265_1272_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1265_1272_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 380,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:c4fc430ad3aae65e:tests_test_window_1273_1280_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1273_1280_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 381,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:c4fc430ad3aae65e:tests_test_window_1273_1280_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1273_1280_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 382,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:a43ab880589a0b65:tests_test_window_1289_1302_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1289_1302_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 383,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:a43ab880589a0b65:tests_test_window_1289_1302_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1289_1302_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 384,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:30997f5ec8985d58:tests_test_window_1303_1316_deep_code_audit_hardening_py"
+        ]
+      },
+      "node_id": "policy:window1303_1316_deep_code_audit_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 385,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:88d6171a0d0b6b65:tests_test_window_1303_1316_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1303_1316_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 386,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:88d6171a0d0b6b65:tests_test_window_1303_1316_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1303_1316_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 387,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:9480c59d53bb5c30:tests_test_window_1317_1329_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1317_1329_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 388,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:9480c59d53bb5c30:tests_test_window_1317_1329_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1317_1329_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 389,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 39,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:60ac778590b120a5:tests_test_window_1330_1342_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1330_1342_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 390,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:60ac778590b120a5:tests_test_window_1330_1342_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1330_1342_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 391,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:0cd87cdfc13159be:tests_test_window_1343_1368_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1343_1368_prompt_draft_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 392,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:0cd87cdfc13159be:tests_test_window_1343_1368_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:window1343_1368_sequence_lock_and_prompt_package",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 393,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:b5d0c7d437a35e23:tests_test_window_545_554_audit_regressions_py"
+        ]
+      },
+      "node_id": "policy:window545_554_runtime_audit_regression_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 394,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:66654a8e9e575688:tests_test_window_555_560_transport_audit_regressions_py"
+        ]
+      },
+      "node_id": "policy:window555_560_gossip_transport_validation_guardrails",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 395,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:c5026ed73e22a889:tests_test_window_555_562_peer_registry_audit_regressions_py"
+        ]
+      },
+      "node_id": "policy:window555_562_gossip_peer_registry_dedup_guardrails",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 396,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:b3efc6f9c98336b1:tests_test_window_767_774_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:window767_774_closure_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 397,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:32133868845dc673:tests_test_window_767_774_integration_gate_772_py"
+        ]
+      },
+      "node_id": "policy:window767_774_integration_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 398,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:e8abae1950c11b29:tests_test_window_775_782_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:window775_782_closure_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 399,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 40,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support trace has no direct source text or LMDB field naming a canonical authority target; adding REFERENCES_AUTHORITY or CLASSIFIED_BY here would be inferred rather than evidenced.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:1f79bb94656a53a5:tests_test_window_823_829_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:window823_829_mysticeti_activation_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 400,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
     }
   ],
   "edges_written": 0,
@@ -8648,8 +11536,8 @@
   "live_queue_count": 1219,
   "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
   "missing_canonical_targets": [],
-  "next_queue_index": 301,
-  "nodes_completed": 300,
+  "next_queue_index": 401,
+  "nodes_completed": 400,
   "notes": [
     "Batches 001-010 are conservative support dispositions. No root bridge was written without direct source evidence of a canonical target.",
     "Phase-file LMDB registration for this report and walkthrough is performed after the files are finalized for the intermediate commit to avoid stale source_hash churn in the committed artifacts."
@@ -8669,7 +11557,7 @@
     "window": 10
   },
   "reachable_non_repo_count": 2104,
-  "scope_status": "in_progress_batches_001_030",
+  "scope_status": "in_progress_batches_001_040",
   "zero_degree_count": 946,
   "zero_degree_prefix_breakdown": {
     "atlas": 1,
