@@ -1,0 +1,2893 @@
+{
+  "all_non_repo_count": 3323,
+  "batch_records": [
+    {
+      "batch": 1,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 10,
+      "queue_index_start": 1,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 2,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 20,
+      "queue_index_start": 11,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 3,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 30,
+      "queue_index_start": 21,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 4,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 40,
+      "queue_index_start": 31,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 5,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 50,
+      "queue_index_start": 41,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 6,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 60,
+      "queue_index_start": 51,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 7,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 70,
+      "queue_index_start": 61,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 8,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 80,
+      "queue_index_start": 71,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 9,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 90,
+      "queue_index_start": 81,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 10,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 100,
+      "queue_index_start": 91,
+      "status": "complete_no_edges_to_apply"
+    }
+  ],
+  "batches_completed": 10,
+  "disposition_summary": {
+    "add_edge": 0,
+    "human_escalation": 0,
+    "missing_canonical_target": 0,
+    "same_authority_or_lifecycle": 0,
+    "support_leaf_no_wiring_required": 100
+  },
+  "dispositions": [
+    {
+      "batch": 1,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=atlas_artifact_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub; stub_reason=low-authority missing endpoint materialized as support stub. Incident-edge read: 1 total; in:EVIDENCES:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file_ref:docs_phases_phase_1136a_genesis_morphogenic_hypergraph_atlas_walkthrough_md"
+        ]
+      },
+      "node_id": "atlas:genesis_core_star_map_curated_seed",
+      "node_kind": "atlas_artifact_node",
+      "prefix": "atlas",
+      "queue_index": 1,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:63cfe1a83e206ecd:tests_test_adr_0034_d2d_sealed_sender_py"
+        ]
+      },
+      "node_id": "claim:adr_0034_cdl_mutation_authorization",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 2,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:63cfe1a83e206ecd:tests_test_adr_0034_d2d_sealed_sender_py"
+        ]
+      },
+      "node_id": "claim:adr_0034_runtime_implementation_authorization",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 3,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:c9146c372543f44d:tests_test_analysis_hygiene_phase_223_py"
+        ]
+      },
+      "node_id": "claim:analysis_reuse_diversity_accepts_non_finite_numeric_fields",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 4,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:bb6caba55a8ec65d:tests_test_cdl_028_fee_burn_candidate_lock_274_fix1_py"
+        ]
+      },
+      "node_id": "claim:cdl_028_ratified_or_runtime_mutated_in_phase_274_fix1",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 5,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:cb4d74f006c08a93:tests_test_cdl_v_batch_a_open_and_evidence_prelock_324_py"
+        ]
+      },
+      "node_id": "claim:cdl_v1_v3_ratified_in_phase_324",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 6,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:25cb8645a5d8174f:tests_test_cdl_v_batch_b_open_and_evidence_prelock_325_py"
+        ]
+      },
+      "node_id": "claim:cdl_v4_v7_ratified_in_phase_325",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 7,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:ca0702b92d91b4f0:tests_test_broad_exception_boundary_policy_phase_1011_py"
+        ]
+      },
+      "node_id": "claim:narrowed_modules_use_unbounded_except_exception",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 8,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:cb60e8a1135c3326:tests_test_adr_stale_reconciliation_strike_force_1156_py"
+        ]
+      },
+      "node_id": "claim:phase_1156_accepts_any_adr",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 9,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 1,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:133d2f81f245c875:tests_test_bootstrap_operations_runbook_235_py"
+        ]
+      },
+      "node_id": "claim:phase_235_ratifies_governance_or_cdl_state",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 10,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:98987f78bdb591d7:tests_test_d2e_03_readiness_257_py"
+        ]
+      },
+      "node_id": "claim:phase_257_touched_ilc_core_runtime",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 11,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:dfae660dd4e4d218:tests_test_cdl_ratification_verification_gate_269_py"
+        ]
+      },
+      "node_id": "claim:phase_269_modified_runtime_behavior",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 12,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:ecc67cb2e27ba779:tests_test_crypto_surface_inventory_lock_280_py"
+        ]
+      },
+      "node_id": "claim:phase_280_runtime_migration_or_decision_log_mutation",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 13,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:ddd42fe5f1229456:tests_test_crypto_migration_initial_tranche_283_py"
+        ]
+      },
+      "node_id": "claim:phase_283_touched_decision_log",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 14,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:dbced96e3e73fcab:tests_test_d2e_05_query_subsystem_300_py"
+        ]
+      },
+      "node_id": "claim:phase_300_mutated_decision_log_consensus_or_security_runtime",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 15,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:41d14684a1a52f25:tests_test_d2e_06_verify_subsystem_302_py"
+        ]
+      },
+      "node_id": "claim:phase_302_mutated_decision_log_consensus_or_security_runtime",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 16,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:330c9f20bcbf955f:tests_test_cdl_088_opening_py"
+        ]
+      },
+      "node_id": "claim:public_claimability_activation_in_phase_1374",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 17,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "claim_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=claim_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:2c958289662a2e0b:tests_test_adr_0008_reconciliation_cleanup_py"
+        ]
+      },
+      "node_id": "claim:standing_genesis_governance_bonus",
+      "node_kind": null,
+      "prefix": "claim",
+      "queue_index": 18,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 2 total; in:COVERS_COMMAND_CONTRACT:repo=1, in:IMPLEMENTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:a3c8145e9e6a54f9:ilc_core_cli_canon_bundle_key_registry_py",
+          "in COVERS_COMMAND_CONTRACT repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.canon_bundle_key_registry",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 19,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 2,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.canon_bundle_sign",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 20,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:2c7f776c23231b53:tests_test_canon_cli_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.canon_cli",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 21,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.canon_export",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 22,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:dbced96e3e73fcab:tests_test_d2e_05_query_subsystem_300_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.main query",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 23,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:41d14684a1a52f25:tests_test_d2e_06_verify_subsystem_302_py"
+        ]
+      },
+      "node_id": "command:python -m ilc_core.cli.main verify",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 24,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:e8dfe23e6a03ffe3:tests_test_data_center_controller_py"
+        ]
+      },
+      "node_id": "command:python simulations/data_center_ballast.py",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 25,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:7c9bba38dc621000:tests_test_cdl_011_015_ratification_evidence_gate_phase_215_py"
+        ]
+      },
+      "node_id": "command:tools/check_cdl_011_015_ratification_evidence_phase_215.sh",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 26,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:dfae660dd4e4d218:tests_test_cdl_ratification_verification_gate_269_py"
+        ]
+      },
+      "node_id": "command:tools/check_cdl_ratification_verification_gate_phase_269.sh",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 27,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "command_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=command_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:COVERS_COMMAND_CONTRACT:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_COMMAND_CONTRACT:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_COMMAND_CONTRACT repo:file:c7dd485f86a3a4cd:tests_test_domain_exception_migration_closure_gate_py"
+        ]
+      },
+      "node_id": "command:tools/check_domain_exception_migration_closure.sh",
+      "node_kind": null,
+      "prefix": "command",
+      "queue_index": 28,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 3 total; in:REQUIRES_PROFILE:repo=3. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=3"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:dfae660dd4e4d218:tests_test_cdl_ratification_verification_gate_269_py",
+          "in REQUIRES_PROFILE repo:file:7c9bba38dc621000:tests_test_cdl_011_015_ratification_evidence_gate_phase_215_py",
+          "in REQUIRES_PROFILE repo:file:c7dd485f86a3a4cd:tests_test_domain_exception_migration_closure_gate_py"
+        ]
+      },
+      "node_id": "executor_profile:bash_plus_pytest",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 29,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 3,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 615 total; in:REQUIRES_PROFILE:repo=615. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=615"
+        ],
+        "incident_edge_count": 615,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:467ff321c6ce773e:tests_test_phase_1214_cdl_086_deferral_py",
+          "in REQUIRES_PROFILE repo:file:d82d7cb3d7e5f3e1:tests_test_phase_575_window_575_584_sequence_lock_py",
+          "in REQUIRES_PROFILE repo:file:acf9762dc89c4108:tests_test_operator_config_docs_phase_1008_py",
+          "in REQUIRES_PROFILE repo:file:7a71188875fb4ec1:tests_test_phase_566_transport_operationalization_boundary_lock_py",
+          "in REQUIRES_PROFILE repo:file:70e537acbd7a850a:tests_test_phase_596_window_596_605_sequence_lock_py"
+        ]
+      },
+      "node_id": "executor_profile:default_local_pytest",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 30,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 19 total; in:REQUIRES_PROFILE:repo=19. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=19"
+        ],
+        "incident_edge_count": 19,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:bc7c067dedf272dd:tests_test_cw2_row_5_runtime_closure_evaluation_py",
+          "in REQUIRES_PROFILE repo:file:f544f60149b59364:tests_test_cdl_v2_sybil_resistance_runtime_389_py",
+          "in REQUIRES_PROFILE repo:file:cb4d74f006c08a93:tests_test_cdl_v_batch_a_open_and_evidence_prelock_324_py",
+          "in REQUIRES_PROFILE repo:file:00d77dfbea504614:tests_test_cdl_v7_popperian_gate_runtime_398_py",
+          "in REQUIRES_PROFILE repo:file:75d3b5da673077dc:tests_test_cdl_v3_diversity_floor_runtime_397_py"
+        ]
+      },
+      "node_id": "executor_profile:git_history_available",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 31,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 94 total; in:REQUIRES_PROFILE:repo=94. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=94"
+        ],
+        "incident_edge_count": 94,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:97c983049b4e0e18:tests_test_phase_676_window_671_676_closure_and_handoff_py",
+          "in REQUIRES_PROFILE repo:file:00bf2e1f9c1a077f:tests_test_phase_456_fix_13_post_nonlinear_control_blocker_disposition_review_py",
+          "in REQUIRES_PROFILE repo:file:62dbe3395445921b:tests_test_phase_1318_context_capsule_v5_54_frontier_refresh_py",
+          "in REQUIRES_PROFILE repo:file:eb42eb03e02b5806:tests_test_phase_1290_context_capsule_v5_52_frontier_refresh_py",
+          "in REQUIRES_PROFILE repo:file:8740c3c83545e4d7:tests_test_phase_1316_window_1303_1316_closure_implementation_audit_py"
+        ]
+      },
+      "node_id": "executor_profile:historical_phase_snapshot",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 32,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 20 total; in:REQUIRES_PROFILE:repo=20. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=20"
+        ],
+        "incident_edge_count": 20,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:c56c5f470298d0fe:tests_test_phase_1433_rehearsal_verdict_py",
+          "in REQUIRES_PROFILE repo:file:0b5e27daa14ffe0b:tests_test_phase_1545p_fix32_homoiconic_test_registry_contract_py",
+          "in REQUIRES_PROFILE repo:file:9d1b96130363dc69:tests_test_ilc_node_v0_py",
+          "in REQUIRES_PROFILE repo:file:278fc1c5fa2ac1ec:tests_test_phase_669_transport_hardening_and_maturity_decision_py",
+          "in REQUIRES_PROFILE repo:file:44a7763363c649b0:tests_test_phase_1423_rehearsal_criteria_py"
+        ]
+      },
+      "node_id": "executor_profile:live_network_vps_gated",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 33,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 36 total; in:REQUIRES_PROFILE:repo=36. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=36"
+        ],
+        "incident_edge_count": 36,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:d3af054c152bbecb:tests_test_phase_1304_context_capsule_v5_53_frontier_refresh_py",
+          "in REQUIRES_PROFILE repo:file:c0677026ea1d2d48:tests_test_phase_1562_invitation_provenance_chain_py",
+          "in REQUIRES_PROFILE repo:file:9480c59d53bb5c30:tests_test_window_1317_1329_prompt_drafts_py",
+          "in REQUIRES_PROFILE repo:file:84c4d5d0408a5be0:tests_test_phase_1517p_adr_0009_layer2_layer3_integration_py",
+          "in REQUIRES_PROFILE repo:file:ab5552a6f7011b82:tests_test_phase_1529p_adr0035_type_registry_scaffold_py"
+        ]
+      },
+      "node_id": "executor_profile:private_local_only",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 34,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 1 total; in:REQUIRES_PROFILE:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:4322d69cd904e96f:tests_test_dag_audit_cli_py"
+        ]
+      },
+      "node_id": "executor_profile:rust_cargo_plus_lmdb",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 35,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 12 total; in:REQUIRES_PROFILE:repo=12. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=12"
+        ],
+        "incident_edge_count": 12,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:c5c8d3bf2179ffab:tests_test_phase_1123_window_1118_1123_closure_gate_py",
+          "in REQUIRES_PROFILE repo:file:03a777ad0ec5391a:tests_test_phase_1173_adr_0036_0037_acceptance_py",
+          "in REQUIRES_PROFILE repo:file:8062e58fcb3ab1a8:tests_test_cw4_row_7_exitability_closure_evaluation_py",
+          "in REQUIRES_PROFILE repo:file:10c13f4596ac5f29:tests_test_phase_1514p_window_1505p_closure_gate_py",
+          "in REQUIRES_PROFILE repo:file:5c670d90bb80b284:tests_test_phase_738_window_733_738_closure_gate_py"
+        ]
+      },
+      "node_id": "executor_profile:sensitive_phase_selftest",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 36,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "executor_profile_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=executor_profile_terminal; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 7 total; in:REQUIRES_PROFILE:repo=7. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Prefix/category identifies a terminal support record; existing semantic coverage is repo-mediated and intentionally excluded from the root-reachability projection.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REQUIRES_PROFILE:repo=7"
+        ],
+        "incident_edge_count": 7,
+        "incident_examples": [
+          "in REQUIRES_PROFILE repo:file:f958bcf5e1a89114:tests_test_canon_export_cli_py",
+          "in REQUIRES_PROFILE repo:file:e8dfe23e6a03ffe3:tests_test_data_center_controller_py",
+          "in REQUIRES_PROFILE repo:file:020febfb26e35776:tests_test_canon_bundle_key_registry_cli_py",
+          "in REQUIRES_PROFILE repo:file:41d14684a1a52f25:tests_test_d2e_06_verify_subsystem_302_py",
+          "in REQUIRES_PROFILE repo:file:2a27a8857969069d:tests_test_canon_bundle_sign_cli_py"
+        ]
+      },
+      "node_id": "executor_profile:subprocess_cli",
+      "node_kind": null,
+      "prefix": "executor_profile",
+      "queue_index": 37,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path ../ILC_release_track/tools/runtime_baseline.py sha256_prefix=dcffef7fb20e10d1; evidence: ../ILC_release_track/tools/runtime_baseline.py:1: #!/usr/bin/env python3; ../ILC_release_track/tools/runtime_baseline.py:2: \"\"\"Measure small runtime baselines for local ILC execution paths.\"\"\"; ../ILC_release_track/tools/runtime_baseline.py:4: from __future__ import annotations | Full LMDB node record read: node_kind=external_source_file_node; graph_projection=support_candidate_graph; candidate_status=fix64_materialized_external_file_counterpart. Incident-edge read: 1 total; in:SAME_SOURCE:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:SAME_SOURCE:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in SAME_SOURCE repo:file_ref:ilc_release_track_tools_runtime_baseline_py"
+        ]
+      },
+      "node_id": "external:file:dcffef7fb20e10d1:ilc_release_track_tools_runtime_baseline_py",
+      "node_kind": "external_source_file_node",
+      "prefix": "external",
+      "queue_index": 38,
+      "source_path": "../ILC_release_track/tools/runtime_baseline.py",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:10365: **Next planned phase:** Phase 1001 (server app-factory import-side-effect reduction); docs/phases/STATUS.md:10369: ## Phase 1001; docs/phases/STATUS.md:10372: **Output**: Removed module-level `app` instantiation from `ilc_core/server.py`; added dedicated ASGI surface `ilc_core/asgi.py`; switched `run_node.py` to uvicorn factory execution path; updated server-facing tests to im | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase1001_server_app_factory_import_side_effect_boundary"
+        ]
+      },
+      "node_id": "phase:1001",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 39,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 4,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path tests/test_phase_1144_sim_spectral_03_harness.py sha256_prefix=515e6e0c9f6c9b73; evidence: tests/test_phase_1144_sim_spectral_03_harness.py:1: \"\"\"Phase 1144 \u2014 SIM-SPECTRAL-03 Genesis-seed harness tests.\"\"\"; tests/test_phase_1144_sim_spectral_03_harness.py:3: from __future__ import annotations; tests/test_phase_1144_sim_spectral_03_harness.py:5: import json | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_03_harness"
+        ]
+      },
+      "node_id": "phase:1144_sim_spectral_03_harness",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 40,
+      "source_path": "tests/test_phase_1144_sim_spectral_03_harness.py",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/sims/sim_spectral_03/run01a_topology_search_notes.md sha256_prefix=62d7eac0533565a9; evidence: docs/sims/sim_spectral_03/run01a_topology_search_notes.md:1: # SIM-SPECTRAL-03 Run 01a Topology Calibration Search Notes; docs/sims/sim_spectral_03/run01a_topology_search_notes.md:3: Phase: 1145a; docs/sims/sim_spectral_03/run01a_topology_search_notes.md:4: Window: 1139-1147 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_03_topology_search"
+        ]
+      },
+      "node_id": "phase:1145a_sim_spectral_03_topology_search",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 41,
+      "source_path": "docs/sims/sim_spectral_03/run01a_topology_search_notes.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/sims/sim_spectral_05/runtime_binding_slice_program_1179_v0.1.md sha256_prefix=ab222e4d873a0b95; evidence: docs/sims/sim_spectral_05/runtime_binding_slice_program_1179_v0.1.md:1: # SIM-SPECTRAL-05 Runtime-Binding Observer Slice Program 1179 v0.1; docs/sims/sim_spectral_05/runtime_binding_slice_program_1179_v0.1.md:3: **Phase:** 1179; docs/sims/sim_spectral_05/runtime_binding_slice_program_1179_v0.1.md:4: **Date:** 2026-05-04 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_05_runtime_binding_slice"
+        ]
+      },
+      "node_id": "phase:1179_sim_spectral_05_runtime_binding_slice",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 42,
+      "source_path": "docs/sims/sim_spectral_05/runtime_binding_slice_program_1179_v0.1.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md sha256_prefix=59b3ebb219e573bf; evidence: docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md:1: # SIM-SPECTRAL-05 Economic-Flow Observer Slice Disposition 1180 v0.1; docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md:3: **Phase:** 1180; docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md:4: **Date:** 2026-05-04 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_05_economic_flow_slice"
+        ]
+      },
+      "node_id": "phase:1180_sim_spectral_05_economic_flow_slice",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 43,
+      "source_path": "docs/sims/sim_spectral_05/economic_flow_slice_disposition_1180_v0.1.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/sims/sim_spectral_05/gossip_slice_program_1187_v0.1.md sha256_prefix=a823e530ea8f603a; evidence: docs/sims/sim_spectral_05/gossip_slice_program_1187_v0.1.md:1: # SIM-SPECTRAL-05 Gossip Observer Slice Program 1187 v0.1; docs/sims/sim_spectral_05/gossip_slice_program_1187_v0.1.md:3: **Phase:** 1187; docs/sims/sim_spectral_05/gossip_slice_program_1187_v0.1.md:4: **Date:** 2026-05-04 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_05_gossip_slice"
+        ]
+      },
+      "node_id": "phase:1187_sim_spectral_05_gossip_slice",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 44,
+      "source_path": "docs/sims/sim_spectral_05/gossip_slice_program_1187_v0.1.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/phase_1192_roadmap_v1_0_rc2_status_walkthrough.md sha256_prefix=f869aea260de30f5; evidence: docs/phases/phase_1192_roadmap_v1_0_rc2_status_walkthrough.md:33: | `docs/phases/phase_1192_roadmap_v1_0_rc2_status_walkthrough.md` | This file, updated to complete | | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 2 total; in:CARRIES_FORWARD:non_repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD sim:spectral_05_three_slice_observer_framework_complete",
+          "in CARRIES_FORWARD sim:spectral_05_three_slice_observer_framework"
+        ]
+      },
+      "node_id": "phase:1192_roadmap_v1_0_rc2_status",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 45,
+      "source_path": "docs/phases/phase_1192_roadmap_v1_0_rc2_status_walkthrough.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:9603: **Output**: Added deterministic `--dry-run` planning contract to `tools/check_cluster_a_replay_proof_ci_gate.sh`, added strict `--baseline` missing-value validation (`exit 2`), expanded CI-gate script contract tests, and; docs/phases/STATUS.md:17540: **Output:** Wired `PersistentFetchRateLimiter` into `HttpFetchTransportRuntime` behind opt-in `FetchTransportConfig.persistent_limiter_path: Path | None`, advanced the HTTP transport runtime token to `http_fetch_transpor; docs/phases/STATUS.md:17542: ## Phase 1213 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase_1213_artifact_manifest_shape"
+        ]
+      },
+      "node_id": "phase:1213",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 46,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:18294: **Output:** Executed after explicit human GO token `GO Phase 1316`. Published `docs/specs/ilc_window_1303_1316_handoff_1316_v0.1.md`, added focused closure tests `tests/test_phase_1316_window_1303_1316_closure_implementa; docs/phases/STATUS.md:18296: ## Phase 1317; docs/phases/STATUS.md:18298: **Description:** Window 1317-1329 sequence lock for release dry run and Confidential Coordination tail | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:release_dry_run_private_only_sequence_locked_phase_1317"
+        ]
+      },
+      "node_id": "phase:1317",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 47,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:18455: Graph delta: `graph_delta=support_only:docs/specs/ilc_final_deterministic_code_security_audit_1332_v0.1.md -> planning/frontier`; `graph_delta=support_only:docs/phases/phase_1332_final_deterministic_code_security_audit_w; docs/phases/STATUS.md:18457: ## Phase 1332 Fix4; docs/phases/STATUS.md:18460: **Commit:** pending phase-close commit `phase 1332 fix4 harden pre phase 1333 blockers` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase_1332_fix4_pre_1333_hardening"
+        ]
+      },
+      "node_id": "phase:1332_fix4",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 48,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 7 total; in:DERIVED_FROM:repo=2, in:EVIDENCES:non_repo=2, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:DERIVED_FROM:repo=2",
+          "in:EVIDENCES:non_repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=2"
+        ],
+        "incident_edge_count": 7,
+        "incident_examples": [
+          "in EVIDENCES phase:135_136_cluster_a_ingest_logic",
+          "in DERIVED_FROM repo:file_ref:ilc_core_protocol_ilc_cluster_a_clause_binding_py",
+          "out CARRIES_FORWARD phase:135_136_cluster_a_replay_determinism",
+          "in DERIVED_FROM repo:file:016e836288ba742f:ilc_core_protocol_ilc_cluster_a_acceptance_evidence_py",
+          "out CARRIES_FORWARD phase:135_136_cluster_a_ingest_logic"
+        ]
+      },
+      "node_id": "phase:134_constitution_cluster_a_foundation",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 49,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 5,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7119: tests passed with 14 tests. Phase 1352 issuance-gate regression passed with 5; docs/phases/STATUS.md:7184: runtime tests and Phase 1352 issuance-gate regression. The Phase 1503p prompt; docs/phases/STATUS.md:7245: 1352 issuance-gate regression passed with 5 tests. The Phase 1344 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:issuance_economics_integration_gate_phase_1352"
+        ]
+      },
+      "node_id": "phase:1352",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 50,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:18885: **Output:** Executed after explicit human GO token `GO Phase 1356`. Hardened prompt `docs/antigravity_tasks/antigravity_prompt__phase_1356_g8_cdl_013_governance_weight_live_integration.md` after \u00a70 discovery found the pr; docs/phases/STATUS.md:18889: Discovery result: `docs/specs/ilc_constitutional_decision_log_v0.1.md:41` confirms CDL-013 is ratified with candidate `decay-non-genesis-only`. `docs/specs/ilc_cdl_011_015_ratification_evidence_bundle_v0.1.md:90` confirm; docs/phases/STATUS.md:18895: Verification: Phase 1356 prompt validator passed; focused Phase 1356 tests passed; Window 1343-1368 prompt draft tests passed; sensitive-runtime guardrail tests passed; sensitive-runtime static checker passed; scoped `gi | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:h11_reputation_governance_weight_float_kill_phase_1357"
+        ]
+      },
+      "node_id": "phase:1357",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 51,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 5 total; in:CARRIES_FORWARD:non_repo=1, in:DERIVED_FROM:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1, out:EVIDENCES:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1",
+          "in:DERIVED_FROM:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1",
+          "out:EVIDENCES:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out EVIDENCES phase:134_constitution_cluster_a_foundation",
+          "out CARRIES_FORWARD phase:138_cluster_a_governance_application_signature_verification",
+          "in CARRIES_FORWARD phase:134_constitution_cluster_a_foundation",
+          "in DERIVED_FROM repo:file:ff7b6cffb8552047:ilc_core_protocol_ilc_cluster_a_conformance_py",
+          "in REFERENCES_AUTHORITY repo:file:03fcda96c72fb6ea:tests_test_ilc_cluster_a_ingest_py"
+        ]
+      },
+      "node_id": "phase:135_136_cluster_a_ingest_logic",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 52,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 4 total; in:CARRIES_FORWARD:non_repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1, out:EVIDENCES:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1",
+          "out:EVIDENCES:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CARRIES_FORWARD phase:134_constitution_cluster_a_foundation",
+          "out CARRIES_FORWARD phase:138_cluster_a_governance_application_signature_verification",
+          "out EVIDENCES phase:134_constitution_cluster_a_foundation",
+          "in REFERENCES_AUTHORITY repo:file:6c8fd0ffff2626d7:tests_test_ilc_cluster_a_replay_determinism_py"
+        ]
+      },
+      "node_id": "phase:135_136_cluster_a_replay_determinism",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 53,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:18930: Discovery result: `tools/testbed/ilc_app_pb2.py` and `tools/testbed/ilc_app_pb2_grpc.py` exist, but production `ilc_core` must not import generated testbed stubs. Phase 1358 therefore dynamically builds the minimal proto; docs/phases/STATUS.md:18944: **Output:** Post-audit fix for Phase 1358 M1. Added a comment to `ILCConsensusGrpcReadAdapter.get_epoch_chain()` documenting the deliberate divergence from Rust `app_interface.rs` epoch-0 sentinel semantics: Rust treats ; docs/phases/STATUS.md:18961: Verification: Phase 1359 prompt validator passed; focused Phase 1359 tests passed; Window 1343-1368 prompt draft tests passed; sensitive-runtime guardrail tests passed; sensitive-runtime static checker passed; scoped `gi | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:multi_operator_mysticeti_testnet_phase_1360"
+        ]
+      },
+      "node_id": "phase:1360",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 54,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:18619: **Output:** Executed after explicit human GO token `GO Phase 1343`. Published `docs/specs/ilc_phase_1343_1368_sequence_lock_v0.1.md`, `docs/specs/ilc_antigravity_context_capsule_v5.56.md`, prompt `docs/antigravity_tasks/; docs/phases/STATUS.md:18667: **Output:** Published `docs/specs/ilc_phase_1345_fix1_cmax_provenance_activation_planning_v0.1.md`, focused tests `tests/test_phase_1345_fix1_cmax_provenance_activation_planning.py`, walkthrough `docs/phases/phase_1345_f; docs/phases/STATUS.md:18671: Activation route: Phase 1345 remains non-activating. Phase 1368 is now the explicit activation-or-defer point. It may implement the private soft-RC production minting runtime gate only if Phase 1366 records `soft_rc_elig | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase_1366_treasury_epoch_budget_binding_verified"
+        ]
+      },
+      "node_id": "phase:1366",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 55,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:19354: `phase_1369_fix1_authorized_numeric_hardening`,; docs/phases/STATUS.md:19363: Window state: Window 1369-1390 is OPEN through Phase 1369 only. Phase 1369 Fix1; docs/phases/STATUS.md:19372: 1369 Fix1. The `get_epoch_chain()` receive-size/channel-limit finding is | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase_1369_fix1_authorized_numeric_hardening"
+        ]
+      },
+      "node_id": "phase:1369_fix1",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 56,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:3438: 1555p, superseding the Phase 1387a matrix for current planning. The refresh; docs/phases/STATUS.md:3466: graph_delta=load_bearing_artifact_changed:docs/specs/ilc_accepted_adr_cdl_public_rc_coverage_matrix_1387a_v0.1.md -> planning/adr-cdl-coverage; docs/phases/STATUS.md:19034: Planning result: added `docs/research/ilc_validator_connectivity_production_model_v0.1.md` and routed durable production validator connectivity to Window 1369-1390 phases 1386b and 1386c. The recorded model is direct per | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:sim_graphopt_01_forward_optimization_phase_1387i"
+        ]
+      },
+      "node_id": "phase:1387",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 57,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 3 total; in:CARRIES_FORWARD:non_repo=2, in:REFERENCES_AUTHORITY:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CARRIES_FORWARD phase:135_136_cluster_a_ingest_logic",
+          "in CARRIES_FORWARD phase:135_136_cluster_a_replay_determinism",
+          "in REFERENCES_AUTHORITY repo:file:888bf5a5a1595c7b:tests_test_ilc_cluster_a_governance_apply_py"
+        ]
+      },
+      "node_id": "phase:138_cluster_a_governance_application_signature_verification",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 58,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:19034: Planning result: added `docs/research/ilc_validator_connectivity_production_model_v0.1.md` and routed durable production validator connectivity to Window 1369-1390 phases 1386b and 1386c. The recorded model is direct per; docs/phases/STATUS.md:19198: remain routed to Window 1369-1390 and do not authorize public or production; docs/phases/STATUS.md:19256: durable validator connectivity caveats remain routed to Window 1369-1390 and | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:window_1369_1390_closed_phase_1390"
+        ]
+      },
+      "node_id": "phase:1390",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 59,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 6,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:22168: ## Phase 1410-Fix1 / Pre-VRF Hardening; docs/phases/STATUS.md:22170: **Phase:** 1410-Fix1; docs/phases/STATUS.md:22175: NON-SENSITIVE hardening phase executed after `GO Phase 1410-Fix1`. The phase | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:pre_vrf_hardening_phase_1410_fix1"
+        ]
+      },
+      "node_id": "phase:1410_fix1",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 60,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:22835: external-ID-first dedup enforcement and the Phase 1416 reviewer-payment; docs/phases/STATUS.md:22904: condition remains incomplete pending Phase 1416 dedup/payment-stub wiring and; docs/phases/STATUS.md:22923: Phase 1416 dedup enforcement and reviewer-payment settlement stub is next and | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:review_lane_payment_not_activated_phase_1416"
+        ]
+      },
+      "node_id": "phase:1416",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 61,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:22818: and records the T0.5 -> T1+ review-lane admission contract for Phases 1415-1417.; docs/phases/STATUS.md:22844: register. `REVIEW_LANE_WIRING_COMPLETE` remains NOT_MET pending Phases 1415-1417; docs/phases/STATUS.md:22905: Phase 1417 integration tests. | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:review_lane_wiring_complete_phase_1417"
+        ]
+      },
+      "node_id": "phase:1417",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 62,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:23082: selected-panel cluster-diversity evidence remains Phase 1419 work. Phase 1419; docs/phases/STATUS.md:23114: Phase 1419 anti-capture diversity production verification pass is next and; docs/phases/STATUS.md:23122: ## Phase 1419 / Anti-Capture Diversity Production Verification Pass | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:anti_capture_diversity_verified_phase_1419"
+        ]
+      },
+      "node_id": "phase:1419",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 63,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7783: graph_delta=support_tests_changed:tests/test_license_presence_phase_997.py,tests/test_phase_1333_source_allowlist_export_execution_gate.py,tests/test_phase_1443_agpl_license_header_audit_allowlist.py,tests/test_phase_144; docs/phases/STATUS.md:8006: ## Phase 1444 / CLA Text Finalization; docs/phases/STATUS.md:8013: **Human authorization:** `GO Phase 1444` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 2 total; in:CARRIES_FORWARD:non_repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:cla_governance_policy_committed_phase_1444",
+          "in CARRIES_FORWARD policy:gap_7_cla_milestone_complete_phase_1444"
+        ]
+      },
+      "node_id": "phase:1444",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 64,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7783: graph_delta=support_tests_changed:tests/test_license_presence_phase_997.py,tests/test_phase_1333_source_allowlist_export_execution_gate.py,tests/test_phase_1443_agpl_license_header_audit_allowlist.py,tests/test_phase_144; docs/phases/STATUS.md:7959: ## Phase 1445 / Gap 7 Partial Closure + External-Action Carry-Forward Record; docs/phases/STATUS.md:7966: **Human authorization:** `GO Phase 1445 and any subsequent non-sensitive phases` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 2 total; in:CARRIES_FORWARD:non_repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:gap_7_not_fully_closed_phase_1445",
+          "in CARRIES_FORWARD policy:gap_7_partially_closed_phase_1445"
+        ]
+      },
+      "node_id": "phase:1445",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 65,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:149_cluster_a_replay_proof_ci_gate",
+          "in REFERENCES_AUTHORITY repo:file:825571aa141093af:tests_test_ilc_cluster_a_replay_proof_cli_batch_py"
+        ]
+      },
+      "node_id": "phase:146_fix1_cluster_a_batch_report_schema",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 66,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:24852: rg -n \"1473p|1474p|1475p|1476p|1477p|1478p|1479p|1480p\" docs/specs/ilc_phase_1473p_1480p_sequence_lock_v0.1.md; docs/phases/STATUS.md:25097: ## Phase 1477p \u2014 Harness Kernel Decimal Integration (2026-05-31); docs/phases/STATUS.md:25103: Phase 1477p wired the private `IdleCapacityScheduler` to optionally consume a | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:harness_kernel_integration_private_not_activated_phase_1477p"
+        ]
+      },
+      "node_id": "phase:1477p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 67,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:26672: ## Phase 1483p \u2014 Rust P2P Relay Routing Table and Python Bridge Stub (2026-05-31); docs/phases/STATUS.md:26682: | 1483p | Rust P2P relay routing table + Python bridge stub | COMPLETE | NON-SENSITIVE | 1481p\u20131488p |; docs/phases/STATUS.md:26685: - `rust_p2p_relay_routing_table_implemented_phase_1483p` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:rust_p2p_bridge_not_activated_phase_1483p"
+        ]
+      },
+      "node_id": "phase:1483p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 68,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:26734: ## Phase 1485p \u2014 ConsentGate Local Graph Artifact Write Path (2026-05-31); docs/phases/STATUS.md:26744: | 1485p | ConsentGate local immutable store write path | COMPLETE | NON-SENSITIVE | 1481p\u20131488p |; docs/phases/STATUS.md:26747: - `consent_gate_local_graph_write_complete_phase_1485p` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 2 total; in:CARRIES_FORWARD:non_repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:local_immutable_store_not_production_phase_1485p",
+          "in CARRIES_FORWARD policy:consent_gate_local_write_private_phase_1485p"
+        ]
+      },
+      "node_id": "phase:1485p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 69,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 7,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 5 total; in:CARRIES_FORWARD:non_repo=1, in:EVIDENCES:non_repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1",
+          "in:EVIDENCES:non_repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:150_cluster_a_ci_gate_baseline_drift_enforcement",
+          "in CARRIES_FORWARD phase:146_fix1_cluster_a_batch_report_schema",
+          "in EVIDENCES phase:150_cluster_a_ci_gate_baseline_drift_enforcement",
+          "in EVIDENCES repo:file_ref:tools_check_cluster_a_replay_proof_ci_gate_sh",
+          "in REFERENCES_AUTHORITY repo:file:3e89828971064912:tests_test_ilc_cluster_a_replay_proof_ci_gate_py"
+        ]
+      },
+      "node_id": "phase:149_cluster_a_replay_proof_ci_gate",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 70,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7114: pre-launch Genesis design authority, and Phase 1502p dynamic-ranking runtime.; docs/phases/STATUS.md:7118: **Verification:** Phase 1504p prompt validation passed. Phase 1502p runtime; docs/phases/STATUS.md:7163: **Authorization:** `GO. Phases 1502p and1503p, both non-sensitive` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:dynamic_ranking_multiplier_not_activated_phase_1502p"
+        ]
+      },
+      "node_id": "phase:1502p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 71,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:3709: live private topology capture, Phase 1508p SIM-FETCH rerun, Phase 1484p; docs/phases/STATUS.md:6770: confirms Werner condition 1 is covered by Phase 1508p and condition 4 is covered; docs/phases/STATUS.md:6812: ## Phase 1508p - Werner SIM-FETCH Re-Run (2026-06-06) | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:werner_condition_1_topology_pressure_covered_phase_1508p"
+        ]
+      },
+      "node_id": "phase:1508p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 72,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "phase_terminal",
+      "direct_read_evidence": "Full LMDB node record read: category=phase_terminal; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. Incident-edge read: 3 total; in:CARRIES_FORWARD:non_repo=1, in:REFERENCES_AUTHORITY:repo=1, out:EVIDENCES:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:EVIDENCES:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CARRIES_FORWARD phase:149_cluster_a_replay_proof_ci_gate",
+          "out EVIDENCES phase:149_cluster_a_replay_proof_ci_gate",
+          "in REFERENCES_AUTHORITY repo:file:7e75edc4b6bd7186:tests_test_ilc_cluster_a_replay_proof_ci_gate_baseline_py"
+        ]
+      },
+      "node_id": "phase:150_cluster_a_ci_gate_baseline_drift_enforcement",
+      "node_kind": null,
+      "prefix": "phase",
+      "queue_index": 73,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:5051: ## Phase 1535p - OBL-020 Emission Round-Trip Integration Test (2026-06-07); docs/phases/STATUS.md:5061: | 1535p | Emission-only economic round-trip integration test | COMPLETE | NON-SENSITIVE | 1531p-1537p |; docs/phases/STATUS.md:5064: - `obl_020_round_trip_integration_test_committed_phase_1535p` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:production_emission_not_activated_phase_1535p"
+        ]
+      },
+      "node_id": "phase:1535p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 74,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:4630: Phase 1540p and Phase 1541p, but remains open pending the Phase 1543p round-trip; docs/phases/STATUS.md:4659: ## Phase 1540p - OBL-022 Treasury + Validator Reward Integration Path (2026-06-08); docs/phases/STATUS.md:4668: | 1540p | OBL-022 treasury governance plus validator reward production integration path under default-off guard | COMPLETE | NON-SENSITIVE | 1538p-1545p | | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:treasury_distribution_not_activated_phase_1540p"
+        ]
+      },
+      "node_id": "phase:1540p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 75,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:4600: ## Phase 1541p - OBL-022 Ejected-Stake Distribution Integration Path (2026-06-08); docs/phases/STATUS.md:4609: | 1541p | OBL-022 ejected-stake distribution production integration path under default-off guard | COMPLETE | NON-SENSITIVE | 1538p-1545p |; docs/phases/STATUS.md:4612: - `ejected_stake_distribution_production_path_committed_phase_1541p` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:ejected_stake_distribution_not_activated_phase_1541p"
+        ]
+      },
+      "node_id": "phase:1541p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 76,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1479: ## Phase 1545p-Fix29 - Atlas Spectral And Non-Excisability SIM (2026-06-15); docs/phases/STATUS.md:1487: | 1545p-Fix29 | Whole-graph Atlas spectral and non-excisability SIM | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1490: - `atlas_spectral_non_excisability_sim_committed_phase_1545p_fix29` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:historical_phase_snapshot_tests_default_off_phase_1545p_fix2"
+        ]
+      },
+      "node_id": "phase:1545p_fix2",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 77,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1781: ## Phase 1545p-Fix24 - Whole-Graph Atlas Objective Contract (2026-06-14); docs/phases/STATUS.md:1789: | 1545p-Fix24 | Whole-graph Atlas objective vector and Genesis-rootedness proof-class contract | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1792: - `whole_graph_atlas_objective_contract_committed_phase_1545p_fix24` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:atlas_signing_gate_not_reached_phase_1545p_fix24"
+        ]
+      },
+      "node_id": "phase:1545p_fix24",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 78,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1725: ## Phase 1545p-Fix25 - Whole-Graph Atlas Baseline Diagnostic (2026-06-14); docs/phases/STATUS.md:1733: | 1545p-Fix25 | Whole-graph Atlas baseline diagnostic and review queue | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1736: - `whole_graph_atlas_baseline_diagnostic_committed_phase_1545p_fix25` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:directed_view_not_yet_contractualized_gap_phase_1545p_fix25"
+        ]
+      },
+      "node_id": "phase:1545p_fix25",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 79,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 8,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1666: ## Phase 1545p-Fix26 - Whole-Graph Axiomatic Extraction Replay (2026-06-14); docs/phases/STATUS.md:1674: | 1545p-Fix26 | Whole-graph axiomatic extraction replay and atom-candidate queue | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1677: - `whole_graph_axiomatic_extraction_replay_committed_phase_1545p_fix26` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:atlas_atoms_not_promoted_phase_1545p_fix26"
+        ]
+      },
+      "node_id": "phase:1545p_fix26",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 80,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1606: ## Phase 1545p-Fix27 - Atlas Rewrite Candidate Generation (2026-06-15); docs/phases/STATUS.md:1614: | 1545p-Fix27 | Whole-graph Atlas rewrite candidate generation | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1617: - `atlas_rewrite_candidate_generation_committed_phase_1545p_fix27` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:atlas_rewrite_candidates_not_promoted_phase_1545p_fix27"
+        ]
+      },
+      "node_id": "phase:1545p_fix27",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 81,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1411: ## Phase 1545p-Fix30 - Long Atlas AutoResearch Optimization Run (2026-06-16); docs/phases/STATUS.md:1419: | 1545p-Fix30 | Long whole-graph Atlas AutoResearch optimization SIM | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1422: - `atlas_long_autoresearch_run_committed_phase_1545p_fix30` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:atlas_optimized_candidate_not_signed_phase_1545p_fix30"
+        ]
+      },
+      "node_id": "phase:1545p_fix30",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 82,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:1380: ## Phase 1545p-Fix31 - Atlas Candidate Reducer And v0.4/v0.5 Packet (2026-06-16); docs/phases/STATUS.md:1388: | 1545p-Fix31 | Atlas v0.4/v0.5 candidate reducer and decision packet | COMPLETE | NON-SENSITIVE | research addendum |; docs/phases/STATUS.md:1391: - `atlas_candidate_reducer_v04_v05_packet_committed_phase_1545p_fix31` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase1573_signing_input_requires_human_scope_selection_phase_1545p_fix31"
+        ]
+      },
+      "node_id": "phase:1545p_fix31",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 83,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix71_materialized_missing_phase_support_node. Incident-edge read: 4 total; in:CARRIES_FORWARD:non_repo=1, in:EVIDENCES:repo=2, in:IMPLEMENTS:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1",
+          "in:EVIDENCES:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:3617e4bfd3b4e2e3:tools_check_test_graph_coverage_py",
+          "in CARRIES_FORWARD policy:homoiconic_test_graph_checker_report_only_phase_1545p_fix33",
+          "in EVIDENCES repo:file:3617e4bfd3b4e2e3:tools_check_test_graph_coverage_py",
+          "in EVIDENCES repo:file:e0ba000d4a16bbb8:tests_test_phase_1545p_fix33_test_graph_coverage_py"
+        ]
+      },
+      "node_id": "phase:1545p_fix33",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 84,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:52: `python -m pytest tests/test_phase_1545p_fix59b_atlas_lmdb_safe_writer.py tests/test_phase_1545p_fix62a_attribution_substrate_closure.py -q`.; docs/phases/STATUS.md:141: ## Fix59e \u2014 Atlas LMDB Phase Tool Migration (phase_1545p_fix59e); docs/phases/STATUS.md:149: | 1545p-Fix59e | Harden local unsigned Atlas LMDB phase tooling so forward routine writes use the safe writer instead of raw adapter mutation | COMPLETE | NON-SENSITIVE | research addendum | | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:human_risk_authorization_relying_on_fedex_delivery_pending_uspto_receipts_phase_1545p_fix5"
+        ]
+      },
+      "node_id": "phase:1545p_fix5",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 85,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 1 total; in:CARRIES_FORWARD:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix69_fix78_analytical_suite_codex_guidance_v0_1_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix72a_guidance_update",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 86,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 1 total; in:CARRIES_FORWARD:repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix69_fix78_analytical_suite_codex_guidance_v0_1_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix72a_hot_cold_path_carry_forward",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 87,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 11 total; in:CARRIES_FORWARD:repo=11. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=11"
+        ],
+        "incident_edge_count": 11,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:ilc_core_economics_onboarding_py",
+          "in CARRIES_FORWARD repo:file_ref:ilc_core_node_node_schema_core_runtime_360_py",
+          "in CARRIES_FORWARD repo:file_ref:ilc_core_ledger_lmdb_backend_py",
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix75_g10_numeric_determinism_sweep_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix75_numeric_determinism_classification_v0_1_json"
+        ]
+      },
+      "node_id": "phase:1545p_fix75",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 88,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 4 total; in:CARRIES_FORWARD:repo=4. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=4"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix76_g10_package_build_audit_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix76_build_critical_file_audit_v0_1_json",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_status_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_phase_1545p_fix76_package_build_audit_walkthrough_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix76",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 89,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 9,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 4 total; in:CARRIES_FORWARD:repo=4. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=4"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix77_crypto_boundary_map_v0_1_json",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_status_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_phase_1545p_fix77_crypto_boundary_audit_walkthrough_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix77_g10_crypto_boundary_audit_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix77",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 90,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 4 total; in:CARRIES_FORWARD:repo=4. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=4"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_status_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_phase_1545p_fix78_lifecycle_alias_cleanup_walkthrough_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix78_g10_lifecycle_alias_cleanup_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix78_lifecycle_alias_cleanup_v0_1_json"
+        ]
+      },
+      "node_id": "phase:1545p_fix78",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 91,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 4 total; in:CARRIES_FORWARD:repo=4. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=4"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_status_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix79_g10_node_kind_normalization_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_fix79_node_kind_normalization_v0_1_json",
+          "in CARRIES_FORWARD repo:file_ref:docs_phases_phase_1545p_fix79_node_kind_normalization_walkthrough_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix79",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 92,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix59b_support_endpoint_registered. Incident-edge read: 2 total; in:CARRIES_FORWARD:repo=2. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix79_g10_node_kind_normalization_md",
+          "in CARRIES_FORWARD repo:file_ref:docs_antigravity_tasks_antigravity_prompt_phase_1545p_fix80_g10_root_reachability_repair_md"
+        ]
+      },
+      "node_id": "phase:1545p_fix79_fix80_prompt_drafts",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 93,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:3840: graph_delta=support_only:tests/test_phase_1549p_obl028_adaptive_fee_burn.py -> tests/window-1546p; docs/phases/STATUS.md:3898: ## Phase 1549p - OBL-028 Adaptive Fee-Burn Ratio Spec and SIM (2026-06-10); docs/phases/STATUS.md:3907: | 1549p | Adaptive fee-burn ratio spec, deterministic SIM, and OBL-028 closure | COMPLETE | NON-SENSITIVE | 1546p-1555p | | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:fee_burn_runtime_unchanged_phase_1549p"
+        ]
+      },
+      "node_id": "phase:1549p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 94,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:3798: ## Phase 1550p-Fix1 - Window 1546p Hardening and Phase 1551p Prompt Audit (2026-06-10); docs/phases/STATUS.md:3806: - `phase_1550p_fix1_window_1546p_hardening_committed`; docs/phases/STATUS.md:3807: - `window_1546p_sequence_lock_status_hardened_phase_1550p_fix1` | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:peer_funded_bounty_runtime_not_activated_phase_1550p"
+        ]
+      },
+      "node_id": "phase:1550p",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 95,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:2520: **Verification:** Phase 1559 focused tests, Phase 1558 bundle tests, and Phase; docs/phases/STATUS.md:2538: ## Phase 1558 - HB-003 Layer 0 Truth-Primitive Schema Embedding (2026-06-12); docs/phases/STATUS.md:2548: | 1558 | HB-003 Layer 0 truth-primitive schema embedding | COMPLETE | NON-SENSITIVE | 1556-1564 | | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase_1558_private_runtime_selftest"
+        ]
+      },
+      "node_id": "phase:1558",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 96,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7872: **Launch-readiness manifest content hash:** `sha256:fb171d78806950de07d6ce1ae7143eca3f7f2a50fef7e06e833c89447ffe5bdf`; docs/phases/STATUS.md:9140: - Fix1A: `ba01716`; docs/phases/STATUS.md:9783: **Next planned phase:** Phase 171 (post-integration closure regression sweep and handoff planning for phases 164-170 hardening line) | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase171_runtime_logging_hardening_closure"
+        ]
+      },
+      "node_id": "phase:171",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 97,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:10156: **Next planned phase:** Phase 198 (server lifecycle app-state refactor and singleton boundary hardening); docs/phases/STATUS.md:10160: ## Phase 198; docs/phases/STATUS.md:10164: **Commit:** this commit (`Phase 198`) | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase198_server_lifecycle_app_state_boundary"
+        ]
+      },
+      "node_id": "phase:198",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 98,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:10167: **Next planned phase:** Phase 199 (multi-instance server isolation regression coverage); docs/phases/STATUS.md:10171: ## Phase 199; docs/phases/STATUS.md:10174: **Output**: Added focused multi-instance isolation tests in `tests/test_server_instance_isolation_phase_199.py` covering graph-state and peer-manager isolation across distinct `create_app()` instances (`2 passed`), recon | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase199_server_instance_state_isolation"
+        ]
+      },
+      "node_id": "phase:199",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 99,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 10,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "direct-read source_path docs/phases/STATUS.md sha256_prefix=9f81d792263c376c; evidence: docs/phases/STATUS.md:7486: `support_candidate_graph=13208`, `excluded_private_material=476`, and; docs/phases/STATUS.md:10266: **Next planned phase:** Phase 208 (RA-05 utility-flow reward linkage and governor checks); docs/phases/STATUS.md:10270: ## Phase 208 | Full LMDB node record read: node_kind=phase_support_node; graph_projection=support_candidate_graph; candidate_status=fix69_support_phase_anchor. Incident-edge read: 1 total; in:CARRIES_FORWARD:non_repo=1. No direct-read evidence in the node record or source file names a canonical CDL/ADR/artifact target requiring a new non-repo authority edge. Existing non-repo incident edges are support-lineage edges inside an unreachable island; no additional root bridge is asserted without source-backed successor evidence.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CARRIES_FORWARD policy:phase208_utility_flow_reward_governor"
+        ]
+      },
+      "node_id": "phase:208",
+      "node_kind": "phase_support_node",
+      "prefix": "phase",
+      "queue_index": 100,
+      "source_path": "docs/phases/STATUS.md",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    }
+  ],
+  "edges_written": 0,
+  "edges_written_by_type": {},
+  "genesis_root": "artifact:genesis_intent_attestation_init_authority_map",
+  "human_escalations": [],
+  "live_queue_count": 1219,
+  "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "missing_canonical_targets": [],
+  "next_queue_index": 101,
+  "nodes_completed": 100,
+  "notes": [
+    "Batches 001-010 are conservative support dispositions. No root bridge was written without direct source evidence of a canonical target.",
+    "Phase-file LMDB registration for this report and walkthrough is performed after the files are finalized for the intermediate commit to avoid stale source_hash churn in the committed artifacts."
+  ],
+  "phase": "1545p-Fix80",
+  "prefix_breakdown": {
+    "atlas": 1,
+    "claim": 17,
+    "command": 10,
+    "executor_profile": 9,
+    "external": 1,
+    "phase": 146,
+    "policy": 217,
+    "repo_dir": 9,
+    "sim": 10,
+    "target": 789,
+    "window": 10
+  },
+  "reachable_non_repo_count": 2104,
+  "scope_status": "in_progress_batches_001_010",
+  "zero_degree_count": 946,
+  "zero_degree_prefix_breakdown": {
+    "atlas": 1,
+    "claim": 17,
+    "command": 10,
+    "executor_profile": 9,
+    "external": 1,
+    "phase": 10,
+    "policy": 93,
+    "repo_dir": 9,
+    "target": 786,
+    "window": 10
+  }
+}
