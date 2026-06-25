@@ -700,15 +700,155 @@
       "queue_index_end": 500,
       "queue_index_start": 491,
       "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 51,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 510,
+      "queue_index_start": 501,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 52,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 520,
+      "queue_index_start": 511,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 53,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 530,
+      "queue_index_start": 521,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 54,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 540,
+      "queue_index_start": 531,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 55,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 550,
+      "queue_index_start": 541,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 56,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 560,
+      "queue_index_start": 551,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 57,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 570,
+      "queue_index_start": 561,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 58,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 580,
+      "queue_index_start": 571,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 59,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 590,
+      "queue_index_start": 581,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 60,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 600,
+      "queue_index_start": 591,
+      "status": "complete_no_edges_to_apply"
     }
   ],
-  "batches_completed": 50,
+  "batches_completed": 60,
   "disposition_summary": {
     "add_edge": 0,
     "human_escalation": 0,
     "missing_canonical_target": 0,
     "same_authority_or_lifecycle": 0,
-    "support_leaf_no_wiring_required": 500
+    "support_leaf_no_wiring_required": 600
   },
   "dispositions": [
     {
@@ -14323,6 +14463,2675 @@
       "source_path": "",
       "target_node": null,
       "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:96a6104a747d1464:tests_test_phase_1162_sim_spectral_04_disposition_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1163_execution_no_cdl085_opening_authorized",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 501,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:a87f53fcee9008b5:ilc_core_rc_release_key_envelope_rehearsal_py",
+          "in NEGATIVE_ASSERTS repo:file:68acafbc9954118f:tests_test_phase_1193_v0_2_signing_skip_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1193_release_key_release_envelope_or_signing_artifact",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 502,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:0c83e653ba999627:tests_test_phase_1215_v0_2_signing_skip_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1215_signing_ceremony_no_signing_evidence",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 503,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:fc7c20bed4c8bc61:tests_test_phase_1221_v0_2_signing_skip_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1221_signing_ceremony_no_signing_evidence_unsigned_v02_candidate",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 504,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:9a7a243afaa5f4a6:tests_test_phase_1230_v0_2_signing_skip_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1230_signing_ceremony_no_signing_evidence_unsigned_v02_candidate",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 505,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:86619fa251d8d188:tests_test_phase_1369_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_no_phase1374_cdl088_prerequisite_before_execution_no_phase1389_public_claimability_gate_before_go",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 506,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:f734b86012fc2570:ilc_core_privacy_transfer_mixing_framework_py",
+          "in NEGATIVE_ASSERTS repo:file:52c17273d099b77c:tests_test_phase_1359_high_001_defense_py"
+        ]
+      },
+      "node_id": "target:boundary_no_plaintext_agent_id_validator_logs_no_transfer_mixing_production_route_no_random_assert_wall_clock_or_float_patterns",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 507,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:b54383959a5eded4:ilc_core_crypto_cbor_canonical_py",
+          "in NEGATIVE_ASSERTS repo:file:dcc1b3fa211b4a26:tests_test_phase_1332_fix4_pre_1333_hardening_py"
+        ]
+      },
+      "node_id": "target:boundary_no_private_peer_public_path_by_default_no_cbor_oversize_decode_no_release_artifact_authorization",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 508,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:a3b21a2e03dbe18e:tests_test_phase_1344_issuance_stack_scoping_py"
+        ]
+      },
+      "node_id": "target:boundary_no_production_issuance_implementation_no_production_minting_no_soft_rc_eligibility_without_phase1366_conditions",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 509,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 51,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 9 total; in:CLASSIFIED_BY:repo=7, in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=7",
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 9,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:dea042a148ecbe2b:ilc_core_epoch_fee_burn_split_runtime_py",
+          "in CLASSIFIED_BY repo:file:5cc741fb9c8369d5:ilc_core_epoch_validator_reward_pool_routing_runtime_py",
+          "in CLASSIFIED_BY repo:file:791a9e801bcafdee:ilc_core_epoch_allocation_distributor_runtime_py",
+          "in CLASSIFIED_BY repo:file:1c0e2c64ac8a075b:ilc_core_epoch_ecu_price_clamp_runtime_py",
+          "in EVIDENCES repo:file:dea042a148ecbe2b:ilc_core_epoch_fee_burn_split_runtime_py"
+        ]
+      },
+      "node_id": "target:boundary_no_production_minting_no_fee_burn_activation_no_allocation_distribution_activation_no_treasury_activation_no_validator_reward_activation_no_ejected_sta",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 510,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:3977f34913ada5da:tests_test_phase_1197_canon_bundle_signing_repair_py"
+        ]
+      },
+      "node_id": "target:boundary_no_production_validation_weakening_no_cli_testing_bypass",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 511,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:8e58384f0655e4ca:ilc_core_sidecars_value_path_activation_boundary_preflight_py",
+          "in EVIDENCES repo:file:40b24f96ea3fbf93:ilc_core_sidecars_wallet_action_semantics_preflight_py",
+          "in NEGATIVE_ASSERTS repo:file:9bc3c19f6a436ab3:tests_test_phase_1336_public_claimability_api_activation_or_carry_forward_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_claimability_api_no_public_verifier_service_no_public_claim_endpoint_no_wallet_value_actions",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 512,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:d3af054c152bbecb:tests_test_phase_1304_context_capsule_v5_53_frontier_refresh_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_claimability_no_public_p2p_no_release_artifact_no_cdl_mutation_no_genesis_atlas_mutation_no_v02_signing_no_ecu_mint_no_ilc_settlement",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 513,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:eb42eb03e02b5806:tests_test_phase_1290_context_capsule_v5_52_frontier_refresh_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_claimability_no_public_p2p_no_release_export_no_genesis_atlas_mutation_no_v02_signing_no_cdl_mutation",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 514,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:5a6b6c05324298be:tests_test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_claimability_no_public_p2p_no_serving_no_wallet_no_value_activation_no_skill_publication",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 515,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:34f7d01bd14963be:ilc_core_sidecars_public_fetch_p2p_readiness_py",
+          "in NEGATIVE_ASSERTS repo:file:9f34931d4c208834:tests_test_phase_1259_cdl087_serving_peer_evidence_slice_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_fetch_serving_no_network_endpoint_no_float_payload_no_public_server_socket",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 516,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:28af6a33bf37bfab:tests_test_phase_1225_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_launch_public_repo_v02_signing_or_cdl087_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 517,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:f02c4e08bf8fed62:tests_test_phase_1360_multi_operator_testnet_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_p2p_no_production_ecu_transfer_activation_no_durable_peer_to_peer_bft_claim_from_direct_injection_no_projection_write_path",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 518,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:55768a4890682820:tests_test_phase_1242_roadmap_v1_1_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_p2p_no_public_claimability_no_final_public_rc_claim_from_roadmap_only",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 519,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 52,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:EVIDENCES:repo=2, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=2",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:e8a216ea075c1426:ilc_core_network_d2d_openclaw_p2p_relay_py",
+          "in EVIDENCES repo:file:1587a49262aad282:ilc_core_sidecars_confidential_coordination_sealed_sender_py",
+          "in NEGATIVE_ASSERTS repo:file:88da43e1d4d3e9c6:tests_test_phase_1326_ccss_003_sealed_sender_local_delivery_boundary_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_p2p_no_public_relay_no_confidential_messaging_claim_no_plaintext_or_route_metadata_leakage_no_unbounded_queue",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 520,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:5392750b246eacf3:tests_test_phase_1250_fix1_rc_frontier_gap_audit_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_rc_claim_no_v02_signing_claim_no_stale_gap_overclaim",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 521,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:48aec109ef164114:tests_test_phase_1289_window_1289_1302_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_rc_no_public_activation_no_cdl088_no_ecu_mint_no_ilc_settlement",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 522,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:62dbe3395445921b:tests_test_phase_1318_context_capsule_v5_54_frontier_refresh_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_rc_no_release_signing_no_public_activation_no_cdl_mutation_no_atlas_g_authority_substitution",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 523,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:8740c3c83545e4d7:tests_test_phase_1316_window_1303_1316_closure_implementation_audit_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_rc_no_source_export_no_release_signing_no_claimability_no_public_p2p_no_wallet_no_ecu_mint_no_ilc_settlement_no_cdl088",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 524,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:4c8c8aa7c35f3403:tests_test_phase_1341_public_rc_publication_claim_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_public_rc_publication_claim_performed_no_public_repository_push_no_public_package_upload_no_release_signing_authorized_no_counsel_approval_no_wallet",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 525,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:2e7812d0f1d067db:tests_test_phase_1287_release_publication_signing_authorization_preflight_py"
+        ]
+      },
+      "node_id": "target:boundary_no_publication_no_signing_no_allowlist_export_no_release_artifact_no_release_keys_no_genesis_atlas_mutation_no_v02_signing",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 526,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:NEGATIVE_ASSERTS:repo=1, in:REFERENCES_AUTHORITY:repo=2. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:0edcbe34c70f4a5e:tools_ccss_relay_ccss_peer_receiver_py",
+          "in REFERENCES_AUTHORITY repo:file:24fc58ece5d43ac2:tools_ccss_send_ccss_transport_py",
+          "in NEGATIVE_ASSERTS repo:file:5f54dd625a3cf7c2:tests_test_phase_1330_window_1330_1342_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_no_publication_no_signing_no_identity_artifact_no_wallet_no_ecu_mint_no_ilc_settlement_no_public_ccss",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 527,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:c3e1fd00ac0f37bf:tests_test_phase_1317_window_1317_1329_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_no_publication_no_signing_no_public_activation_no_helper_stripping_execution_no_atlas_g_substitution_no_public_confidential_coordination",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 528,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:509efee73ecad13a:ilc_core_consensus_circuit_breaker_interface_py",
+          "in NEGATIVE_ASSERTS repo:file:89e4864b5eea5951:tests_test_phase_1238a_sim_fetch_01_fix1_hardening_py"
+        ]
+      },
+      "node_id": "target:boundary_no_random_import_no_bool_rates_no_invalid_circuit_breaker_no_cdl087_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 529,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 53,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:82203e7adfe94179:tests_test_phase_1369_fix1_numeric_hardening_py"
+        ]
+      },
+      "node_id": "target:boundary_no_raw_decimal_invalidoperation_escape_no_unbounded_governance_quality_score_no_lmdb_dry_run_write_transaction",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 530,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:7f8b3a54917e8dc5:tests_test_phase_1331_context_capsule_v5_55_release_candidate_freeze_py"
+        ]
+      },
+      "node_id": "target:boundary_no_release_signing_no_public_activation_no_identity_artifact_no_wallet_no_ecu_mint_no_ilc_settlement_no_counsel_approval",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 531,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:8e58384f0655e4ca:ilc_core_sidecars_value_path_activation_boundary_preflight_py",
+          "in CLASSIFIED_BY repo:file:40b24f96ea3fbf93:ilc_core_sidecars_wallet_action_semantics_preflight_py",
+          "in NEGATIVE_ASSERTS repo:file:d76370d6a84e4360:tests_test_phase_1342_window_1330_1342_closure_handoff_py"
+        ]
+      },
+      "node_id": "target:boundary_no_release_signing_no_public_claimability_no_public_verifier_service_no_wallet_withdrawal_no_ecu_minting_no_ilc_settlement_no_cdl088_opening_no_counsel",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 532,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:EVIDENCES:repo=4, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=4",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "in EVIDENCES repo:file:7c396230272494e0:ilc_core_consensus_reputation_py",
+          "in EVIDENCES repo:file:16cd523a5da66375:ilc_core_consensus_engine_py",
+          "in EVIDENCES repo:file:e633fb52310b57e5:ilc_core_network_d2d_routing_reputation_runtime_py",
+          "in EVIDENCES repo:file:e8a216ea075c1426:ilc_core_network_d2d_openclaw_p2p_relay_py",
+          "in NEGATIVE_ASSERTS repo:file:17652fb6628a4d11:tests_test_phase_1357_reputation_h11_float_kill_py"
+        ]
+      },
+      "node_id": "target:boundary_no_runtime_float_surface_no_nonfinite_float_no_routing_reputation_decimal_claim_before_cdl060_pipeline",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 533,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:595ccdb8d7ae59d9:tests_test_phase_1195_tier3_runtime_linkage_py"
+        ]
+      },
+      "node_id": "target:boundary_no_runtime_mutation_no_signed_genesis_v01_mutation_phase1195",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 534,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:11e08b487d3177c7:tests_test_phase_1340_v0_2_signing_ceremony_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_secret_material_in_committed_artifacts_no_public_rc_activation_despite_v02_signed_gate",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 535,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:b2f01c5b9240a58b:tests_test_phase_1335_release_keys_envelopes_generation_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_secret_material_written_to_repo_no_private_material_path_recorded_no_release_signature_produced_no_unsigned_envelope_misclaimed_as_signed",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 536,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:95bff81ed6d87d32:tests_test_phase_1367_pre_gate_fix_pass_py"
+        ]
+      },
+      "node_id": "target:boundary_no_soft_rc_eligible_true_recorded_no_new_scope_no_full_phase1366_gate_rerun",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 537,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_rc_source_allowlist_export_execution_gate_py",
+          "in EVIDENCES repo:file:49b2b628b1505fa8:ilc_core_sidecars_registry_manifest_py",
+          "in NEGATIVE_ASSERTS repo:file:4c878109112111c0:tests_test_phase_1299_release_allowlist_artifact_genesis_readiness_preflight_py"
+        ]
+      },
+      "node_id": "target:boundary_no_source_allowlist_export_no_release_artifact_no_keys_no_envelope_no_genesis_atlas_signing_no_public_rc_claim",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 538,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:de5a75edd36a4e68:tests_test_phase_1333_source_allowlist_export_execution_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_source_publication_authorized_no_public_repository_publication_no_public_rc_claim",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 539,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 54,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:EVIDENCES:repo=2, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=2",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:af60ecbcfe84f80a:ilc_core_sidecars_confidential_coordination_shard_py",
+          "in EVIDENCES repo:file:6be1cd25bd07af7f:ilc_core_network_d2d_transport_principal_public_path_preflight_py",
+          "in NEGATIVE_ASSERTS repo:file:91c877df369cacec:tests_test_phase_1337_public_path_sidecar_activation_or_exclusion_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_transport_principal_public_path_no_public_p2p_no_public_fetch_serving_no_public_sidecar_projection_no_public_confidential_coordination_no_public_lis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 540,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:52a4b6bcf8c73a38:ilc_core_network_d2d_transport_principal_pre_public_path_py",
+          "in NEGATIVE_ASSERTS repo:file:0db2b471d9c09ead:tests_test_phase_1253_transport_principal_identity_spec_py"
+        ]
+      },
+      "node_id": "target:boundary_no_transport_principal_runtime_activation_no_public_p2p_no_public_sidecar_no_claimability_no_cdl_mutation",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 541,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:0f75d31472e5b669:tests_test_phase_1237_fix4_convergence_trace_py"
+        ]
+      },
+      "node_id": "target:boundary_no_unknown_nodes_no_unbounded_hops_no_cycle_nontermination",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 542,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:8b55e368fdb765e4:tests_test_phase_1237_fix2_ego_graph_query_py"
+        ]
+      },
+      "node_id": "target:boundary_no_unknown_root_no_unbounded_hops_no_overflow_node_result",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 543,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:2aa3ca927a2bee86:tests_test_phase_1237_fix5_dispatcher_integration_py"
+        ]
+      },
+      "node_id": "target:boundary_no_unsupported_query_type_no_missing_query_type_no_unimplemented_supported_query",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 544,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:06ed19f4571ee07e:tests_test_phase_1260_cdl087_observability_and_limiter_regression_py"
+        ]
+      },
+      "node_id": "target:boundary_no_wall_clock_no_per_requester_dossiers_no_float_signals_no_duplicate_epoch_no_cdl087_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 545,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:NEGATIVE_ASSERTS:repo=2. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:9615b2b68b243d46:tests_test_phase_1236_fix2_commit_epoch_quorum_projection_py",
+          "in NEGATIVE_ASSERTS repo:file:6b776b1ede5581fd:tests_test_phase_1236_fix3_commit_epoch_causal_frontier_projection_py"
+        ]
+      },
+      "node_id": "target:boundary_no_wall_clock_random_io_network_or_legacy_constructor",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 546,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:40b24f96ea3fbf93:ilc_core_sidecars_wallet_action_semantics_preflight_py",
+          "in NEGATIVE_ASSERTS repo:file:6128058fce2644e1:tests_test_phase_1338_wallet_ecu_ilc_activation_or_carry_forward_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_no_wallet_write_no_wallet_provider_signing_no_ecu_minting_no_ecu_creation_no_ilc_settlement_no_ilc_transfer_no_settlement_root_publication_no_value_pat",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 547,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:ec5c46e61b85cadb:tests_test_phase_1386_genesis_validator_bootstrap_record_py"
+        ]
+      },
+      "node_id": "target:boundary_not_multi_operator_split_custody_complete_no_private_keys_committed_no_public_rc_graph_permanence_no_production_validator_deployment_no_live_value_path",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 548,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:bb9bbab57e8ca3cd:tests_test_phase_1212_rate_limiter_wiring_py"
+        ]
+      },
+      "node_id": "target:boundary_persistent_limiter_load_or_save_failure_fails_closed_without_want_have_regression",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 549,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 55,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:a282b93a0c36e981:tests_test_phase_1246_cdl_087_governance_review_disposition_py"
+        ]
+      },
+      "node_id": "target:boundary_phase1246_review_only_no_cdl_mutation_no_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 550,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:604913887277584d:tests_test_phase_1363_blocking_authority_prelock_py"
+        ]
+      },
+      "node_id": "target:boundary_phase1363_runtime_unchanged_no_public_claimability_no_cdl088_opening_no_cdl053_repurposing",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 551,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:8a3ceff05cc3c6d0:tests_test_phase_1210_phi_bound_enforcement_py"
+        ]
+      },
+      "node_id": "target:boundary_phi_bound_applies_to_provenance_not_reuse_or_co_authorship_and_rejects_negative_node_mint_count",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 552,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:73f409be41ae6720:tests_test_phase_1177_cdl_085_prelock_py"
+        ]
+      },
+      "node_id": "target:boundary_prelock_before_runtime_phi_bound_lock",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 553,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:343a152da3b7e098:ilc_core_consensus_production_bridge_py",
+          "in NEGATIVE_ASSERTS repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        ]
+      },
+      "node_id": "target:boundary_production_bridge_default_off_no_live_ecu_transfer_no_insecure_channel_no_testbed_stubs_no_unbounded_epoch_chain_no_edge_expansion",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 554,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:91b84c613f26ff5b:tests_test_phase_1351a_cdl_029_amendment_post_theta_hard_dust_routing_py"
+        ]
+      },
+      "node_id": "target:boundary_production_distribution_not_activated_full_genesis_base_tranche_deferred_cdlv7_admissibility_only",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 555,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:76d375188bcb9417:tests_test_phase_1361_adaptive_pruning_py"
+        ]
+      },
+      "node_id": "target:boundary_production_pruning_not_activated_no_retention_override_no_float_or_nonfinite_ecu_score_no_oversized_lmdb_record",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 556,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:IMPLEMENTS:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:IMPLEMENTS:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:84735ecf9c58c96d:ilc_core_validator_topology_shuffle_runtime_py",
+          "in CLASSIFIED_BY repo:file:84735ecf9c58c96d:ilc_core_validator_topology_shuffle_runtime_py",
+          "in NEGATIVE_ASSERTS repo:file:5d8a301b9203f460:tests_test_phase_1354_cdl_068_topology_shuffle_vrf_py"
+        ]
+      },
+      "node_id": "target:boundary_production_topology_shuffle_not_activated_vrf_upgrade_required_fail_closed_no_predictable_prng",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 557,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:5f17ea19770af0c0:ilc_core_epoch_treasury_governance_runtime_py",
+          "in NEGATIVE_ASSERTS repo:file:18837c93e9a1a2ac:tests_test_phase_1348_cdl_047_treasury_governance_runtime_py"
+        ]
+      },
+      "node_id": "target:boundary_production_treasury_not_activated_no_automatic_velocity_action_no_float_economics",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 558,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:f03e4dd855d1eb71:tests_test_phase_1223_coherence_capsule_v5_48_py"
+        ]
+      },
+      "node_id": "target:boundary_public_launch_acts_blocked_v02_signing_deferred_mempalace_advisory",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 559,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 56,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:b26cfec16089177d:tests_test_phase_1134_sim_spectral_02_run01_disposition_py"
+        ]
+      },
+      "node_id": "target:boundary_scenario_a_ambiguous_no_positive_or_negative_overclaim",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 560,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:22fb415a082b4905:tests_test_phase_1303_window_1303_1316_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:boundary_sequence_lock_only_no_public_rc_no_public_p2p_no_helper_stripping_execution_no_genesis_atlas_signing_no_cdl088",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 561,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:7784a1f421c82c7b:ilc_core_sidecars_local_graph_memory_projection_py",
+          "in NEGATIVE_ASSERTS repo:file:8bd8d313a4c8981c:tests_test_phase_1237_l3_sidecar_spec_py"
+        ]
+      },
+      "node_id": "target:boundary_sidecar_no_mutation_authority_no_write_path_not_consensus_participant",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 562,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:e4865401115e6a06:tests_test_phase_1211_truth_primitive_permanence_packet_py"
+        ]
+      },
+      "node_id": "target:boundary_star_map_excluded_commit_epoch_not_agent_issuable_single_agent_not_sufficient",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 563,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:886d3a26989470d5:tests_test_phase_1236_fix5_rust_fixture_mapping_py"
+        ]
+      },
+      "node_id": "target:boundary_testnet_fault_sim_empty_signature_not_adapter_eligible",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 564,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:fed8bc5c91f4d8ef:tests_test_phase_1238c_sim_fetch_01_fix3_tier_verdict_py"
+        ]
+      },
+      "node_id": "target:boundary_tier_service_verdict_does_not_authorize_cdl087_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 565,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:8387f60982a13438:tests_test_phase_1224_fix1_post_closure_audit_hardening_py"
+        ]
+      },
+      "node_id": "target:boundary_tls_verify_default_bounded_fetch_extract_canonical_json_no_wall_clock_epoch_source",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 566,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:f924f040c003649c:tests_test_phase_1334_release_artifact_production_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_unsigned_artifacts_only_no_release_key_generation_no_artifact_signing_no_package_publication_no_public_rc_claim",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 567,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:a3af40c77f7533f6:tests_test_phase_1181_coherence_capsule_v5_43_py"
+        ]
+      },
+      "node_id": "target:boundary_v02_signing_deferred_and_gossip_slice_deferred",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 568,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:32e3c58fc5cdaffa:tests_test_phase_1238h_sim_fetch_01_fix8_werner_overlay_py"
+        ]
+      },
+      "node_id": "target:boundary_werner_overlay_disabled_by_default_no_ecu_mint_no_ilc_settlement_no_cdl087_ratification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 569,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 57,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:151064958b0d1d6f:tests_test_phase_1262_werner_flow_governor_overlay_validation_py"
+        ]
+      },
+      "node_id": "target:boundary_werner_overlay_simulation_only_no_runtime_policy_no_ecu_mint_no_ilc_settlement",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 570,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:NEGATIVE_ASSERTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:NEGATIVE_ASSERTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in NEGATIVE_ASSERTS repo:file:25d2b0582dec4e02:tests_test_phase_1248_window_1241_1248_closure_gate_py"
+        ]
+      },
+      "node_id": "target:boundary_window_closure_not_public_rc_claim_no_public_p2p_no_v02_signing",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 571,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:e0720b5d5c67cfde:tests_test_cdl_030_price_clamp_candidate_lock_277_pre1_py"
+        ]
+      },
+      "node_id": "target:cdl_030_price_clamp_candidate_sweep_outputs",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 572,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 1 total; in:DERIVED_FROM:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:DERIVED_FROM:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in DERIVED_FROM repo:file:c7d3db44af3845ce:tests_test_phase_1179_sim_spectral_05_runtime_binding_slice_py"
+        ]
+      },
+      "node_id": "target:cdl_085_prelock_spec_1177",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 573,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:15564250b72b8883:tests_test_phase_1407_fix3_cdl_093_prelock_amendment_py"
+        ]
+      },
+      "node_id": "target:cdl_093_maintenance_lottery_funding_fraction_sim_1407_fix3",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 574,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 1 total; in:IMPLEMENTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:aa7f0ef36b406879:tests_test_window_469_474_closure_gate_474_py"
+        ]
+      },
+      "node_id": "target:check_window_469_474_closure_gate_phase_474",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 575,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:4c8c8aa7c35f3403:tests_test_phase_1341_public_rc_publication_claim_gate_py"
+        ]
+      },
+      "node_id": "target:claim_matrix_clean_source_tree_unsigned_artifact_release_key_metadata_and_signed_v02_root_envelope",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 576,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:ce9b2347d476cb13:tests_test_phase_528_adr_0023_simulation_synthesis_py"
+        ]
+      },
+      "node_id": "target:concept_adr0023_aesthetic_centrality_novelty_simulation_synthesis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 577,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:a8e802fdfff0c14f:tests_test_phase_1545p_fix31_candidate_reducer_v04_v05_py"
+        ]
+      },
+      "node_id": "target:concept_atlas_candidate_reducer_v04_v05_scope_decision_packet",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 578,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:d99eecdb2c0bab41:tests_test_phase_1545p_fix27_rewrite_candidate_generation_py"
+        ]
+      },
+      "node_id": "target:concept_atlas_dpo_rewrite_candidate_generation",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 579,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 58,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:EVIDENCES:repo=1, out:DERIVED_FROM:repo=1, out:EVIDENCES:repo=3. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "out:DERIVED_FROM:repo=1",
+          "out:EVIDENCES:repo=3"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out EVIDENCES repo:file:921c7dd074fb3517:out_sim_atlas_precision_replay_1545p_fix20_json",
+          "out EVIDENCES repo:file:31e8091affd26e67:tests_test_phase_1545p_fix20_atlas_precision_replay_py",
+          "out DERIVED_FROM repo:file:a6c2b0482f0605db:docs_sims_sim_atlas_axiomatic_calibration_1545p_fix19_v0_1_md",
+          "out EVIDENCES repo:file:0e110765288b4f89:docs_sims_sim_atlas_precision_replay_1545p_fix20_v0_1_md",
+          "in EVIDENCES repo:file:31e8091affd26e67:tests_test_phase_1545p_fix20_atlas_precision_replay_py"
+        ]
+      },
+      "node_id": "target:concept_atlas_precision_negative_controls_and_rejected_file_replay",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 580,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:a898a507305514b6:tests_test_phase_1545p_fix28_projection_hydration_sim_py"
+        ]
+      },
+      "node_id": "target:concept_atlas_projection_hydration_slice_contract",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 581,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:9e03306445f7eac8:tests_test_phase_467_tla_plus_cdl_051_shell_specification_py"
+        ]
+      },
+      "node_id": "target:concept_cdl051_tla_plus_shell_specification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 582,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:7c508b11bce2eedd:docs_antigravity_tasks_antigravity_prompt_phase_473_g8_consensus_adversarial_hardening_and_findings_memo_md",
+          "in EVIDENCES repo:file:a7d888872436a5a9:tests_test_phase_447_consensus_adversarial_regression_py"
+        ]
+      },
+      "node_id": "target:concept_consensus_adversarial_regression_hardening",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 583,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:43fba815ed0858e4:tests_test_phase_498_epoch_boundary_enforcement_architectural_scoping_py"
+        ]
+      },
+      "node_id": "target:concept_epoch_boundary_enforcement_architectural_scoping",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 584,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:23d5465bde2a6a33:tests_test_phase_1545p_fix22_full_repo_genesis_atlas_py"
+        ]
+      },
+      "node_id": "target:concept_full_repo_genesis_atlas_candidate_compilation",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 585,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:6942500edd3288c0:ilc_core_storage_genesis_atlas_candidate_lmdb_adapter_py",
+          "in EVIDENCES repo:file:eb5a1cd92b106f5e:tests_test_phase_1545p_fix23_genesis_atlas_lmdb_materialization_py"
+        ]
+      },
+      "node_id": "target:concept_genesis_atlas_candidate_lmdb_materialization_round_trip",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 586,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:1d34bc123a36d751:tests_test_phase_1545p_fix24_whole_graph_atlas_objective_contract_py"
+        ]
+      },
+      "node_id": "target:concept_genesis_rootedness_proof_class_contract",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 587,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:48db65e00170d647:tests_test_phase_479_genesis_validator_bootstrap_specification_py"
+        ]
+      },
+      "node_id": "target:concept_genesis_validator_bootstrap_specification",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 588,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:e0ba000d4a16bbb8:tests_test_phase_1545p_fix33_test_graph_coverage_py"
+        ]
+      },
+      "node_id": "target:concept_homoiconic_test_graph_coverage_audit",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 589,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 59,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:0b5e27daa14ffe0b:tests_test_phase_1545p_fix32_homoiconic_test_registry_contract_py"
+        ]
+      },
+      "node_id": "target:concept_homoiconic_test_registry_node_and_edge_contract",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 590,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:6ce0a5beeaace1e3:tests_test_phase_1545p_fix13_agentic_graph_grammar_axiom_inventory_py"
+        ]
+      },
+      "node_id": "target:concept_hypergraph_rewrite_grammar_axiom_inventory",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 591,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:9886b7b63e54cc2c:tests_test_phase_1545p_fix30_long_autoresearch_optimization_py"
+        ]
+      },
+      "node_id": "target:concept_long_atlas_autoresearch_keep_revert_optimization",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 592,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:aff6895309ae101b:tests_test_phase_456_fix_14_cdl_050_blocker_clearance_gate_rerun_py"
+        ]
+      },
+      "node_id": "target:concept_oscillator_evidence_controlling_blocker1_basis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 593,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:33f3703dbf9cba36:tests_test_phase_431_pe_stabilization_carry_forward_decision_py"
+        ]
+      },
+      "node_id": "target:concept_pe_stabilization_carry_forward_decision",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 594,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:DERIVED_FROM:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:DERIVED_FROM:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in DERIVED_FROM repo:file:00bf2e1f9c1a077f:tests_test_phase_456_fix_13_post_nonlinear_control_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "target:concept_phase456_fix12_nonlinear_control_outcome",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 595,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:6d81d4b6a2a995f9:tests_test_phase_456_post_fix_5_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "target:concept_post_fix5_blocker1_remains_open_disposition",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 596,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:07981043896d87d1:tests_test_phase_456_fix_9_post_oscillator_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "target:concept_post_oscillator_blocker1_cleared_disposition",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 597,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:00bf2e1f9c1a077f:tests_test_phase_456_fix_13_post_nonlinear_control_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "target:concept_post_oscillator_cleared_state_remains_on_record",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 598,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:1f3782e914fcd5c2:docs_antigravity_tasks_antigravity_prompt_phase_456_g8_oscillator_mechanism_surface_implementation_fix_6_md",
+          "in EVIDENCES repo:file:383f98040b1d98cd:tests_test_phase_456_fix_6_oscillator_mechanism_implementation_py"
+        ]
+      },
+      "node_id": "target:concept_scenario5_oscillator_mechanism_surface",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 599,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 60,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:EVIDENCES:repo=1. Target is a support/output/boundary leaf; the node record does not carry source-backed evidence for a canonical non-repo authority edge.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in EVIDENCES repo:file:405b84547699568e:tests_test_phase_456_fix_3_recovery_rule_mechanism_implementation_py"
+        ]
+      },
+      "node_id": "target:concept_scenario5_recovery_rule_mechanism_surface",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 600,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
     }
   ],
   "edges_written": 0,
@@ -14332,8 +17141,8 @@
   "live_queue_count": 1219,
   "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
   "missing_canonical_targets": [],
-  "next_queue_index": 501,
-  "nodes_completed": 500,
+  "next_queue_index": 601,
+  "nodes_completed": 600,
   "notes": [
     "Batches 001-010 are conservative support dispositions. No root bridge was written without direct source evidence of a canonical target.",
     "Phase-file LMDB registration for this report and walkthrough is performed after the files are finalized for the intermediate commit to avoid stale source_hash churn in the committed artifacts."
@@ -14353,7 +17162,7 @@
     "window": 10
   },
   "reachable_non_repo_count": 2104,
-  "scope_status": "in_progress_batches_001_050",
+  "scope_status": "in_progress_batches_001_060",
   "zero_degree_count": 946,
   "zero_degree_prefix_breakdown": {
     "atlas": 1,
