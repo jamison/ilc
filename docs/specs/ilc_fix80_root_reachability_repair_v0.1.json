@@ -280,15 +280,155 @@
       "queue_index_end": 200,
       "queue_index_start": 191,
       "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 21,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 210,
+      "queue_index_start": 201,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 22,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 220,
+      "queue_index_start": 211,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 23,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 230,
+      "queue_index_start": 221,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 24,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 240,
+      "queue_index_start": 231,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 25,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 250,
+      "queue_index_start": 241,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 26,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 260,
+      "queue_index_start": 251,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 27,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 270,
+      "queue_index_start": 261,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 28,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 280,
+      "queue_index_start": 271,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 29,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 290,
+      "queue_index_start": 281,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 30,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 300,
+      "queue_index_start": 291,
+      "status": "complete_no_edges_to_apply"
     }
   ],
-  "batches_completed": 20,
+  "batches_completed": 30,
   "disposition_summary": {
     "add_edge": 0,
     "human_escalation": 0,
     "missing_canonical_target": 0,
     "same_authority_or_lifecycle": 0,
-    "support_leaf_no_wiring_required": 200
+    "support_leaf_no_wiring_required": 300
   },
   "dispositions": [
     {
@@ -5633,6 +5773,2872 @@
       "source_path": "",
       "target_node": null,
       "zero_non_repo_degree": true
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_harness_consent_gate_py",
+          "out CARRIES_FORWARD phase:1485p",
+          "in CLASSIFIED_BY repo:file:4cc2608db1eb6326:tests_test_phase_1485p_consent_gate_local_write_py"
+        ]
+      },
+      "node_id": "policy:consent_gate_local_write_private_phase_1485p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 201,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:a19413ee4744a481:tests_test_phase_1323_fix3_layered_license_posture_py"
+        ]
+      },
+      "node_id": "policy:counsel_review_future_modification_expected",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 202,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 22 total; in:CLASSIFIED_BY:repo=12, in:EVIDENCES:repo=2, in:REFERENCES_AUTHORITY:repo=8. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=12",
+          "in:EVIDENCES:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=8"
+        ],
+        "incident_edge_count": 22,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:f5392e63a7fa047a:ilc_core_sim_harness_econ_scenarios_py",
+          "in CLASSIFIED_BY repo:file:dc728a36a655b3c9:testbed_scenarios_seven_agent_cycle_v1_json",
+          "in REFERENCES_AUTHORITY repo:file:f5392e63a7fa047a:ilc_core_sim_harness_econ_scenarios_py",
+          "in REFERENCES_AUTHORITY repo:file:53109e849b57ec56:ilc_core_sim_devnet_scenarios_py",
+          "in CLASSIFIED_BY repo:file:f32d902bac6d01e3:ilc_core_sim_devnet_experiments_py"
+        ]
+      },
+      "node_id": "policy:devnet_harness_not_production_emission",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 203,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1545p_fix25",
+          "in CLASSIFIED_BY repo:file:822f248f80e5b598:tests_test_phase_1545p_fix25_whole_graph_baseline_diagnostic_py"
+        ]
+      },
+      "node_id": "policy:directed_view_not_yet_contractualized_gap_phase_1545p_fix25",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 204,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=2, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:74e968d8b48a5646:ilc_core_economics_dynamic_ranking_multiplier_runtime_py",
+          "out CARRIES_FORWARD phase:1502p",
+          "in REFERENCES_AUTHORITY repo:file:74e968d8b48a5646:ilc_core_economics_dynamic_ranking_multiplier_runtime_py",
+          "in CLASSIFIED_BY repo:file:210cc5eaacc0abaa:tests_test_phase_1502p_cdl031_dynamic_ranking_multiplier_py"
+        ]
+      },
+      "node_id": "policy:dynamic_ranking_multiplier_not_activated_phase_1502p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 205,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=2, in:EVIDENCES:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:EVIDENCES:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:4222a3acb8987f0f:ilc_core_epoch_ejected_stake_distribution_production_path_py",
+          "in EVIDENCES repo:file:4222a3acb8987f0f:ilc_core_epoch_ejected_stake_distribution_production_path_py",
+          "out CARRIES_FORWARD phase:1541p",
+          "in CLASSIFIED_BY repo:file:55bb5ece3f0c2183:tests_test_phase_1541p_obl022_ejected_stake_py"
+        ]
+      },
+      "node_id": "policy:ejected_stake_distribution_not_activated_phase_1541p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 206,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:f4dee0a7ef1d0315:tests_test_phase_699_row_8_mysticeti_sovereign_config_py",
+          "in REFERENCES_AUTHORITY repo:file:97c983049b4e0e18:tests_test_phase_676_window_671_676_closure_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:external_constitutional_center_exclusion_hard_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 207,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:919ca40f1f30a7c8:tests_test_quickstart_parity_phase_998_py"
+        ]
+      },
+      "node_id": "policy:external_getting_started_docs_accuracy",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 208,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1549p",
+          "in CLASSIFIED_BY repo:file:238c28bccd75dfb9:tests_test_phase_1549p_obl028_adaptive_fee_burn_py"
+        ]
+      },
+      "node_id": "policy:fee_burn_runtime_unchanged_phase_1549p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 209,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 21,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CARRIES_FORWARD:repo=1, in:CLASSIFIED_BY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CARRIES_FORWARD:repo=1",
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CARRIES_FORWARD repo:file_ref:docs_specs_ilc_public_rc_drift_reconciliation_and_successor_manifest_plan_v0_1_md",
+          "in CLASSIFIED_BY repo:file:ce0489d77e7777b9:tests_test_public_rc_drift_reconciliation_successor_manifest_plan_py"
+        ]
+      },
+      "node_id": "policy:fix6_fix7_required_before_successor_manifest_support_work",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 210,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:CLASSIFIED_BY:repo=1, in:IMPLEMENTS:repo=1, in:REFERENCES_AUTHORITY:repo=3. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:IMPLEMENTS:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=3"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:6092fd5117bb6903:ilc_core_analysis_freshness_gate_py",
+          "in REFERENCES_AUTHORITY repo:file:e08f097625ada717:ilc_core_analysis_node_value_kernel_py",
+          "in REFERENCES_AUTHORITY repo:file:6092fd5117bb6903:ilc_core_analysis_freshness_gate_py",
+          "in IMPLEMENTS repo:file:6092fd5117bb6903:ilc_core_analysis_freshness_gate_py",
+          "in REFERENCES_AUTHORITY repo:file:a693031e693c6d14:tests_test_phase_598_freshness_gate_provenance_and_genesis_exemption_closure_py"
+        ]
+      },
+      "node_id": "policy:freshness_gate_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 211,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in EVIDENCES repo:file:95b9a7d2ec1d9270:ilc_core_rc_cla_governance_status_py",
+          "out CARRIES_FORWARD phase:1444",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_rc_cla_governance_status_py",
+          "in REFERENCES_AUTHORITY repo:file:b1dc32b2a619256b:tests_test_phase_1444_cla_text_finalization_py"
+        ]
+      },
+      "node_id": "policy:gap_7_cla_milestone_complete_phase_1444",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 212,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1445",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_rc_gap_7_closure_status_py",
+          "in EVIDENCES repo:file:00ca85ecba0990a6:ilc_core_rc_gap_7_closure_status_py",
+          "in REFERENCES_AUTHORITY repo:file:ee94dc67cffc4d5e:tests_test_phase_1445_gap_7_partial_closure_py"
+        ]
+      },
+      "node_id": "policy:gap_7_not_fully_closed_phase_1445",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 213,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_rc_gap_7_closure_status_py",
+          "out CARRIES_FORWARD phase:1445",
+          "in EVIDENCES repo:file:00ca85ecba0990a6:ilc_core_rc_gap_7_closure_status_py",
+          "in REFERENCES_AUTHORITY repo:file:ee94dc67cffc4d5e:tests_test_phase_1445_gap_7_partial_closure_py"
+        ]
+      },
+      "node_id": "policy:gap_7_partially_closed_phase_1445",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 214,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:488227db10a5db69:tests_test_phase_1428_window_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:go_window_1429_required_next",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 215,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:10c13f4596ac5f29:tests_test_phase_1514p_window_1505p_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:go_window_1515p_required_next",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 216,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:c5026ed73e22a889:tests_test_window_555_562_peer_registry_audit_regressions_py"
+        ]
+      },
+      "node_id": "policy:gossip_peer_registry_endpoint_dedup_and_fanout_uniqueness",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 217,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:66654a8e9e575688:tests_test_window_555_560_transport_audit_regressions_py"
+        ]
+      },
+      "node_id": "policy:gossip_transport_header_epoch_and_forbidden_key_validation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 218,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=2, in:REFERENCES_AUTHORITY:repo=2. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:9e9ce2a0a850a96f:ilc_core_network_d2d_spectral_beacon_py",
+          "in REFERENCES_AUTHORITY repo:file:63c1845ff0686431:ilc_core_analysis_spectral_utils_py",
+          "in CLASSIFIED_BY repo:file:14adc0832ab6ac35:ilc_core_network_d2d_peer_fingerprint_cache_py",
+          "in REFERENCES_AUTHORITY repo:file:3494845324c07fde:tests_test_phase_932_933_h013_spectral_beacon_py"
+        ]
+      },
+      "node_id": "policy:h013_spectral_beacon_crypto_surface",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 219,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 22,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:CLASSIFIED_BY:repo=1, in:IMPLEMENTS:repo=1, in:REFERENCES_AUTHORITY:repo=3, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:IMPLEMENTS:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=3",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1357",
+          "in CLASSIFIED_BY repo:file:7c396230272494e0:ilc_core_consensus_reputation_py",
+          "in IMPLEMENTS repo:file_ref:ilc_core_consensus_reputation_py",
+          "in REFERENCES_AUTHORITY repo:file:c4db6527114d1bb9:ilc_core_analysis_governance_weight_py",
+          "in REFERENCES_AUTHORITY repo:file:7c396230272494e0:ilc_core_consensus_reputation_py"
+        ]
+      },
+      "node_id": "policy:h11_reputation_governance_weight_float_kill_phase_1357",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 220,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=3, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=3",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1477p",
+          "in CLASSIFIED_BY repo:file_ref:docs_specs_ilc_private_query_response_artifact_schema_1465p_v0_1_md",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_harness_idle_capacity_scheduler_py",
+          "in CLASSIFIED_BY repo:file:07bd9bc02413de6e:tests_test_phase_1477p_harness_kernel_integration_py"
+        ]
+      },
+      "node_id": "policy:harness_kernel_integration_private_not_activated_phase_1477p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 221,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:ca6eab39a0ff7c0f:tests_test_phase_high002_phase_b_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:high002_quorum_threshold_liveness_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 222,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1545p_fix2",
+          "in CLASSIFIED_BY repo:file:8d7fd15f89d923f4:tests_test_phase_1545p_fix2_historical_snapshot_policy_py"
+        ]
+      },
+      "node_id": "policy:historical_phase_snapshot_tests_default_off_phase_1545p_fix2",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 223,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1545p_fix33",
+          "in REFERENCES_AUTHORITY repo:file:3617e4bfd3b4e2e3:tools_check_test_graph_coverage_py",
+          "in CLASSIFIED_BY repo:file:e0ba000d4a16bbb8:tests_test_phase_1545p_fix33_test_graph_coverage_py"
+        ]
+      },
+      "node_id": "policy:homoiconic_test_graph_checker_report_only_phase_1545p_fix33",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 224,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1545p_fix5",
+          "in CLASSIFIED_BY repo:file:41481c6c56dc7d30:tests_test_phase_1545p_fix5_public_disclosure_patent_coverage_py"
+        ]
+      },
+      "node_id": "policy:human_risk_authorization_relying_on_fedex_delivery_pending_uspto_receipts_phase_1545p_fix5",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 225,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in EVIDENCES repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "in CLASSIFIED_BY repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "out CARRIES_FORWARD phase:1352",
+          "in REFERENCES_AUTHORITY repo:file:f42516d41b44674d:tests_test_phase_1352_issuance_economics_integration_gate_py"
+        ]
+      },
+      "node_id": "policy:issuance_economics_integration_gate_phase_1352",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 226,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:0cd87cdfc13159be:tests_test_window_1343_1368_prompt_drafts_py"
+        ]
+      },
+      "node_id": "policy:issuance_stack_integration_and_not_activated_guard",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 227,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=2. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:40ebffb6241c3995:tests_test_phase_1417_review_lane_integration_py",
+          "in REFERENCES_AUTHORITY repo:file:9861f4f22cacdaa8:tests_test_phase_1414_review_lane_adr_py"
+        ]
+      },
+      "node_id": "policy:j008_review_lane_condition",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 228,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in EVIDENCES repo:file:838a4ebffcd219cc:ilc_core_epistemic_vrf_proof_verifier_py",
+          "in REFERENCES_AUTHORITY repo:file:72e49b42f99c1419:tests_test_phase_1413_vrf_integration_py"
+        ]
+      },
+      "node_id": "policy:j008_vrf_verifier_condition",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 229,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 23,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1485p",
+          "in CLASSIFIED_BY repo:file_ref:ilc_core_harness_local_immutable_store_py",
+          "in CLASSIFIED_BY repo:file:4cc2608db1eb6326:tests_test_phase_1485p_consent_gate_local_write_py"
+        ]
+      },
+      "node_id": "policy:local_immutable_store_not_production_phase_1485p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 230,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:b3efc6f9c98336b1:tests_test_window_767_774_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:m007_mysticeti_hooks_activation_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 231,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:tools_testbed_phase1360_multiop_control_sh",
+          "out CARRIES_FORWARD phase:1360",
+          "in REFERENCES_AUTHORITY repo:file:f02c4e08bf8fed62:tests_test_phase_1360_multi_operator_testnet_py"
+        ]
+      },
+      "node_id": "policy:multi_operator_mysticeti_testnet_phase_1360",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 232,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, in:TESTS:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in TESTS repo:file_ref:tests_test_window_767_774_integration_gate_772_py",
+          "in CLASSIFIED_BY repo:file:32133868845dc673:tests_test_window_767_774_integration_gate_772_py",
+          "in CLASSIFIED_BY repo:file:b3efc6f9c98336b1:tests_test_window_767_774_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:no_cdl_mutation_in_window_767_774",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 233,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:CLASSIFIED_BY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:cb08cd63ab73b758:tests_test_window_811_822_option_b_selection_and_pre_rc_hardening_py"
+        ]
+      },
+      "node_id": "policy:no_decision_log_mutation_window811_822",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 234,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=5. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=5"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file_ref:ilc_core_economics_reward_py",
+          "in REFERENCES_AUTHORITY repo:file:870d1697db1ebd8a:ilc_core_analysis_node_value_policy_migration_py",
+          "in REFERENCES_AUTHORITY repo:file:d271e37b25408132:ilc_core_analysis_node_value_governance_conformance_py",
+          "in REFERENCES_AUTHORITY repo:file:e08f097625ada717:ilc_core_analysis_node_value_kernel_py",
+          "in CLASSIFIED_BY repo:file:0574c3ff11093e22:ilc_core_analysis_node_value_input_canon_py"
+        ]
+      },
+      "node_id": "policy:node_value_kernel",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 235,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:5a6b6c05324298be:tests_test_phase_1323_openclaw_nemoclaw_claimable_profile_full_dry_run_py"
+        ]
+      },
+      "node_id": "policy:openclaw_nemoclaw_hosts_not_protocol_substrates",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 236,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file_ref:docs_specs_ilc_phase_1323_fix2_openclaw_vps_install_skill_discovery_v0_1_json",
+          "in REFERENCES_AUTHORITY repo:file:5c82aa6b4a9e37e9:tests_test_phase_1323_fix2_openclaw_vps_install_skill_discovery_py"
+        ]
+      },
+      "node_id": "policy:openclaw_private_vps_install_discovery_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 237,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1550p",
+          "in CLASSIFIED_BY repo:file:f74deca1c6da0d01:tests_test_phase_1550p_obl029_peer_funded_bounty_py"
+        ]
+      },
+      "node_id": "policy:peer_funded_bounty_runtime_not_activated_phase_1550p",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 238,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:REFERENCES_AUTHORITY:repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:eb43e4bddb056a23:tests_test_phase_1196_persistent_rate_limiter_py"
+        ]
+      },
+      "node_id": "policy:persistent_fetch_rate_limiter_scope",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 239,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 24,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:REFERENCES_AUTHORITY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:31e3d5988c063cd2:ilc_core_server_py",
+          "out CARRIES_FORWARD phase:1001",
+          "in REFERENCES_AUTHORITY repo:file:ef3dcf1d9f1db775:tests_test_server_app_factory_phase_1001_py"
+        ]
+      },
+      "node_id": "policy:phase1001_server_app_factory_import_side_effect_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 240,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:1545p_fix31",
+          "in CLASSIFIED_BY repo:file:a8e802fdfff0c14f:tests_test_phase_1545p_fix31_candidate_reducer_v04_v05_py"
+        ]
+      },
+      "node_id": "policy:phase1573_signing_input_requires_human_scope_selection_phase_1545p_fix31",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 241,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:IMPLEMENTS:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:IMPLEMENTS:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_logging_config_py",
+          "out CARRIES_FORWARD phase:171",
+          "in CLASSIFIED_BY repo:file:d1989972a551cfc5:tests_test_runtime_logging_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase171_runtime_logging_hardening_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 242,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:198",
+          "in REFERENCES_AUTHORITY repo:file:09d9baf88a13876a:tests_test_server_lifecycle_phase_198_py"
+        ]
+      },
+      "node_id": "policy:phase198_server_lifecycle_app_state_boundary",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 243,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:199",
+          "in REFERENCES_AUTHORITY repo:file:0b6cf1aab0ec4a0a:tests_test_server_instance_isolation_phase_199_py"
+        ]
+      },
+      "node_id": "policy:phase199_server_instance_state_isolation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 244,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:REFERENCES_AUTHORITY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:c6fd1b857a4e9b08:ilc_core_analysis_utility_flow_rewards_py",
+          "out CARRIES_FORWARD phase:208",
+          "in REFERENCES_AUTHORITY repo:file:83d8e7bf5a13465c:tests_test_utility_flow_rewards_phase_208_py"
+        ]
+      },
+      "node_id": "policy:phase208_utility_flow_reward_governor",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 245,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:REFERENCES_AUTHORITY:repo=3, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=3",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:e08f097625ada717:ilc_core_analysis_node_value_kernel_py",
+          "out CARRIES_FORWARD phase:216",
+          "in REFERENCES_AUTHORITY repo:file:bbe94cc3725d3d62:ilc_core_analysis_reuse_diversity_invariants_py",
+          "in REFERENCES_AUTHORITY repo:file:7f335e4d6d3e1229:tests_test_reuse_diversity_invariants_phase_216_py"
+        ]
+      },
+      "node_id": "policy:phase216_reuse_diversity_anti_sybil_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 246,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:REFERENCES_AUTHORITY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:216",
+          "in REFERENCES_AUTHORITY repo:file:bbe94cc3725d3d62:ilc_core_analysis_reuse_diversity_invariants_py",
+          "in REFERENCES_AUTHORITY repo:file:c975de8f39909158:tests_test_reuse_diversity_invariants_gate_phase_216_py"
+        ]
+      },
+      "node_id": "policy:phase216_reuse_diversity_invariant_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 247,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:236",
+          "in CLASSIFIED_BY repo:file:23fb1952669e0a95:tests_test_phase_236_preflight_py"
+        ]
+      },
+      "node_id": "policy:phase236_composed_preflight_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 248,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:250",
+          "in CLASSIFIED_BY repo:file:7a4b0e2387745c88:tests_test_ratification_sequence_250_py"
+        ]
+      },
+      "node_id": "policy:phase250_259_sequence_lock_no_runtime_mutation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 249,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 25,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:270",
+          "in CLASSIFIED_BY repo:file:7781db90a077295e:tests_test_ratification_sequence_270_py"
+        ]
+      },
+      "node_id": "policy:phase270_279_cdl_dependency_ordering_no_mutation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 250,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:270",
+          "in REFERENCES_AUTHORITY repo:file:7781db90a077295e:tests_test_ratification_sequence_270_py"
+        ]
+      },
+      "node_id": "policy:phase270_279_issuance_governance_closure_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 251,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:296",
+          "in CLASSIFIED_BY repo:file:17e11833ab0d0f46:tests_test_phase_commit_manifest_296_py"
+        ]
+      },
+      "node_id": "policy:phase296_commit_manifest_resolver_hardening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 252,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:430",
+          "in CLASSIFIED_BY repo:file:f7c131cf5284866a:tests_test_phase_430_sim_009_results_synthesis_and_disposition_py"
+        ]
+      },
+      "node_id": "policy:phase430_sim009_insufficient_for_constitutional_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 253,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:431",
+          "in CLASSIFIED_BY repo:file:33f3703dbf9cba36:tests_test_phase_431_pe_stabilization_carry_forward_decision_py"
+        ]
+      },
+      "node_id": "policy:phase431_non_ratifying_pe_stabilization_carry_forward",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 254,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:437",
+          "in CLASSIFIED_BY repo:file:3ed112f7149944a3:tests_test_phase_437_runtime_tranche_findings_memo_and_regression_hardening_py"
+        ]
+      },
+      "node_id": "policy:phase437_runtime_tranche_findings_doc_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 255,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:446",
+          "in CLASSIFIED_BY repo:file:2eba45e8a6713140:tests_test_phase_446_consensus_runtime_iii_harness_integration_py"
+        ]
+      },
+      "node_id": "policy:phase446_consensus_runtime_harness_no_transport_or_storage_cutover",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 256,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:447",
+          "in CLASSIFIED_BY repo:file:a7d888872436a5a9:tests_test_phase_447_consensus_adversarial_regression_py"
+        ]
+      },
+      "node_id": "policy:phase447_consensus_findings_adversarial_regression_no_new_runtime_surface",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 257,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:450",
+          "in CLASSIFIED_BY repo:file:ba36e546e5314bea:tests_test_phase_450_window_sequence_lock_and_lane_identity_freeze_py"
+        ]
+      },
+      "node_id": "policy:phase450_window450_459_sequence_lock_lane_identity_freeze_no_opening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 258,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:456_fix13",
+          "in CLASSIFIED_BY repo:file:00bf2e1f9c1a077f:tests_test_phase_456_fix_13_post_nonlinear_control_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "policy:phase456_fix13_post_nonlinear_control_blocker1_remains_open_no_opening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 259,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 26,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=3, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=3",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:456_fix8",
+          "in REFERENCES_AUTHORITY repo:file:32a6d5dc0b42b867:tools_strike_path_nonlinear_backburn_search_py",
+          "in REFERENCES_AUTHORITY repo:file:2e3944f7e996fc1f:tools_strike_path_graph_indexed_waggle_oscillator_extended_search_py",
+          "in REFERENCES_AUTHORITY repo:file:1fa7334a27d842c4:tools_strike_path_oscillator_search_py",
+          "in CLASSIFIED_BY repo:file:8daa36f243304eb6:tests_test_phase_456_fix_8_oscillator_execution_and_blocker_1_reassessment_py"
+        ]
+      },
+      "node_id": "policy:phase456_fix8_oscillator_blocker1_cleared_no_opening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 260,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=3, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=3",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:2e3944f7e996fc1f:tools_strike_path_graph_indexed_waggle_oscillator_extended_search_py",
+          "in REFERENCES_AUTHORITY repo:file:32a6d5dc0b42b867:tools_strike_path_nonlinear_backburn_search_py",
+          "out CARRIES_FORWARD phase:456_fix9",
+          "in REFERENCES_AUTHORITY repo:file:1fa7334a27d842c4:tools_strike_path_oscillator_search_py",
+          "in CLASSIFIED_BY repo:file:07981043896d87d1:tests_test_phase_456_fix_9_post_oscillator_blocker_disposition_review_py"
+        ]
+      },
+      "node_id": "policy:phase456_fix9_post_oscillator_blocker1_cleared_rerun_admissible_no_opening",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 261,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:475",
+          "in CLASSIFIED_BY repo:file:ee477fbc5eaad13e:tests_test_phase_475_window_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase475_window475_484_sequence_lock_scope_freeze",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 262,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:483",
+          "in CLASSIFIED_BY repo:file:ba75e6b07d413104:tests_test_phase_483_coherence_and_capsule_v2_2_py"
+        ]
+      },
+      "node_id": "policy:phase483_window475_484_coherence_capsule_v2_2",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 263,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:485",
+          "in CLASSIFIED_BY repo:file:850d99a5e58cc454:tests_test_phase_485_window_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase485_window485_494_sequence_lock_sim010_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 264,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:503",
+          "in CLASSIFIED_BY repo:file:f85faf48754fdcc2:tests_test_phase_503_coherence_report_and_capsule_v2_3_py"
+        ]
+      },
+      "node_id": "policy:phase503_window495_504_coherence_capsule_v2_3",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 265,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:533",
+          "in CLASSIFIED_BY repo:file:d247cbab1b151a2a:tests_test_phase_533_coherence_report_and_capsule_v2_6_py"
+        ]
+      },
+      "node_id": "policy:phase533_window525_534_coherence_capsule_v2_6",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 266,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:556",
+          "in CLASSIFIED_BY repo:file:51738a430e4b55bc:tests_test_phase_556_adr_023_signal_floor_invariant_py"
+        ]
+      },
+      "node_id": "policy:phase556_signal_floor_governance_adm_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 267,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:559",
+          "in CLASSIFIED_BY repo:file:045b313df930ee50:tests_test_phase_559_gossip_transport_hardening_py"
+        ]
+      },
+      "node_id": "policy:phase559_gossip_transport_hardening_test_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 268,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:563",
+          "in CLASSIFIED_BY repo:file:97aa752985fc37f1:tests_test_phase_563_coherence_report_and_capsule_py"
+        ]
+      },
+      "node_id": "policy:phase563_window555_564_coherence_capsule_v2_9",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 269,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 27,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:565",
+          "in CLASSIFIED_BY repo:file:372a488edf740c33:tests_test_phase_565_window_565_574_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase565_window565_574_sequence_lock_three_machine_http_transport",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 270,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:566",
+          "in CLASSIFIED_BY repo:file:f438d0f9054fa7b8:docs_specs_ilc_transport_operationalization_boundary_lock_566_v0_1_md",
+          "in CLASSIFIED_BY repo:file:7a71188875fb4ec1:tests_test_phase_566_transport_operationalization_boundary_lock_py"
+        ]
+      },
+      "node_id": "policy:phase566_transport_operationalization_boundary_lock_explicit_http_testbed",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 271,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:604",
+          "in CLASSIFIED_BY repo:file:6ac33fee223c5458:tests_test_phase_604_coherence_report_and_capsule_v3_2_py"
+        ]
+      },
+      "node_id": "policy:phase604_window596_605_coherence_report_capsule_v3_2",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 272,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:620",
+          "in CLASSIFIED_BY repo:file:848ec08a968d2e37:tests_test_phase_620_window_620_622_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase620_window620_622_agent_skills_planning_lane_spec_only",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 273,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:636",
+          "in CLASSIFIED_BY repo:file:ebeaa33c49d2ad88:tests_test_phase_636_tier0_numeric_hardening_and_closure_py"
+        ]
+      },
+      "node_id": "policy:phase636_tier0_numeric_hardening_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 274,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:637",
+          "in CLASSIFIED_BY repo:file:5d241af41b7e8e81:tests_test_phase_637_window_637_641_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase637_window637_641_residual_r2_r3_numeric_cleanup",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 275,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:641",
+          "in CLASSIFIED_BY repo:file:3471e52d4efaaf6e:tests_test_phase_641_residual_numeric_cleanup_and_closure_py"
+        ]
+      },
+      "node_id": "policy:phase641_residual_numeric_cleanup_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 276,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:654",
+          "in CLASSIFIED_BY repo:file:9ed62d98cdcde7cf:tests_test_phase_654_window_649_654_closure_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:phase654_window649_654_runtime_closure_rows1_4",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 277,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:655",
+          "in REFERENCES_AUTHORITY repo:file:5da2551c69b7bc33:tests_test_phase_658_window_655_658_hardening_and_handoff_py",
+          "in CLASSIFIED_BY repo:file:8f8fc8e57f43c72d:tests_test_phase_655_window_655_658_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase655_window655_658_signing_export_reproducibility_lane",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 278,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=4, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=4",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "in REFERENCES_AUTHORITY repo:file:2b3922d07a757792:ilc_core_cli_canon_bundle_key_registry_promotion_py",
+          "out CARRIES_FORWARD phase:657",
+          "in REFERENCES_AUTHORITY repo:file:25264d5f5b80b81a:ilc_core_cli_canon_bundle_key_registry_fetch_py",
+          "in REFERENCES_AUTHORITY repo:file:6ac9f757ac684a24:ilc_core_cli_canon_bundle_key_registry_channel_py",
+          "in REFERENCES_AUTHORITY repo:file:d7e3420cdb32af39:ilc_core_cli_canon_bundle_key_registry_sync_py"
+        ]
+      },
+      "node_id": "policy:phase657_registry_channel_promotion_sync_reproducibility",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 279,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 28,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:658",
+          "in CLASSIFIED_BY repo:file:5da2551c69b7bc33:tests_test_phase_658_window_655_658_hardening_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:phase658_signing_export_hardening_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 280,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:659",
+          "in CLASSIFIED_BY repo:file:c48200a72fa660eb:tests_test_phase_659_window_659_664_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase659_row6_coupling_invariants_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 281,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:665",
+          "in CLASSIFIED_BY repo:file:27307dc888db944a:tests_test_phase_665_window_665_670_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase665_row9_transport_maturity_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 282,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 5 total; in:CLASSIFIED_BY:repo=2, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=2",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 5,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:669",
+          "in EVIDENCES repo:file_ref:tools_run_window_665_670_transport_maturity_closure_gate_phase_670_sh",
+          "in CLASSIFIED_BY repo:file_ref:docs_specs_ilc_transport_hardening_and_maturity_decision_669_v0_1_md",
+          "in CLASSIFIED_BY repo:file:278fc1c5fa2ac1ec:tests_test_phase_669_transport_hardening_and_maturity_decision_py",
+          "in REFERENCES_AUTHORITY repo:file:d860d00ddb78489b:tests_test_phase_670_window_665_670_closure_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:phase669_transport_maturity_decision_closure_candidate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 283,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:670",
+          "in CLASSIFIED_BY repo:file:d860d00ddb78489b:tests_test_phase_670_window_665_670_closure_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:phase670_window665_670_row9_transport_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 284,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:EVIDENCES:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:676",
+          "in REFERENCES_AUTHORITY repo:file:cb1e7e076666b369:tests_test_phase_698_row_7_tlc_evidence_mysticeti_py",
+          "in EVIDENCES repo:file:f4dee0a7ef1d0315:tests_test_phase_699_row_8_mysticeti_sovereign_config_py",
+          "in CLASSIFIED_BY repo:file:97c983049b4e0e18:tests_test_phase_676_window_671_676_closure_and_handoff_py"
+        ]
+      },
+      "node_id": "policy:phase676_rows7_8_censorship_independence_criteria_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 285,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:REFERENCES_AUTHORITY:repo=5, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:REFERENCES_AUTHORITY:repo=5",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:690",
+          "in REFERENCES_AUTHORITY repo:file:55221e229115d09a:tests_test_phase_M015_workload_c_results_py",
+          "in REFERENCES_AUTHORITY repo:file:298af6efe05306e7:tests_test_phase_M019_adversarial_hardening_results_py",
+          "in REFERENCES_AUTHORITY repo:file:92003bff358673e5:tests_test_phase_M016_workload_d_results_py",
+          "in REFERENCES_AUTHORITY repo:file:b3379e1c8e118812:tests_test_phase_M014_workload_b_results_py"
+        ]
+      },
+      "node_id": "policy:phase690_mysticeti_workload_suite",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 286,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:697",
+          "in CLASSIFIED_BY repo:file:446ef749460c0911:tests_test_phase_697_row_5_mechanism_proof_mysticeti_py"
+        ]
+      },
+      "node_id": "policy:phase697_mysticeti_row5_mechanism_proof",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 287,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:698",
+          "in CLASSIFIED_BY repo:file:cb1e7e076666b369:tests_test_phase_698_row_7_tlc_evidence_mysticeti_py"
+        ]
+      },
+      "node_id": "policy:phase698_mysticeti_row7_tlc_evidence",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 288,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:699",
+          "in CLASSIFIED_BY repo:file:f4dee0a7ef1d0315:tests_test_phase_699_row_8_mysticeti_sovereign_config_py"
+        ]
+      },
+      "node_id": "policy:phase699_mysticeti_row8_sovereign_configuration_confirmation",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 289,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 29,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:700",
+          "in CLASSIFIED_BY repo:file:249aa95513d4fbd2:tests_test_phase_700_coherence_capsule_v4_4_and_window_693_700_closure_gate_py",
+          "in REFERENCES_AUTHORITY repo:file:f62735c7be0d8b95:tests_test_phase_701_window_701_706_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase700_window693_700_substrate_legitimacy_closure_gate",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 290,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 4 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=2, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=2",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 4,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:701",
+          "in CLASSIFIED_BY repo:file:f62735c7be0d8b95:tests_test_phase_701_window_701_706_sequence_lock_py",
+          "in REFERENCES_AUTHORITY repo:file:bae45444de6baa98:tests_test_phase_703_bal_profile_kernel_calibration_and_replay_contract_py",
+          "in REFERENCES_AUTHORITY repo:file:bc7c6012d87df1b0:tests_test_phase_706_coherence_capsule_v4_5_and_window_701_706_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase701_window701_706_bal_kernel_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 291,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:703",
+          "in CLASSIFIED_BY repo:file:bae45444de6baa98:tests_test_phase_703_bal_profile_kernel_calibration_and_replay_contract_py"
+        ]
+      },
+      "node_id": "policy:phase703_bal_profile_kernel_calibration_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 292,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:704",
+          "in CLASSIFIED_BY repo:file:1e819e8b4ad3209c:tests_test_phase_704_post_banking_doctrine_lock_py"
+        ]
+      },
+      "node_id": "policy:phase704_post_banking_doctrine_lock_not_binding_law",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 293,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:706",
+          "in CLASSIFIED_BY repo:file:bc7c6012d87df1b0:tests_test_phase_706_coherence_capsule_v4_5_and_window_701_706_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase706_window701_706_economic_doctrine_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 294,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:707",
+          "in CLASSIFIED_BY repo:file:baae9f9a65d02c08:tests_test_phase_707_window_707_712_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase707_window707_712_ratification_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 295,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:712",
+          "in CLASSIFIED_BY repo:file:2e36fe36014ca415:tests_test_phase_712_coherence_report_capsule_v4_6_and_window_707_712_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase712_window707_712_ratification_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 296,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:713",
+          "in CLASSIFIED_BY repo:file:8650a9b98e546c9d:tests_test_phase_713_window_713_716_sequence_lock_py"
+        ]
+      },
+      "node_id": "policy:phase713_window713_716_adaptive_gossip_sequence_lock",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 297,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:714",
+          "in REFERENCES_AUTHORITY repo:file:fb7c09faf02f2db8:tests_test_phase_716_coherence_report_capsule_v4_7_and_window_713_716_closure_gate_py",
+          "in CLASSIFIED_BY repo:file:b2dde830613b6bdd:tests_test_phase_714_adaptive_gossip_contract_and_law_vs_freedom_classification_py"
+        ]
+      },
+      "node_id": "policy:phase714_adaptive_gossip_law_vs_freedom_contract",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 298,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:CLASSIFIED_BY:repo=1, in:REFERENCES_AUTHORITY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:715",
+          "in REFERENCES_AUTHORITY repo:file:fb7c09faf02f2db8:tests_test_phase_716_coherence_report_capsule_v4_7_and_window_713_716_closure_gate_py",
+          "in CLASSIFIED_BY repo:file:18d0c2a287f88f0f:tests_test_phase_715_partition_repair_benchmark_pack_and_missing_signal_doctrine_py"
+        ]
+      },
+      "node_id": "policy:phase715_partition_repair_commissioning_missing_signal_doctrine",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 299,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
+    },
+    {
+      "batch": 30,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "authority_terminal_policy",
+      "direct_read_evidence": "Full LMDB node record read: node_kind=policy_support_trace_node; category=authority_terminal_policy; authority_status=candidate_overlay_support_trace_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:CLASSIFIED_BY:repo=1, out:CARRIES_FORWARD:non_repo=1. Policy support record does not name a canonical CDL/ADR/artifact target in its LMDB fields; no root bridge or authority edge is added by inference.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "out:CARRIES_FORWARD:non_repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "out CARRIES_FORWARD phase:716",
+          "in CLASSIFIED_BY repo:file:fb7c09faf02f2db8:tests_test_phase_716_coherence_report_capsule_v4_7_and_window_713_716_closure_gate_py"
+        ]
+      },
+      "node_id": "policy:phase716_window713_716_adaptive_gossip_closure",
+      "node_kind": "policy_support_trace_node",
+      "prefix": "policy",
+      "queue_index": 300,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": false
     }
   ],
   "edges_written": 0,
@@ -5642,8 +8648,8 @@
   "live_queue_count": 1219,
   "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
   "missing_canonical_targets": [],
-  "next_queue_index": 201,
-  "nodes_completed": 200,
+  "next_queue_index": 301,
+  "nodes_completed": 300,
   "notes": [
     "Batches 001-010 are conservative support dispositions. No root bridge was written without direct source evidence of a canonical target.",
     "Phase-file LMDB registration for this report and walkthrough is performed after the files are finalized for the intermediate commit to avoid stale source_hash churn in the committed artifacts."
@@ -5663,7 +8669,7 @@
     "window": 10
   },
   "reachable_non_repo_count": 2104,
-  "scope_status": "in_progress_batches_001_020",
+  "scope_status": "in_progress_batches_001_030",
   "zero_degree_count": 946,
   "zero_degree_prefix_breakdown": {
     "atlas": 1,
