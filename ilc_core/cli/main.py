@@ -46,6 +46,7 @@ OPERATIONAL_COMMANDS = (
     "sidecar",
     "ccss",
     "atlas",
+    "bootstrap",
     "submit",
     "version",
 )
@@ -1409,6 +1410,80 @@ def _build_parser() -> JsonArgumentParser:
             p_atlas_plan.add_argument("--receipt", default="", help="Optional receipt path")
             continue
 
+        if command == "bootstrap":
+            bootstrap_parser = subparsers.add_parser(
+                "bootstrap",
+                help="Materialize a verified ILC package profile into a local tree",
+            )
+            bootstrap_parser.add_argument(
+                "--profile",
+                required=True,
+                help="Frozen package profile JSON",
+            )
+            bootstrap_parser.add_argument(
+                "--out",
+                required=True,
+                help="Output directory for the staged materialized tree",
+            )
+            bootstrap_parser.add_argument(
+                "--verify",
+                action="store_true",
+                help="Recompute SHA-256 for every materialized file",
+            )
+            bootstrap_parser.add_argument(
+                "--receipt",
+                required=True,
+                help="Path to write the reconstruction receipt JSON",
+            )
+            bootstrap_parser.add_argument(
+                "--repo-root",
+                default=".",
+                help="Local repository root byte source",
+            )
+            bootstrap_parser.add_argument(
+                "--cache-dir",
+                default="",
+                help="Optional content-addressed cache directory",
+            )
+            bootstrap_parser.add_argument(
+                "--tarball",
+                default="",
+                help="Optional source tarball byte source",
+            )
+            bootstrap_parser.add_argument(
+                "--http-base-url",
+                default="",
+                help="Optional HTTP base URL byte source",
+            )
+            bootstrap_parser.add_argument(
+                "--max-total-bytes",
+                type=int,
+                default=256 * 1024 * 1024,
+                help="Maximum total materialized bytes",
+            )
+            bootstrap_parser.add_argument(
+                "--recipe",
+                default="",
+                help="Optional build/test recipe JSON",
+            )
+            bootstrap_parser.add_argument(
+                "--run-recipe",
+                action="store_true",
+                help="Run the supplied build/test recipe after hash verification",
+            )
+            bootstrap_parser.add_argument(
+                "--recipe-timeout",
+                type=int,
+                default=120,
+                help="Per-command recipe timeout in seconds",
+            )
+            bootstrap_parser.add_argument(
+                "--overwrite",
+                action="store_true",
+                help="Replace an existing output directory after safety checks",
+            )
+            continue
+
         if command == "balance":
             balance_parser = subparsers.add_parser(
                 "balance",
@@ -1506,7 +1581,18 @@ def _run_top_level_command(
     args: argparse.Namespace,
     graph_state_path: Path,
 ) -> dict[str, Any]:
-    if command not in {"query", "verify", "bundle", "agent", "node", "sidecar", "ccss", "atlas"}:
+    stateless_commands = {
+        "agent",
+        "atlas",
+        "bootstrap",
+        "bundle",
+        "ccss",
+        "node",
+        "query",
+        "sidecar",
+        "verify",
+    }
+    if command not in stateless_commands:
         _ensure_local_graph_state(graph_state_path, command)
 
     if command == "version":
@@ -1549,6 +1635,31 @@ def _run_top_level_command(
         try:
             data = run_atlas_command(args)
         except AtlasLmdbCliError as exc:
+            raise ValueError(str(exc)) from exc
+        return _success_payload(command, data)
+    if command == "bootstrap":
+        from ilc_core.distribution.materialization import (
+            MaterializationError,
+            bootstrap,
+        )
+
+        try:
+            data = bootstrap(
+                profile_path=Path(args.profile),
+                out_dir=Path(args.out),
+                receipt_path=Path(args.receipt),
+                verify=bool(args.verify),
+                repo_root=Path(args.repo_root),
+                cache_dir=Path(args.cache_dir) if args.cache_dir else None,
+                tarball=Path(args.tarball) if args.tarball else None,
+                http_base_url=str(args.http_base_url or ""),
+                max_total_bytes=int(args.max_total_bytes),
+                recipe_path=Path(args.recipe) if args.recipe else None,
+                run_recipe=bool(args.run_recipe),
+                recipe_timeout_seconds=int(args.recipe_timeout),
+                overwrite=bool(args.overwrite),
+            )
+        except MaterializationError as exc:
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "balance":
