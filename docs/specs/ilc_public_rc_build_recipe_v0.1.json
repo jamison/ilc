@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pip",
+        "install",
+        "-e",
+        ".[public-rc]"
+      ],
+      "id": "editable_public_rc_install"
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_public_rc_package_profiles.py",
+        "-q"
+      ],
+      "id": "public_rc_package_profile_tests"
+    },
+    {
+      "argv": [
+        "python",
+        "-m",
+        "pytest",
+        "tests/test_phase_1545p_fix65_package_membership_manifest.py",
+        "-q"
+      ],
+      "id": "package_membership_manifest_tests"
+    }
+  ],
+  "execution_default": "declared_only_run_with_--run-recipe",
+  "non_claims": [
+    "not_language_agnostic",
+    "not_behavioral_spec_conformance",
+    "not_genesis_signing",
+    "not_public_rc_activation"
+  ],
+  "notes": "Reference implementation materialization only. Not a behavioral-spec conformance receipt.",
+  "profile_name": "ilc-public-rc",
+  "schema_version": "ilc_public_rc_build_recipe_1545p_fix83.v0.1",
+  "signed": false
+}
