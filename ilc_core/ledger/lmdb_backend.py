@@ -24,7 +24,7 @@ def _encode_key(value: str) -> bytes:
 
 
 def _encode_json(payload: object) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
 def _decode_json(payload: bytes | None) -> JsonObject | None:
