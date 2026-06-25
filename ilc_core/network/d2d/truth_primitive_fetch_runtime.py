@@ -40,6 +40,10 @@ from typing import Any
 
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+from ilc_core.network.d2d.tls_policy import (
+    D2D_INSECURE_SKIP_TLS_VERIFY_ENV,
+    should_disable_tls_verification,
+)
 
 TRUTH_PRIMITIVE_FETCH_RUNTIME_VERSION = "truth_primitive_fetch_runtime_901.v0.1"
 TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
@@ -54,7 +58,7 @@ WANT_BLOCK_RATE_LIMIT_PER_MINUTE = 10
 FETCH_RATE_LIMITER_MAX_BUCKETS = 10_000
 _FETCH_TIMEOUT_SECONDS = 5.0
 _MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB — OOM guard on inbound
-_FETCH_TLS_INSECURE_ENV = "ILC_D2D_INSECURE_SKIP_TLS_VERIFY"
+_FETCH_TLS_INSECURE_ENV = D2D_INSECURE_SKIP_TLS_VERIFY_ENV
 _FETCH_RESPONSE_TOO_LARGE_TOKEN = "fetch_response_too_large"
 
 # Dep-chain guard
@@ -86,11 +90,12 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 
 def _client_ssl_context() -> ssl.SSLContext:
-    """Return the default verified TLS context unless explicit testbed opt-out is set."""
+    """Return verified TLS in public mode even if the dev/test bypass is set."""
     context = ssl.create_default_context()
-    if os.environ.get(_FETCH_TLS_INSECURE_ENV) == "1":
-        # RC/testbed-only escape hatch for self-signed local nodes. Production
-        # callers must leave this unset so normal certificate verification applies.
+    if should_disable_tls_verification(
+        insecure_requested=os.environ.get(_FETCH_TLS_INSECURE_ENV) == "1",
+        stacklevel=2,
+    ):
         context.check_hostname = False
         context.verify_mode = ssl.CERT_NONE
     return context
