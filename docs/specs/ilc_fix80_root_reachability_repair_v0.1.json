@@ -1120,15 +1120,155 @@
       "queue_index_end": 800,
       "queue_index_start": 791,
       "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 81,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 810,
+      "queue_index_start": 801,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 82,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 820,
+      "queue_index_start": 811,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 83,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 830,
+      "queue_index_start": 821,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 84,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 840,
+      "queue_index_start": 831,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 85,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 850,
+      "queue_index_start": 841,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 86,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 860,
+      "queue_index_start": 851,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 87,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 870,
+      "queue_index_start": 861,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 88,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 880,
+      "queue_index_start": 871,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 89,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 890,
+      "queue_index_start": 881,
+      "status": "complete_no_edges_to_apply"
+    },
+    {
+      "batch": 90,
+      "edges_planned": 0,
+      "edges_written": 0,
+      "lmdb_application": {
+        "edges_written": 0,
+        "note": "No add_edge or same_authority_or_lifecycle rows in this batch.",
+        "status": "PASS"
+      },
+      "node_count": 10,
+      "queue_index_end": 900,
+      "queue_index_start": 891,
+      "status": "complete_no_edges_to_apply"
     }
   ],
-  "batches_completed": 80,
+  "batches_completed": 90,
   "disposition_summary": {
     "add_edge": 0,
     "human_escalation": 0,
     "missing_canonical_target": 0,
     "same_authority_or_lifecycle": 0,
-    "support_leaf_no_wiring_required": 800
+    "support_leaf_no_wiring_required": 900
   },
   "dispositions": [
     {
@@ -22848,6 +22988,2802 @@
       "source_path": "",
       "target_node": null,
       "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:b998f5f0d56d609c:ilc_core_cli_cli_error_py",
+          "in COVERS_SYMBOL repo:file:f99726ef223dd7bd:tests_test_cli_error_output_standardization_guardrail_py"
+        ]
+      },
+      "node_id": "target:ilc_core_cli__cli_error_emit_cli_error",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 801,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:05b0db8d431e5563:ilc_core_cli_key_utils_py",
+          "in COVERS_SYMBOL repo:file:ce8fa01368a590b8:tests_test_cli_key_loader_dedupe_phase_999_py"
+        ]
+      },
+      "node_id": "target:ilc_core_cli__key_utils_load_key_bytes_with_b64_fallback",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 802,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 2 total; in:IMPLEMENTS:repo=1, in:TESTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:IMPLEMENTS:repo=1",
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:79aae7dd284326a5:ilc_core_cli_main_py",
+          "in TESTS repo:file:adb406f992d90f9c:tests_test_phase_1561_ecu_live_smoke_py"
+        ]
+      },
+      "node_id": "target:ilc_core_cli_balance_report",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 803,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:9aae5d044ff900d9:ilc_core_cli_canon_cluster_a_replay_proof_py",
+          "in COVERS_SYMBOL repo:file:825571aa141093af:tests_test_ilc_cluster_a_replay_proof_cli_batch_py"
+        ]
+      },
+      "node_id": "target:ilc_core_cli_canon_cluster_a_replay_proof_main",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 804,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:6fd1e3fbc94bd722:ilc_core_cli_mcp_cli_py",
+          "in COVERS_SYMBOL repo:file:59d9eb7d9e400b3f:tests_test_mcp_cli_domain_exceptions_py"
+        ]
+      },
+      "node_id": "target:ilc_core_cli_mcp_cli__invoke_tool",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 805,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 8 total; in:TESTS:repo=8. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=8"
+        ],
+        "incident_edge_count": 8,
+        "incident_examples": [
+          "in TESTS repo:file:41d14684a1a52f25:tests_test_d2e_06_verify_subsystem_302_py",
+          "in TESTS repo:file:75d3b5da673077dc:tests_test_cdl_v3_diversity_floor_runtime_397_py",
+          "in TESTS repo:file:f77bbf874822b0ef:tests_test_cdl_v1_temporal_decay_runtime_388_py",
+          "in TESTS repo:file:dbced96e3e73fcab:tests_test_d2e_05_query_subsystem_300_py",
+          "in TESTS repo:file:00d77dfbea504614:tests_test_cdl_v7_popperian_gate_runtime_398_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 806,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:16cd523a5da66375:ilc_core_consensus_engine_py",
+          "in COVERS_SYMBOL repo:file:e004df951a0de381:tests_test_paradigm_shift_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_engine_consensusengine_calculate_maintenance_tax",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 807,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:16cd523a5da66375:ilc_core_consensus_engine_py",
+          "in COVERS_SYMBOL repo:file:e004df951a0de381:tests_test_paradigm_shift_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_engine_consensusengine_calculate_refutation_bounty",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 808,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:8f4358e4ba669c41:ilc_core_consensus_finality_evaluator_py",
+          "in COVERS_SYMBOL repo:file:b494905cfccadca2:tests_test_phase_1235_commit_epoch_canonical_mutation_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_finality_evaluator_evaluate_epoch_finality",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 809,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 81,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:05168d575831c41d:ilc_core_consensus_governance_py",
+          "in COVERS_SYMBOL repo:file:e44b0f67688be3a6:tests_test_governance_config_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_governance_governance",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 810,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:05168d575831c41d:ilc_core_consensus_governance_py",
+          "in COVERS_SYMBOL repo:file:54e6af6076ca72a0:tests_test_governance_engine_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_governance_governance_get_task_fee_ecu",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 811,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:05168d575831c41d:ilc_core_consensus_governance_py",
+          "in COVERS_SYMBOL repo:file:54e6af6076ca72a0:tests_test_governance_engine_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_governance_governance_update_congestion",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 812,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:05168d575831c41d:ilc_core_consensus_governance_py",
+          "in COVERS_SYMBOL repo:file:54e6af6076ca72a0:tests_test_governance_engine_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_governance_governance_update_hardware_potential",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 813,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:343a152da3b7e098:ilc_core_consensus_production_bridge_py",
+          "in COVERS_SYMBOL repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_production_bridge_build_quic_ecu_transfer_submission_path",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 814,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:343a152da3b7e098:ilc_core_consensus_production_bridge_py",
+          "in COVERS_SYMBOL repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_production_bridge_build_secure_grpc_read_stub",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 815,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:343a152da3b7e098:ilc_core_consensus_production_bridge_py",
+          "in COVERS_SYMBOL repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_production_bridge_ilcconsensusgrpcreadadapter",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 816,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:343a152da3b7e098:ilc_core_consensus_production_bridge_py",
+          "in COVERS_SYMBOL repo:file:7b027737f02fa556:tests_test_phase_1358_production_bridge_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_production_bridge_submit_ecu_transfer_via_quic",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 817,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:7c396230272494e0:ilc_core_consensus_reputation_py",
+          "in COVERS_SYMBOL repo:file:17652fb6628a4d11:tests_test_phase_1357_reputation_h11_float_kill_py"
+        ]
+      },
+      "node_id": "target:ilc_core_consensus_reputation_apply_atrophy",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 818,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:TESTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in TESTS repo:file:a8f831d326b22fac:tests_test_phase_551_passive_ecu_attribution_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 819,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 82,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 1 total; in:TESTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in TESTS repo:file:e22c9ce9b3e0bf52:tests_test_phase_1120_sim_provenance_01_commissioning_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_attribution_settle_runtime",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 820,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py",
+          "in COVERS_SYMBOL repo:file:43f28df9705d2890:tests_test_phase_1350_cdl_083_ejected_stake_treasury_distribution_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_attribution_settle_runtime_build_ejected_stake_treasury_distribution_quote",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 821,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=2, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py",
+          "in COVERS_SYMBOL repo:file:6d0ef541b3ab45a2:tests_test_phase_1107_h_con_02_panel_quorum_settle_py",
+          "in COVERS_SYMBOL repo:file:43f28df9705d2890:tests_test_phase_1350_cdl_083_ejected_stake_treasury_distribution_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_attribution_settle_runtime_evaluate_ejected_stake_vote",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 822,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py",
+          "in COVERS_SYMBOL repo:file:43f28df9705d2890:tests_test_phase_1350_cdl_083_ejected_stake_treasury_distribution_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_attribution_settle_runtime_require_h_con_02_quorum_guard",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 823,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 9 total; in:COVERS_SYMBOL:repo=7, in:IMPLEMENTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=7",
+          "in:IMPLEMENTS:repo=2"
+        ],
+        "incident_edge_count": 9,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:docs_antigravity_tasks_antigravity_prompt__phase_1126_cdl_084_q2_ratification_md",
+          "in IMPLEMENTS repo:file:495c814a6d08ae5d:ilc_core_economics_epoch_attribution_settle_runtime_py",
+          "in COVERS_SYMBOL repo:file:60a3027a713215d4:tests_test_phase_1127_cdl_084_q2_amendment_py",
+          "in COVERS_SYMBOL repo:file:4a67da8432bcb749:tests_test_phase_1129_fix1_provenance_input_hardening_py",
+          "in COVERS_SYMBOL repo:file:3dbbcf8677c6a35f:tests_test_phase_1185_cdl_085_ratification_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_attribution_settle_runtime_settle_attribution_batch",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 824,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:66462d95d5523cc8:ilc_core_economics_epoch_ledger_py",
+          "in COVERS_SYMBOL repo:file:8dc87d9a30ce9098:tests_test_epoch_ledger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_ledger_simpleepochledger_clearing_price",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 825,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:66462d95d5523cc8:ilc_core_economics_epoch_ledger_py",
+          "in COVERS_SYMBOL repo:file:8dc87d9a30ce9098:tests_test_epoch_ledger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_ledger_simpleepochledger_get_epoch_stats",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 826,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:66462d95d5523cc8:ilc_core_economics_epoch_ledger_py",
+          "in COVERS_SYMBOL repo:file:8dc87d9a30ce9098:tests_test_epoch_ledger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_ledger_simpleepochledger_record_task",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 827,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:66462d95d5523cc8:ilc_core_economics_epoch_ledger_py",
+          "in COVERS_SYMBOL repo:file:8dc87d9a30ce9098:tests_test_epoch_ledger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_epoch_ledger_simpleepochledger_total_aggregate",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 828,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:5b9e77bc917681b7:tests_test_outcome_logger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_outcome_outcomelogger",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 829,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 83,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:8947edc1c39a3c40:tests_test_telemetry_rlhook_py",
+          "in COVERS_SYMBOL repo:file:5b9e77bc917681b7:tests_test_outcome_logger_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_outcome_taskoutcome",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 830,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:3bdce9645f89e26e:tests_test_reward_loop_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_reward_simple_claim_reward",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 831,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:8947edc1c39a3c40:tests_test_telemetry_rlhook_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_telemetry_economictelemetry",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 832,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:8947edc1c39a3c40:tests_test_telemetry_rlhook_py"
+        ]
+      },
+      "node_id": "target:ilc_core_economics_telemetry_rlhook",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 833,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:TESTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in TESTS repo:file:f544f60149b59364:tests_test_cdl_v2_sybil_resistance_runtime_389_py",
+          "in TESTS repo:file:f77bbf874822b0ef:tests_test_cdl_v1_temporal_decay_runtime_388_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 834,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:791a9e801bcafdee:ilc_core_epoch_allocation_distributor_runtime_py",
+          "in IMPLEMENTS repo:file:791a9e801bcafdee:ilc_core_epoch_allocation_distributor_runtime_py",
+          "in COVERS_SYMBOL repo:file:91b84c613f26ff5b:tests_test_phase_1351a_cdl_029_amendment_post_theta_hard_dust_routing_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_allocation_distributor_runtime_build_allocation_distribution_quote",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 835,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_candidate",
+      "category": null,
+      "direct_read_evidence": "Full LMDB node record read: node_kind=target_record_node; graph_projection=support_candidate_graph; candidate_status=fix59_stub. No source_path is present. Incident-edge read: 2 total; in:IMPLEMENTS:repo=1, in:TESTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:IMPLEMENTS:repo=1",
+          "in:TESTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in TESTS repo:file:adb406f992d90f9c:tests_test_phase_1561_ecu_live_smoke_py",
+          "in IMPLEMENTS repo:file:3a03f06a69e1e34e:ilc_core_epoch_epoch_emission_production_path_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_emission_production_path_guard",
+      "node_kind": "target_record_node",
+      "prefix": "target",
+      "queue_index": 836,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in EVIDENCES repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "in IMPLEMENTS repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "in COVERS_SYMBOL repo:file:f42516d41b44674d:tests_test_phase_1352_issuance_economics_integration_gate_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_issuance_economics_integration_gate_build_issuance_economics_integration_gate_report",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 837,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "in EVIDENCES repo:file:9d220efad180d2e5:ilc_core_epoch_issuance_economics_integration_gate_py",
+          "in COVERS_SYMBOL repo:file:f42516d41b44674d:tests_test_phase_1352_issuance_economics_integration_gate_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_issuance_economics_integration_gate_verify_issuance_economics_integration_gate",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 838,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:5f17ea19770af0c0:ilc_core_epoch_treasury_governance_runtime_py",
+          "in COVERS_SYMBOL repo:file:18837c93e9a1a2ac:tests_test_phase_1348_cdl_047_treasury_governance_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_treasury_governance_runtime_build_treasury_governance_quote",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 839,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 84,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:5f17ea19770af0c0:ilc_core_epoch_treasury_governance_runtime_py",
+          "in COVERS_SYMBOL repo:file:18837c93e9a1a2ac:tests_test_phase_1348_cdl_047_treasury_governance_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_treasury_governance_runtime_require_cdl_047_treasury_fractions",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 840,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:5f17ea19770af0c0:ilc_core_epoch_treasury_governance_runtime_py",
+          "in COVERS_SYMBOL repo:file:18837c93e9a1a2ac:tests_test_phase_1348_cdl_047_treasury_governance_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_treasury_governance_runtime_require_production_treasury_activation",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 841,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:5cc741fb9c8369d5:ilc_core_epoch_validator_reward_pool_routing_runtime_py",
+          "in COVERS_SYMBOL repo:file:95bff81ed6d87d32:tests_test_phase_1367_pre_gate_fix_pass_py"
+        ]
+      },
+      "node_id": "target:ilc_core_epoch_validator_reward_pool_routing_runtime_build_validator_reward_pool_routing_quote",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 842,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:c9146c372543f44d:tests_test_analysis_hygiene_phase_223_py"
+        ]
+      },
+      "node_id": "target:ilc_core_exceptions_nodevaluekernelerror",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 843,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:TESTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in TESTS repo:file:f77bbf874822b0ef:tests_test_cdl_v1_temporal_decay_runtime_388_py",
+          "in TESTS repo:file:f544f60149b59364:tests_test_cdl_v2_sybil_resistance_runtime_389_py"
+        ]
+      },
+      "node_id": "target:ilc_core_genesis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 844,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=2"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_genesis_work_task_py",
+          "in IMPLEMENTS repo:file:5e155771a62cd3b1:ilc_core_cli_ep_task_cli_py",
+          "in COVERS_SYMBOL repo:file:4c6cb321689a59bc:tests_test_genesis_work_task_model_py"
+        ]
+      },
+      "node_id": "target:ilc_core_genesis_work_task_ep_task_from_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 845,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=2"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_genesis_work_task_py",
+          "in IMPLEMENTS repo:file:5e155771a62cd3b1:ilc_core_cli_ep_task_cli_py",
+          "in COVERS_SYMBOL repo:file:4c6cb321689a59bc:tests_test_genesis_work_task_model_py"
+        ]
+      },
+      "node_id": "target:ilc_core_genesis_work_task_ep_task_to_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 846,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_genesis_work_task_py",
+          "in COVERS_SYMBOL repo:file:4c6cb321689a59bc:tests_test_genesis_work_task_model_py"
+        ]
+      },
+      "node_id": "target:ilc_core_genesis_work_task_epistemicworktask",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 847,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_governance_challenge_node_runtime_py",
+          "in COVERS_SYMBOL repo:file:b24dc9df73071048:tests_test_cdl_006_challenge_node_runtime_1382_py"
+        ]
+      },
+      "node_id": "target:ilc_core_governance_challenge_node_runtime_validate_challenge_record",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 848,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_governance_challenge_node_runtime_py",
+          "in COVERS_SYMBOL repo:file:b24dc9df73071048:tests_test_cdl_006_challenge_node_runtime_1382_py"
+        ]
+      },
+      "node_id": "target:ilc_core_governance_challenge_node_runtime_verify_challenge_quorum",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 849,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 85,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_governance_challenge_node_runtime_py",
+          "in COVERS_SYMBOL repo:file:b24dc9df73071048:tests_test_cdl_006_challenge_node_runtime_1382_py"
+        ]
+      },
+      "node_id": "target:ilc_core_governance_challenge_node_runtime_write_challenge_audit_path_record",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 850,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_agent_graph_projection_runtime_py",
+          "in COVERS_SYMBOL repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_agent_graph_projection_runtime_build_fetch_incentive_hypergraph_slice",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 851,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_agent_graph_projection_runtime_py",
+          "in COVERS_SYMBOL repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_agent_graph_projection_runtime_export_projection_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 852,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_agent_graph_projection_runtime_export_projection_ndjson",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 853,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=2, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_agent_graph_projection_runtime_py",
+          "in COVERS_SYMBOL repo:file:67f4b23711ee74e3:tests_test_phase_1237_post_fix7_sidecar_audit_hardening_py",
+          "in COVERS_SYMBOL repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_agent_graph_projection_runtime_path_to_genesis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 854,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_agent_graph_projection_runtime_py",
+          "in COVERS_SYMBOL repo:file:f354f4728b2fda50:tests_test_phase_1229_agent_graph_projection_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_agent_graph_projection_runtime_project_graph",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 855,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:0d504fc5ed48e3f0:tests_test_kernel_py",
+          "in COVERS_SYMBOL repo:file:038456bcb7afa0a3:tests_test_graph_edges_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_epistemicgraph_add_edge_by_ids",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 856,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph___init___py",
+          "in COVERS_SYMBOL repo:file:0eb679facd6ba25d:tests_test_edge_link_boundary_phase_1007_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_epistemicgraph_add_link",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 857,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph___init___py",
+          "in COVERS_SYMBOL repo:file:0d504fc5ed48e3f0:tests_test_kernel_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_epistemicgraph_add_node",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 858,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph___init___py",
+          "in COVERS_SYMBOL repo:file:0d504fc5ed48e3f0:tests_test_kernel_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_epistemicgraph_load_genesis",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 859,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 86,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 8 total; in:TESTS:repo=8. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=8"
+        ],
+        "incident_edge_count": 8,
+        "incident_examples": [
+          "in TESTS repo:file:038456bcb7afa0a3:tests_test_graph_edges_py",
+          "in TESTS repo:file:5bc6d429a18f02f8:tests_test_contradiction_py",
+          "in TESTS repo:file:892c93f5f90e564d:tests_test_claim_scores_py",
+          "in TESTS repo:file:74bd5f36af57ceaf:tests_test_agent_auto_strategy_py",
+          "in TESTS repo:file:5650d7e64297791c:tests_test_contradiction_war_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_py",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 860,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:9a01dbfb5eb1fe83:tests_test_phase_1237_fix6_canonical_export_bundle_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_build_sidecar_query_bundle",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 861,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=2, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:6e5f38795baad725:tests_test_phase_1237_fix3_centrality_metrics_py",
+          "in COVERS_SYMBOL repo:file:67f4b23711ee74e3:tests_test_phase_1237_post_fix7_sidecar_audit_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_compute_centrality_metrics",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 862,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:0f75d31472e5b669:tests_test_phase_1237_fix4_convergence_trace_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_compute_convergence_trace",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 863,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:COVERS_SYMBOL:repo=5, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=5",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:b1f1cc8515b55bdd:tests_test_sidecar_query_completeness_1379_py",
+          "in COVERS_SYMBOL repo:file:6e5f38795baad725:tests_test_phase_1237_fix3_centrality_metrics_py",
+          "in COVERS_SYMBOL repo:file:8b55e368fdb765e4:tests_test_phase_1237_fix2_ego_graph_query_py",
+          "in COVERS_SYMBOL repo:file:0f75d31472e5b669:tests_test_phase_1237_fix4_convergence_trace_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_execute_sidecar_query",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 864,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_graph_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:9a01dbfb5eb1fe83:tests_test_phase_1237_fix6_canonical_export_bundle_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_export_sidecar_query_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 865,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:9a01dbfb5eb1fe83:tests_test_phase_1237_fix6_canonical_export_bundle_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_export_sidecar_query_ndjson",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 866,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:2aa3ca927a2bee86:tests_test_phase_1237_fix5_dispatcher_integration_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_query_types",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 867,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:f2ebbd93f1c1e383:tests_test_phase_1237_sidecar_query_runtime_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_sidecar_query_runtime_version",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 868,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=3. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=3"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:f2ebbd93f1c1e383:tests_test_phase_1237_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:b1f1cc8515b55bdd:tests_test_sidecar_query_completeness_1379_py",
+          "in COVERS_SYMBOL repo:file:2aa3ca927a2bee86:tests_test_phase_1237_fix5_dispatcher_integration_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_sidecarquery",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 869,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 87,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:f2ebbd93f1c1e383:tests_test_phase_1237_sidecar_query_runtime_py",
+          "in COVERS_SYMBOL repo:file:8b55e368fdb765e4:tests_test_phase_1237_fix2_ego_graph_query_py"
+        ]
+      },
+      "node_id": "target:ilc_core_graph_sidecar_query_runtime_sidecarquerybounds",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 870,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_hardware_py",
+          "in COVERS_SYMBOL repo:file:0500f93915e2ef9d:tests_test_hardware_archetypes_py"
+        ]
+      },
+      "node_id": "target:ilc_core_hardware_configure_agent_from_archetype",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 871,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=2, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_hardware_py",
+          "in COVERS_SYMBOL repo:file:0500f93915e2ef9d:tests_test_hardware_archetypes_py",
+          "in COVERS_SYMBOL repo:file:aa58916bed410952:tests_test_config_dependency_policy_phase_1006_py"
+        ]
+      },
+      "node_id": "target:ilc_core_hardware_load_hardware_archetypes",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 872,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_identity_log_redaction_runtime_py",
+          "in COVERS_SYMBOL repo:file:52c17273d099b77c:tests_test_phase_1359_high_001_defense_py"
+        ]
+      },
+      "node_id": "target:ilc_core_identity_log_redaction_runtime_agentidlogredactionfilter",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 873,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=2"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_identity___init___py",
+          "in IMPLEMENTS repo:file_ref:ilc_core_identity_log_redaction_runtime_py",
+          "in COVERS_SYMBOL repo:file:52c17273d099b77c:tests_test_phase_1359_high_001_defense_py"
+        ]
+      },
+      "node_id": "target:ilc_core_identity_log_redaction_runtime_redact_agent_id_for_log",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 874,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 6 total; in:CLASSIFIED_BY:repo=1, in:IMPLEMENTS:repo=1, in:REFERENCES_AUTHORITY:repo=1, in:TESTS:repo=3. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:CLASSIFIED_BY:repo=1",
+          "in:IMPLEMENTS:repo=1",
+          "in:REFERENCES_AUTHORITY:repo=1",
+          "in:TESTS:repo=3"
+        ],
+        "incident_edge_count": 6,
+        "incident_examples": [
+          "in CLASSIFIED_BY repo:file:8899554d1fa0363c:tools_query_rc0_1_economic_state_py",
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger___init___py",
+          "in TESTS repo:file:f544f60149b59364:tests_test_cdl_v2_sybil_resistance_runtime_389_py",
+          "in TESTS repo:file:f77bbf874822b0ef:tests_test_cdl_v1_temporal_decay_runtime_388_py",
+          "in TESTS repo:file:9300e5d82d060d16:tests_test_phase_631_window_631_636_sequence_lock_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 875,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_py",
+          "in COVERS_SYMBOL repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_canon_bundle_key_registry_get_registry",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 876,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_py",
+          "in COVERS_SYMBOL repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_canon_bundle_key_registry_load_registry",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 877,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_canon_bundle_key_registry_py",
+          "in COVERS_SYMBOL repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_canon_bundle_key_registry_reset_registry",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 878,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:b25aae83c3a770ed:tests_test_canon_bundle_key_registry_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_canon_bundle_key_registry_set_registry",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 879,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 88,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_lmdb_backend_py",
+          "in COVERS_SYMBOL repo:file:ff3e80f5bede262b:tests_test_lmdb_public_runtime_store_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_lmdb_backend_lmdbledgerbackend",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 880,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_settlement_metrics_py",
+          "in COVERS_SYMBOL repo:file:d64755f1793b5086:tests_test_settlement_metrics_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_settlement_metrics_compute_settlement_metrics",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 881,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_ledger_settlement_verification_py",
+          "in COVERS_SYMBOL repo:file:82cb3ccef2d1a871:tests_test_settlement_verification_py"
+        ]
+      },
+      "node_id": "target:ilc_core_ledger_settlement_verification_verify_stake_distribution",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 882,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_logging_config_py",
+          "in COVERS_SYMBOL repo:file:622d4d54b1fd8709:tests_test_logging_config_py"
+        ]
+      },
+      "node_id": "target:ilc_core_logging_config_configure_logging",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 883,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "fix38_candidate_overlay",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=candidate_review_required; canonicality_tier=fix38_candidate_overlay; promotion_status=candidate_only_not_canonical; inclusion_status=candidate_overlay; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:TESTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:TESTS:repo=2"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in TESTS repo:file:f544f60149b59364:tests_test_cdl_v2_sybil_resistance_runtime_389_py",
+          "in TESTS repo:file:f77bbf874822b0ef:tests_test_cdl_v1_temporal_decay_runtime_388_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 884,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_cdl087_observability_py",
+          "in COVERS_SYMBOL repo:file:06ed19f4571ee07e:tests_test_phase_1260_cdl087_observability_and_limiter_regression_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_cdl087_observability_build_observability_collection_window",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 885,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_cdl087_observability_py",
+          "in COVERS_SYMBOL repo:file:06ed19f4571ee07e:tests_test_phase_1260_cdl087_observability_and_limiter_regression_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_cdl087_observability_record_cdl077_limiter_regression",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 886,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_cdl087_observability_py",
+          "in COVERS_SYMBOL repo:file:06ed19f4571ee07e:tests_test_phase_1260_cdl087_observability_and_limiter_regression_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_cdl087_observability_record_ratification_readiness_verdict",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 887,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_cdl087_serving_peer_evidence_py",
+          "in COVERS_SYMBOL repo:file:9f34931d4c208834:tests_test_phase_1259_cdl087_serving_peer_evidence_slice_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_cdl087_serving_peer_evidence_build_bootstrap_snapshot",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 888,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_cdl087_serving_peer_evidence_py",
+          "in COVERS_SYMBOL repo:file:9f34931d4c208834:tests_test_phase_1259_cdl087_serving_peer_evidence_slice_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_cdl087_serving_peer_evidence_verify_bootstrap_snapshot_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 889,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 89,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:EVIDENCES:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:EVIDENCES:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_gossip_transport_py",
+          "in EVIDENCES repo:file:319815fafd56a988:ilc_core_cli_d2e_lifecycle_cli_py",
+          "in COVERS_SYMBOL repo:file:09f0feebd705d558:tests_test_phase_1331_fix3_network_dos_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_gossip_transport_gossip_request_path",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 890,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_gossip_transport_py",
+          "in COVERS_SYMBOL repo:file:09f0feebd705d558:tests_test_phase_1331_fix3_network_dos_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_gossip_transport_validate_gossip_headers",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 891,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_http_fetch_transport_runtime_py",
+          "in COVERS_SYMBOL repo:file:bb9bbab57e8ca3cd:tests_test_phase_1212_rate_limiter_wiring_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_http_fetch_transport_runtime_fetchtransportconfig",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 892,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=2. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=2"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file_ref:ilc_core_network_d2d_http_fetch_transport_runtime_py",
+          "in IMPLEMENTS repo:file:7cbf97be6925fd67:ilc_core_network_d2d_http_gossip_transport_runtime_py",
+          "in COVERS_SYMBOL repo:file:bb9bbab57e8ca3cd:tests_test_phase_1212_rate_limiter_wiring_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_http_fetch_transport_runtime_httpfetchtransportruntime",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 893,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:d5debcc446c0edd8:ilc_core_network_d2d_persistent_fetch_rate_limiter_runtime_py",
+          "in COVERS_SYMBOL repo:file:7deff3d160268b9b:tests_test_phase_1202_persistent_rate_limiter_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_persistent_fetch_rate_limiter_runtime_persistent_rate_limiter_version",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 894,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 3 total; in:COVERS_SYMBOL:repo=2, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=2",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 3,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:d5debcc446c0edd8:ilc_core_network_d2d_persistent_fetch_rate_limiter_runtime_py",
+          "in COVERS_SYMBOL repo:file:7deff3d160268b9b:tests_test_phase_1202_persistent_rate_limiter_py",
+          "in COVERS_SYMBOL repo:file:ba12f16c9b1190ab:tests_test_phase_1217_post_closure_audit_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_persistent_fetch_rate_limiter_runtime_persistentfetchratelimiter",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 895,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:4ce8b0977b0d4701:ilc_core_network_d2d_truth_primitive_fetch_runtime_py",
+          "in COVERS_SYMBOL repo:file:09f0feebd705d558:tests_test_phase_1331_fix3_network_dos_hardening_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_d2d_truth_primitive_fetch_runtime_fetchratelimiter",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 896,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:b16373783d1deeed:tests_test_network_gossip_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_gossip_gossip_broadcast",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 897,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:b16373783d1deeed:tests_test_network_gossip_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_gossip_gossip_step",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 898,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 1 total; in:COVERS_SYMBOL:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1"
+        ],
+        "incident_edge_count": 1,
+        "incident_examples": [
+          "in COVERS_SYMBOL repo:file:b16373783d1deeed:tests_test_network_gossip_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_gossip_initialize_inboxes",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 899,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
+    },
+    {
+      "batch": 90,
+      "canonicality_tier": "support_trace_not_independent_authority",
+      "category": "support_artifact",
+      "direct_read_evidence": "Full LMDB node record read: category=support_artifact; authority_status=support_only_not_independent_authority; canonicality_tier=support_trace_not_independent_authority; promotion_status=not_independent_authority; inclusion_status=support_trace_not_independent_authority; graph_projection=support_candidate_graph; source_phase=1545p-Fix38. No source_path is present. Incident-edge read: 2 total; in:COVERS_SYMBOL:repo=1, in:IMPLEMENTS:repo=1. ilc_core symbol/module target leaf is not an independent authority node; source repo files and their existing semantic edges are the evidence-bearing graph objects. No Fix80 root bridge is written from symbol name alone.",
+      "disposition": "support_leaf_no_wiring_required",
+      "edge_type": null,
+      "edges_written": 0,
+      "graph_projection": "support_candidate_graph",
+      "incident_edge_summary": {
+        "incident_edge_breakdown": [
+          "in:COVERS_SYMBOL:repo=1",
+          "in:IMPLEMENTS:repo=1"
+        ],
+        "incident_edge_count": 2,
+        "incident_examples": [
+          "in IMPLEMENTS repo:file:3be5ea9aaf2f5f88:ilc_core_network_node_load_export_py",
+          "in COVERS_SYMBOL repo:file:40a1f15493006840:tests_test_node_load_export_py"
+        ]
+      },
+      "node_id": "target:ilc_core_network_node_load_export_export_node_load_to_json",
+      "node_kind": null,
+      "prefix": "target",
+      "queue_index": 900,
+      "source_path": "",
+      "target_node": null,
+      "zero_non_repo_degree": true
     }
   ],
   "edges_written": 0,
@@ -22857,8 +25793,8 @@
   "live_queue_count": 1219,
   "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
   "missing_canonical_targets": [],
-  "next_queue_index": 801,
-  "nodes_completed": 800,
+  "next_queue_index": 901,
+  "nodes_completed": 900,
   "notes": [
     "Batches 001-010 are conservative support dispositions. No root bridge was written without direct source evidence of a canonical target.",
     "Phase-file LMDB registration for this report and walkthrough is performed after the files are finalized for the intermediate commit to avoid stale source_hash churn in the committed artifacts."
@@ -22878,7 +25814,7 @@
     "window": 10
   },
   "reachable_non_repo_count": 2104,
-  "scope_status": "in_progress_batches_001_080",
+  "scope_status": "in_progress_batches_001_090",
   "zero_degree_count": 946,
   "zero_degree_prefix_breakdown": {
     "atlas": 1,
