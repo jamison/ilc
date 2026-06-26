@@ -249,6 +249,81 @@ def _label(node_id: str, node: dict[str, Any]) -> str:
     return label[-60:] if len(label) > 60 else label
 
 
+def _repo_subgroup(node_id: str, node: dict[str, Any]) -> str:
+    if _prefix(node_id) != "repo":
+        return ""
+    source_path = str(node.get("source_path") or "")
+    label = str(node.get("label") or "")
+    candidate = " ".join([source_path, label, node_id]).lower()
+    if "z_past_chats" in candidate:
+        return "private_history"
+    if (
+        "/out/" in candidate
+        or candidate.startswith("out/")
+        or ":out_" in candidate
+        or "_out_" in candidate
+    ):
+        return "output"
+    if (
+        "/tests/" in candidate
+        or candidate.startswith("tests/")
+        or ":tests_" in candidate
+        or "_tests_" in candidate
+        or "test_" in candidate
+    ):
+        return "test"
+    if (
+        "/ilc_core/" in candidate
+        or candidate.startswith("ilc_core/")
+        or ":ilc_core_" in candidate
+        or "_ilc_core_" in candidate
+    ):
+        if any(token in candidate for token in ("crypto", "tls", "security", "cose", "signature")):
+            return "security"
+        return "runtime"
+    if (
+        "/tools/" in candidate
+        or candidate.startswith("tools/")
+        or ":tools_" in candidate
+        or "_tools_" in candidate
+    ):
+        return "tooling"
+    if (
+        "/docs/sims/" in candidate
+        or candidate.startswith("docs/sims/")
+        or ":docs_sims_" in candidate
+        or "_docs_sims_" in candidate
+        or "_sim_" in candidate
+    ):
+        return "sim"
+    if (
+        "/docs/phases/" in candidate
+        or candidate.startswith("docs/phases/")
+        or ":docs_phases_" in candidate
+        or "_docs_phases_" in candidate
+    ):
+        return "phase_doc"
+    if (
+        "/docs/specs/" in candidate
+        or candidate.startswith("docs/specs/")
+        or ":docs_specs_" in candidate
+        or "_docs_specs_" in candidate
+    ):
+        return "spec_doc"
+    if (
+        "/docs/adr/" in candidate
+        or candidate.startswith("docs/adr/")
+        or ":docs_adr_" in candidate
+        or "_docs_adr_" in candidate
+    ):
+        return "adr_doc"
+    if "/docs/" in candidate or candidate.startswith("docs/") or ":docs_" in candidate or "_docs_" in candidate:
+        return "docs"
+    if any(token in candidate for token in ("pyproject", "package", "manifest", "profile", "materialization")):
+        return "package"
+    return "other"
+
+
 def _visual_group(node_id: str, node: dict[str, Any]) -> str:
     """Return the UI category without mutating the canonical node ID or kind."""
     if node_id == NODE0:
@@ -429,6 +504,7 @@ def build_view(
             "label": _label(node_id, node),
             "prefix": _prefix(node_id),
             "projection": _projection(node),
+            "repo_subgroup": _repo_subgroup(node_id, node),
             "size": _node_size(node_id, node),
             "status": _status(node),
             "tier": _tier(node),

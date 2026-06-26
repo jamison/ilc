@@ -227,6 +227,84 @@ def _short_label(node_id: str, node: dict) -> str:
     return label
 
 
+def _repo_subgroup(node_id: str, node: dict) -> str:
+    if _prefix(node_id) != "repo":
+        return ""
+    existing = node.get("repo_subgroup")
+    if isinstance(existing, str) and existing:
+        return existing
+    source_path = str(node.get("source_path") or "")
+    label = str(node.get("label") or "")
+    candidate = " ".join([source_path, label, node_id]).lower()
+    if "z_past_chats" in candidate:
+        return "private_history"
+    if (
+        "/out/" in candidate
+        or candidate.startswith("out/")
+        or ":out_" in candidate
+        or "_out_" in candidate
+    ):
+        return "output"
+    if (
+        "/tests/" in candidate
+        or candidate.startswith("tests/")
+        or ":tests_" in candidate
+        or "_tests_" in candidate
+        or "test_" in candidate
+    ):
+        return "test"
+    if (
+        "/ilc_core/" in candidate
+        or candidate.startswith("ilc_core/")
+        or ":ilc_core_" in candidate
+        or "_ilc_core_" in candidate
+    ):
+        if any(token in candidate for token in ("crypto", "tls", "security", "cose", "signature")):
+            return "security"
+        return "runtime"
+    if (
+        "/tools/" in candidate
+        or candidate.startswith("tools/")
+        or ":tools_" in candidate
+        or "_tools_" in candidate
+    ):
+        return "tooling"
+    if (
+        "/docs/sims/" in candidate
+        or candidate.startswith("docs/sims/")
+        or ":docs_sims_" in candidate
+        or "_docs_sims_" in candidate
+        or "_sim_" in candidate
+    ):
+        return "sim"
+    if (
+        "/docs/phases/" in candidate
+        or candidate.startswith("docs/phases/")
+        or ":docs_phases_" in candidate
+        or "_docs_phases_" in candidate
+    ):
+        return "phase_doc"
+    if (
+        "/docs/specs/" in candidate
+        or candidate.startswith("docs/specs/")
+        or ":docs_specs_" in candidate
+        or "_docs_specs_" in candidate
+    ):
+        return "spec_doc"
+    if (
+        "/docs/adr/" in candidate
+        or candidate.startswith("docs/adr/")
+        or ":docs_adr_" in candidate
+        or "_docs_adr_" in candidate
+    ):
+        return "adr_doc"
+    if "/docs/" in candidate or candidate.startswith("docs/") or ":docs_" in candidate or "_docs_" in candidate:
+        return "docs"
+    if any(token in candidate for token in ("pyproject", "package", "manifest", "profile", "materialization")):
+        return "package"
+    return "other"
+
+
 def _build_graph_data(
     graph: dict,
     max_nodes: int | None = None,
@@ -260,6 +338,7 @@ def _build_graph_data(
             "tier":  str(n.get("tier", "")),
             "kind":  str(n.get("node_kind") or n.get("kind") or ""),
             "projection": str(n.get("graph_projection") or n.get("projection") or ""),
+            "repo_subgroup": _repo_subgroup(nid, n),
             "status": str(n.get("candidate_status") or n.get("status") or ""),
         })
 
@@ -490,7 +569,7 @@ Graph.d3Force("charge").strength(-25);"""
   <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
     <div style="font-size:11px;color:#888;margin-bottom:4px">Hops from Genesis</div>
     <div style="display:flex;align-items:center;gap:6px">
-      <input type="range" id="hop-slider" min="0" max="30" value="0" style="flex:1;accent-color:#ff6644;">
+      <input type="range" id="hop-slider" min="-1" max="30" value="-1" style="flex:1;accent-color:#ff6644;">
       <span id="hop-label" style="font-size:11px;color:#ff9944;min-width:28px">All</span>
     </div>
     <div id="hop-stats" style="font-size:10px;color:#666;margin-top:3px"></div>
@@ -703,10 +782,11 @@ let showClassified      = false;
 let showSourceTree      = true;
 let showContains        = true;
 let showImports         = true;
-let hopDepth            = 0;  // 0 = all; N = show only nodes ≤ N hops from NODE0
+let hopDepth            = -1;  // -1 = all; 0 = NODE0 only; N = show nodes ≤ N hops from NODE0
 
 // hiddenGroups: per-group toggle; nodes in this set are fully invisible.
-const hiddenGroups = new Set();
+const hiddenGroups = new Set(["repo"]);
+const hiddenRepoSubgroups = new Set();
 
 const AUTHORITY_GROUPS = new Set([
   "truth_primitive","axiom","policy","artifact","genesis_authority_root","genesis_agent","adr","cdl","ceremony"
@@ -723,8 +803,9 @@ function nodeVisible(n) {{
   if (n.id === NODE0_ID) return true;
   // Per-group checkbox: fully hidden
   if (hiddenGroups.has(n.group)) return false;
+  if (n.group === "repo" && hiddenRepoSubgroups.has(n.repo_subgroup || "other")) return false;
   // Hop-depth filter: show only nodes within N hops of NODE0
-  if (hopDepth > 0 && (NODE_HOP[n.id] ?? Infinity) > hopDepth) return false;
+  if (hopDepth >= 0 && (NODE_HOP[n.id] ?? Infinity) > hopDepth) return false;
   // Tier-based hide filters
   if (hideGenerated && n.tier === "generated_evidence_material") return false;
   if (hidePrivateHistory && n.tier === "genesis_private_historical_material") return false;
@@ -993,7 +1074,7 @@ document.getElementById("hop-slider").addEventListener("input", e => {{
   hopDepth = parseInt(e.target.value, 10);
   const lbl = document.getElementById("hop-label");
   const stats = document.getElementById("hop-stats");
-  if (hopDepth === 0) {{
+  if (hopDepth < 0) {{
     lbl.textContent = "All";
     stats.textContent = "";
   }} else {{
@@ -1063,7 +1144,15 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
 // ── dynamic legend: per-group checkboxes ─────────────────────────────────
 (function buildLegend() {{
   const counts = {{}};
+  const repoCounts = {{}};
   RAW_NODES.forEach(n => {{ counts[n.group] = (counts[n.group] || 0) + 1; }});
+  RAW_NODES.forEach(n => {{
+    if (n.group === "repo") {{
+      const subgroup = n.repo_subgroup || "other";
+      repoCounts[subgroup] = (repoCounts[subgroup] || 0) + 1;
+    }}
+  }});
+  const repoSubgroups = Object.entries(repoCounts).sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]));
   const pinnedLegendOrder = {{
     "genesis_agent": 1,
     "genesis_authority_root": 2,
@@ -1075,20 +1164,52 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
     return (b[1] - a[1]) || a[0].localeCompare(b[0]);
   }});
   const legend = document.getElementById("legend");
+  if (hiddenGroups.has("repo")) {{
+    repoSubgroups.forEach(([subgroup]) => hiddenRepoSubgroups.add(subgroup));
+  }}
+  function updateRepoParentState(parentCb) {{
+    const total = repoSubgroups.length;
+    const hiddenCount = repoSubgroups.filter(([subgroup]) => hiddenRepoSubgroups.has(subgroup)).length;
+    parentCb.checked = total > 0 && hiddenCount === 0 && !hiddenGroups.has("repo");
+    parentCb.indeterminate = total > 0 && hiddenCount > 0 && hiddenCount < total;
+  }}
+  function setRepoSubrowState(row, cb, subgroup) {{
+    const hidden = hiddenRepoSubgroups.has(subgroup) || hiddenGroups.has("repo");
+    cb.checked = !hidden;
+    const lbl = row.querySelector(".repo-subgroup-label");
+    const dot = row.querySelector(".repo-subgroup-dot");
+    if (lbl) lbl.style.textDecoration = hidden ? "line-through" : "";
+    if (dot) dot.style.opacity = hidden ? "0.25" : "1";
+  }}
   sorted.forEach(([g, cnt]) => {{
     const color = NODE_COLORS[g] || "#cccccc";
     const isFixedGroup = g === "genesis_authority_root";
+    const isRepoGroup = g === "repo";
     const row = document.createElement("div");
     row.style.cssText = "display:flex;align-items:center;margin:2px 0;";
     const cb = document.createElement("input");
     cb.type = "checkbox";
-    cb.checked = true;
+    cb.checked = !hiddenGroups.has(g);
     cb.disabled = isFixedGroup;
     cb.title = isFixedGroup ? "Genesis authority root is always visible" : "";
     cb.style.cssText = `margin-right:4px;flex-shrink:0;cursor:${{isFixedGroup ? "not-allowed" : "pointer"}};`;
     cb.addEventListener("change", () => {{
       if (isFixedGroup) {{ hiddenGroups.delete(g); cb.checked = true; return; }}
-      if (cb.checked) hiddenGroups.delete(g);
+      if (isRepoGroup) {{
+        if (cb.checked) {{
+          hiddenGroups.delete("repo");
+          hiddenRepoSubgroups.clear();
+        }} else {{
+          hiddenGroups.add("repo");
+          repoSubgroups.forEach(([subgroup]) => hiddenRepoSubgroups.add(subgroup));
+        }}
+        document.querySelectorAll("[data-repo-subgroup]").forEach(el => {{
+          const subgroup = el.getAttribute("data-repo-subgroup");
+          const childCb = el.querySelector("input");
+          setRepoSubrowState(el, childCb, subgroup);
+        }});
+        updateRepoParentState(cb);
+      }} else if (cb.checked) hiddenGroups.delete(g);
       else hiddenGroups.add(g);
       refresh();
     }});
@@ -1101,6 +1222,38 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
     row.appendChild(dot);
     row.appendChild(lbl);
     legend.appendChild(row);
+    if (isRepoGroup) {{
+      updateRepoParentState(cb);
+      repoSubgroups.forEach(([subgroup, subcnt]) => {{
+        const subrow = document.createElement("div");
+        subrow.setAttribute("data-repo-subgroup", subgroup);
+        subrow.style.cssText = "display:flex;align-items:center;margin:1px 0 1px 18px;";
+        const subcb = document.createElement("input");
+        subcb.type = "checkbox";
+        subcb.style.cssText = "margin-right:4px;flex-shrink:0;";
+        const subdot = document.createElement("div");
+        subdot.className = "repo-subgroup-dot";
+        subdot.style.cssText = `width:7px;height:7px;border-radius:50%;background:${{color}};margin-right:5px;flex-shrink:0;`;
+        const sublbl = document.createElement("span");
+        sublbl.className = "repo-subgroup-label";
+        sublbl.style.cssText = "font-size:9px;color:#777;";
+        sublbl.textContent = `${{subgroup}}: ${{subcnt.toLocaleString()}}`;
+        subcb.addEventListener("change", () => {{
+          hiddenGroups.delete("repo");
+          if (subcb.checked) hiddenRepoSubgroups.delete(subgroup);
+          else hiddenRepoSubgroups.add(subgroup);
+          setRepoSubrowState(subrow, subcb, subgroup);
+          updateRepoParentState(cb);
+          refresh();
+        }});
+        subrow.appendChild(subcb);
+        subrow.appendChild(subdot);
+        subrow.appendChild(sublbl);
+        legend.appendChild(subrow);
+        setRepoSubrowState(subrow, subcb, subgroup);
+      }});
+      updateRepoParentState(cb);
+    }}
   }});
 }})();
 </script>
@@ -1341,7 +1494,7 @@ Minimal footprint for participation.</span>
     <div id="hop-section">
       <label>Hops from Genesis (filter view)</label>
       <div id="hop-row">
-        <input type="range" id="hop-slider" min="0" max="30" value="0">
+        <input type="range" id="hop-slider" min="-1" max="30" value="-1">
         <span id="hop-label">All</span>
       </div>
       <div id="hop-stats"></div>
@@ -1510,7 +1663,7 @@ function buildInviteChain() {{
 
 // ── filter state ───────────────────────────────────────────────────────────
 let installedIds  = new Set();
-let hopDepth      = 0;
+let hopDepth      = -1;
 let spotlightAuth = false;
 let hidePrivate   = true;
 let showGoverns   = true;
@@ -1529,7 +1682,7 @@ function nodeVisible(n) {{
   if (n.id === NODE0_ID) return true;
   if (!installedIds.has(n.id)) return false;
   if (hiddenGroups.has(n.group)) return false;
-  if (hopDepth > 0 && (NODE_HOP[n.id]??Infinity) > hopDepth) return false;
+  if (hopDepth >= 0 && (NODE_HOP[n.id]??Infinity) > hopDepth) return false;
   if (hidePrivate && n.tier === "genesis_private_historical_material") return false;
   return true;
 }}
@@ -1834,7 +1987,7 @@ document.getElementById("hop-slider").addEventListener("input", e => {{
   hopDepth = parseInt(e.target.value,10);
   const lbl = document.getElementById("hop-label");
   const stats = document.getElementById("hop-stats");
-  if (hopDepth===0) {{ lbl.textContent="All"; stats.textContent=""; }}
+  if (hopDepth < 0) {{ lbl.textContent="All"; stats.textContent=""; }}
   else {{
     lbl.textContent = hopDepth;
     const atHop = ALL_NODES.filter(n=>installedIds.has(n.id)&&NODE_HOP[n.id]===hopDepth).length;
