@@ -72,13 +72,18 @@ GOVERNANCE_EDGE_TYPES = frozenset(
 TEST_EDGE_TYPES = frozenset({"TESTS", "COVERS_SYMBOL", "IMPLEMENTS", "IMPORTS_MODULE"})
 
 PREFIX_COLORS: dict[str, str] = {
+    "genesis_authority_root": "#ffffff",
     "truth_primitive": "#ff4444",
     "policy": "#ff9900",
     "phase": "#ccaa44",
     "artifact": "#ffcc00",
+    "material_manifest_root": "#d6b24a",
+    "material_partition_root": "#9f8a4a",
+    "package_material_root": "#ffd966",
+    "source_tree_overlay": "#7a7a55",
     "genesis_agent": "#ff66ff",
-    "adr": "#4499ff",
-    "cdl": "#44aaff",
+    "adr": "#7d5cff",
+    "cdl": "#00bfff",
     "ceremony": "#ff88ff",
     "invariant": "#ff7744",
     "target": "#66aa66",
@@ -244,23 +249,65 @@ def _label(node_id: str, node: dict[str, Any]) -> str:
     return label[-60:] if len(label) > 60 else label
 
 
-def _node_size(node_id: str) -> int:
-    prefix = _prefix(node_id)
+def _visual_group(node_id: str, node: dict[str, Any]) -> str:
+    """Return the UI category without mutating the canonical node ID or kind."""
     if node_id == NODE0:
+        return "genesis_authority_root"
+    kind = _kind(node)
+    tier = _tier(node)
+    canonicality_tier = node.get("canonicality_tier")
+    if (
+        node_id == "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+        or (node_id.startswith("artifact:") and canonicality_tier == "fix38_candidate_overlay")
+    ):
+        return "source_tree_overlay"
+    if node_id.startswith("artifact:") and kind == "repo_manifest_root":
+        return "material_manifest_root"
+    if node_id.startswith("artifact:") and kind == "repo_material_root":
+        return "material_partition_root"
+    if node_id.startswith("artifact:") and kind == "package_membership_manifest_artifact":
+        return "package_material_root"
+    if node_id.startswith("artifact:") and tier in {
+        "generated_evidence_root",
+        "genesis_private_root",
+        "public_release_candidate_root",
+    }:
+        return "material_partition_root"
+    return _prefix(node_id)
+
+
+def _authority_class(node_id: str, node: dict[str, Any]) -> str:
+    group = _visual_group(node_id, node)
+    if group == "genesis_authority_root":
+        return "genesis_authority_root"
+    if group == "source_tree_overlay":
+        return "candidate_overlay_not_canonical"
+    if group in {"material_manifest_root", "material_partition_root", "package_material_root"}:
+        status = node.get("authority_status") or node.get("signature_status") or "support_material_root"
+        return str(status)
+    value = node.get("authority_status") or node.get("canonicality_tier") or node.get("tier")
+    return str(value) if isinstance(value, str) and value else ""
+
+
+def _node_size(node_id: str, node: dict[str, Any]) -> int:
+    group = _visual_group(node_id, node)
+    if group == "genesis_authority_root":
         return 20
-    if prefix == "truth_primitive":
+    if group == "truth_primitive":
         return 12
-    if prefix in {"policy", "artifact", "genesis_agent"}:
+    if group in {"policy", "artifact", "genesis_agent", "material_manifest_root", "package_material_root"}:
         return 10
-    if prefix in {"adr", "cdl", "ceremony"}:
+    if group == "material_partition_root":
+        return 9
+    if group == "source_tree_overlay":
+        return 7
+    if group in {"adr", "cdl", "ceremony"}:
         return 8
     return 4
 
 
-def _node_color(node_id: str) -> str:
-    if node_id == NODE0:
-        return "#ffffff"
-    return PREFIX_COLORS.get(_prefix(node_id), PREFIX_COLORS["other"])
+def _node_color(node_id: str, node: dict[str, Any]) -> str:
+    return PREFIX_COLORS.get(_visual_group(node_id, node), PREFIX_COLORS["other"])
 
 
 def _is_private_or_generated(node: dict[str, Any]) -> bool:
@@ -370,19 +417,22 @@ def build_view(
 
     view_nodes = [
         {
-            "color": _node_color(node_id),
+            "authority_class": _authority_class(node_id, node),
+            "color": _node_color(node_id, node),
             "degree_lmdb_in": lmdb_in_degree.get(node_id, 0),
             "degree_lmdb_out": lmdb_out_degree.get(node_id, 0),
             "degree_lmdb_total": lmdb_in_degree.get(node_id, 0) + lmdb_out_degree.get(node_id, 0),
             "directed_hop_from_root": directed_hop.get(node_id),
-            "group": _prefix(node_id),
+            "group": _visual_group(node_id, node),
             "id": node_id,
             "kind": _kind(node),
             "label": _label(node_id, node),
+            "prefix": _prefix(node_id),
             "projection": _projection(node),
-            "size": _node_size(node_id),
+            "size": _node_size(node_id, node),
             "status": _status(node),
             "tier": _tier(node),
+            "visual_group": _visual_group(node_id, node),
         }
         for node_id, node in sorted(nodes_by_id.items())
         if node_id in selected_ids

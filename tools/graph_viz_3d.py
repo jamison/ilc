@@ -69,13 +69,18 @@ NODE0 = "artifact:genesis_intent_attestation_init_authority_map"
 
 # ── colour palette by node prefix / kind ────────────────────────────────────
 PREFIX_COLORS: dict[str, str] = {
+    "genesis_authority_root": "#ffffff",   # white       — Node 0
     "truth_primitive":   "#ff4444",   # red         — genesis axioms
     "axiom":             "#ff2244",   # bright red  — axiom nodes
     "policy":            "#ff9900",   # amber       — governance policy
     "artifact":          "#ffcc00",   # gold        — genesis artifacts
+    "material_manifest_root": "#d6b24a",   # brass       — unsigned repo candidate root
+    "material_partition_root": "#9f8a4a",  # muted gold  — source/evidence partitions
+    "package_material_root": "#ffd966",    # pale gold   — package material root
+    "source_tree_overlay": "#7a7a55",       # olive       — candidate source-tree overlay
     "genesis_agent":     "#ff66ff",   # pink        — genesis agents
-    "adr":               "#4499ff",   # blue        — ADRs
-    "cdl":               "#44aaff",   # sky         — CDLs
+    "adr":               "#7d5cff",   # indigo      — ADRs
+    "cdl":               "#00bfff",   # cyan-blue   — CDLs
     "ceremony":          "#ff88ff",   # light pink
     "invariant":         "#cc7722",   # amber-brown — protocol invariants
     "claim":             "#ff7733",   # orange      — epistemic claims
@@ -120,15 +125,30 @@ EDGE_COLORS: dict[str, str] = {
 }
 
 AUTHORITY_PREFIXES = frozenset(
-    ["truth_primitive", "axiom", "policy", "artifact", "genesis_agent", "adr", "cdl", "ceremony"]
+    [
+        "truth_primitive",
+        "axiom",
+        "policy",
+        "artifact",
+        "genesis_authority_root",
+        "genesis_agent",
+        "adr",
+        "cdl",
+        "ceremony",
+    ]
 )
 
 # Priority order for --max-nodes trimming (higher = kept first)
 _GROUP_PRIORITY: dict[str, int] = {
+    "genesis_authority_root": 120,
     "truth_primitive":  100,
     "axiom":            98,
     "genesis_agent":    90,
     "artifact":         80,
+    "package_material_root": 78,
+    "material_manifest_root": 74,
+    "material_partition_root": 68,
+    "source_tree_overlay": 18,
     "policy":           70,
     "cdl":              60,
     "adr":              55,
@@ -173,6 +193,9 @@ def _edge_type(edge: dict) -> str:
 
 
 def _node_size(node_id: str, _node: dict) -> int:
+    exported = _node.get("size")
+    if isinstance(exported, (int, float)) and exported > 0:
+        return int(exported)
     p = _prefix(node_id)
     if node_id == NODE0:
         return 20
@@ -188,6 +211,9 @@ def _node_size(node_id: str, _node: dict) -> int:
 
 
 def _node_color(node_id: str, _node: dict) -> str:
+    exported = _node.get("color")
+    if isinstance(exported, str) and exported:
+        return exported
     if node_id == NODE0:
         return "#ffffff"
     p = _prefix(node_id)
@@ -225,10 +251,12 @@ def _build_graph_data(
             "id":    nid,
             "label": _short_label(nid, n),
             "color": _node_color(nid, n),
+            "authority_class": str(n.get("authority_class") or ""),
             "degree_lmdb_total": n.get("degree_lmdb_total"),
             "directed_hop_from_root": n.get("directed_hop_from_root"),
             "size":  _node_size(nid, n),
-            "group": _prefix(nid),
+            "group": str(n.get("visual_group") or n.get("group") or _prefix(nid)),
+            "prefix": str(n.get("prefix") or _prefix(nid)),
             "tier":  str(n.get("tier", "")),
             "kind":  str(n.get("node_kind") or n.get("kind") or ""),
             "projection": str(n.get("graph_projection") or n.get("projection") or ""),
@@ -681,7 +709,7 @@ let hopDepth            = 0;  // 0 = all; N = show only nodes ≤ N hops from NO
 const hiddenGroups = new Set();
 
 const AUTHORITY_GROUPS = new Set([
-  "truth_primitive","axiom","policy","artifact","genesis_agent","adr","cdl","ceremony"
+  "truth_primitive","axiom","policy","artifact","genesis_authority_root","genesis_agent","adr","cdl","ceremony"
 ]);
 const CONTAINS_TYPES = new Set([
   "CONTAINS_FILE","CONTAINS_GROUP","CONTAINS_PARTITION"
@@ -692,6 +720,7 @@ function _isAuthority(n) {{
 }}
 
 function nodeVisible(n) {{
+  if (n.id === NODE0_ID) return true;
   // Per-group checkbox: fully hidden
   if (hiddenGroups.has(n.group)) return false;
   // Hop-depth filter: show only nodes within N hops of NODE0
@@ -883,11 +912,13 @@ function showInfo(n) {{
   const customUrl = SPRITE_BY_ID[n.id] || SPRITE_BY_GROUP[n.group];
   const traceLen = tracePathOrdered.length > 1
     ? `${{tracePathOrdered.length - 1}} hop(s) to Genesis` : "";
-  const fields = [
+    const fields = [
     ["id",            n.id],
     ["kind",          n.kind],
     ["tier",          n.tier],
     ["group",         n.group],
+    ["prefix",        n.prefix],
+    ["authority_class", n.authority_class],
     ["projection",    n.projection],
     ["status",        n.status],
     ["lmdb_degree",   n.degree_lmdb_total !== undefined && n.degree_lmdb_total !== null ? n.degree_lmdb_total : "—"],
@@ -1037,13 +1068,17 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
   const legend = document.getElementById("legend");
   sorted.forEach(([g, cnt]) => {{
     const color = NODE_COLORS[g] || "#cccccc";
+    const isFixedGroup = g === "genesis_authority_root";
     const row = document.createElement("div");
     row.style.cssText = "display:flex;align-items:center;margin:2px 0;";
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.checked = true;
-    cb.style.cssText = "margin-right:4px;flex-shrink:0;cursor:pointer;";
+    cb.disabled = isFixedGroup;
+    cb.title = isFixedGroup ? "Genesis authority root is always visible" : "";
+    cb.style.cssText = `margin-right:4px;flex-shrink:0;cursor:${{isFixedGroup ? "not-allowed" : "pointer"}};`;
     cb.addEventListener("change", () => {{
+      if (isFixedGroup) {{ hiddenGroups.delete(g); cb.checked = true; return; }}
       if (cb.checked) hiddenGroups.delete(g);
       else hiddenGroups.add(g);
       refresh();
@@ -1052,7 +1087,7 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
     dot.style.cssText = `width:10px;height:10px;border-radius:50%;background:${{color}};margin-right:5px;flex-shrink:0;`;
     const lbl = document.createElement("span");
     lbl.style.cssText = "font-size:10px;color:#aaa;";
-    lbl.textContent = `${{g}}: ${{cnt.toLocaleString()}}`;
+    lbl.textContent = `${{g}}: ${{cnt.toLocaleString()}}${{isFixedGroup ? " (fixed)" : ""}}`;
     row.appendChild(cb);
     row.appendChild(dot);
     row.appendChild(lbl);
@@ -1403,7 +1438,7 @@ const BFS_ORDER = [];
 // Phase 2a = full graph. Phase 2b = invite chain only.
 
 const AUTHORITY_GROUPS = new Set([
-  "truth_primitive","axiom","policy","artifact","genesis_agent",
+  "truth_primitive","axiom","policy","artifact","genesis_authority_root","genesis_agent",
   "adr","cdl","ceremony","invariant"
 ]);
 
@@ -1482,6 +1517,7 @@ const hiddenGroups = new Set(["repo"]);  // repo hidden by default
 const CONTAINS_TYPES = new Set(["CONTAINS_FILE","CONTAINS_GROUP","CONTAINS_PARTITION"]);
 
 function nodeVisible(n) {{
+  if (n.id === NODE0_ID) return true;
   if (!installedIds.has(n.id)) return false;
   if (hiddenGroups.has(n.group)) return false;
   if (hopDepth > 0 && (NODE_HOP[n.id]??Infinity) > hopDepth) return false;
@@ -1604,6 +1640,8 @@ function showNodeInfo(n) {{
   const fields = [
     ["id",    n.id],
     ["group", n.group + (isAuth ? " ★" : "")],
+    ["prefix", n.prefix||"—"],
+    ["authority_class", n.authority_class||"—"],
     ["kind",  n.kind||"—"],
     ["tier",  n.tier||"—"],
     ["hops",  isFinite(hop) ? hop : "unreachable"],
@@ -1818,15 +1856,17 @@ document.getElementById("chk-spotlight").addEventListener("change",  e=>{{spotli
   sorted.forEach(([g, cnt]) => {{
     const color = NODE_COLORS[g]||"#ccc";
     const isHiddenByDefault = g === "repo";
+    const isFixedGroup = g === "genesis_authority_root";
     if (isHiddenByDefault) hiddenGroups.add(g);  // already in set but explicit
     const row = document.createElement("div");
     row.className = "leg-row";
+    row.title = isFixedGroup ? "Genesis authority root is always visible" : "";
     const dot = document.createElement("div");
     dot.className = "leg-dot";
     dot.style.background = color;
     const lbl = document.createElement("span");
     lbl.className = "leg-label";
-    lbl.textContent = g;
+    lbl.textContent = isFixedGroup ? `${{g}} (fixed)` : g;
     const cnt_el = document.createElement("span");
     cnt_el.className = "leg-count";
     cnt_el.textContent = cnt.toLocaleString();
@@ -1839,6 +1879,7 @@ document.getElementById("chk-spotlight").addEventListener("change",  e=>{{spotli
       dot.style.opacity = "0.2";
     }}
     row.addEventListener("click", () => {{
+      if (isFixedGroup) {{ hiddenGroups.delete(g); hidden = false; refresh(); return; }}
       hidden = !hidden;
       if (hidden) hiddenGroups.add(g); else hiddenGroups.delete(g);
       lbl.style.textDecoration = hidden ? "line-through" : "";
