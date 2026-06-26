@@ -1,0 +1,598 @@
+{
+  "added_edges": [
+    {
+      "edge_id": "edge:d631209a0aee1646",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:042_agent_id_flat_namespace"
+    },
+    {
+      "edge_id": "edge:0732f5f38ab1a8f0",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:069_pq_identity_epoch_endorsement"
+    },
+    {
+      "edge_id": "edge:9a54b335c3613173",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:090_identity_bootstrap"
+    },
+    {
+      "edge_id": "edge:92e4f604e6c424ee",
+      "edge_type": "DERIVED_FROM",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md"
+    }
+  ],
+  "apply_receipt": {
+    "accepted_edge_count": 4,
+    "mutated": true,
+    "post_invariants": {
+      "no_dangling_edges": true,
+      "payload_edge_count_matches_rows": true,
+      "payload_node_count_matches_rows": true,
+      "source_path_index_matches_rows": true,
+      "tier_group_index_matches_rows": true,
+      "tier_index_matches_rows": true
+    },
+    "post_lmdb_counts": {
+      "edges": 88030,
+      "nodes": 17465,
+      "payload_edges": 88030,
+      "payload_nodes": 17465
+    },
+    "rejected_edge_count": 0,
+    "status": "PASS"
+  },
+  "canonical_targets": [
+    {
+      "candidate_id": "adr:0038_agent_birth_attestation",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:29,78; docs/adr/ADR_0038_Agent_Birth_Attestation.md:5-11,70-100",
+      "exists": true
+    },
+    {
+      "candidate_id": "adr:0041_agent_init_and_ingestion_protocol",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:30,79; docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md:5-17,26-58",
+      "exists": true
+    },
+    {
+      "candidate_id": "cdl:042_agent_id_flat_namespace",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:80-82; docs/specs/ilc_constitutional_decision_log_v0.1.md:77",
+      "exists": true
+    },
+    {
+      "candidate_id": "cdl:069_pq_identity_epoch_endorsement",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:80-82; docs/specs/ilc_constitutional_decision_log_v0.1.md:101",
+      "exists": true
+    },
+    {
+      "candidate_id": "cdl:090_identity_bootstrap",
+      "evidence": "docs/adr/ADR_0038_Agent_Birth_Attestation.md:51-58,195-204; docs/specs/ilc_constitutional_decision_log_v0.1.md:121",
+      "exists": true
+    }
+  ],
+  "confirmed_existing_edges": [
+    {
+      "annotation_phase": "phase_1545p_fix71",
+      "confidence": "high",
+      "edge_id": "edge:8b19c1a160da5a75",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "adr:0038_agent_birth_attestation"
+    },
+    {
+      "annotation_phase": "phase_1545p_fix71",
+      "confidence": "high",
+      "edge_id": "edge:72184bd1052f7c5d",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "adr:0041_agent_init_and_ingestion_protocol"
+    },
+    {
+      "annotation_phase": "fix38",
+      "confidence": "0.860",
+      "edge_id": "edge:fix40:9f56ff3f7e9c91a38842584fbf34ab8a",
+      "edge_type": "TESTS",
+      "evidence": null,
+      "rationale": "Validates Phase 1423 private soft-RC rehearsal criteria. The test checks required tokens, six required sections, explicit three-machine/seven-agent topology, identity INIT constraints referencing ADR-0038, ADR-0041, and CDL-042, dataset and copyright/verbatim constraints, no live LLM or external model calls, no economic settlement or production ECU distribution, no VPS provisioning, and no jury_activation_gate.py patch.",
+      "source": "repo:file:44a7763363c649b0:tests_test_phase_1423_rehearsal_criteria_py",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.86,
+      "edge_id": "edge:fix38:b29b771a8d51b0f478094774d5b90ced",
+      "edge_type": "TESTS",
+      "evidence": null,
+      "rationale": "Validates Phase 1423 private soft-RC rehearsal criteria. The test checks required tokens, six required sections, explicit three-machine/seven-agent topology, identity INIT constraints referencing ADR-0038, ADR-0041, and CDL-042, dataset and copyright/verbatim constraints, no live LLM or external model calls, no economic settlement or production ECU distribution, no VPS provisioning, and no jury_activation_gate.py patch.",
+      "source": "repo:file:44a7763363c649b0:tests_test_phase_1423_rehearsal_criteria_py",
+      "target": "repo:file_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    }
+  ],
+  "direct_reads": [
+    {
+      "line_refs": [
+        "1-146"
+      ],
+      "path": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md",
+      "summary": "Defines private soft-RC rehearsal entry criteria, topology, identity initialization, dataset constraints, wipe/reset rights, scripted-agent behavior, and non-activation boundaries."
+    },
+    {
+      "line_refs": [
+        "1-69"
+      ],
+      "path": "docs/phases/phase_1423_private_soft_rc_rehearsal_criteria_walkthrough.md",
+      "summary": "Confirms ADR-0038, ADR-0041, agent_mode, roadmap existence, tests, and graph delta."
+    },
+    {
+      "line_refs": [
+        "1-87"
+      ],
+      "path": "tests/test_phase_1423_rehearsal_criteria.py",
+      "summary": "Validates required tokens, topology, identity boundaries, dataset constraints, no live LLM, no settlement, no production ECU, and no gate patch."
+    },
+    {
+      "line_refs": [
+        "1-211"
+      ],
+      "path": "docs/adr/ADR_0038_Agent_Birth_Attestation.md",
+      "summary": "Accepted ADR for Genesis-rooted birth attestation, agent_mode, non-custodial default, no private graph entropy, and secure output target."
+    },
+    {
+      "line_refs": [
+        "1-220"
+      ],
+      "path": "docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md",
+      "summary": "Accepted ADR for permissionless agent INIT, zero public weight until attestation, external identifier anchoring, and T0.5 quarantine semantics."
+    },
+    {
+      "line_refs": [
+        "77",
+        "101",
+        "121"
+      ],
+      "path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "summary": "Confirms CDL-042, CDL-069, and CDL-090 are ratified identity authorities."
+    },
+    {
+      "line_refs": [
+        "1-16",
+        "130-165"
+      ],
+      "path": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md",
+      "summary": "Controlling roadmap records three-machine/seven-agent public-RC path and non-activation blockers."
+    },
+    {
+      "line_refs": [
+        "1-133"
+      ],
+      "path": "docs/specs/ilc_three_machine_seven_agent_private_deployment_rehearsal_1322_v0.1.md",
+      "summary": "Live private deployment rehearsal evidence; public serving, public P2P, signing, wallet writes, ECU minting, and settlement remain non-claims."
+    },
+    {
+      "line_refs": [
+        "1-180"
+      ],
+      "path": "docs/phases/phase_1432_rehearsal_infra_validation_walkthrough.md",
+      "summary": "Private rehearsal infrastructure validation confirms seven-agent scripted cycle, VRF panel evidence, and no live LLM API."
+    },
+    {
+      "line_refs": [
+        "1-180"
+      ],
+      "path": "docs/phases/phase_1433_rehearsal_verdict_walkthrough.md",
+      "summary": "Private rehearsal verdict PASS, Lean Mathlib dataset, wipe right exercised, and no public activation."
+    },
+    {
+      "line_refs": [
+        "1-180"
+      ],
+      "path": "docs/specs/ilc_private_operator_bootstrap_guide_1449p_v0.1.md",
+      "summary": "Private operator bootstrap guide confirms private local checks only and no public operator onboarding."
+    }
+  ],
+  "dry_run_receipt": {
+    "accepted_edge_count": 4,
+    "mutated": false,
+    "projected_counts": {
+      "edges": 88030,
+      "nodes": 17465
+    },
+    "rejected_edge_count": 0,
+    "status": "PASS"
+  },
+  "legacy_file_target_authority_edge_note": "Filtered to outgoing source-file targets from the Phase 1423 criteria node; incoming documents that reference the criteria file are not counted in this queue.",
+  "legacy_file_target_authority_edges": [
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:0194648018454e40",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:adr_0038",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:cad647d05984363d:docs_adr_adr_0038_agent_birth_attestation_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:adr_0041",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:99e94051e54e1d70:docs_adr_adr_0041_agent_init_and_ingestion_protocol_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:cdl_042",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:8b3c35797023664d:docs_specs_ilc_cdl_042_agent_identity_namespace_open_prelock_402_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:cdl_069",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:42b99cc7b1443114:docs_specs_ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_opening_838_v0_1_md"
+    }
+  ],
+  "legacy_missing_evidence_edges": [
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:0194648018454e40",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:057aadde0119c7bc",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P4:Inputs to read first",
+      "source": "repo:file:1a734bb38555f373:docs_antigravity_tasks_antigravity_prompt_phase_1432_g8_rehearsal_infra_validation_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:0f38116603545f2f",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:d0b584a45eaaee2b:docs_specs_ilc_private_operator_bootstrap_guide_1449p_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:140d526d0eef4bb8",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P19:global table backtick path",
+      "source": "repo:file:b539cbba821aebd6:docs_specs_ilc_window_1399_1428_handoff_1428_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:1bddf78fe46e3c20",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:044c7e622bc1f0da:docs_phases_phase_1433_rehearsal_verdict_walkthrough_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:294e113e4d969b83",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:efbac4a55f7be2e6:docs_specs_ilc_rehearsal_verdict_1433_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:4b2fc0478afb8d6a",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:bd6786619a35255d:docs_phases_phase_1448y_soft_rc_access_boundary_artifact_freeze_walkthrough_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:61d04c08c4a52de8",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:c99115894949f770:docs_specs_ilc_soft_rc_access_boundary_artifact_freeze_1448y_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": "phase_1545p_fix71",
+      "confidence": "high",
+      "edge_id": "edge:72184bd1052f7c5d",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "adr:0041_agent_init_and_ingestion_protocol"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:7943e02f983b6471",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P9:graph_delta=load_bearing_artifact_added",
+      "source": "repo:file:e7a96490dc6961de:docs_phases_phase_1423_private_soft_rc_rehearsal_criteria_walkthrough_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": "phase_1545p_fix71",
+      "confidence": "high",
+      "edge_id": "edge:8b19c1a160da5a75",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "adr:0038_agent_birth_attestation"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": null,
+      "edge_id": "edge:8d2857b6a1b75ac2",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:cbe719afe2a5276f:docs_phases_phase_1449p_private_operator_bootstrap_guide_walkthrough_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": "phase_1545p_fix71",
+      "confidence": "high",
+      "edge_id": "edge:8fca90b4b7f495b9",
+      "edge_type": "CARRIES_FORWARD",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:ab4abd9b8ad5bffc",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:9a91741bfc67d598:docs_specs_ilc_rehearsal_infra_validation_evidence_1432_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:adr_0038",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:cad647d05984363d:docs_adr_adr_0038_agent_birth_attestation_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:adr_0041",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:99e94051e54e1d70:docs_adr_adr_0041_agent_init_and_ingestion_protocol_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:cdl_042",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:8b3c35797023664d:docs_specs_ilc_cdl_042_agent_identity_namespace_open_prelock_402_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:authority_ref:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md:cdl_069",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:42b99cc7b1443114:docs_specs_ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_opening_838_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:b13c53d13e8b4bb3",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P4:Inputs to read first",
+      "source": "repo:file:7b834dcc1b9338ab:docs_antigravity_tasks_antigravity_prompt_phase_1431_g8_rehearsal_identity_ceremony_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:b1a601b9451b5d03",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P4:Inputs to read first",
+      "source": "repo:file:774a6465ea22e979:docs_antigravity_tasks_antigravity_prompt_phase_1433_g8_rehearsal_verdict_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:b38883bf2ceb2616",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:89a01a8b1b469f1a:docs_specs_ilc_phase_1431_rehearsal_identity_ceremony_blocked_v0_1_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:bbf071b654895b07",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P10:Claim table confirmed",
+      "source": "repo:file:3c215e98cfc6f080:docs_phases_phase_1432_rehearsal_infra_validation_walkthrough_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": 0.82,
+      "edge_id": "edge:db4b1fdc680f7ccf",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "P18:global bullet backtick path",
+      "source": "repo:file:97fa466fc2a72bf8:docs_antigravity_tasks_antigravity_prompt_phase_1423_g8_private_soft_rc_rehearsal_criteria_md",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": "fix38",
+      "confidence": "0.860",
+      "edge_id": "edge:fix40:9f56ff3f7e9c91a38842584fbf34ab8a",
+      "edge_type": "TESTS",
+      "evidence": null,
+      "rationale": "Validates Phase 1423 private soft-RC rehearsal criteria. The test checks required tokens, six required sections, explicit three-machine/seven-agent topology, identity INIT constraints referencing ADR-0038, ADR-0041, and CDL-042, dataset and copyright/verbatim constraints, no live LLM or external model calls, no economic settlement or production ECU distribution, no VPS provisioning, and no jury_activation_gate.py patch.",
+      "source": "repo:file:44a7763363c649b0:tests_test_phase_1423_rehearsal_criteria_py",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": "fix38",
+      "confidence": "0.780",
+      "edge_id": "edge:fix40:a7f94aaadb5007f297d9a47745ff7c7a",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": null,
+      "rationale": "Validates Phase 1423 private soft-RC rehearsal criteria. The test checks required tokens, six required sections, explicit three-machine/seven-agent topology, identity INIT constraints referencing ADR-0038, ADR-0041, and CDL-042, dataset and copyright/verbatim constraints, no live LLM or external model calls, no economic settlement or production ECU distribution, no VPS provisioning, and no jury_activation_gate.py patch.",
+      "source": "repo:file:44a7763363c649b0:tests_test_phase_1423_rehearsal_criteria_py",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    },
+    {
+      "annotation_phase": null,
+      "confidence": "1.000",
+      "edge_id": "edge:repo_group_docs_specs_to_ee5ac82dbf4cd780_docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "edge_type": "CONTAINS_FILE",
+      "evidence": null,
+      "rationale": null,
+      "source": "repo:group:docs_specs",
+      "target": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+    }
+  ],
+  "lmdb_root": "out/genesis_base_graph_v0.4_unified.lmdb",
+  "missing_canonical_targets": [],
+  "non_claims": [
+    "No Phase 1423 source text rewritten.",
+    "No legacy LMDB edges deleted.",
+    "No GOVERNS edges added.",
+    "No rehearsal activation, public RC activation, public serving, public identity activation, production economics, ECU minting, ILC settlement, wallet mutation, treasury mutation, or epoch transition authorized.",
+    "Roadmap relation treated as provenance, not constitutional authority."
+  ],
+  "phase": "1565-Fix1",
+  "planned_edges": [
+    {
+      "annotation_method": "direct_source_manual_read_phase_1565_fix1",
+      "annotation_phase": "1565-Fix1",
+      "confidence": "high",
+      "edge_id": "edge:d631209a0aee1646",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:80-82; docs/specs/ilc_constitutional_decision_log_v0.1.md:77",
+      "rationale": "Phase 1423 private soft-RC rehearsal criteria directly binds its identity and INIT constraints to this canonical authority.",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "src": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:042_agent_id_flat_namespace",
+      "tgt": "cdl:042_agent_id_flat_namespace"
+    },
+    {
+      "annotation_method": "direct_source_manual_read_phase_1565_fix1",
+      "annotation_phase": "1565-Fix1",
+      "confidence": "high",
+      "edge_id": "edge:0732f5f38ab1a8f0",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:80-82; docs/specs/ilc_constitutional_decision_log_v0.1.md:101",
+      "rationale": "Phase 1423 private soft-RC rehearsal criteria directly binds its identity and INIT constraints to this canonical authority.",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "src": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:069_pq_identity_epoch_endorsement",
+      "tgt": "cdl:069_pq_identity_epoch_endorsement"
+    },
+    {
+      "annotation_method": "direct_source_manual_read_phase_1565_fix1",
+      "annotation_phase": "1565-Fix1",
+      "confidence": "high",
+      "edge_id": "edge:9a54b335c3613173",
+      "edge_type": "REFERENCES_AUTHORITY",
+      "evidence": "docs/adr/ADR_0038_Agent_Birth_Attestation.md:51-58,195-204; docs/specs/ilc_constitutional_decision_log_v0.1.md:121",
+      "rationale": "Phase 1423 private soft-RC rehearsal criteria directly binds its identity and INIT constraints to this canonical authority.",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "src": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "cdl:090_identity_bootstrap",
+      "tgt": "cdl:090_identity_bootstrap"
+    },
+    {
+      "annotation_method": "direct_source_manual_read_phase_1565_fix1",
+      "annotation_phase": "1565-Fix1",
+      "confidence": "high",
+      "edge_id": "edge:92e4f604e6c424ee",
+      "edge_type": "DERIVED_FROM",
+      "evidence": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md:31,48-67; docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md:1-16,130-165",
+      "rationale": "Phase 1423 rehearsal topology derives from the controlling three-machine/seven-agent roadmap; roadmap is provenance, not constitutional authority.",
+      "source": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "src": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md",
+      "target": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md",
+      "tgt": "repo:file:fdf957b301cc90b6:docs_specs_ilc_launch_roadmap_three_machines_seven_agents_v1_1_md"
+    }
+  ],
+  "post_apply": {
+    "dangling_edges": 0,
+    "edge_count": 88030,
+    "edge_id_debt": 0,
+    "node_count": 17465
+  },
+  "skipped_duplicates": [],
+  "status": "PASS",
+  "target_file": "docs/specs/ilc_private_soft_rc_rehearsal_criteria_1423_v0.1.md",
+  "target_node": "repo:file:ee5ac82dbf4cd780:docs_specs_ilc_private_soft_rc_rehearsal_criteria_1423_v0_1_md"
+}
