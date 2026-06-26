@@ -52,7 +52,9 @@ PUBLIC_RC_EXCLUDE_REASON: Local visualisation tool; no signing, upload, or canon
 from __future__ import annotations
 
 import argparse
+import base64
 import json
+import math
 import os
 import subprocess
 import sys
@@ -292,6 +294,316 @@ def _build_graph_data(
         })
 
     return nodes_out, links_out
+
+
+# ── cuneiform star sprite (AN sign — 8 radiating wedges) ─────────────────────
+
+def _cuneiform_star_svg(color: str, size: int = 64) -> str:
+    """Return a data:image/svg+xml;base64,... URI for the Sumerian AN sign.
+
+    Rendered geometrically as 8 isosceles triangle wedges at 45° intervals,
+    pointing outward from center. Center dot in white. Does not rely on
+    Unicode font rendering of U+1202D (varies by platform).
+    """
+    cx, cy = 32.0, 32.0
+    tip_r  = 26.0
+    base_r = 8.0
+    wing   = 2.2   # radians — controls wedge width at base
+
+    polygons = []
+    for deg in range(0, 360, 45):
+        theta = math.radians(deg)
+        tx = cx + tip_r  * math.cos(theta)
+        ty = cy + tip_r  * math.sin(theta)
+        lx = cx + base_r * math.cos(theta + wing)
+        ly = cy + base_r * math.sin(theta + wing)
+        rx = cx + base_r * math.cos(theta - wing)
+        ry = cy + base_r * math.sin(theta - wing)
+        pts = f"{tx:.2f},{ty:.2f} {lx:.2f},{ly:.2f} {rx:.2f},{ry:.2f}"
+        polygons.append(f'<polygon points="{pts}" fill="{color}"/>')
+
+    polygons_svg = "\n  ".join(polygons)
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" '
+        f'width="{size}" height="{size}" viewBox="0 0 64 64">\n'
+        f'  <rect width="64" height="64" fill="none"/>\n'
+        f'  {polygons_svg}\n'
+        f'  <circle cx="32" cy="32" r="4" fill="white"/>\n'
+        f'</svg>'
+    )
+    b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    return f"data:image/svg+xml;base64,{b64}"
+
+
+def _galaxy_depths(galaxies: list[dict]) -> dict[str, int]:
+    """BFS from root galaxies (empty depends_on) to assign depth per galaxy id."""
+    depth: dict[str, int] = {}
+    queue: list[str] = []
+    for g in galaxies:
+        if not g.get("depends_on"):
+            depth[g["id"]] = 0
+            queue.append(g["id"])
+    visited: set[str] = set(depth.keys())
+    changed = True
+    while changed:
+        changed = False
+        for g in galaxies:
+            gid = g["id"]
+            if gid in visited:
+                continue
+            deps = g.get("depends_on", [])
+            resolved = [depth[d] for d in deps if d in depth]
+            if resolved:
+                depth[gid] = max(resolved) + 1
+                visited.add(gid)
+                changed = True
+    for g in galaxies:
+        if g["id"] not in depth:
+            depth[g["id"]] = 1
+    return depth
+
+
+def _galaxy_positions(galaxies: list[dict]) -> dict[str, tuple[float, float, float]]:
+    """Pre-position galaxies in concentric rings by dependency depth."""
+    depths = _galaxy_depths(galaxies)
+    ring_radii = {0: 0.0, 1: 200.0, 2: 400.0}
+    default_r = 600.0
+
+    by_depth: dict[int, list[str]] = {}
+    for gid, d in depths.items():
+        by_depth.setdefault(d, []).append(gid)
+
+    positions: dict[str, tuple[float, float, float]] = {}
+    for d, gids in by_depth.items():
+        r = ring_radii.get(d, default_r)
+        n = len(gids)
+        for i, gid in enumerate(gids):
+            if r == 0.0:
+                positions[gid] = (0.0, 0.0, 0.0)
+            else:
+                angle = 2 * math.pi * i / n
+                positions[gid] = (r * math.cos(angle), 0.0, r * math.sin(angle))
+    return positions
+
+
+_SIGNING_VAL = {
+    "signed_v0.4":       80,
+    "signed_candidate":  60,
+    "unsigned_candidate": 40,
+    "not_loaded":        25,
+}
+
+_SIGNING_OPACITY = {
+    "signed_v0.4":       1.0,
+    "signed_candidate":  0.8,
+    "unsigned_candidate": 0.6,
+    "not_loaded":        0.3,
+}
+
+
+def _render_galaxy_map(galaxies: list[dict]) -> str:
+    """Return a full HTML page rendering the galaxy map with ForceGraph3D."""
+    positions = _galaxy_positions(galaxies)
+
+    nodes = []
+    for g in galaxies:
+        gid = g["id"]
+        state = g.get("signing_state", "not_loaded")
+        pos = positions.get(gid, (0.0, 0.0, 0.0))
+        sprite_uri = _cuneiform_star_svg(g.get("color", "#ffffff"))
+        nodes.append({
+            "id":           gid,
+            "label":        g.get("label", gid),
+            "color":        g.get("color", "#ffffff"),
+            "signing_state": state,
+            "val":          _SIGNING_VAL.get(state, 40),
+            "opacity":      _SIGNING_OPACITY.get(state, 0.6),
+            "graph_path":   g.get("graph_path"),
+            "depends_on":   g.get("depends_on", []),
+            "sprite_uri":   sprite_uri,
+            "x":            pos[0],
+            "y":            pos[1],
+            "z":            pos[2],
+        })
+
+    links = []
+    for g in galaxies:
+        for dep in g.get("depends_on", []):
+            links.append({
+                "source": g["id"],
+                "target": dep,
+                "type":   "DEPENDS_ON",
+                "color":  "rgba(200,200,200,0.3)",
+            })
+
+    nodes_json = json.dumps(nodes, sort_keys=True, separators=(",", ":"))
+    links_json = json.dumps(links, sort_keys=True, separators=(",", ":"))
+    node_count = len(nodes)
+    link_count = len(links)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ILC Galaxy Map — {node_count} galaxies</title>
+<style>
+  * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+  body {{ background: #050510; color: #eee; font-family: monospace; overflow: hidden; }}
+  #graph {{ position: fixed; top: 0; left: 0; width: 100%; height: 100%; }}
+  #panel {{
+    position: fixed; top: 10px; left: 10px; z-index: 10;
+    background: rgba(5,5,20,0.92); border: 1px solid #334;
+    border-radius: 6px; padding: 12px; width: 230px;
+    max-height: calc(100vh - 20px); overflow-y: auto;
+  }}
+  #panel h2 {{ font-size: 13px; color: #ffcc00; margin-bottom: 4px; }}
+  #panel .subtitle {{ font-size: 10px; color: #556; margin-bottom: 8px; }}
+  #panel .stat {{ font-size: 11px; color: #aaa; margin: 2px 0; }}
+  #info {{
+    position: fixed; bottom: 10px; left: 10px; z-index: 10;
+    background: rgba(5,5,20,0.96); border: 1px solid #334;
+    border-radius: 6px; padding: 12px; width: 380px;
+    font-size: 11px; max-height: 260px; overflow-y: auto; display: none;
+  }}
+  #info h3 {{ color: #ffcc00; margin-bottom: 8px; font-size: 13px; }}
+  #info .field {{ color: #aaa; margin: 3px 0; word-break: break-all; line-height: 1.5; }}
+  #info .field b {{ color: #ccc; }}
+  #info .cmd {{ color: #44ff88; font-size: 10px; background: #0a0a18;
+                padding: 4px 8px; border-radius: 3px; margin-top: 6px;
+                word-break: break-all; cursor: text; user-select: all; }}
+  #info-close {{
+    float: right; cursor: pointer; color: #666; font-size: 14px;
+    line-height: 1; margin-left: 8px;
+  }}
+  #info-close:hover {{ color: #fff; }}
+  .legend-row {{ display: flex; align-items: center; gap: 6px; margin: 4px 0; }}
+  .legend-dot {{ width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }}
+  .legend-lbl {{ font-size: 10px; color: #888; }}
+</style>
+</head>
+<body>
+<div id="graph"></div>
+
+<div id="panel">
+  <h2>ILC Galaxy Map</h2>
+  <div class="subtitle">Multi-repo meta-view · cuneiform star sprites</div>
+  <div class="stat">Galaxies: {node_count}</div>
+  <div class="stat">Dependencies: {link_count}</div>
+  <div class="stat" style="margin-top:6px;color:#556">Drag to rotate · Scroll to zoom · Click galaxy for info</div>
+  <div style="margin-top:10px;font-size:10px;color:#556;margin-bottom:4px">SIGNING STATE</div>
+  <div class="legend-row"><div class="legend-dot" style="background:#ffcc00"></div><span class="legend-lbl">signed_v0.4 (full brightness)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#888866"></div><span class="legend-lbl">signed_candidate (80%)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#555566"></div><span class="legend-lbl">unsigned_candidate (60%)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#333344"></div><span class="legend-lbl">not_loaded (30%)</span></div>
+</div>
+
+<div id="info">
+  <span id="info-close" title="Close">X</span>
+  <h3 id="info-title">Galaxy</h3>
+  <div id="info-body"></div>
+</div>
+
+<script src="https://unpkg.com/3d-force-graph@1.73.0/dist/3d-force-graph.min.js"></script>
+<script>
+const GALAXY_NODES = {nodes_json};
+const GALAXY_LINKS = {links_json};
+
+const galaxyMap = {{}};
+GALAXY_NODES.forEach(n => {{ galaxyMap[n.id] = n; }});
+
+function makeGalaxyObject(node) {{
+  const THREE = window.THREE;
+  if (!THREE) return null;
+  const tex = new THREE.TextureLoader().load(node.sprite_uri);
+  const mat = new THREE.SpriteMaterial({{
+    map: tex,
+    transparent: true,
+    opacity: node.opacity,
+    depthWrite: false,
+  }});
+  const sprite = new THREE.Sprite(mat);
+  const scale = node.val * 0.7;
+  sprite.scale.set(scale, scale, 1);
+
+  if (node.signing_state === "signed_v0.4" || node.signing_state === "signed_candidate") {{
+    const glowTex = new THREE.TextureLoader().load(node.sprite_uri);
+    const glowMat = new THREE.SpriteMaterial({{
+      map: glowTex,
+      transparent: true,
+      opacity: 0.25,
+      depthWrite: false,
+    }});
+    const glow = new THREE.Sprite(glowMat);
+    const glowScale = scale * 1.6;
+    glow.scale.set(glowScale, glowScale, 1);
+    const group = new THREE.Group();
+    group.add(glow);
+    group.add(sprite);
+    return group;
+  }}
+  return sprite;
+}}
+
+const Graph = ForceGraph3D()(document.getElementById("graph"))
+  .backgroundColor("#050510")
+  .nodeId("id")
+  .nodeLabel(n => n.label + "\\n" + n.signing_state)
+  .nodeThreeObject(makeGalaxyObject)
+  .nodeThreeObjectExtend(false)
+  .nodeVal(n => n.val)
+  .nodeColor(n => n.color)
+  .nodeOpacity(n => n.opacity)
+  .linkColor(l => l.color || "rgba(200,200,200,0.3)")
+  .linkOpacity(0.5)
+  .linkWidth(0.5)
+  .linkDirectionalArrowLength(0)
+  .onNodeClick(n => showInfo(n))
+  .graphData({{ nodes: GALAXY_NODES, links: GALAXY_LINKS }});
+
+GALAXY_NODES.forEach(n => {{
+  const obj = Graph.graphData().nodes.find(x => x.id === n.id);
+  if (obj) {{
+    obj.x = n.x;
+    obj.y = n.y;
+    obj.z = n.z;
+    obj.fx = undefined;
+    obj.fy = undefined;
+    obj.fz = undefined;
+  }}
+}});
+Graph.numDimensions(3);
+Graph.d3Force("charge").strength(-80);
+
+function showInfo(n) {{
+  document.getElementById("info").style.display = "block";
+  document.getElementById("info-title").textContent = n.label;
+  const gp = n.graph_path;
+  const loadCmd = gp
+    ? "ilc sidecar graph-viz --input " + gp + " --open"
+    : null;
+  const depsText = (n.depends_on && n.depends_on.length)
+    ? n.depends_on.join(", ")
+    : "(none)";
+  let html = [
+    ["ID",           n.id],
+    ["Signing state", n.signing_state],
+    ["Depends on",   depsText],
+    ["Graph path",   gp || "(not loaded locally)"],
+  ].map(([k,v]) => `<div class="field"><b>${{k}}:</b> ${{v}}</div>`).join("");
+  if (loadCmd) {{
+    html += `<div class="field"><b>Load command:</b></div><div class="cmd">${{loadCmd}}</div>`;
+  }} else {{
+    html += `<div class="field" style="color:#ff9944">Galaxy not loaded locally.</div>`;
+  }}
+  document.getElementById("info-body").innerHTML = html;
+}}
+
+document.getElementById("info-close").addEventListener("click", () => {{
+  document.getElementById("info").style.display = "none";
+}});
+</script>
+</body>
+</html>"""
 
 
 def _prefix_colors_js() -> str:
@@ -1927,6 +2239,8 @@ def main() -> None:
     parser.add_argument("--core-only",  action="store_true",         help="Pre-filter to authority nodes only")
     parser.add_argument("--max-nodes",  type=int, default=None,      help="Hard cap on node count")
     parser.add_argument("--sprites",      default=None,                help="JSON sprite manifest path")
+    parser.add_argument("--galaxy",       default=None,
+                        help="path to galaxy manifest JSON; renders galaxy map instead of star map")
     parser.add_argument(
         "--install-demo",
         action="store_true",
@@ -1938,8 +2252,37 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    inp = _export_lmdb_view(args.view) if args.lmdb else Path(args.input)
     out = Path(args.output)
+
+    # ── galaxy map mode ───────────────────────────────────────────────────────
+    if args.galaxy is not None:
+        galaxy_path = Path(args.galaxy)
+        if not galaxy_path.exists():
+            print(f"ERROR: galaxy manifest not found: {galaxy_path}", file=sys.stderr)
+            sys.exit(1)
+        manifest = json.loads(galaxy_path.read_text(encoding="utf-8"))
+        galaxies = manifest.get("galaxies", [])
+        if not galaxies:
+            print("ERROR: galaxy manifest has no galaxies", file=sys.stderr)
+            sys.exit(1)
+        print(f"rendering galaxy map: {len(galaxies)} galaxies from {galaxy_path}", file=sys.stderr)
+        html = _render_galaxy_map(galaxies)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp = tempfile.mkstemp(dir=str(out.parent), prefix=".galaxy.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(html)
+            os.replace(tmp, out)
+        except Exception:
+            Path(tmp).unlink(missing_ok=True)
+            raise
+        print(f"Written → {out}", file=sys.stderr)
+        if args.open:
+            subprocess.Popen(["open", str(out)])
+        return
+
+    inp = _export_lmdb_view(args.view) if args.lmdb else Path(args.input)
+
 
     if not inp.exists():
         print(f"ERROR: input not found: {inp}", file=sys.stderr)
