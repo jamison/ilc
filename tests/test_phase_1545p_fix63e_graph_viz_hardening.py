@@ -45,6 +45,12 @@ def test_fix63e_governance_edge_type_contract() -> None:
     assert "CONTAINS_PARTITION" not in graph_viz_export.GOVERNANCE_EDGE_TYPES
 
 
+def test_fix63e_authority_visual_colors_are_distinct() -> None:
+    assert graph_viz_export.PREFIX_COLORS["adr"] != graph_viz_export.PREFIX_COLORS["cdl"]
+    assert graph_viz_3d.PREFIX_COLORS["adr"] != graph_viz_3d.PREFIX_COLORS["cdl"]
+    assert graph_viz_export.PREFIX_COLORS["genesis_authority_root"] == "#ffffff"
+
+
 def test_fix63e_build_view_exports_degree_and_hop_diagnostics() -> None:
     nodes = [
         {
@@ -81,6 +87,9 @@ def test_fix63e_build_view_exports_degree_and_hop_diagnostics() -> None:
         omit_export_time=True,
     )
     node_by_id = {node["id"]: node for node in payload["nodes"]}
+    assert node_by_id[graph_viz_export.NODE0]["group"] == "genesis_authority_root"
+    assert node_by_id[graph_viz_export.NODE0]["prefix"] == "artifact"
+    assert node_by_id[graph_viz_export.NODE0]["authority_class"] == "genesis_authority_root"
     assert M012 in node_by_id
     assert node_by_id[M012]["degree_lmdb_total"] == 2
     assert node_by_id[M012]["directed_hop_from_root"] == 1
@@ -88,6 +97,47 @@ def test_fix63e_build_view_exports_degree_and_hop_diagnostics() -> None:
     assert node_by_id[M012]["status"] == "support_trace_not_independent_authority"
     assert any(edge["type"] == "CLASSIFIED_BY" for edge in payload["edges"])
     assert all(edge["type"] != "CONTAINS_FILE" for edge in payload["edges"])
+
+
+def test_fix63e_visual_taxonomy_separates_node0_from_material_roots() -> None:
+    generated_root = "artifact:generated_evidence_material_root_1545p_fix22"
+    source_overlay = "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+    nodes = [
+        {
+            "candidate_id": graph_viz_export.NODE0,
+            "authority_status": "retrospective_genesis_attestation_phase_1142",
+            "graph_projection": "genesis_core_star_map",
+            "node_kind": "authority_map",
+            "tier": "genesis_core",
+        },
+        {
+            "candidate_id": generated_root,
+            "authority_status": "support_only_candidate_not_signed",
+            "graph_projection": "support_candidate_graph",
+            "node_kind": "repo_material_root",
+            "tier": "generated_evidence_root",
+        },
+        {
+            "candidate_id": source_overlay,
+            "canonicality_tier": "fix38_candidate_overlay",
+            "graph_projection": "support_candidate_graph",
+            "node_kind": "",
+        },
+    ]
+    payload = graph_viz_export.build_view(
+        view="all-local",
+        nodes=nodes,
+        edges=[],
+        digest_manifest=_fix61_digest_manifest(),
+        lmdb_root=LMDB_ROOT,
+        omit_export_time=True,
+    )
+    node_by_id = {node["id"]: node for node in payload["nodes"]}
+    assert node_by_id[graph_viz_export.NODE0]["group"] == "genesis_authority_root"
+    assert node_by_id[generated_root]["group"] == "material_partition_root"
+    assert node_by_id[generated_root]["authority_class"] == "support_only_candidate_not_signed"
+    assert node_by_id[source_overlay]["group"] == "source_tree_overlay"
+    assert node_by_id[source_overlay]["authority_class"] == "candidate_overlay_not_canonical"
 
 
 def test_fix63e_governance_export_contains_m012_classified_edge(tmp_path: Path) -> None:
@@ -158,3 +208,30 @@ def test_fix63e_html_contains_source_bar_and_popup_diagnostics() -> None:
     assert "visible_degree" in html
     assert "hidden_edges" in html
     assert "directed_hop" in html
+    assert "authority_class" in html
+    assert "genesis_authority_root" in html
+    assert "Genesis authority root is always visible" in html
+
+
+def test_fix63e_renderer_preserves_exported_visual_group_and_color() -> None:
+    nodes, links = graph_viz_3d._build_graph_data(
+        {
+            "nodes": [
+                {
+                    "color": "#123456",
+                    "degree_lmdb_total": 1,
+                    "group": "genesis_authority_root",
+                    "id": graph_viz_export.NODE0,
+                    "kind": "authority_map",
+                    "prefix": "artifact",
+                    "size": 20,
+                    "visual_group": "genesis_authority_root",
+                }
+            ],
+            "edges": [],
+        }
+    )
+    assert links == []
+    assert nodes[0]["group"] == "genesis_authority_root"
+    assert nodes[0]["prefix"] == "artifact"
+    assert nodes[0]["color"] == "#123456"
