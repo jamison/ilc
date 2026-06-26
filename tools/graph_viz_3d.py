@@ -1064,7 +1064,16 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
 (function buildLegend() {{
   const counts = {{}};
   RAW_NODES.forEach(n => {{ counts[n.group] = (counts[n.group] || 0) + 1; }});
-  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const pinnedLegendOrder = {{
+    "genesis_agent": 1,
+    "genesis_authority_root": 2,
+  }};
+  const sorted = Object.entries(counts).sort((a, b) => {{
+    const ap = pinnedLegendOrder[a[0]] || 0;
+    const bp = pinnedLegendOrder[b[0]] || 0;
+    if (ap !== bp) return ap - bp;
+    return (b[1] - a[1]) || a[0].localeCompare(b[0]);
+  }});
   const legend = document.getElementById("legend");
   sorted.forEach(([g, cnt]) => {{
     const color = NODE_COLORS[g] || "#cccccc";
@@ -1851,7 +1860,13 @@ document.getElementById("chk-spotlight").addEventListener("change",  e=>{{spotli
 (function buildLegend() {{
   const counts = {{}};
   ALL_NODES.forEach(n => {{ counts[n.group]=(counts[n.group]||0)+1; }});
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const pinnedLegendOrder = {{"genesis_agent": 1, "genesis_authority_root": 2}};
+  const sorted = Object.entries(counts).sort((a,b)=>{{
+    const ap = pinnedLegendOrder[a[0]] || 0;
+    const bp = pinnedLegendOrder[b[0]] || 0;
+    if (ap !== bp) return ap - bp;
+    return (b[1]-a[1]) || a[0].localeCompare(b[0]);
+  }});
   const legend = document.getElementById("legend");
   sorted.forEach(([g, cnt]) => {{
     const color = NODE_COLORS[g]||"#ccc";
