@@ -85,6 +85,8 @@ output/
 # Local graph visualization demos and sidecar checkouts
 graphify-out/
 ilc-graphics-sidecar/
+ilc-ccss-sidecar/
+ilc-timecapsule-sidecar/
 lib/
 tools/showcase/
 
