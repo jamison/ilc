@@ -193,7 +193,20 @@ def test_fix63e_html_contains_source_bar_and_popup_diagnostics() -> None:
                 "size": 4,
                 "status": "support_trace_not_independent_authority",
                 "tier": "support_candidate",
-            }
+            },
+            {
+                "degree_lmdb_total": 2,
+                "directed_hop_from_root": 3,
+                "group": "repo",
+                "id": "repo:file:abc:ilc_core_runtime_example_py",
+                "kind": "repo_material_node",
+                "label": "ilc_core/runtime_example.py",
+                "projection": "support_candidate_graph",
+                "repo_subgroup": "runtime",
+                "size": 4,
+                "status": "",
+                "tier": "public_release_candidate_material",
+            },
         ],
         [],
         "test",
@@ -211,6 +224,13 @@ def test_fix63e_html_contains_source_bar_and_popup_diagnostics() -> None:
     assert "authority_class" in html
     assert "genesis_authority_root" in html
     assert "Genesis authority root is always visible" in html
+    assert 'const hiddenGroups = new Set(["repo"])' in html
+    assert "hiddenRepoSubgroups" in html
+    assert "data-repo-subgroup" in html
+    assert "repo_subgroup" in html
+    assert 'id="hop-slider" min="-1"' in html
+    assert "let hopDepth            = -1" in html
+    assert "hopDepth >= 0" in html
 
 
 def test_fix63e_renderer_preserves_exported_visual_group_and_color() -> None:
@@ -235,3 +255,44 @@ def test_fix63e_renderer_preserves_exported_visual_group_and_color() -> None:
     assert nodes[0]["group"] == "genesis_authority_root"
     assert nodes[0]["prefix"] == "artifact"
     assert nodes[0]["color"] == "#123456"
+
+
+def test_fix63e_repo_subgroup_is_exported_and_renderer_falls_back() -> None:
+    payload = graph_viz_export.build_view(
+        view="all-local",
+        nodes=[
+            {
+                "candidate_id": "repo:file:abc123:ilc_core_crypto_cose_sign1_py",
+                "source_path": "ilc_core/crypto/cose_sign1.py",
+                "node_kind": "repo_material_node",
+                "tier": "public_release_candidate_material",
+            },
+            {
+                "candidate_id": "repo:file:def456:tests_test_runtime_py",
+                "source_path": "tests/test_runtime.py",
+                "node_kind": "repo_material_node",
+                "tier": "public_release_candidate_material",
+            },
+        ],
+        edges=[],
+        digest_manifest=_fix61_digest_manifest(),
+        lmdb_root=LMDB_ROOT,
+        omit_export_time=True,
+    )
+    by_id = {node["id"]: node for node in payload["nodes"]}
+    assert by_id["repo:file:abc123:ilc_core_crypto_cose_sign1_py"]["repo_subgroup"] == "security"
+    assert by_id["repo:file:def456:tests_test_runtime_py"]["repo_subgroup"] == "test"
+
+    rendered_nodes, _ = graph_viz_3d._build_graph_data(
+        {
+            "nodes": [
+                {
+                    "id": "repo:file:ghi789:docs_specs_example_md",
+                    "group": "repo",
+                    "label": "docs/specs/example.md",
+                }
+            ],
+            "edges": [],
+        }
+    )
+    assert rendered_nodes[0]["repo_subgroup"] == "spec_doc"
