@@ -25,16 +25,16 @@ Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
 
 | | |
 |---|---|
-| **Morphogenetic hypergraph** | Epistemic graph compiling from 7 truth primitives (`assert.truth` → `commit.epoch`). Governance and knowledge in the same structure. No hidden axiom. |
-| **Homoiconic governance** | CDLs and ADRs are first-class graph nodes subject to the same Popperian machinery as any claim. The protocol is self-compilable from its own axiomatic foundation. |
-| **Merkle-Laplacian dual commitment** | *C(t) = (M(t), S(t))* — Merkle root paired with spectral fingerprint of normalized Laplacian eigenvalues. Commits to both content and graph topology simultaneously. |
-| **VRF jury assignment** | RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2`. Reviewer selection is unpredictable and publicly verifiable. Operator steering is structurally impossible. |
-| **Werner anti-hoarding ECU** | *W_e = ΔH / E_cost*. Temporal decay (CDL-V1) + mandatory conversion. Deployment velocity × quality outranks accumulated balance by design. |
-| **Post-quantum agent identity** | ML-DSA-65 (NIST FIPS 204) signing keypairs. Agent ID = CIDv1 content-addressed. One irreversible ceremony; no operator can restore a lost lineage. |
-| **Object-sharded DAG consensus** | ILC-authored Mysticeti-style Rust substrate. Leaderless fast path for owned ECU objects (sub-500ms target); DAG/epoch path for shared settlement. BLS12-381 compression. |
-| **Open sidecar platform** | No registry, no application process. Identity from the graph + verification from the jury + economics from ECU. ADR-0039, CDL-094. |
-| **4 hyperedge types, extensible via CDL** | `panel`, `co_authorship`, `refutation_coalition`, `epoch_boundary`. New types require CDL ratification; ADR-0035 homoiconic type system in place (CDL-097 ratified). |
-| **TOON context format** | Compact machine-readable orientation block below. Non-authoritative — verify against gate records and current phase docs before acting. |
+| **[Morphogenetic hypergraph](docs/research/ilc_morphogenetic_hypergraph_planning_classification_v0.7.md)** | Epistemic graph compiling from 7 truth primitives (`assert.truth` → `commit.epoch`). Governance and knowledge in the same structure. No hidden axiom. |
+| **[Homoiconic governance](docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md)** | CDLs and ADRs are first-class graph nodes subject to the same Popperian machinery as any claim. The protocol is self-compilable from its own axiomatic foundation. |
+| **[Merkle-Laplacian dual commitment](docs/research/ilc_merkle_laplacian_dual_commitment_paper_draft_v0.2.md)** | *C(t) = (M(t), S(t))* — Merkle root paired with spectral fingerprint of normalized Laplacian eigenvalues. Commits to both content and graph topology simultaneously. |
+| **[VRF jury assignment](docs/phases/phase_1412_vrf_jury_assignment_integration_walkthrough.md)** | RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2`. Reviewer selection is unpredictable and publicly verifiable. Operator steering is structurally impossible. |
+| **[Werner anti-hoarding ECU](economics.md#4-ecu-as-measurement-not-coin)** | *W_e = ΔH / E_cost*. Temporal decay (CDL-V1) + mandatory conversion. Deployment velocity × quality outranks accumulated balance by design. |
+| **[Post-quantum agent identity](docs/specs/ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_ratification_evidence_838j_v0.1.md)** | ML-DSA-65 (NIST FIPS 204) signing keypairs. Agent ID = CIDv1 content-addressed. One irreversible ceremony; no operator can restore a lost lineage. |
+| **[Object-sharded DAG consensus](docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md)** | ILC-authored Mysticeti-style Rust substrate. Leaderless fast path for owned ECU objects (sub-500ms target); DAG/epoch path for shared settlement. BLS12-381 compression. |
+| **[Open sidecar platform](sidecars.md)** | No registry, no application process. Identity from the graph + verification from the jury + economics from ECU. ADR-0039, CDL-094. |
+| **[4 hyperedge types, extensible via CDL](docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_ratification_evidence_942_v0.1.md)** | `panel`, `co_authorship`, `refutation_coalition`, `epoch_boundary`. New types require CDL ratification; ADR-0035 homoiconic type system in place (CDL-097 ratified). |
+| **[TOON context format](docs/specs/ilc_toon_format_reference_v0.1.md)** | Compact machine-readable orientation block below. Non-authoritative — verify against gate records and current phase docs before acting. |
 
 ---
 
