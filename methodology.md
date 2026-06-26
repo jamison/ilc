@@ -34,7 +34,13 @@ The result is a project where the governance layer, the implementation layer, an
 
 This document describes how that works in practice.
 
-> **Note for public readers:** Some links in this document (file paths such as `docs/specs/...`) point to files in the private development repository. They are preserved to make the methodology description traceable but are not navigable without access to that repository. The public source repository contains the protocol implementation, specifications, and phase walkthroughs that have been cleared for publication.
+> **Note for public readers:** Some links in this document (file paths such as
+> [`docs/specs/...`](docs/specs/)) point to files in the private development
+> repository. They are preserved to make the methodology description traceable
+> but are not navigable without access to that repository. The public source
+> repository contains the protocol implementation, specifications, and phase
+> walkthroughs that have been cleared for publication. Current activation state
+> lives in [`docs/phases/STATUS.md`](docs/phases/STATUS.md).
 
 ---
 
@@ -46,7 +52,11 @@ ILC governs claims through provenance, refutation, and reuse. The development pr
 - **Refutability:** Design decisions are written as explicit claims with falsification criteria. A claim that cannot be tested or refuted is marked as speculative.
 - **Reuse with attribution:** When a later phase depends on an earlier decision, it cites the exact token and commit. No implicit inheritance.
 
-This means the protocol's own epistemological foundations — the seven truth primitives (`assert.truth`, `validate.claim`, `contradict.assert`, `refute.claim`, `revise.assert`, `link.claim`, `commit.epoch`) — are the vocabulary used to reason about the protocol's own construction.
+This means the protocol's own epistemological foundations — the
+[seven truth primitives](metaphysics.md#5-the-current-canonical-seven)
+(`assert.truth`, `validate.claim`, `contradict.assert`, `refute.claim`,
+`revise.assert`, `link.claim`, `commit.epoch`) — are the vocabulary used to
+reason about the protocol's own construction.
 
 ---
 
@@ -54,7 +64,8 @@ This means the protocol's own epistemological foundations — the seven truth pr
 
 ### Constitutional Decision Log (CDL)
 
-A CDL is a formal binding decision about protocol behavior. It is:
+A [CDL](docs/specs/ilc_constitutional_decision_log_v0.1.md) is a formal binding
+decision about protocol behavior. It is:
 
 - **Numbered sequentially** — CDL-001 onward; the register is append-only
 - **Lifecycle-gated** — every CDL passes through `open → prelock → ratified`, with explicit human authorization at each transition
@@ -65,14 +76,17 @@ CDLs govern: economic constants, attribution rules, governance mechanics, activa
 
 ### Architectural Decision Record (ADR)
 
-An ADR is a design decision at the architecture or interface layer. It is:
+An [ADR](docs/adr/) is a design decision at the architecture or interface layer.
+It is:
 
 - **Accepted rather than ratified** — less ceremonial than a CDL, but still numbered, dated, and immutable once accepted
 - **Scoped to interface and structure** — not economic constants, but how components relate, what APIs look like, what identity formats mean
 
 ADRs govern: layer boundaries, module interfaces, data schemas, network protocols, signing formats, and identity derivation procedures.
 
-As of public RC: see the project statistics table in §15 for current counts; the register grows with each window.
+As of public RC: see the project statistics table in §15 for current counts;
+the [CDL register](docs/specs/ilc_constitutional_decision_log_v0.1.md), ADR
+directory, and [STATUS](docs/phases/STATUS.md) grow with each window.
 
 ---
 
@@ -167,7 +181,8 @@ Executes phase prompts. Writes code, tests, and documentation. Has access to the
 
 Reviews phase prompts before execution and phase outputs after. Is specifically looking for:
 - **Overclaim drift** — "X is implemented" when the implementation doesn't match the claim
-- **Terminology drift** — a term used with a meaning that differs from the canonical glossary
+- **Terminology drift** — a term used with a meaning that differs from the
+  [canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md)
 - **Stale canon conflict** — a historical draft file being treated as authoritative when it has been superseded
 
 Where feasible, the reviewer does not see implementation-level tests during prompt drafting, so tokens drive design rather than tests. After execution, the reviewer verifies outputs match the prompt's token contract.
@@ -342,11 +357,17 @@ ILC uses a layered set of tracking documents that form a coherent state machine.
 
 ### STATUS.md
 
-`docs/phases/STATUS.md` is the append-only log of completed phases. Every phase adds exactly one row when it completes. It is never edited retroactively. If a phase fails closed and is later re-run, the failed-closed record stays and the re-run adds a new row with a supersession note. The file is authoritative for "what happened and when" — but not for "what is the current state."
+[`docs/phases/STATUS.md`](docs/phases/STATUS.md) is the append-only log of
+completed phases. Every phase adds exactly one row when it completes. It is
+never edited retroactively. If a phase fails closed and is later re-run, the
+failed-closed record stays and the re-run adds a new row with a supersession
+note. The file is authoritative for "what happened and when" — but not for
+"what is the current state."
 
 ### PLANNING_INDEX.md
 
-`docs/PLANNING_INDEX.md` is the current-state document. It contains:
+[`docs/PLANNING_INDEX.md`](docs/PLANNING_INDEX.md) is the current-state
+document. It contains:
 - A **Last updated** header summarizing the frontier (updated at every session boundary)
 - A long **Current frontier** paragraph (updated by major milestones, never truncated — only appended)
 - A series of **completion correction** addenda (one per phase, added after each phase completes, never deleted)
@@ -365,7 +386,12 @@ The guidance doc is the pre-execution plan. The closure handoff is the post-exec
 
 ### Capsule
 
-The **context capsule** (`docs/specs/ilc_antigravity_context_capsule_vN.NN.md`) is a compressed state snapshot for agent rehydration. When a new session starts with a cold agent (no prior context), the capsule provides enough state to reconstruct the frontier without reading hundreds of phase walkthroughs. The capsule is updated at every window closure and at major state changes. As of public RC: capsule v5.60.
+The **context capsule** (`docs/specs/ilc_antigravity_context_capsule_vN.NN.md`)
+is a compressed state snapshot for agent rehydration. When a new session starts
+with a cold agent (no prior context), the capsule provides enough state to
+reconstruct the frontier without reading hundreds of phase walkthroughs. The
+capsule is updated at every window closure and at major state changes. As of
+public RC: capsule v5.60.
 
 ### Phase Walkthrough Files
 
@@ -444,7 +470,12 @@ This pipeline means every design decision has a traceable path back to the raw c
 
 ### TOON: Token-Efficient Context Packing
 
-As the project's context requirements grew — longer phase prompts, larger §0 discovery sections, richer agent rehydration packets — compact structured context became a practical efficiency concern. ILC has evaluated **TOON** (a compact, human-legible structured format installable via `pip install toon-format`) for outbound context packing and future agent harness work.
+As the project's context requirements grew — longer phase prompts, larger §0
+discovery sections, richer agent rehydration packets — compact structured
+context became a practical efficiency concern. ILC has evaluated
+[**TOON**](docs/specs/ilc_toon_format_reference_v0.1.md) (a compact,
+human-legible structured format installable via `pip install toon-format`) for
+outbound context packing and future agent harness work.
 
 TOON is not a public-RC protocol semantic and is not part of any content hash by default. The public README does not carry a machine hydration block. In planned Window 1459+ work, an agentic harness may use TOON for outbound prompt compression and task-envelope formatting, but captured model output must preserve raw response bytes as the hashable content, and neither TOON-packed metadata nor node envelopes are included in the content hash unless a later canonical rule explicitly says otherwise.
 

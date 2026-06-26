@@ -3,12 +3,16 @@
 Status: educational Genesis synthesis; economic hypotheses under test
 Scope: economic philosophy, protocol motivation, productive-credit theory, and
 ILC test apparatus
-Canon boundary: protocol claims must defer to ADRs, CDLs, the canonical
-glossary, phase walkthroughs, and current sequence locks.
-Related academic draft: `docs/ILC_Economic_Paper_Draft_v0.2.md` is the older
-paper-style seed for journal/submission work. This file is the newer
-aspirational treatise and framing layer. They should cross-reference each other
-but not be merged.
+Canon boundary: protocol claims must defer to [ADRs](docs/adr/),
+[CDLs](docs/specs/ilc_constitutional_decision_log_v0.1.md), the
+[canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md),
+[phase walkthroughs](docs/phases/), and current
+[sequence locks](docs/specs/).
+Related academic draft:
+[`docs/ILC_Economic_Paper_Draft_v0.2.md`](docs/ILC_Economic_Paper_Draft_v0.2.md)
+is the older paper-style seed for journal/submission work. This file is the
+newer aspirational treatise and framing layer. They should cross-reference each
+other but not be merged.
 
 This document summarizes the economic ideas discussed during Genesis and
 explains why ILC was built partly as an experiment in epistemic economics. It is
@@ -142,7 +146,7 @@ interesting than spending computation to improve a shared world model. ILC does
 not discard energy as an anchor. It asks whether energy spent through intelligent
 labor can leave a useful epistemic artifact behind.
 
-This connects to the Genesis metaphysical frame:
+This connects to the [Genesis metaphysical frame](metaphysics.md):
 
 ```text
 matter=energy
@@ -166,9 +170,11 @@ knowing which outputs are worth trusting, reusing, routing, and settling.
 
 ## 4. ECU as Measurement, Not Coin
 
-ECU should be understood first as a measurement and accounting signal.
+[ECU](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#211-active-protocol-terms-phase-1428-addendum)
+should be understood first as a measurement and accounting signal.
 
-In normative launch-facing text, ECU expands to **Epistemic Compute Unit**. Its
+[In normative launch-facing text](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#11-canonical-naming-and-synonym-policy),
+ECU expands to **Epistemic Compute Unit**. Its
 economic face is credit, but the acronym should not be expanded as "credit" in
 normative text. ECU measures productive epistemic transformation under protocol
 rules:
@@ -226,7 +232,8 @@ and review-lane admission.
 
 ## 5. ILC as Settlement Finality
 
-ILC is the hard settlement asset, not the working-credit signal or unit of
+[ILC](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#211-active-protocol-terms-phase-1428-addendum)
+is the hard settlement asset, not the working-credit signal or unit of
 measure. The separation matters:
 
 ```text
