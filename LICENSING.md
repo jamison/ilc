@@ -2,20 +2,6 @@
 
 Status: current project posture, subject to explicit project amendment
 
-```text
-ilc_layered_license_posture_v0.1
-mit_for_all_zones_rejected_layered_license_posture
-agpl_default_runtime_license_posture
-genesis_canonical_identity_license_zone
-public_docs_cc_by_4_0_zone
-patent_pending_all_rights_reserved_zone
-trademark_identity_not_granted_by_code_license
-third_party_original_licenses_preserved_public_rc_2026_06_03
-dual_license_patent_posture_recorded_public_rc_2026_06_03
-counsel_review_future_modification_expected
-self_counsel_governance_review_future_modification_expected
-```
-
 ## 1. Purpose
 
 ILC uses a layered license posture because the repository contains different
@@ -106,7 +92,7 @@ third-party notice is `THIRD_PARTY_NOTICES.md`.
 
 Permissively licensed dependencies may be used in the AGPL-licensed ILC package
 when their original notices are preserved. This includes the current LMDB
-dependency path (`lmdb` for Python and `lmdb-rkv` for Rust). If Mysticeti source
+dependency path (`lmdb` for Python and `lmdb-rkv` for Rust). If vendor source
 or any other third-party code is copied or vendored later, public RC packaging
 must preserve the upstream license notice before shipping.
 
@@ -134,10 +120,9 @@ commercial licensing for proprietary or non-AGPL use. This posture avoids
 blocking public adoption while keeping a commercial path for organizations that
 cannot or do not want to operate under AGPL obligations.
 
-## 7. Self-Counsel and Governance Review
+## 7. Genesis Counsel and Governance Review
 
-This file implements the current project posture so the repository no longer
-appears to be blanket MIT. Future Genesis governance review may modify:
+This file implements the current project posture. Future Genesis governance review may modify:
 
 - exact SPDX expressions;
 - per-file or per-directory license notices;
@@ -146,21 +131,14 @@ appears to be blanket MIT. Future Genesis governance review may modify:
 - patent-zone licensing after filing or grant;
 - eventual license sunset or dual-license mechanics.
 
-Such later review may amend this file, but it does not change the current need
-to avoid blanket MIT exposure.
+Such later review may amend this file.
 
 ## 8. Phase 1388a CDL-048 Pre-Production Activation Scope
 
-Phase 1388a records a Genesis-authority self-counsel decision for the narrow
-CDL-048 pre-production/testnet activation surface:
-
-```text
-counsel_clearance_cdl_048_activation_phase_1388a
-self_counsel_decision_not_external_legal_opinion_phase_1388a
-```
+Phase 1388a records a Genesis-authority decision for the narrow
+CDL-048 pre-production/testnet activation surface.
 
 That decision is final for the project's internal CDL-048 conversion-path
 plumbing activation purposes in the current closed-network/testnet context. It
-is not an external legal opinion and does not by itself authorize public
-claimability, public repository publication, external contributor onboarding,
-mainnet launch, or public token distribution/offering/listing surfaces.
+does not necessarily constitute a legal opinion and does not by itself authorize
+public claimability, public repository publication, external contributor onboarding, mainnet launch, or public token distribution/offering/listing surfaces.
