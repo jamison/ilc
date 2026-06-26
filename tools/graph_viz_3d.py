@@ -63,6 +63,12 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+# ── rc_visibility scanner (standalone helper; no ilc_core/ import) ────────────
+_TOOLS_DIR = str(Path(__file__).resolve().parent)
+if _TOOLS_DIR not in sys.path:
+    sys.path.insert(0, _TOOLS_DIR)
+from rc_visibility_scanner import scan_rc_visibility  # noqa: E402
+
 DEFAULT_INPUT = REPO_ROOT / "out/atlas_research/genesis_atlas_enriched_candidate_fix41a.json"
 DEFAULT_OUTPUT = REPO_ROOT / "graphify-out/graph_3d.html"
 DEFAULT_VIZ_EXPORT_DIR = REPO_ROOT / "out/viz_exports"
@@ -263,7 +269,15 @@ def _build_graph_data(
             "kind":  str(n.get("node_kind") or n.get("kind") or ""),
             "projection": str(n.get("graph_projection") or n.get("projection") or ""),
             "status": str(n.get("candidate_status") or n.get("status") or ""),
+            "_source_path": str(n.get("source_path") or ""),
         })
+
+    # Scan rc_visibility for nodes that have a source_path
+    _sp_list = [node["_source_path"] for node in nodes_out if node["_source_path"]]
+    _vis_map = scan_rc_visibility(_sp_list, REPO_ROOT) if _sp_list else {}
+    for node in nodes_out:
+        sp = node.pop("_source_path")
+        node["rc_visibility"] = _vis_map.get(sp, "public") if sp else "public"
 
     # --max-nodes: trim by group priority, always keep NODE0
     if max_nodes is not None and len(nodes_out) > max_nodes:
@@ -411,19 +425,22 @@ def _render_galaxy_map(galaxies: list[dict]) -> str:
         state = g.get("signing_state", "not_loaded")
         pos = positions.get(gid, (0.0, 0.0, 0.0))
         sprite_uri = _cuneiform_star_svg(g.get("color", "#ffffff"))
+        # rc_visibility_summary: one of "all_public", "mixed", "unknown"
+        rc_summary = g.get("rc_visibility_summary", "unknown")
         nodes.append({
-            "id":           gid,
-            "label":        g.get("label", gid),
-            "color":        g.get("color", "#ffffff"),
-            "signing_state": state,
-            "val":          _SIGNING_VAL.get(state, 40),
-            "opacity":      _SIGNING_OPACITY.get(state, 0.6),
-            "graph_path":   g.get("graph_path"),
-            "depends_on":   g.get("depends_on", []),
-            "sprite_uri":   sprite_uri,
-            "x":            pos[0],
-            "y":            pos[1],
-            "z":            pos[2],
+            "id":                    gid,
+            "label":                 g.get("label", gid),
+            "color":                 g.get("color", "#ffffff"),
+            "signing_state":         state,
+            "val":                   _SIGNING_VAL.get(state, 40),
+            "opacity":               _SIGNING_OPACITY.get(state, 0.6),
+            "graph_path":            g.get("graph_path"),
+            "depends_on":            g.get("depends_on", []),
+            "sprite_uri":            sprite_uri,
+            "rc_visibility_summary": rc_summary,
+            "x":                     pos[0],
+            "y":                     pos[1],
+            "z":                     pos[2],
         })
 
     links = []
@@ -495,6 +512,11 @@ def _render_galaxy_map(galaxies: list[dict]) -> str:
   <div class="legend-row"><div class="legend-dot" style="background:#888866"></div><span class="legend-lbl">signed_candidate (80%)</span></div>
   <div class="legend-row"><div class="legend-dot" style="background:#555566"></div><span class="legend-lbl">unsigned_candidate (60%)</span></div>
   <div class="legend-row"><div class="legend-dot" style="background:#333344"></div><span class="legend-lbl">not_loaded (30%)</span></div>
+  <div style="margin-top:10px;font-size:10px;color:#556;margin-bottom:4px">RC VISIBILITY (boundary shell)</div>
+  <div class="legend-row"><div class="legend-dot" style="background:#ddaa00;opacity:0.5"></div><span class="legend-lbl">all_public (gold shell)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#aa2222;opacity:0.5"></div><span class="legend-lbl">mixed (red shell)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#334455;opacity:0.5"></div><span class="legend-lbl">unknown (dim blue shell)</span></div>
+  <div class="legend-row"><div class="legend-dot" style="background:#445566;opacity:0.5;border-radius:0"></div><span class="legend-lbl">not_loaded (wireframe)</span></div>
 </div>
 
 <div id="info">
@@ -525,6 +547,35 @@ function makeGalaxyObject(node) {{
   const scale = node.val * 0.7;
   sprite.scale.set(scale, scale, 1);
 
+  const group = new THREE.Group();
+
+  // ── RC visibility boundary shell ────────────────────────────────────────
+  const shellRadius = Math.sqrt(node.val) * 8;
+  const rcSummary = node.rc_visibility_summary || "unknown";
+  if (rcSummary === "not_loaded") {{
+    const geo = new THREE.SphereGeometry(shellRadius, 12, 8);
+    const wfGeo = new THREE.WireframeGeometry(geo);
+    const shellMat = new THREE.LineBasicMaterial({{
+      color: 0x445566,
+      transparent: true,
+      opacity: 0.12,
+    }});
+    group.add(new THREE.LineSegments(wfGeo, shellMat));
+  }} else {{
+    const shellColor = rcSummary === "all_public" ? 0xddaa00
+                     : rcSummary === "mixed"       ? 0xaa2222
+                     :                               0x334455;
+    const shellGeo = new THREE.SphereGeometry(shellRadius, 16, 10);
+    const shellMat = new THREE.MeshBasicMaterial({{
+      color: shellColor,
+      transparent: true,
+      opacity: 0.06,
+      depthWrite: false,
+      side: THREE.FrontSide,
+    }});
+    group.add(new THREE.Mesh(shellGeo, shellMat));
+  }}
+
   if (node.signing_state === "signed_v0.4" || node.signing_state === "signed_candidate") {{
     const glowTex = new THREE.TextureLoader().load(node.sprite_uri);
     const glowMat = new THREE.SpriteMaterial({{
@@ -536,12 +587,11 @@ function makeGalaxyObject(node) {{
     const glow = new THREE.Sprite(glowMat);
     const glowScale = scale * 1.6;
     glow.scale.set(glowScale, glowScale, 1);
-    const group = new THREE.Group();
     group.add(glow);
-    group.add(sprite);
-    return group;
   }}
-  return sprite;
+
+  group.add(sprite);
+  return group;
 }}
 
 const Graph = ForceGraph3D()(document.getElementById("graph"))
@@ -585,10 +635,11 @@ function showInfo(n) {{
     ? n.depends_on.join(", ")
     : "(none)";
   let html = [
-    ["ID",           n.id],
-    ["Signing state", n.signing_state],
-    ["Depends on",   depsText],
-    ["Graph path",   gp || "(not loaded locally)"],
+    ["ID",                n.id],
+    ["Signing state",     n.signing_state],
+    ["RC visibility",     n.rc_visibility_summary || "—"],
+    ["Depends on",        depsText],
+    ["Graph path",        gp || "(not loaded locally)"],
   ].map(([k,v]) => `<div class="field"><b>${{k}}:</b> ${{v}}</div>`).join("");
   if (loadCmd) {{
     html += `<div class="field"><b>Load command:</b></div><div class="cmd">${{loadCmd}}</div>`;
@@ -770,6 +821,13 @@ Graph.d3Force("charge").strength(-25);"""
   <input id="search" type="text" placeholder="Search node ID or label…">
   <div style="margin-top:8px;margin-bottom:4px;font-size:11px;color:#888">Node types</div>
   <div id="legend"></div>
+  <div style="margin-top:10px;margin-bottom:4px;font-size:11px;color:#888">RC Visibility</div>
+  <div style="font-size:10px;color:#888;line-height:1.6">
+    <span style="color:#eee">●</span> public (full brightness)<br>
+    <span style="color:#441a1a">●</span> excluded (red tint, 35% opacity)<br>
+    <span style="color:#1a1a44">●</span> private_hist. (blue tint, 25% opacity)<br>
+    <span style="color:#888">●</span> unknown (no change)
+  </div>
 </div>
 
 <div id="controls">
@@ -777,6 +835,11 @@ Graph.d3Force("charge").strength(-25);"""
   <label><input type="checkbox" id="chk-spotlight"{"checked" if core_only else ""}> Spotlight authority</label>
   <label><input type="checkbox" id="chk-hide-generated" checked> Hide out/ (generated evidence)</label>
   <label><input type="checkbox" id="chk-hide-private-history" checked> Hide Z_Past_Chats (private history)</label>
+  <div style="font-size:11px;color:#888;margin:6px 0 3px">RC visibility</div>
+  <label style="display:flex;align-items:center;gap:4px;color:#aaa;margin:2px 0"><input type="radio" name="rcvis3d" value="all" checked> All nodes</label>
+  <label style="display:flex;align-items:center;gap:4px;color:#aaa;margin:2px 0"><input type="radio" name="rcvis3d" value="public"> Public RC only</label>
+  <label style="display:flex;align-items:center;gap:4px;color:#aaa;margin:2px 0"><input type="radio" name="rcvis3d" value="excluded"> Excluded only</label>
+  <label style="display:flex;align-items:center;gap:4px;color:#aaa;margin:2px 0"><input type="radio" name="rcvis3d" value="private_historical"> Private historical</label>
   <div style="font-size:11px;color:#888;margin:6px 0 4px">Edge filters</div>
   <label><input type="checkbox" id="chk-governs" checked> GOVERNS edges</label>
   <label><input type="checkbox" id="chk-attestation" checked> ATTESTATION edges</label>
@@ -998,11 +1061,20 @@ function clearTrace() {{
   refresh();
 }}
 
+// ── RC visibility overlay ─────────────────────────────────────────────────
+const RC_VIS_OVERLAY = {{
+  "public":             null,       // no change — use existing node color
+  "excluded":           "#441a1a",  // deep red tint
+  "private_historical": "#1a1a44",  // deep blue tint
+  "unknown":            null,       // no change
+}};
+
 // ── filter state ─────────────────────────────────────────────────────────
 // Filters are VISUAL ONLY — they never replace graphData or re-run physics.
 // Every node keeps its position from the full-graph simulation.
 // nodeVisibility / linkVisibility callbacks control what is rendered.
 let searchTerm          = "";
+let rcVisFilter         = "all";  // "all" | "public" | "excluded" | "private_historical"
 // spotlightAuth: dims non-authority nodes to near-invisible; does NOT hide
 // them so their edges to authority nodes remain visible (connected spine).
 let spotlightAuth       = {"true" if core_only else "false"};
@@ -1040,6 +1112,8 @@ function nodeVisible(n) {{
   // Tier-based hide filters
   if (hideGenerated && n.tier === "generated_evidence_material") return false;
   if (hidePrivateHistory && n.tier === "genesis_private_historical_material") return false;
+  // RC visibility filter
+  if (rcVisFilter !== "all" && n.rc_visibility !== rcVisFilter) return false;
   // Search: only matching nodes visible (overrides spotlight)
   if (searchTerm) {{
     const s = searchTerm.toLowerCase();
@@ -1078,7 +1152,16 @@ function nodeColor(n) {{
     return "#151520";                                  // unrelated: dim
   }}
   if (spotlightAuth && !_isAuthority(n)) return "#151528";
+  const overlay = RC_VIS_OVERLAY[n.rc_visibility];
+  if (overlay) return overlay;
   return n.color;
+}}
+
+function nodeOpacity3d(n) {{
+  if (genesisTraceIds.size > 0) return genesisTraceIds.has(n.id) ? 0.9 : 0.08;
+  if (n.rc_visibility === "excluded")           return 0.35;
+  if (n.rc_visibility === "private_historical") return 0.25;
+  return 0.9;
 }}
 
 function nodeSize(n) {{
@@ -1092,7 +1175,10 @@ function nodeSize(n) {{
     return n.size * 0.3;                                  // unrelated: tiny
   }}
   if (spotlightAuth && !_isAuthority(n)) return 0.5;
-  return n.size;
+  let sz = n.size;
+  if (n.rc_visibility === "excluded")           sz *= 0.5;
+  if (n.rc_visibility === "private_historical") sz *= 0.4;
+  return sz;
 }}
 
 function _isTraceEdge(l) {{
@@ -1170,7 +1256,7 @@ const Graph = ForceGraph3D()(document.getElementById("graph"))
   .nodeLabel(n => `${{n.id}}\\n${{n.kind || ""}}`)
   .nodeColor(nodeColor)
   .nodeVal(nodeSize)
-  .nodeOpacity(0.9)
+  .nodeOpacity(nodeOpacity3d)
   .nodeVisibility(nodeVisible)
   .linkColor(linkColor)
   .linkOpacity(0.85)
@@ -1228,6 +1314,7 @@ function showInfo(n) {{
     ["id",            n.id],
     ["kind",          n.kind],
     ["tier",          n.tier],
+    ["rc_visibility", n.rc_visibility || "—"],
     ["group",         n.group],
     ["prefix",        n.prefix],
     ["authority_class", n.authority_class],
@@ -1256,7 +1343,8 @@ function showInfo(n) {{
 // ── controls ─────────────────────────────────────────────────────────────
 function refresh() {{
   // Re-evaluate visibility/color/width — does NOT replace graphData or re-run physics.
-  Graph.nodeColor(nodeColor).nodeVal(nodeSize).nodeVisibility(nodeVisible)
+  Graph.nodeColor(nodeColor).nodeVal(nodeSize).nodeOpacity(nodeOpacity3d)
+       .nodeVisibility(nodeVisible)
        .linkVisibility(linkVisible)
        .linkColor(linkColor)
        .linkWidth(linkWidth);
@@ -1270,6 +1358,8 @@ document.getElementById("search").addEventListener("input", e => {{
   searchTerm = e.target.value.trim();
   refresh();
 }});
+document.querySelectorAll("input[name=rcvis3d]").forEach(r =>
+  r.addEventListener("change", e => {{ rcVisFilter = e.target.value; refresh(); }}));
 document.getElementById("chk-spotlight").addEventListener("change", e => {{
   spotlightAuth = e.target.checked; refresh();
 }});
