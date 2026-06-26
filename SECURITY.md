@@ -43,8 +43,8 @@ public-RC code surfaces, release tooling, and any component that could affect a
 future public artifact if published.
 
 **In scope:**
-- `ilc_core/` Python protocol implementation
-- `ilc_consensus/` Rust consensus implementation
+- [`ilc_core/`](ilc_core/) Python protocol implementation
+- [`ilc_consensus/`](ilc_consensus/) Rust consensus implementation
 - CDL enforcement logic and signing ceremony tooling
 - Cryptographic key handling, BLS signatures, PQ key generation
 - ECU/ILC arithmetic, claimability, and any staged settlement logic that could affect future accounting
@@ -52,7 +52,7 @@ future public artifact if published.
 - Any component that could affect settlement correctness, key material security, or consensus safety
 
 **Out of scope (design decisions, not vulnerabilities):**
-- The fact that Epoch 0 is not mainnet and minting is not active
+- The fact that [Epoch 0 is not mainnet and minting is not active](docs/phases/STATUS.md)
 - The use of provisional algorithms documented as pre-production
 - Protocol behaviors that are the intended result of a ratified CDL
 - Aspirational features described in research documents but not yet implemented
@@ -62,7 +62,10 @@ future public artifact if published.
 
 ## Security Baseline
 
-The Phase 1387 security review established the current baseline: AI-assisted LLM review of the full protocol codebase, with community contributions. No commercial audit firm has reviewed the code at this stage. This is documented transparently in the methodology.
+The Phase 1387 security review established the current baseline: AI-assisted
+LLM review of the full protocol codebase, with community contributions. No
+commercial audit firm has reviewed the code at this stage. This is documented
+transparently in the [methodology](methodology.md#14-security-and-coding-standards).
 
 The following invariants are considered security-critical and are enforced by the codebase:
 
@@ -98,7 +101,7 @@ We will not take legal action against good-faith security researchers who follow
 
 ## Security Comparison: Filesystem Build vs. Homoiconic Graph Compilation
 
-ILC uses a homoiconic graph compilation model: the Genesis Atlas LMDB is a
+ILC uses a [homoiconic graph compilation model](metaphysics.md#12-homoiconicity-narrowly): the Genesis Atlas LMDB is a
 graph metadata and content-addressing index — it stores node identity, topology,
 provenance edges, file hashes (`source_sha256`), sizes, classifications, and
 content-addressed references, but not raw file bytes. Executable software is
@@ -196,7 +199,7 @@ attempt to inject a well-formed node that passes individual field validation but
 is semantically incorrect: wrong `node_kind`, incorrect `graph_projection`, or
 missing required edges. Defense: the signing ceremony validates the full graph
 topology before the Merkle root is signed. Atlas LMDB safe-writer invariants
-(`AtlasLmdbSafeWriter`) enforce baseline structural integrity at write time
+([`AtlasLmdbSafeWriter`](ilc_core/storage/genesis_atlas_lmdb_writer.py)) enforce baseline structural integrity at write time
 (no dangling edges, valid edge IDs, duplicate controls, metadata consistency),
 but do not prove semantic correctness of node classifications or authority claims.
 

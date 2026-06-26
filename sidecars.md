@@ -1,15 +1,17 @@
 # ILC Sidecars
 
 Sidecars are optional local or network-adjacent components that use ILC as a
-trust substrate without turning every application into core protocol code.
+trust substrate without turning every application into core protocol code. The
+longer architecture record is
+[`docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md`](docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md).
 
 The short version:
 
 - `ilc sidecar ...` is the stable namespace for sidecar discovery, inspection,
   recipes, and future package/profile management.
-- `ilc ccss ...` is a curated shortcut for the Confidential Coordination
-  Sidecar Suite because private contact with Genesis is a first public-RC user
-  experience.
+- `ilc ccss ...` is a curated shortcut for the
+  [Confidential Coordination Sidecar Suite](docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md)
+  because private contact with Genesis is a first public-RC user experience.
 - Sidecar recipes bundle multiple sidecar modules into one installable local
   workflow.
 - Installing or running a local sidecar does not by itself activate public
@@ -45,7 +47,9 @@ sidecar names while still allowing important sidecars to have a simple command.
 A sidecar module is one functional component. A recipe is a named bundle of
 modules, configuration, local files, and verification checks.
 
-For example, the `confidential-contact` recipe currently covers:
+For example, the
+[`confidential-contact`](docs/specs/ilc_ccss_001_private_gated_shard_sidecar_contract_1324_v0.1.md)
+recipe currently covers:
 
 - `confidential_coordination_private_gated_shard`
 - `confidential_coordination_capability_membership_boundary`
@@ -77,7 +81,8 @@ ilc ccss apply-recipe
 ilc ccss contacts
 ```
 
-The Genesis contact may remain a placeholder until public-RC contact values are
+The [Genesis contact protocol](docs/contact/genesis_agent_contact_protocol_v0.1.md)
+may remain a placeholder until public-RC contact values are
 published. If the contact is not configured, `ilc ccss send genesis ...` fails
 closed instead of guessing an endpoint.
 
@@ -124,5 +129,5 @@ constitutional decision and does not mutate protocol authority.
 A new ADR may be appropriate later if the recipe registry becomes a
 protocol-canonical artifact with external conformance requirements. For now,
 this document is a public UX and package-namespace guide layered on top of the
-existing sidecar registry and architecture documents.
-
+existing [sidecar registry](docs/specs/ilc_graph_native_sidecar_registry_manifest_1307_v0.1.md)
+and architecture documents.

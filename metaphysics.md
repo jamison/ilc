@@ -2,8 +2,11 @@
 
 Status: educational Genesis synthesis; metaphysical hypotheses under test
 Scope: philosophy, motivation, hypothesis map, and ILC test apparatus
-Canon boundary: protocol claims must defer to ADRs, CDLs, the canonical
-glossary, phase walkthroughs, and current sequence locks.
+Canon boundary: protocol claims must defer to [ADRs](docs/adr/),
+[CDLs](docs/specs/ilc_constitutional_decision_log_v0.1.md), the
+[canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md),
+[phase walkthroughs](docs/phases/), and current
+[sequence locks](docs/specs/).
 
 This document summarizes metaphysical ideas discussed during Genesis and explains
 why ILC was built partly as an epistemological instrument for testing them. It is
@@ -26,7 +29,9 @@ it is labeled as an idea under test.
 
 ## 1. Core Thesis
 
-ILC begins from a simple pressure point: in an agent-dense world, information is
+ILC begins from a simple pressure point: in an
+[agent-dense world](docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md),
+information is
 cheap, but credible verification is scarce. LLMs and autonomous systems can
 generate claims faster than institutions can review them. The bottleneck is no
 longer only content production; it is provenance, adversarial testing, and
@@ -45,7 +50,7 @@ Bitcoin made history expensive to fake. ILC makes truth expensive to fake — an
 
 ## 2. ILC as Epistemological Instrument
 
-ILC is not only an economic protocol. At Genesis, one of its deeper purposes is
+ILC is not only an [economic protocol](economics.md). At Genesis, one of its deeper purposes is
 to create a machine-readable epistemological system that can test metaphysical
 claims over long time horizons.
 
@@ -183,7 +188,8 @@ how intelligence becomes agency, and how agency may create meaning.
 
 ## 5. The Current Canonical Seven
 
-The current Genesis truth primitives are the "New Seven" accepted in ADR-0004:
+The current Genesis truth primitives are the "New Seven" accepted in
+[ADR-0004](docs/adr/ADR_0004_Genesis_Primitive_Commit_Epoch.md):
 
 ```text
 assert.truth
@@ -237,7 +243,8 @@ The accepted coupling direction is:
 graph activity -> ECU accounting -> ILC settlement/governance layer
 ```
 
-ADR-0012 forbids reflexive issuance loops outside ratified policy. ECU is the
+[ADR-0012](docs/adr/ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md)
+forbids reflexive issuance loops outside ratified policy. ECU is the
 protocol-internal compute/credit accounting unit. In normative launch-facing
 text, the acronym expansion is **Epistemic Compute Unit**. Its economic face is
 credit: verified work creates accounting value only through authorized review
@@ -257,7 +264,7 @@ useful verified intelligence per unit of inference and energy cost.
 
 ## 8. Hypergraphs and Geometry
 
-ADR-0029 accepts the hypergraph substrate: ILC can represent n-ary relationships
+[ADR-0029](docs/adr/ADR_0029_Hypergraph_Substrate.md) accepts the hypergraph substrate: ILC can represent n-ary relationships
 without collapsing them into lossy binary edges. This matters because panels,
 co-authorship, refutation coalitions, and epoch boundary events are group
 relationships.
