@@ -89,6 +89,14 @@ def test_ecu_poil_audit_records_known_blockers_and_boundaries() -> None:
         "CDL-048 uses a **four issuance epoch** conversion deadline",
         "Merkle-Laplacian",
         "Do not claim Laplacian reputation is the active ECU issuer",
+        "local/shard ECU credit",
+        "`BalanceStore.apply_attribution()`",
+        "`EpochSettlementProtocol.process_epoch_checkpoint()`",
+        "Treasury/Genesis should not be modeled as the ordinary ECU minting source",
+        "Missing Accepted-Work-to-Attribution Bridge",
+        "`commit_epoch_record()` testnet direct write",
+        "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION=True",
+        "claimability proof binding",
     ]
     for term in required:
         assert term in report
