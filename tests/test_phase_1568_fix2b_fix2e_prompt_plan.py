@@ -17,9 +17,10 @@ def test_fix2b_prompt_preserves_public_firewall_without_private_bypass() -> None
         "public economics firewall",
         "Do not implement a private economics bypass",
         "initialized-agent identity binding",
-        "real signing boundary",
+        "fake-signature fail-closed",
         "SimpleEpochLedger",
         "must not be represented as the authoritative ECU or ILC path",
+        "phase_1568_fix2b1_live_rerun_remains_blocked_pending_fix2b2",
     ]
     for term in required:
         assert term in prompt
@@ -97,6 +98,19 @@ def test_ecu_poil_audit_records_known_blockers_and_boundaries() -> None:
         "`commit_epoch_record()` testnet direct write",
         "JURY_FINALITY_EVALUATOR_NOT_PRODUCTION=True",
         "claimability proof binding",
+    ]
+    for term in required:
+        assert term in report
+
+
+def test_fix2b1_completion_report_preserves_signer_and_attribution_blockers() -> None:
+    report = _read("docs/specs/ilc_phase_1568_fix2b_runtime_identity_economics_hardening_v0.1.md")
+    required = [
+        "phase_1568_fix2b2_agent_submission_signer_required",
+        "phase_1568_fix2b3_attribution_batch_ingestion_required",
+        "ILC_AGENT_SUBMISSION_V1",
+        "The bridge should be designed before Fix2d runs",
+        "A local Rust ingestion binary is safer than adding a network write endpoint",
     ]
     for term in required:
         assert term in report
