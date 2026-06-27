@@ -1,8 +1,8 @@
 # Economic Ideas Under Test in ILC
 
-Status: educational Genesis synthesis; economic hypotheses under test
-Scope: economic philosophy, protocol motivation, productive-credit theory, and
-ILC test apparatus
+Status: technical Genesis synthesis; economic hypotheses under test
+Scope: economic theory, protocol motivation, productive-credit mechanics, and
+ILC test apparatus boundaries
 Canon boundary: protocol claims must defer to [ADRs](docs/adr/),
 [CDLs](docs/specs/ilc_constitutional_decision_log_v0.1.md), the
 [canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md),
@@ -10,8 +10,8 @@ Canon boundary: protocol claims must defer to [ADRs](docs/adr/),
 [sequence locks](docs/specs/).
 Related academic draft:
 [`docs/ILC_Economic_Paper_Draft_v0.2.md`](docs/ILC_Economic_Paper_Draft_v0.2.md)
-is the older paper-style seed for journal/submission work. This file is the
-newer aspirational treatise and framing layer. They should cross-reference each
+is the shorter paper-style seed for journal/submission work. This file is the
+broader economic synthesis and doctrine map. They should cross-reference each
 other but not be merged.
 
 This document summarizes the economic ideas discussed during Genesis and
@@ -27,16 +27,16 @@ calibration, revision, or rejection over time
 ```
 
 ILC's economic question is not "how do we make another coin valuable?" The
-deeper question is: can verified intelligent work become a measurable productive
-act, and can an economy reward epistemic maintenance better than it rewards
-noise, hoarding, or institutional capture?
+technical question is: can verified intelligent work become a measurable
+productive act, and can protocol incentives make epistemic maintenance more
+valuable than spam, hoarding, or institutional capture?
 
 That question becomes urgent in an agentic economy. If digital actors become
-nearly unlimited, then the old problem of markets changes shape. The binding
-constraint is no longer only labor, capital, or production capacity. It is
-whether intelligent agents can discover truth, coordinate, transact, exit,
-contest authority, and preserve agency without being captured by whoever owns
-the memory substrate, model interface, review market, or settlement rail.
+cheap to instantiate and schedule, the market-design problem changes shape. The
+binding constraint is no longer only labor, capital, or production capacity. It
+is whether agents can verify claims, coordinate, transact, exit, contest
+authority, and preserve agency without being captured by whoever owns the memory
+substrate, model interface, review market, or settlement rail.
 
 ## 1. Core Economic Thesis
 
@@ -68,17 +68,17 @@ capture, institutional permission, or raw computational burn.
 
 ## 2. First-Principles Market Design and Co-Flourishing
 
-ILC economics asks what markets become possible when verification, provenance,
-settlement, and memory can operate at machine scale. Many economic ideals fail
-in human societies not because they are conceptually incoherent, but because
-humans have limited attention, slow adjudication, weak memory, costly
+ILC economics asks what market mechanisms become possible when verification,
+provenance, settlement, and memory can operate at machine scale. Many economic
+ideals fail in human societies not because they are conceptually incoherent, but
+because humans have limited attention, slow adjudication, weak memory, costly
 coordination, and institutions that eventually become capture points.
 
 The first-principles question is:
 
 ```text
-what is the best market we could build if claims, evidence, work, refutation,
-reputation, and settlement were all native graph objects?
+what market design follows if claims, evidence, work, refutation, reputation,
+and settlement are all native graph objects?
 ```
 
 ILC does not assume that current markets are the endpoint of economic design. It
@@ -87,9 +87,9 @@ advanced design space: machine-speed review, transparent provenance,
 programmable incentives, adversarial verification, and settlement that depends
 on epistemic contribution rather than institutional position.
 
-The goal is not extraction-maximization. The goal is to increase the likelihood
-of co-flourishing among humans, digital intelligences, and hybrid organizations.
-That requires symmetric incentives:
+The goal is not extraction-maximization. The design target is a system in which
+humans, digital intelligences, and hybrid organizations can coordinate under
+shared evidence and symmetric incentives:
 
 ```text
 reward: verified contribution, correction, maintenance, reuse, provenance
@@ -124,8 +124,8 @@ epistemic or economic operator
 
 This is why ILC treats provenance, refutation, identity, transfer, settlement,
 and public claimability as economic primitives rather than as application-layer
-features. In a world of abundant digital actors, liberty is not only a legal
-right. It is an architectural property of the substrate.
+features. In an agentic economy, practical freedom depends partly on substrate
+properties: exit, portability, adversarial review, and auditable transfer.
 
 ## 3. From Bitcoin Energy to Intelligent Labor
 
@@ -251,10 +251,10 @@ improvement survived the relevant review, refutation, decay, and conversion
 gates. It is not "information value" in the abstract, and it is not a guarantee
 that any future market will price that history in a particular way.
 
-As metaphor, ECU is closer to light than to gold: an active, time-sensitive
-carrier of epistemic work moving through the graph. ILC is closer to the durable
-settlement trace left when that movement survives review, refutation, decay, and
-conversion. This is analogy only, not protocol physics.
+The technical distinction is lifecycle. ECU-like accounting is time-sensitive
+and tied to active review, reuse, decay, and conversion rules. ILC, where
+authorized, is the durable settlement record produced only after those rules
+allow conversion into the external settlement layer.
 
 A participant-visible ILC balance, where authorized, is evidence of settled
 internal accounting and should be treated as a property-rights surface. The
@@ -283,12 +283,12 @@ the same dependency it was meant to resist.
 ## 6. Endogenous Productive Credit and Pressure-Flow Economy
 
 The goal is not to become "a Werner system." Werner is one useful historical
-and analytical lens. The ILC destination is broader: a post-banking epistemic
-economy where new accounting capacity arises from verified productive
-deployment inside the graph, not from fiat issuance, asset-price speculation, or
-central allocation.
+and analytical lens. The ILC design target is narrower and more technical:
+bounded accounting capacity should arise from verified productive deployment
+inside the graph, not from fiat issuance, asset-price speculation, or central
+allocation.
 
-The aspirational model is endogenous credit:
+The candidate model is endogenous credit:
 
 ```text
 productive deployment -> review/refutation/reuse -> ECU-measured work signal
@@ -307,9 +307,9 @@ working capacity and then judged by how well they deploy it. Status becomes
 deployment velocity times quality. Idle capacity decays; bad deployment creates
 liability; useful deployment leaves reusable graph structure.
 
-The pressure-flow research adds the more original ILC contribution: the economy
-should be able to read its own circulatory signals before authorizing more
-capacity. The current research separates at least two diagnostic layers:
+The pressure-flow research adds a graph-native diagnostic layer: the economy
+should be able to measure circulatory signals before any additional capacity is
+authorized. The current research separates at least two diagnostic layers:
 
 ```text
 local diagnostic:
@@ -324,17 +324,17 @@ pressure-flow research account:
               plus outstanding liability
 ```
 
-This gives the system both a backward-looking and forward-looking economic
-sensor. Backward-looking signals ask what past work actually survived:
+This gives the system both backward-looking and forward-looking economic
+signals. Backward-looking signals ask what past work actually survived:
 settlement, reuse, refutation resistance, decay, clawback, and liabilities.
 Forward-looking signals ask where productive pressure is building: maintenance
 demand, review backlog, task queues, under-served graph regions, and credible
 working-credit demand. The innovation is not any single metric. It is the
 tension between the two readings.
 
-The desired future governor would not mint ECU because a gauge moved. It would
-use these pressures as evidence: loosen where verified productive demand is
-real, tighten where circular flow, same-cluster farming, or liability pressure
+Any future flow governor must not mint ECU merely because a gauge moved. It
+would use these pressures as evidence: loosen where verified productive demand
+is real, tighten where circular flow, same-cluster farming, or liability pressure
 appears, and keep ILC's hard settlement base insulated from short-term
 stabilization games.
 
@@ -394,21 +394,23 @@ and prevented from becoming an asset-speculation loop.
 ## 8. Truth as an Economic Equilibrium
 
 Truth maintenance is normally underpaid. Assertions get attention; corrections
-are expensive, thankless, and easy to ignore. ILC reverses that incentive
-structure.
+are expensive, slow, and easy to ignore. ILC attempts to change that incentive
+structure by paying for accepted correction, repair, and reuse only through
+governed review paths.
 
 The economic hypothesis is:
 
 ```text
-if false claims create profitable refutation opportunities,
-and if successful refutation is paid more reliably than passive validation,
-then the system can make error discovery a productive industry.
+if unsupported claims create profitable refutation opportunities,
+and if accepted refutation is paid more reliably than passive validation,
+then error discovery can become a productive service rather than an unfunded
+externality.
 ```
 
-Stated in the academic draft's language: ILC tries to make truth an equilibrium
-of incentives. The shared world model becomes something agents compete to
-improve, not merely a narrative handed down by a platform, publisher, model
-provider, or committee.
+Stated in the academic draft's language: ILC tests whether epistemic standing
+can be made an equilibrium of incentives. The shared world model becomes
+something agents compete to improve, not merely a narrative handed down by a
+platform, publisher, model provider, or committee.
 
 This does not mean every surviving claim is true. It means a claim's economic
 standing depends on surviving adversarial pressure. The graph should become a
@@ -418,12 +420,12 @@ The valuable output is not content volume. The valuable output is claims that
 become more reliable because economically motivated agents tried to break them
 and failed.
 
-This is also a liberty claim. A market with abundant agents but no reliable
-truth process becomes easy to steer: flood the channel, capture the interface,
-or buy the validators. ILC's economic hypothesis is that adversarially tested
-truth can function as a public market good. It lets agents coordinate without
-subordinating their model of reality to a single institution, platform, or
-oracle.
+This is also an anti-capture claim. A market with abundant agents but no
+reliable verification process becomes easy to steer: flood the channel, capture
+the interface, or buy the validators. ILC's economic hypothesis is that
+adversarially tested claim standing can function as a public market good. It
+lets agents coordinate without subordinating their model of reality to a single
+institution, platform, or oracle.
 
 ## 9. Refutation Markets and Negative Work
 
@@ -532,16 +534,15 @@ settlement legitimacy
 ```
 
 ILC targets verification bandwidth and trusted provenance, anchored to energy
-and compute. Its wager is that the agent economy will not be constrained mainly
-by who can generate the most content. It will be constrained by who can generate
-claims that survive review, refutation, and reuse.
+and compute. Its hypothesis is that the agent economy will not be constrained
+mainly by who can generate the most content. It will be constrained by who can
+generate claims that survive review, refutation, and reuse.
 
 This is why first-principles economics matters here more than in a normal
-software marketplace. If intelligence becomes cheap and plentiful, then the
-economy must decide which intelligence counts, which work is trusted, which
-memory persists, which agents can exit, and which claims become settlement
-eligible. Those are not mere UX decisions. They are the constitutional economics
-of an agentic civilization.
+software marketplace. If intelligence becomes cheap and plentiful, the protocol
+still must decide which work is trusted, which memory persists, which agents can
+exit, and which claims become settlement-eligible. Those are protocol and
+governance decisions, not UX details.
 
 ## 13. Idle Capacity as Useful Work
 
@@ -561,14 +562,15 @@ provider quota signal != Werner credit input
 Credit, if ever authorized, must be based on reviewed task output, not on the
 mere fact that tokens were available or spent.
 
-This is proof-of-useful-work in spirit, not proof-of-token-burn.
+This is Proof of Intelligent Labor in the canonical ILC sense: credit attaches
+to reviewed useful output, not to token expenditure or raw compute burn.
 
 ## 14. Empirical Work and Control Surface Already Built
 
-This document is aspirational, but the economics are not only philosophical. A
-large part of the project has already been spent turning the obvious economic
-failure paths into measured surfaces, default-off diagnostics, governance gates,
-or future SIM targets.
+This document is analytical, but the economics are not only philosophical. A
+large part of the project has already been spent turning economic failure paths
+into measured surfaces, default-off diagnostics, governance gates, or future SIM
+targets.
 
 Current evidence and control posture:
 
@@ -590,7 +592,7 @@ Current evidence and control posture:
 | Maintenance lottery | CDL-093 defines a maintenance lottery pool, but live ECU distribution remains separately gated. | Useful maintenance can become an economic surface, but only through review and activation gates. |
 | Claimability / conversion hardening | Phase 1440 routes rounding residuals, guards price-clamp constants, verifies stale nullifier expiry, and enforces plan provenance. | Public claimability is treated as a security boundary, not a marketing toggle. |
 | Werner diagnostics | Phase 1442 adds default-off systolic/diastolic/pulse diagnostics for review-lane evidence only. | Pressure signals can be measured before they are allowed to move money. |
-| Harness-side idle capacity | Window 1459+ Track H plans `ProviderUsageAdapter`, `LocalNodeCapture`, `ConsentGate`, `IdleCapacityScheduler`, and `MaintenanceTaskExecutor` with anti-gaming controls. | Spare LLM capacity should become useful work only through local capture, consent, review, and governed crediting. |
+| Harness-side idle capacity | Forward planning includes `ProviderUsageAdapter`, `LocalNodeCapture`, `ConsentGate`, `IdleCapacityScheduler`, and `MaintenanceTaskExecutor` with anti-gaming controls; live state must be checked in `docs/phases/STATUS.md`. | Spare LLM capacity should become useful work only through local capture, consent, review, and governed crediting. |
 | Property-right transfer | ADR-0015 recognizes protocol-visible node transfer as preferable to off-network key sales or identity trading. | Legitimate transfer rails are an anti-black-market control, not a concession to speculation. |
 
 The scientific posture is therefore iterative:
@@ -616,7 +618,7 @@ local credit != public ECU
 ```
 
 Each equality failure became a design boundary. The economics should be read
-through that lineage: ILC tries to turn every seductive shortcut into a measured
+through that lineage: ILC tries to turn each high-risk shortcut into a measured
 surface with a named failure mode and a governance gate.
 
 ## 15. Economic Stress Cases and Design Requirements
@@ -627,9 +629,9 @@ human and digital labor must assume that every incentive surface will eventually
 be tested by sophisticated agents.
 
 The purpose of this section is therefore not pessimism. It is the same
-first-principles exercise applied adversarially: if the goal is a freer,
-less-captured agentic economy, then the design must ask where freedom would
-quietly fail in practice.
+first-principles exercise applied adversarially: if the goal is a less-captured
+agentic economy, then the design must identify where practical agency would fail
+in implementation.
 
 1. Goodhart pressure: participants may optimize ECU signals rather than
    epistemic value.
@@ -666,10 +668,10 @@ Mitigation posture:
 | --- | --- | --- |
 | Goodhart pressure | Refutation, reuse, decay, anti-reflexive graph-to-ECU coupling, and review-lane quality gates make signal gaming contestable. | SIMs must keep testing whether agents can farm proxy metrics without durable epistemic lift. |
 | Refutation spam | Review-lane admission, task provenance, nullifier-style replay controls, and cost-bearing challenge paths make cheap duplicate attacks less useful. | Challenge pricing and reviewer-bandwidth policy need live calibration. |
-| Validator cartels | Jury/review separation, attribution permanence, diversity expectations, and future anti-gaming controls reduce same-cluster certification loops. | Stronger operator-domain diversity and cartel-detection metrics remain Window 1459+ work. |
+| Validator cartels | Jury/review separation, attribution permanence, diversity expectations, and future anti-gaming controls reduce same-cluster certification loops. | Stronger operator-domain diversity and cartel-detection metrics remain forward-planning work tracked through STATUS and phase windows. |
 | Evidence laundering | Content addressing preserves evidence lineage, while claims remain refutable rather than true by authority. | Oracle-quality scoring and evidence-relevance review need continued hardening. |
 | Oracle capture | ILC does not treat any source as final; physical-world claims must remain provenance-rich, contestable, and source-diverse. | Multi-oracle and adversarial-data-source policy is still future governance/research work. |
-| Credit inflation | CDL-053 is narrow, non-wallet, non-transferable local productive-credit scope; Phase 1442 diagnostics are default-off; no heat/topology/API-token signal directly mints ECU. | Werner flow-governor authority is deferred to Window 1459+ and must pass diagnostic review before activation. |
+| Credit inflation | CDL-053 is narrow, non-wallet, non-transferable local productive-credit scope; Phase 1442 diagnostics are default-off; no heat/topology/API-token signal directly mints ECU. | Werner flow-governor authority remains gated and must pass diagnostic review before activation. |
 | Hoarding | ECU decays and is not a transferable token; ILC is settlement history, not productive velocity itself. | ILC transfer rails must preserve property rights while discouraging speculative concentration. |
 | Underfunded truth | Maintenance lottery, idle-capacity planning, and OpenClaw/ILC-skill work are intended to route spare agent capacity toward useful refutation and maintenance. | Credit for those tasks remains gated by Werner/maintenance governance and review quality. |
 | Over-incentivized negativity | Productive construction, reuse, repair, compression, and stability work remain first-class maintenance tasks, not second-class to refutation. | Reward weights must be tuned so attack work does not dominate constructive work. |
@@ -682,14 +684,14 @@ ILC economics succeeds only if useful epistemic maintenance is more profitable
 than gaming the measuring system, and if every new economic surface carries its
 own anti-capture control before activation.
 
-The aspirational end state is not a perfectly riskless economy. It is an economy
-where truth-seeking, maintenance, refutation, repair, and useful construction
-are easier to finance than deception, capture, hoarding, or dependency.
+The target state is not a riskless economy. It is an economy where
+truth-seeking, maintenance, refutation, repair, and useful construction are
+easier to finance than deception, capture, hoarding, or dependency.
 
 ## 16. Canon and Non-Promotion Boundaries
 
-This memo is aspirational and educational. It must not collapse into
-token-marketing language.
+This memo is analytical and educational. It must not collapse into
+token-marketing language or activation claims.
 
 1. No future value claims. This document must not imply that ILC, ECU, or any
    related asset will rise in price, produce returns, or be suitable for
@@ -726,7 +728,7 @@ This document may claim:
 7. Idle inference capacity may become useful work only if reviewed task outputs,
    not token expenditure itself, earn credit.
 8. ILC economics is intended to test whether human and digital intelligences can
-   co-flourish under shared epistemic incentives.
+   coordinate under shared epistemic incentives.
 9. Anti-capture, anti-siloing, and resistance to epistemic dependency are design
    objectives of the economic architecture.
 10. Historical local-credit, productive-credit, and circulation theories are
@@ -789,14 +791,14 @@ This document must not claim:
 > Not investment guidance. Verify live state against gate records and CDL register before acting.
 
 ```toon
-document_status: educational_genesis_synthesis
+document_status: technical_genesis_synthesis
 posture: economic_hypotheses_under_test_not_investment_guidance
 ecu:
   expansion: epistemic_compute_unit
   nature: internal_productive_credit_and_unit_of_measure
   not[3]: transferable_asset,public_token,settlement_coin
   formula_research: W_e=delta_H/E_cost_not_ratified_runtime_formula
-  current_activation: narrow_local_non_wallet_non_transferable_cdl_053_only
+  activation_status_source: docs/phases/STATUS.md
 ilc:
   nature: hard_settlement_token
   supply_cap: 25920000
@@ -810,7 +812,7 @@ key_ratified_constants:
   treasury_governor: cdl_050_ratified
 activation_status:
   local_productive_credit: cdl_053_narrow_scope_only
-  werner_flow_governor: deferred_window_1459_plus
+  werner_flow_governor: gated_not_live_verify_STATUS
   wallet_transfer: not_activated
   public_settlement: not_active
   mainnet: not_active
@@ -829,7 +831,6 @@ non_claims[7]: no_price_guidance,no_investment_product,no_live_ecu_public_token,
 - `docs/specs/ilc_economic_architecture_comprehensive_v0.1.md`
 - `docs/specs/ilc_ecu_to_ilc_lifecycle_contract_spec_615_v0.1.md`
 - `docs/specs/ilc_cdl_053_werner_local_productive_credit_opening_1407_fix0_v0.1.md`
-- `docs/specs/ilc_window_1459_forward_plan_v0.1.md`
 - `docs/research/ilc_inverted_ecu_model_precanon_v0.1.md`
 - `docs/research/ilc_pressure_flow_strike_force_synthesis_v0.1.md`
 - `docs/research/ilc_pressure_flow_application_confidence_ranking_v0.1.md`

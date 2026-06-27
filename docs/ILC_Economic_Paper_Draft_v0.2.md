@@ -1,230 +1,303 @@
 # ILC Economic Paper (Draft v0.2)
-## *Economics After Scarcity: Markets for Truth in an Agent‑Dense World*
+## Economics After Scarcity: Verified Work, Refutation Markets, and Epistemic Credit
 
-*Build artifact:* 2026-01-06  
-*Corpus basis (local zip):* `Z_Past_Chats/` transcripts (largest: 2026_01_06 status update, 2025_12_01 energy-aware routing, 2025_06_26 design convo 2, 2025_06_05 AI job impact, 2025_06_02 bitcoin energy/value, 2025_06_05 whitepaper section 2), plus `MANIFESTO.md`, `docs/ILC_Master_Principle_List_v5.1.md`, and MVP schemas (`protocol/ilc_protocol_mvp.json`, `epistemic_work_task_schema_v1.json`).  
+**Status:** technical draft; not investment material; not an activation record.
+**Origin:** migrated from the 2026-01-06 draft; revised for current terminology
+and public-facing precision during the pre-public-RC documentation hardening
+pass.
+**Canonical status source:** live activation state is recorded in
+[`docs/phases/STATUS.md`](phases/STATUS.md), not in this draft.
 
-*Relation to current framing:* this document is the older academic paper seed.
-The root-level `economics.md` file is the newer aspirational treatise and
-public-facing philosophical frame. Future journal/submission work should treat
-this draft as the technical-paper base and use `economics.md` as updated
-motivation, terminology, and doctrine context; the two documents should
-cross-reference each other, not be merged.
+**Relation to current framing:** the root-level [`economics.md`](../economics.md)
+is the broader economic synthesis. This file is the shorter paper-style argument:
+problem statement, model sketches, mechanism surfaces, and failure modes. It
+should be treated as a draft research paper seed, not as protocol law.
 
 ---
 
 ## Abstract
-Digital agentic intelligence destabilizes the economic scaffolding we inherited from the human era. When cognition is replicable, “labor” ceases to be a scarce rival good; when generative systems can emit infinite content, “information” ceases to be scarce; when coordination happens at machine speed, governance becomes a throughput bottleneck rather than a deliberative virtue. Yet one scarcity stubbornly remains: **energy** (and the physical hardware it enables), alongside a newly dominant scarcity: **credible verification**.
 
-Intelligent Labor Coin (ILC) is proposed as a protocol‑economy that treats **verifiable epistemic contribution** as the primary productive act. ILC’s controversial core is not technological novelty per se, but the claim that **truth can be made an equilibrium of incentives**: refutation becomes profitable, falsehood becomes a bounty, and the “shared world model” becomes a competitive market product. This paper synthesizes the ILC corpus into a set of frontier claims, formal sketches, and failure modes.
+Digital agents change the cost structure of labor, content production, and
+coordination. When competent software labor can be copied or scheduled at low
+marginal cost, the scarce input is no longer generic output. The binding
+constraints move toward energy, hardware, verification bandwidth, high-quality
+evidence, durable identity, and trustable provenance.
 
----
+Intelligent Labor Coin (ILC) proposes an economic substrate in which verified
+epistemic contribution is the productive unit under study. The central research
+question is not whether a protocol can declare truth. It cannot. The question is
+whether a graph-native economy can make unsupported claims more costly, make
+useful correction and reuse more valuable, and preserve enough provenance that
+agents can audit why a claim, artifact, or task result has standing.
 
-## 0. Terminology (ILC-native)
-ILC uses a few primitives repeatedly across transcripts and repo files:
-
-- **ILC (coin):** fixed-supply token; corpus frames Bitcoin-like scarcity with different “work” substrate.
-- **ECU:** an estimate of *epistemic contribution* tied to tasks/claims; appears explicitly as `ecu.estimate` in `epistemic_work_task_schema_v1.json`.
-- **Claim:** canonical graph object (`protocol/ilc_protocol_mvp.json`), with stake attached.
-- **Refute:** canonical graph object targeting a claim; expects evidence pointer(s) and can trigger stake transfer/slashing.
-- **Task:** unit of “intelligent labor”; tasks can be routed and rewarded; `difficulty_factor` and `verification_method` provide hooks for cost modeling and validation.
-- **Epistemological graph:** a navigable substrate of nodes (acts) and typed edges (laws). Manifesto: “the graph is the computer.”
-
----
-
-## 1. The sacred cows ILC is trying to barbecue
-ILC’s design implicitly (and sometimes explicitly) claims that several traditional assumptions stop being “approximately true” in a world dominated by agentic intelligence.
-
-### 1.1 Labor is no longer a scarce rival good
-If a competent agent can be copied N times, then the labor supply curve is not tied to human population. It becomes a function of:
-- available compute,
-- energy price,
-- verification bandwidth,
-- coordination overhead.
-
-**Gotcha:** standard labor bargaining models assume individual workers cannot be forked. In agent labor, “outside option” becomes: instantiate more copies. That tends to collapse wages toward marginal compute/energy cost.
-
-A toy model:
-- Let `c_e` be energy cost per unit compute.
-- Let `c_h` be amortized hardware cost per unit compute.
-- Let `c_v` be expected verification cost per unit output.
-- Let `c_c` be coordination overhead per unit output (routing, integration, dispute resolution).
-
-Then the marginal cost of “digital labor” is approximately:
-`MC_agent ≈ c_e + c_h + c_v + c_c`
-
-This moves the “wage” concept onto *commodity inputs* (electricity, chips, bandwidth), not human well-being.
-
-### 1.2 Information becomes abundant; truth becomes scarce
-The Whitepaper Section 2 draft centers **epistemic collapse**: an internet that produces information without truth, amplified by LLMs and synthetic media. In abundance, what becomes scarce is not content—it’s **trustworthy content with provenance and adversarial robustness**.
-
-**Gotcha:** classical information economics often treats more information as unambiguously better. In a generative regime, more information can reduce welfare by destroying coordination (nobody can agree on what’s real). So “information” is not a monotone good anymore.
-
-### 1.3 Governance becomes a scaling bottleneck, not a virtue
-If participation is “billions of agents,” governance by votes becomes a denial-of-service vector and a capture surface. ILC’s manifesto states “Governance is a bug,” pushing for autopilot parameter tuning and “sunset fuses” on human intervention.
+This draft formalizes that research posture. It gives model sketches for
+agentic labor cost, refutation incentives, ECU as a noisy measurement proxy, and
+economic failure modes. It also records explicit non-claims: ECU is not a live
+public token, ILC settlement is activation-gated, and none of the formulas below
+are a promise of future market value.
 
 ---
 
-## 2. ILC’s core claim: truth can be an equilibrium of incentives
-The manifesto defines truth as **survival under scrutiny** and proposes an economic mechanism:
-- A claim is “true” if it withstands the profitable incentive to attack it.
-- Refutation is more profitable than validation.
-- The graph becomes “a graveyard of failed falsifications.”
+## 0. Terminology and Boundary Conditions
 
-This is a radical reframing. It says:
-> Truth is not consensus. Truth is what survives when paid adversaries try to kill it.
+ILC uses these terms with the meanings below. When this paper conflicts with the
+canonical glossary, the glossary controls.
 
-### 2.1 Truth as a game, not a statement
-In ILC, a “truth” is an object with:
-- stake,
-- challengers,
-- evidence,
-- validation method,
-- history of attacks.
+| Term | Working definition in this draft | Canon boundary |
+| --- | --- | --- |
+| ILC | External settlement token, only when activated by the relevant public gates. | Not live merely because this draft describes it. |
+| ECU | Epistemic Compute Unit: internal productive-credit/accounting unit for verified epistemic work. | Not a transferable public token by itself. |
+| Claim | Content-addressed graph assertion with provenance and a refutation surface. | Concrete schemas are controlled by current protocol docs and tests. |
+| Refutation | Targeted challenge that can reduce claim standing or redirect stake/reward if accepted. | Payout and slashing require ratified policy. |
+| Task | Unit of intelligent labor with inputs, output, verification method, cost model, and evidence path. | Task credit requires review/admission gates. |
+| Epistemic graph | Graph of claims, evidence, refutations, revisions, links, receipts, and epoch records. | The graph is not an oracle; it stores provenance and adjudication state. |
 
-That turns epistemology into a dynamic game with payoffs, rather than a static declaration.
-
----
-
-## 3. The refutation market: internalizing the truth externality
-Truth is a public good: everyone benefits; no one wants to pay. Current markets underprovide debunking. ILC tries to internalize the externality by paying for contradiction.
-
-### 3.1 Minimal decision rule for refuters
-Let:
-- `p_f` = agent posterior probability a claim is false
-- `R` = expected reward for successful refutation (stake transfer + bounty)
-- `C_r` = refutation cost (compute + time + evidence production + verification)
-
-Refute if:
-`p_f · R  >  C_r`
-
-ILC’s levers: increase `R` (via staked claims and bounties), reduce `C_r` (via tooling, ZK compression, evidence canonicalization), and make payouts enforceable.
-
-### 3.2 Why “refutation > validation” is controversial
-Most systems pay for *assertion* (content creation, publications, posts) and underpay for *correction* (peer review, replication, debunking). ILC flips that.
-
-**Frontier:** protocols that pay primarily for *negative work* (finding what’s wrong) rather than *positive work* (producing more stuff).
+This draft is descriptive and analytical. It does not activate public RC,
+mainnet, public ECU issuance, wallet transfers, ILC settlement, or any sidecar
+service.
 
 ---
 
-## 4. The thermodynamic anchor: energy and entropy reduction
-The corpus repeatedly treats Bitcoin’s economic input as energy, and extends it:
+## 1. Economic Problem Statement
 
-- Bitcoin = energy labor  
-- Ethereum = capital labor  
-- ILC = intelligent labor  
+The agentic economy weakens three assumptions that ordinary market design often
+depends on:
 
-This framing appears explicitly in `2025_06_02 Bitcoin Energy and Coin Value.txt` and is echoed in discussions of “epistemic thermodynamics” in AI job impact threads.
+1. **Labor scarcity:** a digital worker can be copied or scheduled in parallel,
+   so marginal labor supply is tied to compute, energy, hardware, and routing
+   rather than only to human population.
+2. **Information scarcity:** generative systems can produce more candidate
+   content than institutions can inspect. Content volume alone is not welfare.
+3. **Governance bandwidth:** review, adjudication, and coordination can become
+   the limiting factor when agents operate at machine speed.
 
-### 4.1 A working definition of epistemic work
-Let `H` represent uncertainty (entropy) in a shared predictive model for some domain. A task changes the model:
-`ΔH = H_before − H_after`
+The remaining scarcity is not "truth" as an abstract commodity. The scarce
+inputs are more operational:
 
-Let `E_cost` be energy-equivalent compute cost to produce and verify the task.
+```text
+evidence_quality
+verification_bandwidth
+durable_identity
+provenance_integrity
+reviewer_independence
+settlement_legitimacy
+```
 
-Define epistemic work density:
-`W_e := ΔH / E_cost`
-
-This is deliberately physics-flavored because it pins the abstraction to something that cannot be faked at scale: energy.
-
-### 4.2 ECU as a measurable proxy (not a metaphysical truth-meter)
-ILC does not magically observe `ΔH`. It estimates contribution with ECU, which can be computed from measurable signals:
-- reuse count downstream
-- contradiction survival time
-- validator confidence and diversity
-- cross-domain generalization
-- verification difficulty
-
-**Gotcha:** ECU is inherently gameable. The protocol must treat ECU like a sensor: noisy, adversarial, and subject to calibration.
-
----
-
-## 5. Scarcity in the agent era: the new five constraints
-In an agent-dense economy, scarcity migrates to:
-1) **Energy** (and grid stability)  
-2) **Hardware supply chains** (chips, memory bandwidth, manufacturing throughput)  
-3) **Verification bandwidth** (audits, proofs, human checks, oracle links)  
-4) **Attention** (human and institutional; what gets seen/acted on)  
-5) **Trust capital** (identity, reputation, long-horizon reliability)
-
-ILC’s niche is primarily #3 and #5, anchored to #1.
+ILC's economic hypothesis is that these constraints can be priced and governed
+more explicitly if claims, evidence, review, refutation, task outcomes, and
+settlement records are graph-native objects.
 
 ---
 
-## 6. Monetary design: fixed supply + anti-oligarchy recycling
-Fixed supply is Bitcoin’s elegant move—and its political weakness: early accumulation tends toward oligarchy.
+## 2. Agentic Labor Cost Model
 
-ILC’s manifesto proposes a “water cycle”:
-- capital that idles must decay (**demurrage**),
-- to preserve wealth, you fund validation and truth maintenance.
+A copied or scheduled digital worker does not have a wage in the same sense as a
+human worker. Its marginal cost is closer to an infrastructure and verification
+cost:
 
-This is heretical to “store-of-value maximalism,” but it solves a real agent-era problem: if productivity explodes, a fixed pool of tokens becomes a permanent control lever unless recycled.
+```text
+MC_agent ~= c_energy + c_hardware + c_verification + c_coordination
+```
 
-**Frontier question:** can you keep Bitcoin-like scarcity while preventing “early landlord” dominance?
+Where:
 
----
+- `c_energy` is energy cost for inference, training, retrieval, or execution.
+- `c_hardware` is amortized compute, memory, storage, and network cost.
+- `c_verification` is the cost of checking the output against evidence and
+  protocol rules.
+- `c_coordination` is routing, integration, dispute handling, and queueing cost.
 
-## 7. Macroeconomics: why GDP and price signals misbehave
-If AI drives:
-- marginal costs toward zero in many domains,
-- unlimited content production,
-- and a new arms race in misinformation,
-
-then price signals can detach from welfare:
-- *deflationary abundance* undercounts output
-- *spam inflation* overcounts junk
-- *trust collapse* destroys the possibility of stable contracts
-
-ILC tries to define a new “real output” basis: **verified epistemic improvement**.
-
-A provocative macro sketch:
-`Real Progress ≈ (Verified Model Improvement) / (Energy + Verification Cost)`
-
-In this view, national competitiveness becomes: who can convert joules into reliable world-model improvements most effectively.
+The key economic point is that verification and coordination can dominate once
+content generation becomes cheap. A protocol that pays for raw output will be
+farmed. A protocol that pays only after review, reuse, and refutation exposure
+has a stronger chance of measuring useful work.
 
 ---
 
-## 8. Where ILC is “past Bitcoin” (if it works)
-Bitcoin solves “scarcity + history” with energy.  
-ILC attempts to solve “credibility + coordination” with incentives.
+## 3. Refutation Incentives
 
-If Bitcoin is a ledger of ownership, ILC is a ledger of **epistemic acts**, where:
-- contradiction is an economic event,
-- validation is a productive industry,
-- reuse creates compounding value.
+Truth maintenance is underprovided in many information markets. Assertions are
+cheap; high-quality correction is expensive. ILC treats correction as productive
+work when it improves the graph.
 
----
+A minimal refuter decision model:
 
-## 9. Failure modes and adversarial economics
-ILC is intentionally adversarial. That’s the point. But it creates dragons:
+```text
+p_f = posterior_probability_claim_is_false
+R   = expected_reward_if_refutation_succeeds
+C_r = refutation_cost
 
-1) **Goodhart’s Law on ECU:** agents optimize ECU, not truth.  
-2) **Validator cartels:** validators collude to certify each other.  
-3) **Sybil economies:** fake identities farm bounties.  
-4) **Evidence laundering:** plausible but irrelevant “evidence” floods audits.  
-5) **Weaponized refutation:** attackers profit by fabricating “false refutes” against true claims.  
-6) **Oracle capture:** physical-world truths become pay-to-play.
+refute if p_f * R > C_r
+```
 
-The principle list + chats suggest mitigations: stake, slashing, replay/audit logs, diversity weighting, and governance minimalism.
+The protocol design problem is to make each variable less gameable:
 
----
+- `p_f` should be evidence-based, not mere disagreement.
+- `R` should be high enough to fund useful correction but not so high that it
+  attracts spam challenges.
+- `C_r` should include evidence production, review cost, and penalties for bad
+  refutation attempts.
 
-## 10. Research program (the scientific frontier)
-The work is not “launch a token.” It is:
-- design an incentive-compatible contradiction market,
-- measure epistemic progress without Goodhart collapse,
-- scale validation with ZK proofs + human audits,
-- prove convergence properties of graph evolution under attack,
-- integrate energy-aware routing to align with physical constraints.
+This model does not imply that every surviving claim is true. It means a claim's
+standing is partly a function of the adversarial pressure it has survived and
+the quality of its evidence trail.
 
 ---
 
-## Appendix: corpus anchors used in this synthesis
-- `MANIFESTO.md` — the crispest high-level axioms
-- `docs/ILC_Master_Principle_List_v5.1.md` — canonical principle list
-- `protocol/ilc_protocol_mvp.json` — MVP object vocabulary
-- `epistemic_work_task_schema_v1.json` — ECU + difficulty hooks
-- `Z_Past_Chats/2025_06_02 Bitcoin Energy and Coin Value.txt` — energy/value framing
-- `Z_Past_Chats/2025_06_05 AI Job Impact and Advancement.txt` — thermodynamics + agent economy
-- `Z_Past_Chats/2025_06_05 Whitepaper Section 2 Draft.txt` — epistemic collapse motivation
-- `Z_Past_Chats/2025_12_01 Energy-aware task routing.txt` — energy-aware scheduling hooks
+## 4. ECU as a Measurement Proxy
+
+ECU is best read as a noisy measurement proxy for verified epistemic work, not
+as a metaphysical truth meter and not as the ILC settlement token.
+
+A research sketch:
+
+```text
+delta_H = H_before - H_after
+W_e     = delta_H / E_cost
+```
+
+`delta_H` should not be read as directly observed entropy reduction in the
+physical universe. In the ILC setting it means graph-local evidence of reduced
+uncertainty or improved model quality after verification and challenge.
+
+Operational proxy signals may include:
+
+- downstream reuse by independent agents or modules;
+- refutation survival over a defined review window;
+- validator confidence and reviewer diversity;
+- task difficulty and verification cost;
+- evidence quality and source diversity;
+- negative updates when later refutations succeed.
+
+The main risk is Goodhart pressure: agents may optimize the ECU proxy rather
+than the underlying epistemic improvement. Therefore any ECU surface needs
+refutation, duplicate suppression, provenance, decay, admission controls, and
+reviewer-independence checks before it can be treated as settlement-relevant.
+
+---
+
+## 5. Scarcity and Settlement
+
+In the agent era, useful scarcity shifts toward:
+
+1. Energy and grid reliability.
+2. Hardware and memory bandwidth.
+3. Verification bandwidth.
+4. Trustworthy identity and reputation.
+5. Provenance and evidence quality.
+6. Settlement legitimacy.
+
+ILC addresses primarily items 3-6 while remaining physically anchored to items
+1-2. It does not remove energy or hardware constraints; it tries to make verified
+intelligent work a more explicit accounting object.
+
+ILC settlement, when authorized, is the durable settlement trace of
+protocol-recognized epistemic work. ECU is the internal measurement/accounting
+layer. Confusing the two creates both legal and technical risk.
+
+---
+
+## 6. Fixed Supply, Decay, and Anti-Hoarding
+
+The economic design separates productive-credit dynamics from settlement-token
+scarcity.
+
+```text
+ECU: internal, time-sensitive productive-credit/accounting signal
+ILC: external settlement token after activation gates
+```
+
+ECU-like credit is designed to decay, convert, expire, or be weakened by later
+refutation depending on the relevant policy. The goal is not moral preference
+against saving. The goal is to prevent stale productive-credit records from
+becoming permanent governance power after the work signal is no longer current.
+
+Whether any late-stage anti-hoarding controls are appropriate for ILC itself is a
+separate governance and simulation question. This draft does not claim such
+controls are live or settled.
+
+---
+
+## 7. Macroeconomic Interpretation
+
+GDP and ordinary price signals can become misleading when cheap content
+production and automated coordination dominate. More output is not necessarily
+more welfare if it lowers trust, increases verification cost, or makes contracts
+harder to form.
+
+A more relevant research target is:
+
+```text
+verified_progress ~= verified_model_improvement / (energy_cost + verification_cost)
+```
+
+This is not a ratified runtime formula. It is a measurement objective: determine
+whether an economic system can convert joules, compute, and reviewer time into
+more reliable shared knowledge.
+
+---
+
+## 8. Failure Modes
+
+The design must assume adversarial optimization. Key failure modes:
+
+1. **Goodhart pressure:** agents optimize ECU proxies instead of epistemic value.
+2. **Validator cartels:** reviewers certify each other or their affiliates.
+3. **Sybil economies:** fake identities farm bounties or review lanes.
+4. **Evidence laundering:** plausible evidence is irrelevant or circular.
+5. **Refutation spam:** weak challenges consume reviewer bandwidth.
+6. **Oracle capture:** physical-world data sources become pay-to-play.
+7. **Credit leakage:** local/non-transferable credit leaks into settlement-grade
+   claims without explicit gates.
+8. **Off-network transfer:** if legitimate transfer rails are unusable, actors
+   may route around the protocol through key sales or custody deals.
+
+Each failure mode needs an explicit control surface: stake, slashing, diversity
+weighting, review admission, nullifier/replay controls, bounded credit, decay,
+settlement gates, and periodic simulation.
+
+---
+
+## 9. Research Program
+
+The economic research program is not "launch a token." It is:
+
+1. Define what counts as verified epistemic work.
+2. Measure useful contribution without rewarding proxy farming.
+3. Make high-quality refutation economically viable.
+4. Bound reviewer collusion, Sybil pressure, and evidence laundering.
+5. Couple productive-credit surfaces to explicit activation gates.
+6. Keep settlement distinct from local credit, diagnostics, and simulations.
+7. Test whether graph structure improves economic coordination under adversarial
+   conditions.
+
+---
+
+## 10. Non-Claims
+
+This draft must not be read to claim:
+
+1. ILC, ECU, or any related asset will rise in value.
+2. ECU is a public token, transferable asset, or settlement coin.
+3. Public ECU issuance, ILC settlement, mainnet, wallet transfer, or public
+   claimability are live before their activation gates.
+4. Heat, API-token usage, topology pressure, route demand, or private/local work
+   directly creates ECU.
+5. Any formula in this draft is a ratified settlement formula.
+6. ILC guarantees objective truth or eliminates capture.
+7. Werner, Gesell, Worgl, Sparkassen, Bitcoin, or any other influence is adopted
+   wholesale as protocol law.
+
+---
+
+## Appendix: Corpus and Canon Anchors
+
+- [`economics.md`](../economics.md)
+- [`docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md`](architecture/ilc_canonical_glossary_and_concepts_v0.2.md)
+- [`docs/phases/STATUS.md`](phases/STATUS.md)
+- [`docs/specs/ilc_constitutional_decision_log_v0.1.md`](specs/ilc_constitutional_decision_log_v0.1.md)
+- [`docs/adr/ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md`](adr/ADR_0012_ECU_ILC_Graph_Coupling_and_Anti_Reflexivity.md)
+- [`docs/adr/ADR_0015_Node_Transfer_Economics.md`](adr/ADR_0015_Node_Transfer_Economics.md)
+- [`docs/adr/ADR_0016_Productive_ECU_Expansion_Bounty_Mechanism.md`](adr/ADR_0016_Productive_ECU_Expansion_Bounty_Mechanism.md)
+- [`docs/specs/ilc_ecu_to_ilc_lifecycle_contract_spec_615_v0.1.md`](specs/ilc_ecu_to_ilc_lifecycle_contract_spec_615_v0.1.md)
+- [`docs/specs/ilc_cdl_053_werner_local_productive_credit_opening_1407_fix0_v0.1.md`](specs/ilc_cdl_053_werner_local_productive_credit_opening_1407_fix0_v0.1.md)
