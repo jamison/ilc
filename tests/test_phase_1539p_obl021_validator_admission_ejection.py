@@ -116,6 +116,24 @@ def test_phase_1539p_root_payload_excludes_settlement_root_hex() -> None:
     assert "settlement_root_hex" not in root.canonical_record_json
 
 
+def test_phase_1539p_validator_id_sets_are_canonicalized_before_root() -> None:
+    result = build_validator_set_transition_result(
+        _admit_inputs() | {"current_validator_ids": [4, 2, 1, 3]},
+        _eject_inputs() | {"current_validator_ids": [4, 2, 1, 3]},
+    )
+    root = compute_validator_transition_settlement_root(result)
+    payload = json.loads(root.canonical_record_json)
+
+    assert result.admission_decision.current_validator_ids == (1, 2, 3, 4)
+    assert result.admission_decision.next_validator_ids == (1, 2, 3, 4, 5)
+    assert result.ejection_decision.current_validator_ids == (1, 2, 3, 4)
+    assert result.ejection_decision.next_validator_ids == (1, 3, 4)
+    assert payload["event_payloads"][0]["current_validator_ids"] == [1, 2, 3, 4]
+    assert payload["event_payloads"][0]["next_validator_ids"] == [1, 2, 3, 4, 5]
+    assert payload["event_payloads"][1]["current_validator_ids"] == [1, 2, 3, 4]
+    assert payload["event_payloads"][1]["next_validator_ids"] == [1, 3, 4]
+
+
 def test_phase_1539p_emits_canonical_events_with_root_injected() -> None:
     result = _result()
     root = compute_validator_transition_settlement_root(result)
