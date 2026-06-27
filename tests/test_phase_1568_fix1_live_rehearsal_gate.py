@@ -24,6 +24,8 @@ def test_phase_1569_prompt_hard_stops_without_live_rerun_pass() -> None:
 def test_phase_1568_fix2_prompt_requires_live_economic_path() -> None:
     prompt = _read("docs/antigravity_tasks/antigravity_prompt__phase_1568_fix2_g10_live_private_soft_rc_rerun.md")
     required_terms = [
+        "superseded_by_fix2b_fix2c_fix2d_fix2e",
+        "Do not run this prompt with `GO Phase 1568-Fix2`",
         "Only synthetic input",
         "four issuance epochs",
         "CDL-048",
@@ -33,6 +35,16 @@ def test_phase_1568_fix2_prompt_requires_live_economic_path() -> None:
     ]
     for term in required_terms:
         assert term in prompt
+
+
+def test_phase_1568_fix2_split_prompts_exist() -> None:
+    for path in [
+        "docs/antigravity_tasks/antigravity_prompt__phase_1568_fix2b_g10_runtime_identity_economics_hardening.md",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1568_fix2c_g10_four_machine_d2d_readiness.md",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1568_fix2d_g10_live_production_path_soft_rc.md",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1568_fix2e_g10_pre_signing_guard_attack_surface.md",
+    ]:
+        assert (ROOT / path).exists(), path
 
 
 def test_correction_plan_preserves_two_track_boundary() -> None:
