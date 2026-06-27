@@ -5,6 +5,7 @@ import argparse
 import base64
 import hashlib
 import json
+import os
 import sys
 import time
 from collections import Counter
@@ -28,8 +29,12 @@ from ilc_core.economics.outcome import OutcomeLogger, TaskOutcome
 from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
 from ilc_core.economics.reward import simple_claim_reward
 from ilc_core.genesis.work_task import EpistemicWorkTask, ep_task_to_json
-from ilc_core.identity.agent_id_runtime import derive_agent_id
+from ilc_core.identity.agent_id_runtime import derive_agent_id, derive_agent_id_v2, is_v2_agent_id, verify_agent_id_v2
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
+from ilc_core.ledger.public_economics_admission_firewall import (
+    PUBLIC_ELIGIBLE_STATES,
+    validate_public_economics_admission,
+)
 from ilc_core.network.d2d.http_gossip_transport_runtime import (
     HttpGossipTransportRuntime,
     TransportRuntimeConfig,
@@ -39,20 +44,22 @@ from ilc_core.node.node_startup_runtime import load_static_peer_config
 
 AGENT_LOOP_V1_RUNTIME_VERSION = "agent_loop_v1_runtime_575.v0.1"
 DEFAULT_CHANNEL = "ilc.agent-loop.v1"
-DEFAULT_REPRODUCIBILITY_THRESHOLD = 0.85
+DEFAULT_REPRODUCIBILITY_THRESHOLD = "0.85"
 PANEL_SIZE = 8
 QUORUM_THRESHOLD = 5
 DISTINCT_CLUSTER_FLOOR = 3
+_TWELVE_PLACES = Decimal("0.000000000001")
 
 
 @dataclass(frozen=True)
 class AgentProfile:
     slot: int
-    seed_hex: str
     cluster_id: str
     node_name: str
     variant: str
     agent_id: str
+    identity_binding: str
+    seed_fingerprint: str | None = None
 
 
 @dataclass(frozen=True)
@@ -91,14 +98,14 @@ class PanelResult:
     distinct_clusters: int
     distinct_cluster_floor: int
     diversity_floor_met: bool
-    max_cluster_share: float
-    agreement_score: float
-    reproducibility_threshold: float
+    max_cluster_share: str
+    agreement_score: str
+    reproducibility_threshold: str
     majority_output_hash: str | None
     direct_author_agent_id: str | None
     verdict_token: str
     passed: bool
-    confidence_score: float
+    confidence_score: str
     votes: list[PanelVote]
 
 
@@ -160,10 +167,42 @@ def _require_int(name: str, value: Any) -> int:
     return value
 
 
-def _require_float(name: str, value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise AgentLoopRuntimeError(f"{name}_must_be_numeric", f"{name} must be numeric")
-    return float(value)
+def _require_decimal(name: str, value: Any) -> Decimal:
+    if isinstance(value, bool) or isinstance(value, float):
+        raise AgentLoopRuntimeError(
+            f"{name}_must_be_exact_numeric",
+            f"{name} must be Decimal, int, or canonical numeric string",
+        )
+    if not isinstance(value, (Decimal, int, str)):
+        raise AgentLoopRuntimeError(
+            f"{name}_must_be_exact_numeric",
+            f"{name} must be Decimal, int, or canonical numeric string",
+        )
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except Exception as exc:
+        raise AgentLoopRuntimeError(
+            f"{name}_must_be_exact_numeric",
+            f"{name} must be Decimal, int, or canonical numeric string",
+        ) from exc
+    if not number.is_finite():
+        raise AgentLoopRuntimeError(f"{name}_must_be_finite", f"{name} must be finite")
+    return number
+
+
+def _require_unit_decimal(name: str, value: Any) -> Decimal:
+    number = _require_decimal(name, value)
+    if number < Decimal("0") or number > Decimal("1"):
+        raise AgentLoopRuntimeError(f"{name}_must_be_unit_interval", f"{name} must be in [0, 1]")
+    return number
+
+
+def _canonical_decimal(name: str, value: Any) -> str:
+    return decimal_to_canonical_string(_require_decimal(name, value))
+
+
+def _canonical_unit_decimal(name: str, value: Any) -> str:
+    return decimal_to_canonical_string(_require_unit_decimal(name, value))
 
 
 def _require_list_of_strings(name: str, value: Any) -> list[str]:
@@ -202,14 +241,18 @@ def _load_task_spec(
     else:
         # task_json_base64 is the only remaining option (enforced by the mutex check above)
         raw = json.loads(base64.b64decode(task_json_base64).decode("utf-8"))  # type: ignore[arg-type]
-    task = _require_dict("task_spec", raw)
+    return _normalize_task_spec(raw)
+
+
+def _normalize_task_spec(raw: dict[str, Any]) -> dict[str, Any]:
+    task = dict(_require_dict("task_spec", raw))
     task.setdefault("channel", DEFAULT_CHANNEL)
     task.setdefault("claim_form", "falsifiable_positive")
     task.setdefault("has_falsifiable_test", True)
     task.setdefault("is_inadmissible_counterexample", False)
     task.setdefault("reproducibility_threshold", DEFAULT_REPRODUCIBILITY_THRESHOLD)
-    task.setdefault("difficulty_factor", 1.0)
-    task.setdefault("ecu_estimate", 1.0)
+    task.setdefault("difficulty_factor", "1")
+    task.setdefault("ecu_estimate", "1")
     task.setdefault("verification_method", "replayable-simulation")
     task.setdefault("timestamp_created", 1_700_000_000)
     task.setdefault("epoch", 0)
@@ -221,8 +264,12 @@ def _load_task_spec(
     _require_string("verification_method", task.get("verification_method"))
     task["channel"] = _normalize_channel(str(task.get("channel")))
     _require_string("claim_form", task.get("claim_form"))
-    _require_float("difficulty_factor", task.get("difficulty_factor"))
-    _require_float("ecu_estimate", task.get("ecu_estimate"))
+    task["difficulty_factor"] = _canonical_decimal("difficulty_factor", task.get("difficulty_factor"))
+    task["ecu_estimate"] = _canonical_decimal("ecu_estimate", task.get("ecu_estimate"))
+    task["reproducibility_threshold"] = _canonical_unit_decimal(
+        "reproducibility_threshold",
+        task.get("reproducibility_threshold"),
+    )
     _require_int("timestamp_created", task.get("timestamp_created"))
     _require_int("epoch", task.get("epoch"))
     if not isinstance(task.get("has_falsifiable_test"), bool):
@@ -238,20 +285,60 @@ def _load_task_spec(
     return task
 
 
-def _profile(slot: int, seed_hex: str, cluster_id: str, node_name: str, variant: str) -> AgentProfile:
-    try:
-        seed_bytes = bytes.fromhex(seed_hex)
-    except ValueError as exc:
-        raise AgentLoopRuntimeError("agent_seed_hex_invalid", "seed_hex must be valid hex") from exc
-    if not seed_bytes:
-        raise AgentLoopRuntimeError("agent_seed_hex_invalid", "seed_hex must decode to bytes")
+def _profile(
+    slot: int,
+    seed_hex: str | None,
+    cluster_id: str,
+    node_name: str,
+    variant: str,
+    *,
+    expected_agent_id: str | None = None,
+) -> AgentProfile:
+    seed_bytes: bytes | None = None
+    seed_fingerprint: str | None = None
+    if seed_hex is not None:
+        try:
+            seed_bytes = bytes.fromhex(seed_hex)
+        except ValueError as exc:
+            raise AgentLoopRuntimeError("agent_seed_hex_invalid", "seed_hex must be valid hex") from exc
+        if not seed_bytes:
+            raise AgentLoopRuntimeError("agent_seed_hex_invalid", "seed_hex must decode to bytes")
+        seed_fingerprint = hashlib.sha256(seed_bytes).hexdigest()
+
+    if expected_agent_id is not None:
+        normalized_expected = _require_string("expected_agent_id", expected_agent_id)
+        if not is_v2_agent_id(normalized_expected):
+            raise AgentLoopRuntimeError(
+                "expected_agent_id_must_be_cdl069_v2",
+                "expected_agent_id must be a CDL-069 v2 initialized agent id",
+            )
+        if seed_bytes is not None and len(seed_bytes) == 32 and not verify_agent_id_v2(normalized_expected, seed_bytes):
+            raise AgentLoopRuntimeError(
+                "expected_agent_id_seed_mismatch",
+                "expected_agent_id does not match the provided identity seed",
+            )
+        agent_id = normalized_expected
+        identity_binding = "initialized_agent_id"
+    elif seed_bytes is not None and len(seed_bytes) == 32:
+        agent_id = derive_agent_id_v2(seed_bytes)
+        identity_binding = "cdl069_identity_seed"
+    elif seed_bytes is not None:
+        agent_id = derive_agent_id(seed_bytes)
+        identity_binding = "legacy_seed_hex"
+    else:
+        raise AgentLoopRuntimeError(
+            "agent_identity_source_missing",
+            "seed_hex or expected_agent_id is required",
+        )
+
     return AgentProfile(
         slot=slot,
-        seed_hex=seed_hex,
         cluster_id=_require_string("cluster_id", cluster_id),
         node_name=_require_string("node_name", node_name),
         variant=_require_string("variant", variant),
-        agent_id=derive_agent_id(seed_bytes),
+        agent_id=agent_id,
+        identity_binding=identity_binding,
+        seed_fingerprint=seed_fingerprint,
     )
 
 
@@ -316,7 +403,61 @@ def _transport_bundle(config_path: str | Path) -> tuple[TransportRuntimeConfig, 
 
 
 def _signature(payload: dict[str, Any]) -> str:
-    return f"agent-loop-v1:{_sha256_hex(payload)[:24]}"
+    if os.environ.get("ILC_AGENT_LOOP_ALLOW_SYNTHETIC_SIGNATURE_FOR_TESTS") == "1":
+        return f"agent-loop-v1-test-only:{_sha256_hex(payload)[:24]}"
+    raise AgentLoopRuntimeError(
+        "agent_loop_real_signature_required_for_live_rehearsal",
+        "agent loop broadcast requires a real agent submission signature",
+    )
+
+
+def build_rehearsal_public_admission_source_node(
+    *,
+    node_id: str,
+    public_graph_root: str,
+    admitted_epoch: int,
+    source_payload: dict[str, Any],
+    eligible_public_state: str = "public_admitted",
+) -> dict[str, Any]:
+    """Build a disposable public-admission source for the rehearsal graph.
+
+    This satisfies the existing public economics firewall under a wipeable
+    rehearsal root. It is not a private-economics bypass and does not authorize
+    global public-RC state.
+    """
+
+    normalized_node_id = _require_string("node_id", node_id)
+    normalized_root = _require_string("public_graph_root", public_graph_root)
+    normalized_epoch = _require_int("admitted_epoch", admitted_epoch)
+    if normalized_epoch < 0:
+        raise AgentLoopRuntimeError("admitted_epoch_must_be_non_negative", "admitted_epoch must be >= 0")
+    if eligible_public_state not in PUBLIC_ELIGIBLE_STATES:
+        raise AgentLoopRuntimeError(
+            "eligible_public_state_invalid",
+            "eligible_public_state is not accepted by public economics admission",
+        )
+    payload = _require_dict("source_payload", source_payload)
+    proof_payload = {
+        "admitted_epoch": normalized_epoch,
+        "node_id": normalized_node_id,
+        "public_graph_root": normalized_root,
+        "source_payload": payload,
+    }
+    source_node = {
+        "node_id": normalized_node_id,
+        "visibility": "public",
+        "eligible_public_state": eligible_public_state,
+        "public_graph_admission_evidence": {
+            "admission_id": f"rehearsal-public-admission::{normalized_root}::{normalized_node_id}",
+            "public_graph_root": normalized_root,
+            "admitted_epoch": normalized_epoch,
+            "admission_proof_sha256": _sha256_hex(proof_payload),
+        },
+        "rehearsal_payload": payload,
+        "private_promotion_carry_forward": False,
+    }
+    validate_public_economics_admission(source_node, "public_ecu")
+    return source_node
 
 
 def _broadcast_submission(
@@ -373,15 +514,24 @@ def _broadcast_submission(
 def run_agent_once(
     *,
     slot: int,
-    seed_hex: str,
+    seed_hex: str | None,
     cluster_id: str,
     node_name: str,
     node_config_path: str | Path,
     variant: str,
     task: dict[str, Any],
     broadcast: bool,
+    expected_agent_id: str | None = None,
 ) -> dict[str, Any]:
-    profile = _profile(slot, seed_hex, cluster_id, node_name, variant)
+    task = _normalize_task_spec(task)
+    profile = _profile(
+        slot,
+        seed_hex,
+        cluster_id,
+        node_name,
+        variant,
+        expected_agent_id=expected_agent_id,
+    )
     output_payload = _output_payload(task, profile)
     output_hash = _sha256_hex(output_payload)
     ep_task = _build_ep_task(task, profile, output_hash)
@@ -438,6 +588,7 @@ def _load_submission_payloads(submission_dir: str | Path) -> list[dict[str, Any]
 
 
 def _build_outsider_submission(task: dict[str, Any], seed_hex: str, cluster_id: str, node_name: str) -> dict[str, Any]:
+    task = _normalize_task_spec(task)
     profile = _profile(8, seed_hex, cluster_id, node_name, "outsider")
     output_payload = _output_payload(task, profile)
     output_hash = _sha256_hex(output_payload)
@@ -467,6 +618,7 @@ def evaluate_panel(
     submissions: list[dict[str, Any]],
     outsider_submission: dict[str, Any],
 ) -> dict[str, Any]:
+    task = _normalize_task_spec(task)
     all_submissions = submissions + [outsider_submission]
     if len(all_submissions) != PANEL_SIZE:
         raise AgentLoopRuntimeError(
@@ -479,19 +631,19 @@ def evaluate_panel(
     major = output_counts.most_common(2)
     if len(major) > 1 and major[0][1] == major[1][1]:
         majority_hash = None
-        agreement_score = 0.0
+        agreement_score = Decimal("0")
         gate_ok = False
         verdict_token = "panel_majority_hash_tie"
     else:
         majority_hash = major[0][0]
-        agreement_score = round(major[0][1] / PANEL_SIZE, 12)
+        agreement_score = (Decimal(major[0][1]) / Decimal(PANEL_SIZE)).quantize(_TWELVE_PLACES)
         try:
             gate_ok = evaluate_decomposition_admissibility(
                 claim_form=task["claim_form"],
                 has_falsifiable_test=bool(task["has_falsifiable_test"]),
                 is_inadmissible_counterexample=bool(task["is_inadmissible_counterexample"]),
-                agreement_score=agreement_score,
-                reproducibility_threshold=float(task["reproducibility_threshold"]),
+                agreement_score=float(agreement_score),
+                reproducibility_threshold=float(_require_unit_decimal("reproducibility_threshold", task["reproducibility_threshold"])),
             )
         except PopperianGateValidationError as exc:
             raise AgentLoopRuntimeError(exc.token, str(exc)) from exc
@@ -520,7 +672,7 @@ def evaluate_panel(
     distinct_clusters = len({vote.cluster_id for vote in votes})
     diversity_floor_met = distinct_clusters >= DISTINCT_CLUSTER_FLOOR
     max_cluster_slots = max(Counter(vote.cluster_id for vote in votes).values())
-    max_cluster_share = compute_max_cluster_share(
+    max_cluster_share_float = compute_max_cluster_share(
         largest_cluster_slots=max_cluster_slots,
         total_panel_slots=PANEL_SIZE,
     )
@@ -560,14 +712,14 @@ def evaluate_panel(
         distinct_clusters=distinct_clusters,
         distinct_cluster_floor=DISTINCT_CLUSTER_FLOOR,
         diversity_floor_met=diversity_floor_met,
-        max_cluster_share=max_cluster_share,
-        agreement_score=agreement_score,
-        reproducibility_threshold=float(task["reproducibility_threshold"]),
+        max_cluster_share=decimal_to_canonical_string(Decimal(str(max_cluster_share_float))),
+        agreement_score=decimal_to_canonical_string(agreement_score),
+        reproducibility_threshold=task["reproducibility_threshold"],
         majority_output_hash=majority_hash,
         direct_author_agent_id=direct_author_agent_id,
         verdict_token=verdict_token,
         passed=passed,
-        confidence_score=round(yes_votes / PANEL_SIZE, 12),
+        confidence_score=decimal_to_canonical_string((Decimal(yes_votes) / Decimal(PANEL_SIZE)).quantize(_TWELVE_PLACES)),
         votes=votes,
     )
     return {
@@ -578,42 +730,33 @@ def evaluate_panel(
 
 
 def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -> dict[str, Any]:
+    task = _normalize_task_spec(task)
     panel = _require_dict("panel_result", panel_payload.get("panel_result"))
     if not bool(panel.get("passed")):
         return {
             "marker": "agent_loop_claims_skipped",
             "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
             "claims": [],
-            "ledger": {"tasks": 0, "ecu_spent": 0.0, "rewards_paid": 0.0, "clearing_price": 0.0},
-            "outcome_summary": {"count": 0, "total_stake": 0.0, "total_reward": 0.0},
+            "ledger": {"tasks": 0, "ecu_spent": "0", "rewards_paid": "0", "clearing_price": "0"},
+            "outcome_summary": {"count": 0, "total_stake": "0", "total_reward": "0"},
         }
 
     direct_author_agent_id = panel.get("direct_author_agent_id")
     if not isinstance(direct_author_agent_id, str) or not direct_author_agent_id:
         raise AgentLoopRuntimeError("direct_author_missing", "direct author missing from passing panel result")
 
-    confidence_score = _require_float("confidence_score", panel.get("confidence_score"))
-    agreement_score = _require_float("agreement_score", panel.get("agreement_score"))
-    ecu_estimate = _require_float("ecu_estimate", task.get("ecu_estimate"))
-    confidence_decimal = Decimal(str(confidence_score))
-    agreement_decimal = Decimal(str(agreement_score))
-    ecu_estimate_decimal = Decimal(str(ecu_estimate))
-    base_reward = Decimal(
-        str(
-            round(
-                simple_claim_reward(
-                    stake_spent=ecu_estimate_decimal,
-                    potential=confidence_decimal,
-                    success_rate=agreement_decimal,
-                ),
-                12,
-            )
-        )
-    )
+    confidence_decimal = _require_unit_decimal("confidence_score", panel.get("confidence_score"))
+    agreement_decimal = _require_unit_decimal("agreement_score", panel.get("agreement_score"))
+    ecu_estimate_decimal = _require_decimal("ecu_estimate", task.get("ecu_estimate"))
+    base_reward = simple_claim_reward(
+        stake_spent=ecu_estimate_decimal,
+        potential=confidence_decimal,
+        success_rate=agreement_decimal,
+    ).quantize(_TWELVE_PLACES)
     passive_amount = compute_passive_ecu(
         base_reward,
-        centrality_score=agreement_score,
-        q_i=confidence_score,
+        centrality_score=agreement_decimal,
+        q_i=confidence_decimal,
     )
 
     claims: list[EcuClaim] = [
@@ -626,8 +769,8 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
             amount=base_reward,
             basis={
                 "base_reward": base_reward,
-                "confidence_score": confidence_score,
-                "agreement_score": agreement_score,
+                "confidence_score": confidence_decimal,
+                "agreement_score": agreement_decimal,
             },
         )
     ]
@@ -654,8 +797,8 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
                 amount=passive_amount,
                 basis={
                     "base_reward": base_reward,
-                    "centrality_score": agreement_score,
-                    "quality_score": confidence_score,
+                    "centrality_score": agreement_decimal,
+                    "quality_score": confidence_decimal,
                 },
             )
         )
@@ -720,6 +863,7 @@ def _run_agent_command(args: argparse.Namespace) -> int:
         variant=args.variant,
         task=task,
         broadcast=not args.no_broadcast,
+        expected_agent_id=args.expected_agent_id,
     )
     if args.emit_dir:
         _write_json(Path(args.emit_dir) / f"submission_{args.slot}.json", payload)
@@ -890,7 +1034,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_agent = subparsers.add_parser("run-agent", help="Run one deterministic agent submission")
     run_agent.add_argument("--slot", type=int, required=True)
-    run_agent.add_argument("--seed-hex", required=True)
+    run_agent.add_argument("--seed-hex")
+    run_agent.add_argument("--expected-agent-id")
     run_agent.add_argument("--cluster-id", required=True)
     run_agent.add_argument("--node-name", required=True)
     run_agent.add_argument("--node-config", required=True)

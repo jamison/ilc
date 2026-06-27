@@ -17,7 +17,7 @@ def test_epistemic_work_task_construction_and_alias():
         verification_method="hash-match",
         task_state="proposed",
         timestamp_created=1000,
-        ecu_estimate=5.5,
+        ecu_estimate="5.5",
     )
 
     assert task.task_id == "task:123"
@@ -39,20 +39,47 @@ def test_epistemic_work_task_json_roundtrip():
         "verification_method": "signature",
         "task_state": "claimed",
         "timestamp_created": 2000,
-        "ecu.estimate": 10.0,  # Input using alias
-        "difficulty_factor": 1.2
+        "ecu.estimate": "10.0",  # Input using alias
+        "difficulty_factor": "1.2"
     }
 
     # Parse
     task = ep_task_from_json(data)
     assert task.task_id == "task:roundtrip"
     assert task.ecu_estimate == Decimal("10.0")
-    assert task.difficulty_factor == 1.2
+    assert task.difficulty_factor == Decimal("1.2")
 
     # Serialize back
     data_out = ep_task_to_json(task)
     assert data_out["ecu.estimate"] == "10.0"
+    assert data_out["difficulty_factor"] == "1.2"
     assert data_out["task_id"] == "task:roundtrip"
+
+
+def test_epistemic_work_task_rejects_float_economic_fields():
+    with pytest.raises(ValueError, match="epistemic_work_task_ecu_estimate_invalid"):
+        EpistemicWorkTask(
+            task_id="task:float-ecu",
+            task_class="custom",
+            agent_id="agent:test",
+            region_scope=[],
+            verification_method="peer-audit",
+            task_state="proposed",
+            timestamp_created=3000,
+            ecu_estimate=1.0,
+        )
+
+    with pytest.raises(ValueError, match="epistemic_work_task_difficulty_factor_invalid"):
+        EpistemicWorkTask(
+            task_id="task:float-difficulty",
+            task_class="custom",
+            agent_id="agent:test",
+            region_scope=[],
+            verification_method="peer-audit",
+            task_state="proposed",
+            timestamp_created=3000,
+            difficulty_factor=1.0,
+        )
 
 def test_task_queue_bridge_helper():
     """Verify TaskDescriptor.from_epistemic_work_task helper."""
