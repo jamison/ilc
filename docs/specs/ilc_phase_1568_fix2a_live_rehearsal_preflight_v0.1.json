@@ -1,0 +1,194 @@
+{
+  "atlas_clean_base": {
+    "git_commit": "b8541f7717eac1ed0667bcf3eea7288c5f833948",
+    "unified_lmdb_digest_sha256": "7479fe39a1e8918bb8ae54420c2cbb285a6976463c39f3b60d46271c76c911a7"
+  },
+  "blockers": [
+    {
+      "blocking_next_phase": "Phase 1568-Fix2c",
+      "evidence": [
+        "tools/agent_loop_v1.py:_require_float",
+        "tools/agent_loop_v1.py:_load_task_spec",
+        "ilc_core/genesis/work_task.py:difficulty_factor"
+      ],
+      "id": "fix2a_blocker_001_exact_numeric_task_ingestion",
+      "required_resolution": "Fix2b must replace economics-adjacent float normalization with exact Decimal/string ingestion or a frozen rehearsal activation profile that rejects floats before economic claim construction.",
+      "status": "open",
+      "summary": "The current agent loop accepts and emits float-shaped difficulty_factor, ecu_estimate, reproducibility_threshold, confidence_score, and agreement_score values on the live rehearsal path."
+    },
+    {
+      "blocking_next_phase": "Phase 1568-Fix2c",
+      "evidence": [
+        "docs/sims/ilc_block6_tailscale_topology_record_1567_v0.1.json",
+        "tools/agent_loop_v1.py:_profile"
+      ],
+      "id": "fix2a_blocker_002_initialized_agent_identity_binding",
+      "required_resolution": "Fix2b must bind submissions to the Phase 1560/1567 initialized agent IDs rather than derive unrelated runtime IDs from local seed_hex test inputs.",
+      "status": "open",
+      "summary": "The corrected scenario records seven initialized agent IDs, but agent_loop_v1 currently derives agent IDs from local seed_hex inputs."
+    },
+    {
+      "blocking_next_phase": "Phase 1568-Fix2c",
+      "evidence": [
+        "ssh ilc-node-2 systemctl is-active ilc-node-v1.service -> inactive",
+        "ssh ilc-node-3 systemctl is-active ilc-node-v1.service -> inactive",
+        "ssh ilc-node-6 systemctl is-active ilc-node-v1.service -> inactive",
+        "local connect 100.111.172.103:19571 -> connection refused"
+      ],
+      "id": "fix2a_blocker_003_d2d_services_not_running",
+      "required_resolution": "Fix2b must add rehearsal-namespace service-start and readiness scripts, then prove all expected gossip endpoints accept runtime submissions before Fix2c.",
+      "status": "open",
+      "summary": "The staged rehearsal trees exist, but the expected D2D services are not currently active on any VPS and the local port is closed."
+    },
+    {
+      "blocking_next_phase": "Phase 1568-Fix2c",
+      "evidence": [
+        "docs/sims/ilc_block6_rehearsal_evidence_1568_lane3_harnesses_v0.1.json",
+        "docs/sims/ilc_block6_tailscale_topology_record_1567_v0.1.json:balance_report_command"
+      ],
+      "id": "fix2a_blocker_004_prior_lane3_same_agent_balance_checks",
+      "required_resolution": "Fix2c must produce distinct-agent proof for all seven logical agents; read-only balance checks using one agent ID across multiple hosts are insufficient.",
+      "status": "open",
+      "summary": "Prior Lane 3 evidence reused validator_a1's agent ID for node2, node3, and node6 balance checks."
+    },
+    {
+      "blocking_next_phase": "Phase 1568-Fix2b",
+      "evidence": [
+        "ilc_core/ledger/public_economics_admission_firewall.py",
+        "docs/specs/ilc_public_economics_admission_firewall_1387a_v0.1.md"
+      ],
+      "id": "fix2a_blocker_005_private_rehearsal_admission_boundary",
+      "required_resolution": "Fix2b must use a namespace-scoped private rehearsal admission wrapper or equivalent activation profile; private soft-RC rehearsal economics must not be misrepresented as public economics admission.",
+      "status": "open",
+      "summary": "The public economics firewall correctly excludes private visibility. The private soft-RC run needs a separate rehearsal admission boundary."
+    }
+  ],
+  "corrected_scenario": {
+    "agent_count": 7,
+    "contains_ilc_node_1": false,
+    "contains_jamisons_imac": true,
+    "contains_node6_receiver": true,
+    "path": "testbed/scenarios/block6_seven_agent_v1.json",
+    "scenario_id": "block6-seven-agent-cycle-v1"
+  },
+  "created_at_utc": "2026-06-27T11:12:55Z",
+  "d2d_readiness": {
+    "jamisons-imac": {
+      "expected_endpoint": "https://100.111.172.103:19571",
+      "local_connect_127_0_0_1_19571": "connection_refused",
+      "local_connect_100_111_172_103_19571": "connection_refused",
+      "readiness": "blocked"
+    },
+    "ilc-node-2": {
+      "host": "ilc-node-2",
+      "listening_ports_observed": [],
+      "service": "inactive",
+      "ssh": "pass",
+      "staged_rehearsal_tree": "present",
+      "staged_tree_git": "no_git"
+    },
+    "ilc-node-3": {
+      "host": "ilc-node-3",
+      "listening_ports_observed": [],
+      "service": "inactive",
+      "ssh": "pass",
+      "staged_rehearsal_tree": "present",
+      "staged_tree_git": "no_git"
+    },
+    "ilc-node-6": {
+      "host": "ilc-node-6",
+      "listening_ports_observed": [],
+      "service": "inactive",
+      "ssh": "pass",
+      "staged_rehearsal_tree": "present",
+      "staged_tree_git": "no_git"
+    }
+  },
+  "guard_inventory": [
+    {
+      "classification": "preserved",
+      "evidence_path": "ilc_core/epoch/epoch_emission_production_path.py",
+      "guard": "PRODUCTION_EMISSION_NOT_ACTIVATED",
+      "live_value": true,
+      "required_action": "Do not flip for private rehearsal. Use namespace-scoped rehearsal activation profile if runtime-live emission replay is required."
+    },
+    {
+      "classification": "preserved",
+      "evidence_path": "ilc_core/validator/validator_admission_ejection_production_path.py",
+      "guard": "VALIDATOR_ADMISSION_NOT_ACTIVATED",
+      "live_value": true,
+      "required_action": "Do not flip for private rehearsal. Use rehearsal-scoped validator transition evidence."
+    },
+    {
+      "classification": "preserved",
+      "evidence_path": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+      "guard": "TREASURY_DISTRIBUTION_NOT_ACTIVATED",
+      "live_value": true,
+      "required_action": "Do not flip for private rehearsal. Preserve no wallet, treasury, or production distribution writes."
+    },
+    {
+      "classification": "preserved",
+      "evidence_path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+      "guard": "PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED",
+      "live_value": true,
+      "required_action": "Do not flip for private rehearsal. ADR-0016 remains Proposed and bounty activation requires separate authority."
+    },
+    {
+      "classification": "rehearsal_profile_required",
+      "evidence_path": "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py",
+      "guard": "CDL048_CONVERSION_DEADLINE_ISSUANCE_EPOCHS",
+      "live_value": 4,
+      "required_action": "Fix2c must exercise four issuance epochs for conversion coverage."
+    },
+    {
+      "classification": "public_only_not_used_for_private_rehearsal",
+      "evidence_path": "ilc_core/ledger/public_economics_admission_firewall.py",
+      "guard": "PRIVATE_VISIBILITY_EXCLUSION_TOKEN",
+      "live_value": "private_visibility_excluded_from_public_economics_phase_1387a",
+      "required_action": "Keep public economics admission fail-closed; implement private rehearsal admission separately if needed."
+    },
+    {
+      "classification": "post_rc_attack_surface_review",
+      "evidence_path": "ilc_core/network/d2d/openclaw_p2p_relay.py",
+      "guard": "NATIVE_RUST_P2P_NOT_ACTIVATED",
+      "live_value": true,
+      "required_action": "Do not rely on mutable booleans as the public-RC security boundary."
+    }
+  ],
+  "non_claims": [
+    "No live rehearsal was run.",
+    "No production guard was cleared.",
+    "No ECU or ILC was minted or settled.",
+    "No wallet, treasury, production ledger, public P2P, or Genesis graph mutation occurred.",
+    "No public RC activation or Genesis signing occurred."
+  ],
+  "phase": "1568-Fix2a",
+  "prior_evidence_defects": [
+    {
+      "defect_id": "phase_1568_lane3_same_agent_balance_checks",
+      "evidence_path": "docs/sims/ilc_block6_rehearsal_evidence_1568_lane3_harnesses_v0.1.json",
+      "status": "open_until_fix2c_distinct_agent_proof",
+      "summary": "Balance checks on node2, node3, and node6 used the same agent ID rather than proving distinct per-agent participation."
+    }
+  ],
+  "public_economics_firewall_disposition": {
+    "disposition": "preserve_public_firewall_add_private_rehearsal_boundary_before_live_rerun",
+    "evidence_path": "ilc_core/ledger/public_economics_admission_firewall.py",
+    "summary": "The firewall correctly requires public visibility and public graph admission evidence for public economics. Private soft-RC economics need a namespace-scoped admission profile instead of bypassing or weakening this firewall."
+  },
+  "recommended_next_phases": [
+    {
+      "phase": "1568-Fix2b",
+      "scope": "Implement rehearsal activation profile, exact numeric task ingestion, initialized-agent identity binding, and service readiness scripts."
+    },
+    {
+      "phase": "1568-Fix2c",
+      "scope": "Run the sensitive live four-machine private soft-RC rerun after Fix2b passes."
+    },
+    {
+      "phase": "1568-Fix2d_or_1574_input",
+      "scope": "Inventory and remove or structurally neutralize one-line production activation booleans as public-RC attack surfaces."
+    }
+  ],
+  "status": "PASS_PREFLIGHT_BLOCKERS_RECORDED"
+}
