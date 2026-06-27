@@ -14,7 +14,7 @@ class EpistemicWorkTask(BaseModel):
     ]
     agent_id: str
     region_scope: List[str]
-    difficulty_factor: Optional[float] = None
+    difficulty_factor: Optional[Decimal] = None
     input_data: Optional[Dict[str, Any]] = None
     output_hash: Optional[str] = None
     verification_method: Literal[
@@ -47,24 +47,37 @@ class EpistemicWorkTask(BaseModel):
     @field_validator("ecu_estimate", mode="before")
     @classmethod
     def _validate_ecu_estimate(cls, value: object) -> Optional[Decimal]:
+        return cls._validate_non_negative_decimal(value, "epistemic_work_task_ecu_estimate_invalid")
+
+    @field_validator("difficulty_factor", mode="before")
+    @classmethod
+    def _validate_difficulty_factor(cls, value: object) -> Optional[Decimal]:
+        return cls._validate_non_negative_decimal(value, "epistemic_work_task_difficulty_factor_invalid")
+
+    @classmethod
+    def _validate_non_negative_decimal(cls, value: object, token: str) -> Optional[Decimal]:
         if value is None:
             return None
-        if isinstance(value, bool):
-            raise ValueError("epistemic_work_task_ecu_estimate_invalid")
-        if not isinstance(value, (Decimal, int, float, str)):
-            raise ValueError("epistemic_work_task_ecu_estimate_invalid")
+        if isinstance(value, (bool, float)):
+            raise ValueError(token)
+        if not isinstance(value, (Decimal, int, str)):
+            raise ValueError(token)
         try:
             amount = value if isinstance(value, Decimal) else Decimal(str(value))
         except (InvalidOperation, ValueError) as exc:
-            raise ValueError("epistemic_work_task_ecu_estimate_invalid") from exc
+            raise ValueError(token) from exc
         if not amount.is_finite():
-            raise ValueError("epistemic_work_task_ecu_estimate_invalid_non_finite")
+            raise ValueError(f"{token}_non_finite")
         if amount < Decimal("0"):
-            raise ValueError("epistemic_work_task_ecu_estimate_invalid_negative")
+            raise ValueError(f"{token}_negative")
         return amount
 
     @field_serializer("ecu_estimate")
     def _serialize_ecu_estimate(self, value: Optional[Decimal]) -> Optional[str]:
+        return None if value is None else str(value)
+
+    @field_serializer("difficulty_factor")
+    def _serialize_difficulty_factor(self, value: Optional[Decimal]) -> Optional[str]:
         return None if value is None else str(value)
 
 def ep_task_to_json(task: EpistemicWorkTask) -> Dict[str, Any]:

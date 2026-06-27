@@ -20,16 +20,16 @@ def _task() -> dict[str, object]:
         "task_id": "task:test:agent-loop-v1",
         "task_class": "graph.compression",
         "region_scope": ["global"],
-        "difficulty_factor": 1.25,
+        "difficulty_factor": "1.25",
         "verification_method": "replayable-simulation",
-        "ecu_estimate": 2.0,
+        "ecu_estimate": "2",
         "timestamp_created": 1700000100,
         "epoch": 574,
         "channel": "ilc.agent-loop.v1",
         "claim_form": "falsifiable_positive",
         "has_falsifiable_test": True,
         "is_inadmissible_counterexample": False,
-        "reproducibility_threshold": 0.85,
+        "reproducibility_threshold": "0.85",
         "canonical_output": "diagnostics-ledger-compression-v1",
         "divergent_output_prefix": "diagnostics-ledger-divergent-v1",
     }
@@ -64,8 +64,49 @@ def test_run_agent_once_builds_stable_submission_without_broadcast() -> None:
     submission = payload["submission"]
     assert payload["marker"] == "agent_loop_submission_ok"
     assert submission["profile"]["agent_id"].startswith("agent-")
+    assert "seed_hex" not in submission["profile"]
     assert submission["send_statuses"] == []
     assert submission["ep_task"]["output_hash"] == submission["output_hash"]
+
+
+def test_run_agent_once_binds_initialized_agent_id_without_seed_material() -> None:
+    expected_agent_id = "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9"
+
+    payload = agent_loop_v1.run_agent_once(
+        slot=1,
+        seed_hex=None,
+        expected_agent_id=expected_agent_id,
+        cluster_id="cluster-a",
+        node_name="jamisons-imac",
+        node_config_path="unused-when-broadcast-disabled.json",
+        variant="canonical",
+        task=_task(),
+        broadcast=False,
+    )
+
+    profile = payload["submission"]["profile"]
+    assert profile["agent_id"] == expected_agent_id
+    assert profile["identity_binding"] == "initialized_agent_id"
+    assert profile["seed_fingerprint"] is None
+    assert "seed_hex" not in profile
+
+
+def test_float_task_economics_are_rejected_before_claim_construction() -> None:
+    task = {**_task(), "ecu_estimate": 2.0}
+
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex="01" * 16,
+            cluster_id="cluster-a",
+            node_name="ilc-node-1",
+            node_config_path="unused-when-broadcast-disabled.json",
+            variant="canonical",
+            task=task,
+            broadcast=False,
+        )
+
+    assert excinfo.value.token == "ecu_estimate_must_be_exact_numeric"
 
 
 def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
@@ -89,7 +130,7 @@ def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
     assert panel["verdict_token"] == "panel_quorum_passed"
     assert panel["yes_votes"] == 7
     assert panel["distinct_clusters"] == 5
-    assert panel["agreement_score"] == 0.875
+    assert panel["agreement_score"] == "0.875"
 
     claims = claim_payload["claims"]
     assert claim_payload["marker"] == "agent_loop_claims_ok"
@@ -187,6 +228,7 @@ def test_cli_run_agent_writes_submission_file(tmp_path: Path) -> None:
 
 
 def test_broadcast_submission_emits_cbor_payload_and_latency_metrics(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ILC_AGENT_LOOP_ALLOW_SYNTHETIC_SIGNATURE_FOR_TESTS", "1")
     monkeypatch.setattr(
         agent_loop_v1,
         "_transport_bundle",
@@ -245,9 +287,42 @@ def test_broadcast_submission_emits_cbor_payload_and_latency_metrics(monkeypatch
 
     assert len(calls) == 2
     assert all(call[6] == "application/cbor" for call in calls)
+    assert all(call[4].startswith("agent-loop-v1-test-only:") for call in calls)
     decoded = cbor_loads(calls[0][5])
     assert decoded["artifact_kind"] == "agent_submission"
     assert decoded["task_id"] == _task()["task_id"]
+
+
+def test_broadcast_requires_real_signature_without_test_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("ILC_AGENT_LOOP_ALLOW_SYNTHETIC_SIGNATURE_FOR_TESTS", raising=False)
+    monkeypatch.setattr(
+        agent_loop_v1,
+        "_transport_bundle",
+        lambda _config_path: (
+            agent_loop_v1.TransportRuntimeConfig(
+                transport_kind="http",
+                bind_host="127.0.0.1",
+                bind_port=0,
+                tls_cert_path="unused-cert.pem",
+                tls_key_path="unused-key.pem",
+            ),
+            ["https://peer-a.example"],
+        ),
+    )
+
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex="01" * 16,
+            cluster_id="cluster-a",
+            node_name="ilc-node-1",
+            node_config_path="unused.json",
+            variant="canonical",
+            task=_task(),
+            broadcast=True,
+        )
+
+    assert excinfo.value.token == "agent_loop_real_signature_required_for_live_rehearsal"
 
 
 def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
