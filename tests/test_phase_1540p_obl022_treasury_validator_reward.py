@@ -74,7 +74,7 @@ def test_phase_1540p_builds_guarded_result_with_dependency_tokens() -> None:
     assert result.reward_routing_quote.validator_reward_pool_ilc == Decimal("1000")
 
 
-def test_phase_1540p_integration_gate_fail_is_advisory(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_phase_1540p_integration_gate_fail_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     real_report = build_issuance_economics_integration_gate_report()
     failed_report = replace(
         real_report,
@@ -83,15 +83,12 @@ def test_phase_1540p_integration_gate_fail_is_advisory(monkeypatch: pytest.Monke
     )
     monkeypatch.setattr(
         path,
-        "build_issuance_economics_integration_gate_report",
-        lambda: failed_report,
+        "verify_issuance_economics_integration_gate",
+        lambda: (_ for _ in ()).throw(ValueError(failed_report.verdict)),
     )
 
-    result = build_treasury_validator_reward_result(_inputs())
-
-    assert result.integration_gate_result == "forced_gate_fail_for_phase_1540p_test"
-    assert result.gate_report.blocking_reason == "test_only"
-    assert result.production_treasury_distribution_activated is False
+    with pytest.raises(ValueError, match="forced_gate_fail_for_phase_1540p_test"):
+        build_treasury_validator_reward_result(_inputs())
 
 
 def test_phase_1540p_same_result_replays_same_root() -> None:
