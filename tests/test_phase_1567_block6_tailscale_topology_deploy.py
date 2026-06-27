@@ -37,6 +37,7 @@ def test_phase_1567_openclaw_refresh_is_confirmed_without_clawhub_publication() 
     assert skill["user_invocable"] is True
     assert skill["clawhub_published"] is False
     assert len(skill["sha256"]) == 64
+    assert skill["skill_path"] == skill["file_path"]
 
 
 def test_phase_1567_codex_harness_is_rehearsal_only() -> None:
@@ -47,6 +48,15 @@ def test_phase_1567_codex_harness_is_rehearsal_only() -> None:
     assert harness["private_key_access"] is False
     assert harness["wallet_write_access"] is False
     assert harness["production_endpoint_access"] is False
+
+
+def test_phase_1567_prompt_schema_compatibility_fields_are_present() -> None:
+    record = _record()
+
+    assert record["balance_report_command"]["status"] == "reachable"
+    assert record["openclaw_ilc_local_skill"]["skill_path"].endswith(
+        "/.openclaw/workspace/skills/ilc-local/SKILL.md"
+    )
 
 
 def test_phase_1567_non_authorization_boundary_is_preserved() -> None:
