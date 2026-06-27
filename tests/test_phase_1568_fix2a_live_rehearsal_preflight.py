@@ -59,7 +59,7 @@ def test_preflight_report_records_expected_blockers_and_guard_dispositions() -> 
     assert "fix2a_blocker_002_initialized_agent_identity_binding" in blocker_ids
     assert "fix2a_blocker_003_d2d_services_not_running" in blocker_ids
     assert "fix2a_blocker_004_prior_lane3_same_agent_balance_checks" in blocker_ids
-    assert "fix2a_blocker_005_private_rehearsal_admission_boundary" in blocker_ids
+    assert "fix2a_blocker_005_rehearsal_public_admission_records" in blocker_ids
 
     guards = {entry["guard"]: entry for entry in report["guard_inventory"]}
     assert guards["PRODUCTION_EMISSION_NOT_ACTIVATED"]["live_value"] is True
@@ -69,8 +69,11 @@ def test_preflight_report_records_expected_blockers_and_guard_dispositions() -> 
     assert guards["CDL048_CONVERSION_DEADLINE_ISSUANCE_EPOCHS"]["live_value"] == 4
     assert (
         report["public_economics_firewall_disposition"]["disposition"]
-        == "preserve_public_firewall_add_private_rehearsal_boundary_before_live_rerun"
+        == "preserve_public_firewall_add_disposable_rehearsal_public_admission_records_before_live_rerun"
     )
+    report_text = json.dumps(report, sort_keys=True)
+    assert "private rehearsal admission wrapper" not in report_text
+    assert "private economics bypass" in report_text
 
 
 def test_status_tokens_record_preflight_without_live_completion() -> None:
