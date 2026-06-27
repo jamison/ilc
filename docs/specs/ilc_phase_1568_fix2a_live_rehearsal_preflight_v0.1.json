@@ -57,10 +57,10 @@
         "ilc_core/ledger/public_economics_admission_firewall.py",
         "docs/specs/ilc_public_economics_admission_firewall_1387a_v0.1.md"
       ],
-      "id": "fix2a_blocker_005_private_rehearsal_admission_boundary",
-      "required_resolution": "Fix2b must use a namespace-scoped private rehearsal admission wrapper or equivalent activation profile; private soft-RC rehearsal economics must not be misrepresented as public economics admission.",
+      "id": "fix2a_blocker_005_rehearsal_public_admission_records",
+      "required_resolution": "Fix2b must create disposable rehearsal public-admission records that satisfy the existing public economics firewall under a wipeable rehearsal public_graph_root. Do not add a private economics bypass or private admission wrapper.",
       "status": "open",
-      "summary": "The public economics firewall correctly excludes private visibility. The private soft-RC run needs a separate rehearsal admission boundary."
+      "summary": "The public economics firewall correctly excludes private visibility. The soft-RC run needs rehearsal public-admission records scoped to the disposable rehearsal graph."
     }
   ],
   "corrected_scenario": {
@@ -141,11 +141,11 @@
       "required_action": "Fix2c must exercise four issuance epochs for conversion coverage."
     },
     {
-      "classification": "public_only_not_used_for_private_rehearsal",
+      "classification": "public_firewall_preserved",
       "evidence_path": "ilc_core/ledger/public_economics_admission_firewall.py",
       "guard": "PRIVATE_VISIBILITY_EXCLUSION_TOKEN",
       "live_value": "private_visibility_excluded_from_public_economics_phase_1387a",
-      "required_action": "Keep public economics admission fail-closed; implement private rehearsal admission separately if needed."
+      "required_action": "Keep public economics admission fail-closed for private visibility; create disposable rehearsal public-admission records under a wipeable rehearsal public_graph_root."
     },
     {
       "classification": "post_rc_attack_surface_review",
@@ -172,21 +172,25 @@
     }
   ],
   "public_economics_firewall_disposition": {
-    "disposition": "preserve_public_firewall_add_private_rehearsal_boundary_before_live_rerun",
+    "disposition": "preserve_public_firewall_add_disposable_rehearsal_public_admission_records_before_live_rerun",
     "evidence_path": "ilc_core/ledger/public_economics_admission_firewall.py",
-    "summary": "The firewall correctly requires public visibility and public graph admission evidence for public economics. Private soft-RC economics need a namespace-scoped admission profile instead of bypassing or weakening this firewall."
+    "summary": "The firewall correctly requires public visibility and public graph admission evidence for public economics. Soft-RC economics must satisfy this schema with disposable rehearsal public-admission records under a wipeable rehearsal public_graph_root, not bypass or weaken the firewall."
   },
   "recommended_next_phases": [
     {
       "phase": "1568-Fix2b",
-      "scope": "Implement rehearsal activation profile, exact numeric task ingestion, initialized-agent identity binding, and service readiness scripts."
+      "scope": "Implement exact numeric task ingestion, initialized-agent identity binding, real signature-boundary handling, disposable rehearsal public-admission records, and local code/schema blockers."
     },
     {
       "phase": "1568-Fix2c",
-      "scope": "Run the sensitive live four-machine private soft-RC rerun after Fix2b passes."
+      "scope": "Bring the four-machine D2D services to production-shaped readiness under the controlled rehearsal namespace."
     },
     {
-      "phase": "1568-Fix2d_or_1574_input",
+      "phase": "1568-Fix2d",
+      "scope": "Run the sensitive live production-path soft-RC after Fix2b and Fix2c pass."
+    },
+    {
+      "phase": "1568-Fix2e_or_1574_input",
       "scope": "Inventory and remove or structurally neutralize one-line production activation booleans as public-RC attack surfaces."
     }
   ],
