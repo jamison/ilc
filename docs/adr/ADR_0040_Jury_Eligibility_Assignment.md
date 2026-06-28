@@ -205,29 +205,73 @@ but they must not be silently treated as existing production canon.
 
 > **OPEN DESIGN QUESTION (recorded 2026-06-28, Phase 1568-Fix2g Track F):**
 >
-> The original 7+1 design intent may differ from the additive interpretation
-> above. The original model may be a **blind switch-out** model:
+> The original 7+1 design intent is a **sequential temporally-separated
+> switch-out** model, which differs from the additive interpretation above:
 >
-> - All 8 are assigned and submit verdicts during the review window.
-> - After the verdict window closes, a randomized switch-out discards 1 of the 8.
-> - The switch seed is derived from submitted verdict commitment hashes so it
->   cannot be predicted before work begins.
-> - Final counted panel = 7; quorum = k=5 of surviving 7.
+> **Sequential model (original intent):**
+> 1. Panel of 7 selected from availability pool under normal diversity rules.
+> 2. The 7 vote on the node independently; votes are sealed/committed but not
+>    yet revealed.
+> 3. After the 7 have committed, a separate random "switch-out" agent is
+>    selected from the general availability pool — a completely independent
+>    selection event, potentially in a later sub-epoch or even a later epoch.
+> 4. The switch-out agent reads and evaluates the node, votes independently,
+>    and cannot see the sealed votes of the original 7. Vote-blindness of the
+>    switch-out with respect to the original 7 is the critical invariant.
+> 5. One of the original 7 is replaced by the switch-out vote in finality.
+> 6. Final counted panel = 7 votes; quorum = k=5 of 7.
 >
-> Security difference: In the additive model all 8 panel members are knowable
-> at assignment time. In the blind switch-out model an attacker does not know
-> which 7 will count until after verdicts are submitted, materially increasing
-> the cost of a coordinated capture attempt.
+> **Security advantage over additive model and concurrent commit-reveal:**
+> In the additive model and any model where all 8 are selected at assignment
+> time, an attacker who monitors assignment announcements knows all 8 identities
+> before any voting begins. In the sequential model the switch-out agent is not
+> even selected until after the original 7 have committed their votes — a
+> separate, asynchronous, unpredictable event. The switch-out can be any
+> eligible agent in the network; there is no assignment-time signal an attacker
+> can monitor to identify them. Capturing the initial 7 does not guarantee
+> capturing the switch-out because the switch-out does not exist as a known
+> identity at the time of capture.
+>
+> **Critical invariant:** The switch-out agent must not be able to see the
+> sealed votes of the original 7 before casting their own vote. Any mechanism
+> that reveals the panel's sealed votes before the switch-out votes defeats
+> the temporal separation and enables strategic alignment or gaming.
+>
+> **Resolved design decisions (2026-06-28, Genesis Agent):**
+> - R1 (slot selection): The replaced slot is chosen at random from the
+>   original 7. Not a predetermined slot; not the outlier vote. Random
+>   removal preserves symmetry — no reviewer can reason "I am safe" or
+>   "I am expendable" in advance.
+> - R2 (vote sealing): All votes — original 7 and switch-out — must remain
+>   sealed until all 8 have voted, or until the previously ratified quorum
+>   threshold (k=5) is satisfied, whichever the governing plan specifies.
+>   The switch-out must not see any vote from the original 7 before casting
+>   their own. Violating this invariant converts the switch-out into a
+>   strategic override rather than an independent check.
+>
+> **Open questions still requiring CDL/ADR resolution before implementation:**
+> 1. Pool source for switch-out: same lane-specific availability pool as the
+>    original 7, or broader general pool? Broader pool increases diversity but
+>    may admit agents without lane-specific capability credentials.
+> 2. Time window for switch-out vote: fixed epoch interval, variable, or
+>    triggered by the sealed-vote commitment timestamp?
+> 3. Failure handling: if switch-out fails to vote within window, does the
+>    original 7-vote result stand with no replacement, or is a new switch-out
+>    selected? Selecting a new switch-out extends latency; standing the 7
+>    means the anti-capture mechanism silently degraded for that panel.
+> 4. Economic treatment of discarded reviewer: paid base fee? No payment?
+>    Partial credit for work done? Requires CDL authority.
+> 5. Quorum rule post-switch: quorum is k=5 of the final 7 (6 original + 1
+>    switch-out). Does the switch-out vote count toward quorum (recommended
+>    yes — it is now one of the 7 counted votes), and does it count toward
+>    accuracy bonus calculation the same way as the original reviewers?
 >
 > This ADR records the additive interpretation as current canon because it
-> matches the ADM-003 ratified text. The blind switch-out is a
-> `candidate_panel_anti_capture_amendment`. A future ADR amendment or
-> dedicated phase must resolve five open questions before the switch-out
-> can be implemented: (1) whether outsider seat is exempt from discard,
-> (2) economic treatment of discarded reviewer, (3) whether switch uses a
-> separate randomness source, (4) whether all 8 must submit before switch
-> is applied, and (5) whether final panel is definitively 7 or 8.
-> Routing: Fix2g Track F → candidate Fix2i or Window 1565-1575 cleanup.
+> matches the ADM-003 ratified text. The sequential temporally-separated
+> switch-out is a `candidate_panel_anti_capture_amendment` recorded as the
+> stronger intended design.
+> Routing: Fix2g Track F → candidate Fix2i or dedicated amendment phase.
+> Requires explicit GO from human reviewer before implementation.
 
 ## Non-Response and Refusal
 
