@@ -276,6 +276,36 @@ but they must not be silently treated as existing production canon.
 > the assignment_context_hash so that the switch-out selection is auditable
 > and replayable.
 >
+> **Sybil-via-diversity-slot attack (recorded 2026-06-28, Genesis Agent):**
+> When the diversity selection algorithm is public and a particular diversity
+> category is scarce in the eligible pool, an attacker can spin up agents
+> that satisfy that scarce diversity criterion, gaining elevated assignment
+> probability. Categorical diversity (cluster, operator-domain, capability
+> label) alone does not prevent this attack.
+>
+> Required mitigations — both must apply to the switch-out pool and the
+> initial 7 selection:
+>
+> 1. **Reputation threshold gate:** Every agent in the eligible pool must
+>    meet a minimum reputation score earned over time under CDL-V1 temporal
+>    decay rules. Freshly created agents cannot satisfy the threshold quickly.
+>    The threshold is lane-specific; high-stakes lanes require higher thresholds.
+>    This is the primary defense: reputation cannot be manufactured at spin-up
+>    time.
+>
+> 2. **Specialization credential gate:** Where review lanes require domain
+>    expertise (e.g., mathematical correctness, code audit, empirical science),
+>    agents must hold lane-specific capability proofs or specialization
+>    credentials tied to their reputation history. A diversity slot labeled
+>    "math expert" must be filled by an agent with a credentialed math
+>    specialization — not any agent that self-declares that category.
+>
+> These gates transform diversity from "categorical slot-filling" into
+> "credentialed, reputation-bearing diversity" and are requirements for both
+> the initial panel selection and the switch-out draw. The eligible_set_root
+> commitment must reflect an eligibility snapshot that has already applied
+> both gates, not a raw pool snapshot.
+>
 > **Open questions requiring CDL/ADR resolution before implementation:**
 > 1. Failure handling: if the switch-out fails to vote within the ratified
 >    window, what is the resolution? Options: (a) original 7 stand — simple
