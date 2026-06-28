@@ -221,50 +221,74 @@ but they must not be silently treated as existing production canon.
 > 5. One of the original 7 is replaced by the switch-out vote in finality.
 > 6. Final counted panel = 7 votes; quorum = k=5 of 7.
 >
-> **Security advantage over additive model and concurrent commit-reveal:**
-> In the additive model and any model where all 8 are selected at assignment
-> time, an attacker who monitors assignment announcements knows all 8 identities
-> before any voting begins. In the sequential model the switch-out agent is not
-> even selected until after the original 7 have committed their votes — a
-> separate, asynchronous, unpredictable event. The switch-out can be any
-> eligible agent in the network; there is no assignment-time signal an attacker
-> can monitor to identify them. Capturing the initial 7 does not guarantee
-> capturing the switch-out because the switch-out does not exist as a known
-> identity at the time of capture.
+> **Security advantage over additive model:**
+> In the additive model all 8 identities are known at assignment time. In the
+> sequential model the switch-out is not selected until after the original 7
+> have committed sealed votes — a separate, asynchronous event. Capturing
+> the initial 7 does not guarantee capturing the switch-out, because the
+> switch-out does not exist as a known identity at capture time.
 >
-> **Critical invariant:** The switch-out agent must not be able to see the
-> sealed votes of the original 7 before casting their own vote. Any mechanism
-> that reveals the panel's sealed votes before the switch-out votes defeats
-> the temporal separation and enables strategic alignment or gaming.
+> **Critical invariants (hardened 2026-06-28):**
+>
+> INVARIANT-1 (vote-blind isolation): The switch-out agent must not be able
+> to observe, infer, or receive any information about the sealed votes of the
+> original 7 before casting their own vote. This applies to direct vote
+> content AND to side-channel leakage: ack timing, fetch timing, assignment
+> pull timing, and commit submission timing must not leak panel state to the
+> switch-out or to external observers before finality.
+>
+> INVARIANT-2 (finality gate): No reveal, tally, or finality event may
+> occur until the switch-out vote is committed to the protocol OR a
+> ratified failure-handling rule (timeout, escalation, or fixed-fallback)
+> has resolved. Early finality on k=5 of the original 7 before the
+> switch-out votes would mean the switch-out is not part of finality at
+> all — which defeats the amendment's purpose entirely. Any quorum-met
+> condition on the original 7 alone is not finality under this model.
+>
+> INVARIANT-3 (post-replacement diversity): CDL-V3 diversity constraints
+> and independence_k=3 must be re-validated over the final 7 (6 original
+> + 1 switch-out) after random slot removal, not only at initial panel
+> selection. If the switch-out causes a diversity violation in the final 7,
+> the selection must be retried with a fresh switch-out draw.
 >
 > **Resolved design decisions (2026-06-28, Genesis Agent):**
-> - R1 (slot selection): The replaced slot is chosen at random from the
->   original 7. Not a predetermined slot; not the outlier vote. Random
->   removal preserves symmetry — no reviewer can reason "I am safe" or
->   "I am expendable" in advance.
-> - R2 (vote sealing): All votes — original 7 and switch-out — must remain
->   sealed until all 8 have voted, or until the previously ratified quorum
->   threshold (k=5) is satisfied, whichever the governing plan specifies.
->   The switch-out must not see any vote from the original 7 before casting
->   their own. Violating this invariant converts the switch-out into a
->   strategic override rather than an independent check.
+> - R1 (slot selection): Random from the original 7. Not predetermined;
+>   not the outlier. Symmetry preserved.
+> - R2 (vote sealing): All votes sealed until the switch-out vote is
+>   committed or a ratified failure rule resolves. The k=5 quorum threshold
+>   on the original 7 alone does NOT trigger reveal or finality — doing so
+>   would bypass the switch-out and defeat INVARIANT-2.
 >
-> **Open questions still requiring CDL/ADR resolution before implementation:**
-> 1. Pool source for switch-out: same lane-specific availability pool as the
->    original 7, or broader general pool? Broader pool increases diversity but
->    may admit agents without lane-specific capability credentials.
-> 2. Time window for switch-out vote: fixed epoch interval, variable, or
->    triggered by the sealed-vote commitment timestamp?
-> 3. Failure handling: if switch-out fails to vote within window, does the
->    original 7-vote result stand with no replacement, or is a new switch-out
->    selected? Selecting a new switch-out extends latency; standing the 7
->    means the anti-capture mechanism silently degraded for that panel.
-> 4. Economic treatment of discarded reviewer: paid base fee? No payment?
->    Partial credit for work done? Requires CDL authority.
-> 5. Quorum rule post-switch: quorum is k=5 of the final 7 (6 original + 1
->    switch-out). Does the switch-out vote count toward quorum (recommended
->    yes — it is now one of the 7 counted votes), and does it count toward
->    accuracy bonus calculation the same way as the original reviewers?
+> **Seed input for random slot removal:**
+> Must use: assignment_context_hash, switch-out vote commitment hash, and
+> epoch finalization randomness (VRF or epoch-hash shadow).
+> Must NOT use: revealed vote contents of the original 7. Using vote
+> contents as seed input would make the removal predictable by any party
+> who can observe the votes before finality and would create a strategic
+> manipulation surface.
+>
+> **Switch-out pool constraint:**
+> The switch-out must be drawn from the lane-specific eligibility snapshot
+> satisfying capability, conflict, operator-domain, and CDL-V3 diversity
+> constraints — not from "any eligible agent in the network." Broader pool
+> increases diversity only if capability and conflict gates are also applied.
+> The snapshot root must be the same committed eligible_set_root used in
+> the assignment_context_hash so that the switch-out selection is auditable
+> and replayable.
+>
+> **Open questions requiring CDL/ADR resolution before implementation:**
+> 1. Failure handling: if the switch-out fails to vote within the ratified
+>    window, what is the resolution? Options: (a) original 7 stand — simple
+>    but anti-capture silently degrades; (b) one retry with new draw — adds
+>    latency; (c) escalate to Tier 2 — adds latency but preserves integrity.
+>    Must choose and ratify before implementation. Avoid indefinite redraw
+>    loops — they create DoS and liveness risks.
+> 2. Time window: fixed epoch, variable, or sealed-vote-timestamp-triggered?
+> 3. Economic treatment of the discarded original reviewer: requires CDL
+>    authority. Must not affect ECU, reputation, or assignment priority
+>    without explicit ratification.
+> 4. Whether switch-out vote counts identically to original reviewers for
+>    accuracy bonus calculation purposes.
 >
 > This ADR records the additive interpretation as current canon because it
 > matches the ADM-003 ratified text. The sequential temporally-separated
@@ -322,6 +346,28 @@ canonicalization, no production jury activation, no live value-path activation,
 no CDL mutation, no public RC claim, and no graph write.
 
 Stable non-authorization phrase: no public graph canonicalization.
+
+> **PHASE 1429 BOUNDARY NOTE (adjudicated 2026-06-28):**
+> `ilc_core/epistemic/jury_assignment_runtime.py` line 80 reads:
+> `PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False`
+>
+> This is intentional. Phase 1429 explicitly authorized flipping this flag
+> to activate jury assignment quote/execution machinery. STATUS records
+> `production_assignment_activated_phase_1429` and
+> `public_rc_not_activated_phase_1429`.
+>
+> What Phase 1429 activation covers: assignment quote execution machinery,
+> deterministic epoch-hash selection algorithm, quote-mode panel selection.
+>
+> What Phase 1429 activation does NOT cover: public RC, reviewer payment,
+> ECU settlement, live value flow, production VRF assignment, public serving,
+> or any J-008 gate condition.
+>
+> Fix2i must include a Phase 1429 boundary check confirming the activation
+> scope rather than treating the flag as a defect. If jury assignment
+> machinery needs to be disabled again for rehearsal safety in a specific
+> context, that requires a new sensitive rollback/override phase — not a
+> casual flag flip back to True.
 
 ## Graph Delta
 
