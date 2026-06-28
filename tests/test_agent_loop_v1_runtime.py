@@ -91,6 +91,30 @@ def test_run_agent_once_binds_initialized_agent_id_without_seed_material() -> No
     assert "seed_hex" not in profile
 
 
+def test_initialized_agent_id_rejects_legacy_seed_material() -> None:
+    expected_agent_id = "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9"
+
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex="01" * 16,
+            expected_agent_id=expected_agent_id,
+            cluster_id="cluster-a",
+            node_name="jamisons-imac",
+            node_config_path="unused-when-broadcast-disabled.json",
+            variant="canonical",
+            task=_task(),
+            broadcast=False,
+        )
+
+    assert excinfo.value.token == "expected_agent_id_requires_cdl069_seed"
+
+
+def test_stable_json_bytes_rejects_non_finite_values() -> None:
+    with pytest.raises(ValueError):
+        agent_loop_v1._stable_json_bytes({"amount": float("nan")})
+
+
 def test_float_task_economics_are_rejected_before_claim_construction() -> None:
     task = {**_task(), "ecu_estimate": 2.0}
 

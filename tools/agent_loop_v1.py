@@ -10,7 +10,7 @@ import sys
 import time
 from collections import Counter
 from dataclasses import asdict, dataclass
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -138,7 +138,7 @@ class AgentLoopRuntimeError(ValueError):
 
 
 def _stable_json_bytes(payload: Any) -> bytes:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
 def _sha256_hex(payload: Any) -> str:
@@ -146,7 +146,7 @@ def _sha256_hex(payload: Any) -> str:
 
 
 def _emit(payload: dict[str, Any]) -> None:
-    print(json.dumps(payload, sort_keys=True, separators=(",", ":")), flush=True)
+    print(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False), flush=True)
 
 
 def _require_dict(name: str, value: Any) -> dict[str, Any]:
@@ -180,7 +180,7 @@ def _require_decimal(name: str, value: Any) -> Decimal:
         )
     try:
         number = value if isinstance(value, Decimal) else Decimal(str(value))
-    except Exception as exc:
+    except (InvalidOperation, ValueError) as exc:
         raise AgentLoopRuntimeError(
             f"{name}_must_be_exact_numeric",
             f"{name} must be Decimal, int, or canonical numeric string",
@@ -312,11 +312,17 @@ def _profile(
                 "expected_agent_id_must_be_cdl069_v2",
                 "expected_agent_id must be a CDL-069 v2 initialized agent id",
             )
-        if seed_bytes is not None and len(seed_bytes) == 32 and not verify_agent_id_v2(normalized_expected, seed_bytes):
-            raise AgentLoopRuntimeError(
-                "expected_agent_id_seed_mismatch",
-                "expected_agent_id does not match the provided identity seed",
-            )
+        if seed_bytes is not None:
+            if len(seed_bytes) != 32:
+                raise AgentLoopRuntimeError(
+                    "expected_agent_id_requires_cdl069_seed",
+                    "expected_agent_id may only be paired with a CDL-069 v2 identity seed",
+                )
+            if not verify_agent_id_v2(normalized_expected, seed_bytes):
+                raise AgentLoopRuntimeError(
+                    "expected_agent_id_seed_mismatch",
+                    "expected_agent_id does not match the provided identity seed",
+                )
         agent_id = normalized_expected
         identity_binding = "initialized_agent_id"
     elif seed_bytes is not None and len(seed_bytes) == 32:
@@ -845,7 +851,7 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
 
 
 def _run_agent_command(args: argparse.Namespace) -> int:
