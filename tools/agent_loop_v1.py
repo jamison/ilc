@@ -45,6 +45,10 @@ from ilc_core.node.node_startup_runtime import load_static_peer_config
 AGENT_LOOP_V1_RUNTIME_VERSION = "agent_loop_v1_runtime_575.v0.1"
 DEFAULT_CHANNEL = "ilc.agent-loop.v1"
 DEFAULT_REPRODUCIBILITY_THRESHOLD = "0.85"
+SIMPLE_EPOCH_LEDGER_TELEMETRY_NOTE = (
+    "SimpleEpochLedger is telemetry only. rewards_paid includes direct plus "
+    "passive claims. Not authoritative production ECU settlement."
+)
 PANEL_SIZE = 8
 QUORUM_THRESHOLD = 5
 DISTINCT_CLUSTER_FLOOR = 3
@@ -197,8 +201,26 @@ def _require_unit_decimal(name: str, value: Any) -> Decimal:
     return number
 
 
-def _canonical_decimal(name: str, value: Any) -> str:
-    return decimal_to_canonical_string(_require_decimal(name, value))
+def _require_non_negative_decimal(name: str, value: Any) -> Decimal:
+    number = _require_decimal(name, value)
+    if number < Decimal("0"):
+        raise AgentLoopRuntimeError(f"{name}_must_be_non_negative", f"{name} must be non-negative")
+    return number
+
+
+def _require_positive_decimal(name: str, value: Any) -> Decimal:
+    number = _require_decimal(name, value)
+    if number <= Decimal("0"):
+        raise AgentLoopRuntimeError(f"{name}_must_be_positive", f"{name} must be positive")
+    return number
+
+
+def _canonical_non_negative_decimal(name: str, value: Any) -> str:
+    return decimal_to_canonical_string(_require_non_negative_decimal(name, value))
+
+
+def _canonical_positive_decimal(name: str, value: Any) -> str:
+    return decimal_to_canonical_string(_require_positive_decimal(name, value))
 
 
 def _canonical_unit_decimal(name: str, value: Any) -> str:
@@ -264,8 +286,8 @@ def _normalize_task_spec(raw: dict[str, Any]) -> dict[str, Any]:
     _require_string("verification_method", task.get("verification_method"))
     task["channel"] = _normalize_channel(str(task.get("channel")))
     _require_string("claim_form", task.get("claim_form"))
-    task["difficulty_factor"] = _canonical_decimal("difficulty_factor", task.get("difficulty_factor"))
-    task["ecu_estimate"] = _canonical_decimal("ecu_estimate", task.get("ecu_estimate"))
+    task["difficulty_factor"] = _canonical_non_negative_decimal("difficulty_factor", task.get("difficulty_factor"))
+    task["ecu_estimate"] = _canonical_positive_decimal("ecu_estimate", task.get("ecu_estimate"))
     task["reproducibility_threshold"] = _canonical_unit_decimal(
         "reproducibility_threshold",
         task.get("reproducibility_threshold"),
@@ -328,9 +350,14 @@ def _profile(
     elif seed_bytes is not None and len(seed_bytes) == 32:
         agent_id = derive_agent_id_v2(seed_bytes)
         identity_binding = "cdl069_identity_seed"
-    elif seed_bytes is not None:
+    elif seed_bytes is not None and slot == PANEL_SIZE and variant == "outsider":
         agent_id = derive_agent_id(seed_bytes)
         identity_binding = "legacy_seed_hex"
+    elif seed_bytes is not None:
+        raise AgentLoopRuntimeError(
+            "initialized_agent_slot_requires_cdl069_seed",
+            "slots 1-7 require a 32-byte CDL-069 identity seed or expected_agent_id",
+        )
     else:
         raise AgentLoopRuntimeError(
             "agent_identity_source_missing",
@@ -644,6 +671,8 @@ def evaluate_panel(
         majority_hash = major[0][0]
         agreement_score = (Decimal(major[0][1]) / Decimal(PANEL_SIZE)).quantize(_TWELVE_PLACES)
         try:
+            # The Popperian gate API is still float-typed; these casts are an
+            # adapter only. Stored panel economics remain canonical Decimal strings.
             gate_ok = evaluate_decomposition_admissibility(
                 claim_form=task["claim_form"],
                 has_falsifiable_test=bool(task["has_falsifiable_test"]),
@@ -743,7 +772,13 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
             "marker": "agent_loop_claims_skipped",
             "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
             "claims": [],
-            "ledger": {"tasks": 0, "ecu_spent": "0", "rewards_paid": "0", "clearing_price": "0"},
+            "ledger": {
+                "tasks": 0,
+                "ecu_spent": "0",
+                "rewards_paid": "0",
+                "clearing_price": "0",
+                "ledger_note": SIMPLE_EPOCH_LEDGER_TELEMETRY_NOTE,
+            },
             "outcome_summary": {"count": 0, "total_stake": "0", "total_reward": "0"},
         }
 
@@ -753,7 +788,7 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
 
     confidence_decimal = _require_unit_decimal("confidence_score", panel.get("confidence_score"))
     agreement_decimal = _require_unit_decimal("agreement_score", panel.get("agreement_score"))
-    ecu_estimate_decimal = _require_decimal("ecu_estimate", task.get("ecu_estimate"))
+    ecu_estimate_decimal = _require_positive_decimal("ecu_estimate", task.get("ecu_estimate"))
     base_reward = simple_claim_reward(
         stake_spent=ecu_estimate_decimal,
         potential=confidence_decimal,
@@ -810,7 +845,7 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
         )
 
     ledger = SimpleEpochLedger()
-    total_reward = round(sum((claim.amount for claim in claims), Decimal("0")), 12)
+    total_reward = sum((claim.amount for claim in claims), Decimal("0")).quantize(_TWELVE_PLACES)
     ledger.record_task(int(task["epoch"]), ecu_estimate_decimal, total_reward)
 
     outcomes = OutcomeLogger()
@@ -840,6 +875,7 @@ def build_ecu_claim_batch(task: dict[str, Any], panel_payload: dict[str, Any]) -
             "clearing_price": decimal_to_canonical_string(
                 ledger.clearing_price(int(task["epoch"]))
             ),
+            "ledger_note": SIMPLE_EPOCH_LEDGER_TELEMETRY_NOTE,
         },
         "outcome_summary": {
             "count": outcome_summary["count"],
