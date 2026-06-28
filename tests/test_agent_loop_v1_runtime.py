@@ -15,6 +15,14 @@ from tools.testbed import run_rc0_1_benchmarks as benchmark_runner
 from tools.testbed import run_three_node_seven_agent_scenario as scenario_runner
 
 
+def _cdl069_seed(byte_hex: str) -> str:
+    return byte_hex * 32
+
+
+def _legacy_seed(byte_hex: str) -> str:
+    return byte_hex * 16
+
+
 def _task() -> dict[str, object]:
     return {
         "task_id": "task:test:agent-loop-v1",
@@ -52,7 +60,7 @@ def _submission(slot: int, seed_hex: str, cluster_id: str, variant: str = "canon
 def test_run_agent_once_builds_stable_submission_without_broadcast() -> None:
     payload = agent_loop_v1.run_agent_once(
         slot=1,
-        seed_hex="01" * 16,
+        seed_hex=_cdl069_seed("01"),
         cluster_id="cluster-a",
         node_name="ilc-node-1",
         node_config_path="unused-when-broadcast-disabled.json",
@@ -63,7 +71,7 @@ def test_run_agent_once_builds_stable_submission_without_broadcast() -> None:
 
     submission = payload["submission"]
     assert payload["marker"] == "agent_loop_submission_ok"
-    assert submission["profile"]["agent_id"].startswith("agent-")
+    assert submission["profile"]["identity_binding"] == "cdl069_identity_seed"
     assert "seed_hex" not in submission["profile"]
     assert submission["send_statuses"] == []
     assert submission["ep_task"]["output_hash"] == submission["output_hash"]
@@ -97,7 +105,7 @@ def test_initialized_agent_id_rejects_legacy_seed_material() -> None:
     with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
         agent_loop_v1.run_agent_once(
             slot=1,
-            seed_hex="01" * 16,
+            seed_hex=_legacy_seed("01"),
             expected_agent_id=expected_agent_id,
             cluster_id="cluster-a",
             node_name="jamisons-imac",
@@ -108,6 +116,28 @@ def test_initialized_agent_id_rejects_legacy_seed_material() -> None:
         )
 
     assert excinfo.value.token == "expected_agent_id_requires_cdl069_seed"
+
+
+def test_initialized_slots_reject_legacy_seed_without_expected_agent_id() -> None:
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex=_legacy_seed("01"),
+            cluster_id="cluster-a",
+            node_name="jamisons-imac",
+            node_config_path="unused-when-broadcast-disabled.json",
+            variant="canonical",
+            task=_task(),
+            broadcast=False,
+        )
+
+    assert excinfo.value.token == "initialized_agent_slot_requires_cdl069_seed"
+
+
+def test_outsider_slot_allows_legacy_seed_for_rehearsal_panel() -> None:
+    outsider = agent_loop_v1._build_outsider_submission(_task(), _legacy_seed("08"), "cluster-e", "ilc-node-1")
+
+    assert outsider["profile"]["identity_binding"] == "legacy_seed_hex"
 
 
 def test_stable_json_bytes_rejects_non_finite_values() -> None:
@@ -121,7 +151,7 @@ def test_float_task_economics_are_rejected_before_claim_construction() -> None:
     with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
         agent_loop_v1.run_agent_once(
             slot=1,
-            seed_hex="01" * 16,
+            seed_hex=_cdl069_seed("01"),
             cluster_id="cluster-a",
             node_name="ilc-node-1",
             node_config_path="unused-when-broadcast-disabled.json",
@@ -133,17 +163,53 @@ def test_float_task_economics_are_rejected_before_claim_construction() -> None:
     assert excinfo.value.token == "ecu_estimate_must_be_exact_numeric"
 
 
+def test_negative_difficulty_factor_rejected_at_loop_boundary() -> None:
+    task = {**_task(), "difficulty_factor": "-0.5"}
+
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex=_cdl069_seed("01"),
+            cluster_id="cluster-a",
+            node_name="ilc-node-1",
+            node_config_path="unused-when-broadcast-disabled.json",
+            variant="canonical",
+            task=task,
+            broadcast=False,
+        )
+
+    assert excinfo.value.token == "difficulty_factor_must_be_non_negative"
+
+
+def test_zero_ecu_estimate_rejected_at_loop_boundary() -> None:
+    task = {**_task(), "ecu_estimate": "0"}
+
+    with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
+        agent_loop_v1.run_agent_once(
+            slot=1,
+            seed_hex=_cdl069_seed("01"),
+            cluster_id="cluster-a",
+            node_name="ilc-node-1",
+            node_config_path="unused-when-broadcast-disabled.json",
+            variant="canonical",
+            task=task,
+            broadcast=False,
+        )
+
+    assert excinfo.value.token == "ecu_estimate_must_be_positive"
+
+
 def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
     submissions = [
-        _submission(1, "01" * 16, "cluster-a"),
-        _submission(2, "02" * 16, "cluster-b"),
-        _submission(3, "03" * 16, "cluster-c"),
-        _submission(4, "04" * 16, "cluster-a"),
-        _submission(5, "05" * 16, "cluster-b"),
-        _submission(6, "06" * 16, "cluster-c"),
-        _submission(7, "07" * 16, "cluster-d", variant="divergent"),
+        _submission(1, _cdl069_seed("01"), "cluster-a"),
+        _submission(2, _cdl069_seed("02"), "cluster-b"),
+        _submission(3, _cdl069_seed("03"), "cluster-c"),
+        _submission(4, _cdl069_seed("04"), "cluster-a"),
+        _submission(5, _cdl069_seed("05"), "cluster-b"),
+        _submission(6, _cdl069_seed("06"), "cluster-c"),
+        _submission(7, _cdl069_seed("07"), "cluster-d", variant="divergent"),
     ]
-    outsider = agent_loop_v1._build_outsider_submission(_task(), "08" * 16, "cluster-e", "ilc-node-1")
+    outsider = agent_loop_v1._build_outsider_submission(_task(), _legacy_seed("08"), "cluster-e", "ilc-node-1")
 
     panel_payload = agent_loop_v1.evaluate_panel(task=_task(), submissions=submissions, outsider_submission=outsider)
     panel = panel_payload["panel_result"]
@@ -163,19 +229,20 @@ def test_panel_pass_and_ecu_claim_flow_are_deterministic() -> None:
     passive = next(claim for claim in claims if claim["claim_kind"] == "passive")
     assert Decimal(direct["amount"]) > Decimal(passive["amount"])
     assert claim_payload["ledger"]["rewards_paid"] == claim_payload["outcome_summary"]["total_reward"]
+    assert "telemetry only" in claim_payload["ledger"]["ledger_note"]
 
 
 def test_panel_direct_author_uses_hashed_tiebreak_not_lexicographic_order() -> None:
     submissions = [
-        _submission(1, "01" * 16, "cluster-a"),
-        _submission(2, "02" * 16, "cluster-b"),
-        _submission(3, "03" * 16, "cluster-c"),
-        _submission(4, "04" * 16, "cluster-a"),
-        _submission(5, "05" * 16, "cluster-b"),
-        _submission(6, "06" * 16, "cluster-c"),
-        _submission(7, "07" * 16, "cluster-d", variant="divergent"),
+        _submission(1, _cdl069_seed("01"), "cluster-a"),
+        _submission(2, _cdl069_seed("02"), "cluster-b"),
+        _submission(3, _cdl069_seed("03"), "cluster-c"),
+        _submission(4, _cdl069_seed("04"), "cluster-a"),
+        _submission(5, _cdl069_seed("05"), "cluster-b"),
+        _submission(6, _cdl069_seed("06"), "cluster-c"),
+        _submission(7, _cdl069_seed("07"), "cluster-d", variant="divergent"),
     ]
-    outsider = agent_loop_v1._build_outsider_submission(_task(), "08" * 16, "cluster-e", "ilc-node-1")
+    outsider = agent_loop_v1._build_outsider_submission(_task(), _legacy_seed("08"), "cluster-e", "ilc-node-1")
     panel_payload = agent_loop_v1.evaluate_panel(task=_task(), submissions=submissions, outsider_submission=outsider)
     panel = panel_payload["panel_result"]
 
@@ -198,15 +265,15 @@ def test_panel_direct_author_uses_hashed_tiebreak_not_lexicographic_order() -> N
 
 def test_panel_fails_when_diversity_floor_is_not_met() -> None:
     submissions = [
-        _submission(1, "01" * 16, "cluster-a"),
-        _submission(2, "02" * 16, "cluster-a"),
-        _submission(3, "03" * 16, "cluster-a"),
-        _submission(4, "04" * 16, "cluster-a"),
-        _submission(5, "05" * 16, "cluster-b"),
-        _submission(6, "06" * 16, "cluster-b"),
-        _submission(7, "07" * 16, "cluster-b"),
+        _submission(1, _cdl069_seed("01"), "cluster-a"),
+        _submission(2, _cdl069_seed("02"), "cluster-a"),
+        _submission(3, _cdl069_seed("03"), "cluster-a"),
+        _submission(4, _cdl069_seed("04"), "cluster-a"),
+        _submission(5, _cdl069_seed("05"), "cluster-b"),
+        _submission(6, _cdl069_seed("06"), "cluster-b"),
+        _submission(7, _cdl069_seed("07"), "cluster-b"),
     ]
-    outsider = agent_loop_v1._build_outsider_submission(_task(), "08" * 16, "cluster-b", "ilc-node-1")
+    outsider = agent_loop_v1._build_outsider_submission(_task(), _legacy_seed("08"), "cluster-b", "ilc-node-1")
 
     panel_payload = agent_loop_v1.evaluate_panel(task=_task(), submissions=submissions, outsider_submission=outsider)
 
@@ -225,7 +292,7 @@ def test_cli_run_agent_writes_submission_file(tmp_path: Path) -> None:
             "--slot",
             "1",
             "--seed-hex",
-            "01" * 16,
+            _cdl069_seed("01"),
             "--cluster-id",
             "cluster-a",
             "--node-name",
@@ -293,7 +360,7 @@ def test_broadcast_submission_emits_cbor_payload_and_latency_metrics(monkeypatch
 
     payload = agent_loop_v1.run_agent_once(
         slot=1,
-        seed_hex="01" * 16,
+        seed_hex=_cdl069_seed("01"),
         cluster_id="cluster-a",
         node_name="ilc-node-1",
         node_config_path="unused.json",
@@ -337,7 +404,7 @@ def test_broadcast_requires_real_signature_without_test_override(monkeypatch: py
     with pytest.raises(agent_loop_v1.AgentLoopRuntimeError) as excinfo:
         agent_loop_v1.run_agent_once(
             slot=1,
-            seed_hex="01" * 16,
+            seed_hex=_cdl069_seed("01"),
             cluster_id="cluster-a",
             node_name="ilc-node-1",
             node_config_path="unused.json",
@@ -354,13 +421,13 @@ def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
     submissions_dir = tmp_path / "submissions"
     submissions_dir.mkdir()
     submissions = [
-        _submission(1, "01" * 16, "cluster-a"),
-        _submission(2, "02" * 16, "cluster-b"),
-        _submission(3, "03" * 16, "cluster-c"),
-        _submission(4, "04" * 16, "cluster-a"),
-        _submission(5, "05" * 16, "cluster-b"),
-        _submission(6, "06" * 16, "cluster-c"),
-        _submission(7, "07" * 16, "cluster-d", variant="divergent"),
+        _submission(1, _cdl069_seed("01"), "cluster-a"),
+        _submission(2, _cdl069_seed("02"), "cluster-b"),
+        _submission(3, _cdl069_seed("03"), "cluster-c"),
+        _submission(4, _cdl069_seed("04"), "cluster-a"),
+        _submission(5, _cdl069_seed("05"), "cluster-b"),
+        _submission(6, _cdl069_seed("06"), "cluster-c"),
+        _submission(7, _cdl069_seed("07"), "cluster-d", variant="divergent"),
     ]
     for index, submission in enumerate(submissions, start=1):
         (submissions_dir / f"submission_{index}.json").write_text(
@@ -368,7 +435,7 @@ def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
             encoding="utf-8",
         )
 
-    outsider = agent_loop_v1._build_outsider_submission(task, "08" * 16, "cluster-e", "ilc-node-1")
+    outsider = agent_loop_v1._build_outsider_submission(task, _legacy_seed("08"), "cluster-e", "ilc-node-1")
     panel_payload = agent_loop_v1.evaluate_panel(task=task, submissions=submissions, outsider_submission=outsider)
     claim_payload = agent_loop_v1.build_ecu_claim_batch(task, panel_payload)
     panel_path = tmp_path / "panel_result.json"
@@ -389,7 +456,7 @@ def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
             "--ecu-claims-file",
             str(claims_path),
             "--outsider-seed-hex",
-            "08" * 16,
+            _legacy_seed("08"),
             "--outsider-cluster-id",
             "cluster-e",
             "--outsider-node-name",
