@@ -203,6 +203,32 @@ Reduced or cold-start panel sizes such as 3+1 remain not ratified by this ADR.
 Future phases may propose them for low-stakes structural or maintenance lanes,
 but they must not be silently treated as existing production canon.
 
+> **OPEN DESIGN QUESTION (recorded 2026-06-28, Phase 1568-Fix2g Track F):**
+>
+> The original 7+1 design intent may differ from the additive interpretation
+> above. The original model may be a **blind switch-out** model:
+>
+> - All 8 are assigned and submit verdicts during the review window.
+> - After the verdict window closes, a randomized switch-out discards 1 of the 8.
+> - The switch seed is derived from submitted verdict commitment hashes so it
+>   cannot be predicted before work begins.
+> - Final counted panel = 7; quorum = k=5 of surviving 7.
+>
+> Security difference: In the additive model all 8 panel members are knowable
+> at assignment time. In the blind switch-out model an attacker does not know
+> which 7 will count until after verdicts are submitted, materially increasing
+> the cost of a coordinated capture attempt.
+>
+> This ADR records the additive interpretation as current canon because it
+> matches the ADM-003 ratified text. The blind switch-out is a
+> `candidate_panel_anti_capture_amendment`. A future ADR amendment or
+> dedicated phase must resolve five open questions before the switch-out
+> can be implemented: (1) whether outsider seat is exempt from discard,
+> (2) economic treatment of discarded reviewer, (3) whether switch uses a
+> separate randomness source, (4) whether all 8 must submit before switch
+> is applied, and (5) whether final panel is definitively 7 or 8.
+> Routing: Fix2g Track F → candidate Fix2i or Window 1565-1575 cleanup.
+
 ## Non-Response and Refusal
 
 Non-opt-in agents are not penalized for failing to review:
