@@ -440,13 +440,55 @@ def _transport_bundle(config_path: str | Path) -> tuple[TransportRuntimeConfig, 
     )
 
 
-def _signature(payload: dict[str, Any]) -> str:
+def _signature(payload: dict[str, Any], *, agent_id_hex: str | None = None) -> str:
     if os.environ.get("ILC_AGENT_LOOP_ALLOW_SYNTHETIC_SIGNATURE_FOR_TESTS") == "1":
         return f"agent-loop-v1-test-only:{_sha256_hex(payload)[:24]}"
-    raise AgentLoopRuntimeError(
-        "agent_loop_real_signature_required_for_live_rehearsal",
-        "agent loop broadcast requires a real agent submission signature",
-    )
+    if agent_id_hex is None:
+        raise AgentLoopRuntimeError(
+            "agent_loop_signature_requires_agent_id",
+            "agent_id_hex must be provided for live signing",
+        )
+    if not is_v2_agent_id(agent_id_hex):
+        raise AgentLoopRuntimeError(
+            "agent_loop_signature_agent_id_invalid",
+            "agent_id_hex must be a CDL-069 initialized agent id",
+        )
+    from ilc_core.identity.pq_agent_sign_bridge import sign_agent_submission
+
+    return sign_agent_submission(agent_id_hex=agent_id_hex, payload_bytes=_stable_json_bytes(payload))
+
+
+def _signer_agent_id_for_broadcast(artifact: dict[str, Any], signer_agent_id_hex: str | None) -> str:
+    artifact_kind = artifact.get("artifact_kind")
+    if artifact_kind == "agent_submission":
+        profile = _require_dict("artifact_profile", artifact.get("profile"))
+        derived = _require_string("artifact_profile_agent_id", profile.get("agent_id"))
+        if not is_v2_agent_id(derived):
+            raise AgentLoopRuntimeError(
+                "artifact_profile_agent_id_invalid",
+                "agent_submission profile.agent_id must be a CDL-069 initialized agent id",
+            )
+        if signer_agent_id_hex is not None:
+            explicit = _require_string("signer_agent_id", signer_agent_id_hex)
+            if explicit != derived:
+                raise AgentLoopRuntimeError(
+                    "broadcast_signer_agent_id_mismatch",
+                    "explicit signer_agent_id does not match agent_submission profile.agent_id",
+                )
+        return derived
+
+    if signer_agent_id_hex is None:
+        raise AgentLoopRuntimeError(
+            "broadcast_signer_agent_id_required",
+            "non-agent submission broadcasts require --signer-agent-id",
+        )
+    signer = _require_string("signer_agent_id", signer_agent_id_hex)
+    if not is_v2_agent_id(signer):
+        raise AgentLoopRuntimeError(
+            "broadcast_signer_agent_id_invalid",
+            "signer_agent_id must be a CDL-069 initialized agent id",
+        )
+    return signer
 
 
 def build_rehearsal_public_admission_source_node(
@@ -505,6 +547,7 @@ def _broadcast_submission(
     gossip_type: str,
     channel: str,
     epoch: int,
+    signer_agent_id_hex: str,
 ) -> list[dict[str, Any]]:
     transport_config, peers = _transport_bundle(config_path)
     runtime = HttpGossipTransportRuntime(transport_config)
@@ -513,7 +556,7 @@ def _broadcast_submission(
     payload = cbor_dumps_canonical(artifact)
     payload_sha256 = hashlib.sha256(payload).hexdigest()
     payload_bytes = len(payload)
-    signature = _signature(artifact)
+    signature = _signature(artifact, agent_id_hex=signer_agent_id_hex)
     statuses: list[dict[str, Any]] = []
     for endpoint in peers:
         started_at = time.perf_counter()
@@ -592,6 +635,7 @@ def run_agent_once(
             gossip_type="agent_submission",
             channel=task["channel"],
             epoch=int(task["epoch"]),
+            signer_agent_id_hex=profile.agent_id,
         )
     submission = AgentSubmission(
         task_id=task["task_id"],
@@ -1083,18 +1127,21 @@ def _run_broadcast_command(args: argparse.Namespace) -> int:
         task_json=args.task_json,
         task_json_base64=args.task_json_base64,
     )
+    signer_agent_id_hex = _signer_agent_id_for_broadcast(payload, args.signer_agent_id)
     send_statuses = _broadcast_submission(
         config_path=args.node_config,
         artifact=payload,
         gossip_type=args.gossip_type,
         channel=task["channel"],
         epoch=int(task["epoch"]),
+        signer_agent_id_hex=signer_agent_id_hex,
     )
     result = {
         "marker": "agent_loop_broadcast_ok",
         "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
         "artifact_file": str(artifact_path),
         "gossip_type": args.gossip_type,
+        "signer_agent_id": signer_agent_id_hex,
         "send_statuses": send_statuses,
     }
     if args.emit_dir:
@@ -1165,6 +1212,7 @@ def _build_parser() -> argparse.ArgumentParser:
     broadcast.add_argument("--node-config", required=True)
     broadcast.add_argument("--artifact-file", required=True)
     broadcast.add_argument("--gossip-type", required=True)
+    broadcast.add_argument("--signer-agent-id")
     broadcast.add_argument("--emit-dir")
     add_task_source(broadcast)
 
