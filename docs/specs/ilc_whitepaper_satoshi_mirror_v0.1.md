@@ -19,15 +19,55 @@ ILC is a protocol designed for the future agentic and decentralized web, built t
 
 ---
 
+## 0. The Observer Problem
+
+Every record of knowledge requires a standpoint. An observation is not a fact until someone — an agent with an identity, a position, and a method — makes it. A claim is not meaningful until it can, in principle, be falsified. A validation is not credible until the validator's identity is persistent across time and their interests are visible to the network.
+
+Current knowledge systems handle this by delegation: they trust the institution to maintain the standpoint on everyone's behalf. The university certifies the researcher. The journal certifies the finding. The platform certifies the reach. The standpoint exists — it is held privately, and therefore corruptible.
+
+ILC makes the standpoint explicit, attributable, and economically legible. Every agent has a permanent identity derived from a ceremony seed. Every claim is signed. Every jury verdict is recorded. The accumulated structure of claims, validations, refutations, and revisions is the epistemic state of the network — and it is the ledger.
+
+This structure must be grounded. All chains of epistemic justification face the Münchhausen trilemma: infinite regress (each validation requires a validator), circularity (the system validates itself), or an axiomatic stop. ILC takes the third option. The graph originates at Node 0 — the Genesis root — the one assertion in the protocol that cannot be refuted by design, excluded from temporal decay, and signed under a domain context deliberately separated from all subsequent claims. Without it, no chain of claim validation has a terminus. With it, the observer has a declared standpoint, and every claim is traceable back to that ground.
+
+```
+Node 0: Genesis Root
+┌─────────────────────────────────────────────┐
+│  node_kind:  genesis                        │
+│  primitive:  assert.truth — never refuted   │
+│  decay:      excluded from CDL-V1           │
+│  signing:    ILC_GENESIS_ROOT_ENVELOPE_V1   │
+│  identity:   SHA-384(genesis_seed||context) │
+└──────────────────┬──────────────────────────┘
+                   │ ATTESTATION
+                   ▼
+         [claim node — agent asserts P]
+                   │ validate.claim
+                   ▼
+         [jury panel — 7 independent evaluators]
+                   │ commit.epoch
+                   ▼
+         C(t) = (M(t), S(t))  ←  structural commitment
+```
+
+The Genesis root is not a trusted party. It is the protocol's declaration: the graph begins here, signed once, immutably, and everything that follows is traceable to this moment. The observer is not removed — it is made legible.
+
+---
+
 ## 1. Introduction
 
-Commerce in knowledge has always relied on trusted third parties — publishers, institutions, credentialing bodies — to assess the value of intellectual work. While these intermediaries serve well enough for most transactions, the fundamental weakness of a trust-based model is that it concentrates the power to define what knowledge is worth. The cost of this concentration is invisible in normal times. It becomes legible when incumbents suppress inconvenient findings, when credentialing becomes a toll rather than a signal, or when the distance between productive intellectual work and economic reward grows so large that the incentive to do the work collapses.
+The problem of rewarding intellectual labor is, at its core, an epistemic problem. Before value can flow to a knowledge-worker, someone must determine that the work is true, complete, or useful. Every existing mechanism for making this determination — peer review, institutional accreditation, algorithmic ranking, market pricing — delegates that judgment to a centralized authority. The authority is not incidental to these systems; it is their load-bearing structure. Remove it and the system has no way to distinguish genuine knowledge from noise.
 
-What is needed is an epistemic payment system based on cryptographic proof rather than institutional trust, allowing any willing parties to transact directly, with verified quality of intellectual output replacing trusted third-party evaluation.
+The cost of this architecture is not merely inefficiency. It is capture. Any authority that sits between knowledge-producers and their reward becomes a point of control: over what questions are permitted, what findings are publishable, which workers are credentialed, which claims surface and which disappear. This control is exercised at scale, invisibly, by a small number of institutions — and it concentrates the power to define what knowledge is worth in the hands of those who benefit most from the current definition.
 
-The system requires one capability: the ability to determine, without recourse to a trusted arbiter, that a piece of intellectual work meets a testable standard. A claim that can in principle be falsified, an evidence node that supports or weakens it, a panel of evaluators who independently reach a verdict — these are the primitives. If the verdict is tamper-resistant, the payment can be automatic.
+The deeper failure is structural. These systems concentrate not just economic power but epistemic power: the power to determine what counts as knowledge in the first place. When that power is held privately, the record of what has been claimed, evaluated, and verified is also held privately — and it can be revised, suppressed, or simply not maintained when it becomes inconvenient. There is no shared, tamper-resistant, independently auditable record of the world's epistemic state. There is only a patchwork of institutional memories, each serving its own interests.
 
-In this paper we propose a solution to the epistemic labor valuation problem using a peer-to-peer network. The network timestamps epistemic work tasks by hashing them into an ongoing chain of epoch commitments, forming a record that cannot be changed without redoing the proof of structural knowledge for all subsequent epochs. The longest chain not only serves as proof of the sequence of evaluated work, but proof that the majority of evaluation bandwidth came from honest evaluators. As long as honest agents control more than half the active jury capacity, they will generate the longest chain and outpace any attacker. The network itself requires minimal structure. Agents broadcast tasks; the network collects them into panels; panels produce verdicts; verdicts are committed to the epoch chain.
+What is needed is not a better payment rail for knowledge-workers — that framing accepts the premise that the economic mechanism is primary. What is needed is a shared epistemic substrate: a tamper-resistant, content-addressed, cryptographically committed record of what has been claimed, by whom, under what evidence, with what subsequent validation history. Once that substrate exists, the economic mechanism becomes secondary — a system of incentives that rewards honest participation in building and maintaining the record. The graph is primary; the economy is its immune system.
+
+This paper describes such a substrate. In ILC, every claim, validation, refutation, revision, and governance event is a first-class operation on a content-addressed hypergraph — not a side effect of an economic transaction, but the transaction itself. ECU credits and ILC Coin exist to make agents participate honestly in that graph. They are the immune system, not the organism. This inversion — placing epistemic structure above economic incentive — is what distinguishes ILC from every prior attempt to build a knowledge economy.
+
+The graph is grounded by a single unfalsifiable cryptographic axiom, the Genesis root (Section 0), from which seven truth primitives generate a complete epistemic algebra (Appendix B). That algebra is rich enough to express any information relationship currently mediated by a trusted intermediary: credentials, publications, verdicts, contracts, market prices, identity attestations. The epoch commitment chain (Section 3) makes this structure auditable across time. The Merkle-Laplacian dual commitment (Section 4) makes its structural integrity cryptographically verifiable. The economic layer (Sections 5–7) closes the loop: agents who contribute honestly to the graph are rewarded; those who attempt to corrupt it are outcompeted by the honest majority.
+
+The network requires minimal structure. Agents broadcast epistemic work tasks; the network collects them into jury panels; panels produce verdicts under a Popperian falsifiability gate; verdicts are committed to an epoch chain. As long as honest agents control the majority of active jury capacity, the graph grows in the direction of truth — and the economy rewards them for it.
 
 ---
 
