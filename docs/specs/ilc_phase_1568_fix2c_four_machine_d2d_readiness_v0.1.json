@@ -1,0 +1,311 @@
+{
+  "artifact": "ilc_phase_1568_fix2c_four_machine_d2d_readiness_v0.1",
+  "contradiction_search": {
+    "local_full_scan_matches": 82,
+    "local_runtime_scan_verdict": "no ilc_core/tools/testbed guard clearance or public live activation hits; remaining matches are historical docs/tests references",
+    "remote_runtime_scan": {
+      "method": "grep -R fallback because rg is not installed on VPS nodes",
+      "node-2_matches": 0,
+      "node-3_matches": 0,
+      "node-6_matches": 0
+    }
+  },
+  "date_utc": "2026-06-29",
+  "deployed_runtime_commit": "24057d2c92dfe23119eb0e43277e6395aafa7e8f",
+  "endpoint_probes": {
+    "local_to_remote": {
+      "direction": "local_to_remote",
+      "events": [
+        {
+          "event": "tls_insecure_bypass_ignored",
+          "reason": "public_mode_requires_tls_verification"
+        },
+        {
+          "endpoint": "https://100.112.32.42:443",
+          "event": "outgoing_gossip_sent",
+          "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+          "status_code": 202,
+          "transport_kind": "http"
+        },
+        {
+          "event": "tls_insecure_bypass_ignored",
+          "reason": "public_mode_requires_tls_verification"
+        },
+        {
+          "endpoint": "https://100.91.33.46:443",
+          "event": "outgoing_gossip_sent",
+          "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+          "status_code": 202,
+          "transport_kind": "http"
+        },
+        {
+          "event": "tls_insecure_bypass_ignored",
+          "reason": "public_mode_requires_tls_verification"
+        },
+        {
+          "endpoint": "https://100.72.17.38:443",
+          "event": "outgoing_gossip_sent",
+          "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+          "status_code": 202,
+          "transport_kind": "http"
+        }
+      ],
+      "results": [
+        {
+          "endpoint": "https://100.112.32.42:443",
+          "status_code": 202,
+          "target": "node-2"
+        },
+        {
+          "endpoint": "https://100.91.33.46:443",
+          "status_code": 202,
+          "target": "node-3"
+        },
+        {
+          "endpoint": "https://100.72.17.38:443",
+          "status_code": 202,
+          "target": "node-6"
+        }
+      ]
+    },
+    "pass_condition": "all status_code values are 202 and every client event log includes tls_insecure_bypass_ignored followed by outgoing_gossip_sent",
+    "remote_ring": [
+      {
+        "probe": {
+          "endpoint": "https://100.91.33.46:443",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.91.33.46:443",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202
+        },
+        "source": "node-2",
+        "target": "node-3"
+      },
+      {
+        "probe": {
+          "endpoint": "https://100.72.17.38:443",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.72.17.38:443",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202
+        },
+        "source": "node-3",
+        "target": "node-6"
+      },
+      {
+        "probe": {
+          "endpoint": "https://100.112.32.42:443",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.112.32.42:443",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202
+        },
+        "source": "node-6",
+        "target": "node-2"
+      }
+    ],
+    "remote_to_local": [
+      {
+        "probe": {
+          "endpoint": "https://100.111.172.103:19571",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.111.172.103:19571",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202,
+          "target": "node-1"
+        },
+        "source": "node-2"
+      },
+      {
+        "probe": {
+          "endpoint": "https://100.111.172.103:19571",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.111.172.103:19571",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202,
+          "target": "node-1"
+        },
+        "source": "node-3"
+      },
+      {
+        "probe": {
+          "endpoint": "https://100.111.172.103:19571",
+          "events": [
+            {
+              "event": "tls_insecure_bypass_ignored",
+              "reason": "public_mode_requires_tls_verification"
+            },
+            {
+              "endpoint": "https://100.111.172.103:19571",
+              "event": "outgoing_gossip_sent",
+              "path": "/ilc/gossip/phase1568_fix2c_readiness_probe",
+              "status_code": 202,
+              "transport_kind": "http"
+            }
+          ],
+          "status_code": 202,
+          "target": "node-1"
+        },
+        "source": "node-6"
+      }
+    ]
+  },
+  "fix2d_gate": {
+    "next": "Fix2d may run the live soft-RC value path; this phase did not submit claims or economic events.",
+    "ready": true,
+    "requires_live_value_path": false
+  },
+  "input_token_reconciliation": {
+    "live_status_tokens_used": [
+      "phase_1568_fix2b1_runtime_identity_economics_hardening_complete",
+      "phase_1568_fix2b3_attribution_batch_ingestion_complete",
+      "phase_1568_fix2b_live_rerun_ready_pending_fix2c"
+    ],
+    "prompt_expected_legacy_fix2b_token": "phase_1568_fix2b_runtime_identity_economics_hardening_complete",
+    "reason": "Fix2b was split into Fix2b-1/Fix2b-2a/Fix2b-3 after prompt drafting; the live STATUS frontier supersedes the prompt's older aggregate token."
+  },
+  "machines": [
+    {
+      "endpoint": "https://100.111.172.103:19571",
+      "name": "jamisons-imac",
+      "node": "node-1",
+      "python": "3.14.3",
+      "service": "screen:phase1568_fix2c_node1",
+      "status": "listening"
+    },
+    {
+      "endpoint": "https://100.112.32.42:443",
+      "name": "ilc-node-2",
+      "node": "node-2",
+      "python": "3.10.12",
+      "service": "ilc-node-v1.service",
+      "status": "active"
+    },
+    {
+      "endpoint": "https://100.91.33.46:443",
+      "name": "ilc-node-3",
+      "node": "node-3",
+      "python": "3.10.12",
+      "service": "ilc-node-v1.service",
+      "status": "active"
+    },
+    {
+      "endpoint": "https://100.72.17.38:443",
+      "name": "ilc-node-6",
+      "node": "node-6",
+      "python": "3.10.12",
+      "service": "ilc-node-v1.service",
+      "status": "active"
+    }
+  ],
+  "modified_rehearsal_config_files": {
+    "testbed/configs/ilc-node-1/ilc-node-v1.env": "198d2f066f730a090e82203ef96c7ede668bc4050fc27a616f2857ec3a4bc868",
+    "testbed/configs/ilc-node-2/ilc-node-v1.env": "198d2f066f730a090e82203ef96c7ede668bc4050fc27a616f2857ec3a4bc868",
+    "testbed/configs/ilc-node-3/ilc-node-v1.env": "198d2f066f730a090e82203ef96c7ede668bc4050fc27a616f2857ec3a4bc868",
+    "testbed/configs/ilc-node-6/ilc-node-v1.env": "198d2f066f730a090e82203ef96c7ede668bc4050fc27a616f2857ec3a4bc868",
+    "testbed/hosts.json": "b9461e0a687360afa73074af9f6093f88ee864cb9d310d7299153f4ad7144e27",
+    "tools/testbed/d2d_readiness_probe.py": "004c6246fe4b05c6c53da077e3dd4241eee677ef5176a5ac82ef0e268327c672",
+    "tools/testbed/render_testbed_configs.py": "480933fbfdcd724b9dfce0e2603bb60dfb3530a6b65e82e075a588c55fcd9987"
+  },
+  "non_claims": [
+    "no live soft-RC value path was run",
+    "no claim submission occurred",
+    "no ECU lot was created",
+    "no ECU to ILC conversion occurred",
+    "no wallet state was mutated",
+    "no treasury state was mutated",
+    "no production ledger state was mutated",
+    "no public endpoint was exposed",
+    "no public RC was activated",
+    "no Genesis signing occurred"
+  ],
+  "phase": "1568-Fix2c",
+  "scope": "four-machine private D2D readiness only; no live value path",
+  "status": "pass",
+  "tls": {
+    "corrected_finding": "Committed testbed certs were expired and the first regenerated CA lacked CA keyUsage; final rehearsal CA and leaf certs include proper CA/leaf extensions and verify under OpenSSL/Python.",
+    "effective_behavior": "tls_policy ignored verify_peer_tls=false in public mode; probes recorded tls_insecure_bypass_ignored before successful sends",
+    "insecure_skip_env": "not set",
+    "leaf_fingerprints": {
+      "node-1": "FB:60:5A:3C:06:70:8E:3C:F7:60:2C:8B:04:21:5A:49:DC:B1:2F:56:E3:DA:3C:04:9A:3D:88:BB:01:8C:39:5C",
+      "node-2": "6D:AD:A8:42:81:2E:40:95:0D:0E:E1:25:E8:DC:9B:07:7D:1A:88:88:9C:2C:86:73:92:B5:C3:DF:00:23:54:20",
+      "node-3": "FD:86:0C:15:A0:5D:AF:7E:F7:00:5E:67:5D:48:F6:58:FA:0A:60:1A:0D:8A:96:4B:3A:6C:06:CA:51:BC:1E:32",
+      "node-6": "29:A8:AE:2A:61:24:9C:DB:53:E4:89:9E:BF:67:D4:A7:83:C1:F4:CC:54:11:75:4F:B5:30:D9:D0:9A:DB:E3:D1"
+    },
+    "mode": "production semantics in private rehearsal",
+    "public_mode_env": "ILC_D2D_PUBLIC_MODE=1",
+    "rehearsal_ca": {
+      "not_after": "Sep 27 06:40:34 2026 GMT",
+      "not_before": "Jun 29 06:40:34 2026 GMT",
+      "private_key_committed": false,
+      "sha256_fingerprint": "4A:C8:45:0E:AF:35:A0:C3:B1:8D:B2:E6:D7:B2:7B:C6:22:55:DF:E6:A4:E4:5C:2C:D8:8F:E1:19:F2:67:36:85",
+      "subject": "CN=ilc-testbed-ca-phase1568-fix2c"
+    },
+    "verify_peer_tls_config_value": false
+  },
+  "tree_parity": {
+    "local_commit": "24057d2c92dfe23119eb0e43277e6395aafa7e8f",
+    "relevant_files": {
+      "ilc_core/consensus/attribution_batch_bridge.py": "4855250832e82d1fa275750465a036a4c9fdba8df0d332e1cfb4c16f78e30c23",
+      "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py": "28f34ccecf8f37fe016a544ce85c13f85d662d581e8529a4d25678531c2dfa95",
+      "ilc_core/ledger/public_economics_admission_firewall.py": "be9ddf5d15f94ab6d4ccc95bff280a4aff04da76c2516e3b646b91aa6f78d83d",
+      "ilc_core/network/d2d/tls_policy.py": "788d873e5b9b098dbec1b46ab62064ecd85d2888af90b54d7ba60ce681f87109",
+      "tools/agent_loop_v1.py": "432703d9502730469cbcb66b1de590924ec66cb668ed03334204ef68731ad07a"
+    },
+    "remote_parity_confirmed": [
+      "node-2",
+      "node-3",
+      "node-6"
+    ]
+  }
+}
