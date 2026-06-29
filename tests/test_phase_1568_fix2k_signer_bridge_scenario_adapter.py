@@ -177,6 +177,35 @@ def test_local_node_names_include_control_machine_aliases() -> None:
     }
 
 
+def test_broadcast_from_home_exposes_signer_prompt_stderr(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        captured["command"] = command
+        captured.update(kwargs)
+        return SimpleNamespace(stdout=json.dumps({"send_statuses": []}))
+
+    monkeypatch.setattr(scenario_runner, "_run", fake_run)
+    artifact = tmp_path / "artifact.json"
+    artifact.write_text("{}", encoding="utf-8")
+
+    result = scenario_runner._broadcast_from_home(
+        _minimal_task(),
+        artifact,
+        "agent_submission",
+        tmp_path,
+        signer_agent_id=VALID_AGENT_ID,
+    )
+
+    assert result == {"send_statuses": []}
+    assert captured["cwd"] == REPO_ROOT
+    assert captured["stderr_to_terminal"] is True
+    assert "--signer-agent-id" in captured["command"]
+
+
 def test_broadcast_artifact_requires_signer_for_non_agent_artifact(tmp_path: Path) -> None:
     artifact_file = tmp_path / "panel.json"
     artifact_file.write_text(json.dumps({"artifact_kind": "panel_verdict"}, sort_keys=True), encoding="utf-8")
