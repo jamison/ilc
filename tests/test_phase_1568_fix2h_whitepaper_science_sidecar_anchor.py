@@ -47,6 +47,17 @@ def test_matrix_records_public_rc_non_claims():
     assert "not_public_sidecar_serving" in payload["non_claims"]
 
 
+def test_ecu_from_accepted_poil_marks_fix2d_audit_as_planning_input():
+    payload = json.loads(MATRIX.read_text())
+    row = next(item for item in payload["claims"] if item["claim_id"] == "ecu_from_accepted_poil")
+    assert (
+        row["source_qualifiers"][
+            "docs/specs/ilc_phase_1568_fix2d_ecu_poil_production_path_audit_v0.1.md"
+        ]
+        == "planning_input_not_live_evidence"
+    )
+
+
 def test_sidecar_anchor_keeps_public_surfaces_default_off():
     text = ANCHOR.read_text()
     assert "public_serving_enabled=false" in text

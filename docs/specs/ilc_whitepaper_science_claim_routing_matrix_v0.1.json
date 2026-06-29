@@ -79,6 +79,9 @@
         "ilc_core/epoch/epoch_emission_production_path.py",
         "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py"
       ],
+      "source_qualifiers": {
+        "docs/specs/ilc_phase_1568_fix2d_ecu_poil_production_path_audit_v0.1.md": "planning_input_not_live_evidence"
+      },
       "implementation_route": "Fix2d must exercise node submission, review acceptance, ECU lot creation, CDL-048 conversion, ILC allocation event, and settlement-root verification.",
       "pre_rc_required": true,
       "post_rc_route": "Economic behavior spec and language-neutral test vectors.",
