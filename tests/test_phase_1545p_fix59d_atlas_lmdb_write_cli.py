@@ -16,7 +16,11 @@ from ilc_core.cli.atlas_lmdb_cli import (
     handle_atlas_register_phase_files,
 )
 from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
-from ilc_core.storage.genesis_atlas_lmdb_writer import AtlasLmdbSafeWriter, deterministic_edge_id
+from ilc_core.storage.genesis_atlas_lmdb_writer import (
+    AtlasLmdbSafeWriter,
+    AtlasPhaseFileRegistration,
+    deterministic_edge_id,
+)
 
 
 STATUS_PATH = Path("docs/phases/STATUS.md")
@@ -276,6 +280,60 @@ def test_register_phase_files_cli_write_adds_support_nodes_and_edges(tmp_path: P
     assert receipt["accepted_edge_count"] == 2
 
 
+def test_register_phase_files_does_not_duplicate_nodes_when_same_file_listed_twice(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+    writer = AtlasLmdbSafeWriter(root)
+    try:
+        registration = AtlasPhaseFileRegistration(
+            path="docs/phases/example.md",
+            node_kind="phase_walkthrough",
+            graph_projection="support_candidate_graph",
+            graph_delta="support_only",
+        )
+        plan = writer.build_phase_file_registration_plan(
+            phase="1545p-Fix59d-duplicate-test",
+            files=(registration, registration),
+            dry_run=True,
+        )
+        node_ids = [node["candidate_id"] for node in plan.nodes_to_add]
+
+        assert len(node_ids) == len(set(node_ids))
+        assert node_ids.count("repo:file_ref:docs_phases_example_md") == 1
+        assert len(plan.edges_to_add) == 1
+
+        validation = writer.validate_plan(plan)
+        assert len(validation["accepted_edges"]) == 1
+        assert validation["accepted_edges"][0]["edge_type"] == "CARRIES_FORWARD"
+        assert validation["skipped_edges"] == []
+    finally:
+        writer.close()
+
+
+def test_register_phase_files_cli_does_not_multiply_multi_file_inputs(tmp_path: Path) -> None:
+    root = tmp_path / "atlas"
+    _seed_lmdb(root)
+
+    receipt = handle_atlas_register_phase_files(
+        lmdb_path=str(root),
+        phase="1545p-Fix59d-multifile-test",
+        files=("docs/phases/example-a.md", "docs/phases/example-b.md"),
+        node_kind="phase_walkthrough",
+        graph_projection="support_candidate_graph",
+        graph_delta="support_only",
+        required_edges=(),
+        write=False,
+    )
+
+    assert receipt["metadata"]["registered_file_count"] == 2
+    assert receipt["accepted_edge_count"] == 2
+    assert receipt["skipped_edge_count"] == 0
+    assert sorted(edge["source"] for edge in receipt["accepted_edges"]) == [
+        "repo:file_ref:docs_phases_example_a_md",
+        "repo:file_ref:docs_phases_example_b_md",
+    ]
+
+
 def test_float_and_self_referential_digest_fields_fail_closed(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     _seed_lmdb(root)
@@ -366,4 +424,6 @@ def test_atlas_write_cli_routes_through_safe_writer_without_raw_adapter_puts() -
 
 def test_main_excludes_atlas_from_prototype_state_initializer() -> None:
     text = CLI_MAIN_PATH.read_text(encoding="utf-8")
-    assert '{"query", "verify", "bundle", "agent", "node", "sidecar", "ccss", "atlas"}' in text
+    assert "stateless_commands = {" in text
+    assert '"atlas",' in text
+    assert "if command not in stateless_commands:" in text
