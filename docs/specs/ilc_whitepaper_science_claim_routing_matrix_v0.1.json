@@ -1,0 +1,303 @@
+{
+  "schema_version": "ilc_whitepaper_science_claim_routing_matrix.v0.1",
+  "phase": "1568-Fix2h",
+  "status": "internal_engineering_support",
+  "non_claims": [
+    "not_a_whitepaper_appendix",
+    "not_public_rc_activation",
+    "not_type_registry_activation",
+    "not_production_settlement_authority",
+    "not_public_sidecar_serving"
+  ],
+  "claims": [
+    {
+      "claim_id": "directed_morphogenetic_hypergraph",
+      "whitepaper_section": "8, B.2, C",
+      "claim_summary": "ILC target architecture is a directed morphogenetic hypergraph of typed epistemic nodes and n-ary relationships.",
+      "science_verdict": "mathematically_coherent",
+      "canonical_sources": [
+        "docs/adr/ADR_0029_Hypergraph_Substrate.md",
+        "docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md",
+        "docs/specs/ilc_cdl_099_100_hyperedge_type_definition_nodes_forward_plan_v0.1.md",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Current Atlas uses typed nodes and mostly binary edges; first-class definition-node activation remains CDL-099/CDL-100 plus ADR-0035 runtime activation.",
+      "pre_rc_required": false,
+      "post_rc_route": "CDL-099, CDL-100, then sensitive ADR-0035 runtime activation.",
+      "publication_risk_note": "Safe as architectural identity if not phrased as current large-scale active hyperedge runtime."
+    },
+    {
+      "claim_id": "normalized_hypergraph_laplacian",
+      "whitepaper_section": "8, A.10",
+      "claim_summary": "The normalized hypergraph Laplacian provides a structural fingerprint over graph topology.",
+      "science_verdict": "implementation_anchor_present",
+      "canonical_sources": [
+        "ilc_core/analysis/laplacian_analytics.py",
+        "ilc_core/analysis/spectral_utils.py",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Use as diagnostic and measurement substrate; settlement or consensus effect requires separate authority.",
+      "pre_rc_required": false,
+      "post_rc_route": "Adversarial SIMs and CDL routing before any consensus or settlement use.",
+      "publication_risk_note": "Do not present spectral diagnostics as standalone security guarantees."
+    },
+    {
+      "claim_id": "merkle_laplacian_dual_commitment",
+      "whitepaper_section": "8, A.10",
+      "claim_summary": "Pairing content commitment with structural topology measurement can detect structural anomalies content hashes cannot detect alone.",
+      "science_verdict": "needs_adversarial_proof",
+      "canonical_sources": [
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md",
+        "docs/specs/ilc_post_rc_architectural_targets_v0.1.md"
+      ],
+      "implementation_route": "Keep as whitepaper/research target and diagnostic support until adversarial proofs and governance activation exist.",
+      "pre_rc_required": false,
+      "post_rc_route": "Post-RC SIM/CDL lane before use as admission, consensus, or settlement machinery.",
+      "publication_risk_note": "Strong as target claim; risky if described as current live public-RC consensus rule."
+    },
+    {
+      "claim_id": "posk_challenge_bound_proof",
+      "whitepaper_section": "8, A.10, A.11",
+      "claim_summary": "Proof of Structural Knowledge asks nodes to prove knowledge of the finalized graph structure.",
+      "science_verdict": "research_contribution_ip_gated",
+      "canonical_sources": [
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md",
+        "docs/specs/ilc_post_rc_architectural_targets_v0.1.md"
+      ],
+      "implementation_route": "Treat as research proposal, not current live protocol gate.",
+      "pre_rc_required": false,
+      "post_rc_route": "Formalize challenge parameters, tolerance, adversarial model, and verifier cost before activation.",
+      "publication_risk_note": "Whitepaper may describe intended primitive; operational docs must not claim PoSK is live."
+    },
+    {
+      "claim_id": "ecu_from_accepted_poil",
+      "whitepaper_section": "4, 6, A.11",
+      "claim_summary": "Accepted Proof of Intelligent Labor creates ECU under governed production paths.",
+      "science_verdict": "implemented_partial",
+      "canonical_sources": [
+        "docs/specs/ilc_phase_1568_fix2d_ecu_poil_production_path_audit_v0.1.md",
+        "ilc_core/epoch/epoch_emission_production_path.py",
+        "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py"
+      ],
+      "implementation_route": "Fix2d must exercise node submission, review acceptance, ECU lot creation, CDL-048 conversion, ILC allocation event, and settlement-root verification.",
+      "pre_rc_required": true,
+      "post_rc_route": "Economic behavior spec and language-neutral test vectors.",
+      "publication_risk_note": "Do not claim public settlement before Fix2d and subsequent gates close."
+    },
+    {
+      "claim_id": "inverted_ecu_spend_to_keep",
+      "whitepaper_section": "D.1, E.6",
+      "claim_summary": "Inverted ECU/spend-to-keep describes working-credit pressure toward productive deployment.",
+      "science_verdict": "requires_parameter_ratification",
+      "canonical_sources": [
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md",
+        "docs/specs/ilc_post_rc_architectural_targets_v0.1.md"
+      ],
+      "implementation_route": "Design doctrine only unless converted into ratified settlement policy.",
+      "pre_rc_required": false,
+      "post_rc_route": "Post-RC economic behavior spec and CDL decision if settlement effect is desired.",
+      "publication_risk_note": "Must not be described as debit, slash, burn, wallet rule, or live settlement rule."
+    },
+    {
+      "claim_id": "inverse_ecu_backward_attribution",
+      "whitepaper_section": "D.1",
+      "claim_summary": "Backward attribution would route value backward through provenance, dependency, or Merkle-Laplacian paths.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "docs/specs/ilc_post_rc_architectural_targets_v0.1.md",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Keep separate from inverted ECU; no current payout rule.",
+      "pre_rc_required": false,
+      "post_rc_route": "Inverse ECU/backward attribution research lane after economic behavior spec baseline.",
+      "publication_risk_note": "Do not conflate with spend-to-keep or temporal decay."
+    },
+    {
+      "claim_id": "systolic_diastolic_werner_pressure",
+      "whitepaper_section": "D.1, E.6, E.9",
+      "claim_summary": "Werner pressure metrics can provide local-credit pulse/pressure diagnostics.",
+      "science_verdict": "diagnostic_only",
+      "canonical_sources": [
+        "docs/sims/ilc_werner_topology_capture_run_1507p_v0.1.json",
+        "docs/specs/ilc_post_rc_architectural_targets_v0.1.md",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Indicative calculation may be allowed only as diagnostic; no settlement use without CDL authority.",
+      "pre_rc_required": false,
+      "post_rc_route": "Adversarial tests and CDL authority before eligibility, capacity, wallet, or settlement effect.",
+      "publication_risk_note": "No settlement use of Werner pressure metrics without ratified activation."
+    },
+    {
+      "claim_id": "jury_assignment_privacy_and_discoverability",
+      "whitepaper_section": "E.4, E.5, E.10",
+      "claim_summary": "Jury assignment target design separates jury formation, case assignment, sealed delivery, and public audit material.",
+      "science_verdict": "implemented_partial",
+      "canonical_sources": [
+        "docs/adr/ADR_0040_Jury_Eligibility_Assignment.md",
+        "docs/specs/ilc_candidate_cdl_jury_private_assignment_deliberation_channel_v0.1.md",
+        "docs/specs/ilc_phase_1568_fix2g_jury_assignment_announcement_recovery_v0.1.md"
+      ],
+      "implementation_route": "Fix2g covers narrow announcement/recovery. Fix2i designs switch-out privacy. Fix2j decides blind jury CDL route.",
+      "pre_rc_required": true,
+      "post_rc_route": "If not public-RC blocker, route to post-rehearsal or post-RC according to Fix2i decision label.",
+      "publication_risk_note": "Raw panel broadcasts are forbidden for public path; current runtime is narrower than target blind task-handle design."
+    },
+    {
+      "claim_id": "subjective_aesthetic_lane",
+      "whitepaper_section": "B.4, E.8",
+      "claim_summary": "Subjective and aesthetic review lanes can evaluate taste-like or resonance-oriented work without pretending all value is objective truth.",
+      "science_verdict": "requires_parameter_ratification",
+      "canonical_sources": [
+        "docs/specs/ilc_subjective_objective_epistemic_type_and_sybil_guardrails_precanon_v0.1.md",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Keep bounded to curation, resonance, reuse, and subjective/aesthetic lanes until settlement rules are ratified.",
+      "pre_rc_required": false,
+      "post_rc_route": "Later CDL/spec for bounded subjective settlement if desired.",
+      "publication_risk_note": "Must not silently promote subjective verdicts into objective truth or settlement authority."
+    },
+    {
+      "claim_id": "sidecars_as_typed_subgraphs",
+      "whitepaper_section": "D.3, E.12",
+      "claim_summary": "Sidecars are typed subgraphs rooted through agent or registry receipts and ultimately traceable to Genesis.",
+      "science_verdict": "implementation_anchor_present",
+      "canonical_sources": [
+        "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md",
+        "ilc_core/sidecars/registry_manifest.py"
+      ],
+      "implementation_route": "Use current typed binary graph fields at v0.4; defer sidecar-specific hyperedges until post-RC schema work.",
+      "pre_rc_required": false,
+      "post_rc_route": "Post-RC sidecar typed-subgraph schema, contributor registry, and SDK.",
+      "publication_risk_note": "Native sidecar metadata may be package-visible; public serving and third-party installability remain default-off."
+    },
+    {
+      "claim_id": "engram_pool_modification_threat",
+      "whitepaper_section": "E.11",
+      "claim_summary": "External runtime memory pools can create substrate-level dependency among nominally independent jurors.",
+      "science_verdict": "needs_adversarial_proof",
+      "canonical_sources": [
+        "docs/adr/ADR_0040_Jury_Eligibility_Assignment.md",
+        "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md"
+      ],
+      "implementation_route": "Fix2i designs substrate-custody and premise-divergence SIM. Fix2j may open CDL authority.",
+      "pre_rc_required": false,
+      "post_rc_route": "Substrate custody attestation, premise hashes, and cross-juror consistency checks.",
+      "publication_risk_note": "Engram/CXL papers support architecture premise; adversarial modification resistance is ILC threat-model inference."
+    },
+    {
+      "claim_id": "four_layer_epistemic_independence",
+      "whitepaper_section": "E.11.9",
+      "claim_summary": "Juror independence should consider operator, model family, runtime substrate, and representational architecture.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "docs/adr/ADR_0040_Jury_Eligibility_Assignment.md",
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md"
+      ],
+      "implementation_route": "Record as design target; current runtime does not enforce Layer 4 representational independence.",
+      "pre_rc_required": false,
+      "post_rc_route": "Harness H2 plus CDL/ADR authority before production independence claim.",
+      "publication_risk_note": "Do not claim current public-RC juries enforce all four layers."
+    },
+    {
+      "claim_id": "eu_sovereign_ai_national_cluster_fiedler",
+      "whitepaper_section": "E.11.9",
+      "claim_summary": "National or sovereign AI clusters can be modeled as operator/topology domains for diversity and spectral diagnostics.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md",
+        "docs/specs/ilc_harness_sidecar_fix_h2_multi_model_endorsement_prompt_draft_v0.1.md"
+      ],
+      "implementation_route": "Future GAIA-X/sovereign adapter and attestation gate; no compliance claim now.",
+      "pre_rc_required": false,
+      "post_rc_route": "Fix-H2 or later valid phase slot.",
+      "publication_risk_note": "No GAIA-X compliance or sovereign-cluster live claim before implementation and legal review."
+    },
+    {
+      "claim_id": "jepa_world_model_representational_independence",
+      "whitepaper_section": "E.11.9, E.12",
+      "claim_summary": "World-model or JEPA-like endpoints may provide representational diversity relative to transformer-only jurors.",
+      "science_verdict": "research_or_sim_required",
+      "canonical_sources": [
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md",
+        "docs/specs/ilc_harness_sidecar_fix_h2_multi_model_endorsement_prompt_draft_v0.1.md"
+      ],
+      "implementation_route": "Use architecture class as diagnostic metadata until ratified.",
+      "pre_rc_required": false,
+      "post_rc_route": "Model-router and multi-model endorsement runtime after valid sequence lock.",
+      "publication_risk_note": "Architecture class is not a settlement or truth guarantee by itself."
+    },
+    {
+      "claim_id": "substrate_custody_attestation",
+      "whitepaper_section": "E.11",
+      "claim_summary": "Jurors may need to attest runtime substrate custody when external memory or pooled serving affects independence.",
+      "science_verdict": "cdl_or_adr_required",
+      "canonical_sources": [
+        "docs/adr/ADR_0040_Jury_Eligibility_Assignment.md",
+        "docs/specs/ilc_candidate_cdl_jury_private_assignment_deliberation_channel_v0.1.md"
+      ],
+      "implementation_route": "Fix2i designs SIM; Fix2j decides CDL scope.",
+      "pre_rc_required": false,
+      "post_rc_route": "Candidate CDL, then runtime attestation fields.",
+      "publication_risk_note": "No active enforcement claim today."
+    },
+    {
+      "claim_id": "last_mile_harness_sidecar_pipeline",
+      "whitepaper_section": "E.12",
+      "claim_summary": "Harness sidecar provides consent, capture, routing, attestation, and optional graph submission pipeline for operators.",
+      "science_verdict": "implemented_partial",
+      "canonical_sources": [
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md",
+        "ilc_core/harness/__init__.py",
+        "ilc_core/harness/local_node_capture.py",
+        "ilc_core/harness/provider_usage_adapter.py"
+      ],
+      "implementation_route": "Local/default-off primitives exist; model-router and CLI recipes are prompt drafts until valid sequence-lock slot.",
+      "pre_rc_required": false,
+      "post_rc_route": "Fix-H1/H2/H3 after sequence-lock assignment.",
+      "publication_risk_note": "Harness remains PUBLIC_RC_EXCLUDE; no public submission/serving claim."
+    },
+    {
+      "claim_id": "multi_model_endorsement_co_attestation",
+      "whitepaper_section": "E.12",
+      "claim_summary": "Multiple model endpoints can co-attest output quality or premise consistency.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "ilc_core/harness/co_attestation_receipt.py",
+        "docs/specs/ilc_harness_sidecar_fix_h2_multi_model_endorsement_prompt_draft_v0.1.md"
+      ],
+      "implementation_route": "Existing receipt support is local fixture; orchestration is not implemented.",
+      "pre_rc_required": false,
+      "post_rc_route": "Fix-H2 or later valid phase slot.",
+      "publication_risk_note": "Do not treat local co-attestation receipt as production jury independence."
+    },
+    {
+      "claim_id": "model_router_provider_agnostic",
+      "whitepaper_section": "E.12",
+      "claim_summary": "A provider-agnostic model router can select endpoints by capability, budget, and independence metadata.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md",
+        "docs/specs/ilc_harness_sidecar_fix_h1_model_router_prompt_draft_v0.1.md"
+      ],
+      "implementation_route": "No model-router module currently exists; H1 draft specifies it.",
+      "pre_rc_required": false,
+      "post_rc_route": "Fix-H1 after valid phase slot.",
+      "publication_risk_note": "No provider-router runtime claim before implementation."
+    },
+    {
+      "claim_id": "werner_credit_idle_capacity_loop",
+      "whitepaper_section": "E.12, D.1",
+      "claim_summary": "Idle harness capacity could eventually feed maintenance or Werner-credit loops.",
+      "science_verdict": "post_rc_target",
+      "canonical_sources": [
+        "ilc_core/harness/idle_capacity_scheduler.py",
+        "docs/specs/ilc_harness_sidecar_forward_planning_v0.1.md"
+      ],
+      "implementation_route": "Idle scheduler is default-off private fixture; Werner-credit module does not exist.",
+      "pre_rc_required": false,
+      "post_rc_route": "Fix-H3 with sensitive GO and production-path authority.",
+      "publication_risk_note": "No credit minting, maintenance lottery activation, or settlement effect."
+    }
+  ]
+}
