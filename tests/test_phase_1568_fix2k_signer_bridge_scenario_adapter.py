@@ -140,6 +140,29 @@ def test_panel_outsider_fixture_prefers_explicit_outsider() -> None:
     assert scenario_runner._panel_outsider_fixture(scenario) == outsider
 
 
+def test_remote_service_smoke_hosts_use_only_physical_scenario_hosts() -> None:
+    scenario = {
+        "agents": [
+            {"node_name": "jamisons-imac"},
+            {"node_name": "ilc-node-2"},
+            {"node_name": "ilc-node-2"},
+            {"node_name": "ilc-node-3"},
+        ],
+        "outsider_receiver": {"node_name": "ilc-node-6"},
+    }
+    remote_hosts = {
+        "ilc-node-2": {"name": "ilc-node-2"},
+        "ilc-node-3": {"name": "ilc-node-3"},
+        "ilc-node-6": {"name": "ilc-node-6"},
+    }
+
+    assert scenario_runner._remote_service_smoke_hosts(scenario, remote_hosts) == [
+        "ilc-node-2",
+        "ilc-node-3",
+        "ilc-node-6",
+    ]
+
+
 def test_broadcast_artifact_requires_signer_for_non_agent_artifact(tmp_path: Path) -> None:
     artifact_file = tmp_path / "panel.json"
     artifact_file.write_text(json.dumps({"artifact_kind": "panel_verdict"}, sort_keys=True), encoding="utf-8")
