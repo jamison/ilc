@@ -62,3 +62,13 @@ Before public RC, do not attempt to finish every whitepaper target. Instead:
 | Phase 1568-Fix2i | Add substrate-custody and Engram/CXL independence questions to the jury switch-out SIM/amendment lane. |
 | Phase 1568-Fix2j | Open the candidate CDL scope for blind jury assignment, sealed delivery, jury-as-node, and substrate-custody independence. |
 | H1/H2/H3 sidecar drafts | Preserve harness sidecar implementation tasks as prompt drafts until a valid sequence-lock slot exists. |
+
+## Phase 1568-Fix2h Execution Note
+
+Phase 1568-Fix2h created
+`docs/specs/ilc_whitepaper_science_claim_routing_matrix_v0.1.json` as the
+machine-readable routing matrix for this register and
+`docs/specs/ilc_native_sidecar_typed_subgraph_anchor_v0.1.md` as the v0.4
+sidecar anchor vocabulary. The whitepaper itself remains untouched by this
+register; this document and the JSON matrix carry the implementation-gap and
+activation-boundary tracking.
