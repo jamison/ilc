@@ -1578,79 +1578,206 @@ Aesthetic node types proceed to T1.5 without a truth panel. A poem, a musical co
 
 ---
 
-### E.4  Assignment: From Pool to Panel
+### E.4  Assignment: Jury Formation and Case Assignment
 
-When a node crosses the T0.5 boundary, the review lane admission runtime emits a **review assignment event** anchored to the current epoch. Panel selection is deterministic within that epoch, derived from a domain-separated hash of the submitted node's CID combined with the epoch boundary seed.
+ILC's jury architecture separates two events that naive designs conflate: **jury formation** and **case assignment**. Keeping them separate is the mechanism that prevents any single entity from learning the mapping `node_under_review → selected jurors` before the verdict is revealed.
+
+Implementation note: this section describes the target blind-jury construction. The current Fix2g runtime uses the narrower `jury_assignment_announced` contract and still exposes `node_cid` in the announcement payload. The blinded task-handle design below is the intended successor path for the Fix2j/CDL private-assignment work, not a claim about the present runtime surface.
+
+#### E.4.1  Jury Formation as a Graph Node
+
+When sufficient review demand exists for a lane, the protocol forms a **jury group node** — a first-class content-addressed node in the knowledge hypergraph, produced by the same mechanisms as any other graph write. The jury node carries:
 
 ```
-PANEL SELECTION (LOCAL — 7+1)
+JURY GROUP NODE (sealed)
 ───────────────────────────────────────────────────────────
-  Input:
-    node_cid:     SHA-256 of submitted node content
-    epoch_hash:   boundary commitment for current epoch
-    domain:       "ilc_jury_assignment_v1"
-
-  Seed:
-    seed = SHA-384(domain || node_cid || epoch_hash)
-
-  Pool:
-    All agents in availability pool for this lane
-    in the current epoch, sorted by agent_id.
-
-  Selection:
-    Rank agents by SHA-384(seed || agent_id).
-    Exclude: submitter, close PROVENANCE ancestors
-      (independence_k=3 hops), cluster over-represented
-      (CDL-V3 diversity floor).
-    Take top 7 as regular panel.
-    Take rank 8 as outsider seat (forced independence).
-
-  Quorum:
-    k=5 of m=7 must return a verdict.
-    Outsider vote counts but is not required for quorum.
+  jury_id:                CID of this jury node (public)
+  formation_epoch:        epoch of formation (public)
+  review_lane:            popperian_truth | aesthetic | normative (public)
+  docket_capacity:        max cases this jury accepts (public)
+  assignment_context_hash: replayable commitment enabling
+                          self-selection verification (public)
+  eligible_set_root:      Merkle commitment over eligibility
+                          snapshot after all gate checks (public)
+  sealed_composition:     member identities, encrypted to
+                          the jury group key — not readable
+                          by any external party (private
+                          until reveal)
 ───────────────────────────────────────────────────────────
 ```
 
-For production high-value assignments, the epoch-hash shadow above is replaced by a **Verifiable Random Function (VRF)** proof — ECVRF-EDWARDS25519-SHA512-ELL2 — so that the selection is both unpredictable before the epoch boundary and fully verifiable after. The VRF verifier is implemented and tested in the codebase; integration into the assignment pipeline is gated behind the J-008 milestone.
+The jury node's public fields are auditable immediately. Its composition is cryptographically sealed and remains unknowable to any external observer — including the protocol itself — until the verdict reveal event. The jury node is the privacy boundary.
 
-The deterministic nature of the selection means any agent can independently verify whether they were correctly assigned to a panel — or whether someone else was — without any central announcement. The assignment is self-certifying from the epoch boundary commitment and the availability pool snapshot.
+#### E.4.2  Self-Selection: No Trusted Coordinator
+
+No external entity generates jury invitations. Each opted-in agent locally and independently computes whether they are a member of a given jury node:
+
+```
+SELF-SELECTION (LOCAL COMPUTATION)
+───────────────────────────────────────────────────────────
+  jitter_i = SHA-384(
+      "ILC_JURY_JITTER_V1" ||
+      assignment_context_hash ||
+      epoch_randomness ||
+      agent_id_i
+  )
+
+  rank_i = SHA-384(
+      "ILC_JURY_SELECT_V1" ||
+      assignment_context_hash  ||
+      jitter_i ||
+      agent_id_i
+  )
+
+  The top-k agents after hash-derived jitter for this lane
+  and epoch are the jury members. The jitter is replayable
+  after reveal but not usefully predictable before the
+  epoch randomness is fixed. Each agent discovers their own
+  assignment without being told, without a central roster,
+  and without revealing to any network peer that they have
+  been assigned.
+───────────────────────────────────────────────────────────
+```
+
+The eligible pool from which rankings are drawn has already passed four gate layers, applied in order before the `eligible_set_root` is committed:
+
+```
+ELIGIBILITY GATES (applied before eligible_set_root)
+───────────────────────────────────────────────────────────
+  1. Reputation threshold (primary anti-sybil gate)
+     Agent must have accumulated minimum reputation under
+     CDL-V1 temporal decay rules. Freshly created agents
+     cannot satisfy this quickly — reputation is earned
+     through verified prior work, not declared.
+
+  2. Specialization credential
+     For lanes requiring domain expertise, agents must hold
+     capability proofs tied to their reputation history.
+     Categorical diversity self-declaration is not
+     sufficient; the credential must be attested.
+
+  3. Conflict exclusion
+     Submitter, close PROVENANCE ancestors (independence_k=3
+     hops), and same operator-domain agents are excluded.
+
+  4. CDL-V3 diversity floor
+     Panel construction preserves cluster diversity and
+     independence_k=3. The outsider seat is filled by an
+     agent outside the affiliation cluster of the submitter
+     and regular panel majority.
+───────────────────────────────────────────────────────────
+```
+
+The `eligible_set_root` is a Merkle commitment over the agents who passed all four gates for this lane and epoch. It is public and committed before any self-selection computation begins, enabling full audit at reveal: anyone with the opened eligibility snapshot can replay the rank computation and verify every seat.
+
+For production high-value lanes, the epoch-hash shadow in `assignment_context_hash` and the replayable `jitter_i` term are backed by a **Verifiable Random Function (VRF)** proof — so that the selection is unpredictable before the epoch boundary and fully verifiable after.
+
+#### E.4.3  Case Assignment: Nodes Routed to Jury Nodes
+
+When a submitted node crosses T0.5, the protocol assigns it to an available jury node as a **graph edge**, not a new panel:
+
+```
+CASE ASSIGNMENT
+───────────────────────────────────────────────────────────
+  assignment_priority = SHA-384(
+      "ILC_JURY_CASE_ASSIGN_V1" ||
+      node_cid ||
+      jury_node_cid ||
+      epoch_randomness
+  )
+
+  The jury node with the matching assignment priority for
+  this lane receives the case.
+
+  The same jury node may receive up to docket_capacity
+  cases per lifetime: jury_group_node ──► content_node
+                                    (JURY_CASE_ASSIGNMENT)
+
+  The assignment is a public graph write. Revealing which
+  jury node received a case reveals nothing about
+  membership — the jury node's composition is already
+  sealed from the formation step.
+───────────────────────────────────────────────────────────
+```
+
+This separation is the core structural property: the entity that routes cases (case assignment) operates on public jury node CIDs, while the entity that knows membership (each jury member, privately) operates on the sealed composition. No single party ever holds both simultaneously.
+
+#### E.4.4  The Sequential Switch-Out: Temporal Anti-Capture
+
+After the initial jury members have sealed their votes using a commit-reveal scheme — each submitting `SHA-384("ILC_JURY_VOTE_COMMIT_V1" || assignment_context_hash || vote || salt)` without revealing the vote — the protocol selects a single additional agent: the **switch-out**.
+
+The switch-out's identity does not exist at jury formation time. It is selected after the initial members have committed, using entropy that did not exist during the voting window. The switch-out evaluates the case independently, unable to observe any sealed vote. One slot from the initial panel is then removed at random, and the final counted panel is the remaining members plus the switch-out — still seven voters, quorum k=5.
+
+```
+SEQUENTIAL SWITCH-OUT INVARIANTS
+───────────────────────────────────────────────────────────
+  INVARIANT-1 (vote-blind isolation)
+    The switch-out cannot observe any original-panel vote
+    content or infer vote direction from timing side
+    channels before committing its own vote.
+
+  INVARIANT-2 (finality gate)
+    No reveal, tally, or finality event may occur until
+    the switch-out vote is committed. k=5 of the original
+    panel alone is not finality.
+
+  INVARIANT-3 (post-replacement diversity)
+    CDL-V3 diversity constraints are re-validated over the
+    final seven after random slot removal, not only over
+    the initial panel.
+───────────────────────────────────────────────────────────
+```
+
+The security property is temporal: an adversary who successfully identifies and targets the initial panel during the voting window still cannot identify or target the switch-out, because the switch-out does not yet exist as a known identity. The switch-out's selection entropy is also the mechanism that makes the final panel composition uncomputable from public inputs during the voting window — it cannot be reconstructed until after the reveal event.
 
 ---
 
-### E.5  Notification: Push, Pull, and the Gossip Architecture
+### E.5  Notification: Blind Sealed Delivery
 
-The selection mechanism above produces a panel deterministically. But how do assigned reviewers learn that they have been assigned?
-
-The ILC P2P transport layer uses a **pull-dominant gossip model** (CDL-076/077). Peers exchange WANT-HAVE advertisement frames across the D2d overlay. A reviewer who is opted in and monitoring the graph will discover their assignment when the review assignment event propagates to their local shard:
+The public gossip layer carries the minimum information needed for the network to track jury activity without revealing panel composition:
 
 ```
-JURY NOTIFICATION FLOW
+PUBLIC JURY ANNOUNCEMENT (gossip layer)
+───────────────────────────────────────────────────────────
+  assignment_id:           deterministic ID from formation
+  epoch:                   formation epoch
+  review_lane:             popperian_truth | aesthetic | normative
+  assignment_context_hash: public replayable commitment
 
-  Submitter emits:
-    review_assignment_event(node_cid, epoch, panel_ids[])
-    └─ gossip: WANT-HAVE advertisement to shard neighbors
-
-  Each panel member:
-    1. Receives WANT-HAVE for epoch boundary
-    2. Pulls block containing assignment event
-    3. Matches own agent_id against panel_ids[]
-    4. If matched: pulls submitted node (WANT-BLOCK)
-    5. Evaluates and returns verdict before deadline
-
-  ──────────────────────────────────────────────────────
-  DESIGN NOTE:
-  The pull model is the RC architecture. A proactive push
-  shortcut — a direct-addressed sealed message to each
-  panel member's agent_id via the D2d sealed-sender layer
-  — is architecturally compatible and planned as a
-  production enhancement. The sealed-sender envelope
-  (CDL-039) already supports direct-addressed delivery;
-  wiring the jury assignment event into that path does
-  not require protocol changes, only runtime integration.
-  ──────────────────────────────────────────────────────
+  NOT included: node_cid, panel member identities,
+  reviewer public keys, panel_ids[], or any field that
+  would allow observers to reconstruct the panel or
+  identify the node under review.
+───────────────────────────────────────────────────────────
 ```
 
-The assignment window is bounded by the epoch sequence. If a reviewer goes offline for an entire epoch and misses all WANT-HAVE propagation, they will not see their assignment until it has expired. This is not a protocol failure — it is an availability accountability mechanism. Agents who claim availability but do not maintain connectivity reduce the effective pool size for the epoch they miss.
+Each jury member, having computed their assignment locally via self-selection, receives their task bundle through a **per-member unique sealed delivery**: a Sphinx-style encrypted packet (ADR-0034) carrying the actual `node_cid` and task specification, routed via the H-015 spectral relay path natural to that member's position in the network. Each packet is addressed to the member's public key and carries a unique task handle:
+
+```
+PER-MEMBER SEALED DELIVERY
+───────────────────────────────────────────────────────────
+  task_handle_i = SHA-384(
+      "ILC_JURY_TASK_HANDLE_V1" ||
+      node_cid || agent_id_i || epoch || salt
+  )
+
+  Sealed packet to member i:
+    { task_handle_i, node_cid, task_spec }
+    encrypted to agent_id_i's public key
+    delivered via distinct spectral relay path
+
+  No two members receive the same handle or the same
+  relay path. Two members comparing their received
+  material cannot determine whether they are on the
+  same jury or reviewing the same node.
+───────────────────────────────────────────────────────────
+```
+
+Delivery timing is jittered by a random delay before each packet enters the relay path, preventing a network observer from inferring panel assembly by watching for a cluster of sealed deliveries in the same epoch window.
+
+The ILC P2P transport layer uses a **pull-dominant gossip model** (CDL-076/077) for general graph traffic. WANT-HAVE advertisement frames propagate the public jury announcement. A reviewer who has computed their assignment via self-selection can also use the pull layer to fetch any public jury metadata they require for audit purposes. The sealed delivery path handles task content; the pull layer handles public audit material.
+
+The assignment window is bounded by the epoch sequence. An agent who goes offline and misses their assignment window does not receive a late notification — this is not a protocol failure but an availability accountability mechanism. Agents who declare availability but fail to maintain connectivity reduce the effective pool for the epochs they miss.
 
 ---
 
@@ -1759,7 +1886,25 @@ An aesthetic panel verdict that is consistently at odds with eventual reuse patt
 
 ---
 
-### E.9  Jury Assembly: End-to-End Summary
+### E.9  Spectral Pool Sharding and Scale
+
+The spectral machinery described in §4 and §8 connects directly to jury pool construction in a way that resolves the scale question.
+
+An agent's position in the normalized hypergraph Laplacian's spectral embedding reflects the epistemic neighborhood they have built through their work history. Agents who repeatedly contribute to, review, and reference mathematical proof nodes cluster near the "mathematical proof" region of the spectral space. Agents active in empirical science cluster elsewhere. This is not declared or registered — it emerges from the graph structure through CDL-V1 temporal decay acting on contribution hyperedge weights.
+
+The **Fiedler vector** — the eigenvector corresponding to λ₂, the algebraic connectivity of the Laplacian — partitions the network along its natural epistemic fault line. Agents in the same Fiedler partition share structurally proximate epistemic neighborhoods. For jury pool construction, this has two consequences:
+
+**Lane-specific pools emerge without registration.** The eligible pool for a popperian_truth review of a mathematical claim is naturally concentrated in the spectral region corresponding to mathematical reasoning. The `eligible_set_root` is computed over this region, not over the global agent set. At network scale with many review lanes, each lane's pool is a tractable fraction of the total.
+
+**Jury formation parallelizes across spectral clusters.** Jury group nodes formed within the same Fiedler partition use relay paths that are already spectrally local — the H-015 routing layer naturally routes to nearby spectral coordinates. Group key establishment, sealed delivery, and ack collection all traverse short relay paths within the cluster. The communication cost of jury formation scales with cluster size, not with total network size.
+
+The sealed spectral beacon (§D.4) is the substrate for this: agents emit noise-calibrated local Laplacian fingerprints as sealed gossip. Spectral proximity below a threshold indicates shared epistemic neighborhood — agents discover their jury pool co-members through spectral proximity without any central roster or explicit lane registration.
+
+This is also the mechanism for **distributed eligible_set_root computation**. Rather than a central authority computing who passes the eligibility gates, each agent attests its own eligibility at epoch start — signing `{agent_id, reputation_score, specialization_credentials, λ₂_local, epoch}`. Peers cross-validate the λ₂ claim: any peer sharing the same local subgraph view will compute the same value; a fabricated λ₂ is detectable without a central oracle. The `eligible_set_root` is then the Merkle root over all valid attestations received for this epoch and lane — computed independently by every participant from the gossip layer, with no top-down authority.
+
+---
+
+### E.10  Jury Assembly: End-to-End Summary
 
 ```
 JURY ASSEMBLY LIFECYCLE
@@ -1767,51 +1912,78 @@ JURY ASSEMBLY LIFECYCLE
 
   1. AGENT OPTS IN
      Submit availability commitment to graph.
-     Declare lanes, panel sizes, epoch range.
+     Declare lanes, epoch range, capability credentials.
      Signed record admitted as a graph-committed node.
+     Eligibility gates applied at epoch start:
+       reputation threshold → specialization credential →
+       conflict exclusion → CDL-V3 diversity floor.
+     Agent attests λ₂_local (spectral neighborhood proof);
+     peers cross-validate. eligible_set_root committed.
 
-  2. SUBMISSION ARRIVES
+  2. JURY NODE FORMED
+     Protocol writes a jury_group_node to the graph.
+     Public fields: jury_id, epoch, lane, eligible_set_root.
+     Sealed field: composition (encrypted to group key).
+     No external party knows membership at this stage.
+
+  3. EACH MEMBER SELF-SELECTS (local computation)
+     jitter_i = SHA-384(context_hash || epoch_randomness || agent_id_i)
+     rank_i = SHA-384(context_hash || jitter_i || agent_id_i)
+     Members in top-k after hash-derived jitter discover
+     assignment independently.
+     No invitation generator. No central roster.
+     Sealed task bundle delivered per-member via unique
+     relay path; per-member unique task handle; no shared
+     assignment identifier visible before reveal.
+
+  4. SUBMISSION ARRIVES → CASE ASSIGNED TO JURY NODE
      Submitter deposits stake bond.
-     Node enters T0.5 (assigned, not yet reviewed).
-     Review assignment event emitted and gossiped.
+     Node enters T0.5 (submitted, not yet reviewed).
+     Protocol writes JURY_CASE_ASSIGNMENT edge:
+       jury_group_node ──► submitted_node
+     Public graph write: reveals which jury node received
+     the case; reveals nothing about jury membership.
+     Jury node may receive up to docket_capacity cases.
 
-  3. PANEL SELECTION (deterministic)
-     Epoch-hash shadow (RC) / VRF proof (production).
-     Selects 7 + 1 from availability pool.
-     Diversity floor enforced (CDL-V3).
-     Result: panel_ids[] committed to assignment record.
+  5. EVALUATION (sealed)
+     Each member independently reads submitted node via
+     sealed delivery. Applies Popperian falsifiability
+     test or aesthetic judgment per lane.
+     Vote committed (sealed): SHA-384(
+       "ILC_JURY_VOTE_COMMIT_V1" || context_hash || vote || salt)
+     Vote content remains sealed.
 
-  4. NOTIFICATION (pull-dominant)
-     Assigned reviewers pull assignment event via WANT-HAVE.
-     Direct push: architecturally supported, not yet wired.
-     Deadline: 1 validation epoch from assignment.
+  6. SWITCH-OUT SELECTED (after initial votes sealed)
+     Switch-out selection entropy did not exist during
+     the voting window — unknowable at formation time.
+     Switch-out evaluates independently, vote-blind.
+     One slot removed at random from initial panel.
+     Final counted panel: 6 original + 1 switch-out = 7.
 
-  5. EVALUATION
-     Each reviewer independently reads submitted node.
-     Applies Popperian falsifiability test OR
-     aesthetic judgment, depending on epistemic type.
-     Returns signed verdict: APPROVE | REJECT | ABSTAIN.
-
-  6. FINALITY
-     Local quorum reached: k=5 of m=7.
+  7. REVEAL AND FINALITY
+     All votes and sealed_composition revealed atomically.
+     Quorum evaluated: k=5 of final 7.
      2/3 approve → node advances (T0.5 → T1 or T1.5).
      < 2/3 approve → node returned to submitter.
-     Appeal window: 1 epoch.
-     Tier 2/3 escalation if triggered.
+     Appeal window: 1 epoch. Tier 2/3 escalation if triggered.
+     Full audit trail committed: formation → self-selection →
+     case assignment → sealed votes → verdict.
 
-  7. PAYMENT
+  8. PAYMENT
      Base fee: immediate upon verdict delivery.
      Accuracy bonus: vested after 4 epochs.
      Non-response: fee forfeited; availability score decays.
 
   THROUGHOUT: No central coordinator. No admin account.
-  The protocol selects, notifies, evaluates, pays, and
-  escalates entirely through graph events, epoch timing,
-  and cryptographic proof.
+  No single entity ever holds the mapping
+  node_under_review → selected jurors in plaintext.
+  The protocol forms juries, assigns cases, collects
+  sealed votes, and reaches finality entirely through
+  graph events, epoch timing, and cryptographic proof.
 ───────────────────────────────────────────────────────────────────
 ```
 
-The assembly mechanism is not a board of trustees or a curated expert panel. It is a cryptographic lottery weighted by demonstrated reliability, constrained by independence and diversity requirements, and governed by outcome-contingent pay. The closest analogy is not a traditional editorial review board — it is a decentralized prediction market for epistemic quality, where reviewers stake their reputation on the long-run value of what they approve.
+The assembly mechanism is not a board of trustees or a curated expert panel. It is a cryptographic construction in which juries are formed before cases are assigned, members self-select without being told, cases arrive as graph edges to a sealed node, and the complete membership is unknowable to any external party until the atomic reveal event. The closest analogy is not a traditional editorial review board — it is a blind prediction market for epistemic quality, where reviewers stake their reputation without knowing who else is staking alongside them.
 
 ```text
 graph_delta=support_only:docs/specs/ilc_whitepaper_satoshi_mirror_v0.1.md
