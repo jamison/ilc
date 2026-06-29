@@ -295,7 +295,16 @@ class AtlasLmdbSafeWriter:
         current_node_ids = {_candidate_id(node) for node in self.store.iter_nodes()}
         nodes_to_add: list[dict[str, Any]] = []
         edges_to_add: list[dict[str, Any]] = []
+        edge_semantics_to_add: set[tuple[str, str, str]] = set()
         phase_node_id = f"phase:{_phase_slug(phase)}"
+
+        def append_edge_if_missing(edge: dict[str, Any]) -> None:
+            semantic = (_edge_source(edge), _edge_type(edge), _edge_target(edge))
+            if semantic in edge_semantics_to_add:
+                return
+            edge_semantics_to_add.add(semantic)
+            edges_to_add.append(edge)
+
         _append_if_missing(
             nodes_to_add,
             current_node_ids,
@@ -329,7 +338,7 @@ class AtlasLmdbSafeWriter:
             repo_file_node = _repo_file_node_from_registration(registration, phase=phase)
             if repo_file_node is not None:
                 _append_if_missing(nodes_to_add, current_node_ids, repo_file_node)
-                edges_to_add.append(
+                append_edge_if_missing(
                     _edge(
                         source=file_id,
                         edge_type="SAME_SOURCE",
@@ -342,7 +351,7 @@ class AtlasLmdbSafeWriter:
             # public-path classification hub. Public-path tagging history is
             # tracked by Fix67's migration receipt instead of canonical topology.
             if not registration.skip_carries_forward:
-                edges_to_add.append(
+                append_edge_if_missing(
                     _edge(
                         source=file_id,
                         edge_type="CARRIES_FORWARD",
@@ -352,7 +361,7 @@ class AtlasLmdbSafeWriter:
                     )
                 )
             for edge_type, target in registration.required_edges:
-                edges_to_add.append(
+                append_edge_if_missing(
                     _edge(
                         source=file_id,
                         edge_type=edge_type,
