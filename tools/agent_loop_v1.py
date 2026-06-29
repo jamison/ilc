@@ -24,6 +24,11 @@ from ilc_core.consensus.popperian_gate_runtime import (
     PopperianGateValidationError,
     evaluate_decomposition_admissibility,
 )
+from ilc_core.consensus.attribution_batch_bridge import (
+    AttributionBatchBridgeError,
+    apply_attribution_batch_with_rust,
+    build_attribution_batch_from_claims,
+)
 from ilc_core.economics.epoch_ledger import SimpleEpochLedger
 from ilc_core.economics.outcome import OutcomeLogger, TaskOutcome
 from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
@@ -1034,6 +1039,39 @@ def _run_replay_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_build_attribution_batch_command(args: argparse.Namespace) -> int:
+    claim_payload = _require_dict(
+        "ecu_claim_payload",
+        json.loads(Path(args.ecu_claims_file).read_text(encoding="utf-8")),
+    )
+    batch_payload = build_attribution_batch_from_claims(
+        claim_payload,
+        epoch=args.epoch,
+    )
+    if args.emit_dir:
+        _write_json(Path(args.emit_dir) / "consensus_attribution_batch.json", batch_payload)
+    _emit(batch_payload)
+    return 0
+
+
+def _run_apply_attribution_batch_command(args: argparse.Namespace) -> int:
+    batch_payload = _require_dict(
+        "attribution_batch_payload",
+        json.loads(Path(args.attribution_batch_file).read_text(encoding="utf-8")),
+    )
+    result = apply_attribution_batch_with_rust(
+        batch_payload,
+        consensus_lmdb=args.consensus_lmdb,
+        rust_binary=args.rust_binary,
+        dry_run=args.dry_run,
+        timeout_seconds=args.timeout_seconds,
+    )
+    if args.emit_dir:
+        _write_json(Path(args.emit_dir) / "consensus_attribution_apply_receipt.json", result)
+    _emit(result)
+    return 0
+
+
 def _run_broadcast_command(args: argparse.Namespace) -> int:
     artifact_path = Path(args.artifact_file)
     payload = _require_dict(
@@ -1104,6 +1142,25 @@ def _build_parser() -> argparse.ArgumentParser:
     replay.add_argument("--emit-dir")
     add_task_source(replay)
 
+    attribution = subparsers.add_parser(
+        "build-attribution-batch",
+        help="Convert accepted ECU claims into a Rust AttributionBatch JSON payload",
+    )
+    attribution.add_argument("--ecu-claims-file", required=True)
+    attribution.add_argument("--epoch", type=int)
+    attribution.add_argument("--emit-dir")
+
+    apply_attribution = subparsers.add_parser(
+        "apply-attribution-batch",
+        help="Apply a consensus attribution batch through the Rust balance store bridge",
+    )
+    apply_attribution.add_argument("--attribution-batch-file", required=True)
+    apply_attribution.add_argument("--consensus-lmdb", required=True)
+    apply_attribution.add_argument("--rust-binary", required=True)
+    apply_attribution.add_argument("--timeout-seconds", type=int, default=30)
+    apply_attribution.add_argument("--dry-run", action="store_true")
+    apply_attribution.add_argument("--emit-dir")
+
     broadcast = subparsers.add_parser("broadcast-artifact", help="Broadcast a JSON artifact over the live gossip path")
     broadcast.add_argument("--node-config", required=True)
     broadcast.add_argument("--artifact-file", required=True)
@@ -1123,9 +1180,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _run_panel_command(args)
         if args.command == "replay-panel":
             return _run_replay_command(args)
+        if args.command == "build-attribution-batch":
+            return _run_build_attribution_batch_command(args)
+        if args.command == "apply-attribution-batch":
+            return _run_apply_attribution_batch_command(args)
         if args.command == "broadcast-artifact":
             return _run_broadcast_command(args)
         raise AgentLoopRuntimeError("agent_loop_command_unknown", f"unknown command: {args.command}")
+    except AttributionBatchBridgeError as exc:
+        _emit({
+            "marker": "agent_loop_error",
+            "runtime_version": AGENT_LOOP_V1_RUNTIME_VERSION,
+            "token": exc.token,
+            "detail": str(exc),
+        })
+        return 1
     except AgentLoopRuntimeError as exc:
         _emit({
             "marker": "agent_loop_error",
