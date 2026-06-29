@@ -74,6 +74,10 @@ name = "pq_agent_sign"
 path = "src/pq_agent_sign_main.rs"
 
 [[bin]]
+name = "attribution_batch_ingest"
+path = "src/attribution_batch_ingest_main.rs"
+
+[[bin]]
 name = "shamir_split"
 path = "src/shamir_split_main.rs"
 
