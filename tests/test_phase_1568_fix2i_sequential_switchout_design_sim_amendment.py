@@ -8,6 +8,7 @@ ADM_ADDENDUM = (
     ROOT / "docs/specs/ilc_adm_003_sequential_switchout_addendum_1568_fix2i_v0.1.md"
 )
 JURY_RUNTIME = ROOT / "ilc_core/epistemic/jury_assignment_runtime.py"
+STATUS = ROOT / "docs/phases/STATUS.md"
 
 
 def test_amendment_exists_and_is_draft_not_ratified():
@@ -28,6 +29,7 @@ def test_five_prompt_questions_resolved():
     ]:
         assert heading in text
     assert "No open design question from the Fix2i prompt remains unresolved" in text
+    assert "minimum lane-specific eligible-pool size or sparse-pool merge rule" in text
 
 
 def test_economic_treatment_is_explicitly_deferred():
@@ -60,6 +62,11 @@ def test_sim_records_fix2j_post_rc_label():
     assert "activation matrix template does not require blind-jury" in text
 
 
-def test_production_assignment_phase_1429_guard_not_flipped():
-    text = JURY_RUNTIME.read_text()
-    assert "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False" in text
+def test_production_assignment_guard_is_phase_1429_authorized_state():
+    runtime_text = JURY_RUNTIME.read_text()
+    status_text = STATUS.read_text()
+    assert "production_assignment_activated_phase_1429" in runtime_text
+    assert "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED: bool = False" in runtime_text
+    assert "production_assignment_activated_phase_1429" in status_text
+    assert "production_assignment_not_activated_flag_flipped_phase_1429" in status_text
+    assert "public_rc_not_activated_phase_1429" in status_text

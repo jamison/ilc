@@ -1,0 +1,67 @@
+{
+  "artifact": "ilc_fix2h_fix2i_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for Phase 1568-Fix2h and Phase 1568-Fix2i support files under covered intake paths."
+  },
+  "records": [
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2h",
+      "edge_role": "SCIENCE_ROUTING_MATRIX",
+      "repo_path": "docs/specs/ilc_whitepaper_science_claim_routing_matrix_v0.1.json",
+      "target": "phase:phase_1568_fix2h_whitepaper_science_sidecar_anchor"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2h",
+      "edge_role": "SIDECAR_TYPED_SUBGRAPH_ANCHOR",
+      "repo_path": "docs/specs/ilc_native_sidecar_typed_subgraph_anchor_v0.1.md",
+      "target": "sidecar:native_typed_subgraph_anchor"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2h",
+      "edge_role": "GAP_REGISTER",
+      "repo_path": "docs/specs/ilc_whitepaper_to_implementation_gap_register_v0.1.md",
+      "target": "phase:phase_1568_fix2h_whitepaper_science_sidecar_anchor"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2h",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1568_fix2h_whitepaper_science_sidecar_anchor.py",
+      "target": "phase:phase_1568_fix2h_whitepaper_science_sidecar_anchor"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2i",
+      "edge_role": "ADM_ADDENDUM_NOTE",
+      "repo_path": "docs/specs/ilc_adm_003_sequential_switchout_addendum_1568_fix2i_v0.1.md",
+      "target": "phase:phase_1568_fix2i_sequential_switchout_design_sim_amendment"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2i",
+      "edge_role": "SIM_REPORT",
+      "repo_path": "docs/specs/ilc_phase_1568_fix2i_sequential_switchout_sim_v0.1.md",
+      "target": "phase:phase_1568_fix2i_sequential_switchout_design_sim_amendment"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2i",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1568_fix2i_sequential_switchout_design_sim_amendment.py",
+      "target": "phase:phase_1568_fix2i_sequential_switchout_design_sim_amendment"
+    },
+    {
+      "annotation_method": "fix2h_fix2i_overlay_record",
+      "annotation_phase": "phase_1568_fix2h_fix2i_hygiene",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix2h_fix2i_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "status": "review_queue_support_only"
+}

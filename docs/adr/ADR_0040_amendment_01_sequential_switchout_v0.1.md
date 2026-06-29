@@ -175,6 +175,8 @@ purposes. Runtime implementation still requires:
 
 - CDL authority for economic treatment;
 - CDL or ADR authority for substrate-custody settlement effects;
+- minimum lane-specific eligible-pool size or sparse-pool merge rule before
+  activation, because small pools are enumerable by exhaustion;
 - final choice on whether blind-jury CDL work blocks public RC or routes
   post-RC;
 - implementation-specific tests after any ratification.
