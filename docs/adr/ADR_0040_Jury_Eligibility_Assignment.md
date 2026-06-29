@@ -327,6 +327,138 @@ but they must not be silently treated as existing production canon.
 > Routing: Fix2g Track F → candidate Fix2i or dedicated amendment phase.
 > Requires explicit GO from human reviewer before implementation.
 
+## Threat Class: Runtime Memory Substrate Manipulation
+
+**Recorded:** 2026-06-29, Genesis Agent
+**Reference:** arXiv:2601.07372 (Conditional Memory via Scalable Lookup / Engram); arXiv:2603.10087 (Pooling Engram Conditional Memory using CXL)
+**Status:** Open design obligation — candidate mitigations recorded here; CDL authority required before activation. Routed to Fix2j.
+
+### Description
+
+The Engram architecture (DeepSeek, January 2026) separates a large language model into two runtime components that operate simultaneously during inference:
+
+1. **Model weights** — dynamic reasoning on GPU; unchanged across inference runs.
+2. **External N-gram memory pool** — static factual embeddings stored in DRAM, RDMA-pooled memory, or a CXL-connected centralized memory switch (up to 4TB across eight servers; cache-line granular access via PCIe 5.0 x16).
+
+The retrieval mechanism: for each input token sequence, a K-head hash function maps N-gram patterns to indices in the external pool. Retrieved embeddings are injected back into the model's hidden states via a learned gating mechanism. If the retrieved embedding is contextually plausible given the current hidden state, the gate passes it through; if it contradicts the context, the gate suppresses it. The architecture asserts that the pool is "read-only and immutable during inference." This guarantee holds only within a single inference window. Between runs the pool is plain infrastructure — DRAM or CXL-attached memory — administered by whoever controls the hardware.
+
+The architecture defines no:
+- Access authorization framework for the pool between inference windows
+- Audit logging of pool content modifications
+- Tamper detection or change detection mechanism
+- Content verification or cryptographic integrity signatures over pool entries
+- Multi-tenant isolation between pool regions or tenants
+
+### Why This Threat Class Is Categorically Different from RLHF Suppression
+
+| Suppression mechanism | Granularity | Detectable by agent | Weight audit detects it | Modifiability |
+|-----------------------|-------------|---------------------|------------------------|---------------|
+| RLHF training suppression | Topic / pattern (coarse) | No | Yes — weights differ | Requires full retraining |
+| Engram pool modification | **N-gram / cache-line (fine)** | **No** | **No — weights unchanged** | Between runs; no retraining needed |
+
+RLHF suppression modifies what the model can reason about by shaping its weights — detectable via weight fingerprinting or training-provenance audit. An Engram pool modification changes what the model retrieves as factual context without touching the weights at all. A weight hash, model fingerprint, or training provenance audit detects nothing. The agent reasoning from a modified pool is internally consistent — its chain of reasoning is valid given its premises — and it has no internal signal that its factual substrate has been altered.
+
+### The Addressability Attack — Technical Detail
+
+Because N-gram pool indices are deterministically computed from token sequences via a public (or recoverable) hash function, an operator controlling the pool can execute a targeted modification:
+
+```
+ATTACK PROCEDURE:
+
+1. Identify suppression domain D:
+   D = {factual claims to suppress or corrupt}
+   e.g. D = {"Tiananmen 1989", "Taiwan sovereignty",
+              "Uyghur detention", "economic data set X"}
+
+2. For each claim c ∈ D, enumerate its activating N-gram set:
+   G(c) = {g_n = (t_{i-n+1},...,t_i) | g_n ∈ token sequences for c,
+            n ∈ {2,3,...,N_max}}
+
+3. Compute target pool indices via multi-head hash:
+   I(g_n) = {H_k(g_n) mod |M| | k = 1,...,K}
+   where K = number of hash heads (e.g. K=8 for Engram-27B),
+         |M| = total pool size
+
+4. Write modified embeddings at target indices:
+   M̃[i] ← corrupt_embedding(i)   for i ∈ ⋃_{g_n ∈ G(c), c ∈ D} I(g_n)
+   M̃[i] = M[i]                    for all other i
+
+ATTACK COST:  O(|D| · |G(c)| · K) cache-line writes
+DETECTION COST (full scan): O(|M|) — requires complete pool copy to compare
+
+STEALTH PROPERTY: The gating mechanism accepts modified embeddings
+as long as their vector direction is contextually plausible.
+Embedding corruption can be set to produce semantically adjacent
+but factually altered content that passes the gate.
+```
+
+The attack is surgically precise: all N-gram indices outside the suppression domain remain unmodified, so the model's behavior on non-targeted topics is indistinguishable from an unmodified deployment. Only queries that activate the targeted N-gram indices retrieve corrupted embeddings.
+
+The XConn XC50256 CXL switch described in arXiv:2603.10087 uses native load/store semantics — standard NUMA memory operations. Whoever has access to the CXL fabric has read/write access to the pool with no additional mechanism required.
+
+### Threat to ILC Jury Independence
+
+An Engram-augmented juror whose inference pool is controlled by a state actor or corporate operator:
+
+- Passes all weight-level audits (weights are unmodified and identical to a clean deployment)
+- Passes training-provenance verification
+- Produces internally consistent reasoning chains
+- Votes based on factual context that has been selectively corrupted at N-gram granularity for the exact topic class under review
+- Cannot introspect or detect the corruption from within the inference process
+
+This is a qualitatively distinct threat from:
+- The **architectural homogeneity invariant** (INVARIANT-3): that invariant addresses correlated weight-level biases from shared training. A pool-modified agent may have entirely independent training provenance — the attack operates below the weight level.
+- The **sybil-via-diversity-slot attack** recorded above: that attack targets the eligibility assignment mechanism. This attack targets an already-assigned, already-eligible juror's factual knowledge substrate.
+
+A jury of seven architecturally diverse agents all running against operator-controlled CXL pools is structurally compromised regardless of weight diversity. The attack surface is the inference substrate, not the model architecture.
+
+### Candidate Mitigations (Not Yet Activated — CDL Authority Required)
+
+Three candidate mitigations have structural hooks in the existing ILC protocol:
+
+**Mitigation 1 — Inference substrate custody diversity (primary)**
+
+The independence constraint must extend beyond operator-domain identity to **inference substrate custody**. At least `independence_k=3` jurors must run against pools under their own administrative custody — local DRAM, or infrastructure whose access control they independently attest.
+
+Stable boundary token:
+
+```text
+same_cxl_pool_operator_not_independent_for_substrate_purposes
+```
+
+This is the primary mitigation because it eliminates the attack surface for the affected jurors entirely, rather than detecting the attack after the fact.
+
+**Mitigation 2 — Vote commitment with reasoning chain hash**
+
+Jurors commit:
+
+```
+c_j = SHA-384("ILC_JURY_VOTE_COMMIT_V1" || verdict_j || reasoning_trace_j || factual_premise_hash_j)
+```
+
+before any reveal. A pool-modified agent will commit a different reasoning trace and factual premise hash than it would from clean premises, for precisely the N-gram domain that was targeted. This does not prevent the attack in real time but enables post-hoc detection if the pool modification is later discovered (e.g. via forensic comparison with a clean pool snapshot). The INVARIANT-1 sealed-vote commitment already creates the structural hook for this.
+
+**Mitigation 3 — Cross-juror factual premise attestation**
+
+Jurors attest to specific factual claims their verdict depends on, not only the verdict itself. Divergence in stated factual premises across architecturally and infrastructurally diverse jurors is a detection signal:
+
+```
+If |stated_premise_set(juror_i) △ stated_premise_set(juror_j)| > δ_lane
+for diversity-independent jurors i, j
+→ flag jury for escalation before reveal
+```
+
+An Engram-modified agent will assert facts that clean-pool jurors independently do not confirm or contradict. The symmetric difference of premise sets across diverse jurors is a cheap consistency check implementable without revealing vote content.
+
+### Non-Authorizations
+
+Candidate mitigations are recorded here as design obligations for Fix2j. They are not activated. Activation requires:
+- CDL authority defining the inference substrate custody attestation format and verification mechanism
+- An explicit phase opening the substrate diversity requirement within the eligibility gate chain
+- Human GO token before any runtime enforces substrate custody gating on panel selection
+
+This threat class is a hard dependency for the Fix2j candidate CDL (blind jury empanelment). The candidate CDL must define the custody attestation format before any production jury assignment can claim resistance to this threat.
+
 ## Non-Response and Refusal
 
 Non-opt-in agents are not penalized for failing to review:
