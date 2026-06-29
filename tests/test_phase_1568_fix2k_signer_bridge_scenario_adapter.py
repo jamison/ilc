@@ -163,6 +163,20 @@ def test_remote_service_smoke_hosts_use_only_physical_scenario_hosts() -> None:
     ]
 
 
+def test_local_node_names_include_control_machine_aliases() -> None:
+    hosts = {
+        "control_machine": {
+            "name": "ilc-node-1",
+            "tailscale_name": "jamisons-imac",
+        }
+    }
+
+    assert scenario_runner._local_node_names(hosts) == {
+        "ilc-node-1",
+        "jamisons-imac",
+    }
+
+
 def test_broadcast_artifact_requires_signer_for_non_agent_artifact(tmp_path: Path) -> None:
     artifact_file = tmp_path / "panel.json"
     artifact_file.write_text(json.dumps({"artifact_kind": "panel_verdict"}, sort_keys=True), encoding="utf-8")
