@@ -42,6 +42,15 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _submission_wrapper_paths(scenario_root: Path) -> list[Path]:
+    submissions_dir = scenario_root / "submissions"
+    return sorted(
+        path
+        for path in submissions_dir.glob("submission_*.json")
+        if path.name.removeprefix("submission_").removesuffix(".json").isdigit()
+    )
+
+
 def _write_json(path: Path, payload: dict[str, Any] | list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -206,7 +215,7 @@ def _link_export(link: LinkRecord) -> dict[str, Any]:
 
 def _participant_profiles(scenario_root: Path) -> dict[str, dict[str, Any]]:
     participants: dict[str, dict[str, Any]] = {}
-    for submission_path in sorted((scenario_root / "submissions").glob("submission_*.json")):
+    for submission_path in _submission_wrapper_paths(scenario_root):
         wrapper = _load_json(submission_path)
         submission = wrapper.get("submission")
         if not isinstance(submission, dict):
@@ -256,7 +265,7 @@ def materialize_graph_state(*, scenario_root: Path, output_root: Path) -> dict[s
 
     submissions = []
     agent_node_map: dict[str, Node] = {}
-    for submission_path in sorted((scenario_root / "submissions").glob("submission_*.json")):
+    for submission_path in _submission_wrapper_paths(scenario_root):
         wrapper = _load_json(submission_path)
         submission = wrapper.get("submission")
         if not isinstance(submission, dict):
