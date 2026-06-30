@@ -158,6 +158,150 @@ def test_pq_agent_sign_bridge_uses_hidden_prompt_and_piped_stdin(
     assert "stdin" not in kwargs
 
 
+def test_pq_agent_sign_bridge_retries_seed_entry_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    seed_values = iter(["bad seed words", "abandon " * 23 + "about"])
+    run_inputs: list[str] = []
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        return next(seed_values)
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        run_inputs.append(str(kwargs["input"]))
+        if len(run_inputs) == 1:
+            return SimpleNamespace(
+                returncode=1,
+                stdout="",
+                stderr=(
+                    "Enter ML-DSA-65 mldsa_seed for agent aaaaaaaa... "
+                    "as 24 BIP-39 words or 64-char hex, then press Ctrl-D:\n"
+                    "invalid BIP-39 mnemonic: mnemonic contains an unknown word (word 23)\n"
+                ),
+            )
+        return SimpleNamespace(returncode=0, stdout="cd" * 3309, stderr="")
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    signature = sign_agent_submission(
+        agent_id_hex=VALID_AGENT_ID,
+        payload_bytes=b"{}",
+        binary_path=str(fake_binary),
+        manifest_path=str(fake_manifest),
+    )
+
+    assert signature == "cd" * 3309
+    assert run_inputs == ["bad seed words\n", ("abandon " * 23 + "about").strip() + "\n"]
+
+
+def test_pq_agent_sign_bridge_final_seed_failure_is_sanitized(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    attempts = 0
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        return "bad seed words"
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        nonlocal attempts
+        attempts += 1
+        return SimpleNamespace(
+            returncode=1,
+            stdout="",
+            stderr=(
+                "Enter ML-DSA-65 mldsa_seed for agent aaaaaaaa... "
+                "as 24 BIP-39 words or 64-char hex, then press Ctrl-D:\n"
+                "invalid BIP-39 mnemonic: mnemonic contains an unknown word (word 23)\n"
+            ),
+        )
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    with pytest.raises(AgentLoopRuntimeError) as exc_info:
+        sign_agent_submission(
+            agent_id_hex=VALID_AGENT_ID,
+            payload_bytes=b"{}",
+            binary_path=str(fake_binary),
+            manifest_path=str(fake_manifest),
+        )
+
+    assert attempts == 3
+    assert exc_info.value.token == "pq_agent_sign_bridge_failed"
+    assert "press Ctrl-D" not in str(exc_info.value)
+    assert "invalid BIP-39 mnemonic" in str(exc_info.value)
+
+
+def test_pq_agent_sign_bridge_does_not_retry_non_seed_signer_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    attempts = 0
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        return "abandon " * 23 + "about"
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        nonlocal attempts
+        attempts += 1
+        return SimpleNamespace(
+            returncode=1,
+            stdout="",
+            stderr=(
+                "Enter ML-DSA-65 mldsa_seed for agent aaaaaaaa... "
+                "as 24 BIP-39 words or 64-char hex, then press Ctrl-D:\n"
+                "input file exceeds MAX_SIGN_INPUT_BYTES\n"
+            ),
+        )
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    with pytest.raises(AgentLoopRuntimeError) as exc_info:
+        sign_agent_submission(
+            agent_id_hex=VALID_AGENT_ID,
+            payload_bytes=b"{}",
+            binary_path=str(fake_binary),
+            manifest_path=str(fake_manifest),
+        )
+
+    assert attempts == 1
+    assert exc_info.value.token == "pq_agent_sign_bridge_failed"
+    assert "mldsa_seed" not in str(exc_info.value)
+    assert "press Ctrl-D" not in str(exc_info.value)
+    assert "input file exceeds MAX_SIGN_INPUT_BYTES" in str(exc_info.value)
+
+
 def test_agent_loop_signature_requires_agent_id(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ILC_AGENT_LOOP_ALLOW_SYNTHETIC_SIGNATURE_FOR_TESTS", raising=False)
     with pytest.raises(AgentLoopRuntimeError) as exc_info:
