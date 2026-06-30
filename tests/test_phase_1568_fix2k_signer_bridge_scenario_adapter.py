@@ -322,6 +322,30 @@ def test_agent_loop_synthetic_signature_path_is_still_test_only(monkeypatch: pyt
     assert signature.startswith("agent-loop-v1-test-only:")
 
 
+def test_submission_loader_ignores_submission_artifacts(tmp_path: Path) -> None:
+    submission = {
+        "marker": "agent_loop_submission_ok",
+        "runtime_version": "agent_loop_v1_runtime_575.v0.1",
+        "submission": {
+            "task_id": "task:test",
+            "epoch": 0,
+            "profile": {"agent_id": VALID_AGENT_ID},
+            "output_hash": "ab" * 32,
+        },
+    }
+    artifact = {
+        "artifact_kind": "agent_submission",
+        "profile": {"agent_id": VALID_AGENT_ID},
+        "output_hash": "ab" * 32,
+    }
+    (tmp_path / "submission_1.json").write_text(json.dumps(submission), encoding="utf-8")
+    (tmp_path / "submission_artifact_1.json").write_text(json.dumps(artifact), encoding="utf-8")
+
+    loaded = agent_loop_v1._load_submission_payloads(tmp_path)
+
+    assert loaded == [submission["submission"]]
+
+
 def test_scenario_runner_accepts_outsider_receiver() -> None:
     scenario = {
         "scenario_id": "block6-test",

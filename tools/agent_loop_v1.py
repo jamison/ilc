@@ -660,7 +660,12 @@ def _load_submission_payloads(submission_dir: str | Path) -> list[dict[str, Any]
     if not root.is_dir():
         raise AgentLoopRuntimeError("submission_dir_missing", f"submission_dir missing: {root}")
     payloads: list[dict[str, Any]] = []
-    for path in sorted(root.glob("submission_*.json")):
+    submission_paths = [
+        path
+        for path in root.glob("submission_*.json")
+        if path.stem.removeprefix("submission_").isdecimal()
+    ]
+    for path in sorted(submission_paths, key=lambda item: int(item.stem.removeprefix("submission_"))):
         payload = json.loads(path.read_text(encoding="utf-8"))
         submission = _require_dict("submission_wrapper", payload).get("submission")
         payloads.append(_require_dict("submission", submission))
