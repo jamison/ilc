@@ -248,6 +248,22 @@ def test_materialize_economic_cycle_persists_graph_ledger_and_wallet_state(tmp_p
     assert manifest["runtime_identity"]["claims_sha256"] == manifest["settlement_manifest"]["claim_batch_sha256"]
 
 
+def test_materialize_economic_cycle_ignores_submission_artifact_decoys(tmp_path: Path) -> None:
+    scenario_root = _scenario_fixture(tmp_path)
+    _write_json(
+        scenario_root / "submissions" / "submission_artifact_1.json",
+        {
+            "artifact_kind": "agent_submission",
+            "submission": "not-a-wrapper-submission",
+        },
+    )
+
+    manifest = materialize_economic_cycle(scenario_root=scenario_root, output_root=tmp_path / "economic")
+
+    assert manifest["summary"]["node_count"] == 3
+    assert manifest["summary"]["wallet_count"] == 4
+
+
 def test_economic_cycle_tools_emit_machine_readable_outputs(tmp_path: Path) -> None:
     scenario_root = _scenario_fixture(tmp_path)
     output_root = tmp_path / "economic"
