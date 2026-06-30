@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+import ilc_core.identity.pq_agent_sign_bridge as pq_agent_sign_bridge
 from tools import agent_loop_v1
 from tools.agent_loop_v1 import AgentLoopRuntimeError
 from ilc_core.identity.pq_agent_sign_bridge import sign_agent_submission
@@ -77,6 +80,82 @@ def test_pq_agent_sign_bridge_rejects_missing_binary(tmp_path: Path) -> None:
             binary_path=str(missing_binary),
         )
     assert exc_info.value.token == "pq_agent_sign_binary_missing"
+
+
+def test_pq_agent_sign_bridge_requires_interactive_tty(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+
+    class NonTty:
+        def isatty(self) -> bool:
+            return False
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", NonTty())
+
+    with pytest.raises(AgentLoopRuntimeError) as exc_info:
+        sign_agent_submission(
+            agent_id_hex=VALID_AGENT_ID,
+            payload_bytes=b"{}",
+            binary_path=str(fake_binary),
+            manifest_path=str(fake_manifest),
+        )
+
+    assert exc_info.value.token == "pq_agent_sign_seed_tty_required"
+
+
+def test_pq_agent_sign_bridge_uses_hidden_prompt_and_piped_stdin(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    seed_words = "abandon " * 23 + "about"
+    captured: dict[str, object] = {}
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        captured["prompt"] = prompt
+        captured["stream"] = stream
+        return seed_words
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        captured["command"] = command
+        captured["kwargs"] = kwargs
+        return SimpleNamespace(returncode=0, stdout="ab" * 3309, stderr="")
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    signature = sign_agent_submission(
+        agent_id_hex=VALID_AGENT_ID,
+        payload_bytes=b"{}",
+        binary_path=str(fake_binary),
+        manifest_path=str(fake_manifest),
+    )
+
+    assert signature == "ab" * 3309
+    assert "input hidden" in str(captured["prompt"])
+    assert captured["stream"] is sys.stderr
+    command = captured["command"]
+    assert isinstance(command, list)
+    assert seed_words not in " ".join(command)
+    kwargs = captured["kwargs"]
+    assert isinstance(kwargs, dict)
+    assert kwargs["input"] == seed_words + "\n"
+    assert kwargs["stdout"] is subprocess.PIPE
+    assert kwargs["stderr"] is subprocess.PIPE
+    assert "stdin" not in kwargs
 
 
 def test_agent_loop_signature_requires_agent_id(monkeypatch: pytest.MonkeyPatch) -> None:
