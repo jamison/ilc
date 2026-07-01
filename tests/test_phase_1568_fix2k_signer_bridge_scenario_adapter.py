@@ -112,6 +112,8 @@ def test_pq_agent_sign_bridge_uses_hidden_prompt_and_piped_stdin(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.delenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", raising=False)
     fake_binary = tmp_path / "pq-agent-sign"
     fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
     fake_manifest = tmp_path / "manifest.md"
@@ -162,6 +164,8 @@ def test_pq_agent_sign_bridge_retries_seed_entry_failure(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.delenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", raising=False)
     fake_binary = tmp_path / "pq-agent-sign"
     fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
     fake_manifest = tmp_path / "manifest.md"
@@ -205,10 +209,94 @@ def test_pq_agent_sign_bridge_retries_seed_entry_failure(
     assert run_inputs == ["bad seed words\n", ("abandon " * 23 + "about").strip() + "\n"]
 
 
+def test_pq_agent_sign_bridge_process_seed_cache_reuses_successful_seed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.setenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", "1")
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    getpass_count = 0
+    run_inputs: list[str] = []
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        nonlocal getpass_count
+        getpass_count += 1
+        return "abandon " * 23 + "about"
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        run_inputs.append(str(kwargs["input"]))
+        return SimpleNamespace(returncode=0, stdout="ef" * 3309, stderr="")
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    for _ in range(2):
+        assert sign_agent_submission(
+            agent_id_hex=VALID_AGENT_ID,
+            payload_bytes=b"{}",
+            binary_path=str(fake_binary),
+            manifest_path=str(fake_manifest),
+        ) == "ef" * 3309
+
+    assert getpass_count == 1
+    assert run_inputs == [("abandon " * 23 + "about").strip() + "\n"] * 2
+    pq_agent_sign_bridge.clear_process_seed_cache()
+
+
+def test_pq_agent_sign_bridge_process_seed_cache_is_opt_in(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.delenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", raising=False)
+    fake_binary = tmp_path / "pq-agent-sign"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_manifest = tmp_path / "manifest.md"
+    fake_manifest.write_text("# manifest\n", encoding="utf-8")
+    getpass_count = 0
+
+    class Tty:
+        def isatty(self) -> bool:
+            return True
+
+    def fake_getpass(*, prompt: str, stream: object) -> str:
+        nonlocal getpass_count
+        getpass_count += 1
+        return "abandon " * 23 + "about"
+
+    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        return SimpleNamespace(returncode=0, stdout="12" * 3309, stderr="")
+
+    monkeypatch.setattr(pq_agent_sign_bridge.sys, "stdin", Tty())
+    monkeypatch.setattr(pq_agent_sign_bridge.getpass, "getpass", fake_getpass)
+    monkeypatch.setattr(pq_agent_sign_bridge.subprocess, "run", fake_run)
+
+    for _ in range(2):
+        sign_agent_submission(
+            agent_id_hex=VALID_AGENT_ID,
+            payload_bytes=b"{}",
+            binary_path=str(fake_binary),
+            manifest_path=str(fake_manifest),
+        )
+
+    assert getpass_count == 2
+
+
 def test_pq_agent_sign_bridge_final_seed_failure_is_sanitized(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.delenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", raising=False)
     fake_binary = tmp_path / "pq-agent-sign"
     fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
     fake_manifest = tmp_path / "manifest.md"
@@ -257,6 +345,8 @@ def test_pq_agent_sign_bridge_does_not_retry_non_seed_signer_failure(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
+    pq_agent_sign_bridge.clear_process_seed_cache()
+    monkeypatch.delenv("ILC_PQ_AGENT_SIGN_PROCESS_SEED_CACHE", raising=False)
     fake_binary = tmp_path / "pq-agent-sign"
     fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
     fake_manifest = tmp_path / "manifest.md"
@@ -424,20 +514,29 @@ def test_local_node_names_include_control_machine_aliases() -> None:
     }
 
 
-def test_broadcast_from_home_exposes_signer_prompt_stderr(
+def test_broadcast_from_home_uses_in_process_signer_session(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
     captured: dict[str, object] = {}
 
-    def fake_run(command: list[str], **kwargs: object) -> SimpleNamespace:
-        captured["command"] = command
+    def fake_broadcast_submission(**kwargs: object) -> list[dict[str, object]]:
         captured.update(kwargs)
-        return SimpleNamespace(stdout=json.dumps({"send_statuses": []}))
+        return [{"endpoint": "https://peer.invalid", "status_code": 202}]
 
-    monkeypatch.setattr(scenario_runner, "_run", fake_run)
+    monkeypatch.setattr(scenario_runner, "_agent_loop_broadcast_submission", fake_broadcast_submission)
     artifact = tmp_path / "artifact.json"
-    artifact.write_text("{}", encoding="utf-8")
+    artifact.write_text(
+        json.dumps(
+            {
+                "artifact_kind": "agent_submission",
+                "profile": {"agent_id": VALID_AGENT_ID},
+                "output_payload": {"ok": True},
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
 
     result = scenario_runner._broadcast_from_home(
         _minimal_task(),
@@ -447,10 +546,13 @@ def test_broadcast_from_home_exposes_signer_prompt_stderr(
         signer_agent_id=VALID_AGENT_ID,
     )
 
-    assert result == {"send_statuses": []}
-    assert captured["cwd"] == REPO_ROOT
-    assert captured["stderr_to_terminal"] is True
-    assert "--signer-agent-id" in captured["command"]
+    assert result["send_statuses"] == [{"endpoint": "https://peer.invalid", "status_code": 202}]
+    assert captured["signer_agent_id_hex"] == VALID_AGENT_ID
+    assert captured["gossip_type"] == "agent_submission"
+    assert captured["channel"] == _minimal_task()["channel"]
+    assert json.loads((tmp_path / "broadcast_agent_submission.json").read_text(encoding="utf-8"))[
+        "signer_agent_id"
+    ] == VALID_AGENT_ID
 
 
 def test_broadcast_artifact_requires_signer_for_non_agent_artifact(tmp_path: Path) -> None:
