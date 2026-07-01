@@ -375,13 +375,31 @@ def test_broadcast_submission_emits_cbor_payload_and_latency_metrics(monkeypatch
     assert all(status["payload_bytes"] > 0 for status in statuses)
     assert all(isinstance(status["payload_sha256"], str) and status["payload_sha256"] for status in statuses)
     assert all(status["duration_ms"] >= 0.0 for status in statuses)
+    assert all(status["transport_channel"].startswith("cid:") for status in statuses)
 
     assert len(calls) == 2
     assert all(call[6] == "application/cbor" for call in calls)
     assert all(call[4].startswith("agent-loop-v1-test-only:") for call in calls)
+    assert all(call[2].startswith("cid:") for call in calls)
+    assert all(call[2] != _task()["channel"] for call in calls)
     decoded = cbor_loads(calls[0][5])
     assert decoded["artifact_kind"] == "agent_submission"
     assert decoded["task_id"] == _task()["task_id"]
+    assert decoded["channel"].startswith("cid:")
+    assert all(call[2] == decoded["channel"] for call in calls)
+
+
+def test_logical_channel_is_derived_to_opaque_transport_channel() -> None:
+    derived = agent_loop_v1._opaque_transport_channel("ilc.agent-loop.v1")
+    assert derived.startswith("cid:")
+    assert len(derived.removeprefix("cid:")) == 64
+    assert derived == agent_loop_v1._opaque_transport_channel("ilc.agent-loop.v1")
+    assert derived != "ilc.agent-loop.v1"
+
+
+def test_existing_opaque_transport_channel_is_preserved() -> None:
+    channel = "cid:9f7a8c42bb11ddee99aa22cc33ff44aa"
+    assert agent_loop_v1._opaque_transport_channel(channel) == channel
 
 
 def test_broadcast_requires_real_signature_without_test_override(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -413,7 +431,7 @@ def test_broadcast_requires_real_signature_without_test_override(monkeypatch: py
             broadcast=True,
         )
 
-    assert excinfo.value.token == "agent_loop_real_signature_required_for_live_rehearsal"
+    assert excinfo.value.token == "pq_agent_sign_seed_tty_required"
 
 
 def test_cli_replay_panel_verifies_saved_artifacts(tmp_path: Path) -> None:
@@ -613,16 +631,22 @@ def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch,
         return combined_panel_payload
 
     monkeypatch.setattr(scenario_runner, "_evaluate_panel", _fake_evaluate_panel)
-    monkeypatch.setattr(
-        scenario_runner,
-        "_broadcast_from_home",
-        lambda task_payload, artifact_file, gossip_type, emit_dir: {
+    def _fake_broadcast_from_home(
+        task_payload: dict[str, object],
+        artifact_file: Path,
+        gossip_type: str,
+        emit_dir: Path,
+        *,
+        signer_agent_id: str | None = None,
+    ) -> dict[str, object]:
+        return {
             "send_statuses": [
-                {"peer": "ilc-node-2", "send_status": 202},
-                {"peer": "ilc-node-3", "send_status": 202},
+                {"endpoint": "https://ilc-node-2.invalid", "status_code": 202},
+                {"endpoint": "https://ilc-node-3.invalid", "status_code": 202},
             ]
-        },
-    )
+        }
+
+    monkeypatch.setattr(scenario_runner, "_broadcast_from_home", _fake_broadcast_from_home)
     monkeypatch.setattr(
         scenario_runner,
         "_collect_diagnostics",
@@ -645,7 +669,9 @@ def test_run_scenario_emits_live_economic_state(monkeypatch: pytest.MonkeyPatch,
     assert manifest["benchmark_metrics"]["panel_evaluation_ms"] >= 0.0
     assert manifest["benchmark_metrics"]["submission_to_panel_verdict_ms"] >= 0.0
     assert manifest["benchmark_metrics"]["submission_to_network_visibility_ms"] >= 0.0
-    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["endpoint_delivery_count"] == 0
+    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["artifact_count"] == 7
+    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["endpoint_delivery_count"] == 14
+    assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["successful_endpoint_delivery_count"] == 14
     assert manifest["benchmark_metrics"]["claim_submission_delivery_metrics"]["duplicate_endpoint_delivery_ratio"] == 0.0
 
     summary_payload = query_rc0_1_economic_state.query_summary(economic_manifest_path)

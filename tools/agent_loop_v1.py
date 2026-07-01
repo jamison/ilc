@@ -45,10 +45,12 @@ from ilc_core.network.d2d.http_gossip_transport_runtime import (
     TransportRuntimeConfig,
     TransportRuntimeError,
 )
+from ilc_core.network.d2d.interface import D2dInterfaceValidationError, validate_d2d_channel
 from ilc_core.node.node_startup_runtime import load_static_peer_config
 
 AGENT_LOOP_V1_RUNTIME_VERSION = "agent_loop_v1_runtime_575.v0.1"
 DEFAULT_CHANNEL = "ilc.agent-loop.v1"
+TRANSPORT_CHANNEL_DERIVATION_DOMAIN = "ILC_AGENT_LOOP_TRANSPORT_CHANNEL_V1"
 DEFAULT_REPRODUCIBILITY_THRESHOLD = "0.85"
 SIMPLE_EPOCH_LEDGER_TELEMETRY_NOTE = (
     "SimpleEpochLedger is telemetry only. rewards_paid includes direct plus "
@@ -458,6 +460,17 @@ def _signature(payload: dict[str, Any], *, agent_id_hex: str | None = None) -> s
     return sign_agent_submission(agent_id_hex=agent_id_hex, payload_bytes=_stable_json_bytes(payload))
 
 
+def _opaque_transport_channel(channel: str) -> str:
+    logical_channel = _require_string("channel", channel)
+    try:
+        return str(validate_d2d_channel(logical_channel))
+    except D2dInterfaceValidationError:
+        digest = hashlib.sha256(
+            f"{TRANSPORT_CHANNEL_DERIVATION_DOMAIN}:{logical_channel}".encode("utf-8")
+        ).hexdigest()
+        return f"cid:{digest}"
+
+
 def _signer_agent_id_for_broadcast(artifact: dict[str, Any], signer_agent_id_hex: str | None) -> str:
     artifact_kind = artifact.get("artifact_kind")
     if artifact_kind == "agent_submission":
@@ -551,6 +564,7 @@ def _broadcast_submission(
 ) -> list[dict[str, Any]]:
     transport_config, peers = _transport_bundle(config_path)
     runtime = HttpGossipTransportRuntime(transport_config)
+    transport_channel = _opaque_transport_channel(channel)
     # CDL-061 production traffic stays on canonical CBOR; JSON remains only a
     # lower-layer fallback path in the transport runtime.
     payload = cbor_dumps_canonical(artifact)
@@ -564,7 +578,7 @@ def _broadcast_submission(
             status = runtime.send_gossip(
                 endpoint,
                 gossip_type,
-                channel,
+                transport_channel,
                 epoch,
                 signature,
                 payload,
@@ -587,6 +601,7 @@ def _broadcast_submission(
                 "duration_ms": duration_ms,
                 "payload_bytes": payload_bytes,
                 "payload_sha256": payload_sha256,
+                "transport_channel": transport_channel,
             }
         )
     return statuses
