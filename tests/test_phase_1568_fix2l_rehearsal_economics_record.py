@@ -74,9 +74,12 @@ def test_record_uses_agent_loop_claims_and_verifies_settlement_root() -> None:
     assert record["accepted_submission_count"] == 7
     assert record["ecu_claims_total_ecu"] == "5.8173828125"
     assert record["cdl048_dry_run_quote_path_verified"] is True
+    assert record["cdl048_per_agent_lot_coverage_verified"] is True
+    assert record["cdl048_four_issuance_epoch_quote_coverage_verified"] is True
     assert record["allocation_quote_verified"] is True
     assert verification["settlement_root_verified"] is True
     assert verification["settlement_root_hex"] == record["settlement_root_hex"]
+    assert verification["cdl048_per_agent_lot_coverage_verified"] is True
 
 
 def test_cdl048_quote_and_conversion_receipt_boundaries_remain_no_write() -> None:
@@ -90,6 +93,7 @@ def test_cdl048_quote_and_conversion_receipt_boundaries_remain_no_write() -> Non
     assert quote["ledger_write_authorized"] is False
     assert quote["wallet_write_authorized"] is False
     assert quote["public_claimability_activated"] is False
+    assert record["cdl048_per_agent_lot_coverage"]["wallet_write_authorized"] is False
     assert all(value is False for value in conversion_receipt_activation_defaults().values())
 
 
@@ -194,6 +198,9 @@ def test_scenario_manifest_includes_rehearsal_economics_references(tmp_path: Pat
     assert manifest["rehearsal_economics_record_file"] == "rehearsal_economics_record.json"
     assert manifest["rehearsal_settlement_root_hex"] == record["settlement_root_hex"]
     assert manifest["rehearsal_cdl048_wallet_write_authorized"] is False
+    assert manifest["rehearsal_cdl048_per_agent_lot_count"] == 6
+    assert manifest["rehearsal_cdl048_positive_claim_count"] == 6
+    assert manifest["rehearsal_cdl048_four_epoch_quote_coverage_verified"] is True
 
 
 def test_fix2l_does_not_clear_production_emission_guard() -> None:
