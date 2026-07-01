@@ -555,6 +555,44 @@ def test_broadcast_from_home_uses_in_process_signer_session(
     ] == VALID_AGENT_ID
 
 
+def test_broadcast_from_home_prefers_artifact_channel_over_task_channel(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    captured: dict[str, object] = {}
+    artifact_channel = "cid:9f7a8c42bb11ddee99aa22cc33ff44aa"
+
+    def fake_broadcast_submission(**kwargs: object) -> list[dict[str, object]]:
+        captured.update(kwargs)
+        return [{"endpoint": "https://peer.invalid", "status_code": 202}]
+
+    monkeypatch.setattr(scenario_runner, "_agent_loop_broadcast_submission", fake_broadcast_submission)
+    artifact = tmp_path / "artifact.json"
+    artifact.write_text(
+        json.dumps(
+            {
+                "artifact_kind": "agent_submission",
+                "channel": artifact_channel,
+                "profile": {"agent_id": VALID_AGENT_ID},
+                "output_payload": {"ok": True},
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+
+    result = scenario_runner._broadcast_from_home(
+        _minimal_task(),
+        artifact,
+        "agent_submission",
+        tmp_path,
+        signer_agent_id=VALID_AGENT_ID,
+    )
+
+    assert result["send_statuses"] == [{"endpoint": "https://peer.invalid", "status_code": 202}]
+    assert captured["channel"] == artifact_channel
+
+
 def test_broadcast_artifact_requires_signer_for_non_agent_artifact(tmp_path: Path) -> None:
     artifact_file = tmp_path / "panel.json"
     artifact_file.write_text(json.dumps({"artifact_kind": "panel_verdict"}, sort_keys=True), encoding="utf-8")
