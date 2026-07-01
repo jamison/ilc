@@ -72,6 +72,25 @@ testbed/configs/*/cert.pem
 testbed/configs/*/key.pem
 
 # =========================
+# ILC local signing custody artifacts
+# =========================
+# GitHub uses .gitignore for repository ignore policy; there is no separate
+# .githubignore mechanism. Keep private agent seeds, local session keys, and
+# live delegation/session certificates out of git and out of LMDB registration.
+.local_signer_sessions/
+.local_agent_sessions/
+signer_sessions/
+agent_sessions/
+*.mldsa_seed
+*.mldsa_seed.txt
+*.mnemonic
+*.mnemonic.txt
+*.agent-session-key.json
+*.agent-session-cert.json
+*.delegation-session-cert.json
+*.local-session-key.json
+
+# =========================
 # Automation runtime state
 # =========================
 automation/.batch_loop.lock
