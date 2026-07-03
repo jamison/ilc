@@ -102,6 +102,34 @@ def test_fix2r_verifier_rejects_write_authorization_and_noncanonical_records() -
         "reason": "conversion_resolution_not_canonical",
     }
 
+    reordered_tokens = deepcopy(resolution)
+    reordered_tokens["tokens"] = list(reversed(reordered_tokens["tokens"]))
+    assert verify_conversion_resolution(reordered_tokens) == {
+        "ok": False,
+        "reason": "conversion_resolution_not_canonical",
+    }
+
+
+def test_fix2r_resolved_conversion_cannot_finalize_after_deadline() -> None:
+    quote = deepcopy(_record()["cdl048_conversion_quote"])
+    quote["conversion_epoch"] = quote["deadline_epoch"] + 1
+    candidate = build_conversion_candidate_from_quote(quote)
+
+    with pytest.raises(ValueError, match="resolved_conversion_epoch_exceeds_deadline_epoch"):
+        build_conversion_resolution(
+            candidate,
+            resolution_status="resolved",
+            resolution_epoch=candidate.conversion_epoch,
+        )
+
+    omitted = build_conversion_resolution(
+        candidate,
+        resolution_status="omitted",
+        resolution_epoch=candidate.conversion_epoch,
+    ).to_canonical_record()
+
+    assert verify_conversion_resolution(omitted)["ok"] is True
+
 
 def test_fix2r_cdl029_overhead_pool_cannot_satisfy_fixed_tranche() -> None:
     with pytest.raises(

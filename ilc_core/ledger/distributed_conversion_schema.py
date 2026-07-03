@@ -4,6 +4,10 @@
 Phase 1568-Fix2r defines schema/read-model records only. These records make
 Genesis-tranche treatment and CDL-057 witness status explicit without activating
 wallet, treasury, minting, or settlement authority.
+
+The token list emitted by ConversionResolution.to_canonical_record() is
+canonical and load-bearing. verify_conversion_resolution() rejects records whose
+decoded JSON does not match that canonical form, including token reordering.
 """
 
 from __future__ import annotations
@@ -292,6 +296,11 @@ class ConversionResolution:
             "resolution_epoch",
             _require_epoch(self.resolution_epoch, token="resolution_epoch_invalid"),
         )
+        # Only a resolved conversion is deadline-final. Omitted/pending records
+        # may be produced later by recovery or observation paths and therefore
+        # have their own future status-specific checks.
+        if self.resolution_status == "resolved" and self.conversion_epoch > self.deadline_epoch:
+            raise ValueError("resolved_conversion_epoch_exceeds_deadline_epoch")
         expected_root = conversion_resolution_verifier_root_preimage(
             self._record_without_verifier_root()
         )
@@ -332,6 +341,9 @@ class ConversionResolution:
         if self.genesis_tranche_treatment == GENESIS_TRANCHE_EXPLICITLY_DEFERRED:
             record["tokens"].append(FIX2R_EXPLICIT_DEFERRED_TOKEN)
         record["verifier_root"] = self.verifier_root
+        # These are per-record non-activation declarations, not global system
+        # state. A future value path may be public-claimable elsewhere while
+        # this read-model record still authorizes no write effect by itself.
         record["wallet_write_authorized"] = False
         record["treasury_write_authorized"] = False
         record["production_minting_authorized"] = False
