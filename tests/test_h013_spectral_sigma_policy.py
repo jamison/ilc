@@ -17,10 +17,14 @@ from ilc_core.network.d2d.spectral_sigma_policy import (
     SIGMA_DP_CALIBRATION_VALIDATED,
     SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS,
     SIGMA_MAINNET_PROVISIONAL_STATUS,
+    SIGMA_OBLIGATION_ID,
     SIGMA_POLICY_STATUS,
+    SIGMA_PRE_PUBLIC_RC_BLOCKER,
+    SIGMA_REVOCATION_PATH,
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED,
     SIM_BEACON_01_PRIVACY_TARGET_VALIDATED,
     SpectralSigmaPolicyError,
+    build_sigma_policy_status_record,
     normalize_noise_sigma,
     validate_noise_sigma_for_mode,
 )
@@ -45,7 +49,34 @@ def test_h013_sigma_policy_records_no_privacy_calibration_claim() -> None:
         node_startup_runtime.H013_SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS
         is True
     )
+    assert SIGMA_OBLIGATION_ID == "OBL-046"
+    assert SIGMA_PRE_PUBLIC_RC_BLOCKER is True
+    assert (
+        SIGMA_REVOCATION_PATH
+        == "close_obl_046_with_validated_sigma_or_revoke_genesis_provisional_authority"
+    )
     assert node_startup_runtime.H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED is True
+
+
+def test_h013_sigma_policy_status_record_surfaces_provisional_boundary() -> None:
+    record = build_sigma_policy_status_record()
+
+    assert record["version"] == "h013_spectral_sigma_policy.v0.1"
+    assert record["sigma_policy_status"] == SIGMA_POLICY_STATUS
+    assert record["obl_id"] == "OBL-046"
+    assert record["pre_public_rc_blocker"] is True
+    assert record["h013_testnet_emission_sigma"] == H013_TESTNET_EMISSION_SIGMA
+    assert record["sigma_dp_calibration_validated"] is False
+    assert (
+        record["sigma_dp_calibration_not_validated_token"]
+        == SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
+    )
+    assert record["sigma_mainnet_provisional_authorized_by_genesis"] is True
+    assert (
+        record["sigma_mainnet_provisional_status"]
+        == "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
+    )
+    assert record["revocation_or_replacement_path"] == SIGMA_REVOCATION_PATH
 
 
 def test_h013_generic_sigma_floor_validation() -> None:
