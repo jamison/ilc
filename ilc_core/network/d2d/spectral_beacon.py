@@ -27,6 +27,11 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from .gossip import build_transport_envelope
 from .interface import validate_d2d_channel, validate_d2d_peer_id
+from .spectral_sigma_policy import (
+    MIN_NOISE_SIGMA,
+    SpectralSigmaPolicyError,
+    normalize_noise_sigma,
+)
 
 
 H013_SEALED_SPECTRAL_BEACON_VERSION = "h013_sealed_spectral_beacon.v0.1"
@@ -35,10 +40,12 @@ ADR_0034_DEPENDENCY = "run_h013_d2d_sealed_sender_adr_verdict=accepted"
 MAX_LAMBDA_VALUES = 32
 MAX_AGENT_ID_BYTES = 128
 MAX_EMISSION_ID_BYTES = 128
-MIN_NOISE_SIGMA = 0.005
 # H-013 Q1 Option C: beacon emission gated by mode flag.
-# TESTNET: emit with placeholder epsilon (sigma=0.05); no mainnet risk.
-# MAINNET: gate lifted only after SIM-BEACON-01 calibration completes.
+# TESTNET: emit with the Phase-939 candidate sigma; no DP/privacy-calibrated claim.
+# MAINNET: gate lifted only after adversary-model revision validates sigma.
+# STALE CLAIM REMOVED: SIM-BEACON-01 did not calibrate a DP sigma; OBL-046
+# remains open until a validated adversary model and later authority replace
+# the current floor/testnet-candidate policy.
 BEACON_EMISSION_MODE_TESTNET = "testnet"
 BEACON_EMISSION_MODE_MAINNET = "mainnet"
 MAX_NORMALIZED_LAPLACIAN_EIGENVALUE = 2.0
@@ -648,16 +655,10 @@ def _normalize_lambda_local(value: Any) -> list[float]:
 
 
 def _normalize_noise_sigma(value: Any) -> float:
-    if (
-        not isinstance(value, (float, int))
-        or isinstance(value, bool)
-        or not math.isfinite(float(value))
-    ):
-        raise SpectralBeaconValidationError("h013_noise_sigma_invalid", "noise_sigma_invalid")
-    normalized = float(value)
-    if normalized < MIN_NOISE_SIGMA:
-        raise SpectralBeaconValidationError("h013_noise_sigma_below_floor", "noise_sigma_below_floor")
-    return normalized
+    try:
+        return normalize_noise_sigma(value)
+    except SpectralSigmaPolicyError as exc:
+        raise SpectralBeaconValidationError(exc.token, exc.message) from exc
 
 
 def _normalize_emission_id(value: Any) -> str:

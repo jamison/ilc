@@ -11,7 +11,10 @@
 # CDL required before any of these parameters are constitutionally locked.
 #
 # Gate for full spectral pipeline: SIM-HYPEREDGE-01 -> SIM-SPECTRAL-01 -> CDL.
-# Gate for spectral beacon emission: SIM-BEACON-01 (noise budget calibration).
+# Gate for spectral beacon emission: H-013 sigma policy plus SIM-BEACON-01
+# evidence. SIM-BEACON-01 did not validate a differential-privacy sigma.
+# STALE CLAIM REMOVED: this module no longer describes H-013 noise as calibrated
+# differential privacy; it only enforces the current OBL-046-open sigma policy.
 # Gate for spectral routing: SIM-ROUTING-01 (convergence validation).
 # Gate for weight parameterization: SIM-REUSE-01 + CDL (EdgeType coefficients).
 from __future__ import annotations
@@ -21,6 +24,8 @@ import math
 import os
 import struct
 from typing import TYPE_CHECKING, Callable, List, Optional
+
+from ilc_core.network.d2d.spectral_sigma_policy import normalize_noise_sigma
 
 if TYPE_CHECKING:
     from ilc_core.types import WeightParams
@@ -172,14 +177,15 @@ def _csprng_gauss() -> float:
 
 
 def add_noise(eigenvalues: List[float], sigma: float) -> List[float]:
-    """Add calibrated Gaussian noise to a spectral fingerprint before beacon emission.
+    """Add specified Gaussian noise to a spectral fingerprint before beacon emission.
 
-    sigma is the noise standard deviation (differential privacy budget parameter).
-    Calibrate sigma via SIM-BEACON-01 before production use.
-    The H-013 spectral_beacon.py enforces MIN_NOISE_SIGMA=0.005 at the
-    construction boundary — this function does not re-check the floor.
+    sigma is the noise standard deviation. It is not a validated differential
+    privacy budget today: SIM-BEACON-01 requires adversary-model revision before
+    any privacy-calibrated or mainnet claim. The shared H-013 sigma policy
+    enforces MIN_NOISE_SIGMA=0.005 here and at beacon construction.
 
     Uses CSPRNG (os.urandom via Box-Muller), never random.gauss. This is a
     security requirement: noise for beacon privacy must not be predictable.
     """
-    return [v + sigma * _csprng_gauss() for v in eigenvalues]
+    normalized_sigma = normalize_noise_sigma(sigma)
+    return [v + normalized_sigma * _csprng_gauss() for v in eigenvalues]
