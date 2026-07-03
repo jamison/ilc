@@ -27,12 +27,22 @@ H013_SIGMA_POLICY_STATUS = SIGMA_POLICY_STATUS
 SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN = (
     "sigma_dp_calibration_not_validated_obl_046_open"
 )
+# Provisional Genesis authority pending CDL-SIGMA-01 ratification (OBL-046).
+# Revocation/replacement path: when OBL-046 closes, either keep the pinned
+# candidate only if the adversary model validates it and ratified authority
+# flips SIGMA_DP_CALIBRATION_VALIDATED, or set this flag False and replace
+# H013_TESTNET_EMISSION_SIGMA with the ratified sigma before public RC.
 SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS = True
 SIGMA_MAINNET_PROVISIONAL_STATUS = (
     "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
 )
 SIGMA_MAINNET_PROVISIONAL_TOKEN = (
     "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
+)
+SIGMA_OBLIGATION_ID = "OBL-046"
+SIGMA_PRE_PUBLIC_RC_BLOCKER = True
+SIGMA_REVOCATION_PATH = (
+    "close_obl_046_with_validated_sigma_or_revoke_genesis_provisional_authority"
 )
 
 
@@ -105,6 +115,32 @@ def validate_noise_sigma_for_mode(
     raise SpectralSigmaPolicyError("h013_noise_sigma_mode_invalid", "sigma_mode_invalid")
 
 
+def build_sigma_policy_status_record() -> dict[str, Any]:
+    """Return the operator-facing H-013 sigma policy status record."""
+
+    return {
+        "version": SPECTRAL_SIGMA_POLICY_VERSION,
+        "sigma_policy_status": SIGMA_POLICY_STATUS,
+        "obl_id": SIGMA_OBLIGATION_ID,
+        "pre_public_rc_blocker": SIGMA_PRE_PUBLIC_RC_BLOCKER,
+        "min_noise_sigma": MIN_NOISE_SIGMA,
+        "h013_testnet_emission_sigma": H013_TESTNET_EMISSION_SIGMA,
+        "sigma_dp_calibration_validated": SIGMA_DP_CALIBRATION_VALIDATED,
+        "sigma_dp_calibration_not_validated_token": (
+            SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
+        ),
+        "sigma_mainnet_provisional_authorized_by_genesis": (
+            SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS
+        ),
+        "sigma_mainnet_provisional_status": SIGMA_MAINNET_PROVISIONAL_STATUS,
+        "sigma_mainnet_provisional_token": SIGMA_MAINNET_PROVISIONAL_TOKEN,
+        "sim_beacon_01_adversary_model_revision_required": (
+            SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED
+        ),
+        "revocation_or_replacement_path": SIGMA_REVOCATION_PATH,
+    }
+
+
 __all__ = [
     "H013_SIGMA_POLICY_STATUS",
     "H013_TESTNET_EMISSION_SIGMA",
@@ -114,11 +150,15 @@ __all__ = [
     "SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS",
     "SIGMA_MAINNET_PROVISIONAL_STATUS",
     "SIGMA_MAINNET_PROVISIONAL_TOKEN",
+    "SIGMA_OBLIGATION_ID",
     "SIGMA_POLICY_STATUS",
+    "SIGMA_PRE_PUBLIC_RC_BLOCKER",
+    "SIGMA_REVOCATION_PATH",
     "SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED",
     "SIM_BEACON_01_PRIVACY_TARGET_VALIDATED",
     "SPECTRAL_SIGMA_POLICY_VERSION",
     "SpectralSigmaPolicyError",
+    "build_sigma_policy_status_record",
     "normalize_noise_sigma",
     "validate_noise_sigma_for_mode",
 ]

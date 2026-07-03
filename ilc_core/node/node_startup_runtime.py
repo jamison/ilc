@@ -51,6 +51,7 @@ from ilc_core.network.d2d.spectral_sigma_policy import (
     SIGMA_POLICY_STATUS,
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED,
     SpectralSigmaPolicyError,
+    build_sigma_policy_status_record,
     validate_noise_sigma_for_mode,
 )
 from ilc_core.analysis.spectral_utils import spectral_distance
@@ -145,6 +146,7 @@ class NodeStartupContext:
     genesis_import_reference: dict[str, str]
     config_path: str
     genesis_reference_path: str
+    sigma_policy_status: dict[str, Any]
     # H-013 Phase 934: rolling peer fingerprint cache (mutable; frozen only prevents
     # replacing the reference, not updating the cache in place).
     peer_fingerprint_cache: PeerFingerprintCache
@@ -316,6 +318,7 @@ def build_node_startup_context(
         },
         config_path=config['config_path'],
         genesis_reference_path=genesis_reference['genesis_reference_path'],
+        sigma_policy_status=build_sigma_policy_status_record(),
         peer_fingerprint_cache=PeerFingerprintCache(),
     )
 
