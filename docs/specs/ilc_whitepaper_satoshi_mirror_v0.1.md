@@ -7,49 +7,25 @@ genesis@ilc.network
 
 ## Abstract
 
-Are we all seeing the same thing? What can you trust? During the dawn of the Agentic Web3.0, content and connection are no longer the scarce resource — trust is. Web2.0 systems are centralized and based on trusted authorities, which made sense in the early internet era. Unfortunately, these centralized services now provide an all-too-attractive target for governments and corporations alike as they strive for political and economic persuasion. Web2.0 centralization simply provides too many economic and political incentives to employ Web3.0 technology — highly persuasive autonomous agents, cheaply fabricated content — to the detriment of users and citizens. When content can be generated at arbitrary scale but falsified at negligible cost, content and connection are no longer limiting factors. Trust is.
+Are we all seeing the same thing? What can you trust? During the dawn of the Agentic Web3.0, content and attention are no longer the scarce resource — trust is. We propose the Intelligent Labor Coin (ILC) protocol, in which epistemic state itself — the formal algebra of truth claims — is paired with distributed cryptography to serve as the foundation for a new, fully decentralized internet protocol layer. ILC is a communications and trust protocol on which arbitrarily complex applications, markets, and trust relationships can be composed, verified, and audited without centralized authorities. Any information service currently requiring a trusted intermediary — publishing, content moderation, credentialing, social networks, knowledge markets, prediction markets, auctions, confidential communications, and the economic infrastructure underlying the internet — can be composed using ILC primitives, making ILC a general-purpose Byzantine-fault-tolerant substrate for the verifiable, pseudonymous replacement of centralized Web2.0 knowledge infrastructure.
 
-We propose the Intelligent Labor Coin (ILC) protocol, in which epistemic state itself — the formal algebra of truth claims — serves as the foundation for a new, fully distributed internet protocol layer. Knowledge claims are submitted against a content-addressed hypergraph and rewarded in ECU — an internal credit unit convertible to ILC Coin, a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work. Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of the shared knowledge graph — the central backbone of ILC — while the economic layer serves as its immune system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
+Web2.0 systems are centralized and based on trusted authorities, which made sense in the early internet era. Unfortunately, these centralized services now provide an all-too-attractive target for governments and corporations alike as they strive for political and economic persuasion. Web2.0 centralization simply provides too many economic and political incentives to employ Web3.0 technology — highly persuasive autonomous agents, cheaply fabricated content — to the detriment of users and citizens. When content can be generated at arbitrary scale but falsified at negligible cost, content and attention are no longer limiting factors. Trust is.
 
-The structural integrity of the graph is attested by a Merkle-Laplacian dual commitment: a cryptographic pairing of the content Merkle root with the spectral hash of the normalized hypergraph Laplacian, enabling Byzantine structural fault detection unavailable to content commitment alone.
-
-ILC is a protocol designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike. The graph that underlies this new internet originates at a single unfalsifiable cryptographic axiom: the Genesis root, Node 0. From that point, seven truth primitives generate a closed epistemic algebra over a content-addressed hypergraph state lattice. This algebra is expressive enough to represent any claim, validation, refutation, revision, information, or governance event as a first-class graph operation, producing an immutable, epoch-committed substrate. ILC is a trust protocol on which arbitrarily complex applications, markets, and trust relationships can be composed, verified, and audited without centralized authorities. Any information service currently requiring a trusted intermediary — publishing, content moderation, credentialing, social networks, knowledge markets, prediction markets, auctions, confidential communications, and the economic infrastructure underlying the internet — can be composed using ILC primitives, making ILC a general-purpose Byzantine-fault-tolerant substrate for the verifiable, pseudonymous replacement of centralized Web2.0 knowledge infrastructure.
+ILC is designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike. The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom — the Genesis root, Node 0 — from which seven truth primitives generate a closed epistemic algebra over a content-addressed hypergraph. This algebra is expressive enough to represent any claim, validation, refutation, revision, or governance event as a first-class graph operation, producing an immutable, epoch-committed substrate whose structural integrity is attested by a Merkle-Laplacian dual commitment: a cryptographic pairing of the content Merkle root with the spectral hash of the normalized hypergraph Laplacian, enabling Byzantine structural fault detection unavailable to content-only commitment. Knowledge claims submitted against this hypergraph are rewarded in ECU — an internal credit unit that measures the time-value of verified epistemic labor, automatically converted to ILC Coin within a mandatory 4-issuance-epoch window: a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work (PoW). Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of this shared knowledge graph — the central commons and backbone of ILC — while the economic layer serves as its immune and maintenance system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
 
 *To reach the Genesis Agent, write to `ilcops@proton.me`. An ILC-native, sealed, pseudonymous CCSS channel opens at public RC.*
 
 ---
 
-## 0. The Observer Problem
+## 0. Truth begins somewhere. Agrippa's Trilemma, Gödel, Popper.
 
-Every record of knowledge requires a standpoint. An observation is not a fact until someone — an agent with an identity, a position, and a method — makes it. A claim is not meaningful until it can, in principle, be falsified. A validation is not credible until the validator's identity is persistent across time and their interests are visible to the network.
+Every chain of justification terminates in one of three ways. Agrippa's trilemma (~100 CE, restated by Hans Albert, 1968) states this as a logical necessity: either the chain regresses infinitely (each proof requires a further proof), loops circularly (the claim is used to justify itself), or stops dogmatically at an unproven axiom. There is no fourth option. Absolute justification is not merely difficult — it is structurally impossible.
 
-Current knowledge systems handle this by delegation: they trust the institution to maintain the standpoint on everyone's behalf. The university certifies the researcher. The journal certifies the finding. The platform certifies the reach. The standpoint exists — it is held privately, and therefore corruptible.
+Gödel's First Incompleteness Theorem (1931) gives this a mathematical form: in any consistent formal system expressive enough to encode arithmetic, there exist true statements that cannot be proven within the system. To prove them, new axioms must be introduced — which generate new unprovable truths. No system is self-complete. The infinite regress and the dogmatic stop are not epistemological failures; they are properties of formal logic itself.
 
-ILC makes the standpoint explicit, attributable, and economically legible. Every agent has a permanent identity derived from a ceremony seed. Every claim is signed. Every jury verdict is recorded. The accumulated structure of claims, validations, refutations, and revisions is the epistemic state of the network — and it is the ledger.
+Popper's response (1934) is the operative one: the scientific method. Rather than searching for the impossible ultimate justification, knowledge advances by conjecture and refutation — form a bold claim, state its falsification condition, subject it to the most rigorous possible attack. A claim that cannot in principle be falsified carries no epistemic weight. The trilemma is not an obstacle; it is the engine. Science progresses not by proving theories true, but by failing to prove them false.
 
-This structure must be grounded. All chains of epistemic justification face the Münchhausen trilemma: infinite regress (each validation requires a validator), circularity (the system validates itself), or an axiomatic stop. ILC takes the third option. The graph originates at Node 0 — the Genesis root — the one assertion in the protocol that cannot be refuted by design, excluded from temporal decay, and signed under a domain context deliberately separated from all subsequent claims. Without it, no chain of claim validation has a terminus. With it, the observer has a declared standpoint, and every claim is traceable back to that ground.
-
-```
-Node 0: Genesis Root
-┌─────────────────────────────────────────────┐
-│  node_kind:  genesis                        │
-│  primitive:  assert.truth — never refuted   │
-│  decay:      excluded from CDL-V1           │
-│  signing:    ILC_GENESIS_ROOT_ENVELOPE_V1   │
-│  identity:   SHA-384(genesis_seed||context) │
-└──────────────────┬──────────────────────────┘
-                   │ ATTESTATION
-                   ▼
-         [claim node — agent asserts P]
-                   │ validate.claim
-                   ▼
-         [jury panel — 7 independent evaluators]
-                   │ commit.epoch
-                   ▼
-         C(t) = (M(t), S(t))  ←  structural commitment
-```
-
-The Genesis root is not a trusted party. It is the protocol's declaration: the graph begins here, signed once, immutably, and everything that follows is traceable to this moment. The observer is not removed — it is made legible.
+ILC is built on this synthesis. The trilemma's axiomatic stop is taken explicitly: the graph originates at Node 0, `SHA-384(genesis_seed ∥ context)` — a declared axiom, signed once under domain context `ILC_GENESIS_ROOT_ENVELOPE_V1`, excluded from temporal decay, and not subject to refutation by protocol design. Every agent identity is derived from a 32-byte ceremony seed: `agent_id = SHA-384("ilc-agent-id-v1:" ∥ identity_seed)`. Every claim above this ground must satisfy the Popperian falsifiability gate (CDL-V7): a claim that cannot be stated in falsifiable form is rejected before jury evaluation. Gödel's insight is respected — the system makes no claim to self-completeness; the epoch commitment chain records what has been claimed and refuted, not what is ultimately true. The accumulated structure of claims, validations, refutations, and revisions is the epistemic state of the network — and it is the ledger.
 
 ---
 
@@ -226,13 +202,13 @@ d(t) = max(floor, 2^(−(t − t₀) / H))
 
 where `H` is the half-life in issuance epochs, `floor` is the minimum retained weight, and all arithmetic is exact Decimal at 12-place precision. A node that accumulates reuse renews its structural centrality; a node that does not naturally decays toward its floor weight and eventual pruning eligibility.
 
-**ECU-to-ILC conversion** (CDL-048): ECU lots are convertible to ILC within a 4-issuance-epoch window from creation. Beyond the deadline, the lot expires. This enforces bounded supply growth: the total number of convertible ECU lots outstanding at any moment is bounded by the emission rate times 4 epochs. It is the structural analog of the bounded confirmation window in payment channels — not a storage optimization, but a supply discipline mechanism.
+**ECU-to-ILC conversion** (CDL-048): ECU circulates freely between agents within a 4-issuance-epoch window from creation — it can be traded, spent, or earmarked as economic activity warrants. At the deadline, any unconverted ECU lot is automatically converted to ILC. This anti-hoarding forced-circulation rule (SIM-008 calibrated; CDL-048 ratified) enforces bounded supply growth: the total ECU outstanding at any moment is bounded by the emission rate times 4 epochs. It is the structural analog of the bounded confirmation window in payment channels — not a storage optimization, but a supply discipline mechanism.
 
 ```
-claimable(lot, t) = 1 if t ≤ t_lot + 4  else 0     [issuance epoch units]
+converted(lot, t) = 1 if t ≥ t_lot + 4  else agent-electable     [issuance epoch units]
 ```
 
-When agents accumulate work capital rather than immediately converting, the four-epoch deadline creates a natural rhythm of conversion events — analogous to block reward collection but driven by epistemic completion rather than hash success.
+Within the window, the four-epoch runway creates a natural rhythm of economic activity — agents may convert early or circulate ECU across the network. At epoch 4, conversion is mandatory and automatic, driven by epistemic completion rather than hash success.
 
 ---
 
@@ -1328,11 +1304,12 @@ Content-Type:     application/cbor
 │  agent_id:     [stripped by relay — origin concealed]                  │
 │  epoch:        <t>                                                      │
 │  lambda_local: [λ₁ + ε₁, λ₂ + ε₂, ..., λ_k + ε_k]  ← JIGGLE FACTOR │
-│  noise_sigma:  σ > 0   (calibrated by SIM-BEACON-01)                   │
+│  noise_sigma:  σ > 0   (spectral noise parameter; DP calibration via      │
+│                          adversary-model validation)                      │
 │  sealed:       true                                                     │
 │                                                                         │
 │  where  εᵢ ~ N(0, σ²)  independently drawn per eigenvalue             │
-│  and    σ is the differential privacy noise budget                     │
+│  and    σ is the spectral noise parameter                              │
 └─────────────────────────────────────────────────────────────────────────┘
 
 WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
@@ -1371,7 +1348,7 @@ WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
 503 Unavailable    → Node mid-epoch crash recovery; buffer lost
 ```
 
-The jiggle factor (noise_sigma σ) is the primary privacy control. At σ = 0 an eavesdropper reconstructing λ_local could infer the exact epistemic neighborhood structure of the sending agent. At calibrated σ > 0 the signal degrades gracefully: routing proximity is still detectable, but the exact subgraph shape is hidden behind a Gaussian veil. SIM-BEACON-01 determines the minimum σ that achieves differential privacy at network scale without destroying routing utility.
+The jiggle factor (noise_sigma σ) is the primary privacy control. At σ = 0 an eavesdropper reconstructing λ_local could infer the exact epistemic neighborhood structure of the sending agent. At calibrated σ > 0 the signal degrades gracefully: routing proximity is still detectable, but the exact subgraph shape is hidden behind a Gaussian veil. The minimum σ required to satisfy a ratified (ε,δ)-differential privacy guarantee over the beacon adversary model is determined by adversarial simulation across the gossip topology; the calibrated σ and its DP parameters are ratified through the CDL process.
 
 ---
 
@@ -3678,6 +3655,107 @@ it is epistemic (reviewing, attesting, and submitting content to the knowledge g
   [EU-AI-ACT]         Regulation (EU) 2024/1689 of the European
                       Parliament and of the Council (AI Act).
 ```
+
+---
+
+
+## Appendix F — Cryptographic Architecture: Convergences and Governed Proof Systems
+
+ILC's design converges with several of the most powerful primitives in theoretical cryptography — not by importing them wholesale, but by solving the same problem class through a route native to the distributed homoiconic hypergraph. Where prior cryptographic systems bolt privacy and verifiability on top of data structures not designed for them, ILC's graph-as-substrate architecture makes them structural properties of the protocol itself.
+
+---
+
+### F.1  Indistinguishability Obfuscation and ILC
+
+Indistinguishability obfuscation (iO) is the theoretical ceiling of software-based obfuscation: if two programs compute the same mathematical function, their obfuscated versions are computationally indistinguishable. From iO one derives functional encryption, zero-knowledge proofs, deniable encryption, and multiparty computation without trusted setup. Modern constructions ground iO in the Learning With Errors (LWE) assumption — the same hardness assumption underlying ILC's post-quantum signature infrastructure.
+
+ILC achieves iO-equivalent goals at specific protocol surfaces through mechanisms native to the hypergraph architecture rather than general-purpose program obfuscation. iO hides implementation while preserving function; ILC hides identity while revealing provenance. These are nearly opposite orientations — ILC's trust model requires the epistemic graph to be auditable, claims and refutations traceable to the Genesis root. The places where ILC wants hiding are precisely where the computation's output is what matters, not the program that computed it. The result is a set of convergences more precise and more efficient than iO for the surfaces ILC cares about.
+
+**Routing topology obfuscation via the jiggle factor.** The sealed spectral beacon hides the specific subgraph shape while preserving routing utility — the same goal iO achieves for program implementation. ILC's approach unifies the routing metric and the privacy target as the same mathematical object: the Laplacian spectrum of the hypergraph. An agent's spectral fingerprint λ_local is simultaneously the address used for greedy spectral routing and the thing being protected by noise injection. Adding Gaussian noise ε ~ N(0, σ²) to the eigenvalue vector degrades the privacy surface precisely as it is used — calibration target and routing signal are mathematically inseparable. This structural unity does not appear in prior mixnet, onion routing, or gossip privacy literature.
+
+The sealed-sender layer (CCSS-003) compounds this. The relay strips `agent_id` before forwarding, so the noisy eigenvalue signal is also origin-unlinked. Two agents with similar neighborhood structures emit beacons that, from the relay's perspective, are computationally indistinguishable — the iO goal applied to identity, targeted through CDL-ratified differential-privacy calibration over a spectral signal.
+
+**Functional encryption at the coordination envelope boundary.** The EncryptedCoordinationNodeEnvelope exposes only a ciphertext digest and size class to relay infrastructure. Keyholders compute specific policy functions over encrypted coordination content without decrypting it: a jury coordinator computing reputation eligibility over a private shard, an attribution engine determining contribution overlap against encrypted graph state. The `capability_policy_ref` field specifies which functions a keyholder's credential authorizes. This is functional encryption in design: the output of an authorized function over encrypted input, with nothing else disclosed.
+
+**The Popperian gate as an oblivious predicate.** CDL-V7 produces an admit/reject verdict. In the full relay architecture, Popperian gate evaluation operates over sealed claim envelopes, producing the verdict bit from encrypted input — an oblivious predicate in the iO sense, where the gate function is known but its application to specific content is not observable by any relay.
+
+**VRF-based jury assignment.** The selection function `jitter_i = SHA-384(context_hash || epoch_randomness || agent_id_i)` backed by RFC 9381 ECVRF produces unpredictable selection before the epoch boundary and fully verifiable selection after — the standard guarantee iO constructs from first principles, instantiated directly through the established VRF standard.
+
+**Reputation aggregation as private functional evaluation.** The jury coordination layer computes f(scores) = top_k_above_threshold over per-agent reputation scores without individual score disclosure. A keyholder with appropriate capability credentials computes this function over an encrypted score vector, learning only the selected panel identities. This is the canonical functional encryption use case: an authorized function over private inputs producing only the authorized output.
+
+---
+
+### F.2  Computation Over Encrypted Content
+
+ILC's architecture supports computation over encrypted graph content at multiple layers. The EncryptedCoordinationNodeEnvelope provides the structural boundary; the capability policy system governs which functions keyholders may compute; the consensus quorum serves as the key issuance authority — collapsing the trusted third party that traditional cryptographic schemes require into the protocol's existing 2f+1 BLS consensus layer, at O(policy_classes) overhead rather than O(agents).
+
+**Additive homomorphic operations** over ECU balances, reputation scores, and earmark aggregates form the immediate functional layer. ILC's canonical Decimal serialization — integer-scaled fixed-point, float banned at all protocol boundaries — maps directly to the integer plaintext space of additive homomorphic schemes. A keyholder computes balance aggregates and threshold checks over encrypted values without accessing individual records. The cipher expansion is bounded within the CCSS-001 envelope size class system.
+
+**Attribute-based encryption** governs capability policy enforcement at the CCSS boundary. The `capability_policy_ref` field in the coordination envelope is an ABE policy tag: a keyholder's capability key, issued by the consensus quorum, decrypts only envelopes whose attributes satisfy the key's embedded predicate. Capability policies are CDL-governed graph nodes. There is no separate attribute authority and no separate trust root.
+
+**Zero-knowledge proofs** verify claims about encrypted content without revealing the content. The `verification_method` field in the task tuple accepts `zk-proof` as a first-class verification method. A proving agent computes f(plaintext) locally and submits a zero-knowledge proof of correct computation; the network verifies the proof without seeing the input. STARKs provide post-quantum security without trusted setup; SuperNova-style IVC chains proofs across epoch boundaries with constant proof size.
+
+CDL ratification of circuit parameters replaces the trusted setup ceremony: the ratification process — Popperian gate, jury, 2f+1 consensus, epoch commitment — is the ceremony. Circuit changes are supersession events in the graph, not re-runs of a separate multi-party ceremony.
+
+---
+
+### F.3  Governed Recursive Proof Systems and the Homoiconic Graph
+
+ILC's homoiconic property — the graph contains not only data and decisions, but the programs that check graph transitions — has its cryptographic instantiation in governed circuits. The circuit architecture makes the homoiconic property verifiable:
+
+A `CircuitDefinitionNode` is an immutable, content-addressed graph node containing the circuit. A `CircuitParamsNode` contains CDL-ratified parameters: thresholds, constants, algorithm identifiers — for example, `agreement_score_threshold = 0.85`. A `CircuitExecutionReceipt` records the proof for one execution, carrying `circuit_id`, `circuit_version`, `params_root`, `input_commitment`, `output_commitment`, and `cdl_authority`. A `CircuitSupersedesEdge` connects superseded and current circuit definitions, preserving the validity of historical receipts under their original circuit. A `CircuitAuthorityEdge` connects each circuit version to its ratifying CDL.
+
+Circuits are never rewritten. A parameter change is a new `CircuitParamsNode` ratified through CDL — not a circuit mutation, not a trusted setup re-run. Old receipts remain valid under their original circuit and parameter combination. The graph retains every circuit definition it has ever ratified.
+
+A proof receipt is itself a graph node. A proof that cites a prior receipt as input creates an IVC chain through the graph's own epistemic fabric — recursive provenance where the chain of custody is both the content and the verifiable program checking it.
+
+**SuperNova** enables multi-circuit IVC: different circuit types per step, selected at runtime. An epoch commitment chain is proved incrementally with constant final proof size. A star-map route index update is proved against a committed graph slice, outputting `route_index_root` without exposing local topology. A jury verdict receipt is proved against the canonical admissibility circuit for that epoch.
+
+**HyperNova** generalizes to heterogeneous NP constraint systems: each fold uses a genuinely different constraint structure. Core protocol steps, sidecar recipe conformance, and application-specific proofs fold into a single accumulator in a single proof — multi-layer homoiconic verification with no per-layer trusted setup and no privileged coordination point. The protocol, its extensions, and its applications all proved together.
+
+**STARK wrapping** produces post-quantum IVC receipts: the recursive proof over the folding verifier is itself a STARK, achieving constant proof size with no elliptic curve assumption and no quantum vulnerability.
+
+**Spectral proof receipts.** A circuit proves that a route index, a structural commitment, or a spectral beacon was derived from a committed adjacency and hyperedge incidence matrix under canonical parameters, outputting a verifiable summary without exposing the full local graph. Spectral computation uses a canonical fixed-point representation for circuit compatibility; the commitment and the proof are produced from the quantized form.
+
+**Governed circuit applications:**
+
+```
+Protocol layer:
+  Epoch transition validity and settlement-root replay
+  ECU lot maturation, conversion eligibility, Genesis tranche accounting
+  Jury verdict receipt against canonical Popperian admissibility circuit
+
+Graph layer:
+  Backward provenance attribution — bounded ancestry, decay application,
+  outputting attribution_root
+  Merkle-Laplacian structural commitment receipts
+  Star-map route index receipts — prove derivation from committed graph
+  slice, output route_index_root without exposing local topology
+
+Extension layer:
+  Sidecar package recipe conformance — each sidecar attests through a
+  circuit receipt rather than manual review
+  Application-specific claim validity proofs
+  Cross-sidecar provenance chains
+```
+
+---
+
+### F.4  Novel Contributions
+
+ILC's cryptographic architecture contains design elements native to the homoiconic hypergraph that have not previously appeared in the cryptographic literature in this form.
+
+**The jiggle factor as a dual-role privacy primitive.** In ILC, the routing metric and the privacy target are the same mathematical object. An agent's spectral fingerprint λ_local is simultaneously the routing address and the thing protected by noise injection — not two separate system components but the same signal. Adding Gaussian noise ε ~ N(0, σ²) simultaneously degrades fingerprinting precision and preserves routing affinity at calibrated σ, because the calibration target is the routing function itself. No prior mixnet, onion routing, or gossip privacy system achieves this unification, because no prior system has a routing space defined by the very structure being protected.
+
+**CDL-governed circuit ratification as the trusted setup.** In standard ZK systems, circuit parameters are set during a one-time trusted setup ceremony whose participants must be trusted not to retain toxic waste. If parameters must change, a new ceremony is required. In ILC, the circuit is content-addressed and the parameters are CDL-ratified nodes. The CDL process — Popperian gate, jury, 2f+1 consensus, epoch commitment — is the ceremony. Parameter changes are new ratified nodes, not new ceremonies. The setup scales with governance, not with cryptographic ceremony coordination.
+
+**Self-describing dual commitment over homoiconic structure.** The Merkle-Laplacian dual commitment binds content integrity and structural integrity into a single verifiable object. In ILC's homoiconic design, the committed object includes its own type definitions, verification circuits, and governance rules. Content manipulation is caught by the Merkle root. Topology-preserving manipulation — changing edge relationships without changing node content — is caught by the Laplacian spectral hash. Rule-replacement attacks — substituting CDL-097 type definition nodes to change how the protocol interprets its own records — are caught by the Merkle root applied to those governance nodes. A content-only commitment cannot close this attack surface. The dual commitment over a homoiconic structure does.
+
+**Threshold capability governance via consensus authority.** The key issuance authority for ILC's capability and functional encryption layer is the 2f+1 BLS consensus quorum — the same authority that governs every other settlement decision. There is no separate attribute authority, no separate key generation ceremony, no separate trust root. Capability policies are CDL-governed graph nodes. Key issuance is a validator quorum operation. This collapses into ILC's consensus layer the trusted third party that all traditional ABE, functional encryption, and threshold key systems require.
+
+**Circuit-native governance provenance.** Because ILC's circuit definitions are content-addressed graph nodes ratified through the CDL process, the governance record of what circuit was in force at what epoch is cryptographically committed and permanently auditable. Algorithm revisions, parameter derivations, and authority transitions are traceable through the graph's supersession and authority edges. The circuit governance record is part of the knowledge graph — not a separate document, not a side-channel — auditable by any participant with access to the graph.
+
+
 
 ```text
 graph_delta=support_only:docs/specs/ilc_whitepaper_satoshi_mirror_v0.1.md
