@@ -23,6 +23,7 @@ FIX2S_ACTIVATION_PACKET_VERIFIER_VERSION = (
 )
 GENESIS_FIXED_TRANCHE_ILC = "1296000"
 GENESIS_C_MAX_ILC = "25920000"
+REQUIRED_ROLLBACK_STEP_COUNT = 7
 
 OUTPUT_TOKENS: tuple[str, ...] = (
     "phase_1568_fix2s_private_value_write_activation_packet_committed",
@@ -212,6 +213,8 @@ def _verify_guard_clearance_table(guard_table: Mapping[str, Any]) -> None:
 
 
 def _verify_rollback_protocol(protocol: Mapping[str, Any]) -> None:
+    if protocol.get("minimum_step_count") != REQUIRED_ROLLBACK_STEP_COUNT:
+        raise ValueError("rollback_protocol_minimum_step_count_invalid")
     ordered_steps = protocol.get("ordered_steps")
     if (
         not isinstance(ordered_steps, Sequence)
@@ -219,6 +222,8 @@ def _verify_rollback_protocol(protocol: Mapping[str, Any]) -> None:
         or not ordered_steps
     ):
         raise ValueError("rollback_protocol_ordered_steps_required")
+    if len(ordered_steps) < REQUIRED_ROLLBACK_STEP_COUNT:
+        raise ValueError("rollback_protocol_ordered_steps_below_minimum")
     for step in ordered_steps:
         _require_text(step, "rollback_protocol_ordered_step_invalid")
     if protocol.get("rollback_confirmation_required") is not True:
@@ -320,5 +325,6 @@ __all__ = [
     "GENESIS_C_MAX_ILC",
     "GENESIS_FIXED_TRANCHE_ILC",
     "OUTPUT_TOKENS",
+    "REQUIRED_ROLLBACK_STEP_COUNT",
     "verify_activation_packet",
 ]
