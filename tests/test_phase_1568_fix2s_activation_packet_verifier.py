@@ -5,6 +5,7 @@ from copy import deepcopy
 from ilc_core.ledger.fix2s_activation_packet_verifier import (
     FIX2S_ACTIVATION_PACKET_VERIFIER_VERSION,
     OUTPUT_TOKENS,
+    REQUIRED_ROLLBACK_STEP_COUNT,
     verify_activation_packet,
 )
 
@@ -66,12 +67,16 @@ def _packet() -> dict[str, object]:
         },
         "rollback_protocol": {
             "failure_disposition": "discard_run_and_do_not_cite_as_evidence",
+            "minimum_step_count": REQUIRED_ROLLBACK_STEP_COUNT,
             "no_persistent_state_outside_namespace": True,
             "ordered_steps": [
                 "stop private value-write services",
                 "export scratch namespace hashes for audit only",
+                "verify no production Atlas registration occurred for scratch state",
                 "destroy scratch LMDB and wallet/treasury state",
+                "confirm source guard values remain at production-safe values",
                 "rerun production Atlas validation",
+                "record final rollback receipt with hashes and non-secret confirmations",
             ],
             "rollback_confirmation_required": True,
         },
@@ -130,6 +135,31 @@ def test_fix2s_packet_missing_rollback_protocol_fails() -> None:
     assert verify_activation_packet(packet) == {
         "ok": False,
         "reason": "activation_packet_missing_required_section:rollback_protocol",
+    }
+
+
+def test_fix2s_packet_missing_rollback_minimum_step_count_fails() -> None:
+    packet = _packet()
+    del packet["rollback_protocol"]["minimum_step_count"]  # type: ignore[index]
+
+    assert verify_activation_packet(packet) == {
+        "ok": False,
+        "reason": "rollback_protocol_minimum_step_count_invalid",
+    }
+
+
+def test_fix2s_packet_rollback_steps_below_minimum_fails() -> None:
+    packet = _packet()
+    packet["rollback_protocol"]["ordered_steps"] = [  # type: ignore[index]
+        "stop private value-write services",
+        "export scratch namespace hashes for audit only",
+        "destroy scratch LMDB and wallet/treasury state",
+        "rerun production Atlas validation",
+    ]
+
+    assert verify_activation_packet(packet) == {
+        "ok": False,
+        "reason": "rollback_protocol_ordered_steps_below_minimum",
     }
 
 
