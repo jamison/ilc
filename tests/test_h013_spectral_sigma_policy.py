@@ -6,6 +6,8 @@ from ilc_core.analysis.spectral_utils import add_noise
 from ilc_core.network.d2d.spectral_beacon import (
     BEACON_EMISSION_MODE_MAINNET,
     BEACON_EMISSION_MODE_TESTNET,
+    generate_beacon_signing_keypair,
+    generate_sealed_sender_keypair,
 )
 from ilc_core.network.d2d.spectral_sigma_policy import (
     H013_SIGMA_POLICY_STATUS,
@@ -13,6 +15,8 @@ from ilc_core.network.d2d.spectral_sigma_policy import (
     MIN_NOISE_SIGMA,
     SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN,
     SIGMA_DP_CALIBRATION_VALIDATED,
+    SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS,
+    SIGMA_MAINNET_PROVISIONAL_STATUS,
     SIGMA_POLICY_STATUS,
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED,
     SIM_BEACON_01_PRIVACY_TARGET_VALIDATED,
@@ -32,6 +36,15 @@ def test_h013_sigma_policy_records_no_privacy_calibration_claim() -> None:
     assert node_startup_runtime.H013_SIGMA_STATUS == SIGMA_POLICY_STATUS
     assert node_startup_runtime.H013_SIGMA_DP_CALIBRATION_VALIDATED is False
     assert node_startup_runtime.H013_SIGMA_PRIVACY_TARGET_VALIDATED is False
+    assert SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS is True
+    assert (
+        SIGMA_MAINNET_PROVISIONAL_STATUS
+        == "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
+    )
+    assert (
+        node_startup_runtime.H013_SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS
+        is True
+    )
     assert node_startup_runtime.H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED is True
 
 
@@ -62,13 +75,20 @@ def test_h013_testnet_sigma_candidate_is_pinned() -> None:
     assert exc.value.token == "h013_noise_sigma_testnet_candidate_mismatch"
 
 
-def test_h013_mainnet_sigma_fails_until_adversary_model_revision() -> None:
-    with pytest.raises(SpectralSigmaPolicyError) as exc:
+def test_h013_mainnet_sigma_is_genesis_authorized_provisional() -> None:
+    assert (
         validate_noise_sigma_for_mode(
             H013_TESTNET_EMISSION_SIGMA,
             mode=BEACON_EMISSION_MODE_MAINNET,
         )
-    assert exc.value.token == "h013_noise_sigma_mainnet_not_activated"
+        == H013_TESTNET_EMISSION_SIGMA
+    )
+    with pytest.raises(SpectralSigmaPolicyError) as exc:
+        validate_noise_sigma_for_mode(
+            H013_TESTNET_EMISSION_SIGMA + 0.001,
+            mode=BEACON_EMISSION_MODE_MAINNET,
+        )
+    assert exc.value.token == "h013_noise_sigma_mainnet_candidate_mismatch"
 
 
 def test_h013_privacy_calibrated_sigma_request_fails_closed() -> None:
@@ -80,6 +100,14 @@ def test_h013_privacy_calibrated_sigma_request_fails_closed() -> None:
         )
     assert exc.value.token == SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
     assert str(exc.value) == SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
+
+    with pytest.raises(SpectralSigmaPolicyError) as exc:
+        validate_noise_sigma_for_mode(
+            H013_TESTNET_EMISSION_SIGMA,
+            mode=BEACON_EMISSION_MODE_MAINNET,
+            require_privacy_calibrated=True,
+        )
+    assert exc.value.token == SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
 
 
 def test_add_noise_enforces_shared_sigma_floor() -> None:
@@ -104,3 +132,26 @@ def test_node_startup_rejects_h013_testnet_sigma_drift(monkeypatch: pytest.Monke
     with pytest.raises(ValueError) as exc:
         node_startup_runtime._validate_h013_startup_sigma_policy()
     assert str(exc.value) == "h013_noise_sigma_testnet_candidate_mismatch"
+
+
+def test_maybe_emit_spectral_beacon_allows_genesis_provisional_mainnet_mode() -> None:
+    relay_keypair = generate_sealed_sender_keypair()
+    terminal_keypair = generate_sealed_sender_keypair()
+    emission_state = node_startup_runtime.SpectralEmissionState()
+
+    envelope = node_startup_runtime.maybe_emit_spectral_beacon(
+        emission_state,
+        generate_beacon_signing_keypair(),
+        relay_peer_id="peer:relay001",
+        relay_public_key=relay_keypair.public_key_bytes,
+        terminal_peer_id="peer:terminal001",
+        terminal_public_key=terminal_keypair.public_key_bytes,
+        channel_id="cid:0000000000000000",
+        current_epoch=7,
+        lambda_local=[0.25, 0.5, 0.75],
+        mode=BEACON_EMISSION_MODE_MAINNET,
+    )
+
+    assert envelope is not None
+    assert emission_state.last_emit_epoch == 7
+    assert emission_state.prev_lambda == [0.25, 0.5, 0.75]
