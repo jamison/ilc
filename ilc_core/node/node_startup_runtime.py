@@ -35,6 +35,7 @@ from ilc_core.network.d2d.peer_fingerprint_cache import (
     PeerFingerprintCache,
 )
 from ilc_core.network.d2d.spectral_beacon import (
+    BEACON_EMISSION_MODE_MAINNET,
     BEACON_EMISSION_MODE_TESTNET,
     BeaconSigningKeypair,
     SealedSpectralBeaconEnvelope,
@@ -45,6 +46,8 @@ from ilc_core.network.d2d.spectral_beacon import (
 from ilc_core.network.d2d.spectral_sigma_policy import (
     H013_TESTNET_EMISSION_SIGMA,
     SIGMA_DP_CALIBRATION_VALIDATED,
+    SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS,
+    SIGMA_MAINNET_PROVISIONAL_STATUS,
     SIGMA_POLICY_STATUS,
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED,
     SpectralSigmaPolicyError,
@@ -65,10 +68,15 @@ H013_PEER_FINGERPRINT_CACHE_DEPENDENCY = "peer_fingerprint_cache_931.v0.1"
 H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930.v0.1"
 # H-013 Q2: testnet candidate sigma (10x the construction floor).
 # H-013 Q4: change threshold — emit only if spectral_distance(prev, curr) > this value.
-# SIM-BEACON-01 did not validate a DP sigma; adversary-model revision is required.
+# SIM-BEACON-01 did not validate a DP sigma; Genesis authority permits
+# provisional mainnet-mode use without a DP calibration claim.
 H013_SIGMA_STATUS = SIGMA_POLICY_STATUS
 H013_SIGMA_DP_CALIBRATION_VALIDATED = SIGMA_DP_CALIBRATION_VALIDATED
 H013_SIGMA_PRIVACY_TARGET_VALIDATED = SIGMA_DP_CALIBRATION_VALIDATED
+H013_SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS = (
+    SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS
+)
+H013_SIGMA_MAINNET_PROVISIONAL_STATUS = SIGMA_MAINNET_PROVISIONAL_STATUS
 H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED = (
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED
 )
@@ -316,13 +324,21 @@ def _validate_h013_startup_sigma_policy() -> float:
     """Fail closed if startup sigma drifts from the OBL-046-open policy."""
 
     try:
-        return validate_noise_sigma_for_mode(
+        testnet_sigma = validate_noise_sigma_for_mode(
             H013_TESTNET_EMISSION_SIGMA,
             mode=BEACON_EMISSION_MODE_TESTNET,
             require_privacy_calibrated=False,
         )
+        mainnet_sigma = validate_noise_sigma_for_mode(
+            H013_TESTNET_EMISSION_SIGMA,
+            mode=BEACON_EMISSION_MODE_MAINNET,
+            require_privacy_calibrated=False,
+        )
     except SpectralSigmaPolicyError as exc:
         raise ValueError(exc.token) from exc
+    if mainnet_sigma != testnet_sigma:
+        raise ValueError("h013_startup_sigma_policy_inconsistent")
+    return testnet_sigma
 
 
 # ---------------------------------------------------------------------------
@@ -453,13 +469,13 @@ def maybe_emit_spectral_beacon(
 ) -> SealedSpectralBeaconEnvelope | None:
     """Emit a sealed spectral beacon if the mode and change-threshold gate allows.
 
-    H-013 Q1 (Option C): guarded by mode flag. Only BEACON_EMISSION_MODE_TESTNET
-        is reachable here. BEACON_EMISSION_MODE_MAINNET requires adversary-model
-        revision and a separate mainnet activation path — that path is not
-        opened in this window.
+    H-013 Q1 (Option C): guarded by mode flag. BEACON_EMISSION_MODE_TESTNET and
+        BEACON_EMISSION_MODE_MAINNET are reachable here. The mainnet mode is
+        Genesis-authorized provisional use of the pinned candidate only; it is
+        not a differential-privacy calibration claim.
     H-013 Q2: sigma = H013_TESTNET_EMISSION_SIGMA (0.05); specified
         testnet candidate, not privacy-calibrated. SIM-BEACON-01 requires
-        adversary-model revision before any mainnet or DP claim.
+        adversary-model revision before any DP claim.
     H-013 Q4 (Option D): emit once per epoch only if
         spectral_distance(prev, curr) > H013_CHANGE_THRESHOLD (0.15, CDL-082 ratified Phase 950).
         Stable nodes emit infrequently, reducing bandwidth and structural leakage.
@@ -475,15 +491,13 @@ def maybe_emit_spectral_beacon(
         channel_id: gossip channel ID for this emission.
         current_epoch: current validation epoch from the local node clock.
         lambda_local: this node's current spectral fingerprint (noise added here).
-        mode: emission mode guard. Must equal BEACON_EMISSION_MODE_TESTNET.
+        mode: emission mode guard. Must equal BEACON_EMISSION_MODE_TESTNET or
+            BEACON_EMISSION_MODE_MAINNET.
 
     Returns:
         SealedSpectralBeaconEnvelope if the gate allowed emission; None otherwise.
     """
-    if mode != BEACON_EMISSION_MODE_TESTNET:
-        # Mainnet emission path is not open. BEACON_EMISSION_MODE_MAINNET
-        # becomes reachable only after adversary-model revision validates sigma
-        # and a later authorization updates the sigma policy.
+    if mode not in {BEACON_EMISSION_MODE_TESTNET, BEACON_EMISSION_MODE_MAINNET}:
         return None
 
     try:

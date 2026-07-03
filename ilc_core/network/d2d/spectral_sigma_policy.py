@@ -3,7 +3,9 @@
 
 SIM-BEACON-01 did not validate a differential-privacy sigma. It recorded a
 minimum construction floor, a testnet candidate, and a required adversary-model
-revision before any mainnet/privacy-calibrated claim can be made.
+revision before any privacy-calibrated claim can be made. Genesis authority
+separately authorizes provisional mainnet-mode use of the same pinned candidate
+without creating a DP calibration claim.
 """
 
 from __future__ import annotations
@@ -24,6 +26,13 @@ SIGMA_POLICY_STATUS = "specified_floor_testnet_candidate_obl_046_open"
 H013_SIGMA_POLICY_STATUS = SIGMA_POLICY_STATUS
 SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN = (
     "sigma_dp_calibration_not_validated_obl_046_open"
+)
+SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS = True
+SIGMA_MAINNET_PROVISIONAL_STATUS = (
+    "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
+)
+SIGMA_MAINNET_PROVISIONAL_TOKEN = (
+    "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
 )
 
 
@@ -62,9 +71,10 @@ def validate_noise_sigma_for_mode(
 ) -> float:
     """Validate sigma for an activated H-013 emission mode.
 
-    Testnet emission is pinned to the Phase-939 candidate value. Mainnet and
-    privacy-calibrated uses are fail-closed until the adversary-model revision
-    validates a sigma and a later authorization updates this policy.
+    Testnet and Genesis-authorized provisional mainnet emission are pinned to
+    the Phase-939 candidate value. Privacy-calibrated use remains fail-closed
+    until the adversary-model revision validates a sigma and a later authority
+    updates this policy.
     """
 
     normalized = normalize_noise_sigma(value)
@@ -81,10 +91,17 @@ def validate_noise_sigma_for_mode(
             )
         return normalized
     if mode == "mainnet":
-        raise SpectralSigmaPolicyError(
-            "h013_noise_sigma_mainnet_not_activated",
-            "mainnet_sigma_requires_adversary_model_revision",
-        )
+        if not SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS:
+            raise SpectralSigmaPolicyError(
+                "h013_noise_sigma_mainnet_not_activated",
+                "mainnet_sigma_requires_adversary_model_revision",
+            )
+        if normalized != H013_TESTNET_EMISSION_SIGMA:
+            raise SpectralSigmaPolicyError(
+                "h013_noise_sigma_mainnet_candidate_mismatch",
+                "mainnet_sigma_must_match_genesis_authorized_h013_candidate",
+            )
+        return normalized
     raise SpectralSigmaPolicyError("h013_noise_sigma_mode_invalid", "sigma_mode_invalid")
 
 
@@ -94,6 +111,9 @@ __all__ = [
     "MIN_NOISE_SIGMA",
     "SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN",
     "SIGMA_DP_CALIBRATION_VALIDATED",
+    "SIGMA_MAINNET_PROVISIONAL_AUTHORIZED_BY_GENESIS",
+    "SIGMA_MAINNET_PROVISIONAL_STATUS",
+    "SIGMA_MAINNET_PROVISIONAL_TOKEN",
     "SIGMA_POLICY_STATUS",
     "SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED",
     "SIM_BEACON_01_PRIVACY_TARGET_VALIDATED",
