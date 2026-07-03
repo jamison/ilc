@@ -189,6 +189,20 @@ def test_startup_context_contains_expected_fields_and_types(tmp_path: Path) -> N
     assert context.genesis_import_reference['network_id'] == 'testnet-0'
 
 
+def test_startup_context_surfaces_h013_sigma_policy_status(tmp_path: Path) -> None:
+    config_path = _write_config(tmp_path)
+    reference_path = _write_bundle_and_reference(tmp_path)
+    context = runtime.build_node_startup_context(config_path, reference_path)
+
+    assert context.sigma_policy_status['obl_id'] == 'OBL-046'
+    assert context.sigma_policy_status['pre_public_rc_blocker'] is True
+    assert context.sigma_policy_status['sigma_dp_calibration_validated'] is False
+    assert (
+        context.sigma_policy_status['sigma_mainnet_provisional_status']
+        == 'genesis_authorized_provisional_mainnet_sigma_obl_046_open'
+    )
+
+
 def test_phase_570_main_commit_touches_expected_paths_only() -> None:
     commit_ref = _resolve_phase_570_commit_ref()
     assert _changed_paths_for_commit(commit_ref) == EXACT_REQUIRED_MAIN_PATHS
