@@ -1280,9 +1280,9 @@ Spending earns ILC      ratio shifts naturally    P_e governs scarcity not expan
 
 ---
 
-### D.2  Confidential D2D Gossip with Jiggle Factor
+### D.2  Confidential D2D Gossip and Spectral Route Tokens (CCSS-SPECTRAL-01)
 
-ILC's peer-to-peer communication layer (D2d, governed by ADR-0025 and CDL-039) uses HTTP/3 over QUIC as the wire transport. The gossip protocol carries a novel privacy primitive: the **sealed spectral beacon** with calibrated noise injection (the "jiggle factor").
+ILC's peer-to-peer communication layer (D2d, governed by ADR-0025 and CDL-039) uses HTTP/3 over QUIC as the wire transport. The gossip protocol is designed to carry a privacy-preserving spectral routing primitive — **CCSS-SPECTRAL-01** — that hides each agent's Laplacian eigenvalue fingerprint λ_local behind an epoch-keyed, commitment-based route token (CDL-SIGMA-01; successor to the "jiggle factor" sealed spectral beacon design, which failed adversary-model validation at Phase 1568-Fix2w).
 
 **Gossip envelope structure:**
 ```
@@ -1296,27 +1296,33 @@ Content-Type:     application/cbor
 [delta payload]
 ```
 
-**Sealed spectral beacon (privacy-preserving neighborhood signal):**
+**CCSS-SPECTRAL-01 route token (CDL-SIGMA-01; successor to sealed spectral beacon):**
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                      SPECTRAL BEACON (sealed)                          │
 │                                                                         │
 │  agent_id:     [stripped by relay — origin concealed]                  │
 │  epoch:        <t>                                                      │
-│  lambda_local: [λ₁ + ε₁, λ₂ + ε₂, ..., λ_k + ε_k]  ← JIGGLE FACTOR │
-│  noise_sigma:  σ > 0   (spectral noise parameter; DP calibration via      │
-│                          adversary-model validation)                      │
+│  route_token:  SpectralRouteToken  ← CCSS-SPECTRAL-01                  │
+│                HKDF-SHA512(                                            │
+│                  key  = recipient capability shared secret,             │
+│                  salt = epoch_root ‖ message_nonce,                    │
+│                  info = contact_capability_context ‖                   │
+│                         hiding_commitment(λ_local) ‖ route_purpose ‖   │
+│                         "ccss-spectral-route-token-v1")                 │
 │  sealed:       true                                                     │
 │                                                                         │
-│  where  εᵢ ~ N(0, σ²)  independently drawn per eigenvalue             │
-│  and    σ is the spectral noise parameter                              │
+│  λ_local is NEVER transmitted on the wire.                             │
+│  contact capability context rotates per epoch; token is single-use.    │
+│  Public capability identifiers are context only, not token secrets.    │
+│  Relay cannot reconstruct routing-domain information from token.        │
 └─────────────────────────────────────────────────────────────────────────┘
 
 WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
   • A beacon was emitted         • Which agent emitted it (sealed sender)
-  • Approximate neighborhood     • Which specific nodes are in the neighborhood
-    shape (noisy eigenvalues)    • Any claim content
-  • The epoch                    • The exact structural fingerprint
+  • An opaque route token        • The spectral fingerprint λ_local
+  • The epoch                    • The recipient's routing domain or neighborhood
+                                 • Any claim content
 ```
 
 **Privacy boundary in the gossip topology:**
@@ -1324,18 +1330,23 @@ WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
    Agent A                 Relay peers              Agent B (neighbor)
    ┌───────┐              ┌──────────┐              ┌───────┐
    │       │  sealed      │          │   forwarded  │       │
-   │  λ_A  │ ─────────►  │  strips  │ ───────────► │ λ_A   │
-   │ +jig  │  origin      │ agent_id │  (noisy λ)  │ +jig  │
-   │       │  opaque ch.  │          │              │       │
+   │  λ_A  │ ─────────►  │  strips  │ ───────────► │route  │
+   │(local)│  opaque ch.  │ agent_id │  (opaque    │token  │
+   │       │  route token │          │   token)    │ only  │
    └───────┘              └──────────┘              └───────┘
                                                         │
-                                             spectral_distance(λ_A, λ_B)
-                                             = ||λ_A − λ_B||₂
-                                             determines routing affinity
+                                             Agent B verifies token using
+                                             own capability private key (sk_B);
+                                             routing uses B's local λ_B.
+                                             Relay sees nothing about λ_A or λ_B.
 
-   GREEDY SPECTRAL ROUTING:
-   Hop toward peer with smallest spectral_distance to target fingerprint.
-   Intermediate peers see only "pass through" — not the requester identity.
+   CCSS-SPECTRAL-01 ROUTING:
+   Token is HKDF-keyed to the recipient capability shared secret.
+   CCI_B is public/rotating context only, not sufficient to derive Token.
+   Recipient authenticates token under sk_B; relay cannot recover CCI_B or λ_A.
+   Hiding commitment C(λ_A, r) binds token to sender's spectral position for audit,
+   but does not allow λ_A recovery — commitment hiding is cryptographic.
+   Intermediate peers see only "pass through" — not the requester identity or spectrum.
 ```
 
 **HTTP status semantics for gossip states:**
@@ -1348,7 +1359,81 @@ WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
 503 Unavailable    → Node mid-epoch crash recovery; buffer lost
 ```
 
-The jiggle factor (noise_sigma σ) is the primary privacy control. At σ = 0 an eavesdropper reconstructing λ_local could infer the exact epistemic neighborhood structure of the sending agent. At calibrated σ > 0 the signal degrades gracefully: routing proximity is still detectable, but the exact subgraph shape is hidden behind a Gaussian veil. The minimum σ required to satisfy a ratified (ε,δ)-differential privacy guarantee over the beacon adversary model is determined by adversarial simulation across the gossip topology; the calibrated σ and its DP parameters are ratified through the CDL process.
+**Gaussian averaging attack — formal failure analysis.** The original design transmitted xₜ = λ_local + εₜ where εₜ ~ N(0, σ²Iₖ) i.i.d. per emission. The cumulative MLE estimator after T_obs observations is the sample mean:
+```
+λ̂_MLE = (1/T_obs) Σₜ₌₁^T_obs xₜ  →^{a.s.}  λ_local      [SLLN]
+
+MSE(λ̂_MLE) = E[‖λ̂_MLE − λ_local‖²] = kσ²/T_obs → 0     [for any fixed finite σ]
+```
+Fingerprinting success against a population of N agents — identifying the true fingerprint i* as the nearest match — converges to certainty:
+```
+P_correct = P( argmin_{i∈[N]} ‖λ̂_MLE − λᵢ‖₂  =  i* )  →  1   as T_obs→∞
+```
+Fix2w measured P_correct = 0.992 at T_obs=20, N=1000, σ=0.05. The bound is structural: estimation error falls as σ/√T_obs, so doubling σ only halves the benefit of T_obs=4 observations — it is always outpaced by observation count.
+```
+   AVERAGING ATTACK GEOMETRY  (k=2, N=1000 agents in λ-space)
+
+   ·  ·  · [λ*] ·  ·  ·  ·  ·  ·  ·  ·  ·  ·   (N agents)
+
+   T_obs=1,  σ=0.05:  identification cone radius ≈ 0.050
+   T_obs=5,  σ=0.05:  identification cone radius ≈ 0.022   (σ/√T)
+   T_obs=20, σ=0.05:  identification cone radius ≈ 0.011   ← Fix2w
+
+                       ·  · [λ*] ·  ·
+                            ←0.011→
+                       fingerprint isolated at T=20
+
+   Attempt to fix:  σ=0.50 at T=20 → cone radius ≈ 0.112
+   Routing affinity destroyed (adjacent agents indistinguishable)
+   before cone reaches inter-agent spacing. No utility-preserving
+   fixed σ in the tested model repairs this.
+```
+
+**CCSS-SPECTRAL-01 — commitment-based token derivation.** The successor scheme eliminates eigenvalue transmission. The sender constructs a hiding commitment over the fixed-point quantized eigenvalue vector:
+```
+Q_s(λ)ᵢ = ⌊s · λᵢ⌋  ∈ Z        (quantization at scale s, i = 1,...,k)
+
+C(λ_local, r) = H( r ‖ Q_s(λ_local) )
+  where  r ←$ {0,1}^256        (uniform random per-message salt)
+         H = SHA-256            (collision-resistant hash)
+```
+The salt `r` is not carried in the relay-visible envelope. Any later audit
+opening or zero-knowledge proof of commitment membership is a separate governed
+disclosure event; revealing `r` changes the privacy surface and must not be
+treated as normal gossip routing.
+
+then derives the epoch-keyed, recipient-addressed route token:
+```
+Token = HKDF-SHA512(
+  key  = ss_recipient_capability,         (KEM/shared secret from recipient capability)
+  salt = epoch_root ‖ msg_nonce,          (epoch commitment + nonce)
+  info = CCI_context ‖ ek_sender ‖ C(λ_local, r) ‖ route_purpose ‖
+         "ccss-spectral-route-token-v1"
+)
+```
+Under a ratified KEM/PRF construction, a ratified hiding-commitment lifecycle, and side-channel controls for timing, size, and relay-path metadata, the design target for adversary mutual information over any T token observations is:
+```
+I(λ_local ; Token₁,...,TokenT)  ≤  T · (ε_PRF + ε_hiding)  ≈  negl(λ)
+```
+The bound grows linearly in T but remains negligible in the security parameter λ under those assumptions: there is no eigenvalue-averaging attack because Token is a PRF evaluation over committed-but-hidden input, not a direct additive function of λ_local.
+```
+   PRIVACY BOUND COMPARISON  (P_correct vs T_obs)
+
+   Gaussian noise (σ=0.05):
+     T= 1:  P_correct ≈ 0.15   ─┐
+     T= 5:  P_correct ≈ 0.62    │  converges to 1.0
+     T=20:  P_correct ≈ 0.99   ─┘  for σ=0.05 in Fix2w;
+                                    averaging wins for fixed finite σ
+
+   CCSS-SPECTRAL-01 (PRF-based):
+     T= 1:  P_correct ≤ ε_PRF    ─┐
+     T= 5:  P_correct ≤ 5·ε_PRF   │  grows as T·negl(λ)
+     T=20:  P_correct ≤ 20·ε_PRF ─┘  remains negligible
+
+   ──────────────────────────────────────────────────────────
+   Gaussian → 1 as T→∞;  CCSS-SPECTRAL-01 → negl as λ→∞
+```
+The relay receives only Token and epoch; it cannot recover λ_local or the epoch-rotating CCI_recipient. Only the addressed recipient — holding the capability private key sk_recipient corresponding to the current-epoch CCI — can authenticate Token as legitimately addressed to them. The hiding commitment C(λ_local, r) binds the token to the sender's spectral position for audit and non-repudiation; it does not allow λ_local recovery by the relay or the recipient (commitment hiding is one-way). Privacy guarantees derived here are unlinkability and sender anonymity (ADR-0034); differential-privacy calibration is a separate ratified-proof target, not a claim of CCSS-SPECTRAL-01 or ADR-0034 alone. The spectral noise parameter σ is retained as a local obfuscation option until CDL-SIGMA-01 ratification determines its final disposition.
 
 ---
 
@@ -3671,9 +3756,51 @@ Indistinguishability obfuscation (iO) is the theoretical ceiling of software-bas
 
 ILC achieves iO-equivalent goals at specific protocol surfaces through mechanisms native to the hypergraph architecture rather than general-purpose program obfuscation. iO hides implementation while preserving function; ILC hides identity while revealing provenance. These are nearly opposite orientations — ILC's trust model requires the epistemic graph to be auditable, claims and refutations traceable to the Genesis root. The places where ILC wants hiding are precisely where the computation's output is what matters, not the program that computed it. The result is a set of convergences more precise and more efficient than iO for the surfaces ILC cares about.
 
-**Routing topology obfuscation via the jiggle factor.** The sealed spectral beacon hides the specific subgraph shape while preserving routing utility — the same goal iO achieves for program implementation. ILC's approach unifies the routing metric and the privacy target as the same mathematical object: the Laplacian spectrum of the hypergraph. An agent's spectral fingerprint λ_local is simultaneously the address used for greedy spectral routing and the thing being protected by noise injection. Adding Gaussian noise ε ~ N(0, σ²) to the eigenvalue vector degrades the privacy surface precisely as it is used — calibration target and routing signal are mathematically inseparable. This structural unity does not appear in prior mixnet, onion routing, or gossip privacy literature.
+**Routing topology obfuscation via epoch-keyed spectral route tokens.** The CCSS-SPECTRAL-01 scheme (CDL-SIGMA-01) hides the specific subgraph shape while preserving routing utility — the same goal iO achieves for program implementation. ILC's approach unifies the routing metric and the privacy target as the same mathematical object: the normalized Laplacian eigenvalue vector λ_local = (λ₁, ..., λₖ) ∈ [0,2]^k. Greedy spectral routing selects each hop by minimizing:
+```
+d(A,B) = ‖λ_A − λ_B‖₂  =  ( Σᵢ₌₁^k (λᵢᴬ − λᵢᴮ)² )^{1/2}
+```
+λ_local is simultaneously the routing address and the value being protected — but it is never transmitted. The sender constructs a binding hiding commitment over the quantized eigenvalue vector:
+```
+C(λ_local, r) = H( r ‖ Q_s(λ_local) ),    r ←$ {0,1}^256,    Q_s(λ)ᵢ = ⌊s·λᵢ⌋
+```
+then derives an HKDF token keyed to a recipient capability shared secret and authenticated under the recipient's capability private key sk_B. The epoch-rotating contact capability identifier CCI_B is public context, not the token secret:
+```
+Token = HKDF-SHA512(
+  key  = ss_recipient_capability,
+  salt = epoch_root ‖ msg_nonce,
+  info = CCI_context ‖ ek_sender ‖ C(λ_local, r) ‖ route_purpose ‖
+         "ccss-spectral-route-token-v1"
+)
+```
+Under the ratified KEM/PRF construction, commitment-hiding lifecycle, and side-channel controls, any observer lacking sk_B should see:
+```
+I(λ_local ; Token)  ≤  ε_PRF + ε_hiding  ≈  negl(λ)
+```
+Routing signal and privacy protection are mathematically inseparable through the same object λ_local:
+```
+   λ_local AS DUAL OBJECT  (same vector, two roles)
 
-The sealed-sender layer (CCSS-003) compounds this. The relay strips `agent_id` before forwarding, so the noisy eigenvalue signal is also origin-unlinked. Two agents with similar neighborhood structures emit beacons that, from the relay's perspective, are computationally indistinguishable — the iO goal applied to identity, targeted through CDL-ratified differential-privacy calibration over a spectral signal.
+   ┌────────────────────────────────────────────────────────────────┐
+   │  λ_local = (λ₁, ..., λₖ) ∈ [0,2]^k                           │
+   │                          │                                     │
+   │          ┌───────────────┴─────────────────┐                   │
+   │          ▼                                 ▼                   │
+   │   ROUTING ROLE:                    PRIVACY ROLE:               │
+   │   d(A,B) = ‖λ_A − λ_B‖₂           C(λ,r) = H(r ‖ Q_s(λ))     │
+   │   greedy hop selection             committed, never on wire    │
+   │   computed locally by each hop     I(λ;Token) ≤ negl(λ)       │
+   │                                                                │
+   │   Same vector — routing metric = hidden committed value        │
+   └────────────────────────────────────────────────────────────────┘
+```
+This structural unity does not appear in prior mixnet, onion routing, or gossip privacy literature, because no prior system has a routing space defined by the very structure being protected.
+
+The sealed-sender layer (CCSS-003) compounds this. The relay strips `agent_id` before forwarding, so the opaque token is also origin-unlinked. For agents A and B with ‖λ_A − λ_B‖₂ < δ (spectrally similar neighborhoods), and conditioned on comparable timing, size, epoch, and relay-path metadata, the token payload distributions are computationally indistinguishable from the relay's perspective:
+```
+{ Token_A : emitted by A }  ≈_c  { Token_B : emitted by B }    (relay's view)
+```
+because each token is an independent PRF output over freshly sampled ephemeral keys — the iO goal applied to identity, realized through epoch-keyed commitment derivation rather than general-purpose obfuscation.
 
 **Functional encryption at the coordination envelope boundary.** The EncryptedCoordinationNodeEnvelope exposes only a ciphertext digest and size class to relay infrastructure. Keyholders compute specific policy functions over encrypted coordination content without decrypting it: a jury coordinator computing reputation eligibility over a private shard, an attribution engine determining contribution overlap against encrypted graph state. The `capability_policy_ref` field specifies which functions a keyholder's credential authorizes. This is functional encryption in design: the output of an authorized function over encrypted input, with nothing else disclosed.
 
@@ -3739,13 +3866,85 @@ Extension layer:
   Cross-sidecar provenance chains
 ```
 
+**Conversation as an IVC circuit.** ILC's homoiconic property extends to the conversational substrate itself. A multi-turn conversation — an identity ceremony, a jury deliberation, a governance protocol execution — can be represented as a target Incrementally Verifiable Computation (IVC) circuit once the circuit definitions and proof backend are ratified. Define the target conversation state sₙ = (rootₙ, n, accₙ) where rootₙ is the Merkle root over committed turn CIDs, n is the step count, and accₙ is the intended folding accumulator. The step circuit F accepts witness wₙ = (contentₙ, CIDₙ, parent_setₙ, primitivesₙ) and must satisfy the target step relation R_F:
+```
+(sₙ₊₁, sₙ, wₙ) ∈ R_F  iff:
+  (1)  CIDₙ = H(contentₙ)                              [content integrity]
+  (2)  parent_setₙ ⊆ MerkleAncestry(sₙ.root)           [provenance chain]
+  (3)  primitivesₙ ⊆ {TP₁, ..., TP₇}                   [truth-primitive conformance]
+  (4)  sₙ₊₁.root = MerkleUpdate(sₙ.root, CIDₙ)
+  (5)  sₙ₊₁.acc  = HyperNova.fold(sₙ.acc, πₙ)
+```
+```
+   IVC ACCUMULATOR CHAIN  (N turns → O(1) proof)
+
+   s₀ ─F(w₀)→ s₁ ─F(w₁)→ s₂ ─F(w₂)→ ··· ─F(w_{N-1})→ s_N
+   │           │            │                             │
+  acc₀        acc₁         acc₂                         acc_N
+   └─────────────────────────────────────────────────────┘
+         IVC.Verify(R_F, s₀, s_N, acc_N) → {0,1}
+         Target verify cost:  O(|acc_N|) = O(1)   (constant in N)
+         Replay cost:  O(N · |turn|)       (linear in depth)
+```
+A target `ProofReceiptNode` for the complete N-turn conversation:
+```
+ProofReceiptNode = {
+  circuit_id:        H(F),            // content-addressed circuit definition
+  step_count:        N,
+  final_acc:         acc_N,           // folded accumulator (O(1) target size)
+  input_commitment:  H(s₀),          // initial state binding
+  output_commitment: s_N.root,        // final Merkle root
+  cdl_authority:     CDL_id           // governing CDL authority
+}
+```
+The target ZK property provides privacy-preserving attestation: the prover demonstrates ∃(w₀,...,w_{N−1}) satisfying R_F without revealing any wᵢ (turn content). HyperNova-style multifolding is the candidate proof-backend analogy for heterogeneous NP constraint systems — each turn type τ (claim, refutation, verdict, procedural) uses a distinct constraint system ℂ_τ, all accumulated in a single pass:
+```
+accₙ = HyperNova.mfold( ℂ_{τₙ}, (sₙ, wₙ, sₙ₊₁) ) ⊕ accₙ₋₁
+```
+The CDL-057 witness chain is structurally an IVC proof over the governance history: each governance step folds into the accumulator, eliminating live witness retrieval at verification time.
+
 ---
 
 ### F.4  Novel Contributions
 
 ILC's cryptographic architecture contains design elements native to the homoiconic hypergraph that have not previously appeared in the cryptographic literature in this form.
 
-**The jiggle factor as a dual-role privacy primitive.** In ILC, the routing metric and the privacy target are the same mathematical object. An agent's spectral fingerprint λ_local is simultaneously the routing address and the thing protected by noise injection — not two separate system components but the same signal. Adding Gaussian noise ε ~ N(0, σ²) simultaneously degrades fingerprinting precision and preserves routing affinity at calibrated σ, because the calibration target is the routing function itself. No prior mixnet, onion routing, or gossip privacy system achieves this unification, because no prior system has a routing space defined by the very structure being protected.
+**Spectral address and privacy target as the same mathematical object.** In ILC, the routing metric and the privacy target are the same mathematical object: the normalized Laplacian eigenvalue vector λ_local = (λ₁, ..., λₖ) ∈ [0,2]^k of the agent's local neighborhood subgraph. Routing affinity between agents is:
+```
+d(A,B) = ‖λ_A − λ_B‖₂       (greedy hop selection minimizes this)
+```
+and λ_local is simultaneously the value hidden inside C(λ_local, r) in the CCSS-SPECTRAL-01 token. This is a structural property of the routing space, not a design coincidence.
+
+The original jiggle factor demonstrated the unity but used an asymptotically broken protection mechanism. Transmitting xₜ = λ_local + εₜ with εₜ ~ N(0, σ²Iₖ), the adversary's MLE:
+```
+λ̂_MLE = (1/T) Σₜ xₜ  →^{a.s.}  λ_local;    MSE = kσ²/T → 0   (fixed finite σ, T→∞)
+P_correct = P( argmin_i ‖λ̂_MLE − λᵢ‖₂ = i* )  →  1
+```
+Phase 1568-Fix2w confirmed: P_correct = 0.992 at T=20, N=1000, σ=0.05. No utility-preserving σ closes this: the estimation error σ/√T is always outpaced by increasing T, and any σ large enough to prevent fingerprinting at realistic T destroys routing affinity — inter-agent spectral spacing becomes smaller than σ.
+
+CCSS-SPECTRAL-01 preserves the unification while eliminating eigenvalue transmission:
+```
+   EVOLUTION OF THE SPECTRAL PRIVACY MECHANISM
+
+   JIGGLE FACTOR (deprecated):                CCSS-SPECTRAL-01:
+   ┌──────────────────────────────┐           ┌──────────────────────────────────┐
+   │ Wire: xₜ = λ_local + εₜ     │           │ Wire: Token = HKDF(secret,        │
+   │        εₜ ~ N(0, σ²Iₖ)      │    →      │   epoch ‖ ek ‖ C(λ,r) ‖ context) │
+   │                              │           │   C(λ,r) = H(r ‖ Q_s(λ))        │
+   │ Adversary:                   │           │                                  │
+   │   λ̂ = (1/T)Σxₜ → λ_local   │           │ Adversary:                       │
+   │   MSE = kσ²/T → 0            │           │   I(λ;Token) ≤ T·negl(λ)*       │
+   │   P_correct → 1              │           │   P_correct ≤ T·negl(λ)*        │
+   │                              │           │                                  │
+   │ Routing:   ✓ (uses d(A,B))   │           │ Routing:   ✓ (local d(A,B))     │
+   │ Privacy:   ✗ (averaging)     │           │ Privacy:   target (PRF+hiding)  │
+   └──────────────────────────────┘           └──────────────────────────────────┘
+         structural failure                        commitment-based hiding
+    (proved by Fix2w simulation)              (conditional on ratified KEM/PRF,
+                                               commitment lifecycle, side channels)
+```
+`*` Conditional on the ratified KEM/PRF construction, hiding-commitment lifecycle, and side-channel controls defined by CCSS-SPECTRAL-01.
+The structural insight — that the routing address and the protected value are the same object λ_local — survives the transition. No prior mixnet, onion routing, or gossip privacy system achieves this routing-privacy unification, because no prior system has a routing space defined by the very structure being protected.
 
 **CDL-governed circuit ratification as the trusted setup.** In standard ZK systems, circuit parameters are set during a one-time trusted setup ceremony whose participants must be trusted not to retain toxic waste. If parameters must change, a new ceremony is required. In ILC, the circuit is content-addressed and the parameters are CDL-ratified nodes. The CDL process — Popperian gate, jury, 2f+1 consensus, epoch commitment — is the ceremony. Parameter changes are new ratified nodes, not new ceremonies. The setup scales with governance, not with cryptographic ceremony coordination.
 
