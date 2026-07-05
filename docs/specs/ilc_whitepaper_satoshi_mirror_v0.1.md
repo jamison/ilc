@@ -1320,7 +1320,7 @@ Content-Type:     application/cbor
 
 WHAT THE RELAY SEES:          WHAT THE RELAY DOES NOT SEE:
   • A beacon was emitted         • Which agent emitted it (sealed sender)
-  • An opaque route token        • The spectral fingerprint λ_local
+  • Opaque token/KEM material    • The spectral fingerprint λ_local
   • The epoch                    • The recipient's routing domain or neighborhood
                                  • Any claim content
 ```
@@ -1433,7 +1433,18 @@ The bound grows linearly in T but remains negligible in the security parameter �
    ──────────────────────────────────────────────────────────
    Gaussian → 1 as T→∞;  CCSS-SPECTRAL-01 → negl as λ→∞
 ```
-The relay receives only Token and epoch; it cannot recover λ_local or the epoch-rotating CCI_recipient. Only the addressed recipient — holding the capability private key sk_recipient corresponding to the current-epoch CCI — can authenticate Token as legitimately addressed to them. The hiding commitment C(λ_local, r) binds the token to the sender's spectral position for audit and non-repudiation; it does not allow λ_local recovery by the relay or the recipient (commitment hiding is one-way). Privacy guarantees derived here are unlinkability and sender anonymity (ADR-0034); differential-privacy calibration is a separate ratified-proof target, not a claim of CCSS-SPECTRAL-01 or ADR-0034 alone. The spectral noise parameter σ is retained as a local obfuscation option until CDL-SIGMA-01 ratification determines its final disposition.
+The relay receives only the allowed opaque token envelope fields — token, epoch,
+ephemeral/KEM material, nonce, coarse purpose, size class, and hiding commitment.
+It cannot recover λ_local or the epoch-rotating CCI_recipient. Only the addressed
+recipient — holding the capability private key sk_recipient corresponding to the
+current-epoch CCI — can authenticate Token as legitimately addressed to them. The
+hiding commitment C(λ_local, r) binds the token to the sender's spectral position
+for audit and non-repudiation; it does not allow λ_local recovery by the relay or
+the recipient (commitment hiding is one-way). Privacy guarantees derived here are
+unlinkability and sender anonymity (ADR-0034); differential-privacy calibration is
+a separate ratified-proof target, not a claim of CCSS-SPECTRAL-01 or ADR-0034
+alone. The spectral noise parameter σ is retained as a local obfuscation option
+until CDL-SIGMA-01 ratification determines its final disposition.
 
 ---
 
