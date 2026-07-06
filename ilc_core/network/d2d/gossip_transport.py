@@ -10,13 +10,14 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from ilc_core.crypto.pq_signature_verify import CDL_101_SIGNED_ENVELOPE_DEPENDENCY
 from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
     CDL_060_GOSSIP_RUNTIME_VERSION as _CDL_060_GOSSIP_RUNTIME_CHECK,
 )
 from ilc_core.network.d2d.gossip import validate_gossip_channel
 
 
-GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v0.1"
+GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
@@ -29,6 +30,8 @@ REQUIRED_HEADERS = frozenset({
     "ILC-Epoch",
     "ILC-Hop-Count",
     "ILC-Signature",
+    "ILC-Sender-Peer-Id",
+    "ILC-Key-Id",
     "Content-Type",
 })
 FORBIDDEN_HEADER_KEYS = frozenset({
@@ -39,6 +42,10 @@ FORBIDDEN_HEADER_KEYS = frozenset({
 })
 _FORBIDDEN_HEADER_KEYS_LOWER = frozenset(key.lower() for key in FORBIDDEN_HEADER_KEYS)
 ALLOWED_CONTENT_TYPES = frozenset({"application/cbor", "application/json"})
+MAX_SENDER_PEER_ID_CHARS = 128
+MAX_KEY_ID_CHARS = 64
+LEGACY_UNVERIFIABLE_SENDER_PEER_ID = "legacy-unverifiable-peer"
+LEGACY_UNVERIFIABLE_KEY_ID = "legacy-unverifiable-key"
 HTTP_STATUS_BUFFERED = 202
 HTTP_STATUS_SUPPRESSED = 204
 HTTP_STATUS_ENVELOPE_ERROR = 400
@@ -74,6 +81,12 @@ def _require_non_empty_string(value: Any, error_token: str) -> str:
     return normalized
 
 
+def _require_no_whitespace(value: str, error_token: str) -> str:
+    if any(char.isspace() for char in value):
+        raise ValueError(error_token)
+    return value
+
+
 def _require_gossip_type(value: Any) -> str:
     normalized = _require_non_empty_string(
         value,
@@ -106,6 +119,23 @@ def _validated_content_type(value: Any) -> str:
     return normalized
 
 
+def _validated_sender_peer_id(value: Any) -> str:
+    # CDL-039 compatibility: this is a static transport peer-registry slot
+    # introduced by CDL-101. It is not a creator agent ID, graph node ID, or
+    # authorship claim, so it does not join FORBIDDEN_HEADER_KEYS.
+    normalized = _require_non_empty_string(value, "sender_peer_id_must_be_non_empty_string")
+    if len(normalized) > MAX_SENDER_PEER_ID_CHARS:
+        raise ValueError("sender_peer_id_too_long")
+    return _require_no_whitespace(normalized, "sender_peer_id_must_not_contain_whitespace")
+
+
+def _validated_key_id(value: Any) -> str:
+    normalized = _require_non_empty_string(value, "key_id_must_be_non_empty_string")
+    if len(normalized) > MAX_KEY_ID_CHARS:
+        raise ValueError("key_id_too_long")
+    return _require_no_whitespace(normalized, "key_id_must_not_contain_whitespace")
+
+
 def _canonical_forbidden_match(key: str) -> bool:
     return key.lower() in _FORBIDDEN_HEADER_KEYS_LOWER
 
@@ -131,6 +161,8 @@ def build_gossip_headers(
     epoch: int,
     hop_count: int,
     signature: str,
+    sender_peer_id: str = LEGACY_UNVERIFIABLE_SENDER_PEER_ID,
+    key_id: str = LEGACY_UNVERIFIABLE_KEY_ID,
     content_type: str = "application/cbor",
 ) -> dict[str, str]:
     normalized_type = _require_gossip_type(gossip_type)
@@ -146,6 +178,8 @@ def build_gossip_headers(
         signature,
         "gossip_signature_must_be_non_empty_string",
     )
+    normalized_sender_peer_id = _validated_sender_peer_id(sender_peer_id)
+    normalized_key_id = _validated_key_id(key_id)
     normalized_content_type = _validated_content_type(content_type)
     return {
         "ILC-Gossip-Type": normalized_type,
@@ -153,6 +187,8 @@ def build_gossip_headers(
         "ILC-Epoch": str(normalized_epoch),
         "ILC-Hop-Count": str(normalized_hop_count),
         "ILC-Signature": normalized_signature,
+        "ILC-Sender-Peer-Id": normalized_sender_peer_id,
+        "ILC-Key-Id": normalized_key_id,
         "Content-Type": normalized_content_type,
     }
 
@@ -181,6 +217,8 @@ def validate_gossip_headers(headers: dict[str, str]) -> bool:
         headers["ILC-Signature"],
         "gossip_signature_must_be_non_empty_string",
     )
+    _validated_sender_peer_id(headers["ILC-Sender-Peer-Id"])
+    _validated_key_id(headers["ILC-Key-Id"])
     _validated_epoch_header(headers["ILC-Epoch"])
 
     return True

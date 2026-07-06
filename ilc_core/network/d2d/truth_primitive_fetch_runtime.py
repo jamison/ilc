@@ -62,7 +62,7 @@ _FETCH_TLS_INSECURE_ENV = D2D_INSECURE_SKIP_TLS_VERIFY_ENV
 _FETCH_RESPONSE_TOO_LARGE_TOKEN = "fetch_response_too_large"
 
 # Dep-chain guard
-if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
+if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_1572.v0.1":
     raise RuntimeError("truth_primitive_fetch_runtime_gossip_transport_dep_mismatch")
 
 

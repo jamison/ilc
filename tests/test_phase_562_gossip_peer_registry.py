@@ -93,7 +93,7 @@ def test_all_constants_have_exact_expected_values() -> None:
     assert gossip_peer_registry.GOSSIP_PEER_REGISTRY_VERSION == 'gossip_peer_registry_1571.v0.1'
     assert gossip_peer_registry.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert gossip_peer_registry.CDL_039_DEPENDENCY == 'cdl_039_ratified_379.v0.1'
-    assert gossip_peer_registry.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_558.v0.1'
+    assert gossip_peer_registry.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_1572.v0.1'
     assert gossip_peer_registry.PEER_DISCOVERY_MODE == 'static_v1'
     assert gossip_peer_registry.MAX_PEERS == 16
 

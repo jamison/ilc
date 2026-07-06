@@ -191,9 +191,9 @@ class _FakeResponse:
 
 
 def test_module_imports_and_exposes_exact_constants() -> None:
-    assert runtime.HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION == 'http_gossip_transport_runtime_568.v0.1'
+    assert runtime.HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION == 'http_gossip_transport_runtime_1572.v0.1'
     assert runtime.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
-    assert runtime.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_558.v0.1'
+    assert runtime.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_1572.v0.1'
     assert runtime.GOSSIP_PEER_REGISTRY_DEPENDENCY == 'gossip_peer_registry_1571.v0.1'
     assert runtime.TRANSPORT_KIND_QUIC == 'quic'
     assert runtime.TRANSPORT_KIND_HTTP == 'http'
@@ -299,13 +299,25 @@ def test_send_gossip_uses_build_gossip_headers(tmp_path: Path, monkeypatch: pyte
     transport = runtime.HttpGossipTransportRuntime(_config(tmp_path))
     calls: dict[str, object] = {}
 
-    def fake_build(*, gossip_type: str, channel: str, epoch: int, hop_count: int, signature: str, content_type: str) -> dict[str, str]:
+    def fake_build(
+        *,
+        gossip_type: str,
+        channel: str,
+        epoch: int,
+        hop_count: int,
+        signature: str,
+        sender_peer_id: str,
+        key_id: str,
+        content_type: str,
+    ) -> dict[str, str]:
         calls['args'] = {
             'gossip_type': gossip_type,
             'channel': channel,
             'epoch': epoch,
             'hop_count': hop_count,
             'signature': signature,
+            'sender_peer_id': sender_peer_id,
+            'key_id': key_id,
             'content_type': content_type,
         }
         return {
@@ -314,6 +326,8 @@ def test_send_gossip_uses_build_gossip_headers(tmp_path: Path, monkeypatch: pyte
             'ILC-Epoch': str(epoch),
             'ILC-Hop-Count': '1',
             'ILC-Signature': signature,
+            'ILC-Sender-Peer-Id': sender_peer_id,
+            'ILC-Key-Id': key_id,
             'Content-Type': content_type,
         }
 
@@ -341,6 +355,8 @@ def test_send_gossip_uses_build_gossip_headers(tmp_path: Path, monkeypatch: pyte
         'epoch': 2,
         'hop_count': 1,
         'signature': 'sig-2',
+        'sender_peer_id': gossip_transport.LEGACY_UNVERIFIABLE_SENDER_PEER_ID,
+        'key_id': gossip_transport.LEGACY_UNVERIFIABLE_KEY_ID,
         'content_type': 'application/json',
     }
     normalized_headers = {key.lower(): value for key, value in calls['headers'].items()}

@@ -111,7 +111,7 @@ def _resolve_phase_570_commit_ref() -> str:
 def test_module_imports_and_exposes_exact_constants() -> None:
     assert runtime.NODE_STARTUP_RUNTIME_VERSION == 'node_startup_runtime_570.v0.1'
     assert runtime.GOSSIP_PEER_REGISTRY_DEPENDENCY == 'gossip_peer_registry_1571.v0.1'
-    assert runtime.HTTP_GOSSIP_TRANSPORT_DEPENDENCY == 'http_gossip_transport_runtime_568.v0.1'
+    assert runtime.HTTP_GOSSIP_TRANSPORT_DEPENDENCY == 'http_gossip_transport_runtime_1572.v0.1'
 
 
 def test_valid_json_config_produces_gossip_peer_registry(tmp_path: Path) -> None:
