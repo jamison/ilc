@@ -188,14 +188,14 @@ def test_submit_epistemic_work_task_mvp():
         "task_class": "star.map.embedding",
         "agent_id": "agent:test",
         "region_scope": ["global"],
-        "difficulty_factor": 1.0,
+        "difficulty_factor": "1.0",
         "input_data": {"dummy": True},
         "verification_method": "hash-match",
         "task_state": "proposed",
         "timestamp_created": 1700000000,
         # If your EpistemicWorkTask uses an alias like "ecu.estimate",
         # include it here as in the schema:
-        "ecu.estimate": 0.5,
+        "ecu.estimate": "0.5",
     }
 
     response = client.post("/v1/protocol/ep_task", json=payload)
