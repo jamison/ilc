@@ -44,7 +44,7 @@ _GOSSIP_TIMEOUT_SECONDS = 2.0
 _UNSIGNED_SIGNATURE = "UNSIGNED"
 _GOSSIP_TLS_INSECURE_ENV = D2D_INSECURE_SKIP_TLS_VERIFY_ENV
 
-if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_558.v0.1":
+if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_1572.v0.1":
     raise RuntimeError(
         f"truth_primitive_gossip_dep_chain_mismatch: "
         f"gossip_transport={gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION!r}"

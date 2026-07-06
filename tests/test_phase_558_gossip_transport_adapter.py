@@ -84,12 +84,12 @@ def _assert_phase_558_runtime_mutation_scope(commit_ref: str) -> None:
 
 def test_module_imports_without_error_and_exposes_constants() -> None:
     module = importlib.import_module('ilc_core.network.d2d.gossip_transport')
-    assert module.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_558.v0.1'
+    assert module.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_1572.v0.1'
     assert module.REQUIRED_HEADERS == gossip_transport.REQUIRED_HEADERS
 
 
 def test_all_constants_have_exact_expected_values() -> None:
-    assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_558.v0.1'
+    assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_1572.v0.1'
     assert gossip_transport.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert gossip_transport.CDL_039_DEPENDENCY == 'cdl_039_ratified_379.v0.1'
     assert gossip_transport.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == 'cdl_060_gossip_runtime_548.v0.1'

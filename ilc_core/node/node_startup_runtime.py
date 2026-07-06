@@ -63,7 +63,7 @@ from ilc_core.network.star_map.star_map_route_index_runtime import (
 
 NODE_STARTUP_RUNTIME_VERSION = "node_startup_runtime_570.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_1571.v0.1"
-HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_568.v0.1"
+HTTP_GOSSIP_TRANSPORT_DEPENDENCY = "http_gossip_transport_runtime_1572.v0.1"
 CDL_079_DEPENDENCY = "cdl_079_hb_002_bootstrap_distribution.v0.1"
 H013_PEER_FINGERPRINT_CACHE_DEPENDENCY = "peer_fingerprint_cache_931.v0.1"
 H013_SEQUENCE_LOCK_DEPENDENCY = "h013_gossip_beacon_activation_sequence_lock_930.v0.1"

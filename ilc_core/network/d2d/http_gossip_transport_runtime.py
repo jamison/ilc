@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import collections
 import hashlib
+import json
 import os
 import socket
 import ssl
@@ -21,9 +22,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
+from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
+from ilc_core.encoding.dag_cbor import decode_dag_cbor
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import (
     GOSSIP_PEER_REGISTRY_VERSION as _GOSSIP_PEER_REGISTRY_CHECK,
+    GossipPeerRegistry,
     validate_peer_endpoint,
 )
 from ilc_core.network.d2d.tls_policy import (
@@ -32,10 +36,10 @@ from ilc_core.network.d2d.tls_policy import (
 )
 
 
-HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v0.1"
+HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_1572.v0.1"
 TRANSPORT_SECURITY_HARDENING_TOKEN = "transport_security_hardening_1218b"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
-GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
+GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_1572.v0.1"
 GOSSIP_PEER_REGISTRY_DEPENDENCY = "gossip_peer_registry_1571.v0.1"
 TRANSPORT_KIND_QUIC = "quic"
 TRANSPORT_KIND_HTTP = "http"
@@ -47,6 +51,27 @@ PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
 CONTENT_LENGTH_INVALID_TOKEN = "gossip_content_length_invalid"
 TRANSFER_ENCODING_UNSUPPORTED_TOKEN = "gossip_transfer_encoding_not_supported"
 _EVENT_LOG_MAX = 10_000
+GOSSIP_SIGNED_CONTEXT_DOMAIN = "ILC-D2D-GossipEnvelope-v1"
+GOSSIP_SIGNED_CONTEXT_ENVELOPE_VERSION = "1"
+GOSSIP_SIGNATURE_ALG_MLDSA65 = "ML-DSA-65"
+GOSSIP_SIGNED_CONTEXT_KEYS = frozenset({
+    "channel",
+    "content_type",
+    "domain",
+    "envelope_version",
+    "epoch",
+    "gossip_type",
+    "hop_count",
+    "key_id",
+    "payload_sha256",
+    "peer_id",
+    "signature_alg",
+})
+AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
+    "agent_submission",
+    "panel_verdict",
+    "ecu_claim_batch",
+})
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY:
     import json as _json, sys as _sys
@@ -145,6 +170,75 @@ def _canonicalize_headers(headers: dict[str, str]) -> dict[str, str]:
     return normalized
 
 
+def _build_gossip_signed_context(headers: dict[str, str], payload: bytes) -> bytes:
+    """Canonical signed message per CDL-101 canonical signed context."""
+    if not isinstance(payload, bytes):
+        raise ValueError("gossip_payload_must_be_bytes")
+    context = {
+        "channel": str(headers["ILC-Channel"]).strip(),
+        "content_type": str(headers["Content-Type"]).strip(),
+        "domain": GOSSIP_SIGNED_CONTEXT_DOMAIN,
+        "envelope_version": GOSSIP_SIGNED_CONTEXT_ENVELOPE_VERSION,
+        "epoch": int(str(headers["ILC-Epoch"]).strip()),
+        "gossip_type": str(headers["ILC-Gossip-Type"]).strip(),
+        "hop_count": int(str(headers["ILC-Hop-Count"]).strip()),
+        "key_id": str(headers["ILC-Key-Id"]).strip(),
+        "payload_sha256": hashlib.sha256(payload).hexdigest(),
+        "peer_id": str(headers["ILC-Sender-Peer-Id"]).strip(),
+        "signature_alg": GOSSIP_SIGNATURE_ALG_MLDSA65,
+    }
+    if frozenset(context) != GOSSIP_SIGNED_CONTEXT_KEYS:
+        raise ValueError("gossip_signed_context_key_mismatch")
+    if context["hop_count"] != gossip_transport.HOP_COUNT_SINGLE:
+        raise ValueError("gossip_signed_context_hop_count_invalid")
+    return json.dumps(
+        context,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def _extract_claimed_actor(payload: bytes) -> str | None:
+    """Return an explicit claimed actor from JSON or DAG-CBOR payloads."""
+    if not payload:
+        return None
+    decoded: Any | None = None
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        try:
+            decoded = decode_dag_cbor(payload)
+        except (TypeError, ValueError):
+            return None
+    if not isinstance(decoded, dict):
+        return None
+    value = decoded.get("claimed_actor")
+    return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+class _GossipReplayCache:
+    """Bounded LRU replay cache for CDL-101 verified envelopes."""
+
+    MAX_ENTRIES = 4096
+
+    def __init__(self) -> None:
+        self._cache: collections.OrderedDict[tuple[str, str, int, str, str, str], None] = (
+            collections.OrderedDict()
+        )
+
+    def seen(self, key: tuple[str, str, int, str, str, str]) -> bool:
+        return key in self._cache
+
+    def record(self, key: tuple[str, str, int, str, str, str]) -> None:
+        if key in self._cache:
+            self._cache.move_to_end(key)
+            return
+        self._cache[key] = None
+        if len(self._cache) > self.MAX_ENTRIES:
+            self._cache.popitem(last=False)
+
+
 def _validated_content_length(value: Any) -> int:
     if value is None:
         return 0
@@ -181,8 +275,15 @@ def _require_path(value: str, missing_token: str, not_found_token: str) -> Path:
 class HttpGossipTransportRuntime:
     """Minimal real-HTTP wrapper around the ratified envelope helpers."""
 
-    def __init__(self, config: TransportRuntimeConfig) -> None:
+    def __init__(
+        self,
+        config: TransportRuntimeConfig,
+        *,
+        peer_registry: GossipPeerRegistry | None = None,
+    ) -> None:
         self.config = config
+        self._peer_registry = peer_registry
+        self._replay_cache = _GossipReplayCache()
         self.state: dict[str, Any] = {
             "transport_kind": config.transport_kind,
             "event_log": collections.deque(maxlen=_EVENT_LOG_MAX),
@@ -438,6 +539,102 @@ class HttpGossipTransportRuntime:
             self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
 
+        if payload is not None:
+            sender_peer_id = str(normalized_headers.get("ILC-Sender-Peer-Id", "")).strip()
+            key_id = str(normalized_headers.get("ILC-Key-Id", "")).strip()
+            sig_hex = str(normalized_headers.get("ILC-Signature", "")).strip()
+            current_epoch = int(str(normalized_headers.get("ILC-Epoch", "0")).strip())
+            payload_sha256 = hashlib.sha256(payload).hexdigest()
+
+            peer_pubkey = (
+                self._peer_registry.get_peer_pubkey(sender_peer_id)
+                if self._peer_registry is not None and sender_peer_id
+                else None
+            )
+            if peer_pubkey is None:
+                self._record(
+                    "incoming_envelope_unverifiable",
+                    token="gossip_signature_unverifiable_no_pubkey",
+                    peer_id=sender_peer_id,
+                    key_id=key_id,
+                )
+            else:
+                if self._peer_registry is None or not self._peer_registry.is_peer_key_valid(
+                    sender_peer_id,
+                    current_epoch,
+                ):
+                    self._record(
+                        "incoming_envelope_rejected",
+                        token="gossip_sender_key_expired",
+                        peer_id=sender_peer_id,
+                        key_id=key_id,
+                        epoch=current_epoch,
+                    )
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+
+                registry_key_id = self._peer_registry.get_peer_key_id(sender_peer_id)
+                if registry_key_id != key_id:
+                    self._record(
+                        "incoming_envelope_rejected",
+                        token="gossip_sender_key_id_mismatch",
+                        peer_id=sender_peer_id,
+                        key_id=key_id,
+                    )
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+
+                replay_key = (
+                    sender_peer_id,
+                    key_id,
+                    current_epoch,
+                    gossip_type,
+                    str(normalized_headers.get("ILC-Channel", "")).strip(),
+                    payload_sha256,
+                )
+                if self._replay_cache.seen(replay_key):
+                    self._record(
+                        "incoming_envelope_rejected",
+                        token="gossip_replay_detected",
+                        peer_id=sender_peer_id,
+                        key_id=key_id,
+                        epoch=current_epoch,
+                    )
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_EPOCH_CONFLICT
+                    return gossip_transport.HTTP_STATUS_EPOCH_CONFLICT
+
+                signed_context = _build_gossip_signed_context(normalized_headers, payload)
+                if not verify_mldsa65_signature(signed_context, sig_hex, peer_pubkey):
+                    self._record(
+                        "incoming_envelope_rejected",
+                        token="gossip_mldsa_signature_invalid",
+                        peer_id=sender_peer_id,
+                        key_id=key_id,
+                    )
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+
+                if gossip_type in AUTHORITY_BEARING_GOSSIP_TYPES:
+                    claimed_actor = _extract_claimed_actor(payload)
+                    if (
+                        claimed_actor is not None
+                        and not self._peer_registry.is_actor_authorized_for_peer(
+                            sender_peer_id,
+                            claimed_actor,
+                        )
+                    ):
+                        self._record(
+                            "incoming_envelope_rejected",
+                            token="d2d_actor_binding_mismatch",
+                            peer_id=sender_peer_id,
+                            key_id=key_id,
+                            claimed_actor=claimed_actor,
+                        )
+                        self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                        return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+
+                self._replay_cache.record(replay_key)
+
         event_payload: dict[str, Any] = {"path": path}
         if payload is not None:
             event_payload.update(
@@ -462,6 +659,8 @@ class HttpGossipTransportRuntime:
         signature: str,
         payload: bytes | str = b"",
         *,
+        sender_peer_id: str = gossip_transport.LEGACY_UNVERIFIABLE_SENDER_PEER_ID,
+        key_id: str = gossip_transport.LEGACY_UNVERIFIABLE_KEY_ID,
         content_type: str = "application/cbor",
     ) -> int:
         kind = self._normalize_transport_kind()
@@ -481,6 +680,8 @@ class HttpGossipTransportRuntime:
             epoch=epoch,
             hop_count=gossip_transport.HOP_COUNT_SINGLE,
             signature=signature,
+            sender_peer_id=sender_peer_id,
+            key_id=key_id,
             content_type=content_type,
         )
         request_body = _encode_gossip_payload(payload)
