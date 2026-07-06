@@ -73,7 +73,8 @@ def test_cdl_sweep_records_cdl096_ratified_and_runtime_boundaries() -> None:
     assert "public_path_status: blocked" in cdl096
 
     assert "global_tier_activation_status: deferred_to_cdl_096" in cdl095
-    assert "CDL-098 |" not in read(CDL_REGISTER)
+    assert "| CDL-098 |" in read(CDL_REGISTER)
+    assert "cdl_098_ratified_phase_1573a" in table_row(CDL_REGISTER, "CDL-098")
     assert "CDL-098 | Unconsumed" in coherence
 
 
