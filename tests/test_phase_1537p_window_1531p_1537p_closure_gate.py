@@ -110,14 +110,14 @@ def test_phase_1537p_obligation_register_closes_only_obl020_window_a() -> None:
         assert "Block 4 Window B, phase/window TBD by later sequence lock" in row
 
 
-def test_phase_1537p_cdl_register_not_mutated_or_consumed() -> None:
+def test_phase_1537p_cdl_register_frontier_contains_later_cdl_rows() -> None:
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
     cdl_rows = [line for line in cdl.splitlines() if line.startswith("| CDL-")]
 
-    assert len(cdl_rows) == 113
+    assert len(cdl_rows) >= 113
     assert "| CDL-097 |" in cdl
-    assert "| CDL-096 |" not in cdl
-    assert "| CDL-098 |" not in cdl
+    assert "| CDL-096 |" in cdl
+    assert "| CDL-098 |" in cdl
 
 
 def test_phase_1537p_public_path_and_guard_non_authorizations_are_recorded() -> None:

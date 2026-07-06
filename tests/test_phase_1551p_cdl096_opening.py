@@ -56,7 +56,8 @@ def test_sequence_lock_frontier_advances_through_ratification() -> None:
     assert "| 1552p | CDL-096 deliberation and prelock | NON-SENSITIVE | COMPLETE |" in lock
     assert "| 1553p | CDL-096 ratification | SENSITIVE | COMPLETE |" in lock
     assert "| 1554p | Block 5 coherence report and capsule update | NON-SENSITIVE | COMPLETE |" in lock
-    assert "Phase 1555p is next" in lock
+    assert "Window 1546p-1555p is closed" in lock
+    assert "go_window_1556p_block6_required_next" in lock
     assert "Phase 1551p is the next phase" not in lock
 
 
