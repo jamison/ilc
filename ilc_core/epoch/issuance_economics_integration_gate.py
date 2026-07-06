@@ -29,6 +29,8 @@ from .allocation_distributor_runtime import (
 from .ecu_price_clamp_runtime import (
     CDL_030_ECU_PRICE_CLAMP_RUNTIME_TOKEN,
     LIVE_PRICE_ADJUSTMENT_NOT_ACTIVATED_TOKEN,
+    P_MAX,
+    P_MIN,
     build_ecu_price_clamp_quote,
 )
 from .epoch_emission_runtime import (
@@ -182,6 +184,45 @@ def _conservation_result(
     )
 
 
+def _assert_emission_cap_quote(emission_quote: Any) -> None:
+    expected_remaining_cap = C_MAX_ILC - emission_quote.cumulative_issued_before_epoch_ilc
+    if emission_quote.remaining_cap_before_epoch_ilc != expected_remaining_cap:
+        raise ValueError("emission_remaining_cap_mismatch_phase_1352")
+    expected_capped_budget = (
+        emission_quote.raw_epoch_budget_ilc
+        if emission_quote.raw_epoch_budget_ilc <= expected_remaining_cap
+        else expected_remaining_cap
+    )
+    if emission_quote.capped_epoch_budget_ilc != expected_capped_budget:
+        raise ValueError("emission_cap_not_applied_phase_1352")
+    if emission_quote.cap_enforced != (
+        emission_quote.capped_epoch_budget_ilc != emission_quote.raw_epoch_budget_ilc
+    ):
+        raise ValueError("emission_cap_enforced_flag_mismatch_phase_1352")
+    if emission_quote.capped_epoch_budget_ilc > emission_quote.remaining_cap_before_epoch_ilc:
+        raise ValueError("emission_capped_budget_exceeds_remaining_cap_phase_1352")
+
+
+def _assert_price_clamp_quote(price_quote: Any) -> None:
+    if price_quote.clamped_price < P_MIN or price_quote.clamped_price > P_MAX:
+        raise ValueError("price_clamp_output_out_of_bounds_phase_1352")
+    if price_quote.proposed_price < P_MIN:
+        expected_price = P_MIN
+        expected_direction = "floor"
+    elif price_quote.proposed_price > P_MAX:
+        expected_price = P_MAX
+        expected_direction = "ceiling"
+    else:
+        expected_price = price_quote.proposed_price
+        expected_direction = "none"
+    if price_quote.clamped_price != expected_price:
+        raise ValueError("price_clamp_direction_mismatch_phase_1352")
+    if price_quote.clamp_direction != expected_direction:
+        raise ValueError("price_clamp_direction_mismatch_phase_1352")
+    if price_quote.clamp_applied != (expected_direction != "none"):
+        raise ValueError("price_clamp_applied_flag_mismatch_phase_1352")
+
+
 def build_stack_verification_rows() -> tuple[StackVerificationRow, ...]:
     return (
         StackVerificationRow(
@@ -332,12 +373,17 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
     for scenario in scenarios:
         epoch = int(scenario["epoch"])
         emission_quote = build_epoch_emission_quote(epoch, scenario["cumulative"])
+        _assert_emission_cap_quote(emission_quote)
         results.append(
             _conservation_result(
                 epoch,
                 "cdl_025_026_027_emission_cap_quote",
-                emission_quote.capped_epoch_budget_ilc,
-                emission_quote.capped_epoch_budget_ilc,
+                emission_quote.raw_epoch_budget_ilc,
+                emission_quote.capped_epoch_budget_ilc
+                + (
+                    emission_quote.raw_epoch_budget_ilc
+                    - emission_quote.capped_epoch_budget_ilc
+                ),
                 emission_quote.decision_token,
             )
         )
@@ -448,12 +494,13 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
         )
 
         price_quote = build_ecu_price_clamp_quote(epoch, scenario["price"])
+        _assert_price_clamp_quote(price_quote)
         results.append(
             _conservation_result(
                 epoch,
                 "cdl_030_ecu_price_clamp_quote",
-                price_quote.clamped_price,
-                price_quote.clamped_price,
+                price_quote.proposed_price,
+                price_quote.clamped_price + (price_quote.proposed_price - price_quote.clamped_price),
                 price_quote.decision_token,
             )
         )

@@ -52,6 +52,32 @@ def test_verify_stub_ok():
     assert result["total_delta"] == "0"
     assert result["expected_total"] == "0"
 
+
+def test_verify_unknown_distribution_status_fails_closed():
+    epoch_record = {
+        "distribution_status": "unexpected_status",
+        "summary": {"reward_total": "0"},
+    }
+
+    result = verify_stake_distribution(epoch_record, None, {}, {})
+
+    assert result["ok"] is False
+    assert result["error_note"] == "unknown_distribution_status"
+    assert result["top_errors"] == ["unknown_distribution_status:unexpected_status"]
+
+
+def test_verify_negative_reward_total_fails_closed():
+    epoch_record = {
+        "distribution_status": "stub_no_snapshot",
+        "summary": {"reward_total": "-1"},
+    }
+
+    result = verify_stake_distribution(epoch_record, None, {}, {})
+
+    assert result["ok"] is False
+    assert result["error_note"] == "negative_reward_total"
+    assert result["top_errors"] == ["negative_reward_total"]
+
 def test_verify_mismatch():
     """
     Test incorrect distribution detection.

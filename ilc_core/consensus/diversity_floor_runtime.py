@@ -7,7 +7,7 @@ machine-auditable validation tokens.
 
 from __future__ import annotations
 
-import math
+from decimal import Decimal, InvalidOperation
 
 from ilc_core.identity.sybil_resistance_runtime import CDL_V2_DEPENDENCY
 
@@ -23,14 +23,25 @@ class DiversityFloorValidationError(ValueError):
         self.token = token
 
 
-def _require_numeric(name: str, value: float) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+_ZERO = Decimal("0")
+_ONE = Decimal("1")
+_ROUNDING_QUANTUM = Decimal("0.000000000001")
+
+
+def _require_numeric(name: str, value: float) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (int, float, Decimal, str)):
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_invalid_numeric",
             f"{name} must be a numeric value",
         )
-    number = float(value)
-    if not math.isfinite(number):
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise DiversityFloorValidationError(
+            "cdl_v3_diversity_floor_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        ) from exc
+    if not number.is_finite():
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_invalid_numeric",
             f"{name} must be a finite numeric value",
@@ -38,14 +49,18 @@ def _require_numeric(name: str, value: float) -> float:
     return number
 
 
-def _require_positive(name: str, value: float) -> float:
+def _require_positive(name: str, value: float) -> Decimal:
     number = _require_numeric(name, value)
-    if number <= 0.0:
+    if number <= _ZERO:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_non_positive",
             f"{name} must be > 0",
         )
     return number
+
+
+def _score(value: Decimal) -> float:
+    return float(value.quantize(_ROUNDING_QUANTUM))
 
 
 def compute_max_cluster_share(*, largest_cluster_slots: float, total_panel_slots: float) -> float:
@@ -54,7 +69,7 @@ def compute_max_cluster_share(*, largest_cluster_slots: float, total_panel_slots
     largest = _require_numeric("largest_cluster_slots", largest_cluster_slots)
     total = _require_positive("total_panel_slots", total_panel_slots)
 
-    if largest < 0.0:
+    if largest < _ZERO:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_negative_largest_cluster",
             "largest_cluster_slots must be >= 0",
@@ -65,7 +80,7 @@ def compute_max_cluster_share(*, largest_cluster_slots: float, total_panel_slots
             "largest_cluster_slots cannot exceed total_panel_slots",
         )
 
-    return round(largest / total, 12)
+    return _score(largest / total)
 
 
 def meets_distinct_cluster_floor(*, distinct_clusters: float, distinct_cluster_floor: float) -> bool:
@@ -74,7 +89,7 @@ def meets_distinct_cluster_floor(*, distinct_clusters: float, distinct_cluster_f
     distinct = _require_numeric("distinct_clusters", distinct_clusters)
     floor = _require_positive("distinct_cluster_floor", distinct_cluster_floor)
 
-    if distinct < 0.0:
+    if distinct < _ZERO:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_negative_distinct_clusters",
             "distinct_clusters must be >= 0",
@@ -89,12 +104,12 @@ def meets_max_cluster_share_ceiling(*, max_cluster_share: float, max_cluster_sha
     share = _require_numeric("max_cluster_share", max_cluster_share)
     ceiling = _require_numeric("max_cluster_share_ceiling", max_cluster_share_ceiling)
 
-    if share < 0.0 or share > 1.0:
+    if share < _ZERO or share > _ONE:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_share_out_of_range",
             "max_cluster_share must be in [0, 1]",
         )
-    if ceiling <= 0.0 or ceiling > 1.0:
+    if ceiling <= _ZERO or ceiling > _ONE:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_ceiling_out_of_range",
             "max_cluster_share_ceiling must be in (0, 1]",
@@ -117,24 +132,24 @@ def compute_diversity_floor_penalty(
     share = _require_numeric("max_cluster_share", max_cluster_share)
     ceiling = _require_numeric("max_cluster_share_ceiling", max_cluster_share_ceiling)
 
-    if distinct < 0.0:
+    if distinct < _ZERO:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_negative_distinct_clusters",
             "distinct_clusters must be >= 0",
         )
-    if share < 0.0 or share > 1.0:
+    if share < _ZERO or share > _ONE:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_share_out_of_range",
             "max_cluster_share must be in [0, 1]",
         )
-    if ceiling <= 0.0 or ceiling > 1.0:
+    if ceiling <= _ZERO or ceiling > _ONE:
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_ceiling_out_of_range",
             "max_cluster_share_ceiling must be in (0, 1]",
         )
 
-    floor_deficit = max(0.0, (floor - distinct) / floor)
-    concentration_excess = max(0.0, (share - ceiling) / ceiling)
+    floor_deficit = max(_ZERO, (floor - distinct) / floor)
+    concentration_excess = max(_ZERO, (share - ceiling) / ceiling)
 
-    penalty = (0.6 * floor_deficit) + (0.4 * concentration_excess)
-    return round(max(0.0, min(1.0, penalty)), 12)
+    penalty = (Decimal("0.6") * floor_deficit) + (Decimal("0.4") * concentration_excess)
+    return _score(max(_ZERO, min(_ONE, penalty)))

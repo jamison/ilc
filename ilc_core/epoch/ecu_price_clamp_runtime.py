@@ -210,6 +210,8 @@ def require_live_price_adjustment_activation(activation_token: str | None = None
     raise ValueError("live_price_adjustment_activation_not_implemented_phase_1351")
 
 
+# Import-time dependency check is intentional: price-clamp policy is unsafe to
+# import under a mismatched CDL-027 schedule anchor.
 require_cdl_027_schedule_dependency()
 
 

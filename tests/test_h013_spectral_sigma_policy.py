@@ -6,8 +6,11 @@ from ilc_core.analysis.spectral_utils import add_noise
 from ilc_core.network.d2d.spectral_beacon import (
     BEACON_EMISSION_MODE_MAINNET,
     BEACON_EMISSION_MODE_TESTNET,
+    SpectralBeaconReplayCache,
     generate_beacon_signing_keypair,
     generate_sealed_sender_keypair,
+    open_terminal_layer,
+    peel_relay_layer,
 )
 from ilc_core.network.d2d.spectral_sigma_policy import (
     H013_SIGMA_POLICY_STATUS,
@@ -186,3 +189,11 @@ def test_maybe_emit_spectral_beacon_allows_genesis_provisional_mainnet_mode() ->
     assert envelope is not None
     assert emission_state.last_emit_epoch == 7
     assert emission_state.prev_lambda == [0.25, 0.5, 0.75]
+    relay_result = peel_relay_layer(envelope, relay_keypair.private_key)
+    terminal_result = open_terminal_layer(
+        relay_result,
+        terminal_keypair.private_key,
+        replay_cache=SpectralBeaconReplayCache(),
+    )
+    assert terminal_result.beacon.lambda_local != [0.25, 0.5, 0.75]
+    assert all(0.0 <= value <= 2.0 for value in terminal_result.beacon.lambda_local)

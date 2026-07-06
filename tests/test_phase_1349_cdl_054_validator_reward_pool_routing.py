@@ -20,6 +20,7 @@ from ilc_core.epoch import (
     TREASURY_EPOCH_BUDGET_SOURCE_LABEL,
     VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
     VALIDATOR_REWARD_FRACTION_OF_WRITE_FEE_BURN,
+    VALIDATOR_REWARD_POOL_EXCEEDS_CDL047_CAP_TOKEN,
     VALIDATOR_REWARD_POOL_LABEL,
     VALIDATOR_REWARD_POOL_ROUTING_RUNTIME_VERSION,
     VELOCITY_ALERT_FLOOR,
@@ -179,7 +180,7 @@ def test_dependency_and_guard_failures_remain_default_off() -> None:
 
 
 def test_treasury_framework_rejects_reward_request_above_cdl_047_cap() -> None:
-    with pytest.raises(ValueError, match="requested_bounty_exceeds_cdl_047_cap"):
+    with pytest.raises(ValueError, match=VALIDATOR_REWARD_POOL_EXCEEDS_CDL047_CAP_TOKEN):
         build_validator_reward_pool_routing_quote(
             issuance_epoch=0,
             write_fee_burn_pool_ilc="1000",

@@ -7,7 +7,7 @@ and tokenized validation failures.
 
 from __future__ import annotations
 
-import math
+from decimal import Decimal, InvalidOperation
 
 from ilc_core.reputation.temporal_decay_runtime import CDL_V1_DEPENDENCY
 
@@ -23,14 +23,25 @@ class SybilResistanceValidationError(ValueError):
         self.token = token
 
 
-def _require_numeric(name: str, value: float) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+_ZERO = Decimal("0")
+_ONE = Decimal("1")
+_ROUNDING_QUANTUM = Decimal("0.000000000001")
+
+
+def _require_numeric(name: str, value: float) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (int, float, Decimal, str)):
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_invalid_numeric",
             f"{name} must be a numeric value",
         )
-    number = float(value)
-    if not math.isfinite(number):
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise SybilResistanceValidationError(
+            "cdl_v2_sybil_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        ) from exc
+    if not number.is_finite():
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_invalid_numeric",
             f"{name} must be a finite numeric value",
@@ -38,9 +49,9 @@ def _require_numeric(name: str, value: float) -> float:
     return number
 
 
-def _require_unit_interval(name: str, value: float) -> float:
+def _require_unit_interval(name: str, value: float) -> Decimal:
     number = _require_numeric(name, value)
-    if number < 0.0 or number > 1.0:
+    if number < _ZERO or number > _ONE:
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_out_of_range",
             f"{name} must be in [0, 1]",
@@ -54,6 +65,10 @@ def _require_validation_epoch(epoch_type: str) -> None:
             "cdl_v2_sybil_epoch_context_invalid",
             "sybil-resistance heuristics are validation-epoch scoped",
         )
+
+
+def _score(value: Decimal) -> float:
+    return float(value.quantize(_ROUNDING_QUANTUM))
 
 
 def compute_identity_cluster_risk(
@@ -72,8 +87,12 @@ def compute_identity_cluster_risk(
         "key_rotation_overlap_fraction", key_rotation_overlap_fraction
     )
 
-    risk = (0.50 * operator) + (0.30 * infrastructure) + (0.20 * key_overlap)
-    return round(max(0.0, min(1.0, risk)), 12)
+    risk = (
+        (Decimal("0.50") * operator)
+        + (Decimal("0.30") * infrastructure)
+        + (Decimal("0.20") * key_overlap)
+    )
+    return _score(max(_ZERO, min(_ONE, risk)))
 
 
 def compute_burst_write_penalty(
@@ -92,23 +111,23 @@ def compute_burst_write_penalty(
     sensitivity = _require_numeric("burst_sensitivity", burst_sensitivity)
     _require_validation_epoch(epoch_type)
 
-    if writes < 0.0 or baseline <= 0.0:
+    if writes < _ZERO or baseline <= _ZERO:
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_rate_non_positive",
             "writes must be >= 0 and baseline must be > 0",
         )
-    if sensitivity <= 0.0 or sensitivity > 1.0:
+    if sensitivity <= _ZERO or sensitivity > _ONE:
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_burst_sensitivity_out_of_range",
             "burst_sensitivity must be in (0, 1]",
         )
 
     ratio = writes / baseline
-    if ratio <= 1.0:
+    if ratio <= _ONE:
         return 0.0
 
-    penalty = min(1.0, (ratio - 1.0) * sensitivity)
-    return round(penalty, 12)
+    penalty = min(_ONE, (ratio - _ONE) * sensitivity)
+    return _score(penalty)
 
 
 def compute_diversity_floor_contribution(
@@ -121,14 +140,14 @@ def compute_diversity_floor_contribution(
     distinct_refs = _require_numeric("distinct_cluster_refs", distinct_cluster_refs)
     expected_floor = _require_numeric("expected_diversity_floor", expected_diversity_floor)
 
-    if distinct_refs < 0.0 or expected_floor <= 0.0:
+    if distinct_refs < _ZERO or expected_floor <= _ZERO:
         raise SybilResistanceValidationError(
             "cdl_v2_sybil_diversity_floor_invalid",
             "distinct refs must be >= 0 and expected floor must be > 0",
         )
 
-    contribution = min(1.0, distinct_refs / expected_floor)
-    return round(contribution, 12)
+    contribution = min(_ONE, distinct_refs / expected_floor)
+    return _score(contribution)
 
 
 def compute_sybil_penalty(
@@ -145,6 +164,10 @@ def compute_sybil_penalty(
         "diversity_floor_contribution", diversity_floor_contribution
     )
 
-    raw_penalty = (0.55 * risk) + (0.35 * burst) - (0.25 * diversity)
-    bounded = max(0.0, min(1.0, raw_penalty))
-    return round(bounded, 12)
+    raw_penalty = (
+        (Decimal("0.55") * risk)
+        + (Decimal("0.35") * burst)
+        - (Decimal("0.25") * diversity)
+    )
+    bounded = max(_ZERO, min(_ONE, raw_penalty))
+    return _score(bounded)
