@@ -10,14 +10,20 @@ from __future__ import annotations
 
 import ipaddress
 import socket
+from dataclasses import dataclass
+from typing import Any, Mapping, Sequence
 from urllib.parse import urlsplit
 
+from ilc_core.crypto.pq_signature_verify import (
+    CDL_101_SIGNED_ENVELOPE_DEPENDENCY,
+    _MLDSA_PK_HEX_LENGTH,
+)
 from ilc_core.network.d2d.gossip_transport import (
     GOSSIP_TRANSPORT_RUNTIME_VERSION as _GOSSIP_TRANSPORT_CHECK,
 )
 
 
-GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_562.v0.1"
+GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
@@ -26,6 +32,7 @@ MAX_PEERS = 16
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
 _LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
 _NONSTANDARD_IPV4_LITERAL_CHARS = frozenset("0123456789abcdefABCDEFxX.")
+_HEX_CHARS = frozenset("0123456789abcdefABCDEF")
 
 if _GOSSIP_TRANSPORT_CHECK != GOSSIP_TRANSPORT_DEPENDENCY:
     import json as _json, sys as _sys
@@ -117,27 +124,125 @@ def validate_peer_endpoint(
     return normalized_endpoint
 
 
+@dataclass(frozen=True)
+class _PeerEntry:
+    endpoint: str
+    peer_id: str | None = None
+    mldsa_pubkey_hex: str | None = None
+    key_id: str | None = None
+    authorized_actor_ids: tuple[str, ...] = ()
+    valid_from_epoch: int = 0
+    valid_until_epoch: int | None = None
+
+
+def _require_peer_string(value: Any, token: str, max_chars: int) -> str:
+    if not isinstance(value, str):
+        raise ValueError(token)
+    normalized = value.strip()
+    if not normalized or len(normalized) > max_chars or any(char.isspace() for char in normalized):
+        raise ValueError(token)
+    return normalized
+
+
+def _require_epoch(value: Any, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(token)
+    return value
+
+
+def _require_mldsa_pubkey_hex(value: Any) -> str:
+    if (
+        not isinstance(value, str)
+        or len(value) != _MLDSA_PK_HEX_LENGTH
+        or any(char not in _HEX_CHARS for char in value)
+    ):
+        raise ValueError("peer_mldsa_pubkey_hex_invalid")
+    return value
+
+
+def _require_authorized_actor_ids(value: Any) -> tuple[str, ...]:
+    if not isinstance(value, list) or not value:
+        raise ValueError("peer_authorized_actor_ids_required")
+    actors = tuple(
+        _require_peer_string(actor, "peer_authorized_actor_id_invalid", 128)
+        for actor in value
+    )
+    if len(set(actors)) != len(actors):
+        raise ValueError("peer_authorized_actor_ids_duplicate")
+    return actors
+
+
+def _normalize_peer_entry(
+    peer: str | Mapping[str, Any],
+    *,
+    allow_private_address_literals: bool,
+) -> _PeerEntry:
+    if isinstance(peer, str):
+        return _PeerEntry(
+            endpoint=validate_peer_endpoint(
+                peer,
+                allow_private_address_literals=allow_private_address_literals,
+            )
+        )
+    if not isinstance(peer, Mapping):
+        raise ValueError("peer_entry_invalid")
+
+    endpoint = validate_peer_endpoint(
+        peer.get("endpoint"),
+        allow_private_address_literals=allow_private_address_literals,
+    )
+    peer_id = _require_peer_string(peer.get("peer_id"), "peer_id_invalid", 128)
+    pubkey = _require_mldsa_pubkey_hex(peer.get("mldsa_pubkey_hex"))
+    key_id = _require_peer_string(peer.get("key_id"), "peer_key_id_invalid", 64)
+    valid_from = _require_epoch(peer.get("valid_from_epoch", 0), "peer_valid_from_epoch_invalid")
+    valid_until_raw = peer.get("valid_until_epoch")
+    if valid_until_raw is None:
+        valid_until = None
+    else:
+        valid_until = _require_epoch(valid_until_raw, "peer_valid_until_epoch_invalid")
+        if valid_until < valid_from:
+            raise ValueError("peer_valid_until_before_valid_from")
+    if "authorized_actor_ids" not in peer:
+        raise ValueError("peer_authorized_actor_ids_required")
+    return _PeerEntry(
+        endpoint=endpoint,
+        peer_id=peer_id,
+        mldsa_pubkey_hex=pubkey,
+        key_id=key_id,
+        authorized_actor_ids=_require_authorized_actor_ids(peer.get("authorized_actor_ids")),
+        valid_from_epoch=valid_from,
+        valid_until_epoch=valid_until,
+    )
+
+
 class GossipPeerRegistry:
     """Static v1 peer registry — no dynamic discovery."""
 
     def __init__(
         self,
-        peers: list[str],
+        peers: Sequence[str | Mapping[str, Any]],
         *,
         allow_private_address_literals: bool = False,
     ) -> None:
-        normalized_peers = list(
-            dict.fromkeys(
-                validate_peer_endpoint(
-                    peer,
-                    allow_private_address_literals=allow_private_address_literals,
-                )
-                for peer in peers
+        normalized_entries_by_endpoint: dict[str, _PeerEntry] = {}
+        entries_by_peer_id: dict[str, _PeerEntry] = {}
+        for peer in peers:
+            entry = _normalize_peer_entry(
+                peer,
+                allow_private_address_literals=allow_private_address_literals,
             )
-        )
-        if len(normalized_peers) > MAX_PEERS:
+            if entry.endpoint in normalized_entries_by_endpoint:
+                continue
+            normalized_entries_by_endpoint[entry.endpoint] = entry
+            if entry.peer_id is not None:
+                if entry.peer_id in entries_by_peer_id:
+                    raise ValueError("peer_id_duplicate")
+                entries_by_peer_id[entry.peer_id] = entry
+        if len(normalized_entries_by_endpoint) > MAX_PEERS:
             raise ValueError('peer_registry_exceeds_max_peers')
-        self._peers = normalized_peers
+        self._entries = tuple(normalized_entries_by_endpoint.values())
+        self._peers = [entry.endpoint for entry in self._entries]
+        self._entries_by_peer_id = entries_by_peer_id
         self._allow_private_address_literals = allow_private_address_literals
 
     def peer_count(self) -> int:
@@ -145,6 +250,39 @@ class GossipPeerRegistry:
 
     def get_peers(self) -> list[str]:
         return list(self._peers)
+
+    def get_peer_pubkey(self, peer_id: str) -> str | None:
+        entry = self._entries_by_peer_id.get(peer_id)
+        if entry is None:
+            return None
+        return entry.mldsa_pubkey_hex
+
+    def get_peer_key_id(self, peer_id: str) -> str | None:
+        entry = self._entries_by_peer_id.get(peer_id)
+        if entry is None:
+            return None
+        return entry.key_id
+
+    def get_authorized_actor_ids(self, peer_id: str) -> tuple[str, ...]:
+        entry = self._entries_by_peer_id.get(peer_id)
+        if entry is None:
+            return ()
+        return entry.authorized_actor_ids
+
+    def is_actor_authorized_for_peer(self, peer_id: str, claimed_actor: str) -> bool:
+        if not isinstance(claimed_actor, str):
+            return False
+        return claimed_actor in self.get_authorized_actor_ids(peer_id)
+
+    def is_peer_key_valid(self, peer_id: str, epoch: int) -> bool:
+        if isinstance(epoch, bool) or not isinstance(epoch, int):
+            return False
+        entry = self._entries_by_peer_id.get(peer_id)
+        if entry is None or entry.mldsa_pubkey_hex is None:
+            return False
+        if epoch < entry.valid_from_epoch:
+            return False
+        return entry.valid_until_epoch is None or epoch <= entry.valid_until_epoch
 
     def select_fanout_peers(self, fanout: int, exclude: list[str] | None = None) -> list[str]:
         if isinstance(fanout, bool) or not isinstance(fanout, int) or fanout < 1:

@@ -194,7 +194,7 @@ def test_module_imports_and_exposes_exact_constants() -> None:
     assert runtime.HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION == 'http_gossip_transport_runtime_568.v0.1'
     assert runtime.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert runtime.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_558.v0.1'
-    assert runtime.GOSSIP_PEER_REGISTRY_DEPENDENCY == 'gossip_peer_registry_562.v0.1'
+    assert runtime.GOSSIP_PEER_REGISTRY_DEPENDENCY == 'gossip_peer_registry_1571.v0.1'
     assert runtime.TRANSPORT_KIND_QUIC == 'quic'
     assert runtime.TRANSPORT_KIND_HTTP == 'http'
 
