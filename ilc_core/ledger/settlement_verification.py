@@ -21,6 +21,7 @@ JsonScalar: TypeAlias = str | int | bool | None
 JsonValue: TypeAlias = JsonScalar | dict[str, "JsonValue"] | list["JsonValue"]
 JsonObject: TypeAlias = dict[str, JsonValue]
 _SETTLEMENT_QUANTUM = Decimal("0.000000001")
+_ALLOWED_DISTRIBUTION_STATUSES = frozenset({"distributed", "stub_no_snapshot"})
 
 
 class SettlementVerificationResult(TypedDict):
@@ -93,6 +94,17 @@ def verify_stake_distribution(
     Verify that reward distribution matches the stake snapshot and expected total.
     """
     status = epoch_record.get("distribution_status")
+    input_hash = hash_inputs(epoch_record, snapshot, balances_before, balances_after)
+    if status not in _ALLOWED_DISTRIBUTION_STATUSES:
+        return {
+            "ok": False,
+            "total_delta": "0",
+            "expected_total": "0",
+            "max_agent_error": "0",
+            "top_errors": [f"unknown_distribution_status:{status}"],
+            "error_note": "unknown_distribution_status",
+            "input_hash": input_hash,
+        }
 
     # Extract total reward (robust access)
     summary = epoch_record.get("summary", {})
@@ -103,6 +115,16 @@ def verify_stake_distribution(
         )
     else:
         reward_total = ZERO
+    if reward_total < ZERO:
+        return {
+            "ok": False,
+            "total_delta": "0",
+            "expected_total": "0",
+            "max_agent_error": "0",
+            "top_errors": ["negative_reward_total"],
+            "error_note": "negative_reward_total",
+            "input_hash": input_hash,
+        }
 
     deltas: dict[str, Decimal] = {}
     # We care about all agents in the snapshot, plus any that appeared in balances.
@@ -181,5 +203,5 @@ def verify_stake_distribution(
         "max_agent_error": decimal_to_canonical_string(max_err),
         "top_errors": top_errors_formatted,
         "error_note": "distributed_without_snapshot" if missing_snapshot else "",
-        "input_hash": hash_inputs(epoch_record, snapshot, balances_before, balances_after),
+        "input_hash": input_hash,
     }

@@ -91,7 +91,7 @@ def test_fix2n_verifier_remains_backward_compatible_with_fix2l_records() -> None
         record.pop(key)
     record["settlement_root_inputs_sha256"] = settlement_root_inputs_hash(record)
 
-    verification = verify_rehearsal_economics_record(record)
+    verification = verify_rehearsal_economics_record(record, strict_current_artifacts=False)
 
     assert verification["settlement_root_verified"] is True
     assert verification["cdl048_per_agent_lot_coverage_verified"] is False

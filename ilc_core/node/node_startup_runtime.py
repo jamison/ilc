@@ -54,7 +54,7 @@ from ilc_core.network.d2d.spectral_sigma_policy import (
     build_sigma_policy_status_record,
     validate_noise_sigma_for_mode,
 )
-from ilc_core.analysis.spectral_utils import spectral_distance
+from ilc_core.analysis.spectral_utils import add_noise, spectral_distance
 from ilc_core.network.star_map.star_map_route_index_runtime import (
     RouteIndex,
     query_route_index_spectral,
@@ -82,6 +82,7 @@ H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED = (
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED
 )
 H013_CHANGE_THRESHOLD: float = 0.15  # CDL-082 ratified Phase 950; SIM-BEACON-01 evidence Phase 939
+MAX_NORMALIZED_LAPLACIAN_EIGENVALUE: float = 2.0
 
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
     import json as _json, sys as _sys
@@ -457,6 +458,14 @@ class SpectralEmissionState:
     last_emit_epoch: int | None = None
 
 
+def _project_noised_lambda_local(lambda_local: list[float], sigma: float) -> list[float]:
+    noised = add_noise(lambda_local, sigma)
+    return [
+        min(MAX_NORMALIZED_LAPLACIAN_EIGENVALUE, max(0.0, float(value)))
+        for value in noised
+    ]
+
+
 def maybe_emit_spectral_beacon(
     emission_state: SpectralEmissionState,
     signing_keypair: BeaconSigningKeypair,
@@ -518,9 +527,10 @@ def maybe_emit_spectral_beacon(
             # Fingerprint has not changed enough — stable node, suppress emission.
             return None
 
+    noised_lambda_local = _project_noised_lambda_local(lambda_local, emission_sigma)
     beacon = sign_spectral_beacon(
         epoch=current_epoch,
-        lambda_local=lambda_local,
+        lambda_local=noised_lambda_local,
         noise_sigma=emission_sigma,
         signing_keypair=signing_keypair,
     )

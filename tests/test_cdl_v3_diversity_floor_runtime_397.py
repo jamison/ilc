@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -113,6 +114,14 @@ def test_dependency_chain_imports_v2_token() -> None:
 
 def test_compute_max_cluster_share_nominal_case() -> None:
     share = compute_max_cluster_share(largest_cluster_slots=3, total_panel_slots=8)
+    assert share == 0.375
+
+
+def test_compute_max_cluster_share_accepts_exact_decimal_like_inputs() -> None:
+    share = compute_max_cluster_share(
+        largest_cluster_slots=Decimal("3"),
+        total_panel_slots="8",
+    )
     assert share == 0.375
 
 

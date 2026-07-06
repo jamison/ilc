@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -123,6 +124,14 @@ def test_identity_cluster_risk_monotonicity() -> None:
         key_rotation_overlap_fraction=0.8,
     )
     assert low < high
+
+
+def test_identity_cluster_risk_accepts_exact_decimal_like_inputs() -> None:
+    assert compute_identity_cluster_risk(
+        shared_operator_fraction=Decimal("0.10"),
+        shared_infrastructure_fraction="0.10",
+        key_rotation_overlap_fraction=Decimal("0.10"),
+    ) == 0.1
 
 
 def test_burst_write_penalty_zero_below_baseline() -> None:
