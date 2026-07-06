@@ -254,7 +254,7 @@ def test_handoff_artifact_exists_with_required_headings_and_tokens() -> None:
         'cdl_061_ratified_561_gossip_http_envelope_contract',
         'gossip_transport_dep_chain_complete_through_562',
         'window_565_574_ready_to_plan',
-        'gossip_transport_runtime_558.v0.1',
+        'gossip_transport_runtime_1572.v0.1',
         'gossip_peer_registry_562.v0.1',
     ):
         assert token in text

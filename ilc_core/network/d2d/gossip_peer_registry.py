@@ -26,7 +26,7 @@ from ilc_core.network.d2d.gossip_transport import (
 GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
-GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_558.v0.1"
+GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_1572.v0.1"
 PEER_DISCOVERY_MODE = "static_v1"
 MAX_PEERS = 16
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
