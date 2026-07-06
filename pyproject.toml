@@ -130,6 +130,17 @@ dev = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+testpaths = ["tests"]
+norecursedirs = [
+    ".git",
+    ".pytest_cache",
+    ".venv",
+    "build",
+    "dist",
+    "ilc-ccss-sidecar",
+    "ilc-timecapsule-sidecar",
+    "out",
+]
 markers = [
     "expensive_release_artifact: release-artifact build/install proof tests that require ILC_RUN_EXPENSIVE_RELEASE_ARTIFACT_TESTS=1",
     "historical_phase_snapshot: archived phase-snapshot tests that assert historical repository state and require ILC_RUN_HISTORICAL_PHASE_SNAPSHOT_TESTS=1",
