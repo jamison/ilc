@@ -10,6 +10,7 @@ validation to `gossip_transport.py`.
 from __future__ import annotations
 
 import collections
+import hashlib
 import os
 import socket
 import ssl
@@ -156,13 +157,16 @@ def _validated_content_length(value: Any) -> int:
     return normalized
 
 
-def _drain_request_body(stream: Any, content_length: int) -> None:
+def _read_request_body(stream: Any, content_length: int) -> bytes:
+    chunks: list[bytes] = []
     remaining = content_length
     while remaining > 0:
         chunk = stream.read(min(MAX_INBOUND_READ_CHUNK_BYTES, remaining))
         if not chunk:
             raise ConnectionError(PAYLOAD_INCOMPLETE_TOKEN)
+        chunks.append(chunk)
         remaining -= len(chunk)
+    return b"".join(chunks)
 
 
 def _require_path(value: str, missing_token: str, not_found_token: str) -> Path:
@@ -300,14 +304,21 @@ class HttpGossipTransportRuntime:
                     self.send_response(gossip_transport.HTTP_STATUS_ENVELOPE_ERROR)
                     self.end_headers()
                     return
-                status_code = runtime.handle_gossip_request(
-                    self.path,
-                    headers,
-                    content_length=content_length,
-                )
-                if status_code == gossip_transport.HTTP_STATUS_BUFFERED and content_length:
+                if content_length > MAX_INBOUND_PAYLOAD_BYTES:
+                    runtime._record(
+                        "incoming_envelope_rejected",
+                        token=PAYLOAD_TOO_LARGE_TOKEN,
+                        content_length=content_length,
+                    )
+                    runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    self.close_connection = True
+                    self.send_response(gossip_transport.HTTP_STATUS_ENVELOPE_ERROR)
+                    self.end_headers()
+                    return
+                payload = b""
+                if content_length:
                     try:
-                        _drain_request_body(self.rfile, content_length)
+                        payload = _read_request_body(self.rfile, content_length)
                     except socket.timeout:
                         runtime._record(
                             "incoming_envelope_rejected",
@@ -324,6 +335,20 @@ class HttpGossipTransportRuntime:
                         )
                         runtime.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
                         status_code = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    else:
+                        status_code = runtime.handle_gossip_request(
+                            self.path,
+                            headers,
+                            content_length=content_length,
+                            payload=payload,
+                        )
+                else:
+                    status_code = runtime.handle_gossip_request(
+                        self.path,
+                        headers,
+                        content_length=content_length,
+                        payload=payload,
+                    )
                 self.close_connection = True
                 self.send_response(status_code)
                 self.end_headers()
@@ -366,6 +391,7 @@ class HttpGossipTransportRuntime:
         headers: dict[str, str],
         *,
         content_length: int | None = None,
+        payload: bytes | None = None,
     ) -> int:
         normalized_headers = _canonicalize_headers(headers)
         if content_length is not None and content_length > MAX_INBOUND_PAYLOAD_BYTES:
@@ -376,6 +402,28 @@ class HttpGossipTransportRuntime:
             )
             self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        if payload is not None:
+            if not isinstance(payload, bytes):
+                self._record("incoming_envelope_rejected", token="gossip_payload_must_be_bytes")
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            if content_length is not None and len(payload) != content_length:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token=PAYLOAD_INCOMPLETE_TOKEN,
+                    content_length=content_length,
+                    payload_bytes=len(payload),
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            if len(payload) > MAX_INBOUND_PAYLOAD_BYTES:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token=PAYLOAD_TOO_LARGE_TOKEN,
+                    content_length=len(payload),
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
         try:
             gossip_type = str(normalized_headers["ILC-Gossip-Type"]).strip()
             expected_path = gossip_transport.gossip_request_path(gossip_type)
@@ -390,7 +438,18 @@ class HttpGossipTransportRuntime:
             self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
 
-        self._record("incoming_envelope_buffered", path=path)
+        event_payload: dict[str, Any] = {"path": path}
+        if payload is not None:
+            event_payload.update(
+                {
+                    "payload_bytes": len(payload),
+                    "payload_sha256": hashlib.sha256(payload).hexdigest(),
+                    "signature_sha256": hashlib.sha256(
+                        str(normalized_headers["ILC-Signature"]).encode("utf-8")
+                    ).hexdigest(),
+                }
+            )
+        self._record("incoming_envelope_buffered", **event_payload)
         self.state["last_status_code"] = gossip_transport.HTTP_STATUS_BUFFERED
         return gossip_transport.HTTP_STATUS_BUFFERED
 

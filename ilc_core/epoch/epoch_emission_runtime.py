@@ -114,6 +114,8 @@ def epoch_zero_emission_budget() -> Decimal:
         geometric_sum = (Decimal(1) - (ratio ** ISSUANCE_SCHEDULE_HORIZON_EPOCHS)) / (
             Decimal(1) - ratio
         )
+        if not geometric_sum.is_finite() or geometric_sum <= Decimal("0"):
+            raise ValueError("epoch_zero_emission_geometric_sum_invalid")
         return _quantize_ilc(C_MAX_ILC / geometric_sum)
 
 

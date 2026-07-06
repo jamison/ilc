@@ -112,6 +112,16 @@ class TestCoseUnprotectedMustBeEmpty:
         with pytest.raises(ValueError, match="unprotected headers must be empty"):
             cose_sign1_decode(bad_cose)
 
+    def test_reject_wrong_length_signature_at_decode_boundary(self):
+        """Malformed Ed25519 signature lengths fail before cryptographic verify."""
+        payload = encode_dag_cbor({"a": 1})
+        protected = cbor_dumps_canonical({COSE_HDR_ALG: COSE_ALG_EDDSA})
+        cose_array = [protected, {}, payload, b"\x00" * 63]
+        bad_cose = cbor_dumps_canonical(CBORTag(COSE_TAG_SIGN1, cose_array))
+
+        with pytest.raises(ValueError, match="EdDSA signature must be 64 bytes"):
+            cose_sign1_decode(bad_cose)
+
 
 class TestCosePayloadCanonical:
     """Tests for payload canonicality and ILC strict rules."""

@@ -445,8 +445,37 @@ def test_loopback_send_receive_over_real_http_returns_success_status_code(tmp_pa
         )
         assert status == gossip_transport.HTTP_STATUS_BUFFERED
         assert server_transport.state['last_status_code'] == gossip_transport.HTTP_STATUS_BUFFERED
+        event = server_transport.state['event_log'][-1]
+        assert event['event'] == 'incoming_envelope_buffered'
+        assert event['payload_bytes'] == 0
+        assert event['payload_sha256'] == (
+            'e3b0c44298fc1c149afbf4c8996fb924'
+            '27ae41e4649b934ca495991b7852b855'
+        )
+        assert len(event['signature_sha256']) == 64
     finally:
         server_transport.stop()
+
+
+def test_handle_gossip_request_rejects_payload_length_mismatch(tmp_path: Path) -> None:
+    transport = runtime.HttpGossipTransportRuntime(_config(tmp_path))
+    headers = gossip_transport.build_gossip_headers(
+        gossip_type='centrality_delta',
+        channel='cid:1234567890abcdef',
+        epoch=8,
+        hop_count=1,
+        signature='sig-8',
+    )
+
+    status = transport.handle_gossip_request(
+        '/ilc/gossip/centrality_delta',
+        headers,
+        content_length=16,
+        payload=b'too-short',
+    )
+
+    assert status == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+    assert transport.state['event_log'][-1]['token'] == runtime.PAYLOAD_INCOMPLETE_TOKEN
 
 
 def test_loopback_rejects_oversized_payload_before_buffering(tmp_path: Path) -> None:

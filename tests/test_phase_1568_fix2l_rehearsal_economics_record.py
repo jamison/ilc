@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from tools.testbed.rehearsal_economics import (
     RehearsalEconomicsError,
     build_rehearsal_economics_record,
     conversion_receipt_activation_defaults,
+    settlement_root_inputs_hash,
     verify_rehearsal_economics_record,
     write_json,
 )
@@ -143,6 +145,36 @@ def test_settlement_root_verifier_cli_fails_on_tampered_record(tmp_path: Path) -
     payload = json.loads(result.stdout)
     assert payload["settlement_root_verified"] is False
     assert payload["token"] == "settlement_root_hex_mismatch"
+
+
+def test_verifier_rejects_current_record_missing_required_subrecords_by_default() -> None:
+    record = _record()
+    for key in (
+        "cdl048_per_agent_lot_coverage",
+        "cdl048_per_agent_lot_coverage_verified",
+        "cdl048_four_issuance_epoch_quote_coverage_verified",
+        "cdl048_conversion_coverage_mode",
+    ):
+        record.pop(key)
+    record["settlement_root_inputs_sha256"] = settlement_root_inputs_hash(record)
+
+    with pytest.raises(RehearsalEconomicsError) as excinfo:
+        verify_rehearsal_economics_record(record)
+
+    assert excinfo.value.token == "cdl048_per_agent_lot_coverage_required"
+
+
+def test_verifier_rejects_accepted_submission_hash_mismatch() -> None:
+    record = deepcopy(_record())
+    record["accepted_submissions"][0]["output_hash"] = "tampered-output"
+
+    with pytest.raises(RehearsalEconomicsError) as excinfo:
+        verify_rehearsal_economics_record(record)
+
+    assert excinfo.value.token in {
+        "accepted_submissions_projection_mismatch",
+        "accepted_submissions_hash_mismatch",
+    }
 
 
 def test_record_rejects_float_shaped_economic_claim_amount() -> None:

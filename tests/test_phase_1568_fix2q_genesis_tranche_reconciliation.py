@@ -79,7 +79,7 @@ def test_fix2q_rehearsal_record_separates_burn_overhead_and_fixed_tranche() -> N
 
 def test_fix2q_verifier_recomputes_reconciliation_and_settlement_input_hash() -> None:
     record = _fee_record()
-    verification = verify_rehearsal_economics_record(record)
+    verification = verify_rehearsal_economics_record(record, strict_current_artifacts=False)
 
     assert verification["settlement_root_verified"] is True
     assert verification["genesis_tranche_reconciliation_verified"] is True
@@ -168,7 +168,7 @@ def test_fix2q_verifier_remains_backward_compatible_with_pre_fix2q_records() -> 
     record.pop("genesis_tranche_reconciliation_verified")
     record["settlement_root_inputs_sha256"] = settlement_root_inputs_hash(record)
 
-    verification = verify_rehearsal_economics_record(record)
+    verification = verify_rehearsal_economics_record(record, strict_current_artifacts=False)
 
     assert verification["settlement_root_verified"] is True
     assert verification["genesis_tranche_reconciliation_verified"] is False

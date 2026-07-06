@@ -395,10 +395,7 @@ def evaluate_ejected_stake_vote(
         raise ValueError("participating_voters_must_not_exceed_total_members")
     quorum_met = (
         participating_voters >= HCON02_QUORUM_MINIMUM_VOTERS
-        and (
-            total_members == 0
-            or Decimal(participating_voters) / Decimal(total_members) >= HCON02_QUORUM_FLOOR
-        )
+        and Decimal(participating_voters) / Decimal(total_members) >= HCON02_QUORUM_FLOOR
     )
     if not quorum_met:
         return (False, [])

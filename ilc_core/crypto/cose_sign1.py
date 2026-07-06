@@ -145,6 +145,11 @@ def cose_sign1_decode(cose_bytes: bytes) -> dict:
         raise ValueError("COSE_Sign1 payload must be bstr")
     if not isinstance(signature, bytes):
         raise ValueError("COSE_Sign1 signature must be bstr")
+    if len(signature) != _EDDSA_SIG_LENGTH:
+        raise ValueError(
+            f"EdDSA signature must be {_EDDSA_SIG_LENGTH} bytes, "
+            f"got {len(signature)}"
+        )
     
     # Validate protected header is canonical CBOR
     validate_canonical_cbor_bytes(protected_bstr)

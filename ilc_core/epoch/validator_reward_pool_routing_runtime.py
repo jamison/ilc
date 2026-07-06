@@ -57,6 +57,9 @@ VALIDATOR_REWARD_POOL_LABEL = "validator_reward_pool"
 WRITE_FEE_BURN_POOL_LABEL = "write_fee_burn_pool"
 MAX_ILC_QUANTIZE_ADJUSTED_EXPONENT = 18
 INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
+VALIDATOR_REWARD_POOL_EXCEEDS_CDL047_CAP_TOKEN = (
+    "validator_reward_pool_exceeds_cdl_047_bounty_cap"
+)
 
 
 @dataclass(frozen=True)
@@ -218,6 +221,11 @@ def build_validator_reward_pool_routing_quote(
     )
     fraction = require_cdl_054_validator_reward_fraction(validator_reward_fraction)
     validator_reward_pool = _quantize_ilc(write_fee_burn_pool * fraction)
+    treasury_bounty_cap = _quantize_ilc(
+        treasury_epoch_budget * BOUNTY_CAP_FRACTION_OF_EPOCH_BUDGET
+    )
+    if validator_reward_pool > treasury_bounty_cap:
+        raise ValueError(VALIDATOR_REWARD_POOL_EXCEEDS_CDL047_CAP_TOKEN)
 
     treasury_quote = build_treasury_governance_quote(
         issuance_epoch=epoch,
@@ -269,6 +277,8 @@ def require_production_validator_reward_distribution_activation(
     raise ValueError("production_validator_reward_distribution_activation_not_implemented_phase_1349")
 
 
+# Import-time dependency check is intentional: reward-pool routing delegates to
+# CDL-047 treasury constraints and must fail fast if that anchor drifts.
 require_cdl_047_treasury_dependency()
 
 
@@ -281,6 +291,7 @@ __all__ = [
     "PRODUCTION_VALIDATOR_REWARD_DISTRIBUTION_ACTIVATION_TOKEN",
     "TREASURY_EPOCH_BUDGET_BINDING_VERIFIED_TOKEN",
     "TREASURY_EPOCH_BUDGET_SOURCE_LABEL",
+    "VALIDATOR_REWARD_POOL_EXCEEDS_CDL047_CAP_TOKEN",
     "VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN",
     "VALIDATOR_REWARD_FRACTION_OF_WRITE_FEE_BURN",
     "VALIDATOR_REWARD_POOL_LABEL",
