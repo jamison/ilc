@@ -85,18 +85,19 @@ def test_cdl039_forbidden_identity_headers_remain_forbidden() -> None:
     assert "It is not the v1 default" in text
 
 
-def test_cdl101_register_row_is_opened_not_ratified() -> None:
+def test_cdl101_register_row_records_opening_and_ratification() -> None:
     text = _read(CDL_LOG)
 
     assert "| CDL-101 | CDL-061 / CDL-039 / Block 6 deep audit 086bfd81 |" in text
     assert "D2D Signed Gossip Envelope" in text
-    assert "| opened |" in text
+    assert "| ratified | phase_1572a | cdl_101_ratified |" in text
     assert "opening_token: cdl_101_opened" in text
     assert "opened_phase: 1570" in text
-    assert "pending_ratification" in text
-    assert "runtime_activation_status: not_authorized" in text
+    assert "ratified_phase: 1572a" in text
+    assert "ratification_token: cdl_101_ratified" in text
+    assert "status_detail: ratified" in text
+    assert "runtime_activation_status: private_receiver_verification_wired_phase_1572_public_path_blocked" in text
     assert "public_path_status: blocked" in text
-    assert "ratification_token: cdl_101_ratified" not in text
 
 
 def test_status_records_phase1570_tokens_and_no_activation_claim() -> None:
