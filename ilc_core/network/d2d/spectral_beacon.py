@@ -59,6 +59,7 @@ CHACHA20POLY1305_NONCE_SIZE = 12
 CHACHA20POLY1305_TAG_SIZE = 16
 INNER_ENVELOPE_SIZE = X25519_PUBLIC_KEY_SIZE + CHACHA20POLY1305_NONCE_SIZE + INNER_PLAINTEXT_SIZE + CHACHA20POLY1305_TAG_SIZE
 OUTER_ENVELOPE_SIZE = X25519_PUBLIC_KEY_SIZE + CHACHA20POLY1305_NONCE_SIZE + OUTER_PLAINTEXT_SIZE + CHACHA20POLY1305_TAG_SIZE
+CCSS_SPECTRAL_ROUTE_TOKEN_ENVELOPE_VERSION = "ccss-spectral-01.v0.1"
 
 
 class SpectralBeaconValidationError(ValueError):
@@ -438,13 +439,108 @@ def build_h013_gossip_envelope(
         "h013_emission_id": sealed_envelope.emission_id,
     }
     headers.update(normalized_headers)
-    return build_transport_envelope(
+    envelope = build_transport_envelope(
         message_id=sealed_envelope.emission_id,
         payload_cid=payload_cid,
         channel_id=sealed_envelope.channel_id,
         sender_peer_id=sealed_envelope.relay_peer_id,
         transport_headers=headers,
     )
+    _check_no_lambda_in_envelope(envelope)
+    return envelope
+
+
+def build_spectral_route_token_envelope(
+    *,
+    lambda_local: list[float],
+    recipient_pk_bytes: bytes,
+    epoch: int,
+    epoch_root: bytes,
+    raw_cap_id: str,
+    route_purpose: bytes,
+) -> dict[str, Any]:
+    """Build a guarded CCSS-SPECTRAL-01 relay-visible route-token envelope.
+
+    ``lambda_local`` is used only to create a hiding commitment. It is never
+    placed in the returned envelope. The route-token path remains inactive
+    until a later authority clears ``CCSS_SPECTRAL_01_NOT_ACTIVATED``.
+    """
+
+    from . import spectral_route_token as srt
+
+    if srt.CCSS_SPECTRAL_01_NOT_ACTIVATED:
+        raise SpectralBeaconValidationError(
+            "ccss_spectral_01_not_activated",
+            "ccss_spectral_01_not_activated",
+        )
+    normalized_epoch = _normalize_epoch(epoch)
+    route_purpose_text = _normalize_route_purpose_for_envelope(route_purpose)
+
+    ss, kem_ciphertext = srt.kem_encap(recipient_pk_bytes)
+    sender_ephemeral_pubkey, _mlkem_ciphertext = srt.split_hybrid_kem_ciphertext(
+        kem_ciphertext
+    )
+    quantized = srt.quantize_lambda(
+        _normalize_lambda_local(lambda_local),
+        srt.CCSS_SPECTRAL_QUANTIZATION_SCALE,
+    )
+    commitment_salt = secrets.token_bytes(32)
+    hiding_commitment = srt.make_hiding_commitment(quantized, commitment_salt)
+    cap_ctx_commitment = srt.make_capability_context_commitment(
+        raw_cap_id,
+        normalized_epoch,
+    )
+    message_nonce = secrets.token_bytes(32)
+    route_token = srt.derive_route_token(
+        ss=ss,
+        epoch_root=epoch_root,
+        message_nonce=message_nonce,
+        capability_context_commitment=cap_ctx_commitment,
+        sender_ephemeral_pubkey=sender_ephemeral_pubkey,
+        kem_ciphertext=kem_ciphertext,
+        hiding_commitment=hiding_commitment,
+        route_purpose=route_purpose,
+    )
+    envelope: dict[str, Any] = {
+        "capability_context_commitment": cap_ctx_commitment.hex(),
+        "ccss_spectral_version": CCSS_SPECTRAL_ROUTE_TOKEN_ENVELOPE_VERSION,
+        "epoch": normalized_epoch,
+        "hiding_commitment": hiding_commitment.hex(),
+        "kem_ciphertext": kem_ciphertext.hex(),
+        "message_nonce": message_nonce.hex(),
+        "route_purpose": route_purpose_text,
+        "route_token": route_token.hex(),
+        "sender_ephemeral_pubkey": sender_ephemeral_pubkey.hex(),
+    }
+    _check_no_lambda_in_envelope(envelope)
+    return envelope
+
+
+def validate_relay_envelope(envelope: dict[str, Any]) -> None:
+    """Validate relay-visible CCSS-SPECTRAL fields regardless of guard state."""
+
+    from . import spectral_route_token as srt
+
+    try:
+        srt.validate_no_forbidden_fields(envelope)
+    except srt.SpectralRouteTokenError as exc:
+        raise SpectralBeaconValidationError(exc.token, exc.message) from exc
+
+
+def _check_no_lambda_in_envelope(envelope: dict[str, Any]) -> None:
+    """Fail closed if deprecated lambda/sigma fields reach relay-visible data."""
+
+    from . import spectral_route_token as srt
+
+    try:
+        srt.validate_no_forbidden_fields(envelope)
+    except srt.SpectralRouteTokenError as exc:
+        if exc.token == "ccss_spectral_forbidden_wire_field_present":
+            raise SpectralBeaconValidationError(
+                "ccss_spectral_01_lambda_wire_emission_forbidden",
+                "ccss_spectral_01_lambda_wire_emission_forbidden",
+            ) from exc
+        raise SpectralBeaconValidationError(exc.token, exc.message) from exc
 
 
 def _seal_for_recipient(
@@ -668,6 +764,27 @@ def _normalize_emission_id(value: Any) -> str:
     if not re.fullmatch(r"[A-Za-z0-9._:-]+", emission_id):
         raise SpectralBeaconValidationError("h013_emission_id_invalid", "emission_id_shape_invalid")
     return emission_id
+
+
+def _normalize_route_purpose_for_envelope(value: Any) -> str:
+    if not isinstance(value, bytes) or not value:
+        raise SpectralBeaconValidationError(
+            "ccss_spectral_route_purpose_invalid",
+            "route_purpose_must_be_non_empty_bytes",
+        )
+    try:
+        decoded = value.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise SpectralBeaconValidationError(
+            "ccss_spectral_route_purpose_invalid",
+            "route_purpose_must_be_utf8",
+        ) from exc
+    if not decoded.strip():
+        raise SpectralBeaconValidationError(
+            "ccss_spectral_route_purpose_invalid",
+            "route_purpose_must_be_non_empty",
+        )
+    return decoded
 
 
 def _normalize_agent_public_key(value: Any) -> bytes:
