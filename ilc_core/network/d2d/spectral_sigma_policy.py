@@ -22,7 +22,8 @@ H013_TESTNET_EMISSION_SIGMA = 0.05
 SIGMA_DP_CALIBRATION_VALIDATED = False
 SIM_BEACON_01_PRIVACY_TARGET_VALIDATED = SIGMA_DP_CALIBRATION_VALIDATED
 SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED = True
-SIGMA_POLICY_STATUS = "specified_floor_testnet_candidate_obl_046_open"
+SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01 = "specified_floor_testnet_candidate_obl_046_open"
+SIGMA_POLICY_STATUS = "sigma_local_simulation_only_cdl_sigma_01_ratified"
 H013_SIGMA_POLICY_STATUS = SIGMA_POLICY_STATUS
 SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN = (
     "sigma_dp_calibration_not_validated_obl_046_open"
@@ -50,6 +51,8 @@ SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC = True
 # at public RC unless CCSS_SPECTRAL_01_NOT_ACTIVATED is cleared and the
 # Phase 1574 activation matrix authorizes the claim.
 CDLSIGMA01_RATIFICATION_PHASE = "cdl_sigma_01_ratified_phase_1573e"
+CCSS_SPECTRAL_01_RATIFIED = True
+SIGMA_WIRE_EMISSION_FORBIDDEN_AFTER_CDL_SIGMA_01 = True
 
 
 class SpectralSigmaPolicyError(ValueError):
@@ -127,6 +130,7 @@ def build_sigma_policy_status_record() -> dict[str, Any]:
     return {
         "version": SPECTRAL_SIGMA_POLICY_VERSION,
         "sigma_policy_status": SIGMA_POLICY_STATUS,
+        "sigma_policy_status_pre_cdl_sigma_01": SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01,
         "obl_id": SIGMA_OBLIGATION_ID,
         "pre_public_rc_blocker": SIGMA_PRE_PUBLIC_RC_BLOCKER,
         "min_noise_sigma": MIN_NOISE_SIGMA,
@@ -142,6 +146,10 @@ def build_sigma_policy_status_record() -> dict[str, Any]:
         "sigma_mainnet_provisional_token": SIGMA_MAINNET_PROVISIONAL_TOKEN,
         "sigma_no_dp_claim_at_public_rc": SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC,
         "cdl_sigma_01_ratification_phase": CDLSIGMA01_RATIFICATION_PHASE,
+        "ccss_spectral_01_ratified": CCSS_SPECTRAL_01_RATIFIED,
+        "sigma_wire_emission_forbidden_after_cdl_sigma_01": (
+            SIGMA_WIRE_EMISSION_FORBIDDEN_AFTER_CDL_SIGMA_01
+        ),
         "sim_beacon_01_adversary_model_revision_required": (
             SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED
         ),
@@ -150,6 +158,7 @@ def build_sigma_policy_status_record() -> dict[str, Any]:
 
 
 __all__ = [
+    "CCSS_SPECTRAL_01_RATIFIED",
     "CDLSIGMA01_RATIFICATION_PHASE",
     "H013_SIGMA_POLICY_STATUS",
     "H013_TESTNET_EMISSION_SIGMA",
@@ -162,8 +171,10 @@ __all__ = [
     "SIGMA_OBLIGATION_ID",
     "SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC",
     "SIGMA_POLICY_STATUS",
+    "SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01",
     "SIGMA_PRE_PUBLIC_RC_BLOCKER",
     "SIGMA_REVOCATION_PATH",
+    "SIGMA_WIRE_EMISSION_FORBIDDEN_AFTER_CDL_SIGMA_01",
     "SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED",
     "SIM_BEACON_01_PRIVACY_TARGET_VALIDATED",
     "SPECTRAL_SIGMA_POLICY_VERSION",
