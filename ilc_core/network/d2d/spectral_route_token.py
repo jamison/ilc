@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 import hashlib
+import hmac
 import json
 import math
 from numbers import Real
@@ -93,11 +94,19 @@ CCSS_SPECTRAL_ALLOWED_CLEARTEXT_FIELDS: frozenset[str] = frozenset(
     }
 )
 
-# Fix2z defines these only as "coarse enum" placeholders; Phase 1573f does not
-# invent runtime values before a later activation/specification phase.
-CCSS_SPECTRAL_ROUTE_PURPOSE_VALUES: frozenset[str] = frozenset()
+ROUTE_PURPOSE_VALUES: frozenset[bytes] = frozenset(
+    {
+        b"bootstrap",
+        b"direct-message",
+        b"query",
+        b"relay",
+    }
+)
+CCSS_SPECTRAL_ROUTE_PURPOSE_VALUES: frozenset[str] = frozenset(
+    value.decode("ascii") for value in ROUTE_PURPOSE_VALUES
+)
 CCSS_SPECTRAL_SIZE_CLASS_VALUES: frozenset[str] = frozenset()
-CCSS_SPECTRAL_COARSE_ENUM_VALUES_SPECIFIED = False
+CCSS_SPECTRAL_COARSE_ENUM_VALUES_SPECIFIED = True
 
 CCSS_SPECTRAL_MAX_ENVELOPE_DEPTH = 20
 
@@ -422,6 +431,7 @@ def derive_route_token(
     """Derive the opaque route token from selected-KEM material and context."""
 
     _raise_if_not_activated()
+    validate_route_purpose(route_purpose)
     shared_secret = _require_bytes(ss, field_name="shared_secret")
     salt = _require_bytes(epoch_root, field_name="epoch_root") + _require_bytes(
         message_nonce, field_name="message_nonce"
@@ -443,6 +453,49 @@ def derive_route_token(
         salt=salt,
         info=info,
     ).derive(shared_secret)
+
+
+def authenticate_route_token(
+    token: bytes,
+    ss: bytes,
+    epoch_root: bytes,
+    message_nonce: bytes,
+    capability_context_commitment: bytes,
+    sender_ephemeral_pubkey: bytes,
+    kem_ciphertext: bytes,
+    hiding_commitment: bytes,
+    route_purpose: bytes,
+) -> bool:
+    """Authenticate a recipient-visible route token in constant time."""
+
+    _raise_if_not_activated()
+    candidate = _require_bytes(token, field_name="route_token")
+    expected = derive_route_token(
+        ss,
+        epoch_root,
+        message_nonce,
+        capability_context_commitment,
+        sender_ephemeral_pubkey,
+        kem_ciphertext,
+        hiding_commitment,
+        route_purpose,
+    )
+    return hmac.compare_digest(candidate, expected)
+
+
+def validate_route_purpose(route_purpose: bytes) -> None:
+    """Validate the coarse route-purpose enum."""
+
+    purpose = _require_bytes(route_purpose, field_name="route_purpose")
+    if purpose not in ROUTE_PURPOSE_VALUES:
+        try:
+            printable = purpose.decode("utf-8")
+        except UnicodeDecodeError:
+            printable = purpose.hex()
+        raise SpectralRouteTokenError(
+            f"ccss_spectral_01_invalid_route_purpose:{printable}",
+            f"ccss_spectral_01_invalid_route_purpose:{printable}",
+        )
 
 
 def validate_no_forbidden_fields(envelope: dict[str, Any], _depth: int = 0) -> None:
