@@ -35828,6 +35828,41 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1573d_adr0035_activation_posture_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_078_phase_1573i",
+      "chronology_note": "2026-07-07 Phase 1573i CDL-SIGMA-01 adversary model ratification evidence",
+      "manual_read_summary": "Ratifies the passive relay adversary model and indistinguishability target for CCSS-SPECTRAL-01 as a governance record. Explicitly records no formal proof, no DP/anonymity claim, no guard clearance, analytic no-signal SIM interpretation, hybrid KEM posture, and unresolved side-channel constraints.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_role_specific_authority_trace",
+          "target": "cdl_sigma_01_ratified_phase_1573e",
+          "rationale": "Adversary model amendment references and extends CDL-SIGMA-01 ratification"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "ccss_spectral_01_sim_adversary_model_pass_phase_1573h"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:ccss_spectral_01_no_formal_privacy_proof_claim_phase_1573i"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:cdl_sigma_01_adversary_model -> cdl_sigma_01",
+      "repo_path": "docs/specs/ilc_cdl_sigma_01_adversary_model_ratification_evidence_1573i_v0.1.md"
     }
   ],
   "boundary": {
