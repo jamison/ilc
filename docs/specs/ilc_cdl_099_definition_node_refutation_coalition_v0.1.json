@@ -1,0 +1,57 @@
+{
+  "attribution_policy": "non_attributable",
+  "authority_ref": {
+    "cdl": "CDL-097",
+    "ratification_token": "cdl_097_ratified_phase_1528p"
+  },
+  "cdl_authority": "cdl_099",
+  "content_type": "type_definition",
+  "decomposition_recipe": [
+    {
+      "input_ref": "target_claim",
+      "output_ref": "refutation_coalition_hyperedge",
+      "primitive": "contradict.assert",
+      "role": "coordinated_refutation_assertion"
+    },
+    {
+      "input_ref": "refuter_members",
+      "output_ref": "refutation_coalition_hyperedge",
+      "primitive": "link.claim",
+      "role": "refuters_linked_to_refutation"
+    }
+  ],
+  "decomposition_recipe_text": "contradict.assert compose link.claim",
+  "definition_id": "bafyreig3k6wtdjjxskuftiqk2ifykyfc5duaowpm4rbjwwpanuwgt6ekom",
+  "definition_version": "cdl_099_1573b.v0.1",
+  "dispute_path": {
+    "instance_level": "popperian_jury",
+    "type_level": "cdl_amendment"
+  },
+  "effective_epoch": 0,
+  "governing_cdls": [
+    "CDL-081",
+    "CDL-083"
+  ],
+  "hyperedge_type": "refutation_coalition",
+  "instance_attribution_policy": "conditional attribution only when refutation is upheld under CDL-V7/CDL-083",
+  "instance_level_dispute_path": "popperian_jury",
+  "irreducible": false,
+  "irreducible_reason": null,
+  "membership_requirements": {
+    "minimum_refuters": 2,
+    "requires_target_claim": true
+  },
+  "node_type": "type_definition",
+  "phase": "1573b",
+  "role_schema": {
+    "refutation_nodes": "refutation evidence submitted by coalition members",
+    "refuter_agents": "agents participating in coordinated refutation",
+    "target_claim": "claim or assertion challenged"
+  },
+  "scope": "initial_hyperedge_type_definition_nodes_phase_1573b",
+  "snapshot_semantics": true,
+  "supersedes_definition_id": null,
+  "target_surface": "HyperEdge.hyperedge_type",
+  "target_value": "refutation_coalition",
+  "type_level_dispute_path": "cdl_amendment"
+}

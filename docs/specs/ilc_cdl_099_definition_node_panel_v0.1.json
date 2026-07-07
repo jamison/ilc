@@ -1,0 +1,57 @@
+{
+  "attribution_policy": "non_attributable",
+  "authority_ref": {
+    "cdl": "CDL-097",
+    "ratification_token": "cdl_097_ratified_phase_1528p"
+  },
+  "cdl_authority": "cdl_099",
+  "content_type": "type_definition",
+  "decomposition_recipe": [
+    {
+      "input_ref": "claim_node",
+      "output_ref": "panel_hyperedge",
+      "primitive": "validate.claim",
+      "role": "review_membership_validates_claim"
+    },
+    {
+      "input_ref": "panel_members",
+      "output_ref": "panel_hyperedge",
+      "primitive": "link.claim",
+      "role": "members_and_evidence_linked_to_panel"
+    }
+  ],
+  "decomposition_recipe_text": "validate.claim compose link.claim",
+  "definition_id": "bafyreicgd7nvktewtmbldrq6nkgqmbgjgdpqxt2bwj2d37gxdzbbymcmc4",
+  "definition_version": "cdl_099_1573b.v0.1",
+  "dispute_path": {
+    "instance_level": "popperian_jury",
+    "type_level": "cdl_amendment"
+  },
+  "effective_epoch": 0,
+  "governing_cdls": [
+    "CDL-081",
+    "CDL-083"
+  ],
+  "hyperedge_type": "panel",
+  "instance_attribution_policy": "governance/evidence surface; ejected-stake and upheld-refutation flows governed by CDL-083 where applicable",
+  "instance_level_dispute_path": "popperian_jury",
+  "irreducible": false,
+  "irreducible_reason": null,
+  "membership_requirements": {
+    "minimum_members": "governed by panel/jury scope; CDL-083 where applicable",
+    "requires_claim_node": true
+  },
+  "node_type": "type_definition",
+  "phase": "1573b",
+  "role_schema": {
+    "claim_node": "epistemic object under review",
+    "evidence_nodes": "evidence and submissions reviewed by the panel",
+    "reviewer_agents": "7+1 empaneled reviewers or configured panel members"
+  },
+  "scope": "initial_hyperedge_type_definition_nodes_phase_1573b",
+  "snapshot_semantics": true,
+  "supersedes_definition_id": null,
+  "target_surface": "HyperEdge.hyperedge_type",
+  "target_value": "panel",
+  "type_level_dispute_path": "cdl_amendment"
+}
