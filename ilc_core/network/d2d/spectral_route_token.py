@@ -1,12 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """CCSS-SPECTRAL-01 SpectralRouteToken primitive boundary.
 
-Phase 1573f creates this module as a non-activated cryptographic primitive
-surface. The current local ``cryptography`` library is 46.0.7. ML-KEM-768
-remains the primary target, but the bounded dependency probe for this phase
-could not produce a vetted, importable, KAT-checked ML-KEM-768 dependency.
-Therefore the committed implementation uses the explicit X25519 contingency
-path and exposes that fact as a machine-readable constant.
+Phase 1573f created this module as a non-activated cryptographic primitive
+surface. Phase 1573f-Fix1 upgrades the KEM path to a hybrid X25519 +
+ML-KEM-768 construction using ``cryptography>=48.0.0`` while keeping route-token
+emission fail-closed behind ``CCSS_SPECTRAL_01_NOT_ACTIVATED``.
 """
 
 from __future__ import annotations
@@ -19,6 +17,7 @@ from numbers import Real
 from typing import Any
 
 from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import mlkem
 from cryptography.hazmat.primitives.asymmetric.x25519 import (
     X25519PrivateKey,
     X25519PublicKey,
@@ -29,16 +28,35 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 CCSS_SPECTRAL_01_NOT_ACTIVATED = True
 CCSS_SPECTRAL_ROUTE_TOKEN_VERSION = "ccss_spectral_route_token_1573f.v0.1"
 CCSS_SPECTRAL_ROUTE_TOKEN_HKDF_INFO_V1 = b"ccss-spectral-route-token-v1"
+CCSS_SPECTRAL_HYBRID_KEM_COMBINE_INFO_V1 = (
+    b"ccss-spectral-hybrid-x25519-mlkem768-combine-v1"
+)
 CCSS_SPECTRAL_HIDING_COMMIT_PREFIX = b"ccss-spectral-lambda-commit-v1"
 CCSS_SPECTRAL_CAP_CONTEXT_PREFIX = b"ccss-spectral-cap-context-v1"
 CCSS_SPECTRAL_QUANTIZATION_SCALE = 1000
-CCSS_SPECTRAL_01_KEM_ALGORITHM = "x25519_ecdh_contingency"
-CCSS_SPECTRAL_01_KEM_SELECTION_TOKEN = "kem_x25519_contingency_selected_phase_1573f"
-CCSS_SPECTRAL_01_KEM_NON_PQ_DISCLAIMER = (
-    "X25519 ECDH contingency selected: ML-KEM-768 dependency evaluation failed. "
-    "X25519 provides no post-quantum security. ML-KEM-768 upgrade remains the "
-    "primary target after a vetted dependency and deterministic KAT evidence are "
-    "available. Token: kem_x25519_contingency_selected_phase_1573f"
+CCSS_SPECTRAL_01_KEM_ALGORITHM = "hybrid_x25519_ml_kem_768_fips203"
+CCSS_SPECTRAL_01_KEM_SELECTION_TOKEN = (
+    "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1"
+)
+CCSS_SPECTRAL_01_KEM_SECURITY_NOTE = (
+    "Hybrid X25519 + ML-KEM-768 selected in Phase 1573f-Fix1. X25519 provides "
+    "mature classical security; ML-KEM-768 provides the FIPS 203 post-quantum "
+    "KEM component. Token: kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1"
+)
+
+CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES = 32
+CCSS_SPECTRAL_X25519_PRIVATE_KEY_BYTES = 32
+CCSS_SPECTRAL_MLKEM768_PUBLIC_KEY_BYTES = 1184
+CCSS_SPECTRAL_MLKEM768_PRIVATE_SEED_BYTES = 64
+CCSS_SPECTRAL_MLKEM768_CIPHERTEXT_BYTES = 1088
+CCSS_SPECTRAL_HYBRID_PUBLIC_KEY_BYTES = (
+    CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES + CCSS_SPECTRAL_MLKEM768_PUBLIC_KEY_BYTES
+)
+CCSS_SPECTRAL_HYBRID_PRIVATE_KEY_BYTES = (
+    CCSS_SPECTRAL_X25519_PRIVATE_KEY_BYTES + CCSS_SPECTRAL_MLKEM768_PRIVATE_SEED_BYTES
+)
+CCSS_SPECTRAL_HYBRID_CIPHERTEXT_BYTES = (
+    CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES + CCSS_SPECTRAL_MLKEM768_CIPHERTEXT_BYTES
 )
 
 CCSS_SPECTRAL_FORBIDDEN_WIRE_FIELDS: frozenset[str] = frozenset(
@@ -144,27 +162,177 @@ def generate_ephemeral_x25519() -> tuple[bytes, X25519PrivateKey]:
     return public_key, private_key
 
 
+def generate_hybrid_recipient_keypair() -> tuple[bytes, bytes]:
+    """Generate a local hybrid recipient capability keypair for tests/wiring.
+
+    Returns ``(public_key_bytes, private_key_seed_bytes)`` where:
+    - public key bytes = X25519 public key || ML-KEM-768 public key
+    - private key bytes = X25519 private seed || ML-KEM-768 private seed
+
+    This helper does not activate route-token emission.
+    """
+
+    x25519_private_key = X25519PrivateKey.generate()
+    x25519_public_key = x25519_private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PublicFormat.Raw,
+    )
+    x25519_private_seed = x25519_private_key.private_bytes(
+        encoding=serialization.Encoding.Raw,
+        format=serialization.PrivateFormat.Raw,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    mlkem_private_key = mlkem.MLKEM768PrivateKey.generate()
+    mlkem_public_key = mlkem_private_key.public_key().public_bytes_raw()
+    mlkem_private_seed = mlkem_private_key.private_bytes_raw()
+    return x25519_public_key + mlkem_public_key, x25519_private_seed + mlkem_private_seed
+
+
+def split_hybrid_public_key(pk_recipient_bytes: bytes) -> tuple[bytes, bytes]:
+    """Split fixed-format hybrid recipient public key bytes."""
+
+    public_key_bytes = _require_bytes(
+        pk_recipient_bytes, field_name="recipient_public_key"
+    )
+    if len(public_key_bytes) != CCSS_SPECTRAL_HYBRID_PUBLIC_KEY_BYTES:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_hybrid_public_key_length_invalid",
+            "hybrid_public_key_length_invalid",
+        )
+    return (
+        public_key_bytes[:CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES],
+        public_key_bytes[CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES:],
+    )
+
+
+def split_hybrid_private_key(sk_recipient_bytes: bytes) -> tuple[bytes, bytes]:
+    """Split fixed-format hybrid recipient private seed bytes."""
+
+    private_key_bytes = _require_bytes(
+        sk_recipient_bytes, field_name="recipient_private_key"
+    )
+    if len(private_key_bytes) != CCSS_SPECTRAL_HYBRID_PRIVATE_KEY_BYTES:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_hybrid_private_key_length_invalid",
+            "hybrid_private_key_length_invalid",
+        )
+    return (
+        private_key_bytes[:CCSS_SPECTRAL_X25519_PRIVATE_KEY_BYTES],
+        private_key_bytes[CCSS_SPECTRAL_X25519_PRIVATE_KEY_BYTES:],
+    )
+
+
+def split_hybrid_kem_ciphertext(kem_ciphertext: bytes) -> tuple[bytes, bytes]:
+    """Split fixed-format hybrid KEM ciphertext bytes."""
+
+    ciphertext_bytes = _require_bytes(kem_ciphertext, field_name="kem_ciphertext")
+    if len(ciphertext_bytes) != CCSS_SPECTRAL_HYBRID_CIPHERTEXT_BYTES:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_hybrid_ciphertext_length_invalid",
+            "hybrid_ciphertext_length_invalid",
+        )
+    return (
+        ciphertext_bytes[:CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES],
+        ciphertext_bytes[CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES:],
+    )
+
+
+def _load_x25519_public_key(public_key_bytes: bytes) -> X25519PublicKey:
+    try:
+        return X25519PublicKey.from_public_bytes(public_key_bytes)
+    except ValueError as exc:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_recipient_x25519_public_key_invalid",
+            "recipient_x25519_public_key_invalid",
+        ) from exc
+
+
+def _load_x25519_private_key(private_key_bytes: bytes) -> X25519PrivateKey:
+    try:
+        return X25519PrivateKey.from_private_bytes(private_key_bytes)
+    except ValueError as exc:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_recipient_x25519_private_key_invalid",
+            "recipient_x25519_private_key_invalid",
+        ) from exc
+
+
+def _load_mlkem768_public_key(public_key_bytes: bytes) -> mlkem.MLKEM768PublicKey:
+    try:
+        return mlkem.MLKEM768PublicKey.from_public_bytes(public_key_bytes)
+    except ValueError as exc:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_recipient_mlkem768_public_key_invalid",
+            "recipient_mlkem768_public_key_invalid",
+        ) from exc
+
+
+def _load_mlkem768_private_key(seed_bytes: bytes) -> mlkem.MLKEM768PrivateKey:
+    try:
+        return mlkem.MLKEM768PrivateKey.from_seed_bytes(seed_bytes)
+    except ValueError as exc:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_recipient_mlkem768_private_key_invalid",
+            "recipient_mlkem768_private_key_invalid",
+        ) from exc
+
+
+def _combine_hybrid_shared_secret(x25519_ss: bytes, mlkem_ss: bytes) -> bytes:
+    return HKDF(
+        algorithm=hashes.SHA512(),
+        length=32,
+        salt=None,
+        info=CCSS_SPECTRAL_HYBRID_KEM_COMBINE_INFO_V1,
+    ).derive(x25519_ss + mlkem_ss)
+
+
 def kem_encap(pk_recipient_bytes: bytes) -> tuple[bytes, bytes]:
     """Encapsulate to the recipient capability public key.
 
     Phase 1573f keeps the entry point fail-closed behind
     ``CCSS_SPECTRAL_01_NOT_ACTIVATED``. If a later phase clears the guard under
-    authority, the X25519 contingency returns ``(shared_secret,
-    sender_ephemeral_pubkey)``.
+    authority, the hybrid path returns ``(combined_shared_secret,
+    hybrid_ciphertext)`` where ``hybrid_ciphertext`` is
+    sender X25519 ephemeral public key || ML-KEM-768 ciphertext.
     """
 
     _raise_if_not_activated()
-    recipient_bytes = _require_bytes(pk_recipient_bytes, field_name="recipient_public_key")
+    x25519_recipient_public_bytes, mlkem_recipient_public_bytes = split_hybrid_public_key(
+        pk_recipient_bytes
+    )
+    recipient_public_key = _load_x25519_public_key(x25519_recipient_public_bytes)
+    mlkem_public_key = _load_mlkem768_public_key(mlkem_recipient_public_bytes)
+    sender_public_key, sender_private_key = generate_ephemeral_x25519()
+    x25519_shared_secret = sender_private_key.exchange(recipient_public_key)
+    mlkem_shared_secret, mlkem_ciphertext = mlkem_public_key.encapsulate()
+    return (
+        _combine_hybrid_shared_secret(x25519_shared_secret, mlkem_shared_secret),
+        sender_public_key + mlkem_ciphertext,
+    )
+
+
+def kem_decap(sk_recipient_bytes: bytes, kem_ciphertext: bytes) -> bytes:
+    """Decapsulate the guarded hybrid KEM ciphertext for recipient tests/wiring."""
+
+    _raise_if_not_activated()
+    x25519_private_seed, mlkem_private_seed = split_hybrid_private_key(
+        sk_recipient_bytes
+    )
+    sender_ephemeral_public_bytes, mlkem_ciphertext = split_hybrid_kem_ciphertext(
+        kem_ciphertext
+    )
+    x25519_private_key = _load_x25519_private_key(x25519_private_seed)
+    sender_public_key = _load_x25519_public_key(sender_ephemeral_public_bytes)
+    x25519_shared_secret = x25519_private_key.exchange(sender_public_key)
+    mlkem_private_key = _load_mlkem768_private_key(mlkem_private_seed)
     try:
-        recipient_public_key = X25519PublicKey.from_public_bytes(recipient_bytes)
+        mlkem_shared_secret = mlkem_private_key.decapsulate(mlkem_ciphertext)
     except ValueError as exc:
         raise SpectralRouteTokenError(
-            "ccss_spectral_recipient_public_key_invalid",
-            "recipient_public_key_invalid",
+            "ccss_spectral_mlkem768_ciphertext_invalid",
+            "mlkem768_ciphertext_invalid",
         ) from exc
-    sender_public_key, sender_private_key = generate_ephemeral_x25519()
-    shared_secret = sender_private_key.exchange(recipient_public_key)
-    return shared_secret, sender_public_key
+    return _combine_hybrid_shared_secret(x25519_shared_secret, mlkem_shared_secret)
 
 
 def quantize_lambda(

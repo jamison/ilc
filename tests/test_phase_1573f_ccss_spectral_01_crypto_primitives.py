@@ -3,9 +3,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import cryptography
 import pytest
-from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PrivateKey
-from cryptography.hazmat.primitives import serialization
 
 from ilc_core.network.d2d import spectral_route_token as srt
 
@@ -13,6 +12,22 @@ from ilc_core.network.d2d import spectral_route_token as srt
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STATUS_PATH = REPO_ROOT / "docs" / "phases" / "STATUS.md"
 MODULE_PATH = REPO_ROOT / "ilc_core" / "network" / "d2d" / "spectral_route_token.py"
+PYPROJECT_PATH = REPO_ROOT / "pyproject.toml"
+REQUIREMENTS_PATH = REPO_ROOT / "requirements.txt"
+DOWNSTREAM_PROMPTS = [
+    REPO_ROOT
+    / "docs"
+    / "antigravity_tasks"
+    / "antigravity_prompt__phase_1573g_g10_ccss_spectral_01_beacon_emission.md",
+    REPO_ROOT
+    / "docs"
+    / "antigravity_tasks"
+    / "antigravity_prompt__phase_1573h_g10_ccss_spectral_01_full_test_and_sim.md",
+    REPO_ROOT
+    / "docs"
+    / "antigravity_tasks"
+    / "antigravity_prompt__phase_1573i_g10_cdl_sigma_01_adversary_model.md",
+]
 
 
 def test_module_guard_and_constants_are_phase_1573f_locked() -> None:
@@ -31,7 +46,13 @@ def test_module_guard_and_constants_are_phase_1573f_locked() -> None:
     )
     assert srt.CCSS_SPECTRAL_QUANTIZATION_SCALE == 1000
     assert srt.CCSS_SPECTRAL_01_KEM_ALGORITHM != "<SET_FROM_STEP_1_OUTCOME>"
-    assert srt.CCSS_SPECTRAL_01_KEM_ALGORITHM == "x25519_ecdh_contingency"
+    assert srt.CCSS_SPECTRAL_01_KEM_ALGORITHM == "hybrid_x25519_ml_kem_768_fips203"
+    assert srt.CCSS_SPECTRAL_01_KEM_SELECTION_TOKEN == (
+        "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1"
+    )
+    assert srt.CCSS_SPECTRAL_HYBRID_PUBLIC_KEY_BYTES == 1216
+    assert srt.CCSS_SPECTRAL_HYBRID_PRIVATE_KEY_BYTES == 96
+    assert srt.CCSS_SPECTRAL_HYBRID_CIPHERTEXT_BYTES == 1120
 
 
 def test_guarded_entry_points_fail_closed_by_default() -> None:
@@ -119,21 +140,19 @@ def test_capability_context_commitment_rotates_by_epoch() -> None:
         srt.make_capability_context_commitment(raw_cap_id, -1)
 
 
-def test_x25519_contingency_and_hkdf_are_testable_when_guard_is_monkeypatched(
+def test_hybrid_kem_and_hkdf_are_testable_when_guard_is_monkeypatched(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(srt, "CCSS_SPECTRAL_01_NOT_ACTIVATED", False)
-    recipient_private_key = X25519PrivateKey.generate()
-    recipient_public_key = recipient_private_key.public_key().public_bytes(
-        encoding=serialization.Encoding.Raw,
-        format=serialization.PublicFormat.Raw,
-    )
 
-    shared_secret, sender_public_key = srt.kem_encap(recipient_public_key)
-    decapsulated = recipient_private_key.exchange(
-        srt.X25519PublicKey.from_public_bytes(sender_public_key)
-    )
+    recipient_public_key, recipient_private_key = srt.generate_hybrid_recipient_keypair()
+    shared_secret, kem_ciphertext = srt.kem_encap(recipient_public_key)
+    decapsulated = srt.kem_decap(recipient_private_key, kem_ciphertext)
+    sender_public_key, mlkem_ciphertext = srt.split_hybrid_kem_ciphertext(kem_ciphertext)
+
     assert shared_secret == decapsulated
+    assert len(sender_public_key) == srt.CCSS_SPECTRAL_X25519_PUBLIC_KEY_BYTES
+    assert len(mlkem_ciphertext) == srt.CCSS_SPECTRAL_MLKEM768_CIPHERTEXT_BYTES
 
     token_a = srt.derive_route_token(
         shared_secret,
@@ -141,7 +160,7 @@ def test_x25519_contingency_and_hkdf_are_testable_when_guard_is_monkeypatched(
         b"nonce-a",
         b"capability-context",
         sender_public_key,
-        sender_public_key,
+        kem_ciphertext,
         b"hiding-commitment",
         b"direct-message",
     )
@@ -151,7 +170,7 @@ def test_x25519_contingency_and_hkdf_are_testable_when_guard_is_monkeypatched(
         b"nonce-a",
         b"capability-context",
         sender_public_key,
-        sender_public_key,
+        kem_ciphertext,
         b"hiding-commitment",
         b"direct-message",
     )
@@ -161,7 +180,7 @@ def test_x25519_contingency_and_hkdf_are_testable_when_guard_is_monkeypatched(
         b"nonce-b",
         b"capability-context",
         sender_public_key,
-        sender_public_key,
+        kem_ciphertext,
         b"hiding-commitment",
         b"direct-message",
     )
@@ -171,28 +190,31 @@ def test_x25519_contingency_and_hkdf_are_testable_when_guard_is_monkeypatched(
 
     with pytest.raises(srt.SpectralRouteTokenError) as invalid_key:
         srt.kem_encap(b"too-short")
-    assert invalid_key.value.token == "ccss_spectral_recipient_public_key_invalid"
+    assert invalid_key.value.token == "ccss_spectral_hybrid_public_key_length_invalid"
+
+    with pytest.raises(srt.SpectralRouteTokenError) as invalid_ct:
+        srt.kem_decap(recipient_private_key, b"too-short")
+    assert invalid_ct.value.token == "ccss_spectral_hybrid_ciphertext_length_invalid"
 
 
-def test_status_records_exactly_one_kem_outcome_token() -> None:
+def test_status_records_historical_contingency_and_current_hybrid_fix1_token() -> None:
     status_text = STATUS_PATH.read_text(encoding="utf-8")
-    selected_tokens = [
-        "kem_ml_kem_768_primary_selected_phase_1573f",
-        "kem_x25519_contingency_selected_phase_1573f",
-    ]
-    present = [token for token in selected_tokens if token in status_text]
-    assert present == ["kem_x25519_contingency_selected_phase_1573f"]
+    assert "kem_x25519_contingency_selected_phase_1573f" in status_text
+    assert "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1" in status_text
+    assert "ml_kem_768_dependency_resolved_phase_1573f_fix1" in status_text
+    assert "kem_ml_kem_768_primary_selected_phase_1573f" not in status_text
     assert "ccss_spectral_01_crypto_primitives_committed_phase_1573f" in status_text
     assert "spectral_route_token_module_created_phase_1573f" in status_text
     assert "ccss_spectral_01_not_activated_guard_installed_phase_1573f" in status_text
-    assert "public_path_remains_blocked_phase_1573f" in status_text
+    assert "public_path_remains_blocked_phase_1573f_fix1" in status_text
 
 
-def test_x25519_contingency_disclaimer_is_operator_visible() -> None:
-    assert "post-quantum" in srt.CCSS_SPECTRAL_01_KEM_NON_PQ_DISCLAIMER
-    assert "contingency" in srt.CCSS_SPECTRAL_01_KEM_NON_PQ_DISCLAIMER
-    assert "kem_x25519_contingency_selected_phase_1573f" in (
-        srt.CCSS_SPECTRAL_01_KEM_NON_PQ_DISCLAIMER
+def test_hybrid_security_note_is_operator_visible() -> None:
+    assert "X25519" in srt.CCSS_SPECTRAL_01_KEM_SECURITY_NOTE
+    assert "ML-KEM-768" in srt.CCSS_SPECTRAL_01_KEM_SECURITY_NOTE
+    assert "post-quantum" in srt.CCSS_SPECTRAL_01_KEM_SECURITY_NOTE
+    assert "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1" in (
+        srt.CCSS_SPECTRAL_01_KEM_SECURITY_NOTE
     )
 
 
@@ -200,3 +222,27 @@ def test_module_does_not_import_random() -> None:
     module_text = MODULE_PATH.read_text(encoding="utf-8")
     assert "import random" not in module_text
     assert "from random" not in module_text
+
+
+def test_phase_1573f_fix1_dependency_floor_uses_cryptography_48() -> None:
+    assert tuple(int(part) for part in cryptography.__version__.split(".")[:2]) >= (48, 0)
+    pyproject_text = PYPROJECT_PATH.read_text(encoding="utf-8")
+    requirements_text = REQUIREMENTS_PATH.read_text(encoding="utf-8")
+    assert "cryptography>=48.0.0" in pyproject_text
+    assert "cryptography>=48.0.0" in requirements_text
+    assert "liboqs-python" not in pyproject_text
+
+
+def test_phase_1573f_fix1_downstream_prompts_use_hybrid_kem_posture() -> None:
+    forbidden_fragments = [
+        "x25519_ecdh_initial",
+        "X25519 ECDH is the current KEM",
+        "no post-quantum security",
+        "Any claim of PQ security for X25519",
+    ]
+    for prompt_path in DOWNSTREAM_PROMPTS:
+        prompt_text = prompt_path.read_text(encoding="utf-8")
+        assert "hybrid" in prompt_text.lower(), prompt_path
+        assert "ML-KEM-768" in prompt_text, prompt_path
+        for fragment in forbidden_fragments:
+            assert fragment not in prompt_text, (prompt_path, fragment)
