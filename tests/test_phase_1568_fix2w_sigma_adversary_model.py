@@ -40,8 +40,12 @@ def test_fix2w_sigma_policy_consistent_with_verdict() -> None:
     assert spectral_sigma_policy.SIGMA_DP_CALIBRATION_VALIDATED is False
     assert spectral_sigma_policy.SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED is True
     assert (
-        spectral_sigma_policy.SIGMA_POLICY_STATUS
+        spectral_sigma_policy.SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01
         == "specified_floor_testnet_candidate_obl_046_open"
+    )
+    assert (
+        spectral_sigma_policy.SIGMA_POLICY_STATUS
+        == "sigma_local_simulation_only_cdl_sigma_01_ratified"
     )
     assert CDL_SIGMA_DOC.exists()
 

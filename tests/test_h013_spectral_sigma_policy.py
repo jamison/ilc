@@ -13,6 +13,7 @@ from ilc_core.network.d2d.spectral_beacon import (
     peel_relay_layer,
 )
 from ilc_core.network.d2d.spectral_sigma_policy import (
+    CCSS_SPECTRAL_01_RATIFIED,
     H013_SIGMA_POLICY_STATUS,
     H013_TESTNET_EMISSION_SIGMA,
     MIN_NOISE_SIGMA,
@@ -22,8 +23,10 @@ from ilc_core.network.d2d.spectral_sigma_policy import (
     SIGMA_MAINNET_PROVISIONAL_STATUS,
     SIGMA_OBLIGATION_ID,
     SIGMA_POLICY_STATUS,
+    SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01,
     SIGMA_PRE_PUBLIC_RC_BLOCKER,
     SIGMA_REVOCATION_PATH,
+    SIGMA_WIRE_EMISSION_FORBIDDEN_AFTER_CDL_SIGMA_01,
     SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED,
     SIM_BEACON_01_PRIVACY_TARGET_VALIDATED,
     SpectralSigmaPolicyError,
@@ -35,7 +38,11 @@ from ilc_core.node import node_startup_runtime
 
 
 def test_h013_sigma_policy_records_no_privacy_calibration_claim() -> None:
-    assert SIGMA_POLICY_STATUS == "specified_floor_testnet_candidate_obl_046_open"
+    assert SIGMA_POLICY_STATUS == "sigma_local_simulation_only_cdl_sigma_01_ratified"
+    assert (
+        SIGMA_POLICY_STATUS_PRE_CDL_SIGMA_01
+        == "specified_floor_testnet_candidate_obl_046_open"
+    )
     assert H013_SIGMA_POLICY_STATUS == SIGMA_POLICY_STATUS
     assert SIGMA_DP_CALIBRATION_VALIDATED is False
     assert SIM_BEACON_01_PRIVACY_TARGET_VALIDATED is False
@@ -59,6 +66,8 @@ def test_h013_sigma_policy_records_no_privacy_calibration_claim() -> None:
         == "close_obl_046_with_validated_sigma_or_revoke_genesis_provisional_authority"
     )
     assert node_startup_runtime.H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED is True
+    assert CCSS_SPECTRAL_01_RATIFIED is True
+    assert SIGMA_WIRE_EMISSION_FORBIDDEN_AFTER_CDL_SIGMA_01 is True
 
 
 def test_h013_sigma_policy_status_record_surfaces_provisional_boundary() -> None:
@@ -66,6 +75,10 @@ def test_h013_sigma_policy_status_record_surfaces_provisional_boundary() -> None
 
     assert record["version"] == "h013_spectral_sigma_policy.v0.1"
     assert record["sigma_policy_status"] == SIGMA_POLICY_STATUS
+    assert (
+        record["sigma_policy_status_pre_cdl_sigma_01"]
+        == "specified_floor_testnet_candidate_obl_046_open"
+    )
     assert record["obl_id"] == "OBL-046"
     assert record["pre_public_rc_blocker"] is True
     assert record["h013_testnet_emission_sigma"] == H013_TESTNET_EMISSION_SIGMA
@@ -75,6 +88,8 @@ def test_h013_sigma_policy_status_record_surfaces_provisional_boundary() -> None
         == SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
     )
     assert record["sigma_mainnet_provisional_authorized_by_genesis"] is True
+    assert record["ccss_spectral_01_ratified"] is True
+    assert record["sigma_wire_emission_forbidden_after_cdl_sigma_01"] is True
     assert (
         record["sigma_mainnet_provisional_status"]
         == "genesis_authorized_provisional_mainnet_sigma_obl_046_open"
