@@ -1,0 +1,43 @@
+{
+  "attribution_policy": "non_attributable",
+  "authority_ref": {
+    "cdl": "CDL-097",
+    "ratification_token": "cdl_097_ratified_phase_1528p"
+  },
+  "cdl_authority": "cdl_099",
+  "content_type": "type_definition",
+  "decomposition_recipe": [],
+  "decomposition_recipe_text": "commit.epoch (axiomatic temporal anchor)",
+  "definition_id": "bafyreiaflwdhvjhmlesyvcwqdti4ojhfcawul5enveladnpvbks2rb26um",
+  "definition_version": "cdl_099_1573b.v0.1",
+  "dispute_path": {
+    "instance_level": "popperian_jury",
+    "type_level": "cdl_amendment"
+  },
+  "effective_epoch": 0,
+  "governing_cdls": [
+    "CDL-027"
+  ],
+  "hyperedge_type": "epoch_boundary",
+  "instance_attribution_policy": "no ECU attribution; structural only under CDL-081",
+  "instance_level_dispute_path": "popperian_jury",
+  "irreducible": true,
+  "irreducible_reason": "commit.epoch is the axiomatic temporal anchor under ADR-0035 and ADR-0004; it is consensus-layer only and not reducible to agent-issuable truth primitives.",
+  "membership_requirements": {
+    "consensus_layer_only": true,
+    "requires_epoch_index": true
+  },
+  "node_type": "type_definition",
+  "phase": "1573b",
+  "role_schema": {
+    "epoch_index": "epoch being committed",
+    "finalized_claims": "claims or state roots finalized at the boundary",
+    "validator_set": "validators or authority surface witnessing the boundary"
+  },
+  "scope": "initial_hyperedge_type_definition_nodes_phase_1573b",
+  "snapshot_semantics": true,
+  "supersedes_definition_id": null,
+  "target_surface": "HyperEdge.hyperedge_type",
+  "target_value": "epoch_boundary",
+  "type_level_dispute_path": "cdl_amendment"
+}
