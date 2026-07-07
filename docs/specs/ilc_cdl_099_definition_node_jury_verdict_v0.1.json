@@ -1,0 +1,70 @@
+{
+  "attribution_policy": "non_attributable",
+  "authority_ref": {
+    "cdl": "CDL-097",
+    "ratification_token": "cdl_097_ratified_phase_1528p"
+  },
+  "cdl_authority": "cdl_099",
+  "content_type": "type_definition",
+  "decomposition_recipe": [
+    {
+      "input_ref": "claim_node",
+      "output_ref": "verdict_outcome",
+      "primitive": "validate.claim",
+      "role": "jury_validates_or_rejects_claim"
+    },
+    {
+      "input_ref": "jury_panel",
+      "output_ref": "jury_verdict_hyperedge",
+      "primitive": "link.claim",
+      "role": "verdict_links_claim_panel_and_finality_path"
+    },
+    {
+      "input_ref": "verdict_record",
+      "output_ref": "epoch_boundary",
+      "primitive": "commit.epoch",
+      "role": "verdict_snapshot_epoch_anchor"
+    }
+  ],
+  "decomposition_recipe_text": "validate.claim compose link.claim compose commit.epoch",
+  "decomposition_resolution": "confirmed_reducible_to_validate_claim_link_claim_commit_epoch_for_CDL_099_minimum_viable_scope; CDL_100 governs dispute procedure, not this type record's primitive basis",
+  "definition_id": "bafyreicbuq73yafpfnb57ca7mheluxu5kgewckgemmp3hz6mq4gc52p66y",
+  "definition_version": "cdl_099_1573b.v0.1",
+  "dispute_path": {
+    "instance_level": "popperian_jury",
+    "type_level": "cdl_amendment"
+  },
+  "effective_epoch": 0,
+  "governing_cdls": [
+    "CDL-095",
+    "CDL-096"
+  ],
+  "hyperedge_type": "jury_verdict",
+  "instance_attribution_policy": "no direct ECU attribution from verdict existence; reviewer compensation and accuracy incentives remain governed by CDL-091/CDL-095/CDL-096",
+  "instance_level_dispute_path": "popperian_jury",
+  "irreducible": false,
+  "irreducible_reason": null,
+  "membership_requirements": {
+    "requires_claim_node": true,
+    "requires_finality_path": true,
+    "requires_jury_panel": true
+  },
+  "node_type": "type_definition",
+  "phase": "1573b",
+  "role_schema": {
+    "binding_cdls": [
+      "CDL-095",
+      "CDL-096"
+    ],
+    "claim_node": "the epistemic object adjudicated",
+    "finality_path": "local | petition | high_stakes_auto | diversity_fail | global_tier",
+    "jury_panel": "reference to panel hyperedge (7+1 empaneled)",
+    "verdict_outcome": "upheld | overturned | no_consensus | escalated"
+  },
+  "scope": "initial_hyperedge_type_definition_nodes_phase_1573b",
+  "snapshot_semantics": true,
+  "supersedes_definition_id": null,
+  "target_surface": "HyperEdge.hyperedge_type",
+  "target_value": "jury_verdict",
+  "type_level_dispute_path": "cdl_amendment"
+}

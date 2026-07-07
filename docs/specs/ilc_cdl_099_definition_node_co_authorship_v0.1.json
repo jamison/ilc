@@ -1,0 +1,56 @@
+{
+  "attribution_policy": "non_attributable",
+  "authority_ref": {
+    "cdl": "CDL-097",
+    "ratification_token": "cdl_097_ratified_phase_1528p"
+  },
+  "cdl_authority": "cdl_099",
+  "content_type": "type_definition",
+  "decomposition_recipe": [
+    {
+      "input_ref": "authored_output",
+      "output_ref": "co_authorship_hyperedge",
+      "primitive": "assert.truth",
+      "role": "joint_creation_assertion"
+    },
+    {
+      "input_ref": "author_members",
+      "output_ref": "co_authorship_hyperedge",
+      "primitive": "link.claim",
+      "role": "authors_linked_to_output"
+    }
+  ],
+  "decomposition_recipe_text": "assert.truth compose link.claim",
+  "definition_id": "bafyreihjav2xiqlp4lyeep4pntvfruxolwanum5hkxukcmevxpnynss3zu",
+  "definition_version": "cdl_099_1573b.v0.1",
+  "dispute_path": {
+    "instance_level": "popperian_jury",
+    "type_level": "cdl_amendment"
+  },
+  "effective_epoch": 0,
+  "governing_cdls": [
+    "CDL-081"
+  ],
+  "hyperedge_type": "co_authorship",
+  "instance_attribution_policy": "attribution-bearing instances under CDL-081 proportional-by-stake policy",
+  "instance_level_dispute_path": "popperian_jury",
+  "irreducible": false,
+  "irreducible_reason": null,
+  "membership_requirements": {
+    "minimum_authors": 2,
+    "requires_output_node": true
+  },
+  "node_type": "type_definition",
+  "phase": "1573b",
+  "role_schema": {
+    "author_agents": "agents asserting co-authorship",
+    "output_node": "jointly created epistemic object",
+    "stake_weights": "stake proportions if attribution-bearing under CDL-081"
+  },
+  "scope": "initial_hyperedge_type_definition_nodes_phase_1573b",
+  "snapshot_semantics": true,
+  "supersedes_definition_id": null,
+  "target_surface": "HyperEdge.hyperedge_type",
+  "target_value": "co_authorship",
+  "type_level_dispute_path": "cdl_amendment"
+}
