@@ -245,7 +245,7 @@
     },
     {
       "annotation_batch": "manual_batch_001_frontier_files_0001_0010",
-      "chronology_note": "Earliest commit 2025-11-24T16:18:11+01:00 bfe1eaec feat: add potential-aware auto-mine strategy and sims; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float→Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
+      "chronology_note": "Earliest commit 2025-11-24T16:18:11+01:00 bfe1eaec feat: add potential-aware auto-mine strategy and sims; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float\u2192Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
       "manual_read_summary": "Validates EveAgent auto_mine_claim behavior against EpistemicGraph and ConsensusEngine: funded auto-mining creates a draft-signed node, records stake, spends wallet balance, and high-potential trust vector stakes at least as much as low-potential.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -405,7 +405,7 @@
     },
     {
       "annotation_batch": "manual_batch_001_frontier_files_0001_0010",
-      "chronology_note": "Earliest commit 2025-11-24T14:14:40+01:00 04ca608e feat: add MVP ECU-aware staking strategy for EveAgent; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float→Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
+      "chronology_note": "Earliest commit 2025-11-24T14:14:40+01:00 04ca608e feat: add MVP ECU-aware staking strategy for EveAgent; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float\u2192Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
       "manual_read_summary": "Validates EveAgent staking strategy and mine_thought behavior: requested stake is bumped to task fee when possible, exact fee is preserved, stake is capped by wallet, funded thought mining draft-signs a node, adds graph edges/stake, and deducts wallet balance.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -13878,7 +13878,7 @@
     {
       "annotation_batch": "manual_batch_030_frontier_files_0291_0300",
       "chronology_note": "Earliest commit 2026-05-08T12:11:45+02:00 2f332650 docs: harden phase prompt schema discipline.",
-      "manual_read_summary": "Validates Phase 1241-1248 prompt schema and token-discipline documents. The test checks all eight phase prompts validate, every prompt has §0 token-audit/MemPalace discipline and non-empty Required Tokens, AGENTS.md reminds agents to follow prompt schema and §0c claim enumeration, and the prompt README requires walkthrough/STATUS updates before phase-close/backfill commits.",
+      "manual_read_summary": "Validates Phase 1241-1248 prompt schema and token-discipline documents. The test checks all eight phase prompts validate, every prompt has \u00a70 token-audit/MemPalace discipline and non-empty Required Tokens, AGENTS.md reminds agents to follow prompt schema and \u00a70c claim enumeration, and the prompt README requires walkthrough/STATUS updates before phase-close/backfill commits.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -17422,7 +17422,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:25:03+02:00 6b88e034 adr(1387d): write ADR-0035 formal spec — homoiconic type definition system.",
+      "chronology_note": "Earliest commit 2026-05-19T08:25:03+02:00 6b88e034 adr(1387d): write ADR-0035 formal spec \u2014 homoiconic type definition system.",
       "manual_read_summary": "Validates Phase 1387d ADR-0035 formal spec. The test checks ADR-0035 file existence, direction-accepted and implementation-deferred tokens, resolution of type-regress, ADR-0030 content_type relationship, Popperian type-level claim form, compositional primitive basis/decomposition recipe constraints, forward obligations, ADR-0004/0029/0030 references, working spec cross-reference, retroactivity/snapshot semantics, non-attributable definition nodes, and Phase 1387d token.",
       "proposed_authority_trace_edges": [
         {
@@ -17508,7 +17508,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:46:13+02:00 504d46a8 sim(1387f): SIM-GRAPHOPT-01 — graph structure analysis extension.",
+      "chronology_note": "Earliest commit 2026-05-19T08:46:13+02:00 504d46a8 sim(1387f): SIM-GRAPHOPT-01 \u2014 graph structure analysis extension.",
       "manual_read_summary": "Validates Phase 1387f graph structure analysis extension. The test checks graph_structure_analysis presence, authority trace depth metrics, max depth bound, histogram coverage, at most one untraceable core node, duplicate recipe group detection, GOVERNS/CONSTRAINS merge-candidate recipe, zero missing recipes after 1387h, positive orphan node count with all orphans basis-reachable, and compiler Phase 1387f annotation.",
       "proposed_authority_trace_edges": [
         {
@@ -17548,7 +17548,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:49:31+02:00 3ed04fed sim(1387g): SIM-GRAPHOPT-02 — epistemic leverage analysis.",
+      "chronology_note": "Earliest commit 2026-05-19T08:49:31+02:00 3ed04fed sim(1387g): SIM-GRAPHOPT-02 \u2014 epistemic leverage analysis.",
       "manual_read_summary": "Validates Phase 1387g epistemic leverage analysis. The test checks epistemic_leverage_analysis presence, baseline reachable count 54, leverage scores covering all core nodes, nonnegative non-root leverage, zero keystone nodes, 15 axiomatic roots, all non-root leverage equal to one, normal leverage type distribution, and compiler Phase 1387g annotation.",
       "proposed_authority_trace_edges": [
         {
@@ -17588,7 +17588,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:51:10+02:00 afb46c44 sim(1387h): SIM-GRAPHOPT-03 — canonicalize ATTESTATION/PROVENANCE edge recipes.",
+      "chronology_note": "Earliest commit 2026-05-19T08:51:10+02:00 afb46c44 sim(1387h): SIM-GRAPHOPT-03 \u2014 canonicalize ATTESTATION/PROVENANCE edge recipes.",
       "manual_read_summary": "Validates Phase 1387h edge recipe canonicalization. The test checks all star-map edges have decomposition_recipe, ATTESTATION and PROVENANCE use assert.truth and link.claim with distinct scopes, diagnostic missing recipe count is zero, duplicate recipe group count is two, ATTESTATION/PRIMITIVE_INVOCATION/PROVENANCE share primitives with scope distinctions, and GOVERNS/CONSTRAINS merge candidate remains present.",
       "proposed_authority_trace_edges": [
         {
@@ -17628,7 +17628,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:52:26+02:00 976ae6e9 sim(1387i): SIM-GRAPHOPT-04 — synthesis report + forward recommendations.",
+      "chronology_note": "Earliest commit 2026-05-19T08:52:26+02:00 976ae6e9 sim(1387i): SIM-GRAPHOPT-04 \u2014 synthesis report + forward recommendations.",
       "manual_read_summary": "Validates Phase 1387i graph-optimization synthesis report. The test checks report existence, closing token, max-depth finding, zero-keystone finding, GOVERNS/CONSTRAINS merge candidate, ATTESTATION/PROVENANCE scope distinction, zero missing recipes after 1387h, 37 orphan leaf nodes, and forward optimization/obligation section.",
       "proposed_authority_trace_edges": [
         {
@@ -34835,7 +34835,7 @@
     {
       "annotation_batch": "manual_batch_074_frontier_files_0731_0740",
       "chronology_note": "Earliest commit 2026-05-09T14:16:41+02:00 3454a26a docs(g8): draft window 1281 1288 prompt package.",
-      "manual_read_summary": "Validates the superseded Window 1289-1302 prompt draft package. The test checks sequence-lock and guidance routing, prompt schema, §0 sections, token blocks, sensitive GO requirements, public non-claims, human escalation, public claimability non-activation, PLANNING_INDEX superseded status, session-start routing, prompt file completeness, old-name exclusion, and active lock/guidance references.",
+      "manual_read_summary": "Validates the superseded Window 1289-1302 prompt draft package. The test checks sequence-lock and guidance routing, prompt schema, \u00a70 sections, token blocks, sensitive GO requirements, public non-claims, human escalation, public claimability non-activation, PLANNING_INDEX superseded status, session-start routing, prompt file completeness, old-name exclusion, and active lock/guidance references.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -34937,7 +34937,7 @@
     {
       "annotation_batch": "manual_batch_075_frontier_files_0741_0750",
       "chronology_note": "Earliest commit 2026-05-12T08:19:27+02:00 2a780eb0 docs(g8): record release dry-run window planning.",
-      "manual_read_summary": "Validates Window 1303-1316 prompt drafts. The test checks planning-only guidance, forward-plan alignment, prompt schema, §0 discovery sections, non-authorization floor, required tokens, sensitive GO gates, guidance/sequence-lock references, Phase 1308 export non-execution, Phase 1313 default-off public P2P boundary, and PLANNING_INDEX references.",
+      "manual_read_summary": "Validates Window 1303-1316 prompt drafts. The test checks planning-only guidance, forward-plan alignment, prompt schema, \u00a70 discovery sections, non-authorization floor, required tokens, sensitive GO gates, guidance/sequence-lock references, Phase 1308 export non-execution, Phase 1313 default-off public P2P boundary, and PLANNING_INDEX references.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -35444,7 +35444,7 @@
     },
     {
       "annotation_batch": "manual_batch_076_frontier_files_0751_0756",
-      "chronology_note": "Earliest commit 2026-04-23T08:22:08+02:00 06d0301d feat(g8): window 775-782 row-5 privacy remediation — non-closure verdict.",
+      "chronology_note": "Earliest commit 2026-04-23T08:22:08+02:00 06d0301d feat(g8): window 775-782 row-5 privacy remediation \u2014 non-closure verdict.",
       "manual_read_summary": "Validates the Window 775-782 closure gate and honest non-closure verdict for Row-5 privacy remediation. The test checks closure tokens, runtime markers for layer-1 log hygiene and layer-2 batching/multi-relay, SIM-LEAKAGE-01 run artifacts, bounded auditability language, ZK nullifier/selective-disclosure future path, capsule/planning references, and no decision-log mutation.",
       "proposed_authority_trace_edges": [
         {
@@ -35755,6 +35755,79 @@
       ],
       "recommended_graph_action": "materialize Row-5 B5 lock and commissioning TESTS with candidate mechanism-lock traces",
       "repo_path": "tests/test_window_b_scope_b5_lock_and_commissioning.py"
+    },
+    {
+      "annotation_batch": "manual_batch_077_phase_1573d",
+      "chronology_note": "2026-07-07 phase_1573d ADR-0035 type registry public RC activation posture locked",
+      "manual_read_summary": "ADR-0035 public RC activation posture decision document. Posture 1 (default_off_at_public_rc) chosen. Guard ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED confirmed True. CDL-099 and CDL-100 ratification confirmed. Post-RC targets row updated with Phase 1573d note.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "adr:ADR-0035"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-099"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-100"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added: posture_doc -> cdl_100",
+      "repo_path": "docs/specs/ilc_adr_0035_public_rc_activation_posture_1573d_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_077_phase_1573d",
+      "chronology_note": "2026-07-07 phase_1573d test file",
+      "manual_read_summary": "Tests for Phase 1573d: posture doc exists, guard True, tokens in STATUS.md, CDL-099/100 references, post-RC targets updated.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_adr_0035_public_rc_activation_posture_1573d_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_tests_added",
+      "repo_path": "tests/test_phase_1573d_adr0035_activation_posture.py"
+    },
+    {
+      "annotation_batch": "manual_batch_077_phase_1573d",
+      "chronology_note": "2026-07-07 phase_1573d walkthrough",
+      "manual_read_summary": "Phase 1573d walkthrough. Documents posture decision, guard verification, whitepaper alignment, and carry-forward to 1573e.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573d_adr0035_activation_posture_walkthrough.md"
     }
   ],
   "boundary": {
