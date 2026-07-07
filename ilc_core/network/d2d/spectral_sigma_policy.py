@@ -44,6 +44,12 @@ SIGMA_PRE_PUBLIC_RC_BLOCKER = True
 SIGMA_REVOCATION_PATH = (
     "close_obl_046_with_validated_sigma_or_revoke_genesis_provisional_authority"
 )
+SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC = True
+# CDL-SIGMA-01 ratified Phase 1573e: sigma is a local simulation parameter only.
+# ILC makes no differential-privacy or anonymity claim about spectral routing
+# at public RC unless CCSS_SPECTRAL_01_NOT_ACTIVATED is cleared and the
+# Phase 1574 activation matrix authorizes the claim.
+CDLSIGMA01_RATIFICATION_PHASE = "cdl_sigma_01_ratified_phase_1573e"
 
 
 class SpectralSigmaPolicyError(ValueError):
@@ -134,6 +140,8 @@ def build_sigma_policy_status_record() -> dict[str, Any]:
         ),
         "sigma_mainnet_provisional_status": SIGMA_MAINNET_PROVISIONAL_STATUS,
         "sigma_mainnet_provisional_token": SIGMA_MAINNET_PROVISIONAL_TOKEN,
+        "sigma_no_dp_claim_at_public_rc": SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC,
+        "cdl_sigma_01_ratification_phase": CDLSIGMA01_RATIFICATION_PHASE,
         "sim_beacon_01_adversary_model_revision_required": (
             SIM_BEACON_01_ADVERSARY_MODEL_REVISION_REQUIRED
         ),
@@ -142,6 +150,7 @@ def build_sigma_policy_status_record() -> dict[str, Any]:
 
 
 __all__ = [
+    "CDLSIGMA01_RATIFICATION_PHASE",
     "H013_SIGMA_POLICY_STATUS",
     "H013_TESTNET_EMISSION_SIGMA",
     "MIN_NOISE_SIGMA",
@@ -151,6 +160,7 @@ __all__ = [
     "SIGMA_MAINNET_PROVISIONAL_STATUS",
     "SIGMA_MAINNET_PROVISIONAL_TOKEN",
     "SIGMA_OBLIGATION_ID",
+    "SIGMA_NO_DP_CLAIM_AT_PUBLIC_RC",
     "SIGMA_POLICY_STATUS",
     "SIGMA_PRE_PUBLIC_RC_BLOCKER",
     "SIGMA_REVOCATION_PATH",
