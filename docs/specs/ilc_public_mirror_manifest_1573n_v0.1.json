@@ -1,0 +1,23 @@
+{
+  "artifact_id": "ilc-artifact:public-mirror-option-c-manifest@phase-1573",
+  "artifact_type": "source_release_tarball",
+  "author_rewrite_result": "Genesis Agent <ilcops@proton.me>",
+  "canonical_hash": "sha256:5aa97a4ca76b6560802d31067428cc8fc5482c3ccebc9669509c36a710041804",
+  "commit_count_after": 2848,
+  "commit_count_before": 4186,
+  "commit_count_min_required": 2511,
+  "denylist_scan_result": "pass",
+  "excluded_path_count": 7117,
+  "filtered_public_head_sha": "636ff974061793d12f57308e95fac640b9697e07",
+  "lineage_reference": "genesis:v0.4",
+  "no_push": true,
+  "pipeline_duration_seconds": 178,
+  "pipeline_version": "generate_public_mirror_1573n.v0.1",
+  "produced_phase": 1573,
+  "public_rc_exclude_scan_result": "pass",
+  "publication_authority": "none - push gated to Phase 1575",
+  "ratification_token": "public_mirror_pipeline_rehearsed_phase_1573n",
+  "signing_status": "deferred",
+  "source_private_commit": "33667341ca661ea4a70ed9f1d515bd503393399b",
+  "staging_dir": "/tmp/ilc-public-mirror-1573n"
+}
