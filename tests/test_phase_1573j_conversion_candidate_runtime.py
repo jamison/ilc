@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 
@@ -43,6 +44,12 @@ def _generate(monkeypatch: pytest.MonkeyPatch, *lots: dict[str, object], current
 
 def test_guard_is_true_by_default() -> None:
     assert runtime.CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED is True
+
+
+def test_cdl048_deadline_constant_is_public_profile_local() -> None:
+    assert runtime.MANDATORY_CONVERSION_EPOCHS_CDL048 == 4
+    source = Path(runtime.__file__).read_text(encoding="utf-8")
+    assert "cdl048_conversion_sweeper_runtime" not in source
 
 
 def test_generator_raises_when_guard_is_true() -> None:

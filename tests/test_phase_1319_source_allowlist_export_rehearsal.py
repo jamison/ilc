@@ -101,6 +101,55 @@ def test_phase_1319_force_included_public_rc_exclude_marker_fails_closed(
     ]
 
 
+def test_phase_1319_public_rc_exclude_prose_reference_is_not_marker(
+    tmp_path: Path,
+) -> None:
+    _write(
+        tmp_path / "src/prose.md",
+        "# Public release notes\n\n"
+        "This document explains that `PUBLIC_RC_EXCLUDE` is a deny marker.\n",
+    )
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src",),
+        excluded_roots=(),
+        reviewed_legacy_paths=("src/prose.md",),
+    )
+
+    assert manifest["result"] == "pass"
+    assert manifest["marker_scan"]["hit_count"] == 0
+    assert [record["path"] for record in manifest["included_files"]] == ["src/prose.md"]
+
+
+def test_phase_1319_public_rc_exclude_late_comment_is_not_header_marker(
+    tmp_path: Path,
+) -> None:
+    _write(
+        tmp_path / "src/script.sh",
+        "#!/usr/bin/env bash\n"
+        "# Usage: script\n"
+        "# Line 3\n"
+        "# Line 4\n"
+        "# Line 5\n"
+        "# Line 6\n"
+        "# Line 7\n"
+        "# Line 8\n"
+        "# PUBLIC_RC_EXCLUDE: prose_reference_not_header\n"
+        "echo ok\n",
+    )
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src",),
+        excluded_roots=(),
+    )
+
+    assert manifest["result"] == "pass"
+    assert manifest["marker_scan"]["hit_count"] == 0
+    assert [record["path"] for record in manifest["included_files"]] == ["src/script.sh"]
+
+
 def test_phase_1319_force_included_generated_cache_file_fails_closed(
     tmp_path: Path,
 ) -> None:
