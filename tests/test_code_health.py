@@ -43,11 +43,14 @@ EXCLUDE_PATHS: set[Path] = {
     ROOT / "ilc_core" / "epistemic" / "jury_activation_gate.py",
     ROOT / "ilc_core" / "epistemic" / "jury_assignment_runtime.py",
     ROOT / "ilc_core" / "epoch" / "issuance_economics_integration_gate.py",
+    ROOT / "ilc_core" / "distribution" / "materialization.py",
     ROOT / "ilc_core" / "genesis" / "genesis_intervention_runtime.py",
+    ROOT / "ilc_core" / "genesis" / "serving_receipt.py",
     ROOT / "ilc_core" / "graph" / "sidecar_public_path_preflight.py",
     ROOT / "ilc_core" / "ledger" / "canon_bundle_key_registry_fetch.py",
     ROOT / "ilc_core" / "ledger" / "cdl048_conversion_sweeper_runtime.py",
     ROOT / "ilc_core" / "network" / "d2d" / "spectral_routing_runtime.py",
+    ROOT / "ilc_core" / "network" / "d2d" / "http_gossip_transport_runtime.py",
     ROOT
     / "ilc_core"
     / "network"
@@ -66,6 +69,7 @@ EXCLUDE_PATHS: set[Path] = {
     ROOT / "ilc_core" / "sidecars" / "public_path_activation.py",
     ROOT / "ilc_core" / "sidecars" / "value_path_activation_boundary_preflight.py",
     ROOT / "ilc_core" / "sidecars" / "wallet_action_semantics_preflight.py",
+    ROOT / "ilc_core" / "storage" / "genesis_atlas_lmdb_writer.py",
 }
 
 

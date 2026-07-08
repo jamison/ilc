@@ -27,15 +27,17 @@ def test_layered_license_zone_table_exists() -> None:
     assert licensing_path.exists()
 
     content = licensing_path.read_text(encoding="utf-8")
+    # HISTORICAL_SNAPSHOT: Phase 997 originally pinned tokenized license-zone
+    # labels. LICENSING.md is now prose/table authority, so preserve the same
+    # layered-license contract without requiring obsolete token strings.
     for token in (
-        "ilc_layered_license_posture_v0.1",
-        "mit_for_all_zones_rejected_layered_license_posture",
-        "agpl_default_runtime_license_posture",
-        "genesis_canonical_identity_license_zone",
-        "public_docs_cc_by_4_0_zone",
-        "patent_pending_all_rights_reserved_zone",
-        "trademark_identity_not_granted_by_code_license",
-        "counsel_review_future_modification_expected",
+        "A blanket MIT license is not the current project posture",
+        "AGPL-3.0-only during bootstrap",
+        "Genesis canonical artifacts",
+        "CC BY 4.0 style attribution terms",
+        "All Rights Reserved - Patent Pending",
+        "Trademark/canonical-identity policy; no grant by code license",
+        "Future Genesis governance review may modify",
     ):
         assert token in content
 

@@ -492,9 +492,10 @@ def validate_route_purpose(route_purpose: bytes) -> None:
             printable = purpose.decode("utf-8")
         except UnicodeDecodeError:
             printable = purpose.hex()
+        token = f"ccss_spectral_01_invalid_route_purpose:{printable}"
         raise SpectralRouteTokenError(
-            f"ccss_spectral_01_invalid_route_purpose:{printable}",
-            f"ccss_spectral_01_invalid_route_purpose:{printable}",
+            token,
+            token,
         )
 
 

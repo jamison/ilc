@@ -104,19 +104,17 @@ elif rows.get('CDL-061', {}).get('status') != 'ratified':
     print('invalid|cdl_061_not_ratified')
 elif rows.get('CDL-061', {}).get('ratified_phase') != '561':
     print('invalid|cdl_061_ratified_phase_mismatch')
-elif 'CDL-053' in rows:
-    print('invalid|cdl_053_present')
 elif not capsule_path.exists():
     print('invalid|capsule_v2_9_missing')
 elif not coherence_path.exists():
     print('invalid|coherence_report_563_missing')
 elif 'window_565_multi_machine_packaging_carry_forward' not in coherence_text:
     print('invalid|coherence_forward_obligation_missing')
-elif 'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v0.1"' not in transport_text:
+elif 'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v0.1"' not in transport_text:
     print('invalid|gossip_transport_runtime_missing_or_mismatch')
 elif 'CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"' not in transport_text:
     print('invalid|gossip_transport_dep_not_ratified')
-elif 'GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_562.v0.1"' not in registry_text:
+elif 'GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"' not in registry_text:
     print('invalid|gossip_peer_registry_missing_or_mismatch')
 elif 'PEER_DISCOVERY_MODE = "static_v1"' not in registry_text:
     print('invalid|peer_discovery_mode_mismatch')

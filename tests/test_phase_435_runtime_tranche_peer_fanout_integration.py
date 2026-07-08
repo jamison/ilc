@@ -203,7 +203,9 @@ def test_cli_refactor_preserves_exemption_set_and_node_payload_shape(monkeypatch
     import ilc_core.cli.main as cli_main
 
     text = CLI_PATH.read_text(encoding="utf-8")
-    assert 'if command not in {"query", "verify", "bundle", "agent", "node"}:' in text
+    assert "stateless_commands = {" in text
+    for command in ("query", "verify", "bundle", "agent", "node"):
+        assert f'"{command}"' in text
 
     fake_module = types.ModuleType("ilc_core.cli.d2e_lifecycle_cli")
     fake_module.run_node_command = lambda args: {"status": "ok", "subcommand": "constants"}

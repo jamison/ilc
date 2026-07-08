@@ -53,4 +53,13 @@ if [[ $# -eq 1 ]]; then
   esac
 fi
 
-python3 tools/run_d2e_composed_preflight_phase_306.py
+PYTHON_BIN="${PYTHON:-}"
+if [[ -z "${PYTHON_BIN}" ]]; then
+  if [[ -x ".venv/bin/python" ]]; then
+    PYTHON_BIN=".venv/bin/python"
+  else
+    PYTHON_BIN="python3"
+  fi
+fi
+
+"${PYTHON_BIN}" tools/run_d2e_composed_preflight_phase_306.py

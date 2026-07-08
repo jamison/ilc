@@ -177,8 +177,6 @@ def test_private_identity_round_trip_unseals_ccss_envelope(tmp_path) -> None:
     assert result["ok"] is True
     assert identity_path.stat().st_mode & 0o777 == 0o600
 
-    import json
-
     identity = json.loads(identity_path.read_text())
     contact = json.loads(contact_path.read_text())
     assert "ccss_private_key_hex" not in contact
@@ -210,8 +208,6 @@ def test_unseal_fails_with_wrong_private_key(tmp_path) -> None:
         identity_path=wrong_identity,
         contact_path=wrong_contact,
     )
-
-    import json
 
     recipient = json.loads(recipient_contact.read_text())
     wrong = json.loads(wrong_identity.read_text())

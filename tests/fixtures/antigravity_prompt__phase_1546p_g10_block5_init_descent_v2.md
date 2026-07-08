@@ -148,6 +148,12 @@ Tokens expected at completion:
 - `mempalace_rebuilt_phase_1546p`
 - `obl_register_refreshed_phase_1546p`
 
+## LMDB Node Registration
+
+This fixture models the current prompt schema. Any new files created by the
+phase must be registered as candidate LMDB nodes in the same commit or the
+walkthrough must record that no new LMDB-eligible files were created.
+
 ## Commit Message
 
 ```

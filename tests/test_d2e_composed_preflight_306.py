@@ -19,7 +19,18 @@ PHASE_306_COMMIT_SUBJECT = "feat(g8): phase 306 d2e composed query-verify-bundle
 
 
 def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(GATE_CMD + args, capture_output=True, text=True, env=env, check=False)
+    gate_env = os.environ.copy()
+    if env is not None:
+        gate_env.update(env)
+    gate_env["PYTHON"] = sys.executable
+    return subprocess.run(
+        GATE_CMD + args,
+        capture_output=True,
+        text=True,
+        env=gate_env,
+        check=False,
+        timeout=120,
+    )
 
 
 def _run_cli(args: list[str], env: dict[str, str]) -> subprocess.CompletedProcess[str]:

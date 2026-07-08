@@ -19,6 +19,14 @@ PUBKEY_HEX = "a" * 3328
 SIG_HEX = "b" * 6618
 
 
+def _import_oqs_or_skip() -> object:
+    try:
+        import oqs  # type: ignore[import]
+    except BaseException as exc:  # oqs may call SystemExit while trying to install liboqs.
+        pytest.skip(f"oqs unavailable: {exc.__class__.__name__}")
+    return oqs
+
+
 def _structured_peer(
     *,
     peer_id: str = "peer-alpha",
@@ -84,11 +92,7 @@ def test_verify_mldsa65_signature_runtime_error_returns_false(monkeypatch: pytes
 
 
 def test_verify_mldsa65_signature_valid_signature_true_when_oqs_available() -> None:
-    try:
-        import oqs  # type: ignore[import]
-    except BaseException as exc:  # oqs may call SystemExit while trying to install liboqs.
-        pytest.skip(f"oqs unavailable: {exc.__class__.__name__}")
-
+    oqs = _import_oqs_or_skip()
     signer = oqs.Signature("ML-DSA-65")
     public_key = signer.generate_keypair()
     message = b"phase-1571-mldsa-verification"
@@ -98,11 +102,7 @@ def test_verify_mldsa65_signature_valid_signature_true_when_oqs_available() -> N
 
 
 def test_verify_mldsa65_signature_wrong_signature_false_when_oqs_available() -> None:
-    try:
-        import oqs  # type: ignore[import]
-    except BaseException as exc:
-        pytest.skip(f"oqs unavailable: {exc.__class__.__name__}")
-
+    oqs = _import_oqs_or_skip()
     signer = oqs.Signature("ML-DSA-65")
     public_key = signer.generate_keypair()
     signature = signer.sign(b"original")

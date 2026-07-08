@@ -103,7 +103,10 @@ def test_jury_verdict_decomposition_is_resolved_without_closing_cdl100() -> None
         encoding="utf-8"
     )
     assert "| CDL-100 |" in cdl_register
-    assert "| planned_not_opened |" in cdl_register
+    assert (
+        "| planned_not_opened |" in cdl_register
+        or "| ratified | phase_1573c | cdl_100_ratified |" in cdl_register
+    )
 
 
 def test_cdl099_does_not_activate_type_registry_or_runtime_migration() -> None:

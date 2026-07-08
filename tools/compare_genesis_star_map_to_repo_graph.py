@@ -137,7 +137,7 @@ def _iter_text_files(roots: Iterable[Path], max_files: int = MAX_SCAN_FILES) -> 
 def _read_lines(path: Path) -> list[str]:
     try:
         if path.stat().st_size > MAX_SCAN_FILE_BYTES:
-            raise ValueError("observed_repo_hypergraph_scan_file_bytes_limit_exceeded")
+            return []
         lines: list[str] = []
         contains_genesis_term = False
         with path.open("r", encoding="utf-8") as handle:
@@ -273,7 +273,10 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
             ),
         )
 
-    aliases_by_node = {node_id: _node_aliases(node) for node_id, node in star_nodes.items()}
+    aliases_by_node = {
+        node_id: tuple(alias.lower() for alias in _node_aliases(node))
+        for node_id, node in star_nodes.items()
+    }
     symbol_nodes = {node.get("symbol"): node_id for node_id, node in star_nodes.items() if node.get("symbol")}
 
     scanned_file_count = 0
@@ -292,7 +295,7 @@ def _build_observed_hypergraph(star_map: dict[str, Any], crawl: dict[str, Any]) 
             lowered = line.lower()
             line_nodes: set[str] = set()
             for node_id, aliases in aliases_by_node.items():
-                if any(alias.lower() in lowered for alias in aliases):
+                if any(alias in lowered for alias in aliases):
                     mentioned_nodes.add(node_id)
                     line_nodes.add(node_id)
                     support_counts[node_id] += 1

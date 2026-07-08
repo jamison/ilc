@@ -98,9 +98,10 @@ def validate_noise_sigma_for_mode(
 
     normalized = normalize_noise_sigma(value)
     if require_privacy_calibrated:
+        token = SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN
         raise SpectralSigmaPolicyError(
-            SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN,
-            SIGMA_DP_CALIBRATION_NOT_VALIDATED_TOKEN,
+            token,
+            token,
         )
     if mode == "testnet":
         if normalized != H013_TESTNET_EMISSION_SIGMA:

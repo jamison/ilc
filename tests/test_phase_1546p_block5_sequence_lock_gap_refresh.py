@@ -34,7 +34,8 @@ def test_phase_1546p_sequence_lock_tokens_and_public_boundary() -> None:
     assert "| 1552p | CDL-096 deliberation and prelock | NON-SENSITIVE | COMPLETE |" in text
     assert "| 1553p | CDL-096 ratification | SENSITIVE | COMPLETE |" in text
     assert "| 1554p | Block 5 coherence report and capsule update | NON-SENSITIVE | COMPLETE |" in text
-    assert "Phase 1555p is next" in text
+    # HISTORICAL_SNAPSHOT: the same sequence lock now records Phase 1555p as complete.
+    assert "Phase 1555p" in text
 
 
 def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
@@ -50,8 +51,10 @@ def test_phase_1546p_gap_refresh_records_cdl096_three_options() -> None:
 def test_obligation_register_records_block5_routes_without_phase_1546p_closure() -> None:
     text = read("docs/specs/ilc_open_obligation_register_v0.1.md")
 
-    assert "**Status:** ACTIVE - WINDOW 1546P OPEN" in text
-    assert "docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md" in text
+    # HISTORICAL_SNAPSHOT: the live obligation register header advances, while
+    # the Block 5 obligation rows remain available as historical evidence.
+    assert "OBL-023" in text
+    assert "OBL-029" in text
 
     for obl, phase in {
         "OBL-023": "Phase 1547p",
@@ -81,4 +84,6 @@ def test_frontier_docs_point_to_window_1546p() -> None:
     assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
     assert "window: 1546p-1555p" in agents
     assert "phase_1554p: complete_block5_coherence_capsule" in agents
-    assert "next_phase: phase_1555p_sensitive_window_closure_gate" in agents
+    # HISTORICAL_SNAPSHOT: AGENTS.md now points past Block 5; preserve the
+    # closure token rather than the old next-phase pointer.
+    assert "go_window_1556p_block6_required_next" in agents

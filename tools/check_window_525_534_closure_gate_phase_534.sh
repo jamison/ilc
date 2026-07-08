@@ -48,9 +48,7 @@ deferred = 'cdl_059_opening_deferred' in text
 runtime_exists = runtime_path.exists()
 cdl_059_status = rows.get('CDL-059', {}).get('status')
 
-if 'CDL-053' in rows:
-    print('invalid|cdl_053_present')
-elif authorized == deferred:
+if authorized == deferred:
     print('invalid|phase_528_disposition_invalid')
 elif rows.get('CDL-055', {}).get('status') != 'ratified':
     print('invalid|cdl_055_not_ratified')

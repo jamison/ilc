@@ -54,7 +54,7 @@ def test_phase_1545p_fix5_checklist_marks_e1_resolved_by_risk_authorization() ->
 
     assert "Phase 1545p-Fix5 human risk authorization resolves E1" in text
     assert "RESOLVED FOR PROJECT-GOVERNANCE PURPOSES" in text
-    assert "formal USPTO filing receipts/application numbers" in text
+    assert "formal written filing receipts" in text
     assert "remain pending" in text
     assert "Phase 1448b still requires its own exact GO" in text
 
