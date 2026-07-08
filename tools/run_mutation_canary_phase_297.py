@@ -80,12 +80,12 @@ _TRANSPORT_FORBIDDEN_OLD = 'creator_agent_id",'
 _TRANSPORT_FORBIDDEN_NEW = 'REMOVED_FOR_MUTATION",'
 
 # Probe 7 — gossip_transport_version_guard
-# Mutation: changes the Phase 558 transport runtime version constant.
+# Mutation: changes the current transport runtime version constant.
 _TRANSPORT_VERSION_LINE = (
-    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v0.1"'
+    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v0.1"'
 )
 _TRANSPORT_VERSION_MUTANT = (
-    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_558.v9.9"'
+    'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v9.9"'
 )
 
 # Probe 8 — gossip_transport_cdl_061_dep_guard
@@ -94,12 +94,12 @@ _TRANSPORT_CDL061_DEP_LINE = 'CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"'
 _TRANSPORT_CDL061_DEP_MUTANT = 'CDL_061_DEPENDENCY = "cdl_061_ratified_999.v0.1"'
 
 # Probe 9 — http_gossip_transport_runtime_version_guard
-# Mutation: changes the Phase 568 real HTTP transport runtime version constant.
+# Mutation: changes the current real HTTP transport runtime version constant.
 _HTTP_GOSSIP_RUNTIME_VERSION_LINE = (
-    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v0.1"'
+    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_1572.v0.1"'
 )
 _HTTP_GOSSIP_RUNTIME_VERSION_MUTANT = (
-    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_568.v9.9"'
+    'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_1572.v9.9"'
 )
 
 PROBES = (
