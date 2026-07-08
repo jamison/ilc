@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 RUNNER = Path("tools/run_mutation_canary_phase_297.py")
+GOSSIP_TRANSPORT = Path("ilc_core/network/d2d/gossip_transport.py")
+HTTP_GOSSIP_RUNTIME = Path("ilc_core/network/d2d/http_gossip_transport_runtime.py")
 
 
 def _run(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -47,6 +49,25 @@ def test_dry_run_contract_and_probe_order() -> None:
     ]
     for token in expected:
         assert token in lines
+
+
+def test_d2d_transport_canaries_target_current_runtime_versions() -> None:
+    expected_gossip_line = (
+        'GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v0.1"'
+    )
+    expected_http_line = (
+        'HTTP_GOSSIP_TRANSPORT_RUNTIME_VERSION = "http_gossip_transport_runtime_1572.v0.1"'
+    )
+    runner_text = RUNNER.read_text(encoding="utf-8")
+    gossip_text = GOSSIP_TRANSPORT.read_text(encoding="utf-8")
+    runtime_text = HTTP_GOSSIP_RUNTIME.read_text(encoding="utf-8")
+
+    assert expected_gossip_line in runner_text
+    assert expected_gossip_line in gossip_text
+    assert expected_http_line in runner_text
+    assert expected_http_line in runtime_text
+    assert "gossip_transport_runtime_558.v0.1" not in runner_text
+    assert "http_gossip_transport_runtime_568.v0.1" not in runner_text
 
 
 def test_unknown_arg_returns_exit_2() -> None:
