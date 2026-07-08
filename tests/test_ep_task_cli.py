@@ -31,11 +31,11 @@ def test_cli_submit_stdin(capsys, monkeypatch):
         "task_class": "star.map.embedding",
         "agent_id": "agent:cli",
         "region_scope": ["global"],
-        "difficulty_factor": 1.0,
+        "difficulty_factor": "1.0",
         "verification_method": "hash-match",
         "task_state": "proposed",
         "timestamp_created": 1700000000,
-        "ecu.estimate": 0.5,
+        "ecu.estimate": "0.5",
     }
     
     # Mock stdin

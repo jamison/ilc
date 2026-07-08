@@ -482,6 +482,7 @@ def test_remote_service_smoke_hosts_use_only_physical_scenario_hosts() -> None:
         "agents": [
             {"node_name": "jamisons-imac"},
             {"node_name": "ilc-node-2"},
+            # Intentional duplicate: multiple agents can share one physical host.
             {"node_name": "ilc-node-2"},
             {"node_name": "ilc-node-3"},
         ],

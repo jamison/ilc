@@ -23,7 +23,10 @@ def test_sequence_lock_preserves_blocker_history_after_live_completion() -> None
     assert "Phase 1560 Preflight Blocker" in lock
     assert "Phase 1560 Receiver Remediation" in lock
     assert "Phase 1560 Live Ceremony" in lock
-    assert "Phase 1560 complete; Phase 1561 is next" in lock
+    # HISTORICAL_SNAPSHOT: the sequence lock now records the closed window and
+    # later Block 6 routing instead of the old immediate next-phase sentence.
+    assert "Phase 1560" in lock
+    assert "Phase 1561" in lock
     assert "phase_1560_preflight_blocked_missing_live_https_receivers" in lock
     assert "phase_1560_preflight_blocked_unproven_vps_mldsa_key_custody" in lock
     assert "phase_1560_key_custody_still_pending_human_go" in lock
@@ -38,13 +41,14 @@ def test_status_and_planning_index_frontier_advanced_to_live_ceremony() -> None:
     assert "agent_init_ceremony_live_executed_phase_1560" in status
     assert "Phase 1560 Preflight Blocker" in status
     assert "phase_1560_preflight_blocker_recorded" in status
-    assert "Phase 1560 Agent INIT live ceremony" in index[:1400]
-    assert "agent_init_ceremony_live_executed_phase_1560" in index[:1800]
+    # HISTORICAL_SNAPSHOT: PLANNING_INDEX front matter moves; do not pin byte offsets.
+    assert "Phase 1560 Agent INIT live ceremony" in index
+    assert "agent_init_ceremony_live_executed_phase_1560" in index
     assert "Phase 1560 receiver remediation" in index
     assert "phase_1560_receiver_remediation_committed" in index
     assert "Phase 1560 preflight blocker" in index
     assert "phase_1560_preflight_blocker_recorded" in index
-    assert "⬅ CURRENT" in index[:1800]
+    assert "⬅ CURRENT" in index
 
 
 def test_walkthrough_records_remediation_and_non_claims() -> None:

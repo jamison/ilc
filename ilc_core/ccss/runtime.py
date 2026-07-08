@@ -598,8 +598,8 @@ def _l2_obfuscation_flags(text: str) -> list[str]:
     those attacks are caught without a separate flag.  Cross-script
     lookalikes (e.g. Cyrillic U+0456 'і' for Latin 'i') are NOT
     compatibility equivalents in Unicode and require the Unicode confusables
-    table (TR39) to detect.  That lookup is not bundled here; it is noted as
-    a known gap in TODO.md under "message safety: language-independent L2".
+    table (TR39) to detect.  That lookup is not bundled here; it is recorded as
+    a known gap under "message safety: language-independent L2".
     Flagging NFKC differences directly causes false positives on legitimate
     multilingual text (e.g. Japanese fullwidth punctuation) so it is omitted.
     """

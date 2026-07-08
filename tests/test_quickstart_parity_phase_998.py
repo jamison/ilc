@@ -14,7 +14,9 @@ def test_readme_quickstart_commands_present() -> None:
     assert "python3 tools/genesis_boot.py" in readme
     assert "python3 run_node.py" in readme
     assert "python3 tools/demo_walkthrough.py" in readme
-    assert "Reads `config/genesis.json` and prints the Genesis hash" in readme
+    # HISTORICAL_SNAPSHOT: Phase 998 used an older explanatory sentence. The
+    # current README keeps the same quickstart contract in command-comment form.
+    assert "prints Genesis hash from config/genesis.json" in readme
 
 
 def test_genesis_boot_quickstart_behavior() -> None:

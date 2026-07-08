@@ -9,11 +9,28 @@ EVIDENCE_DOC = Path(
     "docs/specs/ilc_cdl_101_d2d_signed_gossip_envelope_ratification_evidence_1572a_v0.1.md"
 )
 STATUS = Path("docs/phases/STATUS.md")
+PHASE_1572A_COMMIT_SUBJECT = "feat(block6): ratify CDL-101 signed D2D gossip envelope (Phase 1572a)"
 
 
-def _changed_paths_against_head() -> list[str]:
+def _phase_1572a_commit_ref() -> str:
     result = subprocess.run(
-        ["git", "diff", "--name-only", "HEAD"],
+        ["git", "log", "--format=%H%x09%s"],
+        capture_output=True,
+        check=True,
+        text=True,
+    )
+    for line in result.stdout.splitlines():
+        if "\t" not in line:
+            continue
+        commit_hash, subject = line.split("\t", 1)
+        if subject.strip() == PHASE_1572A_COMMIT_SUBJECT:
+            return commit_hash
+    raise AssertionError("phase_1572a_commit_not_present_in_local_history")
+
+
+def _changed_paths_for_commit(commit_ref: str) -> list[str]:
+    result = subprocess.run(
+        ["git", "show", "--name-only", "--pretty=", commit_ref],
         capture_output=True,
         check=True,
         text=True,
@@ -48,6 +65,6 @@ def test_status_records_phase_1572a_tokens() -> None:
 
 
 def test_phase_1572a_does_not_modify_ilc_core_files() -> None:
-    changed_paths = _changed_paths_against_head()
+    changed_paths = _changed_paths_for_commit(_phase_1572a_commit_ref())
     assert changed_paths
     assert not any(path.startswith("ilc_core/") for path in changed_paths)

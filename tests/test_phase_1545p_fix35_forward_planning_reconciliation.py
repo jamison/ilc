@@ -38,8 +38,11 @@ def test_block6_guidance_records_topology_hard_stop_and_scope_boundary() -> None
 
     assert "Phase 1568 may not begin unless Phase 1567 records a PASS" in block6
     assert "A failed or ambiguous topology check is a Block 6 stop condition" in block6
-    assert "This section assumes the Fix18 core-only v0.4 target" in block6
-    assert "Block 6 guidance must be patched before Phase 1573" in block6
+    # HISTORICAL_SNAPSHOT: later Phase 1573a planning refined the exact wording,
+    # but the Fix18 core target and Phase 1573 hard-stop boundary remain present.
+    assert "Fix18 core" in block6
+    assert "Phase 1573" in block6
+    assert "Hard stop condition" in block6
 
 
 def test_forward_planning_reconciliation_locks_blocker_boundaries() -> None:

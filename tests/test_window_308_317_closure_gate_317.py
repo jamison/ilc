@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -19,7 +20,18 @@ PHASE_317_COMMIT_SUBJECT = "docs(g8): phase 317 window 308-317 closure verificat
 
 
 def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(GATE_CMD + args, capture_output=True, text=True, env=env, check=False)
+    gate_env = os.environ.copy()
+    if env is not None:
+        gate_env.update(env)
+    gate_env["PYTHON"] = sys.executable
+    return subprocess.run(
+        GATE_CMD + args,
+        capture_output=True,
+        text=True,
+        env=gate_env,
+        check=False,
+        timeout=300,
+    )
 
 
 def _snapshot_override_env(tmp_path: Path, verdict: str) -> tuple[dict[str, str], bytes | None]:

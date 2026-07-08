@@ -27,6 +27,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from .gossip import build_transport_envelope
 from .interface import validate_d2d_channel, validate_d2d_peer_id
+from . import spectral_route_token as srt
 from .spectral_sigma_policy import (
     MIN_NOISE_SIGMA,
     SpectralSigmaPolicyError,
@@ -466,12 +467,11 @@ def build_spectral_route_token_envelope(
     until a later authority clears ``CCSS_SPECTRAL_01_NOT_ACTIVATED``.
     """
 
-    from . import spectral_route_token as srt
-
     if srt.CCSS_SPECTRAL_01_NOT_ACTIVATED:
+        token = "ccss_spectral_01_not_activated"
         raise SpectralBeaconValidationError(
-            "ccss_spectral_01_not_activated",
-            "ccss_spectral_01_not_activated",
+            token,
+            token,
         )
     normalized_epoch = _normalize_epoch(epoch)
     route_purpose_text = _normalize_route_purpose_for_envelope(route_purpose)
@@ -519,8 +519,6 @@ def build_spectral_route_token_envelope(
 def validate_relay_envelope(envelope: dict[str, Any]) -> None:
     """Validate relay-visible CCSS-SPECTRAL fields regardless of guard state."""
 
-    from . import spectral_route_token as srt
-
     try:
         srt.validate_no_forbidden_fields(envelope)
     except srt.SpectralRouteTokenError as exc:
@@ -530,15 +528,14 @@ def validate_relay_envelope(envelope: dict[str, Any]) -> None:
 def _check_no_lambda_in_envelope(envelope: dict[str, Any]) -> None:
     """Fail closed if deprecated lambda/sigma fields reach relay-visible data."""
 
-    from . import spectral_route_token as srt
-
     try:
         srt.validate_no_forbidden_fields(envelope)
     except srt.SpectralRouteTokenError as exc:
         if exc.token == "ccss_spectral_forbidden_wire_field_present":
+            token = "ccss_spectral_01_lambda_wire_emission_forbidden"
             raise SpectralBeaconValidationError(
-                "ccss_spectral_01_lambda_wire_emission_forbidden",
-                "ccss_spectral_01_lambda_wire_emission_forbidden",
+                token,
+                token,
             ) from exc
         raise SpectralBeaconValidationError(exc.token, exc.message) from exc
 

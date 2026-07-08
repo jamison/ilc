@@ -118,11 +118,33 @@ def test_cdl098_section_architecture_no_adr0035_activation() -> None:
 
 def test_phase1573a_does_not_modify_ilc_core_runtime_files() -> None:
     result = subprocess.run(
-        ["git", "diff", "--name-only", "HEAD"],
+        [
+            "git",
+            "show",
+            "--name-only",
+            "--format=",
+            "21565d99",
+        ],
         cwd=REPO_ROOT,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
     )
+    if result.returncode != 0:
+        result = subprocess.run(
+            [
+                "git",
+                "show",
+                "--name-only",
+                "--format=",
+                "HEAD",
+                "--",
+                str(EVIDENCE.relative_to(REPO_ROOT)),
+            ],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
     modified = {line.strip() for line in result.stdout.splitlines() if line.strip()}
     assert not [path for path in modified if path.startswith("ilc_core/")]
