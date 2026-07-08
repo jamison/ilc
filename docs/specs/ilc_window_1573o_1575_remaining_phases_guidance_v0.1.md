@@ -62,7 +62,7 @@ ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 - Phase 1573u: OBL register sweep + pre-1573v coherence check
 
 ### Track C — Runtime Implementation (NON-SENSITIVE) — G8
-- Phase 1573z: Invite token CLI plumbing (InviteBatchRecord, InviteRedemptionRecord, ilc init --invite, three signing levels)
+- Phase 1573z: Invite token CLI plumbing (InviteBatchRecord, InviteRedemptionRecord, invite-aware identity/agent init command, three signing levels)
 - Phase 1573ab: genesis_accrual_governor.py runtime fix (C_max denominator)
 - Phase 1573y: Fix65a/Fix65b LMDB coverage repair (sequential Atlas writes only)
 
