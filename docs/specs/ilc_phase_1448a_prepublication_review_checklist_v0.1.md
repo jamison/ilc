@@ -58,14 +58,17 @@ What the public will actually receive.
 - [x] Contains seven public identity records (M1: Genesis Agent, Reviewer-1, Reviewer-2; M2: Validator-A1, Validator-A2; M3: Validator-B1, Validator-B2) — public key material only; private key material off-machine
 - [x] **Decision: SHIPS in public tree.** Shipping the manifest is useful for community — it documents the rehearsal ceremony, provides the public identity anchors, and demonstrates the CDL-069 derivation in practice. No private information present.
 
-### A4 — Git commit author metadata — **RESOLVED 2026-05-28**
+### A4 — Git commit author metadata — **AMENDED 2026-07-08**
 
-- [x] Run `git log --format="%an <%ae>" | sort -u` — result: **one author: `Genesis Agent <ilcops@proton.me>`** across all commits
-- [x] **Decision: Option A — Fresh mirror.** The public repo (`ILC-Foundation/ilc`) will be seeded from the materialized tree as a single squashed commit authored as `Genesis Agent <ilcops@proton.me>`. The private repo retains the full development history. Personal name and email will NOT appear in the public commit history.
+- [x] Run private repo `git log --format="%an <%ae>" | sort -u` — historical private author metadata exists and must not be exposed raw.
+- [x] **Decision amended: Option C — full rewritten history.** Phase 1573n supersedes the earlier Option A fresh-mirror decision. The public repo (`ILC-Foundation/ilc`) will be derived from the private canonical repo by `tools/scripts/generate_public_mirror.sh`, retaining rewritten public history while rewriting all author/email metadata to `Genesis Agent <ilcops@proton.me>` and stripping all `PUBLIC_RC_EXCLUDE` declaration-header paths from current and historical git objects.
+- [x] Phase 1573n rehearsal retained 2,848 commits from 4,186 source commits, removed 7,117 excluded paths, produced filtered head `636ff974061793d12f57308e95fac640b9697e07`, and passed denylist plus `PUBLIC_RC_EXCLUDE` scans. Manifest: `docs/specs/ilc_public_mirror_manifest_1573n_v0.1.json`.
 
-**Rationale for community/long-term governance:** A fresh mirror is also the better choice for protocol longevity — when Genesis steps back and the community self-governs, the entire visible public commit history is protocol work, not private development iterations linked to the founder's personal email. This is cleaner for external contributors and preserves the pseudonymous Genesis Agent model throughout.
+**Rationale for community/long-term governance:** Option C preserves public-relevant project history while maintaining the pseudonymous Genesis Agent model. The public mirror is a derived artifact, not the source of truth. All public mirror updates must be regenerated from the private canonical repo through the reproducible filter pipeline and manifest process.
 
-**A4 push instructions (confirmed):**
+**A4 push instructions superseded:** The old Option A single-squash push instructions below are historical and must not be used for public RC. Phase 1575 must use the Option C filtered mirror output after a fresh denylist and exclusion scan pass.
+
+Historical Option A instructions, superseded:
 ```bash
 cd /tmp/ilc-public
 git init
@@ -310,8 +313,7 @@ Required inputs for Phase 1448b.
 - [ ] **`publication_target`** (exact repository URL): `https://github.com/ILC-Foundation/ilc`
   (confirmed — `ILC-Foundation` org created 2026-05-25; repo exists private)
 - [ ] **`publication_tag`** (immutable release tag): e.g., `v0.3-public-rc` (confirm)
-- [ ] **Push method:** direct push of existing repo (with history) vs. fresh mirror (no history)
-  — depends on Section A4 privacy decision
+- [x] **Push method:** Option C filtered mirror with rewritten history, author/email rewrite, and `PUBLIC_RC_EXCLUDE` declaration-header stripping across current and historical git objects. Phase 1573n rehearsed the pipeline; Phase 1575 remains the only public-push authority.
 - [ ] **GitHub Actions / CI:** set up basic CI (pytest on push) before going public?
   Or post-publication task?
 - [ ] **Release notes draft:** ready for human review before push
@@ -324,7 +326,7 @@ Required inputs for Phase 1448b.
 |---------|------|----------|------|
 | A2 | File list walkthrough | RESOLVED — MANIFESTO.md excluded; economics.md excluded (future TOON rewrite); all others decided | 2026-05-28 |
 | A3 | Identity manifest ships? | RESOLVED — ships; public fields only confirmed | 2026-05-28 |
-| A4 | Git author metadata | RESOLVED — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; no personal name/email in public history | 2026-05-28 |
+| A4 | Git author metadata | AMENDED 2026-07-08 - Option C (full rewritten history) supersedes Option A (fresh mirror). Phase 1573n pipeline rehearsal: 2848 commits retained, all personal identifiers removed, all PUBLIC_RC_EXCLUDE header-marked files stripped. Pipeline: `tools/scripts/generate_public_mirror.sh`. Manifest: `docs/specs/ilc_public_mirror_manifest_1573n_v0.1.json`. Public push still gated to Phase 1575. | 2026-07-08 |
 | CDL-095 | Jury verdict finality ratification | RESOLVED — ratified Phase 1448c; token `cdl_095_ratified_phase_1448c` | 2026-05-25 |
 | B1 | Org creation | RESOLVED — `ILC-Foundation` org created; description, topics, issues configured 2026-05-28; website pending domain registration | 2026-05-28 |
 | B2 | Repo name | RESOLVED — `ilc` (clean); private repo `ILC-Foundation/ilc` configured | 2026-05-28 |
@@ -344,7 +346,7 @@ Required inputs for Phase 1448b.
 
 **Blocking items** (must resolve before Phase 1448b can execute):
 - A1 — **RESOLVED 2026-05-25** — `tree_sha256: 925d6399399c7f82f52cf17318687a9d625d7e64ef2b0e2fc6586fd15c036361`
-- A4 — **RESOLVED 2026-05-28** — Option A (fresh mirror); `Genesis Agent <ilcops@proton.me>`; push instructions recorded above
+- A4 — **AMENDED 2026-07-08** — Option C (full rewritten history) supersedes Option A; Phase 1573n rehearsed the reproducible filter pipeline with 2,848 commits retained, denylist pass, and `PUBLIC_RC_EXCLUDE` scan pass; public push remains gated to Phase 1575
 - CDL-095 — **RESOLVED 2026-05-25** — `cdl_095_ratified_phase_1448c` token emitted (Phase 1448c)
 - E1 — **RESOLVED 2026-06-09 FOR PROJECT-GOVERNANCE PURPOSES** — Phase 1545p-Fix5 records the coverage audit and explicit human risk authorization to proceed toward public RC relying on FedEx delivery evidence; USPTO application numbers were received verbally on 2026-06-10; formal written filing receipts remain pending. Phase 1448b still requires its own exact GO and final publication/export checks.
 - G — **RESOLVED 2026-05-25** — `publication_target: https://github.com/ILC-Foundation/ilc`, `publication_tag: v0.3-public-rc`
