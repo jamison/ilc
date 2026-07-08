@@ -35863,6 +35863,25 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added:cdl_sigma_01_adversary_model -> cdl_sigma_01",
       "repo_path": "docs/specs/ilc_cdl_sigma_01_adversary_model_ratification_evidence_1573i_v0.1.md"
+    },
+    {
+      "candidate_id": "conversion_candidate_runtime_1573j",
+      "path": "ilc_core/ledger/conversion_candidate_runtime.py",
+      "node_type": "runtime_module",
+      "annotation_method": "manual_reviewed",
+      "annotation_phase": "phase_1573j",
+      "annotation_reviewer": "codex",
+      "genesis_signature_version": "v0.4",
+      "update_authority": "genesis_until_sunset",
+      "update_authority_cdl": "cdl_098",
+      "graph_trace_status": "candidate",
+      "proposed_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl_048_ratified_phase_419",
+          "rationale": "Eligible-lot generator implements CDL-048 mandatory conversion deadline logic"
+        }
+      ]
     }
   ],
   "boundary": {
