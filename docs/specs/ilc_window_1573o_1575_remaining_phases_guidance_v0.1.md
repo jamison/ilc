@@ -1,9 +1,10 @@
 # ILC Window 1565-1575 Remaining Phases Guidance (1573o–1575)
 
 > **Note (2026-07-08):** G8 package renumbered from 1573o-z to 1573u-1573af to avoid
-> collision with the G10 CCSS lane (1573o complete, 1573p-r pending, 1573s ContactGateNode,
-> 1573t optional ContactGate rehearsal). The phase table below reflects the updated G8
-> numbering. G10 CCSS lane (1573p, 1573q, 1573r) precedes the G8 package in execution order.
+> collision with the G10 CCSS lane (1573o complete; 1573p-r privacy work pending;
+> 1573s ContactGateNode policy and 1573t ContactGate local rehearsal required). The
+> phase table below reflects the updated G8 numbering. The complete G10 CCSS lane
+> (1573p through 1573t) precedes the G8 package in execution order.
 
 Status: planning guidance addendum
 Date: 2026-07-08
