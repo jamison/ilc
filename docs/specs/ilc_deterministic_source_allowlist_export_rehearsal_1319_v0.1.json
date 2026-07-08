@@ -85,10 +85,10 @@
   "counts": {
     "blocked_ambiguities": 0,
     "dependency_hits": 0,
-    "excluded_files": 44,
-    "included_files": 381,
-    "legacy_untagged_default_excluded": 44,
-    "legacy_untagged_included_reviewed": 381,
+    "excluded_files": 25,
+    "included_files": 439,
+    "legacy_untagged_default_excluded": 25,
+    "legacy_untagged_included_reviewed": 439,
     "legacy_untagged_review_required_blocked": 0,
     "marker_hits": 0
   },
@@ -992,6 +992,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/analysis/spectral_utils.py",
+        "target": "ilc_core.network.d2d.spectral_sigma_policy"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/analysis/spectral_utils.py",
         "target": "ilc_core.types"
       },
       {
@@ -1102,12 +1107,22 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/analysis/utility_flow_rewards.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/analysis/utility_flow_rewards.py",
         "target": "ilc_core.exceptions"
       },
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/analysis/utility_flow_rewards.py",
         "target": "logging"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/analysis/utility_flow_rewards.py",
+        "target": "math"
       },
       {
         "edge_type": "python_ast_import",
@@ -1123,6 +1138,431 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/asgi.py",
         "target": "server"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/__init__.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "ilc_core.crypto.cbor_canonical"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "ilc_core.crypto.cose_sign1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/bundle_verifier.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "ilc_core.crypto.cose_sign1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "ilc_core.crypto.cose_sign1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "ilc_core.crypto.cose_sign1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "ilc_core.crypto.cose_sign1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/layer3_wire_binding.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "ilc_core.crypto.cbor_canonical"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "ilc_core.encoding.dag_cbor"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "types"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/bundle/type_registry.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/__init__.py",
+        "target": "ilc_core.ccss.runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/__init__.py",
+        "target": "ilc_core.ccss.safe_message"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.hazmat.primitives.asymmetric.x25519"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.hazmat.primitives.ciphers.aead"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.hazmat.primitives.hashes"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.hazmat.primitives.kdf.hkdf"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "cryptography.hazmat.primitives.serialization"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "socket"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "socketserver"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "struct"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "time"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/runtime.py",
+        "target": "unicodedata"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "ilc_core.ccss.runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ccss/safe_message.py",
+        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -1163,6 +1603,51 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/_key_utils.py",
         "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "argparse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "ilc_core.ledger.exact_numeric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "ilc_core.storage.genesis_atlas_lmdb_writer"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/atlas_lmdb_cli.py",
+        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -1741,6 +2226,26 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/ccss_cli.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/ccss_cli.py",
+        "target": "argparse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/ccss_cli.py",
+        "target": "ilc_core.ccss.runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/ccss_cli.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/cli/d2e_agent_cli.py",
         "target": "__future__"
       },
@@ -1937,7 +2442,22 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.cli.atlas_lmdb_cli"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.cli.ccss_cli"
       },
       {
         "edge_type": "python_ast_import",
@@ -1958,6 +2478,21 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
         "target": "ilc_core.cli.d2e_submit_cli"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.cli.sidecar_cli"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.distribution.materialization"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "importlib"
       },
       {
         "edge_type": "python_ast_import",
@@ -2036,6 +2571,41 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "argparse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "ilc_core.ccss.runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "ilc_core.sidecars.registry_manifest"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "ilc_graph_viz.__main__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "importlib.util"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/sidecar_cli.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/config.py",
         "target": "ilc_core.exceptions"
       },
@@ -2091,6 +2661,91 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "ilc_core.consensus.attribution_batch_bridge"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "ilc_core.ledger.distributed_conversion_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "ilc_core.ledger.exact_numeric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "ilc_core.ledger.exact_numeric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "subprocess"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/consensus/attribution_batch_bridge.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/consensus/circuit_breaker_interface.py",
         "target": "__future__"
       },
@@ -2127,12 +2782,12 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/consensus/diversity_floor_runtime.py",
-        "target": "ilc_core.identity.sybil_resistance_runtime"
+        "target": "decimal"
       },
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/consensus/diversity_floor_runtime.py",
-        "target": "math"
+        "target": "ilc_core.identity.sybil_resistance_runtime"
       },
       {
         "edge_type": "python_ast_import",
@@ -2386,8 +3041,133 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/crypto/pq_signature_verify.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/crypto/pq_signature_verify.py",
+        "target": "oqs"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/distribution/__init__.py",
         "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/genesis_package_manifest.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/genesis_package_manifest.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/genesis_package_manifest.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/genesis_package_manifest.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/genesis_package_manifest.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "argparse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "datetime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "ilc_core.storage.genesis_atlas_lmdb_writer"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "shutil"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "subprocess"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "sys"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "tarfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "urllib.error"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "urllib.parse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/distribution/materialization.py",
+        "target": "urllib.request"
       },
       {
         "edge_type": "python_ast_import",
@@ -2506,6 +3286,41 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "ilc_core.epoch.treasury_governance_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/economics/reward.py",
         "target": "__future__"
       },
@@ -2528,6 +3343,11 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/economics/rl_agents.py",
         "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/economics/rl_agents.py",
+        "target": "decimal"
       },
       {
         "edge_type": "python_ast_import",
@@ -2627,6 +3447,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/epistemic/__init__.py",
+        "target": "jury_acceptance_authority_classification"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/__init__.py",
         "target": "jury_activation_gate"
       },
       {
@@ -2722,6 +3547,21 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/epistemic/ingestion_shadow_harness.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/jury_acceptance_authority_classification.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/jury_acceptance_authority_classification.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/jury_acceptance_authority_classification.py",
         "target": "typing"
       },
       {
@@ -3001,6 +3841,21 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/vrf_proof_verifier.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/vrf_proof_verifier.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epistemic/vrf_proof_verifier.py",
+        "target": "nacl.bindings"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/__init__.py",
         "target": "allocation_distributor_runtime"
       },
@@ -3076,6 +3931,36 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "ilc_core.epoch.epoch_emission_production_path"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/canonical_economic_event.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/ecu_price_clamp_runtime.py",
         "target": "__future__"
       },
@@ -3101,6 +3986,41 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "ilc_core.economics.epoch_attribution_settle_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/epoch_boundary_witness_runtime.py",
         "target": "__future__"
       },
@@ -3108,6 +4028,56 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/epoch_boundary_witness_runtime.py",
         "target": "ilc_core.validator"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "ilc_core.epoch.allocation_distributor_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "ilc_core.epoch.epoch_emission_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "ilc_core.epoch.fee_burn_split_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "ilc_core.epoch.issuance_economics_integration_gate"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/epoch_emission_production_path.py",
+        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -3177,6 +4147,46 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/fee_burn_split_runtime.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "ilc_core.epoch.allocation_distributor_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "ilc_core.epoch.epoch_emission_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "ilc_core.epoch.fee_burn_split_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "target": "ilc_core.ledger.exact_numeric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
         "target": "typing"
       },
       {
@@ -3262,6 +4272,51 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/epoch/treasury_governance_runtime.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "ilc_core.epoch.issuance_economics_integration_gate"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "ilc_core.epoch.treasury_governance_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "ilc_core.epoch.validator_reward_pool_routing_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/epoch/treasury_validator_reward_production_path.py",
         "target": "typing"
       },
       {
@@ -3417,6 +4472,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/genesis/__init__.py",
+        "target": "serving_receipt"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/__init__.py",
         "target": "validator_bootstrap_runtime"
       },
       {
@@ -3472,6 +4532,41 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/genesis/assertion_schema.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "ilc_core.genesis.assertion_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/genesis_authority_assertion.py",
         "target": "typing"
       },
       {
@@ -3556,6 +4651,46 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/invitation_provenance_record.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/genesis/schema.py",
         "target": "importlib.resources"
       },
@@ -3566,8 +4701,73 @@
       },
       {
         "edge_type": "python_ast_import",
-        "source": "ilc_core/genesis/schema.py",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "ilc_core.encoding.cidv1"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "ilc_core.network.d2d.gossip_peer_registry"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
         "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "ssl"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "urllib.error"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/genesis/serving_receipt.py",
+        "target": "urllib.request"
       },
       {
         "edge_type": "python_ast_import",
@@ -3781,6 +4981,176 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/__init__.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/co_attestation_receipt.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/co_attestation_receipt.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/co_attestation_receipt.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/co_attestation_receipt.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/co_attestation_receipt.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "ilc_core.harness.co_attestation_receipt"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "ilc_core.harness.local_immutable_store"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/consent_gate.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "ilc_core.analysis.node_value_kernel"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "ilc_core.harness.provider_usage_adapter"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/idle_capacity_scheduler.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "ilc_core.harness.consent_gate"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/local_node_capture.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "ilc_core.harness.idle_capacity_scheduler"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "ilc_core.private_json_guardrails"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/maintenance_task_executor.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/provider_usage_adapter.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/provider_usage_adapter.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/provider_usage_adapter.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/harness/provider_usage_adapter.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/identity/__init__.py",
         "target": "agent_id_runtime"
       },
@@ -3922,12 +5292,12 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/identity/sybil_resistance_runtime.py",
-        "target": "ilc_core.reputation.temporal_decay_runtime"
+        "target": "decimal"
       },
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/identity/sybil_resistance_runtime.py",
-        "target": "math"
+        "target": "ilc_core.reputation.temporal_decay_runtime"
       },
       {
         "edge_type": "python_ast_import",
@@ -4811,6 +6181,61 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/conversion_candidate_runtime.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/conversion_candidate_runtime.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/conversion_candidate_runtime.py",
+        "target": "ilc_core.ledger.distributed_conversion_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/conversion_candidate_runtime.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "ilc_core.ledger.exact_numeric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/distributed_conversion_schema.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/ledger/ecu_active_layer_runtime.py",
         "target": "__future__"
       },
@@ -4882,6 +6307,36 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/ledger/exact_numeric.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+        "target": "ilc_core.ledger.distributed_conversion_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
         "target": "typing"
       },
       {
@@ -5497,6 +6952,16 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/gossip_peer_registry.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/gossip_peer_registry.py",
+        "target": "ilc_core.crypto.pq_signature_verify"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/gossip_peer_registry.py",
         "target": "ilc_core.network.d2d.gossip_transport"
       },
       {
@@ -5522,12 +6987,22 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/gossip_peer_registry.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/gossip_peer_registry.py",
         "target": "urllib.parse"
       },
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/gossip_transport.py",
         "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/gossip_transport.py",
+        "target": "ilc_core.crypto.pq_signature_verify"
       },
       {
         "edge_type": "python_ast_import",
@@ -5647,7 +7122,22 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
         "target": "http.server"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "target": "ilc_core.crypto.pq_signature_verify"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "target": "ilc_core.encoding.dag_cbor"
       },
       {
         "edge_type": "python_ast_import",
@@ -5662,7 +7152,17 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "target": "ilc_core.network.d2d.tls_policy"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
         "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "target": "os"
       },
       {
         "edge_type": "python_ast_import",
@@ -5947,6 +7447,71 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/spectral_beacon.py",
+        "target": "spectral_sigma_policy"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_beacon.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "cryptography.hazmat.primitives"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "cryptography.hazmat.primitives.asymmetric"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "cryptography.hazmat.primitives.asymmetric.x25519"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "cryptography.hazmat.primitives.kdf.hkdf"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "hmac"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "math"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
+        "target": "numbers"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_route_token.py",
         "target": "typing"
       },
       {
@@ -5973,6 +7538,36 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/spectral_routing_runtime.py",
         "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_sigma_policy.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_sigma_policy.py",
+        "target": "math"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/spectral_sigma_policy.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/tls_policy.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/tls_policy.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/tls_policy.py",
+        "target": "warnings"
       },
       {
         "edge_type": "python_ast_import",
@@ -6023,6 +7618,11 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
         "target": "ilc_core.network.d2d.routing_reputation_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
+        "target": "ilc_core.network.d2d.tls_policy"
       },
       {
         "edge_type": "python_ast_import",
@@ -6078,6 +7678,11 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
         "target": "ilc_core.network.d2d.gossip_peer_registry"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
+        "target": "ilc_core.network.d2d.tls_policy"
       },
       {
         "edge_type": "python_ast_import",
@@ -6447,6 +8052,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/node/node_startup_runtime.py",
+        "target": "ilc_core.network.d2d.spectral_sigma_policy"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/node/node_startup_runtime.py",
         "target": "ilc_core.network.star_map.star_map_route_index_runtime"
       },
       {
@@ -6663,6 +8273,21 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/privacy/monitor.py",
         "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/private_json_guardrails.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/private_json_guardrails.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/private_json_guardrails.py",
+        "target": "json"
       },
       {
         "edge_type": "python_ast_import",
@@ -7876,6 +9501,76 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_application_numbers_status.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_application_numbers_status.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_application_numbers_status.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_application_numbers_status.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_delivery_status.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_delivery_status.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_delivery_status.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/patent_delivery_status.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "ilc_core.epistemic.truth_primitive_submission_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/reputation/__init__.py",
         "target": "temporal_decay_runtime"
       },
@@ -8357,6 +10052,31 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/sidecars/confidential_coordination_shard.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sidecars/idea_descent_rehearsal.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sidecars/idea_descent_rehearsal.py",
+        "target": "collections.abc"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sidecars/idea_descent_rehearsal.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sidecars/idea_descent_rehearsal.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sidecars/idea_descent_rehearsal.py",
         "target": "typing"
       },
       {
@@ -9086,6 +10806,41 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py",
         "target": "__future__"
       },
@@ -9122,6 +10877,121 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "decimal"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "ilc_core.sim.sim_fetch_01.werner_topology_capture_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "ilc_core.sim.sim_fetch_01.werner_topology_pressure_profile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "ilc_core.sim.sim_fetch_01.werner_topology_capture_schema"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "shutil"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "subprocess"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
         "target": "typing"
       },
       {
@@ -9248,6 +11118,86 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/storage/__init__.py",
         "target": "truth_primitive_graph_lmdb_adapter"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "target": "ilc_core.storage.lmdb_public_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "ilc_core.storage.genesis_atlas_candidate_lmdb_adapter"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "ilc_core.storage.lmdb_public_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "os"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "tempfile"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -9571,6 +11521,36 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "dataclasses"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "ilc_core.validator.admission_ejection_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/work/task_queue.py",
         "target": "__future__"
       },
@@ -9610,49 +11590,7 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
-      "path": "ilc_consensus/src/relay_routing_table.rs",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/__init__.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/bundle_verifier.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/layer0_protocol_bundle.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/layer1_genesis_bundle.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/layer2_epoch_snapshot.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/bundle/layer3_wire_binding.py",
+      "path": "ilc_core/epistemic/jury_assignment_announcement_runtime.py",
       "review_required_before_public_export": true
     },
     {
@@ -9660,13 +11598,6 @@
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
       "path": "ilc_core/epistemic/jury_finality_evaluator.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/epistemic/vrf_proof_verifier.py",
       "review_required_before_public_export": true
     },
     {
@@ -9701,34 +11632,6 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
-      "path": "ilc_core/harness/__init__.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/harness/co_attestation_receipt.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/harness/consent_gate.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/harness/idle_capacity_scheduler.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
       "path": "ilc_core/harness/local_immutable_store.py",
       "review_required_before_public_export": true
     },
@@ -9736,21 +11639,7 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
-      "path": "ilc_core/harness/local_node_capture.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/harness/maintenance_task_executor.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/harness/provider_usage_adapter.py",
+      "path": "ilc_core/identity/pq_agent_sign_bridge.py",
       "review_required_before_public_export": true
     },
     {
@@ -9799,21 +11688,7 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
-      "path": "ilc_core/private_json_guardrails.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
       "path": "ilc_core/rc/genesis_v0_2_signing_ceremony_gate.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/rc/public_rc_exclude_disposition.py",
       "review_required_before_public_export": true
     },
     {
@@ -9885,54 +11760,26 @@
       "marker_status": "hit",
       "path": "ilc_core/schema/verdict_record_schema.py",
       "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
-      "review_required_before_public_export": true
-    },
-    {
-      "blocked": false,
-      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
-      "marker_status": "hit",
-      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
-      "review_required_before_public_export": true
     }
   ],
   "excluded_roots": [
     {
-      "count": 1214,
+      "count": 1399,
       "reason": "private_phase_prompt_history_default_excluded",
       "root": "docs/antigravity_tasks"
     },
     {
-      "count": 1554,
+      "count": 1761,
       "reason": "private_phase_walkthrough_history_default_excluded",
       "root": "docs/phases"
     },
     {
-      "count": 384,
+      "count": 386,
       "reason": "research_and_patent_sensitive_material_default_excluded",
       "root": "docs/research"
     },
     {
-      "count": 47748,
+      "count": 48620,
       "reason": "generated_mempalace_and_local_output_default_excluded",
       "root": "out"
     },
@@ -9952,12 +11799,12 @@
       "root": "local_monitoring"
     },
     {
-      "count": 54538,
+      "count": 65802,
       "reason": "generated_rust_build_output_default_excluded",
       "root": "ilc_consensus/target"
     },
     {
-      "count": 1435,
+      "count": 1646,
       "reason": "private_phase_regression_tests_default_excluded",
       "root": "tests"
     }
@@ -9989,16 +11836,16 @@
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 1696,
-      "hash_sha256": "2bf886d6665668e32ef7904ead8c10cf5c5a13a8b94e4ac577b54b7057f976dc",
+      "byte_size": 1700,
+      "hash_sha256": "db32d6bc692adf050199b74ba8a99df03c222153c40cb06b641599f071396090",
       "marker_status": "absent",
       "path": "LICENSE",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 9720,
-      "hash_sha256": "f2c33dd4969c6e33c3ce79bd46a48da720a9bb6cc23661103b5145c5b9fdadd6",
+      "byte_size": 8963,
+      "hash_sha256": "7bd5d5f5f6f865cf110e7a90b9bba167d9196d42147c582d19301b01de90746f",
       "marker_status": "absent",
       "path": "LICENSING.md",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10013,16 +11860,16 @@
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 3190,
-      "hash_sha256": "547ee2214ac9088a6f9ce9c1d1de47cc85bba52dc2f95c6fa40f2b3ae5aabf06",
+      "byte_size": 12746,
+      "hash_sha256": "933f26218273244aa58d42b4b4e8fb911af8bb50dba22af193bf0b2649441f5a",
       "marker_status": "absent",
       "path": "README.md",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 3678,
-      "hash_sha256": "4c16bb25f53019a900a0d5f88e1a2f8cb583cce5312971539c24c6754a761ce4",
+      "byte_size": 16606,
+      "hash_sha256": "329040113824a1cda2b05aa1235b9b80d7fe82284e217153940d284f851f2034",
       "marker_status": "absent",
       "path": "SECURITY.md",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10037,8 +11884,8 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 1914,
-      "hash_sha256": "353d63df6919c7ca1ad348d3179cea9c7fcc2b78f94ceef2d596980890f1e971",
+      "byte_size": 2086,
+      "hash_sha256": "7a5c7aac1241e3494835129f9398d72387e45eb05edab205b553436957181a13",
       "marker_status": "absent",
       "path": "ilc_consensus/Cargo.toml",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10057,6 +11904,14 @@
       "hash_sha256": "8dec11d8421f11d42abdffbce72929a6b4a0367a58aac00615bc75118b14f204",
       "marker_status": "absent",
       "path": "ilc_consensus/src/app_interface.rs",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
+      "byte_size": 9678,
+      "hash_sha256": "09876f594e9f80890c4af776c1363c057f8e468516bedc1ca5c6613853516ef9",
+      "marker_status": "absent",
+      "path": "ilc_consensus/src/attribution_batch_ingest_main.rs",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10149,6 +12004,14 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
+      "byte_size": 25866,
+      "hash_sha256": "eeca6f69f2a32c13098377ee2985784cbd8dd43c1ff6b8948797268ac51f14d2",
+      "marker_status": "absent",
+      "path": "ilc_consensus/src/pq_agent_sign_main.rs",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
       "byte_size": 17570,
       "hash_sha256": "32964c082f1922bf8eb99dc46e406cae5906c8da0cef2dca4c206eebc16de112",
       "marker_status": "absent",
@@ -10161,6 +12024,14 @@
       "hash_sha256": "c77edf675ed6abf63c42bd9b7269212004cb0aac65fda58444ca82c39508d419",
       "marker_status": "absent",
       "path": "ilc_consensus/src/pq_sign_main.rs",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
+      "byte_size": 7038,
+      "hash_sha256": "c8caa8da60c0d797f8f41a7af3f2f0de56d16ce8627f20293a2a080dded8c9bb",
+      "marker_status": "absent",
+      "path": "ilc_consensus/src/relay_routing_table.rs",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10477,8 +12348,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7602,
-      "hash_sha256": "63c1845ff0686431017a708974c269b600a43f50936078251fc587858282e4c1",
+      "byte_size": 7986,
+      "hash_sha256": "c9189096b8262b93eb10d62b062fc10f686c6a142648eca4360d366500b0f35f",
       "marker_status": "absent",
       "path": "ilc_core/analysis/spectral_utils.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10509,8 +12380,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14769,
-      "hash_sha256": "1871e4309c41d8333cc35f083f826977be4ab0f4fe965e4f61cae195d6861e86",
+      "byte_size": 14919,
+      "hash_sha256": "c6fd1b857a4e9b081024613f53e1134c67899150bc6de8ae31c1b848f42af9ce",
       "marker_status": "absent",
       "path": "ilc_core/analysis/utility_flow_rewards.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10521,6 +12392,86 @@
       "hash_sha256": "4ad8527b857667206d950922516bccc971b5b69e130a03aae47d73a4561da8b8",
       "marker_status": "absent",
       "path": "ilc_core/asgi.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 329,
+      "hash_sha256": "ba0454e4699b9a30b3826d09161fe17f27789ccb61c18af531ceae2f173fd63e",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 6407,
+      "hash_sha256": "a6012726ee2a0b6af865528a6776ccc01bfbae8e4d40b20dc76a642341405afd",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/bundle_verifier.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 11108,
+      "hash_sha256": "05617514e7eefc68dde2db50df390043187133bfdfcb480e97d0e4901b86b6e8",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/layer0_protocol_bundle.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7224,
+      "hash_sha256": "da03dc70932dbebf339ce29838b7d27a16ed727eb029a7d3a39b7c9e35b3ec59",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/layer1_genesis_bundle.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7879,
+      "hash_sha256": "73920c994bcc008e5a014673f451fcbe9cf906aece28155d54f38ac7d0135a8d",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/layer2_epoch_snapshot.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 6361,
+      "hash_sha256": "e3b8e5cfdba6d67fc9d8bbfdde01adac1b91f6d34ee9b1202ae2ea6f11311de9",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/layer3_wire_binding.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 11193,
+      "hash_sha256": "1ec5e2b4eaf3fcc7eef49c937045e4c009156ad4bf458b2b25ad4f0dd4aa25de",
+      "marker_status": "absent",
+      "path": "ilc_core/bundle/type_registry.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 932,
+      "hash_sha256": "8635ad4dc043abc0aca5f8157ef822a84aa3ad7bb317cc31b857544afb009cbd",
+      "marker_status": "absent",
+      "path": "ilc_core/ccss/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 39514,
+      "hash_sha256": "b9e6409ca1d375c40be90c02c91f08f7d093be7a4f341f63eca3e4c1c8c249c2",
+      "marker_status": "absent",
+      "path": "ilc_core/ccss/runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 12634,
+      "hash_sha256": "5bf942d42cc03e23061655c33dbbdb6c6d1764927998c66ce24d623f1c21a69e",
+      "marker_status": "absent",
+      "path": "ilc_core/ccss/safe_message.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10537,6 +12488,14 @@
       "hash_sha256": "05b0db8d431e556379f5a6de8cd289cc2d0a315f11af439f0bf3162b51196505",
       "marker_status": "absent",
       "path": "ilc_core/cli/_key_utils.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 23980,
+      "hash_sha256": "9729af0800dc5869bb62647354d336f49777a40f4e3242d49eade7dcc8ad9bf0",
+      "marker_status": "absent",
+      "path": "ilc_core/cli/atlas_lmdb_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10669,6 +12628,14 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 4276,
+      "hash_sha256": "e811b4dbcd2bc5c795ace15d66421ae37fe528ab45155946cf9d3c05f09b7112",
+      "marker_status": "absent",
+      "path": "ilc_core/cli/ccss_cli.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 2135,
       "hash_sha256": "b8ee392f31b19c36d34e21ad0cb9b5eeac5cae3b53acba2accdc1fd99675d25e",
       "marker_status": "absent",
@@ -10701,16 +12668,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6586,
-      "hash_sha256": "5e155771a62cd3b19f9b252f16846076a0bffea04720802567637d060adfe49c",
+      "byte_size": 6710,
+      "hash_sha256": "6f612efaf6ed9f7e01e39ba7d920595b4d361a97b6cdab1d2305e759b86159fb",
       "marker_status": "absent",
       "path": "ilc_core/cli/ep_task_cli.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 44040,
-      "hash_sha256": "23bf9877be343fb4358b2d598671ea55012992212b57489efa7f1501a5d0ea06",
+      "byte_size": 68619,
+      "hash_sha256": "6cdf658dc466392767f101247f5478be06f664590b7b55e181ce24f5bfab7b81",
       "marker_status": "absent",
       "path": "ilc_core/cli/main.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10725,8 +12692,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 5889,
+      "hash_sha256": "75bed49bf8f68e01ba235e5d5c53d6955e6335da9349e37fad97c1abcb36b2b3",
+      "marker_status": "absent",
+      "path": "ilc_core/cli/sidecar_cli.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 2803,
-      "hash_sha256": "1fc5316b6d71473fad622ba62fa8f0c612e221c54c40467bece94aee0f593484",
+      "hash_sha256": "7a4878b0b42a08156734860c9c734dd5264187af771a5888f6c7a7fd4ae725ab",
       "marker_status": "absent",
       "path": "ilc_core/config.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10737,6 +12712,22 @@
       "hash_sha256": "92de59be635b3e23a2271f6897a47afe98ee083c972c2d640718652292b384b8",
       "marker_status": "absent",
       "path": "ilc_core/consensus/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 21874,
+      "hash_sha256": "ca85a858fbf33eded5124442de4c867ec3795fabae256c318bd8bbebb9f33924",
+      "marker_status": "absent",
+      "path": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 8964,
+      "hash_sha256": "4855250832e82d1fa275750465a036a4c9fdba8df0d332e1cfb4c16f78e30c23",
+      "marker_status": "absent",
+      "path": "ilc_core/consensus/attribution_batch_bridge.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10757,8 +12748,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 4975,
-      "hash_sha256": "d20cbf4309ddd08916cb09d5abafd7c871f323ee6c12c552171d9421996d3f99",
+      "byte_size": 5530,
+      "hash_sha256": "785d65f79b2c2727fe7d590f0ef5559ecacf6493f83ae075a1e1ec3b0f9da40e",
       "marker_status": "absent",
       "path": "ilc_core/consensus/diversity_floor_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10789,8 +12780,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9880,
-      "hash_sha256": "05168d575831c41d1a50dde3a0c88c10419dac145faaa1afb0c633861cec4ac1",
+      "byte_size": 10096,
+      "hash_sha256": "e59c5a89b014a02e487c49f3a8aee62d85d616e61584e312655c7bf77552c494",
       "marker_status": "absent",
       "path": "ilc_core/consensus/governance.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10821,8 +12812,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1049,
-      "hash_sha256": "2ba29a720d74b7c0a7f0950411f871879b69e2e9c5bcd9e86ccece6f0a2e3703",
+      "byte_size": 1114,
+      "hash_sha256": "8340190b2d509bf42a168f6a2701fdacba89b725b9900e73d27d498bd15c6b89",
       "marker_status": "absent",
       "path": "ilc_core/crypto/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10837,10 +12828,18 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8242,
-      "hash_sha256": "021a4adee3d89ef6d95b595959d933df5b96ae4594f2602b9279e1e750415ae2",
+      "byte_size": 8425,
+      "hash_sha256": "45665e8098da8f8e00f34f835ede13da05e0e69f58c45c11ea58a82d61e0c22a",
       "marker_status": "absent",
       "path": "ilc_core/crypto/cose_sign1.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 1953,
+      "hash_sha256": "c2130d69fe4e2ee2b949ad6354b74e129713bd823cc0ded77f4d5a8d14878cd6",
+      "marker_status": "absent",
+      "path": "ilc_core/crypto/pq_signature_verify.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10849,6 +12848,22 @@
       "hash_sha256": "3b94ed5758e20b545d55000f7c160a08a7049396d353096e3170234e5040a6e3",
       "marker_status": "absent",
       "path": "ilc_core/distribution/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7867,
+      "hash_sha256": "ff69a812792dad63952dbde492db2d0906874b4ec9bb9e514961e36509bc4fa5",
+      "marker_status": "absent",
+      "path": "ilc_core/distribution/genesis_package_manifest.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 25015,
+      "hash_sha256": "7c7d9edd7717da47ea5e7f0b78d532773b2c2c88e6c475bdb710ef446ca9d47a",
+      "marker_status": "absent",
+      "path": "ilc_core/distribution/materialization.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10877,8 +12892,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 23651,
-      "hash_sha256": "495c814a6d08ae5d8e670887a24c6cf0ded6f8a7ba69adab65d8825915de189a",
+      "byte_size": 23593,
+      "hash_sha256": "13ad44a68a8f866b96af9fd063c47081cce9baa6c78328655bf2741dc1f7c51b",
       "marker_status": "absent",
       "path": "ilc_core/economics/epoch_attribution_settle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10893,8 +12908,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2468,
-      "hash_sha256": "ce90f73d4aa7e4929bd3ef3315c24cd9735fff891f62e7a4e6987b9de8cc33da",
+      "byte_size": 2526,
+      "hash_sha256": "974ca8cd5efd14880a93f68b8abaa0bb6dc4f62034d2cfeab3eb8d007aa6c48e",
       "marker_status": "absent",
       "path": "ilc_core/economics/onboarding.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10909,10 +12924,18 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3646,
-      "hash_sha256": "508b064f64813d7c93c44c7df53d6331126772346521c8444d1637211df4d89c",
+      "byte_size": 3704,
+      "hash_sha256": "9109c3c5a80c9fe8dba9845f1c39e52ae4a6ae5485578c9255bb47f24ec68e1d",
       "marker_status": "absent",
       "path": "ilc_core/economics/passive_ecu_attribution_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 16157,
+      "hash_sha256": "e0a490568780596b687970bce950b4c94ad4b1f2c93cc0d965019d5ea83fb5d3",
+      "marker_status": "absent",
+      "path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -10925,8 +12948,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2190,
-      "hash_sha256": "d47c6e2dce5f7a1b4e801712bbfd775f922f1a4dcc210e24a94c7ec51d84a1b1",
+      "byte_size": 2231,
+      "hash_sha256": "7b41ab22eea96259aa37669a2df588d5d8115292b7c90e400898085c1421ef89",
       "marker_status": "absent",
       "path": "ilc_core/economics/rl_agents.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10957,8 +12980,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15289,
-      "hash_sha256": "61fed2b993799b80cc6273e1714bc20ffab52d5e5f99814a89aa6725fafbd4fa",
+      "byte_size": 15844,
+      "hash_sha256": "f0bba2802709278e6ebdd44bdff3aae1f7099a06d2961a7e53a49e15c68605ed",
       "marker_status": "absent",
       "path": "ilc_core/encoding/dag_cbor.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10973,8 +12996,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7036,
-      "hash_sha256": "8f1ab5fa485b375ac9bb73881f29145f2a0c86463c15294ed29dbac21b8d4c1a",
+      "byte_size": 8180,
+      "hash_sha256": "db082a9aa1dbfea7fe6a4311de3fbdaad0c010d94bede688b3660361499c1f00",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -10993,6 +13016,14 @@
       "hash_sha256": "c9a4c6cacb11e9d75bc022c20badff26e979ebd48440fc4e6e91bd3eeffbe24b",
       "marker_status": "absent",
       "path": "ilc_core/epistemic/ingestion_shadow_harness.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7769,
+      "hash_sha256": "820a45fe0ea925744702bca9d03673f8c7b1543ad1b898ca4cd9bdfbc60c4520",
+      "marker_status": "absent",
+      "path": "ilc_core/epistemic/jury_acceptance_authority_classification.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -11085,26 +13116,50 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13643,
-      "hash_sha256": "7f5c910ce6dc1f21c7c4b266f4aed315644f2d726231a914d0fe857eab413a13",
+      "byte_size": 12288,
+      "hash_sha256": "838a4ebffcd219cc144aea3ba85a32db704ff5042f22f674372896bedf56af41",
+      "marker_status": "absent",
+      "path": "ilc_core/epistemic/vrf_proof_verifier.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 13749,
+      "hash_sha256": "eaad795738d00dee9945d05bda8a475187cb7b7070239a45549d53ba23eb46d7",
       "marker_status": "absent",
       "path": "ilc_core/epoch/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18408,
-      "hash_sha256": "78532d7d9dd5c24b5af5aeccd258635f940471ec0d79aab7b711465fd609110a",
+      "byte_size": 18901,
+      "hash_sha256": "791a9e801bcafdeee6da693ba63e3438e6c829d2a7943897231818f3e7547529",
       "marker_status": "absent",
       "path": "ilc_core/epoch/allocation_distributor_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 8954,
-      "hash_sha256": "1c0e2c64ac8a075b47fd15460a9b3d1992e2b74b1ad24b9191153a35f3fa5cd3",
+      "byte_size": 6935,
+      "hash_sha256": "07a2ed17e87de7546d50dc9cbebbca52467bd47bcdff7a28ec75538645307ef3",
+      "marker_status": "absent",
+      "path": "ilc_core/epoch/canonical_economic_event.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 9086,
+      "hash_sha256": "4695b42a3a28af9a6b83f3e311795fc5add9cce0c23b78f314b7970139406192",
       "marker_status": "absent",
       "path": "ilc_core/epoch/ecu_price_clamp_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 13368,
+      "hash_sha256": "4222a3acb8987f0f0771d192a04422245a63d11c111f2cf6b0d7a0bae8b1f20f",
+      "marker_status": "absent",
+      "path": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -11117,8 +13172,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7766,
-      "hash_sha256": "811ab7904b02788cd84c8817bf0fc7a39a39eaec2a743e3bef05de84875a8de4",
+      "byte_size": 14841,
+      "hash_sha256": "3a03f06a69e1e34ea53ad2cc3088421577bb72d5ffd60baf32685fdd7b7539e3",
+      "marker_status": "absent",
+      "path": "ilc_core/epoch/epoch_emission_production_path.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7915,
+      "hash_sha256": "3e07e7eb763fa741994cde2613055c1ce9cc74228c27cd153967e107b91cd7f0",
       "marker_status": "absent",
       "path": "ilc_core/epoch/epoch_emission_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11141,8 +13204,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 19614,
-      "hash_sha256": "9d220efad180d2e52930d3c0c8f2049fe8b0e9eac5bd855cc68fcecfe161e2ac",
+      "byte_size": 17325,
+      "hash_sha256": "a1b9125a5e52a2fbea678858b584b2d8016b14402b6e59e482ccc6921b30a912",
+      "marker_status": "absent",
+      "path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 21890,
+      "hash_sha256": "6d3847cb0292e79111bfdd0f43124a14d8969ef8bdc6f7b4e702419a6a8fd944",
       "marker_status": "absent",
       "path": "ilc_core/epoch/issuance_economics_integration_gate.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11157,8 +13228,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 13138,
-      "hash_sha256": "5cc741fb9c8369d5f307abf8dca2af63ac337f6e55abbf5a906d93f4578f7309",
+      "byte_size": 15334,
+      "hash_sha256": "b604dee367cf356e057e9ee2bd353de29c6ce5bdda3eebdbd0000ca805b5afc8",
+      "marker_status": "absent",
+      "path": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 13693,
+      "hash_sha256": "6b88f5c37a9cdd11bb312f4fad5017cced902deffbb6f95741ba9d97dd328a54",
       "marker_status": "absent",
       "path": "ilc_core/epoch/validator_reward_pool_routing_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11197,8 +13276,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 3646,
-      "hash_sha256": "a2612720a982bc7616aeb122d9ceab1bb6c5f8a142f3cf16f477b2790c529ff8",
+      "byte_size": 4205,
+      "hash_sha256": "9fd7c8949d81c6cd006de6a721dfef2521f4e0e35f16b7f5886b4d2743fbd7dd",
       "marker_status": "absent",
       "path": "ilc_core/genesis/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11221,6 +13300,22 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 1880,
+      "hash_sha256": "25ac686a28c1ff04f05860aaf252a2291b2dffea1f782ade0b6c1644b377db15",
+      "marker_status": "absent",
+      "path": "ilc_core/genesis/epistemic_work_task_schema_v1.json",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 8809,
+      "hash_sha256": "4be357485da539700c975a86c8c18231f0be91cb9e2cb088de7a6ad3896e01aa",
+      "marker_status": "absent",
+      "path": "ilc_core/genesis/genesis_authority_assertion.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 17921,
       "hash_sha256": "32f4413a8da889b8d382b2aca77dbe1284e88f9c3d424e2030364f628776e18d",
       "marker_status": "absent",
@@ -11237,10 +13332,26 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1228,
-      "hash_sha256": "42e7b3edffb9ac28e4fde1460dcdec1668053339a766255361c46b550f744357",
+      "byte_size": 10447,
+      "hash_sha256": "539df515c870499b9e9d774452f9780113ce923783759e0e0bf6a89933f9b216",
+      "marker_status": "absent",
+      "path": "ilc_core/genesis/invitation_provenance_record.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 483,
+      "hash_sha256": "b39a67a818c422fc895fb95b4e02938049ec09e8ec871b6ffa029ec966dc5944",
       "marker_status": "absent",
       "path": "ilc_core/genesis/schema.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 14823,
+      "hash_sha256": "581f7bced34fcfe413ecb1a77df49b985161e23e2d12f98ccc90064da558bafe",
+      "marker_status": "absent",
+      "path": "ilc_core/genesis/serving_receipt.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -11253,8 +13364,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 2913,
-      "hash_sha256": "abe6d255d94f3ebdf2d969c57bc021cc3b890eec4d70d0217381e2ea2c56efc3",
+      "byte_size": 3397,
+      "hash_sha256": "457022d577a2ba4f4426156765184ba8e94fee912f149354d2d8abc5ce96d8b1",
       "marker_status": "absent",
       "path": "ilc_core/genesis/work_task.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11289,6 +13400,62 @@
       "hash_sha256": "708d3a8ae4a1567b393e1862a796ede65ab73218acc140f2f68f5a5f724452db",
       "marker_status": "absent",
       "path": "ilc_core/hardware.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 323,
+      "hash_sha256": "60c38e0de73d09479458e7d485c365f401d8dd3162b3841abe414a92505bb4fd",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 2912,
+      "hash_sha256": "30e64cc8bef1784b04e091a1f2ea6531a6d644a862992310ead2fc1af0d6b1f6",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/co_attestation_receipt.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 5304,
+      "hash_sha256": "5b718988d5ea9e2b4ac4d9656fbad4c485743279a776b77d333319b1758f6850",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/consent_gate.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 5564,
+      "hash_sha256": "6a43d2c3972bb6f7ba8261d47288bcbfbdbfa63241749e2ca9dd13d710a7cca9",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/idle_capacity_scheduler.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 2333,
+      "hash_sha256": "758920baeb90109400c4853fcc84d149524aea818eaa717e26ed48b5e6b07cf6",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/local_node_capture.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 3925,
+      "hash_sha256": "dddba49aa14fda164f19f91af5bf2a1ff2f17a7e2748969c182873fd375f8fc3",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/maintenance_task_executor.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 5244,
+      "hash_sha256": "78d9c03dfe2d77588a59a8bd817caf54e0a52c7f104ad9f7f2f27e00509069de",
+      "marker_status": "absent",
+      "path": "ilc_core/harness/provider_usage_adapter.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -11341,8 +13508,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5001,
-      "hash_sha256": "1d0e2490fbaf50330a06a33052aa0480b646b6709b0d4d5e6ad85226a81a64cf",
+      "byte_size": 5646,
+      "hash_sha256": "5f34c016a2d34a44c14bd1f7d2ed6e807405ec59aecdc14e2020f815a3b56451",
       "marker_status": "absent",
       "path": "ilc_core/identity/sybil_resistance_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11381,8 +13548,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10110,
-      "hash_sha256": "f4b6bae236754180724fb4735ed2171b8f37d135a9108639c77d8da6167e67ea",
+      "byte_size": 10135,
+      "hash_sha256": "fa378aee76ef70039afbadf69854287ee8bea223b1c45a314933212723b892dd",
       "marker_status": "absent",
       "path": "ilc_core/ledger/canon_bundle_key_registry_bundle.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11541,6 +13708,22 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 6342,
+      "hash_sha256": "cc716237dcbb811ae2d9bb702c25584c32798efa40f2c53a4c4dd53cb2518cd3",
+      "marker_status": "absent",
+      "path": "ilc_core/ledger/conversion_candidate_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 19348,
+      "hash_sha256": "3b5ace020c6fc15d158563b7c4013d234931ab99693efb111023a70165f7a507",
+      "marker_status": "absent",
+      "path": "ilc_core/ledger/distributed_conversion_schema.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 13819,
       "hash_sha256": "a762cf51f0be13ba9397663b903dba9c1d5408138be19d8e67e9e51257397e6d",
       "marker_status": "absent",
@@ -11565,6 +13748,14 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 12701,
+      "hash_sha256": "198557c529d33ba75433d6c84f44f6cf92453ff5a20282db536dd347c07a58e1",
+      "marker_status": "absent",
+      "path": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 7855,
       "hash_sha256": "6723081b60923a41ad849f6f213658521b0bec6e74a29de052988714cd9caaf3",
       "marker_status": "absent",
@@ -11573,8 +13764,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6930,
-      "hash_sha256": "315fbce0f1844a3b7c401a00663d13b437730f55fe1699061e1d3adc6f8350f7",
+      "byte_size": 6947,
+      "hash_sha256": "82459e375a8da05439187067e655eebc97d79e8075dd0710e5a8c6cdfb0afcfc",
       "marker_status": "absent",
       "path": "ilc_core/ledger/lmdb_backend.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11605,8 +13796,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6424,
-      "hash_sha256": "007bf60768b6443c871cff9b006145928d4ff30516e007f5b6e568f0fa60f4c9",
+      "byte_size": 7229,
+      "hash_sha256": "4a8c5632815d2b356494a8b0876c16dd262c4abc4d0e35c6b881a0a7457dce98",
       "marker_status": "absent",
       "path": "ilc_core/ledger/settlement_verification.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11781,16 +13972,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5871,
-      "hash_sha256": "b9358efcf5569fd52ca86b5a67fa8eb0e3597ef942e2208e63d1302af3c2c7e8",
+      "byte_size": 11131,
+      "hash_sha256": "6234ef050adaeecf6a70e4005bdad987b51301e732710ef897066af4bfded410",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/gossip_peer_registry.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6313,
-      "hash_sha256": "f6ba38041ce6cf3b99b1d0dd67e1d98a466d96924dfa3f4b49ab6d56060f0443",
+      "byte_size": 8076,
+      "hash_sha256": "2b8835cb231b03a3499ab5087fbd156724a0125070804af1cb0a84e0aff5afff",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/gossip_transport.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11805,8 +13996,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17493,
-      "hash_sha256": "7cbf97be6925fd67248a182eef37997f4318d1144c2bddc5eb8168b163e8b3e4",
+      "byte_size": 28906,
+      "hash_sha256": "6c4e6543e5e97f9f06eb80f7d0be272396e82123d6c656a877a78e09e5523cca",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11861,10 +14052,18 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 28330,
-      "hash_sha256": "9e9ce2a0a850a96faa76d54646a9010041f3e85590fe03cbc39d977a7ffd2e78",
+      "byte_size": 32588,
+      "hash_sha256": "763e3cbcca6661fbc81e2e1e44edaff966e1ccb35ce9bd625fa1366bde61db7c",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/spectral_beacon.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 19109,
+      "hash_sha256": "8318bbd6d4dc5234917e69e5dc58b905f081c6d9dc8767569ccaa88b164f14da",
+      "marker_status": "absent",
+      "path": "ilc_core/network/d2d/spectral_route_token.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -11877,6 +14076,22 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7461,
+      "hash_sha256": "5e0f14b6be8a5314b0da2da022975128569dc6f090003b0717a6d840ae25e360",
+      "marker_status": "absent",
+      "path": "ilc_core/network/d2d/spectral_sigma_policy.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 1169,
+      "hash_sha256": "788d873e5b9b098dbec1b46ab62064ecd85d2888af90b54d7ba60ce681f87109",
+      "marker_status": "absent",
+      "path": "ilc_core/network/d2d/tls_policy.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 15384,
       "hash_sha256": "52a4b6bcf8c73a385219769584a6f75a374353f9670e7a60a18a312075971b5f",
       "marker_status": "absent",
@@ -11885,16 +14100,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17431,
-      "hash_sha256": "4ce8b0977b0d470120d5eb2908f8bdf1c7fc1c47c70fb3af131b60bbdebfb1d5",
+      "byte_size": 17470,
+      "hash_sha256": "0e906f5b1a7653e92b61b9bed9c15c6c44278cc1cfe62cd2bd53c9b5f5441f26",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 7257,
-      "hash_sha256": "402c39717341cd7d3751c336586e031bdb4169100a4fe9bbf1204cf0e70a8a01",
+      "byte_size": 7451,
+      "hash_sha256": "a6a0b48a02844fb97707148a96beefba9c360d3c00b858fa0c46ea96809359f4",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11949,8 +14164,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12393,
-      "hash_sha256": "34eabbdfef8de751b975ea02fe5eeab110cf1175ba83a6d45510fdf29b4454f5",
+      "byte_size": 12410,
+      "hash_sha256": "26f9a77e8f0917d28c066636ca1e3e07897a05bfaa26530012a4e7cf3b3eafac",
       "marker_status": "absent",
       "path": "ilc_core/network/wire_transport_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -11981,24 +14196,24 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 18980,
-      "hash_sha256": "b82c0d27eda2bd620cc7e437215d053154ab17c9dc68f91c27878cbb1262cc13",
+      "byte_size": 18997,
+      "hash_sha256": "5b056a266f9139876d462c7664edada69c890af857d1a48f3835f526fd0357e9",
       "marker_status": "absent",
       "path": "ilc_core/node/node_dissemination_runtime_362.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 15589,
-      "hash_sha256": "b44a561e82feb8f85f8c0a02a4ba2999089659b89062c23af49151c7862869d2",
+      "byte_size": 15606,
+      "hash_sha256": "94cab1f638229443f0b00105d6473b3fa5d1f7985770bc0e3a8dbea316ef74b4",
       "marker_status": "absent",
       "path": "ilc_core/node/node_schema_core_runtime_360.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 21602,
-      "hash_sha256": "581241d2e82c610c30eeecaafe1f42117ca60d998b0d7e61006567f92b98be69",
+      "byte_size": 24153,
+      "hash_sha256": "84f415cac91008d51d184d66cca22757f6702b0f7f64265217573bdcb66cf966",
       "marker_status": "absent",
       "path": "ilc_core/node/node_startup_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12037,8 +14252,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12679,
-      "hash_sha256": "7c922355999b865943422f88a7321b8f9c797a4e37202b211ab7a8a91d8a3eae",
+      "byte_size": 12696,
+      "hash_sha256": "df1056028fe29f40a4ff6d840000e6771bb66a20aaf22cf2c51a716dda13a424",
       "marker_status": "absent",
       "path": "ilc_core/node/validation_lifecycle_runtime_361.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12061,8 +14276,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 11803,
-      "hash_sha256": "e7bfbf469d7bf001f10761484a93a554cc199657d2b16bd016b8c7f2ca4e19e1",
+      "byte_size": 11943,
+      "hash_sha256": "cae8455158f6d998e1266affbe615e5d978747f6fac4629b47452b3e48559725",
       "marker_status": "absent",
       "path": "ilc_core/privacy/metrics.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12073,6 +14288,14 @@
       "hash_sha256": "47dbc07c421c036b7e1423bf63f4db23c55d48faa53d772506d1796a130343cd",
       "marker_status": "absent",
       "path": "ilc_core/privacy/monitor.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 2805,
+      "hash_sha256": "310ed5c6ed6456a348add77c6e63765e2b274bc3c2952b3bdffd4cca962f5327",
+      "marker_status": "absent",
+      "path": "ilc_core/private_json_guardrails.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -12149,8 +14372,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 14902,
-      "hash_sha256": "016e836288ba742f4b323cde36802de947975d92fd1c160aa3a77a173f7255e3",
+      "byte_size": 14958,
+      "hash_sha256": "f229c936a314f352c9fcd859321fea5fe4f9abf2262099a273caa829b317cfd4",
       "marker_status": "absent",
       "path": "ilc_core/protocol/ilc_cluster_a_acceptance_evidence.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12501,8 +14724,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 31137,
-      "hash_sha256": "7c3c30d8b0fe010e5073ab4854b2d481c59287411c846ef7f61ecf91483c865b",
+      "byte_size": 31388,
+      "hash_sha256": "b170f130a6f7bca534b4d9417c3c1296d62490df5913aad49be3c0ae87056d85",
       "marker_status": "absent",
       "path": "ilc_core/rc/economic_cycle_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12553,6 +14776,30 @@
       "hash_sha256": "acaafc7f201a75818126e1df20cc4ab753028b4921939f2098ce1625a3ee461a",
       "marker_status": "absent",
       "path": "ilc_core/rc/package_profiles.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7203,
+      "hash_sha256": "44004b97af9d3ad69f3b1ee1fccb2c795b086ac942d31dabe3e2d545b600d62c",
+      "marker_status": "absent",
+      "path": "ilc_core/rc/patent_application_numbers_status.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7134,
+      "hash_sha256": "5751c285f62177e87a71cd9851b44f2c2eec766aff70a0dccd8994898274a208",
+      "marker_status": "absent",
+      "path": "ilc_core/rc/patent_delivery_status.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 22236,
+      "hash_sha256": "22c3cd1088100ad06efe23c46ce59f249f4471567651aec4c09f62ac71e4e59b",
+      "marker_status": "absent",
+      "path": "ilc_core/rc/public_rc_exclude_disposition.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -12653,8 +14900,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 61155,
-      "hash_sha256": "0b2ad4397ab32cc953ff577f9bc80b8abdfcd9fbe9268d283d5e17f8b1ca89c2",
+      "byte_size": 61427,
+      "hash_sha256": "7853c079e98add67d2bae48619a3f73ba280f111004bee18e80b44334e324098",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/claimability_receipt_verifier.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12689,6 +14936,14 @@
       "hash_sha256": "af60ecbcfe84f80aa0be2d911e4f84743402f2558cffab03725d277aa9ddbe85",
       "marker_status": "absent",
       "path": "ilc_core/sidecars/confidential_coordination_shard.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 21480,
+      "hash_sha256": "17a8b9e97aff730f0a45eea5cc1605fbeec2b9918193ec58f8ca30319877e7a1",
+      "marker_status": "absent",
+      "path": "ilc_core/sidecars/idea_descent_rehearsal.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -12813,6 +15068,14 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 25028,
+      "hash_sha256": "354507792ebc6f20c3db225e7c6bcc7bf2ddafe4a13dd6b327a02abe68b7d25f",
+      "marker_status": "absent",
+      "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 0,
       "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "marker_status": "absent",
@@ -12825,6 +15088,30 @@
       "hash_sha256": "9e9e9e9fa67bb780239076e8f475a8ffe2bb690f67e1a2b71a1b750cbc7edbc8",
       "marker_status": "absent",
       "path": "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 10504,
+      "hash_sha256": "bf872bc55b4e25350ddd721d26ea0b9c4b43a86fe6b2bf4c0bfbc297684b6cb3",
+      "marker_status": "absent",
+      "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 15438,
+      "hash_sha256": "633691fbe11109f57edd377258447de11fa031d1fbaf869c7d39e729394458d8",
+      "marker_status": "absent",
+      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 19068,
+      "hash_sha256": "1729cf7c72f066dd87d21266f38e264e4ad71325203cfbe31f41c54e7c80074a",
+      "marker_status": "absent",
+      "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -12865,6 +15152,22 @@
       "hash_sha256": "bb9ffb96d148586ed7de5d64f720ffff5059c043e5bc3bc780f66fe12251138a",
       "marker_status": "absent",
       "path": "ilc_core/storage/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 11821,
+      "hash_sha256": "252ebbf86bdc986b7376a7ffa7b5cc797a71a684bbc269d7cfce566ecd41167c",
+      "marker_status": "absent",
+      "path": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 60136,
+      "hash_sha256": "0674f1a5c1cc99547d3eacd5eefa9fa2847c0ff720efb3061b25bfc00dd9e52f",
+      "marker_status": "absent",
+      "path": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -12917,16 +15220,16 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 6679,
-      "hash_sha256": "c9ff2e83228af2452164f14a331cdf75563ba8721e765b3b0938b9e81625317f",
+      "byte_size": 6700,
+      "hash_sha256": "61bdeb30383fcdba5d69fcbde08e394aabc62895a42006830bd3454bd48930c7",
       "marker_status": "absent",
       "path": "ilc_core/testing/ratification_mutation_scope_guardrail.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 17626,
-      "hash_sha256": "9be29773d0cee1756cb4d6d126ff8f38d33eb6662fc9da2c3697ef6f75649dab",
+      "byte_size": 17708,
+      "hash_sha256": "8363bf4570f883e23230cdc201bf7ad5e783b220b6255329e9c0610d20b60e0f",
       "marker_status": "absent",
       "path": "ilc_core/types.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12957,8 +15260,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1869,
-      "hash_sha256": "a8e3e4a24dac517b4b7ac012bf39f6ebc25ca3673ff728a550cb715ea7b4c50a",
+      "byte_size": 1861,
+      "hash_sha256": "3f64addb8bd96bb1ba2fb116780dae2e766a2cced5963f4e59a13fab247466f6",
       "marker_status": "absent",
       "path": "ilc_core/validator/staking_liveness_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -12981,6 +15284,14 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 13344,
+      "hash_sha256": "7b878729aa8d952bdad61f03b6f195b42a04ef27f28cf0ed2d64d4451c258507",
+      "marker_status": "absent",
+      "path": "ilc_core/validator/validator_admission_ejection_production_path.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 4336,
       "hash_sha256": "3556d6d11e15901f95e2e78a9e5a0064df3eeb2492e49f5640fa836199172af4",
       "marker_status": "absent",
@@ -12989,24 +15300,24 @@
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 25604,
-      "hash_sha256": "897a5d5ab6c2d6477e15f5496dc3b62280e9d04c6e97e39e411375ade7695c4e",
+      "byte_size": 26020,
+      "hash_sha256": "98bdc2768b93774ad39a38489cc55b653ec90c84681715b90f91afc2c1a51780",
       "marker_status": "absent",
       "path": "metaphysics.md",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 68329,
-      "hash_sha256": "adfc03dc66e9f530192e04e9b92bbf2ff7d8147b408dbbfb7560d9791f368b93",
+      "byte_size": 68830,
+      "hash_sha256": "ec32a9320544f406028a12ca1414177cb6eb27162ac8074d00e0a271c8af04ca",
       "marker_status": "absent",
       "path": "methodology.md",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 3355,
-      "hash_sha256": "bb8165729cbe3623209d4fadcaadd4df0406674e32a5d048af07e1052da94147",
+      "byte_size": 5279,
+      "hash_sha256": "bbccfe8335ceb28671c83dc5d60bd2245415c393e672c0a3d06045f54e71f6ac",
       "marker_status": "absent",
       "path": "pyproject.toml",
       "scanner_status": "included_for_rehearsal_scan"
@@ -13016,39 +15327,11 @@
     "ambiguity_count": 0,
     "default_excluded_files": [
       {
-        "path": "ilc_consensus/src/relay_routing_table.rs",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/__init__.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/bundle_verifier.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/layer0_protocol_bundle.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/layer1_genesis_bundle.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/layer2_epoch_snapshot.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/bundle/layer3_wire_binding.py",
+        "path": "ilc_core/epistemic/jury_assignment_announcement_runtime.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
         "path": "ilc_core/epistemic/jury_finality_evaluator.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/epistemic/vrf_proof_verifier.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -13068,35 +15351,11 @@
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
-        "path": "ilc_core/harness/__init__.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/harness/co_attestation_receipt.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/harness/consent_gate.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/harness/idle_capacity_scheduler.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
         "path": "ilc_core/harness/local_immutable_store.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
-        "path": "ilc_core/harness/local_node_capture.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/harness/maintenance_task_executor.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/harness/provider_usage_adapter.py",
+        "path": "ilc_core/identity/pq_agent_sign_bridge.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -13124,15 +15383,7 @@
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
-        "path": "ilc_core/private_json_guardrails.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
         "path": "ilc_core/rc/genesis_v0_2_signing_ceremony_gate.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/rc/public_rc_exclude_disposition.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
@@ -13173,22 +15424,6 @@
       },
       {
         "path": "ilc_core/schema/verdict_record_schema.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
-        "reason": "public_rc_exclude_marker_default_excluded"
-      },
-      {
-        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       }
     ],
@@ -13242,6 +15477,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_consensus/src/attribution_batch_ingest_main.rs",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_consensus/src/balance_store.rs",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -13286,11 +15525,19 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_consensus/src/pq_agent_sign_main.rs",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_consensus/src/pq_keygen_main.rs",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
         "path": "ilc_consensus/src/pq_sign_main.rs",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_consensus/src/relay_routing_table.rs",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13474,11 +15721,55 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/bundle/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/bundle_verifier.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/layer0_protocol_bundle.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/layer1_genesis_bundle.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/layer2_epoch_snapshot.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/layer3_wire_binding.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/bundle/type_registry.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/ccss/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/ccss/runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/ccss/safe_message.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/cli/_cli_error.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
         "path": "ilc_core/cli/_key_utils.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/cli/atlas_lmdb_cli.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13546,6 +15837,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/cli/ccss_cli.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/cli/d2e_agent_cli.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -13574,11 +15869,23 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/cli/sidecar_cli.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/config.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
         "path": "ilc_core/consensus/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/consensus/accepted_work_lineage_adapter.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/consensus/attribution_batch_bridge.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13634,7 +15941,19 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/crypto/pq_signature_verify.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/distribution/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/distribution/genesis_package_manifest.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/distribution/materialization.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13667,6 +15986,10 @@
       },
       {
         "path": "ilc_core/economics/passive_ecu_attribution_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13707,6 +16030,10 @@
       },
       {
         "path": "ilc_core/epistemic/ingestion_shadow_harness.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/epistemic/jury_acceptance_authority_classification.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13754,6 +16081,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/epistemic/vrf_proof_verifier.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/epoch/__init__.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -13762,11 +16093,23 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/epoch/canonical_economic_event.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/epoch/ecu_price_clamp_runtime.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/epoch/ejected_stake_distribution_production_path.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/epoch/epoch_boundary_witness_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/epoch/epoch_emission_production_path.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13782,11 +16125,19 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/epoch/issuance_economics_integration_gate.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
         "path": "ilc_core/epoch/treasury_governance_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/epoch/treasury_validator_reward_production_path.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13822,6 +16173,14 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/genesis/epistemic_work_task_schema_v1.json",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/genesis/genesis_authority_assertion.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/genesis/genesis_intervention_runtime.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -13830,7 +16189,15 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/genesis/invitation_provenance_record.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/genesis/schema.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/genesis/serving_receipt.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13855,6 +16222,34 @@
       },
       {
         "path": "ilc_core/hardware.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/co_attestation_receipt.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/consent_gate.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/idle_capacity_scheduler.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/local_node_capture.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/maintenance_task_executor.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/harness/provider_usage_adapter.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -13982,6 +16377,14 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/ledger/conversion_candidate_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/ledger/distributed_conversion_schema.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/ledger/ecu_active_layer_runtime.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -13991,6 +16394,10 @@
       },
       {
         "path": "ilc_core/ledger/exact_numeric.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/ledger/fix2s_activation_packet_verifier.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14146,7 +16553,19 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/network/d2d/spectral_route_token.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/network/d2d/spectral_routing_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/network/d2d/spectral_sigma_policy.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/network/d2d/tls_policy.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14247,6 +16666,10 @@
       },
       {
         "path": "ilc_core/privacy/monitor.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/private_json_guardrails.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14490,6 +16913,18 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/rc/patent_application_numbers_status.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/rc/patent_delivery_status.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/rc/public_rc_exclude_disposition.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/reputation/__init__.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -14558,6 +16993,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/sidecars/idea_descent_rehearsal.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/sidecars/local_graph_memory_projection.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -14618,11 +17057,27 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/sim/sim_fetch_01/__init__.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
         "path": "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14643,6 +17098,14 @@
       },
       {
         "path": "ilc_core/storage/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -14702,6 +17165,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/validator/validator_admission_ejection_production_path.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/work/task_queue.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -14722,7 +17189,7 @@
   },
   "marker_scan": {
     "exact_marker": "PUBLIC_RC_EXCLUDE",
-    "file_count_scanned": 381,
+    "file_count_scanned": 439,
     "hit_count": 0,
     "hits": [],
     "result": "pass",
@@ -14833,7 +17300,7 @@
   "rerun": {
     "command": "./.venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "determinism": "manifest_hash_must_match_expected_manifest_hash_on_unchanged_inputs",
-    "expected_manifest_hash": "cd437aa90da87933d98b2507c84be647487eccccc528f899d0802dcfb1cdce92"
+    "expected_manifest_hash": "c28c88d97057017c6cb2792e7709ebea961f4559357f5767de82926df5c414d1"
   },
   "result": "pass",
   "scanner_limitations": [
