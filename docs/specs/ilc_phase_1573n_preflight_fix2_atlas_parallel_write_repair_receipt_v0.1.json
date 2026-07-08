@@ -1,0 +1,38 @@
+{
+  "artifact_id": "ilc-artifact:phase-1573n-preflight-fix2-atlas-parallel-write-repair-receipt@v0.1",
+  "edge_count_after": 89169,
+  "incident": "parallel_atlas_register_phase_files_write_index_payload_mismatch",
+  "node_count_after": 18442,
+  "non_claims": [
+    "This repair does not constitute a canonical graph mutation.",
+    "No new nodes or edges were introduced by the repair itself.",
+    "No Genesis signing, public graph publication, public RC activation, runtime activation, wallet write, minting, or settlement occurred.",
+    "The local Atlas LMDB remains an unsigned support/candidate graph projection."
+  ],
+  "phase": "1573n-preflight-fix2",
+  "post_repair_validation": {
+    "edge_id_status": "complete",
+    "no_dangling_edges": true,
+    "payload_edge_count_matches_rows": true,
+    "payload_node_count_matches_rows": true,
+    "source_path_index_matches_rows": true,
+    "tier_group_index_matches_rows": true,
+    "tier_index_matches_rows": true,
+    "verdict": "pass"
+  },
+  "pre_repair_validation": {
+    "no_dangling_edges": true,
+    "payload_edge_count_matches_rows": false,
+    "payload_node_count_matches_rows": false,
+    "source_path_index_matches_rows": false,
+    "tier_group_index_matches_rows": false,
+    "tier_index_matches_rows": false,
+    "verdict": "fail"
+  },
+  "repair_cause": "Multiple atlas register-phase-files CLI processes were run concurrently against out/genesis_base_graph_v0.4_unified.lmdb. The row stores accepted writes, but the derived graph payload and secondary indexes fell out of sync.",
+  "repair_method": "Loaded the full node and edge row stores via GenesisAtlasCandidateStore.iter_nodes() and iter_edges(), then rebuilt derived stores with replace_nodes(), replace_edges(), and put_graph_payload(). Subsequent phase-file registrations were run sequentially.",
+  "repair_record_location_note": "This committed docs receipt is the durable provenance record. The ignored out/ tree may contain local CLI receipts, but out/ is not used as the committed evidence surface.",
+  "schema_version": "ilc_phase_1573n_preflight_fix2_atlas_parallel_write_repair_receipt.v0.1",
+  "status": "repaired_and_validated",
+  "timestamp_utc": "2026-07-08T14:04:26Z"
+}
