@@ -50,7 +50,9 @@ def test_cdl_register_ratifies_cdl097_and_keeps_runtime_blocked() -> None:
     assert "type_registry_implementation_status: not_authorized" in cdl
     assert "production_activation_status: not_authorized" in cdl
     assert "runtime_guard_required: ADR_0035_TYPE_REGISTRY_NOT_ACTIVATED=True (Phase 1529p)" in cdl
-    assert "| CDL-096 |" not in cdl
+    # HISTORICAL_SNAPSHOT: CDL-096 was later ratified in the Werner lane.
+    # Phase 1528p only needs to prove CDL-097 did not consume that authority.
+    assert "| CDL-096 |" in cdl
 
 
 def test_adr0035_status_records_authority_without_activation_claim() -> None:

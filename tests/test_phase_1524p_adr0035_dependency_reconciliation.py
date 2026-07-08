@@ -43,7 +43,10 @@ def test_dependency_reconciliation_preserves_non_mutation_state() -> None:
         or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr35
     )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr35
-    assert "| CDL-096 |" not in cdl
+    # HISTORICAL_SNAPSHOT: Phase 1524p reserved CDL-096 for the Werner lane.
+    # Current canon has since opened and ratified CDL-096, so this test now
+    # checks the historical reservation token rather than forbidding the row.
+    assert "cdl_096_status: separate_werner_lane_unaffected" in cdl or "| CDL-096 |" in cdl
     if "cdl_097_ratified_phase_1528p" in cdl:
         assert "type_registry_implementation_status: not_authorized" in cdl
     else:

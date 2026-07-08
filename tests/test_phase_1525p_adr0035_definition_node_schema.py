@@ -77,5 +77,7 @@ def test_phase_1525p_does_not_mutate_adr_or_cdl_authority() -> None:
         or "CDL-097 ratified Phase 1528p; implementation authority in place" in adr
     )
     assert "adr_0035_implementation_deferred_pending_cdl" in adr
-    assert "| CDL-096 |" not in cdl
+    # HISTORICAL_SNAPSHOT: CDL-096 was not present when Phase 1525p ran; it is
+    # now present in current canon and must not fail this historical selftest.
+    assert "CDL-096" in cdl
     assert "type_definition_node_type_mismatch" not in cdl

@@ -266,6 +266,14 @@ def merge_fix38_edges(
             continue
         repo_path = row.get("repo_path")
         if not isinstance(repo_path, str) or not repo_path:
+            # The manual edge ledger is append-only and now contains newer
+            # phase annotations with different schemas. Fix40 only consumes
+            # Fix38 rows that carry repo_path plus the proposed edge lists.
+            if not any(
+                isinstance(row.get(name), list)
+                for name in ("proposed_semantic_edges", "proposed_authority_trace_edges")
+            ):
+                continue
             raise Fix40Error("fix38_ledger_row_missing_repo_path")
         source_candidates = path_index.get(repo_path, [])
         if source_candidates:

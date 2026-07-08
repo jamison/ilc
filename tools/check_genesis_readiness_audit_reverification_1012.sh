@@ -42,8 +42,17 @@ done
 
 cd "${REPO_ROOT}"
 
+PYTHON_BIN="${PYTHON:-}"
+if [ -z "${PYTHON_BIN}" ]; then
+    if [ -x ".venv/bin/python" ]; then
+        PYTHON_BIN=".venv/bin/python"
+    else
+        PYTHON_BIN="python3"
+    fi
+fi
+
 PYTEST_CMD=(
-    python3 -m pytest
+    "${PYTHON_BIN}" -m pytest
     tests/test_license_presence_phase_997.py
     tests/test_quickstart_parity_phase_998.py
     tests/test_cli_key_loader_dedupe_phase_999.py

@@ -854,7 +854,11 @@ def load_manual_edge_ledger(path: Path) -> dict[str, dict[str, Any]]:
     for annotation in annotations:
         repo_path = annotation.get("repo_path")
         if not repo_path:
-            raise FrontierReportError("manual_edge_ledger_annotation_missing_repo_path")
+            # Later phases may append carry-forward graph annotations with a
+            # different schema (for example `path` plus `proposed_edges`).
+            # Fix38 regeneration consumes only the original repo_path-indexed
+            # manual-read rows, so ignore non-Fix38 rows deterministically.
+            continue
         by_path[str(repo_path)] = {
             "manual_read_summary": annotation["manual_read_summary"],
             "proposed_trace_roles": annotation["proposed_trace_roles"],

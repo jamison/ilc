@@ -37,12 +37,17 @@ def test_cdl097_opening_artifact_records_required_tokens_and_questions() -> None
 def test_cdl_register_has_cdl097_and_no_cdl096_row() -> None:
     cdl = _read("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-    assert "| CDL-096 |" not in cdl
+    # HISTORICAL_SNAPSHOT: Phase 1526p did not consume CDL-096. Current canon
+    # later opened/ratified CDL-096, so assert separation rather than absence.
+    assert "| CDL-096 |" in cdl
     assert "| CDL-097 |" in cdl
     assert "Type-definition node authority" in cdl
     assert "cdl_097_type_definition_node_authority_opened_phase_1526p" in cdl
     assert "cdl_097_deliberation_questions_recorded_phase_1526p" in cdl
-    assert "cdl_096_status: separate_werner_lane_unaffected" in cdl
+    assert (
+        "cdl_096_status: separate_werner_lane_unaffected" in cdl
+        or "cdl_096_ratified_phase_1553p" in cdl
+    )
     if "ratification_token: cdl_097_ratified_phase_1528p" in cdl:
         assert "type_registry_implementation_status: not_authorized" in cdl
     else:

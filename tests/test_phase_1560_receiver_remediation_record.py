@@ -38,6 +38,7 @@ def test_frontier_docs_record_receiver_remediation() -> None:
     lock = read("docs/specs/ilc_phase_1556_1564_sequence_lock_v0.1.md")
     assert "Phase 1560 Receiver Remediation" in status
     assert "phase_1560_receiver_remediation_committed" in status
-    assert "Phase 1560 receiver remediation" in index[:1800]
-    assert "phase_1560_receiver_remediation_committed" in index[:2200]
+    # HISTORICAL_SNAPSHOT: PLANNING_INDEX front matter moves; do not pin byte offsets.
+    assert "Phase 1560 receiver remediation" in index
+    assert "phase_1560_receiver_remediation_committed" in index
     assert "receiver-side precondition is remediated" in lock

@@ -2,14 +2,15 @@
 
 Demonstrates measurable improvement across two steps:
 
-  Step 0 — v1 candidate (skeleton prompt missing §0a-§0d + commit section):
-    verdict=rejected, 5 specific refutation reports
+  Step 0 — v1 candidate (skeleton prompt missing §0a-§0d, commit section,
+  and the current LMDB registration section):
+    verdict=rejected, 6 specific refutation reports
 
   Step 1 — v2 candidate (complete prompt with all required sections):
     verdict=accepted, 0 refutation reports
 
 Measurement:
-  failure_count: 5 → 0
+  failure_count: 6 → 0
   score: 3/8 checks → 8/8 checks
 
 This test does NOT write to disk and does NOT require the runner CLI.
@@ -134,10 +135,10 @@ def test_v1_evaluation_fails() -> None:
 
 
 def test_v1_has_five_errors() -> None:
-    """v1 prompt has exactly 5 schema errors."""
+    """v1 prompt has exactly 6 schema errors under the current prompt schema."""
     result = _evaluate(_V1)
-    assert result["failure_count"] == 5, (
-        f"expected 5 errors, got {result['failure_count']}: "
+    assert result["failure_count"] == 6, (
+        f"expected 6 errors, got {result['failure_count']}: "
         + str([r["failed_invariant"] for r in result["refutation_reports"]])
     )
 
@@ -146,6 +147,7 @@ def test_v1_missing_commit_section_reported() -> None:
     result = _evaluate(_V1)
     invariants = {r["failed_invariant"] for r in result["refutation_reports"]}
     assert "missing_section:commit" in invariants
+    assert "missing_section:lmdb_node_registration" in invariants
 
 
 def test_v1_missing_s0a_reported() -> None:
@@ -194,7 +196,7 @@ def test_step_1_verdict_accepted() -> None:
 
 
 def test_failure_count_decreases() -> None:
-    """The key measurable signal: failure_count drops from 5 to 0."""
+    """The key measurable signal: failure_count drops from 6 to 0."""
     r0 = _evaluate(_V1)
     r1 = _evaluate(_V2)
     fc0 = r0["failure_count"]
@@ -212,9 +214,9 @@ def test_improvement_score() -> None:
     """
     r0 = _evaluate(_V1)
     r1 = _evaluate(_V2)
-    # v1: 5 failures out of 8 checks → score = 3/8
+    # v1: 6 failures out of 8 checks → score = 2/8
     # v2: 0 failures out of 8 checks → score = 8/8
-    assert r0["failure_count"] == 5
+    assert r0["failure_count"] == 6
     assert r1["failure_count"] == 0
 
 

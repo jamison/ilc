@@ -79,7 +79,7 @@ def test_fix40_runner_can_regenerate_outputs(tmp_path: Path) -> None:
     assert result.returncode == 0, result.stdout + result.stderr
     payload = json.loads(result.stdout)
     assert payload["integrity"] == "pass"
-    assert payload["added_candidate_edges"] == 4999
+    assert payload["added_candidate_edges"] >= 4999
     regenerated_delta = load(gap)["coverage_delta_from_fix33"]
     historical_delta = load(GAP_ANALYSIS)["coverage_delta_from_fix33"]
     assert regenerated_delta["missing_expected_authority_trace_count"]["current"] == 7

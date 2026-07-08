@@ -94,7 +94,10 @@ def test_phase_1538p_frontier_updates_are_present() -> None:
     assert "docs/specs/ilc_phase_1538p_1545p_sequence_lock_v0.1.md" in planning_index
     assert "Phase 1538p - Block 4B Sequence Lock and Gap Refresh" in status
     assert "gap_refresh_1538p_pre_block4b_committed" in status
-    assert "window: 1538p-1545p" in agents
+    # HISTORICAL_SNAPSHOT: AGENTS.md now includes later windows; keep this
+    # check anchored to the durable Phase 1538p tokens instead of requiring the
+    # historical window to remain the active window.
+    assert "window_1538p_1545p: CLOSED_PASS" in agents
     assert "phase_1538p: complete_sequence_lock_gap_refresh_mempalace" in agents
     assert "Window 1538p-1545p Block 4 Window B" in register
     assert "obl_021_routed_to_window_1538p_phase_1538p" in register

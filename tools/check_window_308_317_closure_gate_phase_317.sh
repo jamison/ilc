@@ -22,6 +22,22 @@ commands=(
   "python3 -m pytest tests/test_no_ellipses_in_walkthroughs.py -q"
 )
 
+PYTHON_BIN="${PYTHON:-}"
+if [[ -z "${PYTHON_BIN}" ]]; then
+  if [[ -x ".venv/bin/python3" ]]; then
+    PYTHON_BIN=".venv/bin/python3"
+  elif [[ -x ".venv/bin/python" ]]; then
+    PYTHON_BIN=".venv/bin/python"
+  else
+    PYTHON_BIN="python3"
+  fi
+fi
+
+PYTHON_DIR="$(dirname "${PYTHON_BIN}")"
+if [[ "${PYTHON_DIR}" != "." ]]; then
+  export PATH="${PYTHON_DIR}:${PATH}"
+fi
+
 usage() {
   cat <<'USAGE'
 Usage: tools/check_window_308_317_closure_gate_phase_317.sh [--dry-run|--help]

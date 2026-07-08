@@ -19,6 +19,7 @@ from tools.evaluators.ilc_decomposition_evaluator import (
     DEFAULT_PROFILES,
     EVALUATOR_ID,
     EVALUATOR_TYPE,
+    REPLAY_COMMAND_TEMPLATE,
     decompose_and_evaluate,
     load_profiles,
     run_evaluation,
@@ -49,7 +50,6 @@ def test_evaluator_type_is_static_audit() -> None:
 
 
 def test_replay_command_template_has_candidate_placeholder() -> None:
-    from tools.evaluators.ilc_decomposition_evaluator import REPLAY_COMMAND_TEMPLATE
     assert "{candidate}" in REPLAY_COMMAND_TEMPLATE
 
 
@@ -529,7 +529,6 @@ def test_run_evaluation_objective_profile_directive() -> None:
 
 def test_objective_file_exists() -> None:
     """The objective file referenced in REPLAY_COMMAND_TEMPLATE must exist."""
-    from tools.evaluators.ilc_decomposition_evaluator import REPLAY_COMMAND_TEMPLATE
     import re
     match = re.search(r"--objective (\S+)", REPLAY_COMMAND_TEMPLATE)
     assert match, "REPLAY_COMMAND_TEMPLATE must contain --objective <path>"

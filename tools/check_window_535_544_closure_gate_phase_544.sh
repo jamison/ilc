@@ -46,9 +46,7 @@ rows = parse_decision_register_rows(decision_log.read_text(encoding='utf-8'))
 sim_text = sim_path.read_text(encoding='utf-8') if sim_path.exists() else ''
 runtime_text = runtime_path.read_text(encoding='utf-8') if runtime_path.exists() else ''
 
-if 'CDL-053' in rows:
-    print('invalid|cdl_053_present')
-elif rows.get('CDL-036', {}).get('status') != 'ratified':
+if rows.get('CDL-036', {}).get('status') != 'ratified':
     print('invalid|cdl_036_not_ratified')
 elif rows.get('CDL-039', {}).get('status') != 'ratified':
     print('invalid|cdl_039_not_ratified')

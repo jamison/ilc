@@ -208,7 +208,10 @@ def test_gate_assertions_and_handoff_contract_tokens() -> None:
             assert token in row, f"phase_413_missing_{token}:{cdl_id}"
 
     agent_text = AGENT_RUNTIME_PATH.read_text(encoding="utf-8")
-    assert 'AGENT_ID_RUNTIME_VERSION = "agent_id_runtime_410.v0.1"' in agent_text
+    # HISTORICAL_SNAPSHOT: the runtime version advanced after Phase 410 while
+    # retaining the same namespace module. Do not pin the current source to the
+    # old literal version string.
+    assert 'AGENT_ID_RUNTIME_VERSION = "agent_id_runtime_' in agent_text
 
     timed_out_text = TIMED_OUT_RUNTIME_PATH.read_text(encoding="utf-8")
     assert 'ORPHAN_TIMEOUT_EPOCHS: int = 4' in timed_out_text
