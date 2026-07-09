@@ -35,6 +35,9 @@ CCSS_SPECTRAL_HYBRID_KEM_COMBINE_INFO_V1 = (
 CCSS_SPECTRAL_HIDING_COMMIT_PREFIX = b"ccss-spectral-lambda-commit-v1"
 CCSS_SPECTRAL_CAP_CONTEXT_PREFIX = b"ccss-spectral-cap-context-v1"
 CCSS_SPECTRAL_QUANTIZATION_SCALE = 1000
+CCSS_SPECTRAL_MAX_LAMBDA_COMPONENTS = 32
+CCSS_SPECTRAL_MIN_LAMBDA_VALUE = 0.0
+CCSS_SPECTRAL_MAX_LAMBDA_VALUE = 2.0
 CCSS_SPECTRAL_01_KEM_ALGORITHM = "hybrid_x25519_ml_kem_768_fips203"
 CCSS_SPECTRAL_01_KEM_SELECTION_TOKEN = (
     "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1"
@@ -348,7 +351,14 @@ def quantize_lambda(
     lambda_vector: list[float],
     scale: int = CCSS_SPECTRAL_QUANTIZATION_SCALE,
 ) -> list[int]:
-    """Quantize a local spectral vector with ``floor(scale * lambda_i)``."""
+    """Quantize bounded normalized-Laplacian coordinates.
+
+    This primitive accepts the same spectral range as the H-013 beacon builder:
+    non-empty, at most 32 components, and each value in ``[0, 2]``. Keeping the
+    primitive bounded prevents callers from bypassing the builder-level input
+    and memory safeguards before a future activation clears the route-token
+    guard.
+    """
 
     if not isinstance(scale, int) or isinstance(scale, bool) or scale <= 0:
         raise SpectralRouteTokenError(
@@ -359,6 +369,16 @@ def quantize_lambda(
         raise SpectralRouteTokenError(
             "ccss_spectral_lambda_vector_must_be_list",
             "lambda_vector_must_be_list",
+        )
+    if not lambda_vector:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_lambda_vector_empty",
+            "lambda_vector_empty",
+        )
+    if len(lambda_vector) > CCSS_SPECTRAL_MAX_LAMBDA_COMPONENTS:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_lambda_vector_too_large",
+            "lambda_vector_too_large",
         )
     quantized: list[int] = []
     for index, value in enumerate(lambda_vector):
@@ -373,6 +393,14 @@ def quantize_lambda(
                 "ccss_spectral_lambda_component_non_finite",
                 f"lambda_component_non_finite:{index}",
             )
+        if (
+            normalized < CCSS_SPECTRAL_MIN_LAMBDA_VALUE
+            or normalized > CCSS_SPECTRAL_MAX_LAMBDA_VALUE
+        ):
+            raise SpectralRouteTokenError(
+                "ccss_spectral_lambda_component_out_of_range",
+                f"lambda_component_out_of_range:{index}",
+            )
         quantized.append(math.floor(scale * normalized))
     return quantized
 
@@ -385,11 +413,27 @@ def make_hiding_commitment(quantized_lambda: list[int], salt: bytes) -> bytes:
             "ccss_spectral_quantized_lambda_must_be_list",
             "quantized_lambda_must_be_list",
         )
+    if not quantized_lambda:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_quantized_lambda_empty",
+            "quantized_lambda_empty",
+        )
+    if len(quantized_lambda) > CCSS_SPECTRAL_MAX_LAMBDA_COMPONENTS:
+        raise SpectralRouteTokenError(
+            "ccss_spectral_quantized_lambda_too_large",
+            "quantized_lambda_too_large",
+        )
+    max_quantized = CCSS_SPECTRAL_MAX_LAMBDA_VALUE * CCSS_SPECTRAL_QUANTIZATION_SCALE
     for index, value in enumerate(quantized_lambda):
         if not isinstance(value, int) or isinstance(value, bool):
             raise SpectralRouteTokenError(
                 "ccss_spectral_quantized_lambda_component_invalid",
                 f"quantized_lambda_component_invalid:{index}",
+            )
+        if value < 0 or value > max_quantized:
+            raise SpectralRouteTokenError(
+                "ccss_spectral_quantized_lambda_component_out_of_range",
+                f"quantized_lambda_component_out_of_range:{index}",
             )
     salt_bytes = _require_bytes(salt, field_name="commitment_salt")
     payload = json.dumps(
