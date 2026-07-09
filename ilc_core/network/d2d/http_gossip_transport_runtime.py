@@ -72,6 +72,13 @@ AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
     "panel_verdict",
     "ecu_claim_batch",
 })
+UNVERIFIABLE_NO_PUBKEY_TOKEN = "gossip_signature_unverifiable_no_pubkey"
+UNVERIFIABLE_AUTHORITY_GOSSIP_REJECTED_TOKEN = (
+    "gossip_signature_unverifiable_authority_rejected"
+)
+UNVERIFIABLE_PUBLIC_MODE_REJECTED_TOKEN = (
+    "gossip_signature_unverifiable_public_mode_rejected"
+)
 
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != GOSSIP_TRANSPORT_DEPENDENCY:
     import json as _json, sys as _sys
@@ -215,6 +222,14 @@ def _extract_claimed_actor(payload: bytes) -> str | None:
         return None
     value = decoded.get("claimed_actor")
     return value.strip() if isinstance(value, str) and value.strip() else None
+
+
+def _unverifiable_peer_rejection_token(gossip_type: str) -> str | None:
+    if os.environ.get(D2D_PUBLIC_MODE_ENV) == "1":
+        return UNVERIFIABLE_PUBLIC_MODE_REJECTED_TOKEN
+    if gossip_type in AUTHORITY_BEARING_GOSSIP_TYPES:
+        return UNVERIFIABLE_AUTHORITY_GOSSIP_REJECTED_TOKEN
+    return None
 
 
 class _GossipReplayCache:
@@ -554,10 +569,21 @@ class HttpGossipTransportRuntime:
             if peer_pubkey is None:
                 self._record(
                     "incoming_envelope_unverifiable",
-                    token="gossip_signature_unverifiable_no_pubkey",
+                    token=UNVERIFIABLE_NO_PUBKEY_TOKEN,
                     peer_id=sender_peer_id,
                     key_id=key_id,
                 )
+                rejection_token = _unverifiable_peer_rejection_token(gossip_type)
+                if rejection_token is not None:
+                    self._record(
+                        "incoming_envelope_rejected",
+                        token=rejection_token,
+                        peer_id=sender_peer_id,
+                        key_id=key_id,
+                        gossip_type=gossip_type,
+                    )
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             else:
                 if self._peer_registry is None or not self._peer_registry.is_peer_key_valid(
                     sender_peer_id,

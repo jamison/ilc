@@ -42,6 +42,7 @@ CONTACT_GATE_SECRET_FIELD_NAMES: frozenset[str] = frozenset(
 )
 
 _NULLIFIER_PREFIX = b"ilc-contact-gate-nullifier-v1:"
+_CONTACT_ID_DIGEST_PREFIX = b"ilc-contact-gate-contact-id-v1:"
 
 
 class ContactGateError(ValueError):
@@ -88,15 +89,37 @@ def _constant_time_match(left: Any, right: Any, *, field: str) -> bool:
     )
 
 
-def _safe_contact_set(value: Any) -> set[str]:
+def _safe_contact_tuple(value: Any) -> tuple[str, ...]:
     if value is None:
-        return set()
+        return ()
     if not isinstance(value, Sequence) or isinstance(value, (bytes, bytearray, str)):
         raise ContactGateError("ccss_contact_gate_known_contacts_invalid")
-    contacts: set[str] = set()
+    contacts: list[str] = []
     for item in value:
-        contacts.add(_require_string(item, token="ccss_contact_gate_contact_id_invalid"))
-    return contacts
+        contacts.append(_require_string(item, token="ccss_contact_gate_contact_id_invalid"))
+    return tuple(contacts)
+
+
+def _contact_id_digest(contact_id: str) -> bytes:
+    return hashlib.sha256(
+        _CONTACT_ID_DIGEST_PREFIX
+        + _require_string(contact_id, token="ccss_contact_gate_contact_id_invalid").encode(
+            "utf-8"
+        )
+    ).digest()
+
+
+def _constant_time_contact_membership(sender_contact_id: Any, known_contacts: Any) -> bool:
+    contacts = _safe_contact_tuple(known_contacts)
+    candidate = (
+        _contact_id_digest(sender_contact_id)
+        if isinstance(sender_contact_id, str) and sender_contact_id
+        else _contact_id_digest("ilc-contact-gate-invalid-sender")
+    )
+    matched = 0
+    for contact_id in contacts:
+        matched |= int(hmac.compare_digest(candidate, _contact_id_digest(contact_id)))
+    return bool(matched)
 
 
 def _verdict(
@@ -173,11 +196,10 @@ def evaluate_contact_gate(
         )
 
     if admission_mode == "contacts_only":
-        known_contacts = _safe_contact_set(
-            policy_map.get("known_contact_ids", policy_map.get("allowed_contact_ids"))
+        accepted = _constant_time_contact_membership(
+            context_map.get("sender_contact_id"),
+            policy_map.get("known_contact_ids", policy_map.get("allowed_contact_ids")),
         )
-        sender_contact_id = context_map.get("sender_contact_id")
-        accepted = isinstance(sender_contact_id, str) and sender_contact_id in known_contacts
         return _verdict(
             accepted=accepted,
             admission_mode=admission_mode,

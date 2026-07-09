@@ -60,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573u-Fix3)" in taxonomy
-    assert "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening" in taxonomy
-    assert "manual_batch_084_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573u-Fix4)" in taxonomy
+    assert "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening" in taxonomy
+    assert "manual_batch_085_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:
@@ -209,3 +209,49 @@ def test_guidance_distinguishes_new_schema_from_legacy_keys() -> None:
     claude_flat = " ".join(claude.split())
     assert "Historical ledger records may still contain legacy keys" in claude_flat
     assert "Do not copy those keys into new records" in claude_flat
+
+
+def test_contact_gate_unverifiable_peer_hardening_batch_is_semantically_wired() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch")
+        == "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening"
+    }
+    assert set(by_path) == {
+        "ilc_core/ccss/contact_gate.py",
+        "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+        "tests/test_phase_1573t_contact_gate_local_evaluator.py",
+        "tests/test_phase_1572_receiver_mldsa_verification.py",
+        "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+        "tests/test_phase_1573u_node_classification_taxonomy.py",
+        "docs/phases/phase_1573u_fix4_contact_gate_unverifiable_peer_hardening_walkthrough.md",
+    }
+    assert {
+        "edge_type": "IMPLEMENTS",
+        "target": "spec:CCSS-ContactGate",
+    } in by_path["ilc_core/ccss/contact_gate.py"]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "IMPLEMENTS",
+        "target": "cdl:CDL-101",
+    } in by_path[
+        "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "TESTS",
+        "target": "ilc_core/ccss/contact_gate.py",
+    } in by_path[
+        "tests/test_phase_1573t_contact_gate_local_evaluator.py"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "TESTS",
+        "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py",
+    } in by_path[
+        "tests/test_phase_1572_receiver_mldsa_verification.py"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "ATTESTATION",
+        "target": "phase:phase_1573u_fix4_contact_gate_contacts_only_constant_time_scan",
+    } in by_path[
+        "docs/phases/phase_1573u_fix4_contact_gate_unverifiable_peer_hardening_walkthrough.md"
+    ]["proposed_semantic_edges"]

@@ -1,3 +1,5 @@
+import inspect
+
 import pytest
 from pathlib import Path
 
@@ -6,6 +8,7 @@ from ilc_core.ccss.contact_gate import (
     CONTACT_GATE_ADMISSION_MODES,
     CONTACT_GATE_PUBLIC_SERVING_NOT_ACTIVATED,
     ContactGateError,
+    _constant_time_contact_membership,
     assert_no_private_gate_fields,
     evaluate_contact_gate,
     make_contact_gate_nullifier,
@@ -44,6 +47,16 @@ def test_contacts_only_accepts_known_contact_and_rejects_unknown_sender() -> Non
     assert "known_contact_ids" not in accepted
     assert_no_private_gate_fields(accepted)
     assert_no_private_gate_fields(rejected)
+
+
+def test_contacts_only_uses_constant_time_digest_scan_not_set_membership() -> None:
+    assert _constant_time_contact_membership("alice", ["alice", "bob"]) is True
+    assert _constant_time_contact_membership("mallory", ["alice", "bob"]) is False
+
+    source = inspect.getsource(_constant_time_contact_membership)
+    assert "hmac.compare_digest" in source
+    assert " in known_contacts" not in source
+    assert "return True" not in source
 
 
 def test_capability_required_uses_constant_time_opaque_commitment_match() -> None:
