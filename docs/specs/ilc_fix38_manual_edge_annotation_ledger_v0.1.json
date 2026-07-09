@@ -37534,13 +37534,12 @@
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/agent.py",
       "manual_read_summary": "EveAgent runtime: submits claim nodes to the epistemic graph, stakes ECU through consensus governance fee enforcement, and auto-mines claims proportional to PoW hardware potential score.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "rationale": "CDL-042 governs the globally flat namespace and key-derived agent_id used as EveAgent.id."
+          "rationale": "CDL-042 governs the globally flat namespace and key-derived agent_id used as EveAgent.id.",
+          "target": "cdl:CDL-042"
         }
       ],
       "proposed_semantic_edges": [
@@ -37550,8 +37549,8 @@
         },
         {
           "edge_type": "IMPLEMENTS",
-          "target": "adr:ADR-0028",
-          "rationale": "ADR-0028 records the agent execution posture (Option B) that EveAgent's staking and auto-mine strategy implements."
+          "rationale": "ADR-0028 records the agent execution posture (Option B) that EveAgent's staking and auto-mine strategy implements.",
+          "target": "adr:ADR-0028"
         }
       ],
       "proposed_trace_roles": [
@@ -37559,12 +37558,12 @@
         "SOURCE_TREE_MEMBER",
         "IMPLEMENTS"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/agent.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/agent_descriptors.py",
       "manual_read_summary": "Aggregates per-agent task-count distributions across problem space categories into AgentDescriptor dataclass objects for analytics export.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37576,12 +37575,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/agent_descriptors.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/agent_dossier_export.py",
       "manual_read_summary": "Flattens AgentProfile objects to CSV and JSON export format, handling nested competency, stress-response, and light-cone sub-structures via scalar promotion and _json columns.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37593,12 +37592,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/agent_dossier_export.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/agent_profiles.py",
       "manual_read_summary": "AgentProfile dataclass that aggregates per-agent econ, claim, influence, competency, stress-response, and light-cone KPIs into a unified exportable record; includes builder and attach helpers.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37610,12 +37609,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/agent_profiles.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/claim_scores.py",
       "manual_read_summary": "Builds per-claim influence score rows by combining EpistemicGraph link statistics (supports_in, refutes_in, depends_on_in) with local influence scores derived from ProtocolParams.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37627,12 +37626,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/claim_scores.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/competency_kpis.py",
       "manual_read_summary": "Computes per-agent competency KPIs aggregated by problem space and barrier level (low/medium/high), including task success rates and per-space cross-averages.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37644,12 +37643,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/competency_kpis.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/econ_accounting.py",
       "manual_read_summary": "Computes macro token economic metrics\u2014burn, public benefit allocation, and net issuance\u2014from DevnetExperimentSummary totals, enforcing rate validity and sum constraints.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37661,12 +37660,12 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/econ_accounting.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/econ_kpis.py",
       "manual_read_summary": "Loads tasks.csv, epochs.csv, and claims.csv and computes per-agent and global economic KPIs including reward totals, clearing prices, domain breakdown, and task counts.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37678,18 +37677,18 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/econ_kpis.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/embedding_pipeline.py",
       "manual_read_summary": "H-010 epoch-stamped node embedding pipeline: selects sentence-transformer models by ADR-0030 content type, enforces SIM-EMBED-01 staleness thresholds, and persists L2-normalized vectors to an LMDB sidecar store.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0030",
-          "rationale": "ADR-0030 defines the node embedding substrate and content-type mapping that embedding_pipeline.py implements."
+          "rationale": "ADR-0030 defines the node embedding substrate and content-type mapping that embedding_pipeline.py implements.",
+          "target": "adr:ADR-0030"
         }
       ],
       "proposed_semantic_edges": [
@@ -37699,8 +37698,8 @@
         },
         {
           "edge_type": "IMPLEMENTS",
-          "target": "adr:ADR-0030",
-          "rationale": "Implements ADR-0030 embedding substrate: content-type \u2192 payload family \u2192 model selection, staleness thresholds, and LMDB sidecar persistence."
+          "rationale": "Implements ADR-0030 embedding substrate: content-type \u2192 payload family \u2192 model selection, staleness thresholds, and LMDB sidecar persistence.",
+          "target": "adr:ADR-0030"
         }
       ],
       "proposed_trace_roles": [
@@ -37708,12 +37707,12 @@
         "SOURCE_TREE_MEMBER",
         "IMPLEMENTS"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/embedding_pipeline.py"
     },
     {
       "annotation_batch": "catchup_batch_001",
       "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "repo_path": "ilc_core/analysis/epistemic_code.py",
       "manual_read_summary": "TargetEpistemicConfig and NamespaceStats dataclasses with compute_config_error(), which measures signed deviations between observed namespace epistemic health metrics and target thresholds for contradiction density, validation depth, and crosslink ratio.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37725,7 +37724,8 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/analysis/epistemic_code.py"
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
@@ -41974,7 +41974,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate contacts_only matching hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 ContactGate contacts_only matching hardened",
       "manual_read_summary": "ContactGate local evaluator: implements recipient-side admission modes and now evaluates contacts_only through domain-separated contact-id digests with a full hmac.compare_digest scan rather than ordinary set membership.",
       "proposed_authority_trace_edges": [
         {
@@ -42007,7 +42007,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — unverifiable peer buffering narrowed",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 unverifiable peer buffering narrowed",
       "manual_read_summary": "HTTP gossip transport runtime: implements CDL-101 signed envelope verification and now rejects unverifiable authority-bearing envelopes and all public-mode unverifiable envelopes while retaining low-authority graduated-rollout buffering.",
       "proposed_authority_trace_edges": [
         {
@@ -42045,7 +42045,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate regression extended",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 ContactGate regression extended",
       "manual_read_summary": "ContactGate local evaluator tests: verify admission modes, private-field suppression, nullifier determinism, and the new contacts_only hmac.compare_digest scan invariant.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42071,7 +42071,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — receiver verification regression extended",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 receiver verification regression extended",
       "manual_read_summary": "Receiver-side ML-DSA verification tests: verify signed-context binding, replay rejection, actor binding, graduated unverifiable buffering, and new fail-closed rejection for authority-bearing or public-mode unverifiable envelopes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42097,7 +42097,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy current-batch pointer advanced",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 taxonomy current-batch pointer advanced",
       "manual_read_summary": "Atlas graph node classification taxonomy: advances the current manual batch marker to batch 084 and keeps the graph-intake schema and edge-type guidance current for future agents.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42119,7 +42119,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy regression updated for batch 084",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 taxonomy regression updated for batch 084",
       "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 084 to include IMPLEMENTS, TESTS, and ATTESTATION edges for the hardening files.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42145,7 +42145,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 — walkthrough and non-claim record",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 walkthrough and non-claim record",
       "manual_read_summary": "Phase 1573u-Fix4 walkthrough: records the ContactGate contacts_only hardening, unverifiable peer fail-closed boundary, verification commands, graph intake, and non-claims.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42167,7 +42167,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — agent execution policy updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 agent execution policy updated",
       "manual_read_summary": "AGENTS.md: records the standing sanitized public mirror policy that the private canonical repo is source of truth, the mirror is a private derived artifact, and phase prompts must record mirror disposition.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42194,7 +42194,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — Claude workflow policy updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Claude workflow policy updated",
       "manual_read_summary": "CLAUDE.md: requires phase prompts and walkthroughs to record sanitized mirror disposition, mirror staleness, and no-public-push or explicit publication authority.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42221,7 +42221,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — phase prompt schema updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 phase prompt schema updated",
       "manual_read_summary": "Antigravity prompt schema: adds required Public mirror maintenance section so future prompts record mirror staleness, no hand edits, no public push, and regenerated-manifest requirements.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42243,7 +42243,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — prompt validator updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 prompt validator updated",
       "manual_read_summary": "Phase prompt validator: enforces Public mirror maintenance sections for Phase 1574+ prompts, making sanitized mirror disposition a schema gate.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42265,7 +42265,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1574 prompt hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Phase 1574 prompt hardened",
       "manual_read_summary": "Phase 1574 publication readiness prompt: records that readiness edits make the sanitized mirror stale and do not authorize public mirror push, visibility change, package publication, or public-RC claim.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42292,7 +42292,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1575 prompt hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Phase 1575 prompt hardened",
       "manual_read_summary": "Phase 1575 public-RC gate prompt: requires sanitized mirror regeneration from source_private_commit, filtered_public_head_sha recording, scan pass, target remote verification, and explicit public-RC gate before publication.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42319,7 +42319,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — public mirror policy regression added",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 public mirror policy regression added",
       "manual_read_summary": "Phase 1573u-Fix5 public mirror policy tests: pin AGENTS/CLAUDE/schema policy text, validator enforcement, and Phase 1574/1575 prompt validity.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42345,7 +42345,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy current-batch pointer advanced",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 taxonomy current-batch pointer advanced",
       "manual_read_summary": "Atlas graph node classification taxonomy: advances current manual batch marker to batch 085 for the public mirror policy hardening records.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42367,7 +42367,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy regression updated for batch 085",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 taxonomy regression updated for batch 085",
       "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 085 semantic wiring for policy docs, validator, prompts, and tests.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42393,7 +42393,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 — walkthrough and non-claim record",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 walkthrough and non-claim record",
       "manual_read_summary": "Phase 1573u-Fix5 walkthrough: records sanitized public mirror maintenance policy changes, validation results, graph intake, and no-publication non-claims.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42415,7 +42415,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — release-engineering-track quarantine audit prompt",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 release-engineering-track quarantine audit prompt",
       "manual_read_summary": "Phase 1573ag prompt: requires a non-sensitive file-by-file disposition audit for the quarantined release-engineering-track branch before Phase 1574, with no merge, cherry-pick, runtime change, public push, or publication authority.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42446,7 +42446,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — Phase 1574 precondition patch",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 Phase 1574 precondition patch",
       "manual_read_summary": "Phase 1574 publication readiness prompt patch: requires the Phase 1573ag release-engineering-track disposition token before publication readiness can proceed.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42473,7 +42473,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — regression coverage",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 regression coverage",
       "manual_read_summary": "Phase 1573ag prompt tests: verify the release-engineering-track prompt quarantines the branch, requires explicit supersession dispositions, forbids merge/publication/cherry-pick, and patches Phase 1574 to depend on the disposition token.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42499,7 +42499,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — batch marker advanced",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 batch marker advanced",
       "manual_read_summary": "Node classification taxonomy update: advances the manual Fix38 batch marker to batch 086 for the Phase 1573ag release-engineering disposition prompt hardening records.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42521,7 +42521,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — Fix38 ledger self-registration",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 Fix38 ledger self-registration",
       "manual_read_summary": "Fix38 manual edge annotation ledger update: registers Phase 1573ag prompt hardening records and the Phase 1574 precondition patch for release-engineering-track disposition.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42548,23 +42548,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-098",
-          "review_status": "candidate_cdl_098_trace"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-099",
-          "review_status": "candidate_cdl_099_trace"
+          "review_status": "candidate_cdl_099_trace",
+          "target": "cdl:CDL-099"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-100",
-          "review_status": "candidate_cdl_100_trace"
+          "review_status": "candidate_cdl_100_trace",
+          "target": "cdl:CDL-100"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0035",
-          "review_status": "candidate_adr_0035_trace"
+          "review_status": "candidate_adr_0035_trace",
+          "target": "adr:ADR-0035"
         }
       ],
       "proposed_semantic_edges": [
@@ -42832,6 +42832,187 @@
         }
       ],
       "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "Node classification taxonomy update: distinguishes the ordinary Fix38 annotation edge subset from the reserved Atlas/LMDB native edge namespace and documents contextual substitution rules.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "ilc_core/storage/genesis_atlas_lmdb_writer.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "AGENTS.md graph intake guidance: clarifies that taxonomy \u00a74 is the ordinary Fix38 subset while \u00a74a reserves broader Atlas/LMDB native edge semantics.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "AGENTS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "CLAUDE.md graph intake guidance: clarifies the Fix38-vs-LMDB namespace split and forbids blind collapse of native LMDB edges into narrower annotation edges.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "CLAUDE.md"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "Antigravity prompt schema update: requires phase prompts to treat taxonomy \u00a74 as the phase-intake subset and \u00a74a as the reserved Atlas/LMDB native namespace.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/README.md"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "Phase 1573ah-Fix1 namespace tests: assert every LMDB writer edge type is documented in the taxonomy, the Fix38 subset remains narrower than the native namespace, and live LMDB edge rows use only writer-reserved labels.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/storage/genesis_atlas_lmdb_writer.py"
+        },
+        {
+          "edge_type": "TESTS_STORAGE",
+          "target": "lmdb:genesis_base_graph_v0.4_unified"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "TESTS_STORAGE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ah_fix1_lmdb_edge_namespace_taxonomy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
+      "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
+      "manual_read_summary": "Fix38 manual edge annotation ledger update: registers Phase 1573ah-Fix1 LMDB edge namespace alignment records for taxonomy, instruction docs, regression tests, and ledger self-registration.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER",
         "DERIVED_FROM"
       ],
