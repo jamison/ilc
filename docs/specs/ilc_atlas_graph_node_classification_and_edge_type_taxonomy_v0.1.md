@@ -334,6 +334,7 @@ current context.
 | Edge type | Reserved meaning | Usage profile | Substitution guidance for ordinary phase records |
 |---|---|---|---|
 | `CARRIES_FORWARD` | Carries an obligation, phase result, policy, or invariant forward across windows/phases. | `atlas_native_reserved` | Use `PROVENANCE` for lineage evidence, `ATTESTATION` for phase completion, or `REFERENCES_AUTHORITY` for governing authority. |
+| `CITES` | Source artifact cites, links, embeds, or navigationally refers to another artifact without asserting governance authority, implementation, evidence, provenance, or test coverage. | `atlas_native_reserved` | Use `REFERENCES_AUTHORITY` for governing CDL/ADR/spec authority; use `EVIDENCES`, `TESTS`, `DERIVED_FROM`, or `PROVENANCE` when those narrower claims apply. |
 | `CONSTRAINS` | A policy or parameter constrains another policy, primitive, or rule. | `atlas_native_reserved` | Use `REFERENCES_AUTHORITY` when documenting the governing spec; do not collapse true constraint topology without review. |
 | `CONTAINS_FILE` | Package/root artifact contains a concrete repo file node. | `atlas_native_reserved` | No Fix38 substitute; ordinary files use `SOURCE_TREE_MEMBER`. |
 | `CONTAINS_GROUP` | Package/root artifact contains a repo group node. | `atlas_native_reserved` | No Fix38 substitute. |
@@ -403,6 +404,7 @@ retirement migration must:
 | `OPENED_FOR` | `recipe_retire_candidate` | `EVIDENCES -> cdl:<opening-token>` plus `REFERENCES_AUTHORITY -> cdl:CDL-NNN`. | Candidate migration if opening targets can be identified deterministically. |
 | `PRELOCK_FOR` | `recipe_retire_candidate` | `ATTESTATION -> phase:<prelock-token>` or `EVIDENCES -> cdl:<prelock-token>` plus `REFERENCES_AUTHORITY -> cdl:CDL-NNN`. | Candidate migration if prelock targets can be identified deterministically. |
 | `EXPECTS_RESOLUTION` | `native_primitive_review` | Usually preserve as lifecycle topology; may be represented by a future gap-node recipe only after gap schema ratification. | Do not migrate automatically. |
+| `CITES` | `native_reference_keep` | Non-authoritative citation/link relation for source-read cases where `REFERENCES_AUTHORITY` would overclaim. | Keep as the narrow replacement for legacy generic `REFERENCES` when no authority, evidence, derivation, provenance, or test claim applies. |
 | `CONTAINS_FILE` | `materialized_shortcut_keep` | Can be derived from package manifest membership plus `SOURCE_TREE_MEMBER`, but direct edge supports package queries. | Keep. |
 | `CONTAINS_GROUP` | `materialized_shortcut_keep` | Can be derived from package/group manifest membership, but direct edge supports package queries. | Keep. |
 | `CONTAINS_PARTITION` | `materialized_shortcut_keep` | Can be derived from partition manifest membership, but direct edge supports package queries. | Keep. |
