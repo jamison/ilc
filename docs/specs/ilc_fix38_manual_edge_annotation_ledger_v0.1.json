@@ -49523,6 +49523,136 @@
         "PROVENANCE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_104_phase_1573x_multi_slice_adr_disposition",
+      "chronology_note": "2026-07-09 Phase 1573x — multi-slice encrustation ADR disposition.",
+      "manual_read_summary": "Disposition record explains that no duplicate multi-slice encrustation ADR was opened because ADR-0037 is already accepted and the Window 1175 handoff records the original carry-forward as closed.",
+      "repo_path": "docs/specs/ilc_phase_1573x_multi_slice_encrustation_adr_disposition_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573x_g8_multi_slice_encrustation_adr.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "adr:ADR-0037"
+        },
+        {
+          "edge_type": "CITES",
+          "target": "docs/specs/ilc_window_1166_1175_handoff_1175_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "CITES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_104_phase_1573x_multi_slice_adr_disposition",
+      "chronology_note": "2026-07-09 Phase 1573x — disposition regression test.",
+      "manual_read_summary": "Test file verifies the disposition record, ADR-0037 multi-slice encrustation content, ADR-0037 acceptance review evidence, Window 1175 closed-token evidence, Phase 1573x STATUS tokens, and absence of a duplicate multi-slice ADR file.",
+      "repo_path": "tests/test_phase_1573x_multi_slice_adr_disposition.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573x_g8_multi_slice_encrustation_adr.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_phase_1573x_multi_slice_encrustation_adr_disposition_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/adr/ADR_0037_Genesis_Canonical_Lineage_Contract.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_104_phase_1573x_multi_slice_adr_disposition",
+      "chronology_note": "2026-07-09 Phase 1573x — walkthrough evidence.",
+      "manual_read_summary": "Walkthrough records the 1573x hard-stop evidence, source reads, no-duplicate-ADR disposition, graph delta, verification commands, output tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1573x_multi_slice_encrustation_adr_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573x_g8_multi_slice_encrustation_adr.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:adr_multi_slice_encrustation_model_existing_adr0037_confirmed_phase_1573x"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_104_phase_1573x_multi_slice_adr_disposition",
+      "chronology_note": "2026-07-09 Phase 1573x — STATUS token record.",
+      "manual_read_summary": "STATUS records completion tokens confirming existing ADR-0037 coverage for the multi-slice encrustation carry-forward and retained public-path block.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573x_g8_multi_slice_encrustation_adr.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:adr_multi_slice_encrustation_model_existing_adr0037_confirmed_phase_1573x"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
