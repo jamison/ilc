@@ -49239,6 +49239,131 @@
         "PROVENANCE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_102_phase_1573v_canonical_glossary_amendment",
+      "chronology_note": "2026-07-09 Phase 1573v — canonical glossary amendment.",
+      "manual_read_summary": "Canonical glossary now disambiguates star map meanings, pins AtlasSliceManifest as the signed executable-map/install-guide meaning, separates graph_projection from legacy tier and CDL-071 temporal tiers, and defines four group-node terms.",
+      "repo_path": "docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CITES",
+          "target": "docs/adr/ADR_0003_Star_Map_Ngram_Route_Index.md"
+        },
+        {
+          "edge_type": "CITES",
+          "target": "docs/adr/ADR_0033_Star_Map_Homoiconic_Epistemiological_Entity.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CITES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_102_phase_1573v_canonical_glossary_amendment",
+      "chronology_note": "2026-07-09 Phase 1573v — canonical glossary amendment test.",
+      "manual_read_summary": "Test file verifies the glossary contains the new star-map disambiguation, AtlasSliceManifest canonical-object binding, tier versus graph_projection migration note, group-node taxonomy, and Phase 1573v STATUS tokens.",
+      "repo_path": "tests/test_phase_1573v_canonical_glossary_amendment.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573v_g8_canonical_glossary_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_102_phase_1573v_canonical_glossary_amendment",
+      "chronology_note": "2026-07-09 Phase 1573v — walkthrough evidence.",
+      "manual_read_summary": "Walkthrough records preconditions, source reads, glossary amendment summary, graph delta, verification commands, output tokens, and non-claims for the canonical vocabulary amendment.",
+      "repo_path": "docs/phases/phase_1573v_canonical_glossary_amendment_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573v_g8_canonical_glossary_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:canonical_glossary_star_map_disambiguation_complete_phase_1573v"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_102_phase_1573v_canonical_glossary_amendment",
+      "chronology_note": "2026-07-09 Phase 1573v — STATUS token record.",
+      "manual_read_summary": "STATUS records completion tokens for star-map disambiguation, tier versus graph_projection disambiguation, group-node taxonomy, and retained public-path block.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573v_g8_canonical_glossary_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:canonical_glossary_star_map_disambiguation_complete_phase_1573v"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

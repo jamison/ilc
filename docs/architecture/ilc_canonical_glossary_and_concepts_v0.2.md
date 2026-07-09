@@ -169,6 +169,42 @@ The following terms are load-bearing in active phase prompts, CDL work, and J-se
 | **ILC high-speed object-sharded DAG substrate** | The ILC-authored Mysticeti-style Rust consensus substrate in `ilc_consensus/` selected for ILC's object-sharded settlement model: owned ECU balance objects can use a leaderless fast path targeting sub-500ms finality, while shared epoch-settlement records use DAG-ordered consensus and epoch-boundary commitment. BLS multi-sig aggregation (`ilc_consensus/src/validator.rs`) compresses quorum evidence to a single proof. TLA+ verification specs pending. | Use this full descriptive phrase in public-facing text until a distinct brand name is cleared. Use `Mysticeti-style` for architectural lineage only; do not imply upstream `mysticeti-core` is vendored or that public production settlement is live. |
 | **ML-DSA-65** | Module Lattice DSA (NIST FIPS 204), the post-quantum signing algorithm used for Genesis-authority artifacts: activation certificate, root envelopes. Forward-safe against quantum adversaries. The production jury assignment machinery uses ML-DSA-65 for high-value signing surfaces. | Use `ML-DSA-65` when specifying the signing algorithm for Genesis-authority or post-quantum surfaces. |
 
+### 2.12 Star Map, Projection, and Group Node Disambiguation (Phase 1573v)
+
+These terms are canonical for Block 6 graph packaging, Atlas slice, and graph
+curation text. They disambiguate overloaded historical "star map", "tier", and
+"node" language without activating public RC, export tooling, or any signing
+pipeline.
+
+#### 2.12.1 "Star Map" Disambiguation
+
+| Term | Canonical meaning | Canon Rule |
+| :--- | :--- | :--- |
+| **AtlasSliceManifest** | The canonical "star map" object going forward for install/build packaging: a signed, content-addressed, verifiable manifest for a specific graph projection slice. It commits to the slice identity, source LMDB root, projection filter, included-node Merkle root, cross-section reference count, exclusion policy, privacy budget, installer profile, and later receipt/signature fields. CDL-098 authorizes Genesis to sign public-section AtlasSliceManifest records only for `genesis_core_star_map`, `public_protocol_graph`, and `support_candidate_graph`; `excluded_private_material` remains owner-signed or private-policy governed. | Use `AtlasSliceManifest` when referring to the signed executable map or install/hydration guide for a graph slice. Do not use it to mean ADR-0003 route indexes, ADR-0033 published navigation nodes, raw graph authority, or an LMDB database itself. |
+| **Route index** | The ADR-0003/CDL-080 historical "star map" route prefilter: a signed, versioned N-gram bucket index used for low-cost L2 gossip discovery and candidate-route lookup. It is advisory only. | Use `route index` for this surface in new normative text. Do not call it a Genesis primitive, consensus object, install guide, or AtlasSliceManifest. |
+| **Published star-map navigation node** | The ADR-0033 first-class graph node created when a route cluster, panel result, or navigation overlay is published, shared, relied upon, or referenced by later claims. It uses `Node.type = "star_map"` and can receive claims, refutations, provenance, review, and later attribution. | Use `published star-map navigation node` or `star_map node` for ADR-0033 entities. Do not conflate these nodes with AtlasSliceManifest packaging objects. |
+| **Graph projection label** | A Fix55 classification bucket label such as `genesis_core_star_map`, `public_protocol_graph`, `support_candidate_graph`, `excluded_private_material`, or `review_required`. These labels classify nodes for export/projection policy; they are not themselves star-map objects. | Use `graph_projection` or `graph projection label` for these buckets. Do not treat `genesis_core_star_map` as equivalent to the curated 57-node core or to an AtlasSliceManifest. |
+
+#### 2.12.2 `graph_projection` Versus `tier`
+
+| Term | Canonical meaning | Canon Rule |
+| :--- | :--- | :--- |
+| **graph_projection** | The Fix55-established five-bucket LMDB node field used for public/private classification, graph-derived export, Atlas slice generation, and homoiconic build policy. Current canonical values are `genesis_core_star_map`, `public_protocol_graph`, `support_candidate_graph`, `excluded_private_material`, and `review_required`. | Treat `graph_projection` as the authoritative classification field for graph packaging and export decisions. |
+| **tier** | A legacy LMDB classifier field with values such as `support_candidate`, `public_release_candidate_material`, and `genesis_private_or_public_rc_excluded`. It predates `graph_projection` and partially overlaps it. | Do not introduce new normative dependencies on `tier` for graph export or Atlas slice policy. Existing `tier` indexes may remain for compatibility until migration/elimination work, currently routed to Phase 1576a after the Fix56-Fix65 coverage gap closes. |
+| **CDL-071 temporal tiers** | Protocol timing/persistence tiers such as Tier 1 and Tier 2 in the temporal data framework. | Never conflate CDL-071 temporal tiers with LMDB `tier` or `graph_projection` classification fields. |
+
+#### 2.12.3 Group Node Taxonomy
+
+The phrase "group node" is not a single object type. New normative text must use
+one of the four terms below.
+
+| Term | Domain | Definition | Canon Rule |
+| :--- | :--- | :--- | :--- |
+| **repo_group_node** | Source tree organization | A source-tree grouping node used to organize repository files, batches, or partitions in Atlas/LMDB graph intake. It is not governance authority. | Use only for repository organization and source-tree graph structure. |
+| **jury_group_node** | Private jury deliberation | A sealed group node for jury deliberation membership or process context. This lane is patent-sensitive and not yet opened as a CDL lane; records remain `PUBLIC_RC_EXCLUDE` unless later governance authorizes otherwise. | Do not expose as a public-RC primitive or use it as a public jury finality claim. |
+| **SigningGroupRulesNode** | Public signing authority knowledge node | A public knowledge node under ADR-0020/CDL-098 curation discipline that defines signing authority for AtlasSliceManifest records. Expected fields include `authorized_projections`, `quorum_spec`, `key_type = "ml_dsa_65"`, and `expiry_condition`. | Use for public manifest-signing rules. It is a CDL-098-governed curation schema, not an ADR-0035 type definition node and not a CDL-099 definition-node instance. |
+| **GatedShardPolicyNode** | Public anchor for private subgraph policy | A public anchor node for a private/gated shard. Expected fields include `shard_id`, `group_member_ids`, `kem_public_key`, `shard_merkle_commitment`, and `promotion_policy`. Private node contents remain outside the public slice unless capability and policy authorize access. | Use for private-slice policy anchoring. It is a CDL-098-governed curation schema, not an ADR-0035 type definition node and not a CDL-099 definition-node instance. |
+
 ---
 
 ## 3. Architectural Invariants
