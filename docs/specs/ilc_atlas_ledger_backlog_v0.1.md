@@ -25,7 +25,7 @@
 
 | Batch | Files | Directory range | Status | Annotator |
 |-------|-------|-----------------|--------|-----------|
-| catchup_batch_001 | #001–010 | ilc_core/agent.py … ilc_core/analysis/epistemic_code.py | pending | — |
+| catchup_batch_001 | #001–010 | ilc_core/agent.py … ilc_core/analysis/epistemic_code.py | complete — fd371d8df | sonnet |
 | catchup_batch_002 | #011–020 | ilc_core/analysis/epoch_report_export.py … ilc_core/analysis/namespace_health.py | pending | — |
 | catchup_batch_003 | #021–030 | ilc_core/analysis/node_value_conformance.py … ilc_core/analysis/utility_flow_rewards.py | pending | — |
 | catchup_batch_004 | #031–040 | ilc_core/asgi.py … ilc_core/bundle/type_registry.py | pending | — |
