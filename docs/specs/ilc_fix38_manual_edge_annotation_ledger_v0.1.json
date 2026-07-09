@@ -42685,6 +42685,158 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_changed",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - AGENTS graph classification sources",
+      "manual_read_summary": "AGENTS.md: requires phase graph-intake work to use the canonical Atlas taxonomy for node kinds and edge types, and the Phase 1573ah namespace policy for reserved-vs-extension edge rules once it exists.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "AGENTS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - Claude graph classification sources",
+      "manual_read_summary": "CLAUDE.md: requires new graph node records to use the canonical Atlas taxonomy and blocks custom extension edge namespaces until the Phase 1573ah edge namespace policy exists.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "CLAUDE.md"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - phase prompt schema graph sources",
+      "manual_read_summary": "Antigravity prompt schema: makes every LMDB Node Registration section cite the canonical Atlas taxonomy and the Phase 1573ah edge namespace policy for reserved-vs-extension edge classification.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/README.md"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - regression coverage",
+      "manual_read_summary": "Phase 1573ah graph classification instruction tests: verify AGENTS.md, CLAUDE.md, and the prompt schema cite the canonical taxonomy and namespace-policy sources and forbid ungoverned custom edge types.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "AGENTS.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "CLAUDE.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/README.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ah_graph_classification_instruction_sources.py"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - batch marker advanced",
+      "manual_read_summary": "Node classification taxonomy update: advances the manual Fix38 batch marker to batch 088 for the graph classification instruction-source records.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_088_phase_1573ah_graph_classification_instruction_sources",
+      "chronology_note": "2026-07-09 phase_1573ah instruction hardening - Fix38 ledger self-registration",
+      "manual_read_summary": "Fix38 manual edge annotation ledger update: registers graph classification instruction-source hardening records for AGENTS.md, CLAUDE.md, the prompt schema, tests, and taxonomy marker.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
