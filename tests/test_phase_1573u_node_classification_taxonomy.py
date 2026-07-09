@@ -16,6 +16,36 @@ RECENT_BATCHES = {
     "manual_batch_080_phase_1573j_current",
 }
 
+RECENT_TEST_FILES = {
+    "tests/test_h013_spectral_sigma_policy.py",
+    "tests/test_phase_1568_fix2w_sigma_adversary_model.py",
+    "tests/test_phase_1573e_cdl_sigma_01_ratification.py",
+    "tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py",
+    "tests/test_phase_1573g_ccss_spectral_01_beacon_emission.py",
+    "tests/test_phase_1573h_ccss_spectral_01_full_test_suite.py",
+    "tests/test_phase_1573i_cdl_sigma_01_adversary_model.py",
+    "tests/test_phase_1573j_conversion_candidate_runtime.py",
+    "tests/test_phase_1573k_obl040_rerun006.py",
+    "tests/test_phase_1573l_obl039_obl040_closure.py",
+    "tests/test_phase_1573m_full_suite_test_hardening.py",
+    "tests/test_phase_1573n_preflight_history_wide_public_mirror_filter.py",
+    "tests/test_phase_1573n_public_mirror_preparation.py",
+    "tests/test_phase_1573o_ccss_privacy_claim_boundary.py",
+    "tests/test_phase_1573p_ccss_metadata_leakage_audit.py",
+    "tests/test_phase_1573q_ccss_side_channel_sim.py",
+    "tests/test_phase_1573r_ccss_cover_batching_design.py",
+    "tests/test_phase_1573s_contact_gate_policy_spec.py",
+    "tests/test_phase_1573t_contact_gate_local_evaluator.py",
+}
+
+RUNTIME_FILES = {
+    "ilc_core/network/d2d/spectral_beacon.py",
+    "ilc_core/network/d2d/spectral_route_token.py",
+    "ilc_core/network/d2d/spectral_sigma_policy.py",
+    "ilc_core/ccss/contact_gate.py",
+    "ilc_core/ccss/__init__.py",
+}
+
 
 def _annotations() -> list[dict[str, object]]:
     return json.loads(LEDGER.read_text())["annotations"]
@@ -30,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573u-Fix1)" in taxonomy
-    assert "manual_batch_081_phase_1573u_fix1_taxonomy_hardening" in taxonomy
-    assert "manual_batch_082_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573u-Fix2)" in taxonomy
+    assert "manual_batch_082_phase_1573u_fix2_semantic_edge_enrichment" in taxonomy
+    assert "manual_batch_083_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:
@@ -66,6 +96,108 @@ def test_taxonomy_hardening_batch_registers_new_phase_files() -> None:
     assert by_path[
         "tests/test_phase_1573u_node_classification_taxonomy.py"
     ]["recommended_graph_action"] == "support_only"
+
+
+def test_semantic_edge_enrichment_batch_registers_fix2_walkthrough() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch")
+        == "manual_batch_082_phase_1573u_fix2_semantic_edge_enrichment"
+    }
+    assert set(by_path) == {
+        "docs/phases/phase_1573u_fix2_fix38_semantic_edge_enrichment_walkthrough.md",
+        "docs/specs/ilc_atlas_ledger_backlog_v0.1.md",
+    }
+    annotation = by_path[
+        "docs/phases/phase_1573u_fix2_fix38_semantic_edge_enrichment_walkthrough.md"
+    ]
+    assert "candidate_id" not in annotation
+    assert annotation["recommended_graph_action"] == "support_only"
+    assert {
+        "edge_type": "ATTESTATION",
+        "target": "phase:phase_1573u_fix2_batch079080_semantic_edges_enriched",
+    } in annotation["proposed_semantic_edges"]
+    backlog = by_path["docs/specs/ilc_atlas_ledger_backlog_v0.1.md"]
+    assert backlog["recommended_graph_action"] == "load_bearing_artifact_added"
+    assert "catch-up batch namespace" in backlog["manual_read_summary"]
+
+
+def test_batch_079_080_test_files_have_tests_edges_and_read_summaries() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch") in RECENT_BATCHES
+    }
+    assert RECENT_TEST_FILES <= set(by_path)
+    for repo_path in RECENT_TEST_FILES:
+        annotation = by_path[repo_path]
+        targets = {
+            edge["target"]
+            for edge in annotation["proposed_semantic_edges"]
+            if edge["edge_type"] == "TESTS"
+        }
+        assert targets, repo_path
+        assert not annotation["manual_read_summary"].startswith("Registers ")
+
+
+def test_batch_079_080_runtime_modules_have_implements_edges() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch") in RECENT_BATCHES
+    }
+    for repo_path in RUNTIME_FILES:
+        annotation = by_path[repo_path]
+        targets = {
+            edge["target"]
+            for edge in annotation["proposed_semantic_edges"]
+            if edge["edge_type"] == "IMPLEMENTS"
+        }
+        assert targets, repo_path
+        assert annotation["recommended_graph_action"] == "load_bearing_artifact_added"
+
+
+def test_batch_079_080_authority_edges_use_canonical_targets_not_phase_tokens() -> None:
+    forbidden_targets = {
+        "ccss_spectral_01_full_test_suite_pass_phase_1573h",
+        "ccss_spectral_01_route_token_spec_1573f",
+        "cdl_sigma_01_ratified_phase_1573e",
+        "public_mirror_pipeline_rehearsed_phase_1573n",
+        "cdl_098_ratified_phase_1573a",
+        "ccss_contact_gate_local_evaluator_committed_phase_1573t",
+    }
+    for annotation in _annotations():
+        if annotation.get("annotation_batch") not in RECENT_BATCHES:
+            continue
+        for edge in annotation.get("proposed_authority_trace_edges", []):
+            assert edge["target"] not in forbidden_targets
+
+
+def test_batch_079_080_evidence_and_attestation_edges_are_present() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch") in RECENT_BATCHES
+    }
+    evidence = by_path[
+        "docs/specs/ilc_cdl_sigma_01_ratification_evidence_1573e_v0.1.md"
+    ]["proposed_semantic_edges"]
+    assert {"edge_type": "EVIDENCES", "target": "cdl:CDL-SIGMA-01"} in evidence
+
+    closure = by_path[
+        "docs/specs/ilc_obl039_obl040_pre_rc_closure_record_1573l_v0.1.md"
+    ]["proposed_semantic_edges"]
+    assert {"edge_type": "EVIDENCES", "target": "obl:OBL-039"} in closure
+    assert {"edge_type": "EVIDENCES", "target": "obl:OBL-040"} in closure
+
+    walkthrough = by_path[
+        "docs/phases/phase_1573t_ccss_contact_gate_local_rehearsal_walkthrough.md"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "ATTESTATION",
+        "target": "phase:ccss_contact_gate_local_evaluator_committed_phase_1573t",
+    } in walkthrough
 
 
 def test_guidance_distinguishes_new_schema_from_legacy_keys() -> None:
