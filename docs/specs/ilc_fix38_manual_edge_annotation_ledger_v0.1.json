@@ -49364,6 +49364,165 @@
         "PROVENANCE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_103_phase_1573w_atlas_slice_pipeline_projection_policy",
+      "chronology_note": "2026-07-09 Phase 1573w — AtlasSliceManifest build pipeline specification.",
+      "manual_read_summary": "Spec defines the AtlasSliceManifest authority boundary, manifest fields, compile-section/sign-manifest/verify-slice CLI contract, layered download architecture, Layer 0 bundle provenance, and build safety rules without implementing runtime commands.",
+      "repo_path": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_private_layer_policy_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CITES",
+          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CITES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_103_phase_1573w_atlas_slice_pipeline_projection_policy",
+      "chronology_note": "2026-07-09 Phase 1573w — graph projection naming policy specification.",
+      "manual_read_summary": "Spec defines the five canonical graph_projection buckets, ProjectionPolicyNode schema, community sub-label rule, slash and kebab-case naming convention, and legacy-tier migration posture.",
+      "repo_path": "docs/specs/ilc_graph_projection_naming_policy_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CITES",
+          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CITES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_103_phase_1573w_atlas_slice_pipeline_projection_policy",
+      "chronology_note": "2026-07-09 Phase 1573w — spec regression test.",
+      "manual_read_summary": "Test file verifies both Phase 1573w specs exist, include the layered download table, define ProjectionPolicyNode, cite private-layer policy boundaries, and emit the required STATUS tokens.",
+      "repo_path": "tests/test_phase_1573w_spec_docs_committed.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573w_g8_atlas_slice_pipeline_and_projection_naming_policy.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_graph_projection_naming_policy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_103_phase_1573w_atlas_slice_pipeline_projection_policy",
+      "chronology_note": "2026-07-09 Phase 1573w — walkthrough evidence.",
+      "manual_read_summary": "Walkthrough records preconditions, source reads, spec summaries, graph delta, verification commands, output tokens, and non-claims for the Atlas slice pipeline and projection naming phase.",
+      "repo_path": "docs/phases/phase_1573w_atlas_slice_pipeline_and_projection_naming_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573w_g8_atlas_slice_pipeline_and_projection_naming_policy.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:atlas_slice_manifest_build_pipeline_spec_committed_phase_1573w"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_103_phase_1573w_atlas_slice_pipeline_projection_policy",
+      "chronology_note": "2026-07-09 Phase 1573w — STATUS token record.",
+      "manual_read_summary": "STATUS records completion tokens for the AtlasSliceManifest build pipeline spec, graph_projection naming policy spec, and retained public-path block.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573w_g8_atlas_slice_pipeline_and_projection_naming_policy.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:atlas_slice_manifest_build_pipeline_spec_committed_phase_1573w"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
