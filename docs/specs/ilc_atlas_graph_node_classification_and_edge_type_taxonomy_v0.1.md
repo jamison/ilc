@@ -454,8 +454,8 @@ Batch identifier format: `manual_batch_NNN_phase_MMMM_<slug>`
 - `MMMM` — the current phase number (e.g., `1575`)
 - `<slug>` — short lowercase underscore-separated description of what the batch covers
 
-**Current last batch (as of Phase 1573ah prompt hardening):** `manual_batch_087_phase_1573ah_edge_namespace_policy_prompt`
-**Next batch:** `manual_batch_088_<slug>`
+**Current last batch (as of Phase 1573ah instruction hardening):** `manual_batch_088_phase_1573ah_graph_classification_instruction_sources`
+**Next batch:** `manual_batch_089_<slug>`
 
 For retroactive backfills covering a range of phases, use:
 `manual_batch_NNN_phase_RANGE_retroactive`
