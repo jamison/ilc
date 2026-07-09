@@ -35890,20 +35890,25 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_cdl_sigma_01_ratification_evidence_1573e_v0.1.md against cdl_sigma_01_ratified_phase_1573e",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "cdl_sigma_01_ratified_phase_1573e"
+          "rationale": "CDL-SIGMA-01 ratification evidence is governed by the CDL-SIGMA-01 authority row.",
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_cdl_sigma_01_ratification_evidence_1573e_v0.1.md"
@@ -35938,20 +35943,29 @@
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers ilc_core/network/d2d/spectral_beacon.py against ccss_spectral_01_full_test_suite_pass_phase_1573h",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_full_test_suite_pass_phase_1573h"
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/network/d2d/spectral_beacon.py"
@@ -35963,20 +35977,29 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers ilc_core/network/d2d/spectral_route_token.py against ccss_spectral_01_route_token_spec_1573f",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_route_token_spec_1573f"
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/network/d2d/spectral_route_token.py"
@@ -35988,20 +36011,24 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers ilc_core/network/d2d/spectral_sigma_policy.py against cdl_sigma_01_ratified_phase_1573e",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "cdl_sigma_01_ratified_phase_1573e"
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/network/d2d/spectral_sigma_policy.py"
@@ -36111,16 +36138,33 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_h013_spectral_sigma_policy.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the H-013 spectral sigma policy, sigma floor enforcement, provisional mainnet authorization boundary, spectral beacon constants, and node-startup sigma validation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_sigma_policy.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_beacon.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/analysis/spectral_utils.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/node/node_startup_runtime.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_h013_spectral_sigma_policy.py"
@@ -36128,16 +36172,29 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1568_fix2w_sigma_adversary_model.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the Fix2w sigma adversary-model result document, OBL-046 routing, and spectral_sigma_policy non-validation constants.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_sigma_policy.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_sim_fix2w_sigma_adversary_model_results_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_open_obligation_register_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1568_fix2w_sigma_adversary_model.py"
@@ -36145,16 +36202,29 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573e_cdl_sigma_01_ratification.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests CDL-SIGMA-01 ratification evidence, CDL register row fields, forbidden wire-field commitments, and spectral sigma policy constants.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_sigma_01_ratification_evidence_1573e_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_sigma_policy.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573e_cdl_sigma_01_ratification.py"
@@ -36162,16 +36232,21 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression tests for CCSS-SPECTRAL-01 cryptographic primitive shape, guard behavior, and token derivation invariants.",
+      "manual_read_summary": "Tests CCSS-SPECTRAL-01 SpectralRouteToken crypto primitives, forbidden-field rejection, hybrid KEM/HKDF derivation, and guard behavior.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py"
@@ -36179,16 +36254,29 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression tests that spectral beacon envelopes hide lambda values and keep relay validation always-on while activation remains guarded.",
+      "manual_read_summary": "Tests guarded spectral route-token envelope emission, relay validation, lambda/sigma forbidden-field rejection, and sigma-policy boundary status.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_beacon.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_sigma_policy.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573g_ccss_spectral_01_beacon_emission.py"
@@ -36196,16 +36284,25 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression and SIM tests for CCSS-SPECTRAL-01 route-token authentication, purpose validation, and adversary-model pass evidence.",
+      "manual_read_summary": "Tests route-token recipient authentication, purpose validation, forbidden-field rejection, simulation outputs, and non-activation status for Phase 1573h.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "out/sim_ccss_spectral_01_adversary_model_results.json"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573h_ccss_spectral_01_full_test_suite.py"
@@ -36213,16 +36310,33 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573i_cdl_sigma_01_adversary_model.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests CDL-SIGMA-01 adversary-model amendment evidence, CDL register mutation, SIM result interpretation, side-channel non-claims, and guard status.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_sigma_01_adversary_model_ratification_evidence_1573i_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573i_cdl_sigma_01_adversary_model.py"
@@ -36266,11 +36380,20 @@
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "obl:OBL-039"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "obl:OBL-040"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_obl039_obl040_pre_rc_closure_record_1573l_v0.1.md"
@@ -36282,26 +36405,35 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_ccss_public_rc_privacy_claim_boundary_1573o_v0.1.md against ccss_spectral_01_full_test_suite_pass_phase_1573h",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_full_test_suite_pass_phase_1573h"
-        },
-        {
-          "edge_type": "REFERENCES_AUTHORITY",
           "rationale": "Phase 1573u backfill registers docs/specs/ilc_ccss_public_rc_privacy_claim_boundary_1573o_v0.1.md against obl:OBL-047",
           "review_status": "candidate_role_specific_authority_trace",
           "target": "obl:OBL-047"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:ccss_public_rc_privacy_claim_boundary"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_ccss_public_rc_privacy_claim_boundary_1573o_v0.1.md"
@@ -36313,20 +36445,29 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_ccss_metadata_leakage_audit_1573p_v0.1.md against ccss_spectral_01_full_test_suite_pass_phase_1573h",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_full_test_suite_pass_phase_1573h"
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:ccss_metadata_leakage_audit"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_ccss_metadata_leakage_audit_1573p_v0.1.md"
@@ -36338,20 +36479,29 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_ccss_cover_batching_design_1573r_v0.1.md against ccss_spectral_01_full_test_suite_pass_phase_1573h",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_full_test_suite_pass_phase_1573h"
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:ccss_cover_batch_profile_v1_candidate"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_ccss_cover_batching_design_1573r_v0.1.md"
@@ -36363,20 +36513,29 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md against ccss_spectral_01_full_test_suite_pass_phase_1573h",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_spectral_01_full_test_suite_pass_phase_1573h"
+          "review_status": "candidate_ccss_spectral_01_spec_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_sigma_01_trace",
+          "target": "cdl:CDL-SIGMA-01"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:ccss_contact_gate_policy_boundary"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
@@ -36388,9 +36547,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_public_mirror_manifest_1573n_v0.1.md against public_mirror_pipeline_rehearsed_phase_1573n",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "public_mirror_pipeline_rehearsed_phase_1573n"
+          "review_status": "candidate_obl_002_release_control_trace",
+          "target": "obl:OBL-002"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_prepublication_checklist_trace",
+          "target": "docs/specs/ilc_phase_1448a_prepublication_review_checklist_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -36413,9 +36576,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers docs/specs/ilc_window_1573o_1575_remaining_phases_guidance_v0.1.md against cdl_098_ratified_phase_1573a",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "cdl_098_ratified_phase_1573a"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         }
       ],
       "proposed_semantic_edges": [
@@ -36438,20 +36600,24 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "rationale": "Phase 1573u backfill registers ilc_core/ccss/contact_gate.py against ccss_contact_gate_local_evaluator_committed_phase_1573t",
-          "review_status": "candidate_role_specific_authority_trace",
-          "target": "ccss_contact_gate_local_evaluator_committed_phase_1573t"
+          "review_status": "candidate_contact_gate_spec_trace",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
         "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/ccss/contact_gate.py"
@@ -36782,16 +36948,25 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573j_conversion_candidate_runtime.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests ConversionCandidate eligible-lot runtime generation, CDL-048 deadline semantics, Decimal amount validation, omission detection, and default-off guard behavior.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ledger/conversion_candidate_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ledger/distributed_conversion_schema.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573j_conversion_candidate_runtime.py"
@@ -36799,16 +36974,25 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573k_obl040_rerun006.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests Rerun 006 evidence for OBL-040/OBL-039, omission-free checkpoint roots, BFT quorum source, schema fields, and rollback receipt completeness.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_block6_obl040_rerun006_evidence_1573k_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_block6_obl040_rerun006_rollback_receipt_1573k_v0.1.json"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573k_obl040_rerun006.py"
@@ -36816,16 +37000,33 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573l_obl039_obl040_closure.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the OBL-039/OBL-040 pre-RC closure record, obligation-register dispositions, planning update, and disposable rerun evidence boundaries.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_obl039_obl040_pre_rc_closure_record_1573l_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_open_obligation_register_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/PLANNING_INDEX.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_block6_obl040_rerun006_evidence_1573k_v0.1.json"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573l_obl039_obl040_closure.py"
@@ -36833,16 +37034,29 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573m_full_suite_test_hardening.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests Phase 1573m full-suite hardening tokens, walkthrough, pytest log, conftest skip boundaries, and prompt validation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "conftest.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/phases/phase_1573m_full_suite_test_hardening_walkthrough.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "out/phase_1573m_pytest_final.log"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573m_full_suite_test_hardening.py"
@@ -36850,16 +37064,21 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573n_preflight_history_wide_public_mirror_filter.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the public mirror script history-wide exclusion builder, blob verifier, header-anchored scanning, and commit-count guard.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/scripts/generate_public_mirror.sh"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573n_preflight_history_wide_public_mirror_filter.py"
@@ -36867,16 +37086,33 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573n public mirror Option C preparation verification.",
+      "manual_read_summary": "Tests the public mirror Option C rehearsal manifest, no-push script boundary, checklist update, and maintenance policy.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_public_mirror_manifest_1573n_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/scripts/generate_public_mirror.sh"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_phase_1448a_prepublication_review_checklist_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_public_mirror_manifest_1573n_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573n_public_mirror_preparation.py"
@@ -36884,16 +37120,25 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573o_ccss_privacy_claim_boundary.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the CCSS public-RC privacy claim boundary, forbidden privacy/anonymity wording, Phase 1574 dependency, and non-activation walkthrough.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_ccss_public_rc_privacy_claim_boundary_1573o_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_publication_readiness_audit.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573o_ccss_privacy_claim_boundary.py"
@@ -36901,16 +37146,37 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression tests for the Phase 1573p CCSS metadata leakage audit and its pre-public-RC privacy-claim boundary.",
+      "manual_read_summary": "Tests CCSS metadata leakage audit surfaces across SpectralRouteToken, spectral beacon, sigma policy, and HTTP gossip logging.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_ccss_metadata_leakage_audit_1573p_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_beacon.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_sigma_policy.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573p_ccss_metadata_leakage_audit.py"
@@ -36918,16 +37184,29 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression tests for the Phase 1573q side-channel simulation outputs and residual metadata non-claim boundaries.",
+      "manual_read_summary": "Tests the deterministic CCSS side-channel simulation outputs, timing/size/route-purpose leakage findings, and cover-batching recommendations.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/sim/sim_ccss_side_channel_1573q.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_ccss_side_channel_sim_1573q_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_ccss_side_channel_sim_1573q_v0.1.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573q_ccss_side_channel_sim.py"
@@ -36935,16 +37214,29 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Regression tests for the Phase 1573r cover/batching design, fixed bundle profile, TTL, and non-activation boundary.",
+      "manual_read_summary": "Tests the CCSS cover/batching design against Phase 1573q SIM recommendations, fixed-bundle/TTL policy, and non-activation claims.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_ccss_cover_batching_design_1573r_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/sims/ilc_ccss_side_channel_sim_1573q_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_publication_readiness_audit.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573r_ccss_cover_batching_design.py"
@@ -36952,16 +37244,25 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573s_contact_gate_policy_spec.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the ContactGateNode policy spec, six admission modes, relay-visible/private-field boundary, nullifier shape, and non-activation status.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573s_g10_ccss_contact_gate_policy_spec.md"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573s_contact_gate_policy_spec.py"
@@ -36969,16 +37270,25 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers tests/test_phase_1573t_contact_gate_local_evaluator.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Tests the local ContactGate evaluator API, all admission modes, constant-time capability checks, sanitized verdicts, and fail-closed stake/rate mode.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ccss/contact_gate.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ccss/__init__.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573t_contact_gate_local_evaluator.py"
@@ -37020,7 +37330,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers docs/specs/ilc_phase_1573n_preflight_fix2_atlas_parallel_write_repair_receipt_v0.1.json as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Records the Phase 1573n preflight Atlas parallel-write repair receipt and validation evidence.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37037,7 +37347,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Registers docs/specs/ilc_public_mirror_manifest_1573n_v0.1.json as a source-tree member for the Phase 1573u recent-window ledger backfill.",
+      "manual_read_summary": "Machine-readable public mirror Option C rehearsal manifest with filter, denylist, and commit-count evidence.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37055,17 +37365,34 @@
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Exports the CCSS ContactGate local evaluator API and admission-mode constants for package-level access.",
-      "proposed_authority_trace_edges": [],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_contact_gate_spec_trace",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
+        }
+      ],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_1573s_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "ilc_core/ccss/contact_gate.py"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "DERIVED_FROM"
       ],
-      "recommended_graph_action": "support_only",
+      "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/ccss/__init__.py"
     },
     {
@@ -37077,10 +37404,15 @@
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:ccss_contact_gate_local_evaluator_committed_phase_1573t"
         }
       ],
       "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER"
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1573t_ccss_contact_gate_local_rehearsal_walkthrough.md"
@@ -37153,6 +37485,51 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1573u_fix1_node_classification_taxonomy_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_082_phase_1573u_fix2_semantic_edge_enrichment",
+      "chronology_note": "2026-07-09 Phase 1573u-Fix2 semantic edge enrichment for recent Fix38 batches.",
+      "manual_read_summary": "Walkthrough recording the batch 079/080 semantic-edge enrichment for TESTS, IMPLEMENTS, EVIDENCES, ATTESTATION, and canonical authority targets.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573u_fix2_batch079080_semantic_edges_enriched"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573u_fix2_fix38_semantic_edge_enrichment_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_082_phase_1573u_fix2_semantic_edge_enrichment",
+      "chronology_note": "2026-07-09 Phase 1573u-Fix2 semantic edge enrichment and backlog routing.",
+      "manual_read_summary": "Tracks the historical pre-protocol Atlas/Fix38 ledger coverage backlog and defines the catch-up batch namespace without consuming current manual batch numbers.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_atlas_ledger_backlog_v0.1.md"
     }
   ],
   "boundary": {
