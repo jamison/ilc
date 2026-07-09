@@ -103,7 +103,19 @@ Node kind is inferred from file path and content type. Use the strings in the
 
 ---
 
-## §4 — Edge Type Taxonomy
+## §4 — Fix38 Annotation Edge Type Taxonomy
+
+This section defines the edge subset that agents may use for new entries in the
+Fix38 annotation ledger. It is intentionally narrower than the full Atlas/LMDB
+graph namespace because phase graph-intake records should be simple, reviewable,
+and source-read. The broader native LMDB namespace is reserved in §4a for graph
+materialization, package topology, historical authority normalization, and
+Genesis/Atlas-native lifecycle edges.
+
+Do not invent new edge names in Fix38 records. If a phase needs a relationship
+that cannot be expressed by the Fix38 subset below, either use a documented
+substitution from §4a or route the new edge through the namespace governance
+policy.
 
 ### SOURCE_TREE_MEMBER
 
@@ -294,6 +306,68 @@ Use in addition to `TESTS` when storage fidelity (not just logic) is the test co
 
 ---
 
+## §4a — Atlas/LMDB Reserved Native Edge Namespace
+
+The live Atlas LMDB at `out/genesis_base_graph_v0.4_unified.lmdb` contains
+native graph edges that are valid ILC graph semantics but are not automatically
+available for new Fix38 phase-intake records. These labels are reserved for ILC
+native use and are accepted by `ilc_core/storage/genesis_atlas_lmdb_writer.py`.
+
+The full reserved native namespace is the union of:
+
+1. the Fix38 annotation edge types in §4; and
+2. the additional Atlas/LMDB native edge types in the table below.
+
+New phase ledger entries should still prefer the §4 subset. Use the additional
+native labels only when a phase explicitly operates on Atlas/LMDB materialization
+or a ratified graph-governance spec authorizes that label in the current context.
+
+| Edge type | Reserved meaning | New Fix38 use posture | Substitution guidance for ordinary phase records |
+|---|---|---|---|
+| `CARRIES_FORWARD` | Carries an obligation, phase result, policy, or invariant forward across windows/phases. | Native/reserved; avoid for ordinary file intake. | Use `PROVENANCE` for lineage evidence, `ATTESTATION` for phase completion, or `REFERENCES_AUTHORITY` for governing authority. |
+| `CONSTRAINS` | A policy or parameter constrains another policy, primitive, or rule. | Native/reserved. | Use `REFERENCES_AUTHORITY` when documenting the governing spec; do not collapse true constraint topology without review. |
+| `CONTAINS_FILE` | Package/root artifact contains a concrete repo file node. | Native/reserved for package manifests and materialization. | No Fix38 substitute; ordinary files use `SOURCE_TREE_MEMBER`. |
+| `CONTAINS_GROUP` | Package/root artifact contains a repo group node. | Native/reserved for package manifests and materialization. | No Fix38 substitute. |
+| `CONTAINS_PARTITION` | Package/root artifact contains a graph or package partition. | Native/reserved for package manifests and materialization. | No Fix38 substitute. |
+| `EXPECTS_RESOLUTION` | Authority or artifact expects a gap node to be resolved later. | Native/reserved for gap lifecycle graphs. | Use `REFERENCES_AUTHORITY` to cite a gap policy; do not encode lifecycle state unless authorized. |
+| `GOVERNS` | Authority node governs a policy, invariant, CDL, ADR, or other governed object. | Native/reserved and governance-sensitive. | Use `REFERENCES_AUTHORITY` for ordinary docs that cite governing authority. Do not substitute when the actual claim is governance topology. |
+| `IMPLEMENTS_MODULE` | Legacy/module-level implementation relation between files or tests and modules. | Legacy reserved; no new ordinary use. | Prefer `IMPLEMENTS` for runtime-to-CDL/ADR implementation and `TESTS`/`COVERS_SYMBOL` for test coverage. |
+| `IMPORTS_MODULE` | Source module imports another source module. | Native/reserved for code-graph extraction. | Usually omit from Fix38. Use `DERIVED_FROM` only if the relationship is substantive derivation, not a normal import. |
+| `OPENED_FOR` | CDL/ADR/opening artifact opens a governance item for a target authority. | Native/reserved for governance lifecycle. | Use `EVIDENCES` or `REFERENCES_AUTHORITY` in ordinary phase evidence records. |
+| `PRELOCK_FOR` | Prelock artifact or phase prelocks a governance item. | Native/reserved for governance lifecycle. | Use `EVIDENCES` or `ATTESTATION` if the file records the prelock event. |
+| `PRIMITIVE_INVOCATION` | Truth primitive invokes, maps to, or is authorized against an axiom/primitive target. | Native/reserved for truth-primitive topology. | No ordinary Fix38 substitute. |
+| `PROPOSES_CHANGE_TO` | Proposal object targets an authority/spec for future modification. | Native/reserved; currently accepted by writer even if unused in LMDB. | Use `REFERENCES_AUTHORITY` for docs that merely discuss proposed changes. |
+| `RATIFICATION_EVIDENCE_FOR` | Specific ratification evidence points to a CDL/ADR authority. | Legacy/native reserved. | Prefer `EVIDENCES` plus `REFERENCES_AUTHORITY` for new records. |
+| `RESOLVED_BY` | A superseded/alternate/gap node is resolved by a canonical node or decision. | Native/reserved for lifecycle and gap closure. | Do not substitute unless source-read proves `EVIDENCES` or `ATTESTATION` is the actual relationship. |
+| `SAME_AUTHORITY` | Two authority aliases or historical records refer to the same authority surface. | Native/reserved for authority normalization. | No ordinary Fix38 substitute; route alias repairs through governance/normalization phases. |
+| `SAME_SOURCE` | A file reference node and repo file node identify the same source artifact. | Native/reserved for source-ref normalization. | No ordinary Fix38 substitute. |
+| `SUPERSEDED_BY` | One authority or artifact is superseded by another. | Native/reserved for lifecycle/normalization. | Do not collapse to `REFERENCES_AUTHORITY`; lifecycle semantics would be lost. |
+| `USES` | Tool/script/module uses another module or adapter. | Native/reserved for code-graph extraction. | Usually omit. Use `DERIVED_FROM` only for substantive derivation, not ordinary dependency. |
+
+### Substitution rules
+
+Safe substitutions are contextual, not mechanical. Do not run a blind migration
+that rewrites Atlas/LMDB edges into the Fix38 subset. A substitution is allowed
+only when the original source and target have been direct-read and the narrower
+edge preserves the claim:
+
+1. `RATIFICATION_EVIDENCE_FOR`, `OPENED_FOR`, and `PRELOCK_FOR` may become
+   `EVIDENCES` or `ATTESTATION` in new phase records when the file attests to or
+   evidences that governance act.
+2. `IMPLEMENTS_MODULE` may become `IMPLEMENTS` only when the source is a runtime
+   module and the target is a CDL/ADR authority. If the source is a test, use
+   `TESTS` or `COVERS_SYMBOL`.
+3. `IMPORTS_MODULE` and `USES` should usually be omitted from phase-intake
+   records. Normal imports are not graph-governance claims.
+4. `GOVERNS`, `SAME_AUTHORITY`, `SAME_SOURCE`, `SUPERSEDED_BY`,
+   `RESOLVED_BY`, `CONTAINS_*`, `CONSTRAINS`, `PRIMITIVE_INVOCATION`, and
+   `EXPECTS_RESOLUTION` should not be substituted automatically. They carry
+   native graph semantics that should remain explicit when present.
+
+The current discrepancy between the Fix38 subset and the Atlas/LMDB edge set is
+therefore intentional after this section: the full Atlas graph reserves more
+native semantics than ordinary phase-intake records should use.
+
 ## §5 — Classification Decision Tree
 
 Apply these steps in order for every new file. Stop at the first match.
@@ -454,8 +528,8 @@ Batch identifier format: `manual_batch_NNN_phase_MMMM_<slug>`
 - `MMMM` — the current phase number (e.g., `1575`)
 - `<slug>` — short lowercase underscore-separated description of what the batch covers
 
-**Current last batch (as of Phase 1573ah instruction hardening):** `manual_batch_088_phase_1573ah_graph_classification_instruction_sources`
-**Next batch:** `manual_batch_089_<slug>`
+**Current last batch (as of Phase 1573ah-Fix1 LMDB edge namespace alignment):** `manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment`
+**Next batch:** `manual_batch_090_<slug>`
 
 For retroactive backfills covering a range of phases, use:
 `manual_batch_NNN_phase_RANGE_retroactive`
