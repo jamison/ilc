@@ -48138,6 +48138,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573am_g8_security_runtime_transactionality_review.md"
+    },
+    {
+      "annotation_batch": "manual_batch_096_phase_1573_obl_register_completion",
+      "chronology_note": "2026-07-09 OBL register completion — converts OBL-002 from open register row into standing release-control invariant.",
+      "manual_read_summary": "Standing release-control invariant register defining INV-REL-001: raw private repository publication is forbidden and public release must use a sanitized allowlist, Option C, or graph-derived export path.",
+      "repo_path": "docs/specs/ilc_release_control_invariants_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "obl:OBL-002",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "invariant:INV-REL-001"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_096_phase_1573_obl_register_completion",
+      "chronology_note": "2026-07-09 OBL register completion — routes OBL-030 out of pre-public-RC obligations into post-public-RC side-project planning.",
+      "manual_read_summary": "Post-public-RC Atlas of Cliffs side-project routing plan preserving future publication and public-graph entry work without treating it as a pre-public-RC blocker.",
+      "repo_path": "docs/specs/ilc_atlas_of_cliffs_post_public_rc_side_project_plan_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "obl:OBL-030",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "project:atlas_of_cliffs_post_public_rc_side_project"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
