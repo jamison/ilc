@@ -48206,6 +48206,148 @@
         "CLASSIFIED_BY"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_097_phase_1573ak_api_ingress_boundary",
+      "chronology_note": "2026-07-09 Phase 1573ak — FastAPI ingress boundary runtime hardening.",
+      "manual_read_summary": "FastAPI server runtime now classifies user-facing routes, installs an app-level Content-Length body-size backstop, enforces a 1 MiB gossip receive cap, and rejects unsafe peer-admin host targets unless the local development override is explicitly enabled.",
+      "repo_path": "ilc_core/server.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ak_g8_api_ingress_boundary_audit.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:api_ingress_boundary_classified_phase_1573ak"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:gossip_body_cap_enforced_phase_1573ak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_097_phase_1573ak_api_ingress_boundary",
+      "chronology_note": "2026-07-09 Phase 1573ak — API ingress hardening regression tests.",
+      "manual_read_summary": "Regression tests verify FastAPI route classification coverage, gossip payload size and JSON rejection behavior, unsafe peer-admin host rejection, local development override behavior, and the app-level request body-size middleware backstop.",
+      "repo_path": "tests/test_server_ingress_hardening.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ak_g8_api_ingress_boundary_audit.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/server.py"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.server.MaxBodySizeMiddleware"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.server.receive_gossip"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.server.add_peer"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "COVERS_SYMBOL"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_097_phase_1573ak_api_ingress_boundary",
+      "chronology_note": "2026-07-09 Phase 1573ak — walkthrough attestation.",
+      "manual_read_summary": "Walkthrough records the 1573ak API ingress boundary audit, direct-read inputs, server hardening changes, focused test results, non-authorizations, and output tokens.",
+      "repo_path": "docs/phases/phase_1573ak_api_ingress_boundary_audit_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ak_g8_api_ingress_boundary_audit.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:api_ingress_boundary_classified_phase_1573ak"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gossip_body_cap_enforced_phase_1573ak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_097_phase_1573ak_api_ingress_boundary",
+      "chronology_note": "2026-07-09 Phase 1573ak — sequence-lock addendum.",
+      "manual_read_summary": "Block 6 sequence-lock addendum records 1573ak as a non-sensitive pre-1574 API ingress hardening phase after 1573ai and before publication readiness gates.",
+      "repo_path": "docs/specs/ilc_phase_1565_1575_sequence_lock_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ak_g8_api_ingress_boundary_audit.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1573ak"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573ak_sequence_lock_addendum_recorded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
     }
   ],
   "boundary": {
