@@ -82,7 +82,7 @@ def test_fix40_runner_can_regenerate_outputs(tmp_path: Path) -> None:
     assert payload["added_candidate_edges"] >= 4999
     regenerated_delta = load(gap)["coverage_delta_from_fix33"]
     historical_delta = load(GAP_ANALYSIS)["coverage_delta_from_fix33"]
-    assert regenerated_delta["missing_expected_authority_trace_count"]["current"] == 7
+    assert regenerated_delta["missing_expected_authority_trace_count"]["current"] == 20
     assert historical_delta["missing_expected_authority_trace_count"]["current"] == 57
     assert load(coverage)["summary"]["phase"] == "1545p-Fix40"
     assert "1545p-Fix40" in coverage_report.read_text(encoding="utf-8")

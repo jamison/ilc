@@ -21,7 +21,6 @@ from ilc_core.genesis.assertion_schema import (
     encode_genesis_assertion_payload,
     verify_genesis_assertion_schema,
 )
-from ilc_core.private_json_guardrails import reject_float
 
 GENESIS_AUTHORITY_ASSERTION_BUILDER_VERSION = "genesis_authority_assertion_builder_1557.v0.1"
 
@@ -37,7 +36,7 @@ def build_genesis_authority_assertions(genesis_config: dict[str, Any]) -> list[d
             "genesis_authority_assertion_config_must_be_dict",
             "genesis_config must be a dict",
         )
-    reject_float(genesis_config, "genesis_authority_assertion_float_not_allowed")
+    _reject_float(genesis_config, "genesis_authority_assertion_float_not_allowed")
 
     agent_id = _required_str(genesis_config, "agent_id")
     content = GenesisAssertionContent(
@@ -56,6 +55,19 @@ def build_genesis_authority_assertions(genesis_config: dict[str, Any]) -> list[d
     payload["agent_id"] = agent_id
     payload["sig"] = _optional_str(genesis_config, "sig") or ""
     return [payload]
+
+
+def _reject_float(value: object, token: str) -> None:
+    if isinstance(value, float):
+        raise ValueError(token)
+    if isinstance(value, Mapping):
+        for key, nested in value.items():
+            _reject_float(key, token)
+            _reject_float(nested, token)
+        return
+    if isinstance(value, (list, tuple)):
+        for nested in value:
+            _reject_float(nested, token)
 
 
 def verify_genesis_authority_assertions(
