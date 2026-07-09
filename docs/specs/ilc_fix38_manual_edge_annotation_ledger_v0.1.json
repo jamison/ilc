@@ -48766,6 +48766,305 @@
         "TESTS"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — Atlas edge retirement migration receipt.",
+      "manual_read_summary": "Records the applied Atlas LMDB edge retirement migration, including removed retired labels, replacement edge accounting, skipped duplicate replacements, and final LMDB invariant counts.",
+      "repo_path": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:atlas_edge_retirement_migration_applied_phase_1573aj"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — machine-readable Atlas edge retirement migration receipt.",
+      "manual_read_summary": "JSON receipt pins before/after LMDB counts, 80 removed retired rows, 75 accepted replacement rows, five skipped duplicate/already-present replacements, zero retired-label counts, and final invariant pass.",
+      "repo_path": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:atlas_edge_retirement_migration_applied_phase_1573aj"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — Atlas edge taxonomy hardening.",
+      "manual_read_summary": "Taxonomy update declares CITES as a canonical non-authoritative citation edge and records its keep posture for replacing legacy generic REFERENCES without overclaiming authority.",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "edge_type:CITES"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — Atlas LMDB writer taxonomy enforcement hardening.",
+      "manual_read_summary": "Writer update accepts canonical CITES and narrows REFERENCES_AUTHORITY validation to permit authority-like ADR/spec/glossary file-ref nodes while continuing to reject runtime/module repo targets.",
+      "repo_path": "ilc_core/storage/genesis_atlas_lmdb_writer.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — migration apply tool.",
+      "manual_read_summary": "Tool validates the 1573ai-Fix1 replacement plan, removes exact retired edge semantics, adds deterministic replacement edges through the safe writer, and emits the 1573aj migration receipt.",
+      "repo_path": "tools/apply_atlas_edge_retirement_1573aj.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aj_g8_atlas_edge_retirement_apply.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — migration regression tests.",
+      "manual_read_summary": "Test file verifies migration receipt schema and counts, retired-label absence, post-migration LMDB invariants, duplicate replacement accounting, Phase 1574 gate recognition, STATUS tokens, and CITES taxonomy registration.",
+      "repo_path": "tests/test_phase_1573aj_atlas_edge_retirement_apply.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS_STORAGE",
+          "target": "lmdb:genesis_base_graph_v0.4_unified"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "TESTS_STORAGE"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — rehearsal regression compatibility update.",
+      "manual_read_summary": "Updated the 1573ai rehearsal tests so they continue validating the original 80-row plan before migration and the intentional zero-live-candidate post-migration state after 1573aj.",
+      "repo_path": "tests/test_phase_1573ai_atlas_edge_retirement_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.json",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — phase walkthrough.",
+      "manual_read_summary": "Walkthrough records precondition tokens, dry-run and apply counts, duplicate replacement accounting, taxonomy/writer hardening, graph deltas, and no-publication non-claims.",
+      "repo_path": "docs/phases/phase_1573aj_atlas_edge_retirement_apply_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:atlas_edge_retirement_migration_applied_phase_1573aj"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — phase prompt hardening.",
+      "manual_read_summary": "Prompt now matches the actual 1573ai-Fix1 plan shape, including apply_ready, replacement_plan rows, manual classification, and duplicate/already-present replacement accounting.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573aj_g8_atlas_edge_retirement_apply.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_migration_1573aj_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:atlas_edge_retirement_migration_applied_phase_1573aj"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_100_phase_1573aj_atlas_edge_retirement_apply",
+      "chronology_note": "2026-07-09 Phase 1573aj — 1573ai-Fix1 JSON correction.",
+      "manual_read_summary": "Rehearsal JSON corrected one overclaimed replacement from REFERENCES_AUTHORITY to CITES and updates replacement type counts to match the final source-read classification.",
+      "repo_path": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:atlas_edge_retirement_apply_ready_phase_1573ai"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
     }
   ],
   "boundary": {

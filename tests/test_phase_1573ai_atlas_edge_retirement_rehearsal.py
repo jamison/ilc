@@ -16,6 +16,7 @@ PHASE_1574_PROMPT = (
     REPO_ROOT
     / "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
 )
+STATUS = REPO_ROOT / "docs/phases/STATUS.md"
 
 CANDIDATE_EDGE_TYPES = {
     "REFERENCES",
@@ -54,6 +55,13 @@ def _live_candidate_rows() -> list[dict]:
         writer.close()
 
 
+def _migration_applied() -> bool:
+    return (
+        "atlas_edge_retirement_migration_applied_phase_1573aj"
+        in STATUS.read_text(encoding="utf-8")
+    )
+
+
 def test_rehearsal_json_exists_and_is_schema_valid() -> None:
     payload = _rehearsal()
 
@@ -73,6 +81,11 @@ def test_source_edge_counts_match_live_lmdb_read_counts() -> None:
     payload = _rehearsal()
     live_counts = Counter(str(edge.get("edge_type", "")) for edge in _live_candidate_rows())
 
+    if _migration_applied():
+        assert sum(live_counts.values()) == 0
+        assert payload["total_candidate_rows"] == 80
+        return
+
     assert payload["source_edge_counts"] == {
         edge_type: live_counts.get(edge_type, 0)
         for edge_type in payload["candidate_edge_types"]
@@ -86,6 +99,12 @@ def test_every_candidate_row_is_covered_exactly_once() -> None:
     plan_edge_ids = sorted(row["original_edge_id"] for row in payload["replacement_plan"])
 
     assert payload["all_rows_covered"] is True
+    if _migration_applied():
+        assert live_edge_ids == []
+        assert len(plan_edge_ids) == 80
+        assert len(plan_edge_ids) == len(set(plan_edge_ids))
+        return
+
     assert plan_edge_ids == live_edge_ids
     assert len(plan_edge_ids) == len(set(plan_edge_ids))
 

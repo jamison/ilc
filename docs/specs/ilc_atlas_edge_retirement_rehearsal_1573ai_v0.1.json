@@ -657,14 +657,14 @@
     },
     {
       "classification": "manually_classified_phase_1573ai_fix1",
-      "classification_reason": "security.md references ilc_core genesis atlas LMDB writer as governing authority for Atlas storage.",
+      "classification_reason": "security.md cites ilc_core genesis atlas LMDB writer as an implementation reference for Atlas storage; this is not a governing authority edge.",
       "deterministic_proposed_replacement_edge_ids": [],
       "original_edge_id": "edge:5975df0c8f3d2944",
       "original_edge_type": "REFERENCES",
       "proposed_replacement_edges": [
         {
           "classification_basis": "manual_source_read_phase_1573ai_fix1",
-          "edge_type": "REFERENCES_AUTHORITY",
+          "edge_type": "CITES",
           "source": "repo:file_ref:security_md",
           "target": "repo:file_ref:ilc_core_storage_genesis_atlas_lmdb_writer_py"
         }
@@ -1504,11 +1504,11 @@
   ],
   "replacement_type_counts": {
     "ATTESTATION": 1,
-    "CITES": 29,
+    "CITES": 30,
     "EVIDENCES": 8,
     "IMPORTS_MODULE": 2,
     "PROVENANCE": 7,
-    "REFERENCES_AUTHORITY": 30,
+    "REFERENCES_AUTHORITY": 29,
     "TESTS": 3
   },
   "source_edge_counts": {

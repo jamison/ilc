@@ -30,6 +30,7 @@ _KNOWN_EDGE_TYPES: frozenset[str] = frozenset(
     {
         "ATTESTATION",
         "CARRIES_FORWARD",
+        "CITES",
         "CLASSIFIED_BY",
         "CONSTRAINS",
         "CONTAINS_FILE",
@@ -1272,7 +1273,7 @@ def _validate_edge_semantics(
         if not (_is_file_ref(source) and _is_repo_file(target)):
             raise ValueError(f"same_source_requires_file_ref_to_repo_file:{source}->{target}")
     elif edge_type == "REFERENCES_AUTHORITY":
-        if _is_runtime_or_repo(target):
+        if _is_runtime_or_repo(target) and not _is_authority_reference_node(target_node):
             raise ValueError(f"references_authority_target_must_not_be_repo_or_runtime:{target}")
     elif edge_type == "SOURCE_TREE_MEMBER":
         if not (
@@ -1306,6 +1307,24 @@ def _is_authority_like(candidate_id: str, node_record: Mapping[str, Any] | None)
 
 def _is_runtime_or_repo(candidate_id: str) -> bool:
     return any(candidate_id.startswith(prefix) for prefix in _RUNTIME_REPO_PREFIXES)
+
+
+def _is_authority_reference_node(node_record: Mapping[str, Any] | None) -> bool:
+    if node_record is None:
+        return False
+    node_kind = str(node_record.get("node_kind", ""))
+    if node_kind in _AUTHORITY_NODE_KINDS:
+        return True
+    if node_kind in {
+        "adr_document_node",
+        "cdl_evidence_node",
+        "governance_spec_node",
+        "spec_doc_node",
+        "spec_document_node",
+    }:
+        return True
+    source_path = str(node_record.get("source_path", ""))
+    return source_path.startswith(("docs/adr/", "docs/specs/", "docs/architecture/"))
 
 
 def _is_file_ref(candidate_id: str) -> bool:
