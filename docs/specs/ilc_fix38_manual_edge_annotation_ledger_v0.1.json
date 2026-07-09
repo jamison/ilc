@@ -42164,6 +42164,254 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1573u_fix4_contact_gate_unverifiable_peer_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — agent execution policy updated",
+      "manual_read_summary": "AGENTS.md: records the standing sanitized public mirror policy that the private canonical repo is source of truth, the mirror is a private derived artifact, and phase prompts must record mirror disposition.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_CLASSIFICATION",
+          "target": "policy:sanitized_public_mirror_derived_artifact"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_mirror_push_without_public_rc_authority"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_CLASSIFICATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "AGENTS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Claude workflow policy updated",
+      "manual_read_summary": "CLAUDE.md: requires phase prompts and walkthroughs to record sanitized mirror disposition, mirror staleness, and no-public-push or explicit publication authority.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_CLASSIFICATION",
+          "target": "policy:sanitized_public_mirror_derived_artifact"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_mirror_visibility_change_without_public_rc_authority"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_CLASSIFICATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "CLAUDE.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — phase prompt schema updated",
+      "manual_read_summary": "Antigravity prompt schema: adds required Public mirror maintenance section so future prompts record mirror staleness, no hand edits, no public push, and regenerated-manifest requirements.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_CLASSIFICATION",
+          "target": "policy:sanitized_public_mirror_derived_artifact"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_CLASSIFICATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/antigravity_tasks/README.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — prompt validator updated",
+      "manual_read_summary": "Phase prompt validator: enforces Public mirror maintenance sections for Phase 1574+ prompts, making sanitized mirror disposition a schema gate.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:phase_prompt_public_mirror_maintenance_required"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tools/validate_phase_prompt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1574 prompt hardened",
+      "manual_read_summary": "Phase 1574 publication readiness prompt: records that readiness edits make the sanitized mirror stale and do not authorize public mirror push, visibility change, package publication, or public-RC claim.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1574_publication_readiness_audit"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:phase_1574_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1575 prompt hardened",
+      "manual_read_summary": "Phase 1575 public-RC gate prompt: requires sanitized mirror regeneration from source_private_commit, filtered_public_head_sha recording, scan pass, target remote verification, and explicit public-RC gate before publication.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1575_public_rc_gate_001"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_unverified_public_mirror_target_remote"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575_g10_block6_public_rc_gate_001.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — public mirror policy regression added",
+      "manual_read_summary": "Phase 1573u-Fix5 public mirror policy tests: pin AGENTS/CLAUDE/schema policy text, validator enforcement, and Phase 1574/1575 prompt validity.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/validate_phase_prompt.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/README.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573u_fix5_public_mirror_policy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy current-batch pointer advanced",
+      "manual_read_summary": "Atlas graph node classification taxonomy: advances current manual batch marker to batch 085 for the public mirror policy hardening records.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_CLASSIFICATION",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_CLASSIFICATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy regression updated for batch 085",
+      "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 085 semantic wiring for policy docs, validator, prompts, and tests.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573u_node_classification_taxonomy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — walkthrough and non-claim record",
+      "manual_read_summary": "Phase 1573u-Fix5 walkthrough: records sanitized public mirror maintenance policy changes, validation results, graph intake, and no-publication non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573u_fix5_public_mirror_policy_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573u_fix5_public_mirror_policy_walkthrough.md"
     }
   ],
   "boundary": {

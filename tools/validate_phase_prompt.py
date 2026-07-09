@@ -32,6 +32,7 @@ UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
 # created in docs/specs/, docs/antigravity_tasks/, ilc_core/, tools/, tests/.
 # Enforces the Graph Intake Protocol (CLAUDE.md) — prevents coverage deficit.
 LMDB_NODE_REGISTRATION_PHASE_FLOOR = 1545
+PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR = 1574
 
 
 def _norm_heading(s: str) -> str:
@@ -149,6 +150,13 @@ def validate(path: Path) -> list[str]:
         # must be declared as a candidate LMDB node in the same commit.
         if "lmdb node registration" not in headings:
             errors.append("missing_section:lmdb_node_registration")
+
+    if expected_phase_number >= PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR:
+        # Require explicit sanitized public mirror disposition. This prevents
+        # phases from silently making the generated private mirror stale or
+        # implying public mirror publication authority.
+        if "public mirror maintenance" not in headings:
+            errors.append("missing_section:public_mirror_maintenance")
 
     return errors
 
