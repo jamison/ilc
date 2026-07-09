@@ -37726,6 +37726,4143 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports per-agent epoch reports combining namespace health and agent dossier data to CSV or JSON files, creating parent directories automatically.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "ilc_core/analysis/namespace_health.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "ilc_core/analysis/namespace_health.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/epoch_report_export.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "SIM-63A offline analysis module computing Gini coefficients, Pearson correlation, \u03b2/\u03b8 ECU payout reweighting, and PB farming gating simulations over agent payout distributions.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/fairness_metrics.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes exponential decay freshness gate scores bounded by a configurable floor, with a Genesis node exemption that bypasses decay.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/freshness_gate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Enforces the Genesis cumulative accrual cap using a sigmoid taper (theta_hard=1/20, theta_soft=exp(-3)) with monotonicity invariants and bounded Decimal arithmetic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/genesis_accrual_governor.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Implements CDL-013 Decimal-arithmetic governance weight and vote-share computation with a decay-non-genesis-only rule.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:013"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:013"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/governance_weight.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes per-claim link statistics (supports_in, refutes_in, equivalent_in, depends_on_in) and local influence scores dispatched by protocol algorithm ID.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/graph_kpis.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Full hypergraph Laplacian analytics pipeline implementing ADR-0029 and SIM-SPECTRAL-01: builds the normalized Laplacian, computes the Fiedler value (lambda2/v2), and evaluates partition risk with bootstrap mode for small graphs below N=44.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0029_Hypergraph_Laplacian_Analytics.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0029"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/laplacian_analytics.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes the epistemic light cone composite score (reach \u00d7 horizon \u00d7 domain_span) per agent from graph adjacency and task row aggregation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/light_cone_kpis.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes induced-subgraph local lambda2 per content_type cluster (H-006b Part 2+4, ADR-0032 \u00a72.5), excluding partial-membership hyperedges.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0032_Multiscale_Spectral_Analysis.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0032"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/local_spectral_analytics.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_002_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Builds NamespaceHealthSnapshot combining epistemic stress and cohesion metrics for a namespace at one epoch.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/namespace_health.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Builds conformance reports with SHA-256 over sorted score rows and anti-sybil invariant checks (sybil_low_diversity_reuse, inconsistent_agent_reuse).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_conformance.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Extracts NodeValueInputEvents from dict rows or NDJSON files and constructs replay fixtures with SHA-256 integrity checksums.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_extraction.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Produces comprehensive multi-check governance conformance reports covering score vector schema, anti-sybil, reuse diversity, freshness, refutation profitability, and genesis accrual governor invariants.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_governance_conformance.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Validates and normalizes four node value input event kinds (task_outcome, claim, refutation, commit.epoch) into canonical TypedDict structures with telemetry.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_input_canon.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Core epistemic weight kernel: builds NodeEvidenceVectors from events, computes weighted Decimal scores (reuse, contradiction, validation, path) and utility flow.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_kernel.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Normalizes policy bundles in strict (v0.1) or legacy-bridge mode, mapping legacy field aliases to canonical keys.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/node_value_policy_migration.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes normalized path lift scores per node from path witnesses using baseline efficiency (weight/cost ratio), with agent diversity tracking.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/path_lift_counterfactual.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Aggregates task counts per agent across six problem space categories (LOCAL_CONSISTENCY, GLOBAL_EXPLANATION, etc.) with heuristic inference from task fields.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/problem_space_kpis.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Validates reuse diversity policy (min_distinct_agents, max_single_agent_share, penalty_floor) and computes a diversity multiplier with refutation-safe floor.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/reuse_diversity_invariants.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_003_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Materializes TaskRoutingSuggestions into concrete RoutedTaskRows with QA gating, \u03ba-parameterized reward calculation, and competence multiplier logic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/routed_tasks.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports RoutedTaskRow dict lists to CSV (alphabetical header) or JSON files, creating parent directories automatically.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/routed_tasks_export.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "H-006b Part 3 temporal spectral trajectory analytics: produces SpectralEpochRecord with lambda2_delta and lambda2_accel from a single LAPACK eigenvalue call.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/spectral_trajectory.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0029 spectral utility functions: L2 spectral_distance routing metric, provisional edge weight computation (SIM-REUSE-01 pending), v0.2 fixed-point eigenvalue hashing, and CSPRNG Gaussian noise injection for beacon emission.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0029_Hypergraph_Laplacian_Analytics.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0029"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/spectral_utils.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes EpistemicStress (validation depth, contradiction, crosslink error terms) and CohesionMetrics (support ratio, controversy ratio, mean absolute influence).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/stress_and_cohesion.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Aggregates per-agent stress response metrics (low/high bucket task counts and success rates) from task samples that include a stress field.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/stress_response_kpis.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Generates prioritized TaskRoutingSuggestion lists combining regime classification, agent competency, stress preference, and light cone tie-breaking.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/task_routing_suggestions.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Utility flow reward allocation governor: applies action-kind multipliers (refutation=1.2\u00d7), diversity/freshness multipliers, budget cap, genesis share cap, and refutation profitability invariant.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/analysis/utility_flow_rewards.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Thin ASGI adapter creating the ilc_core FastAPI application via create_app() for uvicorn and module-import serving surfaces.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/asgi.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "PUBLIC_RC_EXCLUDE package marker for the private ADR-0009 bundle tooling; exports no symbols.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_004_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Independent four-layer ADR-0009 bundle verifier: validates CIDv1 content-addressing, DAG-CBOR canonicality, COSE-Sign1 signatures, and the cross-layer CID chain.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/bundle_verifier.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0009 Layer 0 generator: embeds CDL-073 truth primitive schemas as DAG-CBOR bundles with optional COSE-Sign1 attestation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:073"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/layer0_protocol_bundle.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0009 Layer 1 generator: links Layer 0 by SHA-256/CIDv1, stores seed claims, initial agent roster, shard topology, and genesis signing key references as DAG-CBOR.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/layer1_genesis_bundle.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0009 Layer 2 generator: commits epoch state with graph, agent, and contract digests, linking back to Layer 0 and Layer 1 by CIDv1.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/layer2_epoch_snapshot.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0009 Layer 3 generator: wire binding descriptor linking a Layer 2 snapshot CIDv1 to message type, agent, epoch, payload digest, and signature reference.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0009_Protocol_Bundle_Architecture.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/layer3_wire_binding.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ADR-0035 type definition registry (default-off): parses and verifies type definition records with CIDv1 identity; CDL-097 ratification token present.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0035_Type_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:097"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0035"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/bundle/type_registry.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CCSS local runtime implementing X25519+ChaCha20Poly1305 double-layer envelope encryption, contact/identity management, SOCKS5 Tor transport, and prompt injection detection with L2 Unicode obfuscation checks.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ccss/runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "SafeCCSSMessage frozen dataclass enforcing content-vs-instruction isolation with an as_user_input() JSON wrapper and a pluggable MessageSafetyClassifier Protocol for LLM-backed safety passes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ccss/safe_message.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Shared CLI error helpers: emit_cli_error() prints a JSON error payload and exits 2.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/_cli_error.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Key loading utility: base64-decodes key material with a raw-byte fallback for CLI key-registry tools.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/_key_utils.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_005_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Read-first Atlas LMDB CLI providing status, validate, node, edges, register-phase-files, apply-edge-batch, and apply-node-edge-plan subcommands with an authority edge gate.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/atlas_lmdb_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 420 agent identity derive CLI; routes derive-agent-id and verify-agent-id subcommands against CDL-042 runtime.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:042"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:042"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/d2e_agent_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 421 lifecycle CLI routing timed-out-lifecycle commands against CDL-046 and D2D gossip dependency tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:046"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:046"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/d2e_lifecycle_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 888 CDL-075 truth store query CLI routing query-truth subcommands against the CDL-075 truth primitive graph store.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:075"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:075"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/d2e_query_truth_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 874/882 CDL-074/075 truth primitive submit CLI routing submit-truth subcommands that validate and record truth primitive submissions.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:074"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:075"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/d2e_submit_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "HTTP CLI adapter for epistemic task operations with 2-second connect and 30-second read timeouts enforced on all outbound requests.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/ep_task_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Main JSON-first ILC CLI (Phase 264) routing all primitive and operational subcommands and enforcing structured error output.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "MCP CLI adapter dispatching ILC tool calls through NodeMCPToolService.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/mcp_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Sidecar and recipe discovery CLI providing list and run subcommands, including the confidential-contact recipe.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/sidecar_cli.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Canon export bundle signing CLI: signs a canon export bundle using an Ed25519 key loaded from the key registry.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/canon_bundle_sign.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_006_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Canon export bundle validation CLI: validates the structure and signature chain of a canon export bundle file.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/canon_bundle_validate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Governance config loader: reads YAML or JSON configuration files with defaults from governance_mvp.json.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/config.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports CDL-V3 diversity floor and CDL-V7 Popperian gate consensus package symbols.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v3"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v7"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2t lineage adapter mapping accepted agent-loop ECU claim payloads to provenance chain records for attribution downstream.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/accepted_work_lineage_adapter.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2b-3 Python-to-Rust attribution batch bridge converting accepted agent-loop ECU claims to the JSON shape consumed by the Rust attribution_batch_ingest binary.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/attribution_batch_bridge.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-045 circuit-breaker validator: validates breaker activation parameters and evaluates CDL-V3 diversity-quorum trigger conditions.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:045"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:045"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/circuit_breaker_interface.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "SponsorGraph union-find data structure for computing capital cluster diversity across validator sponsor relationships.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/clustering.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-V3 diversity floor runtime: deterministic cluster-diversity helpers computing max_cluster_share and distinct-cluster floor with bounded penalty scoring.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:v3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/diversity_floor_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Core consensus engine coordinating stake governance, ECU fee structure, and validator quorum logic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/engine.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 444 epoch-state and quorum-record runtime implementing CDL-051 constitutional consensus and epoch finality.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:051"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:051"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/epoch_state_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_007_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 445 finality evaluator with CDL-V3 diversity-aware extension that checks whether a quorum record satisfies finality conditions.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v3"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:051"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:v3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/finality_evaluator.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ECU-anchored congestion-aware fee governance: BacklogMetrics and Governance class computing dynamic fee floors from queue depth and stake utilization.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/governance.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-V7 Popperian gate runtime: evaluates decomposition admissibility and falsifiability criteria for epistemic node submissions.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v7"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:v7"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/popperian_gate_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1358 Python-to-ilc_consensus gRPC production bridge referencing ADR-0028 for the language-boundary contract.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0028_Python_Rust_Language_Split.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/adr/ADR_0028_Python_Rust_Language_Split.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/production_bridge.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1357 H-011 Decimal reputation runtime: computes per-agent reputation scores from validation, refutation, and consistency history using exact Decimal arithmetic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/reputation.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports COSE-Sign1 cryptographic primitives (cose_sign1_sign, cose_sign1_verify, cose_sign1_decode).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/crypto/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Canonical CBOR encoding/decoding utilities using cbor2 with canonical=True and a 1 MiB input size cap; validates round-trip canonicality.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/crypto/cbor_canonical.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Minimal RFC 8152 COSE_Sign1 implementation using Ed25519 (algorithm -8, EdDSA) with canonical CBOR and ILC DAG-CBOR payload validation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/crypto/cose_sign1.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ML-DSA-65 signature verification utility for CDL-101 signed gossip envelopes; fails closed on any import, format, or verification error.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:101"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:101"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/crypto/pq_signature_verify.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Distribution profile constants package marker; exports no protocol symbols.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/distribution/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_008_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Economics sandbox entropy helpers: learning_signal() and entropy_weight() compute mid-entropy upweighting over empirical success rates using exact Decimal arithmetic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/entropy.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 550 passive ECU attribution runtime computing centrality-weighted, quality-adjusted passive payouts for reuse paths with CDL-060 dependency verification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:060"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:060"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/passive_ecu_attribution_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "OnboardingVault: issues 0.02 ECU starter credits per agent and intercepts 50% of earnings as repayment until the debt is cleared.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/onboarding.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 946 EpochAttributionBatch.settle() runtime implementing CDL-081 attribution settlement (REUSE, CO_AUTHORSHIP, REFUTATION, PROVENANCE) and CDL-083 H-CON-02 ejected-stake treasury distribution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:081"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:083"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:084"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:085"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:081"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/epoch_attribution_settle_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Economics sandbox reward helper: simple_claim_reward() computes entropy-weighted reward from stake_spent, hardware potential, and optional success_rate using exact Decimal arithmetic.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/reward.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "EconomicTelemetry fa\u00e7ade wrapping SimpleEpochLedger and OutcomeLogger; RLHook defines a no-op observer interface for RL agents to receive per-task and per-epoch signals.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/telemetry.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "SimpleEpochLedger: minimal per-epoch Decimal ledger tracking task counts, ECU spent, and rewards paid with a clearing-price computation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/epoch_ledger.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "TaskOutcome dataclass and OutcomeLogger for accumulating sandbox task economic outcomes (stake_spent, reward_paid, success, domain) in memory.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/outcome.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-031 dynamic ranking multiplier runtime (guarded, not activated): computes log-shaped multiplier f(w) \u2208 [0.80, 1.65] from epistemic weight with anti-dominance cap.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:031"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:031"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/dynamic_ranking_multiplier_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Productive ECU Expansion Bounty scaffold (Phase 1542p, OBL-027): builds non-activating issuance quotes, delivery stubs, and settlement roots under ADR-0016 proposed authority with 15% cap enforced.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0016"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0016"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Sandbox RL agent: SimpleBanditHook implements epsilon-greedy domain selection using secrets.SystemRandom() and incremental mean updates over TaskOutcome reward_paid signals.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/rl_agents.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_009_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1532p default-off emission production path composing CDL-025/026/027/028/029 quote runtimes into a guarded result with SHA-256 settlement root; PRODUCTION_EMISSION_NOT_ACTIVATED=True.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:025"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:026"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:028"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:029"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:025"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/epoch_emission_production_path.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1345 non-activating epoch emission quote runtime implementing CDL-025 halving schedule, CDL-026 C_MAX=25,920,000 cap, and CDL-027 epoch length constants.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:025"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:026"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:027"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:025"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/epoch_emission_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1351 default-off CDL-030 ECU price clamp quote runtime enforcing P_MIN=0.75 and P_MAX=1.30 bounds derived from CDL-027 parameters.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:030"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:030"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/ecu_price_clamp_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1347 default-off CDL-029 allocation split quote runtime distributing epoch emission across the 80/15/5 agent/validator/Genesis-overhead pools.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:029"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:029"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/allocation_distributor_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1346 default-off CDL-028 fee-burn split quote runtime burning 10% of fees to the genesis burn pool with non-activating Decimal arithmetic.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:028"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:028"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/fee_burn_split_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1348 default-off CDL-047 treasury governance quote runtime enforcing 15% bounty cap, 5% burn floor, and 91% velocity alert threshold.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:047"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:047"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/treasury_governance_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1349 default-off CDL-054 validator reward-pool routing runtime computing per-epoch validator share from the CDL-029 allocation pool.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:054"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:054"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/validator_reward_pool_routing_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1352 non-activating issuance economics integration gate composing the Phase 1345\u20131351a quote runtimes and verifying quote-level debit/credit conservation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/issuance_economics_integration_gate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1534p canonical economic event record schema and emitter: builds typed CanonicalEconomicEventRecord structs from CDL-025/027/028/029 emission path output.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:025"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:029"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/canonical_economic_event.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Epoch-boundary witness runtime implementing CDL-057 epoch boundary attestation with CDL-055 staking liveness dependency.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:057"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:055"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:057"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/epoch_boundary_witness_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_010_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase-314 epoch snapshot generator/verifier runtime with canonical test vectors for snapshot creation, bootstrap, and epoch retention.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/epoch_snapshot_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2q Genesis tranche reconciliation runtime separating three Genesis-related value surfaces (genesis burn pool, CDL-029 overhead, CDL-048 tranche) without activating any wallet or settlement path.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:048"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1541p default-off ejected-stake distribution production path wrapping CDL-083/H-CON-02 quote runtimes with SHA-256 settlement root; no stake liquidation or wallet write activated.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:083"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:083"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/ejected_stake_distribution_production_path.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1540p default-off treasury and validator reward production path wrapping CDL-047 and CDL-054 quote runtimes; no treasury transfer or payout activated.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:047"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:054"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epoch/treasury_validator_reward_production_path.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "EVE capsule builder and signing utilities per ADR-0006: builds capsule manifests from entries and signs them using COSE-Sign1 with Ed25519.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/specs/eve_capsule_format_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/eve/capsule_builder.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "EVE capsule verification utilities per ADR-0006: loads and validates capsule manifests and verifies COSE-Sign1 signatures.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/specs/eve_capsule_format_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/eve/capsule.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Centralized ILC domain exception hierarchy defining typed exception classes for stake, epoch, graph, gossip, ledger, protocol, and CLI error conditions.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/exceptions.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 858 HB-001 genesis assertion schema: GenesisAssertionContent, GenesisValidatorEntry, canonical JSON payload encoding for ML-DSA-65 signing, and structural validation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:073"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:073"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/assertion_schema.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1355 default-off CDL-V6 Genesis intervention guardrail runtime: records and audits extraordinary intervention decisions within three-lifetime and epoch-60 outer-sunset bounds.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v6"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:v6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/genesis_intervention_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Genesis validator bootstrap runtime: verifies epoch-zero state, enrollment records, and derives agent IDs from CDL-042 derivation rules.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:042"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:051"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/validator_bootstrap_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_011_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Genesis validator bootstrap admission-control runtime (Phase 481): builds admission control bundles from enrollment records and epoch-zero state against CDL-040.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:040"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:040"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/admission_control_bootstrap.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase-312 genesis state bundle generator/verifier runtime with canonical ceremony step validation and test vectors for mainnet genesis bundle construction.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/genesis_state_bundle_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1557 HB-001 genesis-authority assertion builder wiring caller-facing helpers over the Phase 858 assertion schema to produce unsigned assert.truth envelopes.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:073"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/genesis_authority_assertion.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1559 HB-002 known-peer serving receipts: builds, fetches, and verifies serving receipts over HTTPS with 30-second timeout and 1 MiB response cap.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/serving_receipt.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1562 invitation provenance records: builds and atomically persists InvitationProvenanceRecord structs linking inviter, invitee, serving receipt, depth, and parent invite.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/invitation_provenance_record.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Loads the canonical EpistemicWorkTask JSON schema from the ilc_core.genesis package resource epistemic_work_task_schema_v1.json.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/schema.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "EpistemicWorkTask Pydantic model with five task classes, six task states, Decimal ecu_estimate, and five verification methods.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/work_task.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-006 challenge-node runtime (Phase 1382): validates schema, verifies 3-body affirmative quorum, and writes deterministic audit-path records.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:006"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:006"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/governance/challenge_node_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-009 fork-legitimacy operator inspection runtime (Phase 1383): validates badge schema and eligibility rules for fork-signal artifacts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:009"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:009"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/governance/fork_legitimacy_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1229 read-only deterministic graph projection runtime for digital agents: produces projection dicts for authority, claim, provenance, economic, and branchial convergence views.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/graph/agent_graph_projection_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_012_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1237 read-only sidecar query runtime performing ego-graph, centrality-metrics, and convergence-trace queries over Phase 1229 graph projection dictionaries.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/graph/sidecar_query_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1278 sidecar public-path authorization preflight: records fail-closed checks required before a future non-loopback projection endpoint, but does not bind any socket or serve data.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/graph/sidecar_public_path_preflight.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "HardwareArchetype dataclass and YAML/JSON loader for hardware capability profiles used in economics sandbox simulations.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/hardware.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private idle capacity scheduler stub (not activated): selects up to MAX_TASKS_PER_WINDOW maintenance candidates from scored agent nodes using Decimal epistemic weight.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/idle_capacity_scheduler.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private local node capture helper: builds deterministic LocalNodeSnapshot objects for private graph-shaped artifacts with consent gate enforcement.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/local_node_capture.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private deterministic maintenance task executor: converts scheduled fixtures into QueryResponseArtifact objects with canonical JSON and SHA-256 content addressing.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/maintenance_task_executor.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private local token-budget tracker: accumulates ProviderBudgetSnapshot records from LLM provider usage telemetry (not protocol truth).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/provider_usage_adapter.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private local co-attestation fixture: builds CoAttestationReceipt from up to 16 attestation signatures with canonical JSON and receipt SHA-256.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/co_attestation_receipt.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private local capture consent gate: evaluates ConsentDecision records per subject_id/purpose pair before allowing private artifact transitions.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/consent_gate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private file-backed immutable store (Phase 1485p): persists LocalLedgerEntry records for ConsentGate-approved harness artifacts with mkstemp+os.replace atomic writes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/harness/local_immutable_store.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_013_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-069 epoch endorsement packet schema: field validation, COSE_Sign1 signing payload construction, and agent_state_root specification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/endorsement_packet_schema.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-042 agent identity derivation runtime: deterministically derives 96-char hex agent IDs from identity seeds.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:042"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:042"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/agent_id_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-069 epoch endorsement protocol runtime: EpochEndorsementPacket dataclass, EndorsementCache validator-side state, liveness assertion and ecu_commitment derivation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/epoch_endorsement_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "HIGH-001 AgentID log redaction helpers: produces deterministic epoch-scoped redaction tokens from AgentID material before passing to logging sinks.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/log_redaction_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-069 genesis record schema runtime: four-field SHA-384 commitment structure, blinding factor derivation, and recovery transaction protocol.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:069"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/genesis_record_schema.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Private rehearsal bridge to the Rust pq_agent_sign binary: prompts for seed via TTY-hidden getpass and pipes it to the signer without exposing it as an argument or env var.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/pq_agent_sign_bridge.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-V2 Sybil resistance runtime: validates sponsor diversity, cluster diversity, and invitation-chain depth constraints.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:v2"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:v2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/identity/sybil_resistance_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exact numeric helpers: to_decimal(), decimal_to_canonical_string(), and parse_non_negative_decimal() with NaN/Infinity rejection for all ECU boundary inputs.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/exact_numeric.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "In-memory settlement ledger backend: EpochRecord, InMemoryLedgerBackend, StakeSnapshot-based reward distribution, and abstract LedgerBackend interface.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/backend.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "StakeSnapshot frozen dataclass capturing per-epoch agent stake distribution with invariant checking that the sum of per-agent stakes equals total_stake.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/stake_snapshot.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_014_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes aggregate settlement metrics from the ledger (total epochs, settled/rolled-back/superseded counts, total rewards distributed and stubbed).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/settlement_metrics.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports ledger state to LedgerStateExport JSON/CSV, optionally including stake distribution checks per epoch.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/ledger_export.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Exports canonical ledger state as canon_state.json with SHA-256 hash commitment over sorted-key JSON.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "FileLedgerBackend: persistent file-based ledger backend storing epoch records, stake snapshots, and balances as JSON files with atomic writes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/persistent_backend.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "LmdbLedgerBackend: LMDB-backed ledger backend storing epoch records, stake snapshots, and balances with 256 MiB default map size.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/lmdb_backend.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ILC package profile constants (Gap 14, Phases 1436a-1436b): defines five canonical Python package profile names (protocol-core, operator-node, openclaw-hosted, public-rc, dev).",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/distribution/package_profiles.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Deterministic Genesis package membership manifest helpers: scans Atlas nodes to build a Merkle root over public-protocol-graph file members for local verification.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/distribution/genesis_package_manifest.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Public-RC reference implementation materialization helpers (Fix83): generates manifests, fetches files from cache/repo/tarball/HTTP, verifies SHA-256 hashes, and produces reconstruction receipts.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/distribution/materialization.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ILC encoding package exports: DAG-CBOR encode/decode, CIDv1 node ID generation, and strict profile validation primitives.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/encoding/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CIDv1 generation and parsing: derives content-addressed NodeIDs using DAG-CBOR codec (0x71), SHA2-256 multihash (0x12), and base32 lowercase multibase encoding.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/encoding/cidv1.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_015_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Deterministic DAG-CBOR subset encoder/decoder: definite-length CBOR with canonical map key ordering, minimal integer encoding, no floats, no tags, and 64-level nesting cap.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/encoding/dag_cbor.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "LEB128-style unsigned variable-length integer encoder/decoder for CIDv1 multihash prefix construction.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/encoding/varint.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-052 epistemic runtime package exports: jury gate, shadow ingestion harness, jury assignment, acceptance authority classification, incentives, review lane, maintenance lottery, VRF verifier, and novelty/refutation/reuse centrality runtimes.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/__init__.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2 verifier for ADR-0042 jury assignment (Phase 1411): verifies proofs using liboqs/nacl and returns the 64-byte VRF beta output.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0042"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0042"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/vrf_proof_verifier.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1398/J-008 production jury activation gate: defines and evaluates ten blocking conditions required before production jury assignment, with Phase 1427 re-run issuing the explicit GO.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_activation_gate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1401 CDL-091 jury incentive runtime stub: exposes CDL-091 ratification evidence, reviewer payment parameters, and REVIEWER_PAYMENT_NOT_ACTIVATED guard.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:091"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:091"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_incentive_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1409 CDL-093 maintenance lottery runtime stub: exposes CDL-093 ratification evidence, pool funding parameters, and MAINTENANCE_LOTTERY_NOT_ACTIVATED guard.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:093"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:093"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/maintenance_lottery_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1415 ADR-0043 review lane admission runtime: pure, default-off evaluator producing T0.5\u2192T1+ admission quotes with dedup, payment stub, and REVIEW_LANE_PRODUCTION_NOT_ACTIVATED guard.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0043"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0043"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/review_lane_admission_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-052 refutation submission runtime (Phase 478): validates refutation envelope fields and returns RefutationSubmissionResult with reputation event.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/refutation_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1396/J-006 default-off jury assignment quote runtime: deterministic panel quoting via epoch-hash shadow assignment with VRF integration and CDL-V3 cluster diversity wiring.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0040"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0040"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_assignment_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_016_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-075 truth primitive graph persistence (Phases 879\u2013881): derives CIDv1 node records from validated submissions and writes them through the graph persistence contract with idempotency guards.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:075"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:074"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:075"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/truth_primitive_graph_store.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-052 novelty-check runtime: validates query fields and returns NoveltyCheckResult indicating whether a CID is novel or a known duplicate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/novelty_check_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-052 reuse-centrality runtime (Phase 537): computes bounded centrality scores using incremental direct-use ratio with a 5% floor.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/reuse_centrality_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1397/J-007 shadow public-ingestion jury harness: exercises T0.5 quarantine, external-identifier deduplication, J-003 taxonomy classification, and maintenance task lifecycle without activating production ingestion or ECU distribution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "adr:0041"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:0041"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/ingestion_shadow_harness.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-059 aesthetic panel runtime (Phase 532): composes deterministic diverse panels from agent_pool by model_type buckets using SHA-256-keyed ordering.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:059"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:059"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/aesthetic_panel_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-074 truth primitive submission runtime (Phases 865\u2013868): validates CDL-073 wire-format submissions for six agent-issuable primitives and returns graph-output contracts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:074"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:073"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:074"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/truth_primitive_submission_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-052 epistemic node-submission runtime (Phase 477): validates node submission envelopes and routes to appropriate mode handler.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:052"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/node_submission_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2g jury assignment announcement and recovery runtime: defines push signal, reviewer self-match/ack contract, and missing-assignment recovery receipt without starting a listener or issuing ECU.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_assignment_announcement_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-095 jury verdict finality evaluator (Phase 1494p): evaluates local finality under 2/3 approval threshold with 5-reviewer participation floor; JURY_FINALITY_EVALUATOR_NOT_PRODUCTION guard retained.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:095"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:095"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_finality_evaluator.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2u classification-only module naming six current acceptance-authority surfaces without empaneling juries, evaluating finality, or authorizing settlement.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/epistemic/jury_acceptance_authority_classification.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_017_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Verifies ledger settlement by comparing per-agent computed reward shares against epoch summaries with configurable tolerance.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/settlement_verification.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Canon bundle utilities: shared helpers for canon export bundle file naming, path construction, and bundle manifest parsing.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_utils.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Defines the v0.1 canon export format schema: EpochRecord serialization structure and field ordering for canonical JSON output.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_format.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Validates canon state JSON against the expected schema, checking fields, types, and hash commitment.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_validate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Builds and persists canon export bundles: packages canon state JSON and supporting files into a versioned archive with manifest and content hashes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_bundle.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Signs a canon export bundle using an Ed25519 private key and writes the detached COSE-Sign1 signature file atomically.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_sign.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Validates the structural integrity of a canon export bundle, checking manifest completeness and file hash correctness.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_validate.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Verifies a COSE-Sign1 signature over a canon export bundle manifest using an Ed25519 public key.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_verify_sig.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Produces a structured summary report of a canon export bundle including file count, total size, and verification status.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_export_bundle_report.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Loads and validates canon state JSON from file, checking schema version and hash commitment before returning the parsed state.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_loader.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_018_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Canon bundle key registry: stores, retrieves, and validates named Ed25519 public keys for signing canon export bundles.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Syncs canon bundle key registry entries between operator instances by exchanging signed registry manifests.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Persists and loads canon bundle key registry sync state (last-sync timestamps and remote peer registry manifests) atomically.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync_state.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Fetches remote canon bundle key registry manifests over HTTPS with timeout enforcement and SHA-256 content verification.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_fetch.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Promotes a key from the staging registry to the active registry after policy review and threshold approvals.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_promotion.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Manages the CCSS-encrypted channel for canon bundle key registry communications between operators.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_channel.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Produces and verifies COSE-Sign1 attestations over canon bundle key registry channel messages.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Packages the current canon bundle key registry into a signed manifest artifact for distribution to peer operators.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_bundle.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Replays a canon export bundle and verifies that all epoch records re-hash to their stored commitments.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_replay_verify.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Produces a structured replay report summarizing epoch re-hash verification results across a canon export bundle.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_replay_report.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_019_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Aggregates pipeline-level status reports across sign, validate, verify, and replay canon bundle workflow steps.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_pipeline_report.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Builds and persists canon bundle audit artifacts capturing operator attestation and review decisions over a bundle manifest.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/canon_bundle_audit_artifact.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ECU active-layer runtime: validates and tracks active ECU balance entries across agent accounts with non-negative Decimal invariants.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/ecu_active_layer_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "ECU/ILC lifecycle runtime: manages the ECU-to-ILC conversion pipeline state, activation gates, and lifecycle event emission.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Public economics admission firewall: enforces the J-008 gate boundary before any public-economics path is activated.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/public_economics_admission_firewall.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Claimability proof binding runtime: validates and records proof-of-eligibility bindings for ECU claimability events.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/claimability_proof_binding_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-048 conversion sweeper runtime: identifies and processes expired ECU-to-ILC conversion candidates within the sweeper epoch window.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:048"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:048"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Distributed conversion schema: defines the canonical field structure and validation rules for distributed ECU-to-ILC conversion artifacts.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/distributed_conversion_schema.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1568-Fix2s activation packet verifier: validates the cryptographic activation packet format and CCSS-SPECTRAL route token before authorizing a conversion activation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/fix2s_activation_packet_verifier.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Conversion candidate runtime: identifies ECU balances eligible for ILC conversion based on epoch expiry and claimability proof status.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/conversion_candidate_runtime.py"
+    },
+    {
+      "annotation_batch": "catchup_batch_020_phase_backfill",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "manual_read_summary": "Ledger package init: exports LedgerBackend, InMemoryLedgerBackend, and key ledger model types.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/ledger/__init__.py"
     }
   ],
   "boundary": {
