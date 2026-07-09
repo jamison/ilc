@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_maintenance_task_executor
 PUBLIC_RC_EXCLUDE_REASON: Private deterministic maintenance executor. No live LLM calls, public endpoint, or credit minting.
 """

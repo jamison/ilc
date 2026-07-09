@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_idle_capacity_scheduler
 PUBLIC_RC_EXCLUDE_REASON: Private scheduler stub. No maintenance lottery activation or credit minting.
 """

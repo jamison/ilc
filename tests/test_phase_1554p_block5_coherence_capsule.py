@@ -55,7 +55,9 @@ def test_obligation_sweep_confirms_closures_without_new_closure_claims() -> None
     assert "OBL-023, OBL-024, OBL-028, and OBL-029 were closed by their owning phases" in coherence
     assert "| OBL-030 |" in register
     assert "| OBL-030 |" in coherence
-    assert "| open |" in table_row(OBL_REGISTER, "OBL-030")
+    obl_030 = table_row(OBL_REGISTER, "OBL-030")
+    assert "| closed - routed to post-public-RC Atlas of Cliffs side-project plan |" in obl_030
+    assert "ilc_atlas_of_cliffs_post_public_rc_side_project_plan_v0.1.md" in obl_030
 
 
 def test_cdl_sweep_records_cdl096_ratified_and_runtime_boundaries() -> None:

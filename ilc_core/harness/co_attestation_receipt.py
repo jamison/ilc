@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_co_attestation_receipt
 PUBLIC_RC_EXCLUDE_REASON: Private local co-attestation fixture. Not a public consensus or settlement proof.
 """

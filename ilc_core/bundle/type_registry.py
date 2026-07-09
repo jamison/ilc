@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: adr_0035_type_registry_not_activated
 PUBLIC_RC_EXCLUDE_REASON: Default-off ADR-0035 type registry scaffold. Guard retained
 until separate production activation authority granted after CDL-097 ratification.

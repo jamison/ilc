@@ -1,10 +1,9 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """RFC 9381 ECVRF verifier for ADR-0042.
 
 PUBLIC_RC_EXCLUDE: phase_1411_verifier_pre_integration
 PUBLIC_RC_EXCLUDE_REASON: verifier is implemented before Phase 1412 jury
 assignment integration and before the J-008 production activation gate.
-PUBLIC_RC_INCLUDE_REQUIRES: Phase 1412 integration, Phase 1413 security review,
-and later explicit J-008 gate authorization.
 """
 
 from __future__ import annotations

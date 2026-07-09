@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_protocol_bundle_tooling
 PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 Layer 0 implementation scaffold. Not public RC distribution tooling.
 """

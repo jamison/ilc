@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_provider_usage_adapter
 PUBLIC_RC_EXCLUDE_REASON: Private local token-budget tracker. Provider telemetry is operational-only and not protocol truth.
 """

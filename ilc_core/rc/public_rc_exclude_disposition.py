@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1308 deterministic PUBLIC_RC_EXCLUDE disposition inventory.
 
 This module records planning metadata only. It does not remove markers, strip a

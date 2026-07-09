@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_agentic_harness
 PUBLIC_RC_EXCLUDE_REASON: Private pre-public harness implementation. Not part of public RC exports or activation surfaces.
 """

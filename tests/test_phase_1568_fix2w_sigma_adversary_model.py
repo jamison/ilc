@@ -54,7 +54,9 @@ def test_fix2w_obl_046_closed() -> None:
     text = OBL_REGISTER.read_text(encoding="utf-8")
     obl_row = next(line for line in text.splitlines() if line.startswith("| OBL-046 |"))
 
-    assert "closed_routed_to_cdl_sigma_01" in obl_row
+    assert "closed - CDL-SIGMA-01 ratified and adversary model recorded" in obl_row
+    assert "cdl_sigma_01_ratified_phase_1573e" in obl_row
+    assert "cdl_sigma_01_adversary_model_ratified_phase_1573i" in obl_row
     assert "open - pre-public-RC blocker" not in obl_row
     assert "phase_1568_fix2w_obl_046_closed" in obl_row
 

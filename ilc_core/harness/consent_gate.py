@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_consent_gate
 PUBLIC_RC_EXCLUDE_REASON: Private local capture consent gate. Does not authorize production graph writes.
 """

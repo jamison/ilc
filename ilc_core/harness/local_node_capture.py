@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_local_node_capture
 PUBLIC_RC_EXCLUDE_REASON: Private local node capture helper. Does not write production graph state.
 """
