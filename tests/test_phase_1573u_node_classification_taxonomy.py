@@ -60,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573u-Fix4)" in taxonomy
-    assert "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening" in taxonomy
-    assert "manual_batch_085_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573u-Fix5)" in taxonomy
+    assert "manual_batch_085_phase_1573u_fix5_public_mirror_policy" in taxonomy
+    assert "manual_batch_086_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:
@@ -254,4 +254,49 @@ def test_contact_gate_unverifiable_peer_hardening_batch_is_semantically_wired() 
         "target": "phase:phase_1573u_fix4_contact_gate_contacts_only_constant_time_scan",
     } in by_path[
         "docs/phases/phase_1573u_fix4_contact_gate_unverifiable_peer_hardening_walkthrough.md"
+    ]["proposed_semantic_edges"]
+
+
+def test_public_mirror_policy_batch_is_semantically_wired() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch")
+        == "manual_batch_085_phase_1573u_fix5_public_mirror_policy"
+    }
+    assert set(by_path) == {
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs/antigravity_tasks/README.md",
+        "tools/validate_phase_prompt.py",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1575_g10_block6_public_rc_gate_001.md",
+        "tests/test_phase_1573u_fix5_public_mirror_policy.py",
+        "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+        "tests/test_phase_1573u_node_classification_taxonomy.py",
+        "docs/phases/phase_1573u_fix5_public_mirror_policy_walkthrough.md",
+    }
+    assert {
+        "edge_type": "GOVERNS_CLASSIFICATION",
+        "target": "policy:sanitized_public_mirror_derived_artifact",
+    } in by_path["AGENTS.md"]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "GOVERNS_CLASSIFICATION",
+        "target": "policy:sanitized_public_mirror_derived_artifact",
+    } in by_path["docs/antigravity_tasks/README.md"]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "IMPLEMENTS",
+        "target": "policy:phase_prompt_public_mirror_maintenance_required",
+    } in by_path["tools/validate_phase_prompt.py"]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "TESTS",
+        "target": "tools/validate_phase_prompt.py",
+    } in by_path["tests/test_phase_1573u_fix5_public_mirror_policy.py"][
+        "proposed_semantic_edges"
+    ]
+    assert {
+        "edge_type": "ATTESTATION",
+        "target": "phase:phase_1573u_fix5_public_mirror_policy_committed",
+    } in by_path[
+        "docs/phases/phase_1573u_fix5_public_mirror_policy_walkthrough.md"
     ]["proposed_semantic_edges"]
