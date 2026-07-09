@@ -43433,23 +43433,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-098",
-          "review_status": "candidate_cdl_098_trace"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-099",
-          "review_status": "candidate_cdl_099_trace"
+          "review_status": "candidate_cdl_099_trace",
+          "target": "cdl:CDL-099"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-100",
-          "review_status": "candidate_cdl_100_trace"
+          "review_status": "candidate_cdl_100_trace",
+          "target": "cdl:CDL-100"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0035",
-          "review_status": "candidate_adr_0035_trace"
+          "review_status": "candidate_adr_0035_trace",
+          "target": "adr:ADR-0035"
         }
       ],
       "proposed_semantic_edges": [
@@ -43472,28 +43472,28 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-098",
-          "review_status": "candidate_cdl_098_trace"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-099",
-          "review_status": "candidate_cdl_099_trace"
+          "review_status": "candidate_cdl_099_trace",
+          "target": "cdl:CDL-099"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-100",
-          "review_status": "candidate_cdl_100_trace"
+          "review_status": "candidate_cdl_100_trace",
+          "target": "cdl:CDL-100"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0035",
-          "review_status": "candidate_adr_0035_trace"
+          "review_status": "candidate_adr_0035_trace",
+          "target": "adr:ADR-0035"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md",
-          "review_status": "candidate_section_architecture_trace"
+          "review_status": "candidate_section_architecture_trace",
+          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43579,8 +43579,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "phase:edge_namespace_extension_policy_committed_phase_1573ah",
-          "review_status": "candidate_phase_gate_trace"
+          "review_status": "candidate_phase_gate_trace",
+          "target": "phase:edge_namespace_extension_policy_committed_phase_1573ah"
         }
       ],
       "proposed_semantic_edges": [
@@ -43603,8 +43603,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md",
-          "review_status": "candidate_namespace_policy_trace"
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43632,8 +43632,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md",
-          "review_status": "candidate_namespace_policy_trace"
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43661,8 +43661,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
-          "review_status": "candidate_taxonomy_trace"
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43690,8 +43690,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
-          "review_status": "candidate_taxonomy_trace"
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43773,8 +43773,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "phase:atlas_edge_retirement_rehearsal_complete_phase_1573ai",
-          "review_status": "candidate_phase_gate_trace"
+          "review_status": "candidate_phase_gate_trace",
+          "target": "phase:atlas_edge_retirement_rehearsal_complete_phase_1573ai"
         }
       ],
       "proposed_semantic_edges": [
@@ -43797,8 +43797,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md",
-          "review_status": "candidate_namespace_policy_trace"
+          "review_status": "candidate_namespace_policy_trace",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -43848,8 +43848,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.md",
-          "review_status": "candidate_taxonomy_trace"
+          "review_status": "candidate_taxonomy_trace",
+          "target": "docs/specs/ilc_atlas_edge_retirement_rehearsal_1573ai_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -44115,8 +44115,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-001",
-          "rationale": "CCSS bootstrap CLI surface is authorized by the CCSS CDL chain."
+          "rationale": "CCSS bootstrap CLI surface is authorized by the CCSS CDL chain.",
+          "target": "cdl:CDL-001"
         }
       ],
       "proposed_semantic_edges": [
@@ -44139,13 +44139,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-029",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-029"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-083",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-083"
         }
       ],
       "proposed_semantic_edges": [
@@ -44185,18 +44185,18 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-040",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-040"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-042"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-051",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-051"
         }
       ],
       "proposed_semantic_edges": [
@@ -44236,13 +44236,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-006",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-006"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-009",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-009"
         }
       ],
       "proposed_semantic_edges": [
@@ -44299,18 +44299,18 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-V1",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-V1"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-V2",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-V2"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-042"
         }
       ],
       "proposed_semantic_edges": [
@@ -44520,8 +44520,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-039",
-          "rationale": "D2d interface enforces CDL-039 transport invariants."
+          "rationale": "D2d interface enforces CDL-039 transport invariants.",
+          "target": "cdl:CDL-039"
         }
       ],
       "proposed_semantic_edges": [
@@ -44544,13 +44544,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-079",
-          "rationale": "Implements HB-002 bootstrap distribution."
+          "rationale": "Implements HB-002 bootstrap distribution.",
+          "target": "cdl:CDL-079"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-077",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-077"
         }
       ],
       "proposed_semantic_edges": [
@@ -44574,8 +44574,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-087",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-087"
         }
       ],
       "proposed_semantic_edges": [
@@ -44598,8 +44598,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-087",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-087"
         }
       ],
       "proposed_semantic_edges": [
@@ -44622,8 +44622,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-060",
-          "rationale": "Implements centrality-delta gossip as specified by CDL-060."
+          "rationale": "Implements centrality-delta gossip as specified by CDL-060.",
+          "target": "cdl:CDL-060"
         }
       ],
       "proposed_semantic_edges": [
@@ -44646,8 +44646,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-039",
-          "rationale": "Enforces all CDL-039 transport invariants at gossip layer."
+          "rationale": "Enforces all CDL-039 transport invariants at gossip layer.",
+          "target": "cdl:CDL-039"
         }
       ],
       "proposed_semantic_edges": [
@@ -44670,13 +44670,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-039",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-039"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-061",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-061"
         }
       ],
       "proposed_semantic_edges": [
@@ -44699,8 +44699,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-061",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-061"
         }
       ],
       "proposed_semantic_edges": [
@@ -44723,8 +44723,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-077",
-          "rationale": "Implements CDL-077 WANT-HAVE/WANT-BLOCK server endpoints."
+          "rationale": "Implements CDL-077 WANT-HAVE/WANT-BLOCK server endpoints.",
+          "target": "cdl:CDL-077"
         }
       ],
       "proposed_semantic_edges": [
@@ -44747,8 +44747,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-039",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-039"
         }
       ],
       "proposed_semantic_edges": [
@@ -44771,13 +44771,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-078",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-078"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-094",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-094"
         }
       ],
       "proposed_semantic_edges": [
@@ -44800,8 +44800,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-039",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-039"
         }
       ],
       "proposed_semantic_edges": [
@@ -44824,13 +44824,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0034",
-          "rationale": ""
+          "rationale": "",
+          "target": "adr:ADR-0034"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-080",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-080"
         }
       ],
       "proposed_semantic_edges": [
@@ -44870,13 +44870,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-078",
-          "rationale": "Implements CDL-078 relay incentive runtime."
+          "rationale": "Implements CDL-078 relay incentive runtime.",
+          "target": "cdl:CDL-078"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-060",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-060"
         }
       ],
       "proposed_semantic_edges": [
@@ -44934,8 +44934,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-094",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-094"
         }
       ],
       "proposed_semantic_edges": [
@@ -44992,8 +44992,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-077",
-          "rationale": "Implements CDL-077 WANT-HAVE/WANT-BLOCK client-side fetch."
+          "rationale": "Implements CDL-077 WANT-HAVE/WANT-BLOCK client-side fetch.",
+          "target": "cdl:CDL-077"
         }
       ],
       "proposed_semantic_edges": [
@@ -45016,13 +45016,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-076",
-          "rationale": "Implements CDL-076 truth primitive announcement gossip."
+          "rationale": "Implements CDL-076 truth primitive announcement gossip.",
+          "target": "cdl:CDL-076"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-061",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-061"
         }
       ],
       "proposed_semantic_edges": [
@@ -45097,8 +45097,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-094",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-094"
         }
       ],
       "proposed_semantic_edges": [
@@ -45138,23 +45138,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-080",
-          "rationale": "Implements CDL-080 Star.Map N-Gram Route Index L3 routing."
+          "rationale": "Implements CDL-080 Star.Map N-Gram Route Index L3 routing.",
+          "target": "cdl:CDL-080"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0003",
-          "rationale": ""
+          "rationale": "",
+          "target": "adr:ADR-0003"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0033",
-          "rationale": ""
+          "rationale": "",
+          "target": "adr:ADR-0033"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-077",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-077"
         }
       ],
       "proposed_semantic_edges": [
@@ -45212,18 +45212,18 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-034",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-034"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-035",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-035"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-036",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-036"
         }
       ],
       "proposed_semantic_edges": [
@@ -45263,8 +45263,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-037",
-          "rationale": "Implements CDL-037 executable descriptor validation."
+          "rationale": "Implements CDL-037 executable descriptor validation.",
+          "target": "cdl:CDL-037"
         }
       ],
       "proposed_semantic_edges": [
@@ -45287,8 +45287,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-036",
-          "rationale": "Implements CDL-036 node dissemination runtime."
+          "rationale": "Implements CDL-036 node dissemination runtime.",
+          "target": "cdl:CDL-036"
         }
       ],
       "proposed_semantic_edges": [
@@ -45311,8 +45311,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-034",
-          "rationale": "Implements CDL-034 node schema core envelope."
+          "rationale": "Implements CDL-034 node schema core envelope.",
+          "target": "cdl:CDL-034"
         }
       ],
       "proposed_semantic_edges": [
@@ -45335,8 +45335,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-079",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-079"
         }
       ],
       "proposed_semantic_edges": [
@@ -45376,8 +45376,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-038",
-          "rationale": "Implements CDL-038 promotion continuity runtime."
+          "rationale": "Implements CDL-038 promotion continuity runtime.",
+          "target": "cdl:CDL-038"
         }
       ],
       "proposed_semantic_edges": [
@@ -45417,13 +45417,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-046",
-          "rationale": "Implements CDL-046 timed-out lifecycle amendment."
+          "rationale": "Implements CDL-046 timed-out lifecycle amendment.",
+          "target": "cdl:CDL-046"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-035",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-035"
         }
       ],
       "proposed_semantic_edges": [
@@ -45447,8 +45447,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-035",
-          "rationale": "Implements CDL-035 validation lifecycle state machine."
+          "rationale": "Implements CDL-035 validation lifecycle state machine.",
+          "target": "cdl:CDL-035"
         }
       ],
       "proposed_semantic_edges": [
@@ -45607,8 +45607,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-051",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-051"
         }
       ],
       "proposed_semantic_edges": [
@@ -45648,8 +45648,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-051",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-051"
         }
       ],
       "proposed_semantic_edges": [
@@ -45672,13 +45672,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-043",
-          "rationale": "Implements CDL-043 adaptive pruning."
+          "rationale": "Implements CDL-043 adaptive pruning.",
+          "target": "cdl:CDL-043"
         },
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-044",
-          "rationale": "Implements CDL-044 retention epochs=1."
+          "rationale": "Implements CDL-044 retention epochs=1.",
+          "target": "cdl:CDL-044"
         }
       ],
       "proposed_semantic_edges": [
@@ -45701,8 +45701,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-013",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-013"
         }
       ],
       "proposed_semantic_edges": [
@@ -46082,8 +46082,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-042"
         }
       ],
       "proposed_semantic_edges": [
@@ -46276,8 +46276,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-051",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-051"
         }
       ],
       "proposed_semantic_edges": [
@@ -46827,8 +46827,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-V1",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-V1"
         }
       ],
       "proposed_semantic_edges": [
@@ -46851,8 +46851,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-V1",
-          "rationale": "Implements CDL-V1 temporal decay runtime."
+          "rationale": "Implements CDL-V1 temporal decay runtime.",
+          "target": "cdl:CDL-V1"
         }
       ],
       "proposed_semantic_edges": [
@@ -46909,8 +46909,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-095",
-          "rationale": "Implements CDL-095 petition node type for jury escalation."
+          "rationale": "Implements CDL-095 petition node type for jury escalation.",
+          "target": "cdl:CDL-095"
         }
       ],
       "proposed_semantic_edges": [
@@ -46933,8 +46933,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-095",
-          "rationale": "Implements CDL-095 verdict record schema."
+          "rationale": "Implements CDL-095 verdict record schema.",
+          "target": "cdl:CDL-095"
         }
       ],
       "proposed_semantic_edges": [
@@ -46991,8 +46991,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-007",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-007"
         }
       ],
       "proposed_semantic_edges": [
@@ -47066,8 +47066,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-088",
-          "rationale": "Records CDL-088 public claimability activation authority flip."
+          "rationale": "Records CDL-088 public claimability activation authority flip.",
+          "target": "cdl:CDL-088"
         }
       ],
       "proposed_semantic_edges": [
@@ -47243,8 +47243,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-094",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-094"
         }
       ],
       "proposed_semantic_edges": [
@@ -47267,8 +47267,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-088",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-088"
         }
       ],
       "proposed_semantic_edges": [
@@ -47512,8 +47512,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-087",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-087"
         }
       ],
       "proposed_semantic_edges": [
@@ -47638,8 +47638,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0003",
-          "rationale": ""
+          "rationale": "",
+          "target": "adr:ADR-0003"
         }
       ],
       "proposed_semantic_edges": [
@@ -47662,8 +47662,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-071",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-071"
         }
       ],
       "proposed_semantic_edges": [
@@ -47737,18 +47737,18 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-043",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-043"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-044",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-044"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-071",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-071"
         }
       ],
       "proposed_semantic_edges": [
@@ -47873,23 +47873,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-055",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-055"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-056",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-056"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-017",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-017"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-068",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-068"
         }
       ],
       "proposed_semantic_edges": [
@@ -47912,23 +47912,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-017",
-          "rationale": "Implements CDL-017 validator admission/ejection."
+          "rationale": "Implements CDL-017 validator admission/ejection.",
+          "target": "cdl:CDL-017"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-042"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-046",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-046"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-058",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-058"
         }
       ],
       "proposed_semantic_edges": [
@@ -47952,8 +47952,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-058",
-          "rationale": "Implements CDL-058 validator re-admission cooldown."
+          "rationale": "Implements CDL-058 validator re-admission cooldown.",
+          "target": "cdl:CDL-058"
         }
       ],
       "proposed_semantic_edges": [
@@ -47976,8 +47976,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-055",
-          "rationale": "Implements CDL-055 staking and liveness state validation."
+          "rationale": "Implements CDL-055 staking and liveness state validation.",
+          "target": "cdl:CDL-055"
         }
       ],
       "proposed_semantic_edges": [
@@ -48000,8 +48000,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-068",
-          "rationale": "Implements CDL-068 topology shuffle epoch-hash v1 posture."
+          "rationale": "Implements CDL-068 topology shuffle epoch-hash v1 posture.",
+          "target": "cdl:CDL-068"
         }
       ],
       "proposed_semantic_edges": [
@@ -48024,13 +48024,13 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
-          "target": "cdl:CDL-056",
-          "rationale": "Implements CDL-056 validator trust-tier management."
+          "rationale": "Implements CDL-056 validator trust-tier management.",
+          "target": "cdl:CDL-056"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-055",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-055"
         }
       ],
       "proposed_semantic_edges": [
@@ -48054,8 +48054,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-017",
-          "rationale": ""
+          "rationale": "",
+          "target": "cdl:CDL-017"
         }
       ],
       "proposed_semantic_edges": [
@@ -48087,6 +48087,57 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/work/task_queue.py"
+    },
+    {
+      "annotation_batch": "manual_batch_095_phase_1573ak_api_ingress_audit_prompt",
+      "chronology_note": "2026-07-09 Phase 1573ak prompt — Block 6 API ingress boundary audit phase prompt.",
+      "manual_read_summary": "Phase prompt for 1573ak: classifies FastAPI routes in server.py, enforces 1 MiB gossip body cap (MAX_GOSSIP_PAYLOAD_BYTES), adds app-level max-body middleware, validates peer host on /peers/add, and adds tests/test_server_ingress_hardening.py; pre-1574 blocker.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ak_g8_api_ingress_boundary_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_095_phase_1573al_rc_exclude_import_closure_prompt",
+      "chronology_note": "2026-07-09 Phase 1573al prompt — Block 6 PUBLIC_RC_EXCLUDE import closure phase prompt.",
+      "manual_read_summary": "Phase prompt for 1573al: builds AST-based PUBLIC_RC_EXCLUDE import scanner (tools/check_public_rc_exclude_imports.py), applies one of four dispositions to 7 confirmed import-closure violations across privacy/__init__, epistemic/__init__, genesis/__init__, genesis_authority_assertion, jury_assignment_runtime, and cli/main.py lazy imports; pre-1574 blocker.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md"
+    },
+    {
+      "annotation_batch": "manual_batch_095_phase_1573am_security_transactionality_prompt",
+      "chronology_note": "2026-07-09 Phase 1573am prompt — Block 6 security runtime transactionality review phase prompt.",
+      "manual_read_summary": "Phase prompt for 1573am: audits key_compromise_runtime.py (revoke+recover partial-state risk) and rollback_resistance_runtime.py (in-memory replay protection lost on restart), adds named doc-comments and security pin tests; becomes pre-activation blocker if either runtime is found on a live public path.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573am_g8_security_runtime_transactionality_review.md"
     }
   ],
   "boundary": {
