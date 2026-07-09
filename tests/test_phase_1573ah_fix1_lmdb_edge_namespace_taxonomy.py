@@ -23,14 +23,14 @@ def _taxonomy_text() -> str:
 
 def _fix38_edge_types() -> set[str]:
     text = _taxonomy_text()
-    section = text.split("## §4 — Fix38 Annotation Edge Type Taxonomy", 1)[1]
-    section = section.split("## §4a — Atlas/LMDB Reserved Native Edge Namespace", 1)[0]
+    section = text.split("## §4 — Canonical ILC Edge Type Namespace", 1)[1]
+    section = section.split("## §4a — Additional Canonical Native Edge Definitions", 1)[0]
     return set(re.findall(r"^### ([A-Z_]+)$", section, flags=re.MULTILINE))
 
 
 def _lmdb_reserved_extra_edge_types() -> set[str]:
     text = _taxonomy_text()
-    section = text.split("## §4a — Atlas/LMDB Reserved Native Edge Namespace", 1)[1]
+    section = text.split("## §4a — Additional Canonical Native Edge Definitions", 1)[1]
     section = section.split("## §5 — Classification Decision Tree", 1)[0]
     return set(re.findall(r"^\| `([A-Z_]+)` \|", section, flags=re.MULTILINE))
 
@@ -44,9 +44,10 @@ def test_taxonomy_reserves_every_lmdb_writer_edge_type() -> None:
     assert "PROPOSES_CHANGE_TO" in _lmdb_reserved_extra_edge_types()
 
 
-def test_fix38_subset_is_narrower_than_lmdb_native_namespace() -> None:
+def test_single_canonical_namespace_uses_profiles_for_phase_intake_and_lmdb() -> None:
     fix38 = _fix38_edge_types()
     extra = _lmdb_reserved_extra_edge_types()
+    text = _taxonomy_text()
 
     assert "SOURCE_TREE_MEMBER" in fix38
     assert "TESTS" in fix38
@@ -54,6 +55,10 @@ def test_fix38_subset_is_narrower_than_lmdb_native_namespace() -> None:
     assert "GOVERNS" in extra
     assert "CONTAINS_FILE" not in fix38
     assert "CONTAINS_FILE" in extra
+    assert "one canonical ILC edge namespace" in text
+    assert "usage_profile=phase_intake" in text
+    assert "usage_profile=atlas_native_reserved" in text
+    assert "usage_profile=legacy_reserved_no_new_use" in text
 
 
 def test_live_lmdb_uses_only_reserved_writer_edge_types() -> None:
@@ -72,5 +77,5 @@ def test_taxonomy_warns_against_blind_lmdb_edge_substitution() -> None:
 
     assert "Do not run a blind migration" in text
     assert "Safe substitutions are contextual, not mechanical" in text
-    assert "The current discrepancy between the Fix38 subset and the Atlas/LMDB edge set is" in text
-    assert "intentional after this section" in text
+    assert "The current difference between phase-intake and Atlas-native usage profiles is" in text
+    assert "single canonical ILC edge namespace" in text
