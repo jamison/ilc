@@ -55,17 +55,21 @@ ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 - Phase 1573x: Multi-slice encrustation model ADR (new ADR opening)
 - Phase 1573aa: CDL-029 Amendment #2 (C_max denominator constitutionalization)
 - Phase 1573ad: Inviter-chaining CDL opening (TBD CDL number, separate from CDL-091 which is ratified Jury Incentive Economics)
+- Phase 1573aq: Inviter-chaining CDL prelock (SENSITIVE; depends on 1573z complete and 1573ad complete)
 - Phase 1574: Publication readiness audit (SENSITIVE, human gate)
-- Phase 1575: Genesis signing ceremony (SENSITIVE, human GO required)
+- Phase 1575: Genesis signing ceremony (SENSITIVE, human GO required; deliverables include signing three AtlasSliceManifest variants — see §4 and Decision 3 note)
 
 ### Track B — Spec Documents (NON-SENSITIVE) — G8
 - Phase 1573w: AtlasSliceManifest build pipeline spec + graph_projection naming policy spec
 - Phase 1573u: OBL register sweep + pre-1573v coherence check
+- Phase 1573an: HB-002 full bootstrap gossip protocol design spec
 
 ### Track C — Runtime Implementation (NON-SENSITIVE) — G8
 - Phase 1573z: Invite token CLI plumbing (InviteBatchRecord, InviteRedemptionRecord, invite-aware identity/agent init command, three signing levels)
 - Phase 1573ab: genesis_accrual_governor.py runtime fix (C_max denominator)
 - Phase 1573y: Fix65a/Fix65b LMDB coverage repair (sequential Atlas writes only)
+- Phase 1573ao: ADR-0009 Layer 0 bundle generator canonical test vectors + CLI wiring (pulled forward from 1576h)
+- Phase 1573ap: Homoiconic build pipeline CLI (ilc atlas build-slice, sign-manifest, verify-slice) (pulled forward from 1576i)
 
 ### Track D — Simulation (NON-SENSITIVE) — G8
 - Phase 1573ac: Canonical Genesis accumulation SIM (closes Phase 305 canonicalization checklist)
@@ -74,7 +78,8 @@ ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 - Phase 1573ae: ProjectionPolicyNode + SigningGroupRulesNode knowledge nodes in LMDB
 
 ### Track F — Closure (NON-SENSITIVE) — G8
-- Phase 1573af: Pre-1574 coherence report + capsule update
+- Phase 1573af: Mid-block coherence check + capsule snapshot (runs before security G8 package; no longer the final pre-1574 coherence)
+- Phase 1573ar: Pre-1574 final coherence report + capsule update (runs after ALL of 1573ak–1573aq)
 
 ## 4. Ordered Phase Table
 
@@ -96,23 +101,34 @@ ILC_CDL_MUTATION_AUTHORIZED=1 ILC_CDL_MUTATION_PHASE=<phase>
 | 14 | 1573ac | Canonical Genesis accumulation SIM | NON-SENSITIVE | D/G8 |
 | 15 | 1573ad | Inviter-chaining CDL opening | SENSITIVE | A/G8 |
 | 16 | 1573ae | ProjectionPolicyNode + SigningGroupRulesNode LMDB nodes | NON-SENSITIVE | E/G8 |
-| 17 | 1573af | Pre-1574 coherence + capsule | NON-SENSITIVE | F/G8 |
-| 18 | 1574 | Publication readiness audit | SENSITIVE | A |
-| 19 | 1575 | Genesis signing ceremony | SENSITIVE | A |
+| 17 | 1573af | Mid-block coherence check + capsule snapshot | NON-SENSITIVE | F/G8 |
+| 18 | 1573ak | API ingress boundary audit | NON-SENSITIVE | G8 |
+| 19 | 1573al | PUBLIC_RC_EXCLUDE import closure | NON-SENSITIVE | G8 |
+| 20 | 1573am | Security runtime transactionality review | NON-SENSITIVE | G8 |
+| 21 | 1573an | HB-002 full bootstrap gossip protocol design spec | NON-SENSITIVE | B/G8 |
+| 22 | 1573ao | ADR-0009 bundle generator test vectors + CLI wiring | NON-SENSITIVE | C/G8 |
+| 23 | 1573ap | Homoiconic build pipeline CLI (ilc atlas build-slice, sign-manifest, verify-slice) | NON-SENSITIVE | C/G8 |
+| 24 | 1573aq | Inviter-chaining CDL prelock | SENSITIVE | A/G8 |
+| 25 | 1573ar | Pre-1574 final coherence report + capsule update | NON-SENSITIVE | F/G8 |
+| 26 | 1574 | Publication readiness audit | SENSITIVE | A |
+| 27 | 1575 | Genesis signing ceremony (+ sign three AtlasSliceManifest variants) | SENSITIVE | A |
 
 ## 5. Post-RC Window 1576-1584 (Planned, Not Yet Sequenced)
+
+**Note:** 1576h (ADR-0009 bundle generator implementation) and 1576i (homoiconic build
+pipeline CLI) have been pulled forward as pre-RC phases 1573ao and 1573ap respectively.
+1576j (layered star maps — three AtlasSliceManifest variants) has been folded into Phase
+1575 Genesis signing ceremony deliverables. The entries below reflect these removals.
 
 | Order | Phase | Topic | Sensitivity |
 |-------|-------|-------|-------------|
 | 1 | 1576a | tier field elimination → graph_projection migration | NON-SENSITIVE |
 | 2 | 1576b-g | Fix56–Fix65 LMDB coverage gap closure (per-node source_sha256) | NON-SENSITIVE series |
-| 3 | 1576h | ADR-0009 Layer 0 bundle generator implementation | NON-SENSITIVE |
-| 4 | 1576i | Homoiconic build pipeline CLI (ilc atlas build-slice, sign-manifest, verify-slice) | NON-SENSITIVE |
-| 5 | 1576j | Layered star maps production (three AtlasSliceManifest variants signed by Genesis) | SENSITIVE |
-| 6 | 1576k | Group node taxonomy ADR (repo_group, jury_group, SigningGroupRulesNode, GatedShardPolicyNode) | SENSITIVE |
-| 7 | 1576l | GatedShardPolicyNode + SigningGroupRulesNode runtime implementation | NON-SENSITIVE |
-| 8 | 1576m | Inviter-chaining CDL ratification | SENSITIVE |
-| 9 | 1576n | Window 1576-1584 closure gate | SENSITIVE |
+| 3 | 1576k | Group node taxonomy ADR (repo_group, jury_group, SigningGroupRulesNode, GatedShardPolicyNode) | SENSITIVE |
+| 4 | 1576l | GatedShardPolicyNode + SigningGroupRulesNode runtime implementation | NON-SENSITIVE |
+| 5 | 1576m | Inviter-chaining CDL ratification | SENSITIVE — Pre-RC prelock completed at Phase 1573aq; ratification requires evidence from live network invite chains (not devnet-only). |
+| 6 | 1576-HB002 | HB-002 full — Full peer-to-peer bootstrap protocol implementation (new node receives signed genesis artifacts from any peer, verifies, reconstructs state). Requires: live external operators, 1573an spec compliance, serving receipt integration. | NON-SENSITIVE implementation; SENSITIVE wire protocol deployment gate |
+| 7 | 1576n | Window 1576-1584 closure gate | SENSITIVE |
 
 ## 6. Critical Constraints
 
@@ -136,6 +152,17 @@ These are for Phase 1573z (invite + init CLI).
 
 ### InviteBatchRecord pattern
 When Genesis creates a batch of N invite tokens: one InviteBatchRecord node written to graph (fields: inviter_cid, batch_id, count, nonce_merkle_root, created_epoch, inviter_sig). No per-token nodes created. Redemption must not persist raw nonces in permanent graph records. Single-use enforcement should use a deterministic redemption nullifier, e.g. `sha256("ilc-invite-nullifier-v1:" || batch_id || nonce)`, so repeat redemption produces the same public nullifier while the nonce remains private. New user's identity node is NOT pre-created — it is created at redemption when the user's public key is known. Phase 1573z implements local/default-off plumbing only; Phase 1573ad opens the separate inviter-chaining economics CDL.
+
+### Pre-RC / post-RC split for HB-002 and inviter-chaining CDL
+
+- Phase 1573an defines the bootstrap gossip protocol wire format spec. Phases 1573ao and 1573ap must implement to this spec. Any deviation discovered post-RC requires an amendment to 1573an, not a silent refactor.
+- Phase 1573aq prelocks the inviter-chaining CDL parameters. Phase 1573z's InviteBatchRecord / InviteRedemptionRecord implementation is the implementation record for those parameters. If 1573z introduces a parameter not captured in 1573aq's prelock, that is a CDL-amendment obligation to carry forward.
+- Phase 1576m CDL ratification requires: the CDL has been prelocked (1573aq token present), and at least one full invite-chain creation + redemption has been observed on the live network. Do not ratify from devnet-only evidence.
+- HB-002 full implementation (post-RC) must pass: new external node bootstraps genesis artifacts from an existing peer without any out-of-band file copy or GitHub clone. Test against a real external operator node, not a local VPS.
+
+### Phase 1575 deliverables — AtlasSliceManifest signing
+
+Signing three AtlasSliceManifest variants is an explicit deliverable of Phase 1575 (Genesis signing ceremony). The three variants correspond to the layered star map tiers defined in 1573w and implemented in 1573ap. Do not create a separate 1576j phase for this — the Genesis signing ceremony is the correct authority gate.
 
 ### ContactGateNode pattern
 Agent INIT nodes can be public, but inbound sealed-message authorization should route through a ContactGateNode/capability context rather than through a global "anyone can message any agent" rule. Contact gates support public-open, contacts-only, capability-required, private-invite-only, and closed modes. Public gate manifests may be graph-visible; private gate capabilities must remain opaque and must be committed through CCSS route-token/sealed-payload context, not relay-visible metadata. Phases 1573s and 1573t specify and rehearse this boundary before public RC.
