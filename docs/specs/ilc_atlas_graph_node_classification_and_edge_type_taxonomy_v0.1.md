@@ -582,8 +582,8 @@ Batch identifier format: `manual_batch_NNN_phase_MMMM_<slug>`
 - `MMMM` — the current phase number (e.g., `1575`)
 - `<slug>` — short lowercase underscore-separated description of what the batch covers
 
-**Current last batch (as of Phase 1573ah-Fix3 edge recipe retirement planning):** `manual_batch_091_phase_1573ah_fix3_edge_recipe_retirement_planning`
-**Next batch:** `manual_batch_092_<slug>`
+**Current last batch (as of Phase 1573ai/1573aj edge retirement prompt drafting):** `manual_batch_092_phase_1573ai_1573aj_edge_retirement_prompt_drafts`
+**Next batch:** `manual_batch_093_<slug>`
 
 For retroactive backfills covering a range of phases, use:
 `manual_batch_NNN_phase_RANGE_retroactive`
