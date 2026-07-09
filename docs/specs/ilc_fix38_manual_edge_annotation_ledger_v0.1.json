@@ -37530,6 +37530,202 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_atlas_ledger_backlog_v0.1.md"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/agent.py",
+      "manual_read_summary": "EveAgent runtime: submits claim nodes to the epistemic graph, stakes ECU through consensus governance fee enforcement, and auto-mines claims proportional to PoW hardware potential score.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-042",
+          "rationale": "CDL-042 governs the globally flat namespace and key-derived agent_id used as EveAgent.id."
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:ADR-0028",
+          "rationale": "ADR-0028 records the agent execution posture (Option B) that EveAgent's staking and auto-mine strategy implements."
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/agent_descriptors.py",
+      "manual_read_summary": "Aggregates per-agent task-count distributions across problem space categories into AgentDescriptor dataclass objects for analytics export.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/agent_dossier_export.py",
+      "manual_read_summary": "Flattens AgentProfile objects to CSV and JSON export format, handling nested competency, stress-response, and light-cone sub-structures via scalar promotion and _json columns.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/agent_profiles.py",
+      "manual_read_summary": "AgentProfile dataclass that aggregates per-agent econ, claim, influence, competency, stress-response, and light-cone KPIs into a unified exportable record; includes builder and attach helpers.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/claim_scores.py",
+      "manual_read_summary": "Builds per-claim influence score rows by combining EpistemicGraph link statistics (supports_in, refutes_in, depends_on_in) with local influence scores derived from ProtocolParams.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/competency_kpis.py",
+      "manual_read_summary": "Computes per-agent competency KPIs aggregated by problem space and barrier level (low/medium/high), including task success rates and per-space cross-averages.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/econ_accounting.py",
+      "manual_read_summary": "Computes macro token economic metrics\u2014burn, public benefit allocation, and net issuance\u2014from DevnetExperimentSummary totals, enforcing rate validity and sum constraints.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/econ_kpis.py",
+      "manual_read_summary": "Loads tasks.csv, epochs.csv, and claims.csv and computes per-agent and global economic KPIs including reward totals, clearing prices, domain breakdown, and task counts.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/embedding_pipeline.py",
+      "manual_read_summary": "H-010 epoch-stamped node embedding pipeline: selects sentence-transformer models by ADR-0030 content type, enforces SIM-EMBED-01 staleness thresholds, and persists L2-normalized vectors to an LMDB sidecar store.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0030",
+          "rationale": "ADR-0030 defines the node embedding substrate and content-type mapping that embedding_pipeline.py implements."
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "adr:ADR-0030",
+          "rationale": "Implements ADR-0030 embedding substrate: content-type \u2192 payload family \u2192 model selection, staleness thresholds, and LMDB sidecar persistence."
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "catchup_batch_001",
+      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "repo_path": "ilc_core/analysis/epistemic_code.py",
+      "manual_read_summary": "TargetEpistemicConfig and NamespaceStats dataclasses with compute_config_error(), which measures signed deviations between observed namespace epistemic health metrics and target thresholds for contradiction density, validation depth, and crosslink ratio.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
     }
   ],
   "boundary": {
