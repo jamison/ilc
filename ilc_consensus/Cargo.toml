@@ -85,5 +85,9 @@ path = "src/shamir_split_main.rs"
 name = "shamir_recover"
 path = "src/shamir_recover_main.rs"
 
+[[bin]]
+name = "shamir_verify"
+path = "src/shamir_verify_main.rs"
+
 # ILC implements its own sovereign Mysticeti-style consensus loop here. The
 # upstream mysticeti-core crate is not a current dependency or vendored source.
