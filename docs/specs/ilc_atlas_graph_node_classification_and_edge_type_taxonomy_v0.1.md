@@ -1,9 +1,9 @@
 # ILC Atlas Graph Node Classification and Edge Type Taxonomy v0.1
 
-**Status:** Authoritative  
-**Established:** Phase 1575  
-**Authority:** CDL-098 (provenance metadata); Fix38 annotation ledger (active candidate record store)  
-**Supersedes:** Informal per-phase guidance embedded in phase prompts  
+**Status:** Authoritative
+**Established:** Phase 1573u / post-1573u ledger hardening
+**Authority:** CDL-098 (provenance metadata); Fix38 annotation ledger (active candidate record store)
+**Supersedes:** Informal per-phase guidance embedded in phase prompts
 
 ---
 
@@ -26,8 +26,10 @@ in the Fix38 ledger and downstream graph materialisation tooling. Introducing sy
 
 ## §2 — Ledger Entry Structure
 
-Each entry in `data['annotations']` is a JSON object with these exact field names.
-Do not substitute alternative names.
+Each new entry in `data['annotations']` is a JSON object with these exact field
+names. Do not substitute alternative names for new records. The historical ledger
+still contains a small number of legacy records with older keys; those are
+permitted as legacy records only and must not be copied into new batches.
 
 ```json
 {
@@ -48,7 +50,7 @@ Do not substitute alternative names.
     }
   ],
   "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SOURCE_TREE_MEMBER"],
-  "recommended_graph_action": "load_bearing_artifact_added: docs/specs/example_file_v0.1.md -> cdl:CDL-NNN",
+  "recommended_graph_action": "load_bearing_artifact_added",
   "repo_path": "docs/specs/example_file_v0.1.md"
 }
 ```
@@ -63,8 +65,8 @@ Do not substitute alternative names.
 | `proposed_authority_trace_edges` | Yes | Authority-connection edges (CDL, ADR, ratified spec); may be empty array `[]` if none exist |
 | `proposed_semantic_edges` | Yes | Structural/content edges; must include at minimum `SOURCE_TREE_MEMBER → genesis:genesis_root_v0.4` |
 | `proposed_trace_roles` | Yes | Flat array of all edge type strings used across both edge arrays |
-| `recommended_graph_action` | Yes | One of the five `graph_delta` forms (§6); free-text elaboration permitted after the form |
-| `repo_path` | Yes | Repo-relative file path (NOT `path`, NOT `candidate_id`, NOT `node_type`) |
+| `recommended_graph_action` | Yes | Normalized graph action token: `support_only`, `load_bearing_artifact_added`, `load_bearing_artifact_changed`, `none`, or `deferred`; older records may contain free-text materialization notes |
+| `repo_path` | Yes | Repo-relative file path (NOT `path`; NOT replaced by `candidate_id` or `node_type`) |
 
 ### What NOT to use
 
@@ -74,9 +76,9 @@ These field names appeared in earlier informal guidance and are **incorrect**:
 |---|---|
 | `path` | `repo_path` |
 | `node_type` | (not a top-level field; node kind is encoded in `recommended_graph_action` and `proposed_trace_roles`) |
-| `candidate_id` | (not used; `repo_path` is the unique key) |
+| `candidate_id` | Do not add to new records; legacy records may retain it for historical repair traces |
 | `proposed_edges` | `proposed_authority_trace_edges` + `proposed_semantic_edges` |
-| `annotation_method` | (provenance metadata — belongs in the per-node Genesis signing block, not the candidate record) |
+| `annotation_method` | Do not add to new records; provenance metadata belongs in the per-node Genesis signing block, not the candidate record |
 
 ---
 
@@ -106,9 +108,9 @@ Node kind is inferred from file path and content type. Use the strings in the
 ### SOURCE_TREE_MEMBER
 
 **Meaning:** Connects any tracked file to the genesis root — asserts it is part of the
-ILC source tree.  
-**Source node types:** All node kinds.  
-**Target format:** `genesis:genesis_root_v0.4`  
+ILC source tree.
+**Source node types:** All node kinds.
+**Target format:** `genesis:genesis_root_v0.4`
 **Example:** `{"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}`
 
 Every file in every ledger entry must include this edge in `proposed_semantic_edges`.
@@ -119,11 +121,11 @@ Do not omit it.
 ### REFERENCES_AUTHORITY
 
 **Meaning:** The file cites, depends on, or is governed by a CDL, ADR, or ratified spec.
-Requires an actual content reference — do not use for mere co-existence.  
+Requires an actual content reference — do not use for mere co-existence.
 **Source node types:** `spec_doc`, `cdl_evidence`, `adr_spec`, `test_file`, `runtime_module`,
-`phase_prompt`, `window_guidance`, `constraint_record`  
-**Target format:** `cdl:CDL-NNN`, `adr:ADR-NNNN`, or `docs/specs/<filename>`  
-**review_status in authority trace edges:** `"candidate_cdl_NNN_trace"`, `"candidate_adr_NNNN_trace"`, etc.  
+`phase_prompt`, `window_guidance`, `constraint_record`
+**Target format:** `cdl:CDL-NNN`, `adr:ADR-NNNN`, or `docs/specs/<filename>`
+**review_status in authority trace edges:** `"candidate_cdl_NNN_trace"`, `"candidate_adr_NNNN_trace"`, etc.
 **Example:**
 ```json
 {
@@ -135,12 +137,26 @@ Requires an actual content reference — do not use for mere co-existence.
 
 ---
 
+### REFERENCES
+
+**Meaning:** Legacy generic reference edge found in older Fix38 annotation
+records. Do not use for new records when a more specific edge applies. Prefer
+`REFERENCES_AUTHORITY` for CDL/ADR/spec authority links, `DERIVED_FROM` for
+derivation, `TESTS` for test coverage, and `EVIDENCES` for evidence links.
+
+**Source node types:** Legacy records only.
+**Target format:** Historical target string from the legacy record.
+**Migration note:** Future cleanup may migrate legacy `REFERENCES` edges to more
+specific edge types after source-read review.
+
+---
+
 ### IMPLEMENTS
 
 **Meaning:** Runtime module implements parameters, constraints, or behaviour specified by
-a CDL or ADR.  
-**Source node types:** `runtime_module`  
-**Target format:** `cdl:CDL-NNN`, `adr:ADR-NNNN`  
+a CDL or ADR.
+**Source node types:** `runtime_module`
+**Target format:** `cdl:CDL-NNN`, `adr:ADR-NNNN`
 **Example:** `{"edge_type": "IMPLEMENTS", "target": "cdl:CDL-051"}`
 
 ---
@@ -149,9 +165,9 @@ a CDL or ADR.
 
 **Meaning:** Test file exercises or validates a specific module, doc, or function. Distinct
 from `REGRESSES` (which guards a named invariant) and `COVERS_SYMBOL` (which pinpoints a
-Python symbol).  
-**Source node types:** `test_file`  
-**Target format:** `ilc_core/path/to/module.py`, `docs/specs/<filename>`, `docs/adr/<filename>`  
+Python symbol).
+**Source node types:** `test_file`
+**Target format:** `ilc_core/path/to/module.py`, `docs/specs/<filename>`, `docs/adr/<filename>`
 **Example:** `{"edge_type": "TESTS", "target": "ilc_core/reputation/temporal_decay_runtime.py"}`
 
 ---
@@ -159,9 +175,9 @@ Python symbol).
 ### COVERS_SYMBOL
 
 **Meaning:** Test or spec covers a specific Python symbol (class, method, or function) by
-dotted import path.  
-**Source node types:** `test_file`, `spec_doc`  
-**Target format:** `module.Class.method` (dotted Python import path)  
+dotted import path.
+**Source node types:** `test_file`, `spec_doc`
+**Target format:** `module.Class.method` (dotted Python import path)
 **Example:** `{"edge_type": "COVERS_SYMBOL", "target": "ilc_core.types.Node.type"}`
 
 ---
@@ -169,9 +185,9 @@ dotted import path.
 ### EVIDENCES
 
 **Meaning:** Spec, walkthrough, or test provides evidence for a CDL ratification, phase
-output token, or ADR acceptance.  
-**Source node types:** `cdl_evidence`, `phase_walkthrough`, `test_file`, `spec_doc`  
-**Target format:** `cdl:cdl_NNN_<slug>_ratified_MMMM`, `phase:<NNNN_token>`, `adr:<slug>`  
+output token, or ADR acceptance.
+**Source node types:** `cdl_evidence`, `phase_walkthrough`, `test_file`, `spec_doc`
+**Target format:** `cdl:cdl_NNN_<slug>_ratified_MMMM`, `phase:<NNNN_token>`, `adr:<slug>`
 **Example:** `{"edge_type": "EVIDENCES", "target": "cdl:cdl_098_provenance_metadata_ratified_1573pre"}`
 
 ---
@@ -179,9 +195,9 @@ output token, or ADR acceptance.
 ### REGRESSES
 
 **Meaning:** Test guards against regression of a specific named invariant. The invariant
-token should be stable and not phase-specific.  
-**Source node types:** `test_file`  
-**Target format:** `invariant:<token_name>`  
+token should be stable and not phase-specific.
+**Source node types:** `test_file`
+**Target format:** `invariant:<token_name>`
 **Example:** `{"edge_type": "REGRESSES", "target": "invariant:no_decision_log_mutation_phase_354"}`
 
 ---
@@ -189,9 +205,9 @@ token should be stable and not phase-specific.
 ### CLASSIFIED_BY
 
 **Meaning:** File is classified by a policy, guard, or sensitivity rule that restricts
-its publication or distribution.  
-**Source node types:** All node kinds (when applicable).  
-**Target format:** `policy:<policy_token>` (e.g., `policy:public_rc_excluded`)  
+its publication or distribution.
+**Source node types:** All node kinds (when applicable).
+**Target format:** `policy:<policy_token>` (e.g., `policy:public_rc_excluded`)
 **Example:** `{"edge_type": "CLASSIFIED_BY", "target": "policy:public_rc_excluded"}`
 
 Add this edge to any file with a `PUBLIC_RC_EXCLUDE` header, in addition to its other edges.
@@ -201,18 +217,18 @@ Add this edge to any file with a `PUBLIC_RC_EXCLUDE` header, in addition to its 
 ### SIM_EVIDENCE
 
 **Meaning:** Simulation script or result file provides evidence for a claim, design
-decision, or protocol parameter.  
-**Source node types:** `sim_tool`, `spec_doc`  
-**Target format:** `claim:<claim_slug>`, `cdl:CDL-NNN`  
+decision, or protocol parameter.
+**Source node types:** `sim_tool`, `spec_doc`
+**Target format:** `claim:<claim_slug>`, `cdl:CDL-NNN`
 **Example:** `{"edge_type": "SIM_EVIDENCE", "target": "claim:spectral_route_efficiency_threshold"}`
 
 ---
 
 ### DERIVED_FROM
 
-**Meaning:** File is derived from, generated by, or directly extends another file.  
-**Source node types:** `tool_script`, `sim_tool`, `spec_doc`  
-**Target format:** `docs/specs/<filename>`, `ilc_core/<module.py>`, `tools/<script>`  
+**Meaning:** File is derived from, generated by, or directly extends another file.
+**Source node types:** `tool_script`, `sim_tool`, `spec_doc`
+**Target format:** `docs/specs/<filename>`, `ilc_core/<module.py>`, `tools/<script>`
 **Example:** `{"edge_type": "DERIVED_FROM", "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"}`
 
 ---
@@ -220,9 +236,9 @@ decision, or protocol parameter.
 ### PROVENANCE
 
 **Meaning:** Records the provenance chain for an artifact — traces custody, authorship,
-or transformation lineage.  
-**Source node types:** `cdl_evidence`, `spec_doc`, `constraint_record`  
-**Target format:** `phase:<NNNN_token>`, `cdl:CDL-NNN`, `commit:<hash>`  
+or transformation lineage.
+**Source node types:** `cdl_evidence`, `spec_doc`, `constraint_record`
+**Target format:** `phase:<NNNN_token>`, `cdl:CDL-NNN`, `commit:<hash>`
 **Example:** `{"edge_type": "PROVENANCE", "target": "phase:1573e_ccss_spectral_authority"}`
 
 ---
@@ -231,9 +247,9 @@ or transformation lineage.
 
 **Meaning:** Walkthrough or record attests to the completed execution of a phase or act.
 Distinct from `EVIDENCES` (which provides substantive evidence, not just attestation of
-completion).  
-**Source node types:** `phase_walkthrough`, `constraint_record`  
-**Target format:** `phase:<NNNN_output_token>`  
+completion).
+**Source node types:** `phase_walkthrough`, `constraint_record`
+**Target format:** `phase:<NNNN_output_token>`
 **Example:** `{"edge_type": "ATTESTATION", "target": "phase:1573e_spectral_authority_ratified"}`
 
 ---
@@ -241,9 +257,9 @@ completion).
 ### COVERS_COMMAND_CONTRACT
 
 **Meaning:** Test covers the CLI contract (flags, exit codes, output format) of a specific
-command.  
-**Source node types:** `test_file`  
-**Target format:** `cli:<command> <subcommand>`  
+command.
+**Source node types:** `test_file`
+**Target format:** `cli:<command> <subcommand>`
 **Example:** `{"edge_type": "COVERS_COMMAND_CONTRACT", "target": "cli:ilc sidecar graph-viz"}`
 
 ---
@@ -251,9 +267,9 @@ command.
 ### NEGATIVE_ASSERTS
 
 **Meaning:** Test or spec records a negative claim or non-claim — asserts that something
-does NOT happen, does NOT apply, or is explicitly excluded.  
-**Source node types:** `test_file`, `spec_doc`, `cdl_evidence`  
-**Target format:** `claim:<claim_slug>` or `invariant:<invariant_token>`  
+does NOT happen, does NOT apply, or is explicitly excluded.
+**Source node types:** `test_file`, `spec_doc`, `cdl_evidence`
+**Target format:** `claim:<claim_slug>` or `invariant:<invariant_token>`
 **Example:** `{"edge_type": "NEGATIVE_ASSERTS", "target": "claim:standing_genesis_governance_bonus"}`
 
 ---
@@ -261,9 +277,9 @@ does NOT happen, does NOT apply, or is explicitly excluded.
 ### REQUIRES_PROFILE
 
 **Meaning:** File's correctness depends on a specific execution profile, environment flag,
-or guard being active (e.g., git history availability, a specific env variable).  
-**Source node types:** `test_file`, `tool_script`  
-**Target format:** `executor_profile:<profile_token>`  
+or guard being active (e.g., git history availability, a specific env variable).
+**Source node types:** `test_file`, `tool_script`
+**Target format:** `executor_profile:<profile_token>`
 **Example:** `{"edge_type": "REQUIRES_PROFILE", "target": "executor_profile:git_history_available"}`
 
 ---
@@ -271,9 +287,9 @@ or guard being active (e.g., git history availability, a specific env variable).
 ### TESTS_STORAGE
 
 **Meaning:** Test exercises LMDB, on-disk, or storage-layer behaviour specifically.
-Use in addition to `TESTS` when storage fidelity (not just logic) is the test concern.  
-**Source node types:** `test_file`  
-**Target format:** `ilc_core/path/to/storage_module.py` or `lmdb:<store_name>`  
+Use in addition to `TESTS` when storage fidelity (not just logic) is the test concern.
+**Source node types:** `test_file`
+**Target format:** `ilc_core/path/to/storage_module.py` or `lmdb:<store_name>`
 **Example:** `{"edge_type": "TESTS_STORAGE", "target": "lmdb:atlas_graph_store"}`
 
 ---
@@ -282,63 +298,63 @@ Use in addition to `TESTS` when storage fidelity (not just logic) is the test co
 
 Apply these steps in order for every new file. Stop at the first match.
 
-**Step 1 — Is it in `out/`?**  
+**Step 1 — Is it in `out/`?**
 → `graph_delta=none:generated_output` — do not add a ledger entry.
 
-**Step 2 — Is it a test file (`tests/test_*.py`)?**  
-→ `node_kind=test_file`  
-→ Required edges: `TESTS → module(s) it tests`, `SOURCE_TREE_MEMBER → genesis:genesis_root_v0.4`  
-→ Optional edges: `COVERS_SYMBOL` if specific symbols are covered; `REGRESSES` if named invariants are guarded; `REQUIRES_PROFILE` if env-gated  
+**Step 2 — Is it a test file (`tests/test_*.py`)?**
+→ `node_kind=test_file`
+→ Required edges: `TESTS → module(s) it tests`, `SOURCE_TREE_MEMBER → genesis:genesis_root_v0.4`
+→ Optional edges: `COVERS_SYMBOL` if specific symbols are covered; `REGRESSES` if named invariants are guarded; `REQUIRES_PROFILE` if env-gated
 → `graph_delta=support_only:<path>`
 
-**Step 3 — Is it an `ilc_core/` runtime module?**  
-→ `node_kind=runtime_module`  
-→ Required edges: `IMPLEMENTS → cdl:CDL-NNN` (or `REFERENCES_AUTHORITY` if no specific CDL), `SOURCE_TREE_MEMBER`  
+**Step 3 — Is it an `ilc_core/` runtime module?**
+→ `node_kind=runtime_module`
+→ Required edges: `IMPLEMENTS → cdl:CDL-NNN` (or `REFERENCES_AUTHORITY` if no specific CDL), `SOURCE_TREE_MEMBER`
 → `graph_delta=load_bearing_artifact_added:<path> -> cdl:CDL-NNN`
 
-**Step 4 — Is it a CDL evidence or ratification doc (`docs/specs/ilc_cdl_*_evidence_*.md`)?**  
-→ `node_kind=cdl_evidence`  
-→ Required edges: `EVIDENCES → cdl:cdl_NNN_<slug>`, `REFERENCES_AUTHORITY → cdl:CDL-NNN`  
-→ Add `NEGATIVE_ASSERTS` for any non-claims documented  
+**Step 4 — Is it a CDL evidence or ratification doc (`docs/specs/ilc_cdl_*_evidence_*.md`)?**
+→ `node_kind=cdl_evidence`
+→ Required edges: `EVIDENCES → cdl:cdl_NNN_<slug>`, `REFERENCES_AUTHORITY → cdl:CDL-NNN`
+→ Add `NEGATIVE_ASSERTS` for any non-claims documented
 → `graph_delta=load_bearing_artifact_added:<path> -> cdl:CDL-NNN`
 
-**Step 5 — Is it an ADR spec (`docs/adr/ADR_*.md`)?**  
-→ `node_kind=adr_spec`  
-→ Required edges: `REFERENCES_AUTHORITY → governing CDL(s)` (if any), `SOURCE_TREE_MEMBER`  
+**Step 5 — Is it an ADR spec (`docs/adr/ADR_*.md`)?**
+→ `node_kind=adr_spec`
+→ Required edges: `REFERENCES_AUTHORITY → governing CDL(s)` (if any), `SOURCE_TREE_MEMBER`
 → `graph_delta=load_bearing_artifact_added:<path> -> adr:ADR-NNNN`
 
-**Step 6 — Is it a governance spec in `docs/specs/` (non-CDL-evidence)?**  
-→ `node_kind=spec_doc`  
-→ Required edges: `REFERENCES_AUTHORITY → CDL/ADR it cites`, `SOURCE_TREE_MEMBER`  
+**Step 6 — Is it a governance spec in `docs/specs/` (non-CDL-evidence)?**
+→ `node_kind=spec_doc`
+→ Required edges: `REFERENCES_AUTHORITY → CDL/ADR it cites`, `SOURCE_TREE_MEMBER`
 → `graph_delta=load_bearing_artifact_added:<path> -> <primary authority anchor>`
 
-**Step 7 — Is it a phase prompt (`docs/antigravity_tasks/antigravity_prompt__*.md`)?**  
-→ `node_kind=phase_prompt`  
-→ Required edges: `SOURCE_TREE_MEMBER` only  
+**Step 7 — Is it a phase prompt (`docs/antigravity_tasks/antigravity_prompt__*.md`)?**
+→ `node_kind=phase_prompt`
+→ Required edges: `SOURCE_TREE_MEMBER` only
 → `graph_delta=support_only:<path>`
 
-**Step 8 — Is it a phase walkthrough (`docs/phases/phase_*_walkthrough.md`)?**  
-→ `node_kind=phase_walkthrough`  
-→ Required edges: `ATTESTATION → phase output token(s)`, `SOURCE_TREE_MEMBER`  
+**Step 8 — Is it a phase walkthrough (`docs/phases/phase_*_walkthrough.md`)?**
+→ `node_kind=phase_walkthrough`
+→ Required edges: `ATTESTATION → phase output token(s)`, `SOURCE_TREE_MEMBER`
 → `graph_delta=support_only:<path>`
 
-**Step 9 — Is it a window guidance or handoff doc?**  
-→ `node_kind=window_guidance`  
-→ Required edges: `SOURCE_TREE_MEMBER`; `REFERENCES_AUTHORITY` if it cites a CDL or ADR  
+**Step 9 — Is it a window guidance or handoff doc?**
+→ `node_kind=window_guidance`
+→ Required edges: `SOURCE_TREE_MEMBER`; `REFERENCES_AUTHORITY` if it cites a CDL or ADR
 → `graph_delta=support_only:<path>`
 
-**Step 10 — Is it a tool or simulation script (`tools/`, `sim_*.py`)?**  
-→ `node_kind=tool_script` (general) or `sim_tool` (simulation)  
+**Step 10 — Is it a tool or simulation script (`tools/`, `sim_*.py`)?**
+→ `node_kind=tool_script` (general) or `sim_tool` (simulation)
 → Required edges: `SOURCE_TREE_MEMBER`; `DERIVED_FROM` if it processes another file;
-`SIM_EVIDENCE` if it produces authoritative evidence  
+`SIM_EVIDENCE` if it produces authoritative evidence
 → `graph_delta=support_only:<path>` (or `load_bearing_artifact_added` if simulation output is authoritative evidence cited in a CDL)
 
-**Step 11 — Is it a constraint record (obligation register, repair receipt)?**  
-→ `node_kind=constraint_record`  
-→ Required edges: `REFERENCES_AUTHORITY`, `SOURCE_TREE_MEMBER`  
+**Step 11 — Is it a constraint record (obligation register, repair receipt)?**
+→ `node_kind=constraint_record`
+→ Required edges: `REFERENCES_AUTHORITY`, `SOURCE_TREE_MEMBER`
 → `graph_delta=load_bearing_artifact_added:<path> -> <primary obligation anchor>`
 
-**In all cases — does the file have a `PUBLIC_RC_EXCLUDE` header?**  
+**In all cases — does the file have a `PUBLIC_RC_EXCLUDE` header?**
 → Add `CLASSIFIED_BY → policy:public_rc_excluded` to `proposed_semantic_edges`
 regardless of node kind.
 
@@ -422,10 +438,10 @@ file itself is what's being created for the first time).
    not yet a canonical reference. Only ratified or formally opened CDLs may appear
    without qualification in `proposed_authority_trace_edges`.
 
-7. **Do not use `annotation_method`, `node_type`, or `candidate_id` as top-level fields**
-   in the candidate ledger record. These names belong to either informal prior guidance
-   (deprecated) or the per-node Genesis signing block (separate). The candidate record
-   schema is defined in §2 of this document.
+7. **Do not add `annotation_method`, `node_type`, or `candidate_id` as top-level fields**
+   in new candidate ledger records. Some historical records retain these keys as
+   legacy repair traces, but new records use the §2 schema only. Provenance metadata
+   belongs to the per-node Genesis signing block, not the candidate ledger record.
 
 ---
 
@@ -438,8 +454,8 @@ Batch identifier format: `manual_batch_NNN_phase_MMMM_<slug>`
 - `MMMM` — the current phase number (e.g., `1575`)
 - `<slug>` — short lowercase underscore-separated description of what the batch covers
 
-**Current last batch (as of Phase 1573i):** `manual_batch_078_phase_1573i_retroactive`  
-**Next batch:** `manual_batch_079_<slug>`
+**Current last batch (as of Phase 1573u-Fix1):** `manual_batch_081_phase_1573u_fix1_taxonomy_hardening`
+**Next batch:** `manual_batch_082_<slug>`
 
 For retroactive backfills covering a range of phases, use:
 `manual_batch_NNN_phase_RANGE_retroactive`
