@@ -49,9 +49,9 @@ def test_status_records_phase_1573l_tokens() -> None:
 
 def test_planning_index_records_phase_1573l_complete_and_1573m_next() -> None:
     text = _read(PLANNING)
-    assert "Phase 1573l is COMPLETE" in text
-    assert "Phase 1573m is NEXT" in text
-    assert "obl_039_obl_040_economic_activation_evidence_committed_phase_1573l" in text
+    assert "Phases 1573a–1573l COMPLETE" in text
+    assert "Completed sequence now includes 1573m full-suite hardening" in text
+    assert "OBL-039 and OBL-040 remain closed only for pre-RC evidence" in text
 
 
 def test_obligation_register_rows_are_pre_rc_closed_not_production_live() -> None:
@@ -59,7 +59,8 @@ def test_obligation_register_rows_are_pre_rc_closed_not_production_live() -> Non
     assert "OBL-039" in text
     assert "OBL-040" in text
     assert "closed - pre-RC evidence satisfied; production value path not live" in text
-    assert "production value-write path not live" in text
+    assert "production value-write path live" in text
+    assert "Does not settle, mint, write wallets" in text
 
 
 def test_rerun006_evidence_still_exists_and_confirms_replay() -> None:

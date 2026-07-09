@@ -99,12 +99,6 @@ from .maintenance_lottery_runtime import (
     request_maintenance_lottery_entry_stub,
     wire_cdl_053_local_credit_eligibility,
 )
-from .vrf_proof_verifier import (
-    VRF_PROOF_VERIFIER_VERSION,
-    VRFVerificationError,
-    verify_vrf_proof,
-    vrf_beta_from_proof,
-)
 from .node_submission_runtime import (
     CDL_052_DEPENDENCY,
     EPISTEMIC_RUNTIME_PART1_VERSION,
@@ -211,8 +205,6 @@ __all__ = [
     "ReviewLaneSettlementStubQuote",
     "ReviewerAttestation",
     "SHARD_TIER_RATIFIED_NOT_ACTIVATED",
-    "VRF_PROOF_VERIFIER_VERSION",
-    "VRFVerificationError",
     "acceptance_authority_table",
     "check_novelty",
     "classify_acceptance_authority",
@@ -233,6 +225,4 @@ __all__ = [
     "validate_epistemic_refutation_submission",
     "validate_epistemic_reuse_centrality_query",
     "validate_manifest_acceptance_authority",
-    "verify_vrf_proof",
-    "vrf_beta_from_proof",
 ]

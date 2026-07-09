@@ -57,14 +57,13 @@ def test_only_non_closed_rows_are_external_invariant_or_post_patent() -> None:
         for obl_id, row in rows.items()
         if not row[3].startswith("closed")
     }
-    assert non_closed == {
-        "OBL-001": "draft-resolved - Filing 3 patched to disclose typed-hypergraph backward credit propagation; filing not yet submitted",
-        "OBL-002": "permanent-invariant",
-        "OBL-030": "open",
-    }
-    assert "patent filing" in rows["OBL-001"][4].lower()
-    assert "allowlist export path" in rows["OBL-002"][4]
-    assert rows["OBL-030"][5] == "After patent decisions"
+    assert non_closed == {}
+    assert rows["OBL-001"][3].startswith("closed - provisional application-number evidence recorded")
+    assert rows["OBL-002"][3] == "closed - converted to standing release-control invariant"
+    assert rows["OBL-030"][3] == "closed - routed to post-public-RC Atlas of Cliffs side-project plan"
+    assert "Written USPTO filing receipts remain pending" in rows["OBL-001"][4]
+    assert "Standing invariant" in rows["OBL-002"][4]
+    assert rows["OBL-030"][5] == "Post-public-RC personal/Genesis side-project lane"
 
 
 def test_phase_1573u_status_records_sweep_and_non_activation_tokens() -> None:

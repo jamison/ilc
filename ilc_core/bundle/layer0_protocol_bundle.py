@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_layer0_protocol_bundle
 PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 Layer 0 generator/verifier. Does not mutate ADR status or publish protocol bundles.
 """

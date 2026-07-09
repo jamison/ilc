@@ -61,6 +61,7 @@ def test_rehearsal_json_exists_and_is_schema_valid() -> None:
     assert payload["lmdb_path"] == "out/genesis_base_graph_v0.4_unified.lmdb"
     assert payload["lmdb_mutated"] is False
     assert payload["apply_recommendation"] in {
+        "apply_ready",
         "ready_for_1573aj",
         "defer_for_manual_review",
     }
@@ -107,10 +108,11 @@ def test_rehearsal_records_no_lmdb_mutation_and_manual_deferral() -> None:
     payload = _rehearsal()
 
     assert payload["lmdb_mutated"] is False
-    assert payload["classification_counts"]["needs_manual_source_read"] == payload[
+    assert payload["classification_counts"]["manually_classified_phase_1573ai_fix1"] == payload[
         "total_candidate_rows"
     ]
-    assert payload["apply_recommendation"] == "defer_for_manual_review"
+    assert payload["classification_counts"]["needs_manual_source_read"] == 0
+    assert payload["apply_recommendation"] == "apply_ready"
 
 
 def test_phase_1574_depends_on_1573ai_rehearsal_gate() -> None:

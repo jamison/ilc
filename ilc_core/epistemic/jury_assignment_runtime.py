@@ -35,7 +35,6 @@ from typing import Any, List, Mapping, Optional
 from ilc_core.consensus.diversity_floor_runtime import (
     compute_max_cluster_share,
 )
-from ilc_core.epistemic.vrf_proof_verifier import VRFVerificationError, vrf_beta_from_proof
 
 JURY_ASSIGNMENT_RUNTIME_VERSION = "jury_assignment_runtime_phase_j006.v0.1"
 ADR_0040_DEPENDENCY = "jury_eligibility_assignment_adr_accepted_phase_j002"
@@ -126,6 +125,19 @@ class JuryAssignmentQuote:
 
 class JuryAssignmentError(Exception):
     """Raised when panel construction fails due to insufficient eligible agents."""
+
+
+try:
+    from ilc_core.epistemic.vrf_proof_verifier import (
+        VRFVerificationError,
+        vrf_beta_from_proof,
+    )
+except ImportError:  # pragma: no cover - exercised in stripped public-RC builds.
+    class VRFVerificationError(Exception):
+        """Fallback when the excluded VRF verifier is absent from public RC."""
+
+    def vrf_beta_from_proof(*, pi: bytes, public_key: bytes, alpha: bytes) -> bytes:
+        raise JuryAssignmentError("vrf_verifier_not_available_public_rc")
 
 
 @dataclass(frozen=True)

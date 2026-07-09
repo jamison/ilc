@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
+import ilc_core.epistemic as epistemic
 from ilc_core.epistemic import vrf_proof_verifier as verifier
-from ilc_core.epistemic import verify_vrf_proof, vrf_beta_from_proof
 
 
 RFC_9381_APPENDIX_B4_VECTORS = (
@@ -72,8 +72,11 @@ def test_module_records_phase_1411_version_and_tokens() -> None:
         == "vrf_proof_verifier_not_activated_phase_1410"
     )
     assert verifier.ALGORITHM == "ECVRF-EDWARDS25519-SHA512-ELL2"
-    assert verify_vrf_proof is verifier.verify_vrf_proof
-    assert vrf_beta_from_proof is verifier.vrf_beta_from_proof
+
+
+def test_vrf_verifier_is_not_reexported_from_epistemic_package_root() -> None:
+    assert not hasattr(epistemic, "verify_vrf_proof")
+    assert not hasattr(epistemic, "vrf_beta_from_proof")
 
 
 @pytest.mark.parametrize("vector", RFC_9381_APPENDIX_B4_VECTORS)

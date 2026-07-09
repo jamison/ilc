@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """PUBLIC_RC_EXCLUDE: private_json_guardrail_helpers
 PUBLIC_RC_EXCLUDE_REASON: Internal helper for private harness/bundle artifacts; not a public protocol API.
 """

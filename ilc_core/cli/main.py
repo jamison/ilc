@@ -1630,7 +1630,10 @@ def _run_top_level_command(
         data = run_ccss_command(args)
         return _success_payload(command, data)
     if command == "atlas":
-        from ilc_core.cli.atlas_lmdb_cli import AtlasLmdbCliError, run_atlas_command
+        try:
+            from ilc_core.cli.atlas_lmdb_cli import AtlasLmdbCliError, run_atlas_command
+        except ImportError as exc:
+            raise ValueError("atlas_lmdb_cli_not_available_public_rc") from exc
 
         try:
             data = run_atlas_command(args)
@@ -1638,10 +1641,13 @@ def _run_top_level_command(
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "bootstrap":
-        from ilc_core.distribution.materialization import (
-            MaterializationError,
-            bootstrap,
-        )
+        try:
+            from ilc_core.distribution.materialization import (
+                MaterializationError,
+                bootstrap,
+            )
+        except ImportError as exc:
+            raise ValueError("materialization_not_available_public_rc") from exc
 
         try:
             data = bootstrap(

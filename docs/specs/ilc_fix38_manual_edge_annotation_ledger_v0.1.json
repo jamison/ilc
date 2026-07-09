@@ -35871,7 +35871,15 @@
       "candidate_id": "conversion_candidate_runtime_1573j",
       "genesis_signature_version": "v0.4",
       "graph_trace_status": "candidate",
+      "manual_read_summary": "Conversion candidate runtime derives CDL-048 eligible conversion candidates, validates Decimal ECU amounts, applies deadline-epoch eligibility, and exposes omission detection while preserving the default-off production guard.",
       "node_type": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "rationale": "Eligible-lot generator implements CDL-048 mandatory conversion deadline logic",
+          "target": "cdl_048_ratified_phase_419"
+        }
+      ],
       "proposed_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -35879,6 +35887,22 @@
           "target": "cdl_048_ratified_phase_419"
         }
       ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-048"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:conversion_candidate_runtime -> CDL-048",
       "repo_path": "ilc_core/ledger/conversion_candidate_runtime.py",
       "update_authority": "genesis_until_sunset",
       "update_authority_cdl": "cdl_098"
@@ -48348,6 +48372,329 @@
         "ATTESTATION"
       ],
       "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — PUBLIC_RC_EXCLUDE AST scanner.",
+      "manual_read_summary": "AST scanner resolves ilc_core imports to source files, reports non-excluded modules that import PUBLIC_RC_EXCLUDE modules, fails on top-level violations, and records intentional lazy import paths.",
+      "repo_path": "tools/check_public_rc_exclude_imports.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_ast_scanner_committed_phase_1573al"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — PUBLIC_RC_EXCLUDE import closure tests.",
+      "manual_read_summary": "Regression tests run the PUBLIC_RC_EXCLUDE import scanner, require zero top-level violations, pin the three intentional lazy import allowances, and verify the scanner CLI exits cleanly.",
+      "repo_path": "tests/test_public_rc_exclude_import_closure.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/check_public_rc_exclude_imports.py"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "tools.check_public_rc_exclude_imports.scan_import_closure"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:public_rc_exclude_no_top_level_import_violations"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "COVERS_SYMBOL",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — import closure walkthrough.",
+      "manual_read_summary": "Walkthrough records direct reads, baseline scanner counts, per-violation dispositions, final scanner output, verification results, graph delta, non-authorizations, and output tokens.",
+      "repo_path": "docs/phases/phase_1573al_public_rc_exclude_import_closure_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:public_rc_exclude_ast_scanner_committed_phase_1573al"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — privacy package root re-export closure.",
+      "manual_read_summary": "Privacy package root no longer imports and re-exports the excluded transfer mixing framework; callers must import that excluded module explicitly when authorized.",
+      "repo_path": "ilc_core/privacy/__init__.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — epistemic package root re-export closure.",
+      "manual_read_summary": "Epistemic package root no longer imports and re-exports the excluded VRF verifier; direct submodule imports remain available in the private tree.",
+      "repo_path": "ilc_core/epistemic/__init__.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — jury assignment VRF import guard.",
+      "manual_read_summary": "Jury assignment runtime now guards the excluded VRF verifier import after JuryAssignmentError is defined and provides a named public-RC stripped-build fallback error.",
+      "repo_path": "ilc_core/epistemic/jury_assignment_runtime.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:vrf_verifier_absence_has_named_public_rc_error"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — genesis package root re-export closure.",
+      "manual_read_summary": "Genesis package root no longer imports and re-exports the excluded private serving receipt surface; direct submodule imports remain available in the private tree.",
+      "repo_path": "ilc_core/genesis/__init__.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — genesis assertion float helper split.",
+      "manual_read_summary": "Genesis authority assertion builder now uses a local recursive _reject_float helper instead of importing the excluded private JSON guardrail helper module.",
+      "repo_path": "ilc_core/genesis/genesis_authority_assertion.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.genesis.genesis_authority_assertion._reject_float"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "COVERS_SYMBOL"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — CLI lazy import guard.",
+      "manual_read_summary": "CLI dispatcher now wraps local-only atlas and bootstrap imports with named ImportError translations for stripped public-RC builds.",
+      "repo_path": "ilc_core/cli/main.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:public_rc_exclude_import_closure_clean_phase_1573al"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_098_phase_1573al_public_rc_exclude_import_closure",
+      "chronology_note": "2026-07-09 Phase 1573al — VRF verifier package-root regression test update.",
+      "manual_read_summary": "VRF verifier test now imports functions from the explicit verifier submodule and asserts those excluded verifier functions are not re-exported from the epistemic package root.",
+      "repo_path": "tests/test_phase_1411_vrf_proof_verifier.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573al_g8_public_rc_exclude_import_closure.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/epistemic/vrf_proof_verifier.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:vrf_verifier_not_reexported_from_epistemic_package_root"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

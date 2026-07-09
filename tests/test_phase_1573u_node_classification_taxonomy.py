@@ -60,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573ag prompt hardening)" in taxonomy
-    assert "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt" in taxonomy
-    assert "manual_batch_087_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573ai edge retirement rehearsal)" in taxonomy
+    assert "manual_batch_094_phase_1573ai_atlas_edge_retirement_rehearsal" in taxonomy
+    assert "manual_batch_095_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:
