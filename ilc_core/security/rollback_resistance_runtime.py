@@ -28,7 +28,13 @@ class RollbackSupersessionEvent:
 
 
 class RollbackResistanceRuntime:
-    """CDL-007 rollback resistance runtime surface."""
+    """CDL-007 rollback resistance runtime surface.
+
+    phase_1573am_activation_prerequisite_durable_replay_store: this default-off
+    surface keeps replay state in process-local dictionaries. Before it is wired
+    to live/public rollback authority, supersession IDs and window-chain claims
+    must be backed by durable storage, such as LMDB or an append-only log.
+    """
 
     def __init__(self, registry: SignerLineageRegistry) -> None:
         self._registry = registry
