@@ -42540,6 +42540,151 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_087_phase_1573ah_edge_namespace_policy_prompt",
+      "chronology_note": "2026-07-09 phase_1573ah prompt hardening - edge namespace extension policy prompt",
+      "manual_read_summary": "Phase 1573ah prompt: requires a non-sensitive edge namespace and extension policy that reserves canonical Atlas/Fix38 and ADR-0035/CDL-099 terms, defines namespaced non-canonical user extension edges, and gates Phase 1574 on completion.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-098",
+          "review_status": "candidate_cdl_098_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-099",
+          "review_status": "candidate_cdl_099_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-100",
+          "review_status": "candidate_cdl_100_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0035",
+          "review_status": "candidate_adr_0035_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_57_node_signing_core_expansion_phase_1573ah"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:user_extension_edges_not_canonical_without_ratification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ah_g8_edge_namespace_extension_policy.md"
+    },
+    {
+      "annotation_batch": "manual_batch_087_phase_1573ah_edge_namespace_policy_prompt",
+      "chronology_note": "2026-07-09 phase_1573ah prompt hardening - Phase 1574 precondition patch",
+      "manual_read_summary": "Phase 1574 publication readiness prompt patch: requires the Phase 1573ah edge namespace extension policy token before the public-RC activation matrix can proceed.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:edge_namespace_extension_policy_committed_phase_1573ah"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_rc_without_edge_namespace_extension_policy"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_087_phase_1573ah_edge_namespace_policy_prompt",
+      "chronology_note": "2026-07-09 phase_1573ah prompt hardening - regression coverage",
+      "manual_read_summary": "Phase 1573ah prompt tests: verify the edge namespace prompt defines reserved canonical surfaces, non-canonical user extension rules, governance promotion requirements, signing-core non-expansion, and the Phase 1574 precondition.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ah_g8_edge_namespace_extension_policy.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ah_edge_namespace_prompt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_087_phase_1573ah_edge_namespace_policy_prompt",
+      "chronology_note": "2026-07-09 phase_1573ah prompt hardening - batch marker advanced",
+      "manual_read_summary": "Node classification taxonomy update: advances the manual Fix38 batch marker to batch 087 for the Phase 1573ah edge namespace policy prompt records.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_087_phase_1573ah_edge_namespace_policy_prompt",
+      "chronology_note": "2026-07-09 phase_1573ah prompt hardening - Fix38 ledger self-registration",
+      "manual_read_summary": "Fix38 manual edge annotation ledger update: registers Phase 1573ah prompt hardening records and the Phase 1574 precondition patch for edge namespace extension policy completion.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
