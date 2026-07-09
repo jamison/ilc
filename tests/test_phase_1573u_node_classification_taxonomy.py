@@ -60,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573u-Fix5)" in taxonomy
-    assert "manual_batch_085_phase_1573u_fix5_public_mirror_policy" in taxonomy
-    assert "manual_batch_086_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573ag prompt hardening)" in taxonomy
+    assert "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt" in taxonomy
+    assert "manual_batch_087_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:
@@ -300,3 +300,37 @@ def test_public_mirror_policy_batch_is_semantically_wired() -> None:
     } in by_path[
         "docs/phases/phase_1573u_fix5_public_mirror_policy_walkthrough.md"
     ]["proposed_semantic_edges"]
+
+
+def test_release_engineering_disposition_prompt_batch_is_semantically_wired() -> None:
+    by_path = {
+        annotation["repo_path"]: annotation
+        for annotation in _annotations()
+        if annotation.get("annotation_batch")
+        == "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt"
+    }
+    assert set(by_path) == {
+        "docs/antigravity_tasks/antigravity_prompt__phase_1573ag_g8_release_engineering_track_disposition_audit.md",
+        "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md",
+        "tests/test_phase_1573ag_release_engineering_prompt.py",
+        "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md",
+        "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json",
+    }
+    assert {
+        "edge_type": "NEGATIVE_ASSERTS",
+        "target": "nonclaim:no_release_engineering_track_merge",
+    } in by_path[
+        "docs/antigravity_tasks/antigravity_prompt__phase_1573ag_g8_release_engineering_track_disposition_audit.md"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "REFERENCES_AUTHORITY",
+        "target": "phase:release_engineering_track_disposition_audit_committed_phase_1573ag",
+    } in by_path[
+        "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+    ]["proposed_semantic_edges"]
+    assert {
+        "edge_type": "TESTS",
+        "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ag_g8_release_engineering_track_disposition_audit.md",
+    } in by_path["tests/test_phase_1573ag_release_engineering_prompt.py"][
+        "proposed_semantic_edges"
+    ]
