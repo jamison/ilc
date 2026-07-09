@@ -35885,7 +35885,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_specs_ilc_cdl_sigma_01_ratification_evidence_1573e_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "CDL-SIGMA-01 Ratification Evidence 1573e v0.1",
       "proposed_authority_trace_edges": [
@@ -35911,7 +35910,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_specs_ilc_constitutional_decision_log_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC Constitutional Decision Log v0.1",
       "proposed_authority_trace_edges": [],
@@ -35929,7 +35927,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "ilc_core_network_d2d_spectral_beacon_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Implements guarded CCSS spectral beacon envelope construction and relay validation without emitting raw lambda values.",
       "proposed_authority_trace_edges": [
@@ -35961,7 +35958,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "ilc_core_network_d2d_spectral_route_token_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Implements SpectralRouteToken cryptographic primitives, hiding commitments, hybrid KEM helpers, and route-token derivation.",
       "proposed_authority_trace_edges": [
@@ -35987,7 +35983,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "ilc_core_network_d2d_spectral_sigma_policy_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Records the CDL-SIGMA-01 sigma policy state, non-claim boundary, and provisional/ratified privacy posture constants.",
       "proposed_authority_trace_edges": [
@@ -36013,7 +36008,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573e_g10_cdl_sigma_01_ratification_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573e-G10: CDL-SIGMA-01 Ratification \u2014 Spectral Sigma Authority and CCSS-SPECTRAL-01 Successor",
       "proposed_authority_trace_edges": [],
@@ -36031,7 +36025,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573f_g10_ccss_spectral_01_crypto_primitives_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573f-G10: CCSS-SPECTRAL-01 Cryptographic Primitives \u2014 SpectralRouteToken Module",
       "proposed_authority_trace_edges": [],
@@ -36049,7 +36042,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573f_fix1_g10_mlkem_hybrid_kem_upgrade_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573f-Fix1-G10: ML-KEM-768 Hybrid KEM Upgrade",
       "proposed_authority_trace_edges": [],
@@ -36067,7 +36059,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573g_g10_ccss_spectral_01_beacon_emission_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573g-G10: CCSS-SPECTRAL-01 Beacon Emission Replacement and Relay Forbidden-Field Enforcement",
       "proposed_authority_trace_edges": [],
@@ -36085,7 +36076,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573h_g10_ccss_spectral_01_full_test_and_sim_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573h-G10: CCSS-SPECTRAL-01 Recipient Path, Full Test Suite, and Adversary Model SIM",
       "proposed_authority_trace_edges": [],
@@ -36103,7 +36093,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573i_g10_cdl_sigma_01_adversary_model_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573i-G10: CDL-SIGMA-01 Adversary Model Ratification and Indistinguishability Target",
       "proposed_authority_trace_edges": [],
@@ -36121,7 +36110,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_h013_spectral_sigma_policy_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_h013_spectral_sigma_policy.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36139,7 +36127,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1568_fix2w_sigma_adversary_model_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1568_fix2w_sigma_adversary_model.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36157,7 +36144,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1573e_cdl_sigma_01_ratification_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573e_cdl_sigma_01_ratification.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36175,7 +36161,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1573f_ccss_spectral_01_crypto_primitives_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression tests for CCSS-SPECTRAL-01 cryptographic primitive shape, guard behavior, and token derivation invariants.",
       "proposed_authority_trace_edges": [],
@@ -36193,7 +36178,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1573g_ccss_spectral_01_beacon_emission_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression tests that spectral beacon envelopes hide lambda values and keep relay validation always-on while activation remains guarded.",
       "proposed_authority_trace_edges": [],
@@ -36211,7 +36195,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1573h_ccss_spectral_01_full_test_suite_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression and SIM tests for CCSS-SPECTRAL-01 route-token authentication, purpose validation, and adversary-model pass evidence.",
       "proposed_authority_trace_edges": [],
@@ -36229,7 +36212,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tests_test_phase_1573i_cdl_sigma_01_adversary_model_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573i_cdl_sigma_01_adversary_model.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36247,7 +36229,6 @@
     },
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
-      "candidate_id": "tools_sim_ccss_spectral_01_adversary_model_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Deterministic CCSS-SPECTRAL-01 adversary-model simulation used to evaluate route-token linking probability under repeated observations.",
       "proposed_authority_trace_edges": [],
@@ -36265,7 +36246,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_obl039_obl040_pre_rc_closure_record_1573l_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC OBL-039 and OBL-040 Pre-RC Closure Record 1573l v0.1",
       "proposed_authority_trace_edges": [
@@ -36297,7 +36277,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_ccss_public_rc_privacy_claim_boundary_1573o_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC CCSS Public-RC Privacy Claim Boundary 1573o v0.1",
       "proposed_authority_trace_edges": [
@@ -36329,7 +36308,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_ccss_metadata_leakage_audit_1573p_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC CCSS Metadata Leakage Audit 1573p v0.1",
       "proposed_authority_trace_edges": [
@@ -36355,7 +36333,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_ccss_cover_batching_design_1573r_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC CCSS Cover and Batching Design 1573r v0.1",
       "proposed_authority_trace_edges": [
@@ -36381,7 +36358,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_ccss_contact_gate_policy_spec_1573s_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC CCSS ContactGateNode Policy Spec 1573s v0.1",
       "proposed_authority_trace_edges": [
@@ -36407,7 +36383,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_public_mirror_manifest_1573n_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC Public Mirror Manifest 1573n v0.1",
       "proposed_authority_trace_edges": [
@@ -36433,7 +36408,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_window_1573o_1575_remaining_phases_guidance_v0_1_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "ILC Window 1565-1575 Remaining Phases Guidance (1573o\u20131575)",
       "proposed_authority_trace_edges": [
@@ -36459,7 +36433,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "ilc_core_ccss_contact_gate_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Implements the local-only ContactGate evaluator, private capability checks, sanitized verdicts, and fail-closed stake/rate-limited mode.",
       "proposed_authority_trace_edges": [
@@ -36485,7 +36458,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573n_g10_public_mirror_option_c_preparation_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573n-G10: Public Mirror Option C Preparation \u2014 Reproducible Filter Pipeline Rehearsal",
       "proposed_authority_trace_edges": [],
@@ -36503,7 +36475,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573o_g10_ccss_privacy_claim_boundary_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573o-G10: CCSS Privacy Claim Boundary",
       "proposed_authority_trace_edges": [],
@@ -36521,7 +36492,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573p_g10_ccss_metadata_leakage_audit_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573p-G10: CCSS Metadata Leakage Audit",
       "proposed_authority_trace_edges": [],
@@ -36539,7 +36509,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573q_g10_ccss_side_channel_sim_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573q-G10: CCSS Side-Channel SIM",
       "proposed_authority_trace_edges": [],
@@ -36557,7 +36526,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573r_g10_ccss_cover_batching_design_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573r-G10: CCSS Cover and Batching Design",
       "proposed_authority_trace_edges": [],
@@ -36575,7 +36543,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573s_g10_ccss_contact_gate_policy_spec_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573s-G10: CCSS ContactGateNode Policy Spec",
       "proposed_authority_trace_edges": [],
@@ -36593,7 +36560,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573t_g10_ccss_contact_gate_local_rehearsal_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573t-G10: CCSS ContactGate Local Evaluator Rehearsal",
       "proposed_authority_trace_edges": [],
@@ -36611,7 +36577,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573u_g8_obl_register_sweep_pre_1573v_coherence_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573u-G8: OBL Register Sweep \u2014 Pre-1573v Coherence Check",
       "proposed_authority_trace_edges": [],
@@ -36629,7 +36594,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573v_g8_canonical_glossary_amendment_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573v-G8: Canonical Glossary Amendment \u2014 Star Map, Tier/Projection, Group Node Taxonomy",
       "proposed_authority_trace_edges": [],
@@ -36647,7 +36611,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573w_g8_atlas_slice_pipeline_and_projection_naming_policy_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573w-G8: Atlas Slice Pipeline Spec and Graph Projection Naming Policy",
       "proposed_authority_trace_edges": [],
@@ -36665,7 +36628,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573x_g8_multi_slice_encrustation_adr_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573x-G8: Multi-Slice Encrustation Model \u2014 ADR Opening",
       "proposed_authority_trace_edges": [],
@@ -36683,7 +36645,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573y_g8_fix65ab_lmdb_coverage_repair_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573y-G8: Fix65a/b \u2014 LMDB graph_projection Coverage and Merkle Integrity Repair",
       "proposed_authority_trace_edges": [],
@@ -36701,7 +36662,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573z_g8_invite_token_cli_plumbing_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573z-G8: Invite Token CLI Plumbing \u2014 InviteBatchRecord, InviteRedemptionRecord, SigningLevel",
       "proposed_authority_trace_edges": [],
@@ -36719,7 +36679,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573aa_g8_cdl029_cmax_denominator_amendment_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573aa-G8: CDL-029 Amendment #2 \u2014 Constitutionalize C_max as Genesis Share Ratio Denominator",
       "proposed_authority_trace_edges": [],
@@ -36737,7 +36696,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573ab_g8_genesis_accrual_governor_cmax_fix_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573ab-G8: genesis_accrual_governor.py Runtime Fix \u2014 C_max Denominator",
       "proposed_authority_trace_edges": [],
@@ -36755,7 +36713,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573ac_g8_canonical_genesis_accumulation_sim_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573ac-G8: Canonical Genesis Accumulation SIM \u2014 Hash-Locked Reproducibility",
       "proposed_authority_trace_edges": [],
@@ -36773,7 +36730,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573ad_g8_inviter_chaining_cdl_opening_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573ad-G8: Inviter-Chaining Economics CDL Opening",
       "proposed_authority_trace_edges": [],
@@ -36791,7 +36747,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573ae_g8_projection_policy_and_signing_group_nodes_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573ae-G8: ProjectionPolicyNode and SigningGroupRulesNode LMDB Registration",
       "proposed_authority_trace_edges": [],
@@ -36809,7 +36764,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_antigravity_tasks_antigravity_prompt_phase_1573af_g8_pre_1574_coherence_capsule_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573af-G8: Pre-1574 Coherence Report and Capsule Update",
       "proposed_authority_trace_edges": [],
@@ -36827,7 +36781,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573j_conversion_candidate_runtime_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573j_conversion_candidate_runtime.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36845,7 +36798,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573k_obl040_rerun006_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573k_obl040_rerun006.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36863,7 +36815,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573l_obl039_obl040_closure_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573l_obl039_obl040_closure.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36881,7 +36832,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573m_full_suite_test_hardening_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573m_full_suite_test_hardening.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36899,7 +36849,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573n_preflight_history_wide_public_mirror_filter_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573n_preflight_history_wide_public_mirror_filter.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36917,7 +36866,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573n_public_mirror_preparation_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573n public mirror Option C preparation verification.",
       "proposed_authority_trace_edges": [],
@@ -36935,7 +36883,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573o_ccss_privacy_claim_boundary_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573o_ccss_privacy_claim_boundary.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -36953,7 +36900,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573p_ccss_metadata_leakage_audit_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression tests for the Phase 1573p CCSS metadata leakage audit and its pre-public-RC privacy-claim boundary.",
       "proposed_authority_trace_edges": [],
@@ -36971,7 +36917,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573q_ccss_side_channel_sim_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression tests for the Phase 1573q side-channel simulation outputs and residual metadata non-claim boundaries.",
       "proposed_authority_trace_edges": [],
@@ -36989,7 +36934,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573r_ccss_cover_batching_design_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Regression tests for the Phase 1573r cover/batching design, fixed bundle profile, TTL, and non-activation boundary.",
       "proposed_authority_trace_edges": [],
@@ -37007,7 +36951,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573s_contact_gate_policy_spec_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573s_contact_gate_policy_spec.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -37025,7 +36968,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tests_test_phase_1573t_contact_gate_local_evaluator_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers tests/test_phase_1573t_contact_gate_local_evaluator.py as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -37043,7 +36985,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tools_scripts_generate_public_mirror_sh_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Builds a local public mirror rehearsal tree using git-filter-repo and denylist/exclusion checks without pushing to a remote.",
       "proposed_authority_trace_edges": [],
@@ -37061,7 +37002,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "tools_sim_sim_ccss_side_channel_1573q_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Deterministic side-channel simulation for timing, size-class, relay-overlap, batching, and mixed-population leakage scenarios.",
       "proposed_authority_trace_edges": [],
@@ -37079,7 +37019,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_phase_1573n_preflight_fix2_atlas_parallel_write_repair_receipt_v0_1_json_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers docs/specs/ilc_phase_1573n_preflight_fix2_atlas_parallel_write_repair_receipt_v0.1.json as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -37097,7 +37036,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_specs_ilc_public_mirror_manifest_1573n_v0_1_json_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Registers docs/specs/ilc_public_mirror_manifest_1573n_v0.1.json as a source-tree member for the Phase 1573u recent-window ledger backfill.",
       "proposed_authority_trace_edges": [],
@@ -37115,7 +37053,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "ilc_core_ccss_init_py_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Exports the CCSS ContactGate local evaluator API and admission-mode constants for package-level access.",
       "proposed_authority_trace_edges": [],
@@ -37133,7 +37070,6 @@
     },
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
-      "candidate_id": "docs_phases_phase_1573t_ccss_contact_gate_local_rehearsal_walkthrough_md_1573u_backfill",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
       "manual_read_summary": "Phase 1573t Walkthrough: CCSS ContactGate Local Evaluator Rehearsal",
       "proposed_authority_trace_edges": [],
@@ -37148,6 +37084,75 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1573t_ccss_contact_gate_local_rehearsal_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_081_phase_1573u_fix1_taxonomy_hardening",
+      "chronology_note": "2026-07-09 Phase 1573u-Fix1 taxonomy and live-ledger consistency hardening.",
+      "manual_read_summary": "Defines the authoritative node-kind, edge-type, graph-delta, and ledger-entry taxonomy for future Atlas/Fix38 classification work.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "rationale": "Taxonomy governs provenance metadata and Genesis graph-update candidate classification under CDL-098 authority.",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_081_phase_1573u_fix1_taxonomy_hardening",
+      "chronology_note": "2026-07-09 Phase 1573u-Fix1 taxonomy and live-ledger consistency hardening.",
+      "manual_read_summary": "Regression tests that pin the node-classification taxonomy against live Fix38 ledger structure and recent-batch schema expectations.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573u_node_classification_taxonomy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_081_phase_1573u_fix1_taxonomy_hardening",
+      "chronology_note": "2026-07-09 Phase 1573u-Fix1 taxonomy and live-ledger consistency hardening.",
+      "manual_read_summary": "Walkthrough recording taxonomy drift findings, recent-ledger cleanup, verification, and non-claims for Phase 1573u-Fix1.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573u_fix1_node_classification_taxonomy_hardened"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573u_fix1_node_classification_taxonomy_hardening_walkthrough.md"
     }
   ],
   "boundary": {
