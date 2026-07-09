@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from fastapi import APIRouter, FastAPI, HTTPException, Request
 import hashlib
+import ipaddress
 import json
 import logging
+import os
 from contextlib import asynccontextmanager
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -44,9 +46,105 @@ from ilc_core.sidecars.public_verifier_api_activation import (
     PHASE_1439_PUBLIC_VERIFIER_API_TOKENS,
 )
 from ilc_core.work.task_queue import TaskDescriptor
+from ilc_core.network.d2d.gossip_peer_registry import reject_private_address_literal
 
 configure_logging()
 logger = logging.getLogger(__name__)
+
+MAX_GOSSIP_PAYLOAD_BYTES: int = 1_048_576
+MAX_APP_REQUEST_BODY_BYTES: int = 10_485_760
+
+_LOCAL_DEV_PEER_ADMIN_ENV = "ILC_LOCAL_DEV_PEER_ADMIN"
+_UNSAFE_PEER_HOST_TOKEN = "peer_admin_unsafe_host_rejected_phase_1573ak"
+_PEER_PORT_INVALID_TOKEN = "peer_admin_port_invalid_phase_1573ak"
+
+_ROUTE_CLASSIFICATION: dict[tuple[str, str], str] = {
+    ("GET", "/"): "public_verifier",
+    ("POST", "/mine"): "local_dev_only",
+    ("GET", "/node/{node_id}"): "public_verifier",
+    ("POST", "/gossip/receive"): "peer_gossip",
+    ("POST", "/peers/add"): "operator_admin",
+    ("GET", "/v1/protocol/schema"): "public_verifier",
+    ("POST", "/v1/protocol/claim"): "local_dev_only",
+    ("POST", "/v1/protocol/refute"): "local_dev_only",
+    ("POST", "/v1/protocol/task_outcome"): "local_dev_only",
+    ("GET", "/v1/protocol/ep_task_schema"): "public_verifier",
+    ("POST", "/v1/protocol/ep_task"): "local_dev_only",
+    ("POST", "/api/v1/claimability/verify"): "public_verifier",
+}
+
+
+class MaxBodySizeMiddleware:
+    """Reject requests with declared bodies above the app-level backstop cap."""
+
+    def __init__(self, app, *, max_body_size: int):
+        self.app = app
+        self.max_body_size = max_body_size
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") != "http":
+            await self.app(scope, receive, send)
+            return
+
+        headers = dict(scope.get("headers") or [])
+        content_length = headers.get(b"content-length")
+        if content_length is not None:
+            try:
+                declared_size = int(content_length.decode("ascii"))
+            except ValueError:
+                response = JSONResponse(
+                    {"detail": "request_content_length_invalid_phase_1573ak"},
+                    status_code=400,
+                )
+                await response(scope, receive, send)
+                return
+            if declared_size > self.max_body_size:
+                response = JSONResponse(
+                    {"detail": "request_body_too_large_phase_1573ak"},
+                    status_code=413,
+                )
+                await response(scope, receive, send)
+                return
+
+        await self.app(scope, receive, send)
+
+
+def _route_classification_coverage() -> dict[tuple[str, str], str]:
+    return dict(_ROUTE_CLASSIFICATION)
+
+
+def _validate_peer_admin_host(host: str) -> str:
+    if not isinstance(host, str):
+        raise HTTPException(status_code=400, detail=_UNSAFE_PEER_HOST_TOKEN)
+    normalized = host.strip().lower().rstrip(".")
+    if (
+        not normalized
+        or any(char.isspace() for char in normalized)
+        or any(char in normalized for char in ("/", "\\", "@"))
+    ):
+        raise HTTPException(status_code=400, detail=_UNSAFE_PEER_HOST_TOKEN)
+
+    literal = normalized
+    if literal.startswith("[") and literal.endswith("]"):
+        literal = literal[1:-1]
+    try:
+        reject_private_address_literal(literal)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    # ipaddress accepts global literals only after the reject_private guard. This
+    # pins the intended behavior for odd literals while preserving DNS names.
+    try:
+        ipaddress.ip_address(literal)
+    except ValueError:
+        pass
+    return normalized
+
+
+def _validate_peer_admin_port(port: int) -> int:
+    if isinstance(port, bool) or not isinstance(port, int) or not 1 <= port <= 65535:
+        raise HTTPException(status_code=400, detail=_PEER_PORT_INVALID_TOKEN)
+    return port
 
 
 def _init_runtime_state(app_obj: FastAPI) -> None:
@@ -216,6 +314,7 @@ class ProtocolTaskOutcomeRequest(BaseModel):
 
 @router.get("/")
 def read_root(request: Request):
+    """Access class: public_verifier. Return local node health metadata."""
     state = _state(request)
     return {
         "system": "Intelligent Labor Coin",
@@ -228,6 +327,8 @@ def read_root(request: Request):
 @router.post("/mine")
 def mine_claim(req: ClaimRequest, request: Request):
     """
+    Access class: local_dev_only.
+
     Public Endpoint: Ask the internal agent to perform labor.
     """
     state = _state(request)
@@ -251,16 +352,57 @@ def mine_claim(req: ClaimRequest, request: Request):
 
 @router.get("/node/{node_id}")
 def get_node(node_id: str, request: Request):
+    """Access class: public_verifier. Return a graph node by identifier."""
     state = _state(request)
     if node_id not in state.graph.nodes:
         raise HTTPException(status_code=404, detail="Node not found")
     return state.graph.nodes[node_id]
 
 @router.post("/gossip/receive")
-def receive_gossip(node_data: dict, request: Request):
+async def receive_gossip(request: Request):
     """
+    Access class: peer_gossip.
+
     Endpoint for other nodes to push data to us.
+
+    Phase 1573ak named gaps: this path verifies canonical node identity and
+    rejects missing signatures, but it does not yet perform cryptographic gossip
+    signature verification or rate limiting.
     """
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            declared_size = int(content_length)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail="gossip_content_length_invalid_phase_1573ak",
+            ) from exc
+        if declared_size > MAX_GOSSIP_PAYLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail="gossip_payload_too_large_phase_1573ak",
+            )
+
+    body = await request.body()
+    if len(body) > MAX_GOSSIP_PAYLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail="gossip_payload_too_large_phase_1573ak",
+        )
+    try:
+        node_data = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail="gossip_json_invalid_phase_1573ak",
+        ) from exc
+    if not isinstance(node_data, dict):
+        raise HTTPException(
+            status_code=400,
+            detail="gossip_payload_not_object_phase_1573ak",
+        )
+
     state = _state(request)
     try:
         node = Node(**node_data)
@@ -288,8 +430,19 @@ def receive_gossip(node_data: dict, request: Request):
 
 @router.post("/peers/add")
 def add_peer_endpoint(host: str, port: int, request: Request):
+    """Access class: operator_admin. Add a static peer in local-dev mode only."""
+    local_dev_peer_admin = bool(os.environ.get(_LOCAL_DEV_PEER_ADMIN_ENV))
+    if not local_dev_peer_admin:
+        host = _validate_peer_admin_host(host)
+    port = _validate_peer_admin_port(port)
     state = _state(request)
-    state.peer_manager.add_peer(host, port)
+    previous_allowance = state.peer_manager.allow_private_peer_endpoints_for_tests
+    try:
+        if local_dev_peer_admin:
+            state.peer_manager.allow_private_peer_endpoints_for_tests = True
+        state.peer_manager.add_peer(host, port)
+    finally:
+        state.peer_manager.allow_private_peer_endpoints_for_tests = previous_allowance
     return {"status": "added", "total_peers": len(state.peer_manager.peers)}
 
 # --- Protocol Surface (MVP) ---
@@ -303,11 +456,13 @@ def add_peer_endpoint(host: str, port: int, request: Request):
 
 @router.get("/v1/protocol/schema")
 def get_protocol_schema():
+    """Access class: public_verifier. Return the protocol schema document."""
     schema = load_protocol_schema()
     return JSONResponse(schema)
 
 @router.post("/v1/protocol/claim")
 def submit_protocol_claim(req: ProtocolClaimRequest):
+    """Access class: local_dev_only. Shape a protocol claim without persistence."""
     # Build a Node; keep it simple and deterministic
     try:
         net_stake = (
@@ -337,6 +492,7 @@ def submit_protocol_claim(req: ProtocolClaimRequest):
 
 @router.post("/v1/protocol/refute")
 def submit_protocol_refute(req: ProtocolRefuteRequest):
+    """Access class: local_dev_only. Shape a protocol refutation without persistence."""
     try:
         net_stake = (
             _parse_decimal_amount(req.net_stake, "protocol_refute_net_stake_invalid")
@@ -362,6 +518,7 @@ def submit_protocol_refute(req: ProtocolRefuteRequest):
 
 @router.post("/v1/protocol/task_outcome")
 def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
+    """Access class: local_dev_only. Shape a protocol task outcome without persistence."""
     try:
         stake_spent = _parse_decimal_amount(
             req.stake_spent, "protocol_task_outcome_stake_spent_invalid"
@@ -390,6 +547,8 @@ def submit_protocol_task_outcome(req: ProtocolTaskOutcomeRequest):
 @router.get("/v1/protocol/ep_task_schema")
 def get_ep_task_schema():
     """
+    Access class: public_verifier.
+
     Return the canonical JSON schema for EpistemicWorkTask.
 
     This is the same schema used by the EpistemicWorkTask Pydantic model
@@ -401,6 +560,8 @@ def get_ep_task_schema():
 @router.post("/v1/protocol/ep_task")
 def submit_ep_task(ep_task: EpistemicWorkTask):
     """
+    Access class: local_dev_only.
+
     Intake endpoint for a single EpistemicWorkTask.
 
     MVP behavior:
@@ -437,6 +598,7 @@ def submit_ep_task(ep_task: EpistemicWorkTask):
 
 @router.post("/api/v1/claimability/verify")
 async def verify_claimability_public_api(request: Request):
+    """Access class: public_verifier. Verify claimability receipt presentations."""
     content_length = request.headers.get("content-length")
     if content_length is not None:
         try:
@@ -503,5 +665,9 @@ async def verify_claimability_public_api(request: Request):
 
 def create_app() -> FastAPI:
     app_obj = FastAPI(title="ILC Node Daemon", version="0.1.0", lifespan=lifespan)
+    app_obj.add_middleware(
+        MaxBodySizeMiddleware,
+        max_body_size=MAX_APP_REQUEST_BODY_BYTES,
+    )
     app_obj.include_router(router)
     return app_obj
