@@ -79,3 +79,27 @@ def test_taxonomy_warns_against_blind_lmdb_edge_substitution() -> None:
     assert "Safe substitutions are contextual, not mechanical" in text
     assert "The current difference between phase-intake and Atlas-native usage profiles is" in text
     assert "single canonical ILC edge namespace" in text
+
+
+def test_taxonomy_defines_recipe_retirement_plan_for_legacy_edges() -> None:
+    text = _taxonomy_text()
+
+    assert "## §4b — Simplification, Recipes, and Retirement Plan" in text
+    assert "| `REFERENCES` | `legacy_retire_candidate` |" in text
+    assert "| `IMPLEMENTS_MODULE` | `legacy_retire_candidate` |" in text
+    assert "| `RATIFICATION_EVIDENCE_FOR` | `recipe_retire_candidate` |" in text
+    assert "| `USES` | `recipe_retire_candidate` |" in text
+    assert "| `OPENED_FOR` | `recipe_retire_candidate` |" in text
+    assert "| `PRELOCK_FOR` | `recipe_retire_candidate` |" in text
+    assert "Near-term cleanup target: retire `REFERENCES`, `IMPLEMENTS_MODULE`" in text
+
+
+def test_taxonomy_keeps_native_primitives_and_materialized_shortcuts() -> None:
+    text = _taxonomy_text()
+
+    assert "| `CONTAINS_FILE` | `materialized_shortcut_keep` |" in text
+    assert "| `SAME_SOURCE` | `materialized_shortcut_keep` |" in text
+    assert "| `GOVERNS` | `native_primitive_keep` |" in text
+    assert "| `CONSTRAINS` | `native_primitive_keep` |" in text
+    assert "| `SAME_AUTHORITY` | `native_primitive_keep` |" in text
+    assert "| `SUPERSEDED_BY` | `native_primitive_keep` |" in text

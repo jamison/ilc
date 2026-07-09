@@ -377,6 +377,51 @@ The current difference between phase-intake and Atlas-native usage profiles is
 therefore intentional after this section: the single canonical ILC edge namespace
 contains more native semantics than ordinary phase-intake records should use.
 
+## §4b — Simplification, Recipes, and Retirement Plan
+
+The canonical namespace should converge toward fewer high-quality primitive
+relations. Some historical labels remain reserved only to preserve current LMDB
+fidelity, but should be retired from new graph production once their existing
+rows are migrated with receipts.
+
+Do not delete or rewrite LMDB edges in-place without a migration phase. A
+retirement migration must:
+
+1. count existing source edge rows before migration;
+2. direct-read a representative sample for every source/target pattern;
+3. generate replacement edges with deterministic `edge_id` values;
+4. preserve or rebuild preimages and graph payload/index consistency;
+5. emit a migration receipt with before/after edge counts; and
+6. run Atlas LMDB validation after the rewrite.
+
+| Edge type | Simplification class | Preferred representation | Migration posture |
+|---|---|---|---|
+| `REFERENCES` | `legacy_retire_candidate` | Replace with `REFERENCES_AUTHORITY`, `DERIVED_FROM`, `EVIDENCES`, `TESTS`, or `PROVENANCE` after source-read classification. | Plan migration; no new use. |
+| `IMPLEMENTS_MODULE` | `legacy_retire_candidate` | Runtime-to-authority becomes `IMPLEMENTS`; test-to-module becomes `TESTS`; symbol-level coverage becomes `COVERS_SYMBOL`. | Plan migration; no new use. |
+| `RATIFICATION_EVIDENCE_FOR` | `recipe_retire_candidate` | `EVIDENCES -> cdl:<ratification-token>` plus `REFERENCES_AUTHORITY -> cdl:CDL-NNN`. | Good candidate for scripted migration with source/target validation. |
+| `USES` | `recipe_retire_candidate` | Ordinary imports become `IMPORTS_MODULE`; generation/lineage claims become `DERIVED_FROM`. | Good candidate for scripted migration after source-read target classification. |
+| `OPENED_FOR` | `recipe_retire_candidate` | `EVIDENCES -> cdl:<opening-token>` plus `REFERENCES_AUTHORITY -> cdl:CDL-NNN`. | Candidate migration if opening targets can be identified deterministically. |
+| `PRELOCK_FOR` | `recipe_retire_candidate` | `ATTESTATION -> phase:<prelock-token>` or `EVIDENCES -> cdl:<prelock-token>` plus `REFERENCES_AUTHORITY -> cdl:CDL-NNN`. | Candidate migration if prelock targets can be identified deterministically. |
+| `EXPECTS_RESOLUTION` | `native_primitive_review` | Usually preserve as lifecycle topology; may be represented by a future gap-node recipe only after gap schema ratification. | Do not migrate automatically. |
+| `CONTAINS_FILE` | `materialized_shortcut_keep` | Can be derived from package manifest membership plus `SOURCE_TREE_MEMBER`, but direct edge supports package queries. | Keep. |
+| `CONTAINS_GROUP` | `materialized_shortcut_keep` | Can be derived from package/group manifest membership, but direct edge supports package queries. | Keep. |
+| `CONTAINS_PARTITION` | `materialized_shortcut_keep` | Can be derived from partition manifest membership, but direct edge supports package queries. | Keep. |
+| `SAME_SOURCE` | `materialized_shortcut_keep` | Can be inferred from source path/content-hash equality, but direct edge supports normalization queries. | Keep. |
+| `IMPORTS_MODULE` | `native_extraction_keep` | Direct source-code import relation. | Keep for code-graph extraction; not for ordinary phase intake. |
+| `CARRIES_FORWARD` | `native_primitive_keep` | Carries temporal obligation/phase continuity. | Keep unless a future temporal-edge CDL replaces it. |
+| `CONSTRAINS` | `native_primitive_keep` | Captures policy/parameter constraint semantics. | Keep. |
+| `GOVERNS` | `native_primitive_keep` | Captures authority topology. | Keep; governance-sensitive. |
+| `PRIMITIVE_INVOCATION` | `native_primitive_keep` | Captures truth-primitive/axiom topology. | Keep. |
+| `PROPOSES_CHANGE_TO` | `native_primitive_keep` | Captures proposal-target topology. | Keep, even if currently unused. |
+| `RESOLVED_BY` | `native_primitive_keep` | Captures gap/alternate resolution lifecycle. | Keep. |
+| `SAME_AUTHORITY` | `native_primitive_keep` | Captures authority alias equivalence. | Keep. |
+| `SUPERSEDED_BY` | `native_primitive_keep` | Captures lifecycle replacement. | Keep. |
+
+Near-term cleanup target: retire `REFERENCES`, `IMPLEMENTS_MODULE`,
+`RATIFICATION_EVIDENCE_FOR`, `USES`, `OPENED_FOR`, and `PRELOCK_FOR` from the
+live Atlas LMDB through a dedicated migration phase, unless source-read audit
+finds rows whose semantics cannot be represented by the preferred recipes.
+
 ## §5 — Classification Decision Tree
 
 Apply these steps in order for every new file. Stop at the first match.
@@ -537,8 +582,8 @@ Batch identifier format: `manual_batch_NNN_phase_MMMM_<slug>`
 - `MMMM` — the current phase number (e.g., `1575`)
 - `<slug>` — short lowercase underscore-separated description of what the batch covers
 
-**Current last batch (as of Phase 1573ah-Fix2 canonical edge namespace unification):** `manual_batch_090_phase_1573ah_fix2_canonical_edge_namespace_unification`
-**Next batch:** `manual_batch_091_<slug>`
+**Current last batch (as of Phase 1573ah-Fix3 edge recipe retirement planning):** `manual_batch_091_phase_1573ah_fix3_edge_recipe_retirement_planning`
+**Next batch:** `manual_batch_092_<slug>`
 
 For retroactive backfills covering a range of phases, use:
 `manual_batch_NNN_phase_RANGE_retroactive`
