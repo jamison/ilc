@@ -61,6 +61,17 @@ def test_pipeline_script_exists_and_has_no_push_command() -> None:
     assert "cat-file" in content
 
 
+def test_pipeline_script_honors_rust_public_rc_exclude_headers() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    assert '(?:<!--|#|//)' in content
+    assert '".rs"' in content
+    assert "shamir_split" in content
+    assert "shamir_recover" in content
+    assert "shamir_verify" in content
+    assert "private Shamir binary declarations" in content
+
+
 def test_phase_1448a_a4_updated_to_option_c() -> None:
     text = CHECKLIST.read_text(encoding="utf-8")
     assert "Option C" in text, "Phase 1448a A4 must be amended to Option C"
