@@ -48695,6 +48695,77 @@
         "REGRESSES"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_099_phase_1573al_signed_slice_forward_plan",
+      "chronology_note": "2026-07-09 Phase 1573al follow-up — signed AtlasSliceManifest executable-map architecture routed to Window 1576+.",
+      "manual_read_summary": "Forward plan defines AtlasSliceManifest as a signed executable map with separate node/content blobs, identity/integrity/availability/authorization separation, manifest-first verification, multi-source materialization, public/private slice modes, and a main-machine plus 3-VPS plus 7-agent rehearsal target.",
+      "repo_path": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/PLANNING_INDEX.md",
+          "review_status": "forward_planning"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "plan:signed_atlas_slice_manifest_executable_map_window_1576_plus"
+        },
+        {
+          "edge_type": "EXPECTS_RESOLUTION",
+          "target": "phase:1576-slice-schema"
+        },
+        {
+          "edge_type": "EXPECTS_RESOLUTION",
+          "target": "phase:1576-agent-bootstrap"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "EXPECTS_RESOLUTION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_099_phase_1573al_signed_slice_forward_plan",
+      "chronology_note": "2026-07-09 Phase 1573al follow-up — regression test for signed AtlasSliceManifest forward planning.",
+      "manual_read_summary": "Test pins the signed AtlasSliceManifest executable-map forward plan, its four-axis separation, manifest-before-fetch rule, 3-VPS/7-agent rehearsal target, and PLANNING_INDEX routing.",
+      "repo_path": "tests/test_signed_atlas_slice_manifest_forward_plan.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/PLANNING_INDEX.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
