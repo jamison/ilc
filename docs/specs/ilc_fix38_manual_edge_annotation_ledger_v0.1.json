@@ -245,7 +245,7 @@
     },
     {
       "annotation_batch": "manual_batch_001_frontier_files_0001_0010",
-      "chronology_note": "Earliest commit 2025-11-24T16:18:11+01:00 bfe1eaec feat: add potential-aware auto-mine strategy and sims; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float\u2192Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
+      "chronology_note": "Earliest commit 2025-11-24T16:18:11+01:00 bfe1eaec feat: add potential-aware auto-mine strategy and sims; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float→Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
       "manual_read_summary": "Validates EveAgent auto_mine_claim behavior against EpistemicGraph and ConsensusEngine: funded auto-mining creates a draft-signed node, records stake, spends wallet balance, and high-potential trust vector stakes at least as much as low-potential.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -405,7 +405,7 @@
     },
     {
       "annotation_batch": "manual_batch_001_frontier_files_0001_0010",
-      "chronology_note": "Earliest commit 2025-11-24T14:14:40+01:00 04ca608e feat: add MVP ECU-aware staking strategy for EveAgent; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float\u2192Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
+      "chronology_note": "Earliest commit 2025-11-24T14:14:40+01:00 04ca608e feat: add MVP ECU-aware staking strategy for EveAgent; latest commit 2026-04-30T08:06:11+02:00 08d94ab9 fix(security): float→Decimal for consensus/agent/onboarding/genesis ECU interfaces.",
       "manual_read_summary": "Validates EveAgent staking strategy and mine_thought behavior: requested stake is bumped to task fee when possible, exact fee is preserved, stake is capped by wallet, funded thought mining draft-signs a node, adds graph edges/stake, and deducts wallet balance.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -13878,7 +13878,7 @@
     {
       "annotation_batch": "manual_batch_030_frontier_files_0291_0300",
       "chronology_note": "Earliest commit 2026-05-08T12:11:45+02:00 2f332650 docs: harden phase prompt schema discipline.",
-      "manual_read_summary": "Validates Phase 1241-1248 prompt schema and token-discipline documents. The test checks all eight phase prompts validate, every prompt has \u00a70 token-audit/MemPalace discipline and non-empty Required Tokens, AGENTS.md reminds agents to follow prompt schema and \u00a70c claim enumeration, and the prompt README requires walkthrough/STATUS updates before phase-close/backfill commits.",
+      "manual_read_summary": "Validates Phase 1241-1248 prompt schema and token-discipline documents. The test checks all eight phase prompts validate, every prompt has §0 token-audit/MemPalace discipline and non-empty Required Tokens, AGENTS.md reminds agents to follow prompt schema and §0c claim enumeration, and the prompt README requires walkthrough/STATUS updates before phase-close/backfill commits.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -17422,7 +17422,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:25:03+02:00 6b88e034 adr(1387d): write ADR-0035 formal spec \u2014 homoiconic type definition system.",
+      "chronology_note": "Earliest commit 2026-05-19T08:25:03+02:00 6b88e034 adr(1387d): write ADR-0035 formal spec — homoiconic type definition system.",
       "manual_read_summary": "Validates Phase 1387d ADR-0035 formal spec. The test checks ADR-0035 file existence, direction-accepted and implementation-deferred tokens, resolution of type-regress, ADR-0030 content_type relationship, Popperian type-level claim form, compositional primitive basis/decomposition recipe constraints, forward obligations, ADR-0004/0029/0030 references, working spec cross-reference, retroactivity/snapshot semantics, non-attributable definition nodes, and Phase 1387d token.",
       "proposed_authority_trace_edges": [
         {
@@ -17508,7 +17508,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:46:13+02:00 504d46a8 sim(1387f): SIM-GRAPHOPT-01 \u2014 graph structure analysis extension.",
+      "chronology_note": "Earliest commit 2026-05-19T08:46:13+02:00 504d46a8 sim(1387f): SIM-GRAPHOPT-01 — graph structure analysis extension.",
       "manual_read_summary": "Validates Phase 1387f graph structure analysis extension. The test checks graph_structure_analysis presence, authority trace depth metrics, max depth bound, histogram coverage, at most one untraceable core node, duplicate recipe group detection, GOVERNS/CONSTRAINS merge-candidate recipe, zero missing recipes after 1387h, positive orphan node count with all orphans basis-reachable, and compiler Phase 1387f annotation.",
       "proposed_authority_trace_edges": [
         {
@@ -17548,7 +17548,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:49:31+02:00 3ed04fed sim(1387g): SIM-GRAPHOPT-02 \u2014 epistemic leverage analysis.",
+      "chronology_note": "Earliest commit 2026-05-19T08:49:31+02:00 3ed04fed sim(1387g): SIM-GRAPHOPT-02 — epistemic leverage analysis.",
       "manual_read_summary": "Validates Phase 1387g epistemic leverage analysis. The test checks epistemic_leverage_analysis presence, baseline reachable count 54, leverage scores covering all core nodes, nonnegative non-root leverage, zero keystone nodes, 15 axiomatic roots, all non-root leverage equal to one, normal leverage type distribution, and compiler Phase 1387g annotation.",
       "proposed_authority_trace_edges": [
         {
@@ -17588,7 +17588,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:51:10+02:00 afb46c44 sim(1387h): SIM-GRAPHOPT-03 \u2014 canonicalize ATTESTATION/PROVENANCE edge recipes.",
+      "chronology_note": "Earliest commit 2026-05-19T08:51:10+02:00 afb46c44 sim(1387h): SIM-GRAPHOPT-03 — canonicalize ATTESTATION/PROVENANCE edge recipes.",
       "manual_read_summary": "Validates Phase 1387h edge recipe canonicalization. The test checks all star-map edges have decomposition_recipe, ATTESTATION and PROVENANCE use assert.truth and link.claim with distinct scopes, diagnostic missing recipe count is zero, duplicate recipe group count is two, ATTESTATION/PRIMITIVE_INVOCATION/PROVENANCE share primitives with scope distinctions, and GOVERNS/CONSTRAINS merge candidate remains present.",
       "proposed_authority_trace_edges": [
         {
@@ -17628,7 +17628,7 @@
     },
     {
       "annotation_batch": "manual_batch_037_frontier_files_0361_0370",
-      "chronology_note": "Earliest commit 2026-05-19T08:52:26+02:00 976ae6e9 sim(1387i): SIM-GRAPHOPT-04 \u2014 synthesis report + forward recommendations.",
+      "chronology_note": "Earliest commit 2026-05-19T08:52:26+02:00 976ae6e9 sim(1387i): SIM-GRAPHOPT-04 — synthesis report + forward recommendations.",
       "manual_read_summary": "Validates Phase 1387i graph-optimization synthesis report. The test checks report existence, closing token, max-depth finding, zero-keystone finding, GOVERNS/CONSTRAINS merge candidate, ATTESTATION/PROVENANCE scope distinction, zero missing recipes after 1387h, 37 orphan leaf nodes, and forward optimization/obligation section.",
       "proposed_authority_trace_edges": [
         {
@@ -34835,7 +34835,7 @@
     {
       "annotation_batch": "manual_batch_074_frontier_files_0731_0740",
       "chronology_note": "Earliest commit 2026-05-09T14:16:41+02:00 3454a26a docs(g8): draft window 1281 1288 prompt package.",
-      "manual_read_summary": "Validates the superseded Window 1289-1302 prompt draft package. The test checks sequence-lock and guidance routing, prompt schema, \u00a70 sections, token blocks, sensitive GO requirements, public non-claims, human escalation, public claimability non-activation, PLANNING_INDEX superseded status, session-start routing, prompt file completeness, old-name exclusion, and active lock/guidance references.",
+      "manual_read_summary": "Validates the superseded Window 1289-1302 prompt draft package. The test checks sequence-lock and guidance routing, prompt schema, §0 sections, token blocks, sensitive GO requirements, public non-claims, human escalation, public claimability non-activation, PLANNING_INDEX superseded status, session-start routing, prompt file completeness, old-name exclusion, and active lock/guidance references.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -34937,7 +34937,7 @@
     {
       "annotation_batch": "manual_batch_075_frontier_files_0741_0750",
       "chronology_note": "Earliest commit 2026-05-12T08:19:27+02:00 2a780eb0 docs(g8): record release dry-run window planning.",
-      "manual_read_summary": "Validates Window 1303-1316 prompt drafts. The test checks planning-only guidance, forward-plan alignment, prompt schema, \u00a70 discovery sections, non-authorization floor, required tokens, sensitive GO gates, guidance/sequence-lock references, Phase 1308 export non-execution, Phase 1313 default-off public P2P boundary, and PLANNING_INDEX references.",
+      "manual_read_summary": "Validates Window 1303-1316 prompt drafts. The test checks planning-only guidance, forward-plan alignment, prompt schema, §0 discovery sections, non-authorization floor, required tokens, sensitive GO gates, guidance/sequence-lock references, Phase 1308 export non-execution, Phase 1313 default-off public P2P boundary, and PLANNING_INDEX references.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -35444,7 +35444,7 @@
     },
     {
       "annotation_batch": "manual_batch_076_frontier_files_0751_0756",
-      "chronology_note": "Earliest commit 2026-04-23T08:22:08+02:00 06d0301d feat(g8): window 775-782 row-5 privacy remediation \u2014 non-closure verdict.",
+      "chronology_note": "Earliest commit 2026-04-23T08:22:08+02:00 06d0301d feat(g8): window 775-782 row-5 privacy remediation — non-closure verdict.",
       "manual_read_summary": "Validates the Window 775-782 closure gate and honest non-closure verdict for Row-5 privacy remediation. The test checks closure tokens, runtime markers for layer-1 log hygiene and layer-2 batching/multi-relay, SIM-LEAKAGE-01 run artifacts, bounded auditability language, ZK nullifier/selective-disclosure future path, capsule/planning references, and no decision-log mutation.",
       "proposed_authority_trace_edges": [
         {
@@ -36036,7 +36036,7 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573e-G10: CDL-SIGMA-01 Ratification \u2014 Spectral Sigma Authority and CCSS-SPECTRAL-01 Successor",
+      "manual_read_summary": "Phase 1573e-G10: CDL-SIGMA-01 Ratification — Spectral Sigma Authority and CCSS-SPECTRAL-01 Successor",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36053,7 +36053,7 @@
     {
       "annotation_batch": "manual_batch_079_phase_1573e_1573i_retroactive",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573f-G10: CCSS-SPECTRAL-01 Cryptographic Primitives \u2014 SpectralRouteToken Module",
+      "manual_read_summary": "Phase 1573f-G10: CCSS-SPECTRAL-01 Cryptographic Primitives — SpectralRouteToken Module",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36572,7 +36572,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "ILC Window 1565-1575 Remaining Phases Guidance (1573o\u20131575)",
+      "manual_read_summary": "ILC Window 1565-1575 Remaining Phases Guidance (1573o–1575)",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -36625,7 +36625,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573n-G10: Public Mirror Option C Preparation \u2014 Reproducible Filter Pipeline Rehearsal",
+      "manual_read_summary": "Phase 1573n-G10: Public Mirror Option C Preparation — Reproducible Filter Pipeline Rehearsal",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36744,7 +36744,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573u-G8: OBL Register Sweep \u2014 Pre-1573v Coherence Check",
+      "manual_read_summary": "Phase 1573u-G8: OBL Register Sweep — Pre-1573v Coherence Check",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36761,7 +36761,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573v-G8: Canonical Glossary Amendment \u2014 Star Map, Tier/Projection, Group Node Taxonomy",
+      "manual_read_summary": "Phase 1573v-G8: Canonical Glossary Amendment — Star Map, Tier/Projection, Group Node Taxonomy",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36795,7 +36795,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573x-G8: Multi-Slice Encrustation Model \u2014 ADR Opening",
+      "manual_read_summary": "Phase 1573x-G8: Multi-Slice Encrustation Model — ADR Opening",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36812,7 +36812,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573y-G8: Fix65a/b \u2014 LMDB graph_projection Coverage and Merkle Integrity Repair",
+      "manual_read_summary": "Phase 1573y-G8: Fix65a/b — LMDB graph_projection Coverage and Merkle Integrity Repair",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36829,7 +36829,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573z-G8: Invite Token CLI Plumbing \u2014 InviteBatchRecord, InviteRedemptionRecord, SigningLevel",
+      "manual_read_summary": "Phase 1573z-G8: Invite Token CLI Plumbing — InviteBatchRecord, InviteRedemptionRecord, SigningLevel",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36846,7 +36846,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573aa-G8: CDL-029 Amendment #2 \u2014 Constitutionalize C_max as Genesis Share Ratio Denominator",
+      "manual_read_summary": "Phase 1573aa-G8: CDL-029 Amendment #2 — Constitutionalize C_max as Genesis Share Ratio Denominator",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36863,7 +36863,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573ab-G8: genesis_accrual_governor.py Runtime Fix \u2014 C_max Denominator",
+      "manual_read_summary": "Phase 1573ab-G8: genesis_accrual_governor.py Runtime Fix — C_max Denominator",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -36880,7 +36880,7 @@
     {
       "annotation_batch": "manual_batch_080_phase_1573j_current",
       "chronology_note": "2026-07-09 Phase 1573u recent-window Atlas annotation ledger backfill.",
-      "manual_read_summary": "Phase 1573ac-G8: Canonical Genesis Accumulation SIM \u2014 Hash-Locked Reproducibility",
+      "manual_read_summary": "Phase 1573ac-G8: Canonical Genesis Accumulation SIM — Hash-Locked Reproducibility",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37533,7 +37533,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "EveAgent runtime: submits claim nodes to the epistemic graph, stakes ECU through consensus governance fee enforcement, and auto-mines claims proportional to PoW hardware potential score.",
       "proposed_authority_trace_edges": [
         {
@@ -37563,7 +37563,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "Aggregates per-agent task-count distributions across problem space categories into AgentDescriptor dataclass objects for analytics export.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37580,7 +37580,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "Flattens AgentProfile objects to CSV and JSON export format, handling nested competency, stress-response, and light-cone sub-structures via scalar promotion and _json columns.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37597,7 +37597,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "AgentProfile dataclass that aggregates per-agent econ, claim, influence, competency, stress-response, and light-cone KPIs into a unified exportable record; includes builder and attach helpers.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37614,7 +37614,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "Builds per-claim influence score rows by combining EpistemicGraph link statistics (supports_in, refutes_in, depends_on_in) with local influence scores derived from ProtocolParams.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37631,7 +37631,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "Computes per-agent competency KPIs aggregated by problem space and barrier level (low/medium/high), including task success rates and per-space cross-averages.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37648,8 +37648,8 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
-      "manual_read_summary": "Computes macro token economic metrics\u2014burn, public benefit allocation, and net issuance\u2014from DevnetExperimentSummary totals, enforcing rate validity and sum constraints.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
+      "manual_read_summary": "Computes macro token economic metrics—burn, public benefit allocation, and net issuance—from DevnetExperimentSummary totals, enforcing rate validity and sum constraints.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37665,7 +37665,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "Loads tasks.csv, epochs.csv, and claims.csv and computes per-agent and global economic KPIs including reward totals, clearing prices, domain breakdown, and task counts.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37682,7 +37682,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "H-010 epoch-stamped node embedding pipeline: selects sentence-transformer models by ADR-0030 content type, enforces SIM-EMBED-01 staleness thresholds, and persists L2-normalized vectors to an LMDB sidecar store.",
       "proposed_authority_trace_edges": [
         {
@@ -37698,7 +37698,7 @@
         },
         {
           "edge_type": "IMPLEMENTS",
-          "rationale": "Implements ADR-0030 embedding substrate: content-type \u2192 payload family \u2192 model selection, staleness thresholds, and LMDB sidecar persistence.",
+          "rationale": "Implements ADR-0030 embedding substrate: content-type → payload family → model selection, staleness thresholds, and LMDB sidecar persistence.",
           "target": "adr:ADR-0030"
         }
       ],
@@ -37712,7 +37712,7 @@
     },
     {
       "annotation_batch": "catchup_batch_001",
-      "chronology_note": "2026-07-08 Historical backfill \u2014 catchup_batch_001, ilc_core pre-protocol gap.",
+      "chronology_note": "2026-07-08 Historical backfill — catchup_batch_001, ilc_core pre-protocol gap.",
       "manual_read_summary": "TargetEpistemicConfig and NamespaceStats dataclasses with compute_config_error(), which measures signed deviations between observed namespace epistemic health metrics and target thresholds for contradiction density, validation depth, and crosslink ratio.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37729,7 +37729,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports per-agent epoch reports combining namespace health and agent dossier data to CSV or JSON files, creating parent directories automatically.",
       "proposed_authority_trace_edges": [
         {
@@ -37758,8 +37758,8 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "SIM-63A offline analysis module computing Gini coefficients, Pearson correlation, \u03b2/\u03b8 ECU payout reweighting, and PB farming gating simulations over agent payout distributions.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "SIM-63A offline analysis module computing Gini coefficients, Pearson correlation, β/θ ECU payout reweighting, and PB farming gating simulations over agent payout distributions.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37775,7 +37775,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Computes exponential decay freshness gate scores bounded by a configurable floor, with a Genesis node exemption that bypasses decay.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37792,7 +37792,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Enforces the Genesis cumulative accrual cap using a sigmoid taper (theta_hard=1/20, theta_soft=exp(-3)) with monotonicity invariants and bounded Decimal arithmetic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37809,7 +37809,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Implements CDL-013 Decimal-arithmetic governance weight and vote-share computation with a decay-non-genesis-only rule.",
       "proposed_authority_trace_edges": [
         {
@@ -37838,7 +37838,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Computes per-claim link statistics (supports_in, refutes_in, equivalent_in, depends_on_in) and local influence scores dispatched by protocol algorithm ID.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37855,7 +37855,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Full hypergraph Laplacian analytics pipeline implementing ADR-0029 and SIM-SPECTRAL-01: builds the normalized Laplacian, computes the Fiedler value (lambda2/v2), and evaluates partition risk with bootstrap mode for small graphs below N=44.",
       "proposed_authority_trace_edges": [
         {
@@ -37884,8 +37884,8 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Computes the epistemic light cone composite score (reach \u00d7 horizon \u00d7 domain_span) per agent from graph adjacency and task row aggregation.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes the epistemic light cone composite score (reach × horizon × domain_span) per agent from graph adjacency and task row aggregation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -37901,8 +37901,8 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Computes induced-subgraph local lambda2 per content_type cluster (H-006b Part 2+4, ADR-0032 \u00a72.5), excluding partial-membership hyperedges.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Computes induced-subgraph local lambda2 per content_type cluster (H-006b Part 2+4, ADR-0032 §2.5), excluding partial-membership hyperedges.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -37930,7 +37930,7 @@
     },
     {
       "annotation_batch": "catchup_batch_002_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Builds NamespaceHealthSnapshot combining epistemic stress and cohesion metrics for a namespace at one epoch.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37947,7 +37947,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Builds conformance reports with SHA-256 over sorted score rows and anti-sybil invariant checks (sybil_low_diversity_reuse, inconsistent_agent_reuse).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37964,7 +37964,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Extracts NodeValueInputEvents from dict rows or NDJSON files and constructs replay fixtures with SHA-256 integrity checksums.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37981,7 +37981,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Produces comprehensive multi-check governance conformance reports covering score vector schema, anti-sybil, reuse diversity, freshness, refutation profitability, and genesis accrual governor invariants.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -37998,7 +37998,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Validates and normalizes four node value input event kinds (task_outcome, claim, refutation, commit.epoch) into canonical TypedDict structures with telemetry.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38015,7 +38015,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Core epistemic weight kernel: builds NodeEvidenceVectors from events, computes weighted Decimal scores (reuse, contradiction, validation, path) and utility flow.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38032,7 +38032,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Normalizes policy bundles in strict (v0.1) or legacy-bridge mode, mapping legacy field aliases to canonical keys.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38049,7 +38049,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Computes normalized path lift scores per node from path witnesses using baseline efficiency (weight/cost ratio), with agent diversity tracking.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38066,7 +38066,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Aggregates task counts per agent across six problem space categories (LOCAL_CONSISTENCY, GLOBAL_EXPLANATION, etc.) with heuristic inference from task fields.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38083,7 +38083,7 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Validates reuse diversity policy (min_distinct_agents, max_single_agent_share, penalty_floor) and computes a diversity multiplier with refutation-safe floor.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38100,8 +38100,8 @@
     },
     {
       "annotation_batch": "catchup_batch_003_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Materializes TaskRoutingSuggestions into concrete RoutedTaskRows with QA gating, \u03ba-parameterized reward calculation, and competence multiplier logic.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Materializes TaskRoutingSuggestions into concrete RoutedTaskRows with QA gating, κ-parameterized reward calculation, and competence multiplier logic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -38117,7 +38117,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports RoutedTaskRow dict lists to CSV (alphabetical header) or JSON files, creating parent directories automatically.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38134,7 +38134,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "H-006b Part 3 temporal spectral trajectory analytics: produces SpectralEpochRecord with lambda2_delta and lambda2_accel from a single LAPACK eigenvalue call.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38151,7 +38151,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0029 spectral utility functions: L2 spectral_distance routing metric, provisional edge weight computation (SIM-REUSE-01 pending), v0.2 fixed-point eigenvalue hashing, and CSPRNG Gaussian noise injection for beacon emission.",
       "proposed_authority_trace_edges": [
         {
@@ -38180,7 +38180,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Computes EpistemicStress (validation depth, contradiction, crosslink error terms) and CohesionMetrics (support ratio, controversy ratio, mean absolute influence).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38197,7 +38197,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Aggregates per-agent stress response metrics (low/high bucket task counts and success rates) from task samples that include a stress field.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38214,7 +38214,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Generates prioritized TaskRoutingSuggestion lists combining regime classification, agent competency, stress preference, and light cone tie-breaking.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38231,8 +38231,8 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Utility flow reward allocation governor: applies action-kind multipliers (refutation=1.2\u00d7), diversity/freshness multipliers, budget cap, genesis share cap, and refutation profitability invariant.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Utility flow reward allocation governor: applies action-kind multipliers (refutation=1.2×), diversity/freshness multipliers, budget cap, genesis share cap, and refutation profitability invariant.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -38248,7 +38248,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Thin ASGI adapter creating the ilc_core FastAPI application via create_app() for uvicorn and module-import serving surfaces.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38265,7 +38265,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "PUBLIC_RC_EXCLUDE package marker for the private ADR-0009 bundle tooling; exports no symbols.",
       "proposed_authority_trace_edges": [
         {
@@ -38289,7 +38289,7 @@
     },
     {
       "annotation_batch": "catchup_batch_004_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Independent four-layer ADR-0009 bundle verifier: validates CIDv1 content-addressing, DAG-CBOR canonicality, COSE-Sign1 signatures, and the cross-layer CID chain.",
       "proposed_authority_trace_edges": [
         {
@@ -38318,7 +38318,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0009 Layer 0 generator: embeds CDL-073 truth primitive schemas as DAG-CBOR bundles with optional COSE-Sign1 attestation.",
       "proposed_authority_trace_edges": [
         {
@@ -38352,7 +38352,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0009 Layer 1 generator: links Layer 0 by SHA-256/CIDv1, stores seed claims, initial agent roster, shard topology, and genesis signing key references as DAG-CBOR.",
       "proposed_authority_trace_edges": [
         {
@@ -38381,7 +38381,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0009 Layer 2 generator: commits epoch state with graph, agent, and contract digests, linking back to Layer 0 and Layer 1 by CIDv1.",
       "proposed_authority_trace_edges": [
         {
@@ -38410,7 +38410,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0009 Layer 3 generator: wire binding descriptor linking a Layer 2 snapshot CIDv1 to message type, agent, epoch, payload digest, and signature reference.",
       "proposed_authority_trace_edges": [
         {
@@ -38439,7 +38439,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ADR-0035 type definition registry (default-off): parses and verifies type definition records with CIDv1 identity; CDL-097 ratification token present.",
       "proposed_authority_trace_edges": [
         {
@@ -38473,7 +38473,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CCSS local runtime implementing X25519+ChaCha20Poly1305 double-layer envelope encryption, contact/identity management, SOCKS5 Tor transport, and prompt injection detection with L2 Unicode obfuscation checks.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38490,7 +38490,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "SafeCCSSMessage frozen dataclass enforcing content-vs-instruction isolation with an as_user_input() JSON wrapper and a pluggable MessageSafetyClassifier Protocol for LLM-backed safety passes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38507,7 +38507,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Shared CLI error helpers: emit_cli_error() prints a JSON error payload and exits 2.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38524,7 +38524,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Key loading utility: base64-decodes key material with a raw-byte fallback for CLI key-registry tools.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38541,7 +38541,7 @@
     },
     {
       "annotation_batch": "catchup_batch_005_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Read-first Atlas LMDB CLI providing status, validate, node, edges, register-phase-files, apply-edge-batch, and apply-node-edge-plan subcommands with an authority edge gate.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38558,7 +38558,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 420 agent identity derive CLI; routes derive-agent-id and verify-agent-id subcommands against CDL-042 runtime.",
       "proposed_authority_trace_edges": [
         {
@@ -38587,7 +38587,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 421 lifecycle CLI routing timed-out-lifecycle commands against CDL-046 and D2D gossip dependency tokens.",
       "proposed_authority_trace_edges": [
         {
@@ -38616,7 +38616,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 888 CDL-075 truth store query CLI routing query-truth subcommands against the CDL-075 truth primitive graph store.",
       "proposed_authority_trace_edges": [
         {
@@ -38645,7 +38645,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 874/882 CDL-074/075 truth primitive submit CLI routing submit-truth subcommands that validate and record truth primitive submissions.",
       "proposed_authority_trace_edges": [
         {
@@ -38674,7 +38674,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "HTTP CLI adapter for epistemic task operations with 2-second connect and 30-second read timeouts enforced on all outbound requests.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38691,7 +38691,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Main JSON-first ILC CLI (Phase 264) routing all primitive and operational subcommands and enforcing structured error output.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38708,7 +38708,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "MCP CLI adapter dispatching ILC tool calls through NodeMCPToolService.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38725,7 +38725,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Sidecar and recipe discovery CLI providing list and run subcommands, including the confidential-contact recipe.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38742,7 +38742,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Canon export bundle signing CLI: signs a canon export bundle using an Ed25519 key loaded from the key registry.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38759,7 +38759,7 @@
     },
     {
       "annotation_batch": "catchup_batch_006_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Canon export bundle validation CLI: validates the structure and signature chain of a canon export bundle file.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38776,7 +38776,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Governance config loader: reads YAML or JSON configuration files with defaults from governance_mvp.json.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38793,7 +38793,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports CDL-V3 diversity floor and CDL-V7 Popperian gate consensus package symbols.",
       "proposed_authority_trace_edges": [
         {
@@ -38822,7 +38822,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2t lineage adapter mapping accepted agent-loop ECU claim payloads to provenance chain records for attribution downstream.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38839,7 +38839,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2b-3 Python-to-Rust attribution batch bridge converting accepted agent-loop ECU claims to the JSON shape consumed by the Rust attribution_batch_ingest binary.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38856,7 +38856,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-045 circuit-breaker validator: validates breaker activation parameters and evaluates CDL-V3 diversity-quorum trigger conditions.",
       "proposed_authority_trace_edges": [
         {
@@ -38885,7 +38885,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "SponsorGraph union-find data structure for computing capital cluster diversity across validator sponsor relationships.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38902,7 +38902,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-V3 diversity floor runtime: deterministic cluster-diversity helpers computing max_cluster_share and distinct-cluster floor with bounded penalty scoring.",
       "proposed_authority_trace_edges": [
         {
@@ -38931,7 +38931,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Core consensus engine coordinating stake governance, ECU fee structure, and validator quorum logic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -38948,7 +38948,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 444 epoch-state and quorum-record runtime implementing CDL-051 constitutional consensus and epoch finality.",
       "proposed_authority_trace_edges": [
         {
@@ -38977,7 +38977,7 @@
     },
     {
       "annotation_batch": "catchup_batch_007_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 445 finality evaluator with CDL-V3 diversity-aware extension that checks whether a quorum record satisfies finality conditions.",
       "proposed_authority_trace_edges": [
         {
@@ -39011,7 +39011,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ECU-anchored congestion-aware fee governance: BacklogMetrics and Governance class computing dynamic fee floors from queue depth and stake utilization.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39028,7 +39028,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-V7 Popperian gate runtime: evaluates decomposition admissibility and falsifiability criteria for epistemic node submissions.",
       "proposed_authority_trace_edges": [
         {
@@ -39057,7 +39057,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1358 Python-to-ilc_consensus gRPC production bridge referencing ADR-0028 for the language-boundary contract.",
       "proposed_authority_trace_edges": [
         {
@@ -39086,7 +39086,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1357 H-011 Decimal reputation runtime: computes per-agent reputation scores from validation, refutation, and consistency history using exact Decimal arithmetic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39103,7 +39103,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports COSE-Sign1 cryptographic primitives (cose_sign1_sign, cose_sign1_verify, cose_sign1_decode).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39120,7 +39120,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Canonical CBOR encoding/decoding utilities using cbor2 with canonical=True and a 1 MiB input size cap; validates round-trip canonicality.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39137,7 +39137,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Minimal RFC 8152 COSE_Sign1 implementation using Ed25519 (algorithm -8, EdDSA) with canonical CBOR and ILC DAG-CBOR payload validation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39154,7 +39154,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ML-DSA-65 signature verification utility for CDL-101 signed gossip envelopes; fails closed on any import, format, or verification error.",
       "proposed_authority_trace_edges": [
         {
@@ -39183,7 +39183,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Distribution profile constants package marker; exports no protocol symbols.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39200,7 +39200,7 @@
     },
     {
       "annotation_batch": "catchup_batch_008_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Economics sandbox entropy helpers: learning_signal() and entropy_weight() compute mid-entropy upweighting over empirical success rates using exact Decimal arithmetic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39217,7 +39217,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 550 passive ECU attribution runtime computing centrality-weighted, quality-adjusted passive payouts for reuse paths with CDL-060 dependency verification.",
       "proposed_authority_trace_edges": [
         {
@@ -39246,7 +39246,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "OnboardingVault: issues 0.02 ECU starter credits per agent and intercepts 50% of earnings as repayment until the debt is cleared.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39263,7 +39263,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 946 EpochAttributionBatch.settle() runtime implementing CDL-081 attribution settlement (REUSE, CO_AUTHORSHIP, REFUTATION, PROVENANCE) and CDL-083 H-CON-02 ejected-stake treasury distribution.",
       "proposed_authority_trace_edges": [
         {
@@ -39307,7 +39307,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Economics sandbox reward helper: simple_claim_reward() computes entropy-weighted reward from stake_spent, hardware potential, and optional success_rate using exact Decimal arithmetic.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39324,8 +39324,8 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "EconomicTelemetry fa\u00e7ade wrapping SimpleEpochLedger and OutcomeLogger; RLHook defines a no-op observer interface for RL agents to receive per-task and per-epoch signals.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "EconomicTelemetry façade wrapping SimpleEpochLedger and OutcomeLogger; RLHook defines a no-op observer interface for RL agents to receive per-task and per-epoch signals.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -39341,7 +39341,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "SimpleEpochLedger: minimal per-epoch Decimal ledger tracking task counts, ECU spent, and rewards paid with a clearing-price computation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39358,7 +39358,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "TaskOutcome dataclass and OutcomeLogger for accumulating sandbox task economic outcomes (stake_spent, reward_paid, success, domain) in memory.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39375,8 +39375,8 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "CDL-031 dynamic ranking multiplier runtime (guarded, not activated): computes log-shaped multiplier f(w) \u2208 [0.80, 1.65] from epistemic weight with anti-dominance cap.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-031 dynamic ranking multiplier runtime (guarded, not activated): computes log-shaped multiplier f(w) ∈ [0.80, 1.65] from epistemic weight with anti-dominance cap.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -39404,7 +39404,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Productive ECU Expansion Bounty scaffold (Phase 1542p, OBL-027): builds non-activating issuance quotes, delivery stubs, and settlement roots under ADR-0016 proposed authority with 15% cap enforced.",
       "proposed_authority_trace_edges": [
         {
@@ -39433,7 +39433,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Sandbox RL agent: SimpleBanditHook implements epsilon-greedy domain selection using secrets.SystemRandom() and incremental mean updates over TaskOutcome reward_paid signals.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39450,7 +39450,7 @@
     },
     {
       "annotation_batch": "catchup_batch_009_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1532p default-off emission production path composing CDL-025/026/027/028/029 quote runtimes into a guarded result with SHA-256 settlement root; PRODUCTION_EMISSION_NOT_ACTIVATED=True.",
       "proposed_authority_trace_edges": [
         {
@@ -39499,7 +39499,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1345 non-activating epoch emission quote runtime implementing CDL-025 halving schedule, CDL-026 C_MAX=25,920,000 cap, and CDL-027 epoch length constants.",
       "proposed_authority_trace_edges": [
         {
@@ -39538,7 +39538,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1351 default-off CDL-030 ECU price clamp quote runtime enforcing P_MIN=0.75 and P_MAX=1.30 bounds derived from CDL-027 parameters.",
       "proposed_authority_trace_edges": [
         {
@@ -39567,7 +39567,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1347 default-off CDL-029 allocation split quote runtime distributing epoch emission across the 80/15/5 agent/validator/Genesis-overhead pools.",
       "proposed_authority_trace_edges": [
         {
@@ -39596,7 +39596,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1346 default-off CDL-028 fee-burn split quote runtime burning 10% of fees to the genesis burn pool with non-activating Decimal arithmetic.",
       "proposed_authority_trace_edges": [
         {
@@ -39625,7 +39625,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1348 default-off CDL-047 treasury governance quote runtime enforcing 15% bounty cap, 5% burn floor, and 91% velocity alert threshold.",
       "proposed_authority_trace_edges": [
         {
@@ -39654,7 +39654,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1349 default-off CDL-054 validator reward-pool routing runtime computing per-epoch validator share from the CDL-029 allocation pool.",
       "proposed_authority_trace_edges": [
         {
@@ -39683,8 +39683,8 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Phase 1352 non-activating issuance economics integration gate composing the Phase 1345\u20131351a quote runtimes and verifying quote-level debit/credit conservation.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1352 non-activating issuance economics integration gate composing the Phase 1345–1351a quote runtimes and verifying quote-level debit/credit conservation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -39700,7 +39700,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1534p canonical economic event record schema and emitter: builds typed CanonicalEconomicEventRecord structs from CDL-025/027/028/029 emission path output.",
       "proposed_authority_trace_edges": [
         {
@@ -39729,7 +39729,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Epoch-boundary witness runtime implementing CDL-057 epoch boundary attestation with CDL-055 staking liveness dependency.",
       "proposed_authority_trace_edges": [
         {
@@ -39763,7 +39763,7 @@
     },
     {
       "annotation_batch": "catchup_batch_010_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase-314 epoch snapshot generator/verifier runtime with canonical test vectors for snapshot creation, bootstrap, and epoch retention.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39780,7 +39780,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2q Genesis tranche reconciliation runtime separating three Genesis-related value surfaces (genesis burn pool, CDL-029 overhead, CDL-048 tranche) without activating any wallet or settlement path.",
       "proposed_authority_trace_edges": [
         {
@@ -39809,7 +39809,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1541p default-off ejected-stake distribution production path wrapping CDL-083/H-CON-02 quote runtimes with SHA-256 settlement root; no stake liquidation or wallet write activated.",
       "proposed_authority_trace_edges": [
         {
@@ -39838,7 +39838,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1540p default-off treasury and validator reward production path wrapping CDL-047 and CDL-054 quote runtimes; no treasury transfer or payout activated.",
       "proposed_authority_trace_edges": [
         {
@@ -39867,7 +39867,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "EVE capsule builder and signing utilities per ADR-0006: builds capsule manifests from entries and signs them using COSE-Sign1 with Ed25519.",
       "proposed_authority_trace_edges": [
         {
@@ -39891,7 +39891,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "EVE capsule verification utilities per ADR-0006: loads and validates capsule manifests and verifies COSE-Sign1 signatures.",
       "proposed_authority_trace_edges": [
         {
@@ -39915,7 +39915,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Centralized ILC domain exception hierarchy defining typed exception classes for stake, epoch, graph, gossip, ledger, protocol, and CLI error conditions.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -39932,7 +39932,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 858 HB-001 genesis assertion schema: GenesisAssertionContent, GenesisValidatorEntry, canonical JSON payload encoding for ML-DSA-65 signing, and structural validation.",
       "proposed_authority_trace_edges": [
         {
@@ -39961,7 +39961,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1355 default-off CDL-V6 Genesis intervention guardrail runtime: records and audits extraordinary intervention decisions within three-lifetime and epoch-60 outer-sunset bounds.",
       "proposed_authority_trace_edges": [
         {
@@ -39990,7 +39990,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Genesis validator bootstrap runtime: verifies epoch-zero state, enrollment records, and derives agent IDs from CDL-042 derivation rules.",
       "proposed_authority_trace_edges": [
         {
@@ -40019,7 +40019,7 @@
     },
     {
       "annotation_batch": "catchup_batch_011_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Genesis validator bootstrap admission-control runtime (Phase 481): builds admission control bundles from enrollment records and epoch-zero state against CDL-040.",
       "proposed_authority_trace_edges": [
         {
@@ -40048,7 +40048,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase-312 genesis state bundle generator/verifier runtime with canonical ceremony step validation and test vectors for mainnet genesis bundle construction.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40065,7 +40065,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1557 HB-001 genesis-authority assertion builder wiring caller-facing helpers over the Phase 858 assertion schema to produce unsigned assert.truth envelopes.",
       "proposed_authority_trace_edges": [
         {
@@ -40089,7 +40089,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1559 HB-002 known-peer serving receipts: builds, fetches, and verifies serving receipts over HTTPS with 30-second timeout and 1 MiB response cap.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40106,7 +40106,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1562 invitation provenance records: builds and atomically persists InvitationProvenanceRecord structs linking inviter, invitee, serving receipt, depth, and parent invite.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40123,7 +40123,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Loads the canonical EpistemicWorkTask JSON schema from the ilc_core.genesis package resource epistemic_work_task_schema_v1.json.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40140,7 +40140,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "EpistemicWorkTask Pydantic model with five task classes, six task states, Decimal ecu_estimate, and five verification methods.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40157,7 +40157,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-006 challenge-node runtime (Phase 1382): validates schema, verifies 3-body affirmative quorum, and writes deterministic audit-path records.",
       "proposed_authority_trace_edges": [
         {
@@ -40186,7 +40186,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-009 fork-legitimacy operator inspection runtime (Phase 1383): validates badge schema and eligibility rules for fork-signal artifacts.",
       "proposed_authority_trace_edges": [
         {
@@ -40215,7 +40215,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1229 read-only deterministic graph projection runtime for digital agents: produces projection dicts for authority, claim, provenance, economic, and branchial convergence views.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40232,7 +40232,7 @@
     },
     {
       "annotation_batch": "catchup_batch_012_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1237 read-only sidecar query runtime performing ego-graph, centrality-metrics, and convergence-trace queries over Phase 1229 graph projection dictionaries.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40249,7 +40249,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1278 sidecar public-path authorization preflight: records fail-closed checks required before a future non-loopback projection endpoint, but does not bind any socket or serve data.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40266,7 +40266,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "HardwareArchetype dataclass and YAML/JSON loader for hardware capability profiles used in economics sandbox simulations.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40283,7 +40283,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private idle capacity scheduler stub (not activated): selects up to MAX_TASKS_PER_WINDOW maintenance candidates from scored agent nodes using Decimal epistemic weight.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40300,7 +40300,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private local node capture helper: builds deterministic LocalNodeSnapshot objects for private graph-shaped artifacts with consent gate enforcement.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40317,7 +40317,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private deterministic maintenance task executor: converts scheduled fixtures into QueryResponseArtifact objects with canonical JSON and SHA-256 content addressing.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40334,7 +40334,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private local token-budget tracker: accumulates ProviderBudgetSnapshot records from LLM provider usage telemetry (not protocol truth).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40351,7 +40351,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private local co-attestation fixture: builds CoAttestationReceipt from up to 16 attestation signatures with canonical JSON and receipt SHA-256.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40368,7 +40368,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private local capture consent gate: evaluates ConsentDecision records per subject_id/purpose pair before allowing private artifact transitions.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40385,7 +40385,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private file-backed immutable store (Phase 1485p): persists LocalLedgerEntry records for ConsentGate-approved harness artifacts with mkstemp+os.replace atomic writes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40402,7 +40402,7 @@
     },
     {
       "annotation_batch": "catchup_batch_013_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-069 epoch endorsement packet schema: field validation, COSE_Sign1 signing payload construction, and agent_state_root specification.",
       "proposed_authority_trace_edges": [
         {
@@ -40431,7 +40431,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-042 agent identity derivation runtime: deterministically derives 96-char hex agent IDs from identity seeds.",
       "proposed_authority_trace_edges": [
         {
@@ -40460,7 +40460,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-069 epoch endorsement protocol runtime: EpochEndorsementPacket dataclass, EndorsementCache validator-side state, liveness assertion and ecu_commitment derivation.",
       "proposed_authority_trace_edges": [
         {
@@ -40489,7 +40489,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "HIGH-001 AgentID log redaction helpers: produces deterministic epoch-scoped redaction tokens from AgentID material before passing to logging sinks.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40506,7 +40506,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-069 genesis record schema runtime: four-field SHA-384 commitment structure, blinding factor derivation, and recovery transaction protocol.",
       "proposed_authority_trace_edges": [
         {
@@ -40535,7 +40535,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Private rehearsal bridge to the Rust pq_agent_sign binary: prompts for seed via TTY-hidden getpass and pipes it to the signer without exposing it as an argument or env var.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40552,7 +40552,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-V2 Sybil resistance runtime: validates sponsor diversity, cluster diversity, and invitation-chain depth constraints.",
       "proposed_authority_trace_edges": [
         {
@@ -40581,7 +40581,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exact numeric helpers: to_decimal(), decimal_to_canonical_string(), and parse_non_negative_decimal() with NaN/Infinity rejection for all ECU boundary inputs.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40598,7 +40598,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "In-memory settlement ledger backend: EpochRecord, InMemoryLedgerBackend, StakeSnapshot-based reward distribution, and abstract LedgerBackend interface.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40615,7 +40615,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "StakeSnapshot frozen dataclass capturing per-epoch agent stake distribution with invariant checking that the sum of per-agent stakes equals total_stake.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40632,7 +40632,7 @@
     },
     {
       "annotation_batch": "catchup_batch_014_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Computes aggregate settlement metrics from the ledger (total epochs, settled/rolled-back/superseded counts, total rewards distributed and stubbed).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40649,7 +40649,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports ledger state to LedgerStateExport JSON/CSV, optionally including stake distribution checks per epoch.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40666,7 +40666,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Exports canonical ledger state as canon_state.json with SHA-256 hash commitment over sorted-key JSON.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40683,7 +40683,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "FileLedgerBackend: persistent file-based ledger backend storing epoch records, stake snapshots, and balances as JSON files with atomic writes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40700,7 +40700,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "LmdbLedgerBackend: LMDB-backed ledger backend storing epoch records, stake snapshots, and balances with 256 MiB default map size.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40717,7 +40717,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ILC package profile constants (Gap 14, Phases 1436a-1436b): defines five canonical Python package profile names (protocol-core, operator-node, openclaw-hosted, public-rc, dev).",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40734,7 +40734,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Deterministic Genesis package membership manifest helpers: scans Atlas nodes to build a Merkle root over public-protocol-graph file members for local verification.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40751,7 +40751,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Public-RC reference implementation materialization helpers (Fix83): generates manifests, fetches files from cache/repo/tarball/HTTP, verifies SHA-256 hashes, and produces reconstruction receipts.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40768,7 +40768,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ILC encoding package exports: DAG-CBOR encode/decode, CIDv1 node ID generation, and strict profile validation primitives.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40785,7 +40785,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CIDv1 generation and parsing: derives content-addressed NodeIDs using DAG-CBOR codec (0x71), SHA2-256 multihash (0x12), and base32 lowercase multibase encoding.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40802,7 +40802,7 @@
     },
     {
       "annotation_batch": "catchup_batch_015_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Deterministic DAG-CBOR subset encoder/decoder: definite-length CBOR with canonical map key ordering, minimal integer encoding, no floats, no tags, and 64-level nesting cap.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40819,7 +40819,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "LEB128-style unsigned variable-length integer encoder/decoder for CIDv1 multihash prefix construction.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40836,7 +40836,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-052 epistemic runtime package exports: jury gate, shadow ingestion harness, jury assignment, acceptance authority classification, incentives, review lane, maintenance lottery, VRF verifier, and novelty/refutation/reuse centrality runtimes.",
       "proposed_authority_trace_edges": [
         {
@@ -40860,7 +40860,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2 verifier for ADR-0042 jury assignment (Phase 1411): verifies proofs using liboqs/nacl and returns the 64-byte VRF beta output.",
       "proposed_authority_trace_edges": [
         {
@@ -40889,7 +40889,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1398/J-008 production jury activation gate: defines and evaluates ten blocking conditions required before production jury assignment, with Phase 1427 re-run issuing the explicit GO.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -40906,7 +40906,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1401 CDL-091 jury incentive runtime stub: exposes CDL-091 ratification evidence, reviewer payment parameters, and REVIEWER_PAYMENT_NOT_ACTIVATED guard.",
       "proposed_authority_trace_edges": [
         {
@@ -40935,7 +40935,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1409 CDL-093 maintenance lottery runtime stub: exposes CDL-093 ratification evidence, pool funding parameters, and MAINTENANCE_LOTTERY_NOT_ACTIVATED guard.",
       "proposed_authority_trace_edges": [
         {
@@ -40964,8 +40964,8 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "Phase 1415 ADR-0043 review lane admission runtime: pure, default-off evaluator producing T0.5\u2192T1+ admission quotes with dedup, payment stub, and REVIEW_LANE_PRODUCTION_NOT_ACTIVATED guard.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "Phase 1415 ADR-0043 review lane admission runtime: pure, default-off evaluator producing T0.5→T1+ admission quotes with dedup, payment stub, and REVIEW_LANE_PRODUCTION_NOT_ACTIVATED guard.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -40993,7 +40993,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-052 refutation submission runtime (Phase 478): validates refutation envelope fields and returns RefutationSubmissionResult with reputation event.",
       "proposed_authority_trace_edges": [
         {
@@ -41022,7 +41022,7 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1396/J-006 default-off jury assignment quote runtime: deterministic panel quoting via epoch-hash shadow assignment with VRF integration and CDL-V3 cluster diversity wiring.",
       "proposed_authority_trace_edges": [
         {
@@ -41051,8 +41051,8 @@
     },
     {
       "annotation_batch": "catchup_batch_016_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "CDL-075 truth primitive graph persistence (Phases 879\u2013881): derives CIDv1 node records from validated submissions and writes them through the graph persistence contract with idempotency guards.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-075 truth primitive graph persistence (Phases 879–881): derives CIDv1 node records from validated submissions and writes them through the graph persistence contract with idempotency guards.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -41085,7 +41085,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-052 novelty-check runtime: validates query fields and returns NoveltyCheckResult indicating whether a CID is novel or a known duplicate.",
       "proposed_authority_trace_edges": [
         {
@@ -41114,7 +41114,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-052 reuse-centrality runtime (Phase 537): computes bounded centrality scores using incremental direct-use ratio with a 5% floor.",
       "proposed_authority_trace_edges": [
         {
@@ -41143,7 +41143,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1397/J-007 shadow public-ingestion jury harness: exercises T0.5 quarantine, external-identifier deduplication, J-003 taxonomy classification, and maintenance task lifecycle without activating production ingestion or ECU distribution.",
       "proposed_authority_trace_edges": [
         {
@@ -41172,7 +41172,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-059 aesthetic panel runtime (Phase 532): composes deterministic diverse panels from agent_pool by model_type buckets using SHA-256-keyed ordering.",
       "proposed_authority_trace_edges": [
         {
@@ -41201,8 +41201,8 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
-      "manual_read_summary": "CDL-074 truth primitive submission runtime (Phases 865\u2013868): validates CDL-073 wire-format submissions for six agent-issuable primitives and returns graph-output contracts.",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
+      "manual_read_summary": "CDL-074 truth primitive submission runtime (Phases 865–868): validates CDL-073 wire-format submissions for six agent-issuable primitives and returns graph-output contracts.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -41235,7 +41235,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-052 epistemic node-submission runtime (Phase 477): validates node submission envelopes and routes to appropriate mode handler.",
       "proposed_authority_trace_edges": [
         {
@@ -41264,7 +41264,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2g jury assignment announcement and recovery runtime: defines push signal, reviewer self-match/ack contract, and missing-assignment recovery receipt without starting a listener or issuing ECU.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41281,7 +41281,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-095 jury verdict finality evaluator (Phase 1494p): evaluates local finality under 2/3 approval threshold with 5-reviewer participation floor; JURY_FINALITY_EVALUATOR_NOT_PRODUCTION guard retained.",
       "proposed_authority_trace_edges": [
         {
@@ -41310,7 +41310,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2u classification-only module naming six current acceptance-authority surfaces without empaneling juries, evaluating finality, or authorizing settlement.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41327,7 +41327,7 @@
     },
     {
       "annotation_batch": "catchup_batch_017_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Verifies ledger settlement by comparing per-agent computed reward shares against epoch summaries with configurable tolerance.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41344,7 +41344,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Canon bundle utilities: shared helpers for canon export bundle file naming, path construction, and bundle manifest parsing.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41361,7 +41361,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Defines the v0.1 canon export format schema: EpochRecord serialization structure and field ordering for canonical JSON output.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41378,7 +41378,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Validates canon state JSON against the expected schema, checking fields, types, and hash commitment.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41395,7 +41395,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Builds and persists canon export bundles: packages canon state JSON and supporting files into a versioned archive with manifest and content hashes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41412,7 +41412,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Signs a canon export bundle using an Ed25519 private key and writes the detached COSE-Sign1 signature file atomically.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41429,7 +41429,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Validates the structural integrity of a canon export bundle, checking manifest completeness and file hash correctness.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41446,7 +41446,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Verifies a COSE-Sign1 signature over a canon export bundle manifest using an Ed25519 public key.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41463,7 +41463,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Produces a structured summary report of a canon export bundle including file count, total size, and verification status.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41480,7 +41480,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Loads and validates canon state JSON from file, checking schema version and hash commitment before returning the parsed state.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41497,7 +41497,7 @@
     },
     {
       "annotation_batch": "catchup_batch_018_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Canon bundle key registry: stores, retrieves, and validates named Ed25519 public keys for signing canon export bundles.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41514,7 +41514,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Syncs canon bundle key registry entries between operator instances by exchanging signed registry manifests.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41531,7 +41531,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Persists and loads canon bundle key registry sync state (last-sync timestamps and remote peer registry manifests) atomically.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41548,7 +41548,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Fetches remote canon bundle key registry manifests over HTTPS with timeout enforcement and SHA-256 content verification.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41565,7 +41565,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Promotes a key from the staging registry to the active registry after policy review and threshold approvals.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41582,7 +41582,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Manages the CCSS-encrypted channel for canon bundle key registry communications between operators.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41599,7 +41599,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Produces and verifies COSE-Sign1 attestations over canon bundle key registry channel messages.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41616,7 +41616,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Packages the current canon bundle key registry into a signed manifest artifact for distribution to peer operators.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41633,7 +41633,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Replays a canon export bundle and verifies that all epoch records re-hash to their stored commitments.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41650,7 +41650,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Produces a structured replay report summarizing epoch re-hash verification results across a canon export bundle.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41667,7 +41667,7 @@
     },
     {
       "annotation_batch": "catchup_batch_019_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Aggregates pipeline-level status reports across sign, validate, verify, and replay canon bundle workflow steps.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41684,7 +41684,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Builds and persists canon bundle audit artifacts capturing operator attestation and review decisions over a bundle manifest.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41701,7 +41701,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ECU active-layer runtime: validates and tracks active ECU balance entries across agent accounts with non-negative Decimal invariants.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41718,7 +41718,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "ECU/ILC lifecycle runtime: manages the ECU-to-ILC conversion pipeline state, activation gates, and lifecycle event emission.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41735,7 +41735,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Public economics admission firewall: enforces the J-008 gate boundary before any public-economics path is activated.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41752,7 +41752,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Claimability proof binding runtime: validates and records proof-of-eligibility bindings for ECU claimability events.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41769,7 +41769,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "CDL-048 conversion sweeper runtime: identifies and processes expired ECU-to-ILC conversion candidates within the sweeper epoch window.",
       "proposed_authority_trace_edges": [
         {
@@ -41798,7 +41798,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Distributed conversion schema: defines the canonical field structure and validation rules for distributed ECU-to-ILC conversion artifacts.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41815,7 +41815,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Phase 1568-Fix2s activation packet verifier: validates the cryptographic activation packet format and CCSS-SPECTRAL route token before authorizing a conversion activation.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41832,7 +41832,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Conversion candidate runtime: identifies ECU balances eligible for ILC conversion based on epoch expiry and claimability proof status.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41849,7 +41849,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 — historical ilc_core/ runtime module",
       "manual_read_summary": "Ledger package init: exports LedgerBackend, InMemoryLedgerBackend, and key ledger model types.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41866,7 +41866,7 @@
     },
     {
       "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 implementation audit hardening for CCSS-SPECTRAL primitive input bounds",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 — implementation audit hardening for CCSS-SPECTRAL primitive input bounds",
       "manual_read_summary": "CCSS-SPECTRAL route token primitive: enforces guarded hybrid KEM route-token derivation and now bounds lambda quantization and hiding-commitment inputs to the H-013 normalized-Laplacian envelope.",
       "proposed_authority_trace_edges": [
         {
@@ -41904,7 +41904,7 @@
     },
     {
       "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 regression coverage for primitive lambda bounds",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 — regression coverage for primitive lambda bounds",
       "manual_read_summary": "Phase 1573f CCSS-SPECTRAL crypto primitive tests: pin guard state, hybrid KEM constants, forbidden wire fields, and new lambda-vector range and length rejection cases.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41926,7 +41926,7 @@
     },
     {
       "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 audit walkthrough and non-claim record",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 — audit walkthrough and non-claim record",
       "manual_read_summary": "Phase 1573u-Fix3 walkthrough: records the implementation audit, lambda primitive hardening, focused verification results, and remaining local-only design notes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41948,7 +41948,7 @@
     },
     {
       "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 taxonomy regression updated for batch 083",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 — taxonomy regression updated for batch 083",
       "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering, ledger schema discipline, TESTS/IMPLEMENTS/EVIDENCES enrichment, and batch 083 registration.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -41974,7 +41974,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 ContactGate contacts_only matching hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate contacts_only matching hardened",
       "manual_read_summary": "ContactGate local evaluator: implements recipient-side admission modes and now evaluates contacts_only through domain-separated contact-id digests with a full hmac.compare_digest scan rather than ordinary set membership.",
       "proposed_authority_trace_edges": [
         {
@@ -42007,7 +42007,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 unverifiable peer buffering narrowed",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — unverifiable peer buffering narrowed",
       "manual_read_summary": "HTTP gossip transport runtime: implements CDL-101 signed envelope verification and now rejects unverifiable authority-bearing envelopes and all public-mode unverifiable envelopes while retaining low-authority graduated-rollout buffering.",
       "proposed_authority_trace_edges": [
         {
@@ -42045,7 +42045,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 ContactGate regression extended",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate regression extended",
       "manual_read_summary": "ContactGate local evaluator tests: verify admission modes, private-field suppression, nullifier determinism, and the new contacts_only hmac.compare_digest scan invariant.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42071,7 +42071,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 receiver verification regression extended",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — receiver verification regression extended",
       "manual_read_summary": "Receiver-side ML-DSA verification tests: verify signed-context binding, replay rejection, actor binding, graduated unverifiable buffering, and new fail-closed rejection for authority-bearing or public-mode unverifiable envelopes.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42097,7 +42097,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 taxonomy current-batch pointer advanced",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy current-batch pointer advanced",
       "manual_read_summary": "Atlas graph node classification taxonomy: advances the current manual batch marker to batch 084 and keeps the graph-intake schema and edge-type guidance current for future agents.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42119,7 +42119,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 taxonomy regression updated for batch 084",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy regression updated for batch 084",
       "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 084 to include IMPLEMENTS, TESTS, and ATTESTATION edges for the hardening files.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42145,7 +42145,7 @@
     },
     {
       "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
-      "chronology_note": "2026-07-09 phase_1573u_fix4 \u2014 walkthrough and non-claim record",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — walkthrough and non-claim record",
       "manual_read_summary": "Phase 1573u-Fix4 walkthrough: records the ContactGate contacts_only hardening, unverifiable peer fail-closed boundary, verification commands, graph intake, and non-claims.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42167,7 +42167,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 agent execution policy updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — agent execution policy updated",
       "manual_read_summary": "AGENTS.md: records the standing sanitized public mirror policy that the private canonical repo is source of truth, the mirror is a private derived artifact, and phase prompts must record mirror disposition.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42194,7 +42194,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Claude workflow policy updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Claude workflow policy updated",
       "manual_read_summary": "CLAUDE.md: requires phase prompts and walkthroughs to record sanitized mirror disposition, mirror staleness, and no-public-push or explicit publication authority.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42221,7 +42221,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 phase prompt schema updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — phase prompt schema updated",
       "manual_read_summary": "Antigravity prompt schema: adds required Public mirror maintenance section so future prompts record mirror staleness, no hand edits, no public push, and regenerated-manifest requirements.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42243,7 +42243,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 prompt validator updated",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — prompt validator updated",
       "manual_read_summary": "Phase prompt validator: enforces Public mirror maintenance sections for Phase 1574+ prompts, making sanitized mirror disposition a schema gate.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42265,7 +42265,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Phase 1574 prompt hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1574 prompt hardened",
       "manual_read_summary": "Phase 1574 publication readiness prompt: records that readiness edits make the sanitized mirror stale and do not authorize public mirror push, visibility change, package publication, or public-RC claim.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42292,7 +42292,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 Phase 1575 prompt hardened",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — Phase 1575 prompt hardened",
       "manual_read_summary": "Phase 1575 public-RC gate prompt: requires sanitized mirror regeneration from source_private_commit, filtered_public_head_sha recording, scan pass, target remote verification, and explicit public-RC gate before publication.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42319,7 +42319,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 public mirror policy regression added",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — public mirror policy regression added",
       "manual_read_summary": "Phase 1573u-Fix5 public mirror policy tests: pin AGENTS/CLAUDE/schema policy text, validator enforcement, and Phase 1574/1575 prompt validity.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42345,7 +42345,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 taxonomy current-batch pointer advanced",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy current-batch pointer advanced",
       "manual_read_summary": "Atlas graph node classification taxonomy: advances current manual batch marker to batch 085 for the public mirror policy hardening records.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42367,7 +42367,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 taxonomy regression updated for batch 085",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — taxonomy regression updated for batch 085",
       "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 085 semantic wiring for policy docs, validator, prompts, and tests.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42393,7 +42393,7 @@
     },
     {
       "annotation_batch": "manual_batch_085_phase_1573u_fix5_public_mirror_policy",
-      "chronology_note": "2026-07-09 phase_1573u_fix5 \u2014 walkthrough and non-claim record",
+      "chronology_note": "2026-07-09 phase_1573u_fix5 — walkthrough and non-claim record",
       "manual_read_summary": "Phase 1573u-Fix5 walkthrough: records sanitized public mirror maintenance policy changes, validation results, graph intake, and no-publication non-claims.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42415,7 +42415,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 release-engineering-track quarantine audit prompt",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — release-engineering-track quarantine audit prompt",
       "manual_read_summary": "Phase 1573ag prompt: requires a non-sensitive file-by-file disposition audit for the quarantined release-engineering-track branch before Phase 1574, with no merge, cherry-pick, runtime change, public push, or publication authority.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42446,7 +42446,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 Phase 1574 precondition patch",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — Phase 1574 precondition patch",
       "manual_read_summary": "Phase 1574 publication readiness prompt patch: requires the Phase 1573ag release-engineering-track disposition token before publication readiness can proceed.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42473,7 +42473,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 regression coverage",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — regression coverage",
       "manual_read_summary": "Phase 1573ag prompt tests: verify the release-engineering-track prompt quarantines the branch, requires explicit supersession dispositions, forbids merge/publication/cherry-pick, and patches Phase 1574 to depend on the disposition token.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42499,7 +42499,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 batch marker advanced",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — batch marker advanced",
       "manual_read_summary": "Node classification taxonomy update: advances the manual Fix38 batch marker to batch 086 for the Phase 1573ag release-engineering disposition prompt hardening records.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42521,7 +42521,7 @@
     },
     {
       "annotation_batch": "manual_batch_086_phase_1573ag_release_engineering_disposition_prompt",
-      "chronology_note": "2026-07-09 phase_1573ag prompt hardening \u2014 Fix38 ledger self-registration",
+      "chronology_note": "2026-07-09 phase_1573ag prompt hardening — Fix38 ledger self-registration",
       "manual_read_summary": "Fix38 manual edge annotation ledger update: registers Phase 1573ag prompt hardening records and the Phase 1574 precondition patch for release-engineering-track disposition.",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -42875,7 +42875,7 @@
     {
       "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
       "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
-      "manual_read_summary": "AGENTS.md graph intake guidance: clarifies that taxonomy \u00a74 is the ordinary Fix38 subset while \u00a74a reserves broader Atlas/LMDB native edge semantics.",
+      "manual_read_summary": "AGENTS.md graph intake guidance: clarifies that taxonomy §4 is the ordinary Fix38 subset while §4a reserves broader Atlas/LMDB native edge semantics.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -42933,7 +42933,7 @@
     {
       "annotation_batch": "manual_batch_089_phase_1573ah_fix1_lmdb_edge_namespace_alignment",
       "chronology_note": "2026-07-09 phase_1573ah_fix1 LMDB edge namespace taxonomy alignment",
-      "manual_read_summary": "Antigravity prompt schema update: requires phase prompts to treat taxonomy \u00a74 as the phase-intake subset and \u00a74a as the reserved Atlas/LMDB native namespace.",
+      "manual_read_summary": "Antigravity prompt schema update: requires phase prompts to treat taxonomy §4 as the phase-intake subset and §4a as the reserved Atlas/LMDB native namespace.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -43422,6 +43422,234 @@
         "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER",
         "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Phase 1573ah prompt: defines the non-sensitive edge namespace and user extension policy phase, including source reads, output tokens, and publication-readiness gate requirements.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-098",
+          "review_status": "candidate_cdl_098_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-099",
+          "review_status": "candidate_cdl_099_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-100",
+          "review_status": "candidate_cdl_100_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0035",
+          "review_status": "candidate_adr_0035_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ah_g8_edge_namespace_extension_policy.md"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Edge namespace and extension policy: reserves Atlas/Fix38 edge labels, CDL-099 protocol hyperedge types, and CROSS_SECTION_REF while requiring user extension edges to be namespaced and non-canonical by default.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-098",
+          "review_status": "candidate_cdl_098_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-099",
+          "review_status": "candidate_cdl_099_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-100",
+          "review_status": "candidate_cdl_100_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0035",
+          "review_status": "candidate_adr_0035_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_graph_section_architecture_v0.1.md",
+          "review_status": "candidate_section_architecture_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CLASSIFIED_BY",
+        "DERIVED_FROM",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Phase 1573ah policy tests: verify the namespace policy exists, lists all current canonical edge labels and CDL-099 hyperedge types, reserves CROSS_SECTION_REF, and gates Phase 1574.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ah_edge_namespace_extension_policy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Phase 1573ah walkthrough: records source reads, policy summary, graph registration, verification results, output tokens, and non-claims for the edge namespace policy phase.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:edge_namespace_extension_policy_committed_phase_1573ah"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "CLASSIFIED_BY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573ah_edge_namespace_extension_policy_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Phase 1574 prompt gate reference: publication readiness audit requires the Phase 1573ah edge namespace policy token before readiness review proceeds.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:edge_namespace_extension_policy_committed_phase_1573ah",
+          "review_status": "candidate_phase_gate_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1574_g10_block6_publication_readiness_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Node classification taxonomy update: advances the current Fix38 manual batch marker to batch 093 for the Phase 1573ah edge namespace policy records.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md",
+          "review_status": "candidate_namespace_policy_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DERIVED_FROM",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_093_phase_1573ah_edge_namespace_policy",
+      "chronology_note": "2026-07-09 phase_1573ah edge namespace policy execution",
+      "manual_read_summary": "Fix38 manual edge annotation ledger update: registers the Phase 1573ah edge namespace policy spec, tests, walkthrough, prompt, Phase 1574 gate reference, and taxonomy marker update.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_edge_namespace_and_extension_policy_v0.1.md",
+          "review_status": "candidate_namespace_policy_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DERIVED_FROM",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "load_bearing_artifact_changed",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
