@@ -41971,6 +41971,199 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1573u_node_classification_taxonomy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate contacts_only matching hardened",
+      "manual_read_summary": "ContactGate local evaluator: implements recipient-side admission modes and now evaluates contacts_only through domain-separated contact-id digests with a full hmac.compare_digest scan rather than ordinary set membership.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:CCSS-ContactGate"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/ccss/contact_gate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — unverifiable peer buffering narrowed",
+      "manual_read_summary": "HTTP gossip transport runtime: implements CDL-101 signed envelope verification and now rejects unverifiable authority-bearing envelopes and all public-mode unverifiable envelopes while retaining low-authority graduated-rollout buffering.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:CDL-101"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:CDL-061"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-101"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-061"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — ContactGate regression extended",
+      "manual_read_summary": "ContactGate local evaluator tests: verify admission modes, private-field suppression, nullifier determinism, and the new contacts_only hmac.compare_digest scan invariant.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ccss/contact_gate.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_ccss_contact_gate_policy_spec_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573t_contact_gate_local_evaluator.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — receiver verification regression extended",
+      "manual_read_summary": "Receiver-side ML-DSA verification tests: verify signed-context binding, replay rejection, actor binding, graduated unverifiable buffering, and new fail-closed rejection for authority-bearing or public-mode unverifiable envelopes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "cdl:CDL-101"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1572_receiver_mldsa_verification.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy current-batch pointer advanced",
+      "manual_read_summary": "Atlas graph node classification taxonomy: advances the current manual batch marker to batch 084 and keeps the graph-intake schema and edge-type guidance current for future agents.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_CLASSIFICATION",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_CLASSIFICATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — taxonomy regression updated for batch 084",
+      "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering and require batch 084 to include IMPLEMENTS, TESTS, and ATTESTATION edges for the hardening files.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573u_node_classification_taxonomy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_084_phase_1573u_fix4_contact_gate_unverifiable_peer_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix4 — walkthrough and non-claim record",
+      "manual_read_summary": "Phase 1573u-Fix4 walkthrough: records the ContactGate contacts_only hardening, unverifiable peer fail-closed boundary, verification commands, graph intake, and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573u_fix4_contact_gate_contacts_only_constant_time_scan"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573u_fix4_contact_gate_unverifiable_peer_hardening_walkthrough.md"
     }
   ],
   "boundary": {

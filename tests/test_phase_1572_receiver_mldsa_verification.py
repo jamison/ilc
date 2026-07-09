@@ -255,6 +255,49 @@ def test_unverifiable_peer_buffered(monkeypatch) -> None:
     )
 
 
+def test_unverifiable_authority_bearing_peer_rejected(monkeypatch) -> None:
+    payload = _json_payload()
+    headers = _headers(
+        peer_id="peer-unverifiable",
+        key_id="key-unverifiable",
+        gossip_type="agent_submission",
+    )
+    transport = _transport(registry=GossipPeerRegistry(["https://example.org"]))
+    monkeypatch.setattr(runtime, "verify_mldsa65_signature", lambda *_: False)
+
+    status = transport.handle_gossip_request(
+        _path(headers),
+        headers,
+        content_length=len(payload),
+        payload=payload,
+    )
+
+    assert status == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+    assert transport.state["event_log"][-1]["token"] == (
+        "gossip_signature_unverifiable_authority_rejected"
+    )
+
+
+def test_unverifiable_peer_rejected_in_public_mode(monkeypatch) -> None:
+    payload = _json_payload()
+    headers = _headers(peer_id="peer-unverifiable", key_id="key-unverifiable")
+    transport = _transport(registry=GossipPeerRegistry(["https://example.org"]))
+    monkeypatch.setenv(runtime.D2D_PUBLIC_MODE_ENV, "1")
+    monkeypatch.setattr(runtime, "verify_mldsa65_signature", lambda *_: False)
+
+    status = transport.handle_gossip_request(
+        _path(headers),
+        headers,
+        content_length=len(payload),
+        payload=payload,
+    )
+
+    assert status == gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+    assert transport.state["event_log"][-1]["token"] == (
+        "gossip_signature_unverifiable_public_mode_rejected"
+    )
+
+
 def test_expired_key_rejected(monkeypatch) -> None:
     payload = _json_payload()
     headers = _headers(epoch=5)
