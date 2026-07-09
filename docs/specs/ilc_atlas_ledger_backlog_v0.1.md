@@ -45,28 +45,28 @@
 | catchup_batch_018 | #171–180 | ilc_core/rc/genesis_v0_2_signing_ceremony_gate.py … ilc_core/sidecars/idea_descent_rehearsal.py | complete — 5b06d24e8 | sonnet |
 | catchup_batch_019 | #181–190 | ilc_core/sidecars/local_graph_memory_projection.py … ilc_core/storage/lmdb_public_runtime.py | complete — 5b06d24e8 | sonnet |
 | catchup_batch_020 | #191–200 | ilc_core/storage/truth_primitive_graph_lmdb_adapter.py … ilc_core/validator/trust_tier_runtime.py | complete — 5b06d24e8 | sonnet |
-| catchup_batch_021 | #201–210 | ilc_core/cli/canon_bundle_key_registry.py … ilc_core/cli/canon_bundle_replay.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_022 | #211–220 | ilc_core/cli/canon_cli.py … ilc_core/governance/__init__.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_023 | #221–230 | ilc_core/graph/__init__.py … ilc_core/mcp/schemas/ilc_mcp_tools_mvp_schema_v0.1.json | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_024 | #231–240 | ilc_core/mcp/schemas/mcp_tool_call_event_schema_v0.1.json … ilc_core/network/d2d/gossip.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_025 | #241–250 | ilc_core/network/d2d/gossip_peer_registry.py … ilc_core/network/d2d/spectral_routing_runtime.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_026 | #251–260 | ilc_core/network/d2d/tls_policy.py … ilc_core/network/rust_p2p_bridge.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_027 | #261–270 | ilc_core/network/star_map/__init__.py … ilc_core/node/node_startup_runtime.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_028 | #271–280 | ilc_core/node/node_v0.py … ilc_core/privacy/transfer_mixing_framework.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_029 | #281–290 | ilc_core/private_json_guardrails.py … ilc_core/protocol/ilc_cluster_a_acceptance_evidence.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_030 | #291–300 | ilc_core/protocol/ilc_cluster_a_clause_binding.py … ilc_core/protocol/ilc_cluster_a_replay_proof_schemas.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_031 | #301–310 | ilc_core/protocol/ilc_governance_record_validate.py … ilc_core/protocol/public_init_admission_runtime.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_032 | #311–320 | ilc_core/protocol/public_receipt_runtime.py … ilc_core/protocol/schemas/canon_export_format_v0.1.json | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_033 | #321–330 | ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json … ilc_core/protocol/schemas/mcp_tool_call_event_schema_v0.1.json | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_034 | #331–340 | ilc_core/rc/__init__.py … ilc_core/rc/package_profile_ci_gate.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_035 | #341–350 | ilc_core/rc/package_profiles.py … ilc_core/rc/signing_ceremony_status.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_036 | #351–360 | ilc_core/rc/source_allowlist_export_execution_gate.py … ilc_core/security/key_compromise_runtime.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_037 | #361–370 | ilc_core/security/rollback_resistance_runtime.py … ilc_core/sidecars/confidential_coordination_sealed_sender.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_038 | #371–380 | ilc_core/sidecars/confidential_coordination_shard.py … ilc_core/sidecars/wallet_action_semantics_preflight.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_039 | #381–390 | ilc_core/sim/devnet_epoch_orchestrator.py … ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_040 | #391–400 | ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py … ilc_core/storage/genesis_atlas_lmdb_writer.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_041 | #401–410 | ilc_core/storage/interfaces.py … ilc_core/validator/admission_ejection_runtime.py | complete — (see batch 021–042 commit) | sonnet |
-| catchup_batch_042 | #411–416 | ilc_core/validator/re_admission_runtime.py … ilc_core/work/task_queue.py | complete — (see batch 021–042 commit) | sonnet |
+| catchup_batch_021 | #201–210 | ilc_core/cli/canon_bundle_key_registry.py … ilc_core/cli/canon_bundle_replay.py | complete — c56e34624 | sonnet |
+| catchup_batch_022 | #211–220 | ilc_core/cli/canon_cli.py … ilc_core/governance/__init__.py | complete — c56e34624 | sonnet |
+| catchup_batch_023 | #221–230 | ilc_core/graph/__init__.py … ilc_core/mcp/schemas/ilc_mcp_tools_mvp_schema_v0.1.json | complete — c56e34624 | sonnet |
+| catchup_batch_024 | #231–240 | ilc_core/mcp/schemas/mcp_tool_call_event_schema_v0.1.json … ilc_core/network/d2d/gossip.py | complete — c56e34624 | sonnet |
+| catchup_batch_025 | #241–250 | ilc_core/network/d2d/gossip_peer_registry.py … ilc_core/network/d2d/spectral_routing_runtime.py | complete — c56e34624 | sonnet |
+| catchup_batch_026 | #251–260 | ilc_core/network/d2d/tls_policy.py … ilc_core/network/rust_p2p_bridge.py | complete — c56e34624 | sonnet |
+| catchup_batch_027 | #261–270 | ilc_core/network/star_map/__init__.py … ilc_core/node/node_startup_runtime.py | complete — c56e34624 | sonnet |
+| catchup_batch_028 | #271–280 | ilc_core/node/node_v0.py … ilc_core/privacy/transfer_mixing_framework.py | complete — c56e34624 | sonnet |
+| catchup_batch_029 | #281–290 | ilc_core/private_json_guardrails.py … ilc_core/protocol/ilc_cluster_a_acceptance_evidence.py | complete — c56e34624 | sonnet |
+| catchup_batch_030 | #291–300 | ilc_core/protocol/ilc_cluster_a_clause_binding.py … ilc_core/protocol/ilc_cluster_a_replay_proof_schemas.py | complete — c56e34624 | sonnet |
+| catchup_batch_031 | #301–310 | ilc_core/protocol/ilc_governance_record_validate.py … ilc_core/protocol/public_init_admission_runtime.py | complete — c56e34624 | sonnet |
+| catchup_batch_032 | #311–320 | ilc_core/protocol/public_receipt_runtime.py … ilc_core/protocol/schemas/canon_export_format_v0.1.json | complete — c56e34624 | sonnet |
+| catchup_batch_033 | #321–330 | ilc_core/protocol/schemas/commit_epoch_event_schema_v0.1.json … ilc_core/protocol/schemas/mcp_tool_call_event_schema_v0.1.json | complete — c56e34624 | sonnet |
+| catchup_batch_034 | #331–340 | ilc_core/rc/__init__.py … ilc_core/rc/package_profile_ci_gate.py | complete — c56e34624 | sonnet |
+| catchup_batch_035 | #341–350 | ilc_core/rc/package_profiles.py … ilc_core/rc/signing_ceremony_status.py | complete — c56e34624 | sonnet |
+| catchup_batch_036 | #351–360 | ilc_core/rc/source_allowlist_export_execution_gate.py … ilc_core/security/key_compromise_runtime.py | complete — c56e34624 | sonnet |
+| catchup_batch_037 | #361–370 | ilc_core/security/rollback_resistance_runtime.py … ilc_core/sidecars/confidential_coordination_sealed_sender.py | complete — c56e34624 | sonnet |
+| catchup_batch_038 | #371–380 | ilc_core/sidecars/confidential_coordination_shard.py … ilc_core/sidecars/wallet_action_semantics_preflight.py | complete — c56e34624 | sonnet |
+| catchup_batch_039 | #381–390 | ilc_core/sim/devnet_epoch_orchestrator.py … ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py | complete — c56e34624 | sonnet |
+| catchup_batch_040 | #391–400 | ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py … ilc_core/storage/genesis_atlas_lmdb_writer.py | complete — c56e34624 | sonnet |
+| catchup_batch_041 | #401–410 | ilc_core/storage/interfaces.py … ilc_core/validator/admission_ejection_runtime.py | complete — c56e34624 | sonnet |
+| catchup_batch_042 | #411–416 | ilc_core/validator/re_admission_runtime.py … ilc_core/work/task_queue.py | complete — c56e34624 | sonnet |
 
 ---
 
@@ -103,7 +103,7 @@ Each batch is 10 files. For each file:
 | Batch | Files | Commit |
 |-------|-------|--------|
 | catchup_batch_002 through catchup_batch_020 | 191 files (ilc_core/analysis/ through ilc_core/ledger/) | 5b06d24e8 |
-| catchup_batch_021 through catchup_batch_042 | 216 files (ilc_core/cli/canon_bundle_key_registry.py through ilc_core/work/task_queue.py) — ilc_core/ gap now COMPLETE | (commit hash to be updated after push) |
+| catchup_batch_021 through catchup_batch_042 | 216 files (ilc_core/cli/canon_bundle_key_registry.py through ilc_core/work/task_queue.py) — ilc_core/ gap now COMPLETE | c56e34624 |
 
 Previously completed (in-protocol):
 
