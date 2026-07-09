@@ -188,6 +188,11 @@ class KeyCompromiseResponseRuntime:
         if entry.operational_signer_key != decision.compromised_signer_id:
             raise ValueError("compromised_signer_mismatch")
 
+        # phase_1573am_activation_prerequisite_transactional_revoke_recover:
+        # before this default-off surface is wired to any live/public signing
+        # path, revoke()+recover() must be wrapped in checkpoint/restore or an
+        # equivalent transaction. If recover() raises after revoke(), this
+        # lineage can remain REVOKED until an operator repairs state.
         self._registry.revoke(
             lineage_id=decision.lineage_id,
             authorizer_signer_id=containment_authorizer_signer_id,
