@@ -60,9 +60,9 @@ def test_taxonomy_documents_live_legacy_references_edge() -> None:
 
 def test_taxonomy_batch_numbering_matches_post_1573u_state() -> None:
     taxonomy = TAXONOMY.read_text()
-    assert "Current last batch (as of Phase 1573u-Fix2)" in taxonomy
-    assert "manual_batch_082_phase_1573u_fix2_semantic_edge_enrichment" in taxonomy
-    assert "manual_batch_083_<slug>" in taxonomy
+    assert "Current last batch (as of Phase 1573u-Fix3)" in taxonomy
+    assert "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening" in taxonomy
+    assert "manual_batch_084_<slug>" in taxonomy
 
 
 def test_recent_fix38_batches_use_repo_path_not_candidate_id() -> None:

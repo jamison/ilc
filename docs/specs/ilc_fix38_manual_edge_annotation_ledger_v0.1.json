@@ -41863,6 +41863,114 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added:ilc_core/ -> genesis:genesis_root_v0.4",
       "repo_path": "ilc_core/ledger/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 implementation audit hardening for CCSS-SPECTRAL primitive input bounds",
+      "manual_read_summary": "CCSS-SPECTRAL route token primitive: enforces guarded hybrid KEM route-token derivation and now bounds lambda quantization and hiding-commitment inputs to the H-013 normalized-Laplacian envelope.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_authority_trace",
+          "target": "cdl:CDL-SIGMA-01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ccss_spectral_01_spectral_route_token_spec_v0.1.md"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-SIGMA-01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/d2d/spectral_route_token.py"
+    },
+    {
+      "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 regression coverage for primitive lambda bounds",
+      "manual_read_summary": "Phase 1573f CCSS-SPECTRAL crypto primitive tests: pin guard state, hybrid KEM constants, forbidden wire fields, and new lambda-vector range and length rejection cases.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/spectral_route_token.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py"
+    },
+    {
+      "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 audit walkthrough and non-claim record",
+      "manual_read_summary": "Phase 1573u-Fix3 walkthrough: records the implementation audit, lambda primitive hardening, focused verification results, and remaining local-only design notes.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1573u_fix3_spectral_route_token_input_bounds_hardened"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573u_fix3_spectral_route_token_input_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_083_phase_1573u_fix3_spectral_route_token_input_hardening",
+      "chronology_note": "2026-07-09 phase_1573u_fix3 \u2014 taxonomy regression updated for batch 083",
+      "manual_read_summary": "Phase 1573u node classification taxonomy tests: verify current batch numbering, ledger schema discipline, TESTS/IMPLEMENTS/EVIDENCES enrichment, and batch 083 registration.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_atlas_graph_node_classification_and_edge_type_taxonomy_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573u_node_classification_taxonomy.py"
     }
   ],
   "boundary": {

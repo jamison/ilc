@@ -50,6 +50,9 @@ def test_module_guard_and_constants_are_phase_1573f_locked() -> None:
     assert srt.CCSS_SPECTRAL_01_KEM_SELECTION_TOKEN == (
         "kem_hybrid_x25519_ml_kem_768_selected_phase_1573f_fix1"
     )
+    assert srt.CCSS_SPECTRAL_MAX_LAMBDA_COMPONENTS == 32
+    assert srt.CCSS_SPECTRAL_MIN_LAMBDA_VALUE == 0.0
+    assert srt.CCSS_SPECTRAL_MAX_LAMBDA_VALUE == 2.0
     assert srt.CCSS_SPECTRAL_HYBRID_PUBLIC_KEY_BYTES == 1216
     assert srt.CCSS_SPECTRAL_HYBRID_PRIVATE_KEY_BYTES == 96
     assert srt.CCSS_SPECTRAL_HYBRID_CIPHERTEXT_BYTES == 1120
@@ -102,19 +105,31 @@ def test_valid_cleartext_shape_passes_forbidden_field_validator() -> None:
 
 
 def test_quantize_lambda_is_deterministic_and_integer_only() -> None:
-    assert srt.quantize_lambda([0.0, 0.001, 1.2345, -0.0001]) == [0, 1, 1234, -1]
-    result = srt.quantize_lambda([2, 3.75], scale=10)
-    assert result == [20, 37]
+    assert srt.quantize_lambda([0.0, 0.001, 1.2345, 2.0]) == [0, 1, 1234, 2000]
+    result = srt.quantize_lambda([2, 1.75], scale=10)
+    assert result == [20, 17]
     assert all(isinstance(item, int) and not isinstance(item, bool) for item in result)
 
     with pytest.raises(srt.SpectralRouteTokenError):
         srt.quantize_lambda([float("nan")])
     with pytest.raises(srt.SpectralRouteTokenError):
         srt.quantize_lambda([True])
+    with pytest.raises(srt.SpectralRouteTokenError) as negative_exc:
+        srt.quantize_lambda([-0.0001])
+    assert negative_exc.value.token == "ccss_spectral_lambda_component_out_of_range"
+    with pytest.raises(srt.SpectralRouteTokenError) as too_large_exc:
+        srt.quantize_lambda([2.0001])
+    assert too_large_exc.value.token == "ccss_spectral_lambda_component_out_of_range"
+    with pytest.raises(srt.SpectralRouteTokenError) as empty_exc:
+        srt.quantize_lambda([])
+    assert empty_exc.value.token == "ccss_spectral_lambda_vector_empty"
+    with pytest.raises(srt.SpectralRouteTokenError) as vector_too_large_exc:
+        srt.quantize_lambda([0.1] * 33)
+    assert vector_too_large_exc.value.token == "ccss_spectral_lambda_vector_too_large"
 
 
 def test_hiding_commitment_is_salt_sensitive_and_stable() -> None:
-    quantized_lambda = [1, 2, 3000]
+    quantized_lambda = [1, 2, 2000]
     salt_a = bytes.fromhex("00" * 32)
     salt_b = bytes.fromhex("11" * 32)
     commitment_a = srt.make_hiding_commitment(quantized_lambda, salt_a)
@@ -126,6 +141,22 @@ def test_hiding_commitment_is_salt_sensitive_and_stable() -> None:
     assert commitment_a != commitment_b
     with pytest.raises(srt.SpectralRouteTokenError):
         srt.make_hiding_commitment([1, False], salt_a)
+    with pytest.raises(srt.SpectralRouteTokenError) as empty_exc:
+        srt.make_hiding_commitment([], salt_a)
+    assert empty_exc.value.token == "ccss_spectral_quantized_lambda_empty"
+    with pytest.raises(srt.SpectralRouteTokenError) as vector_too_large_exc:
+        srt.make_hiding_commitment([1] * 33, salt_a)
+    assert vector_too_large_exc.value.token == "ccss_spectral_quantized_lambda_too_large"
+    with pytest.raises(srt.SpectralRouteTokenError) as negative_exc:
+        srt.make_hiding_commitment([-1], salt_a)
+    assert negative_exc.value.token == (
+        "ccss_spectral_quantized_lambda_component_out_of_range"
+    )
+    with pytest.raises(srt.SpectralRouteTokenError) as too_large_exc:
+        srt.make_hiding_commitment([2001], salt_a)
+    assert too_large_exc.value.token == (
+        "ccss_spectral_quantized_lambda_component_out_of_range"
+    )
 
 
 def test_capability_context_commitment_rotates_by_epoch() -> None:
