@@ -100,6 +100,11 @@ def test_fix38_batch_079_and_080_targets_are_registered() -> None:
             annotation.get("repo_path")
         )
 
+    assert (
+        len(by_batch["manual_batch_079_phase_1573e_1573i_retroactive"])
+        == 19
+    )
+    assert len(by_batch["manual_batch_080_phase_1573j_current"]) == 45
     assert BATCH_079_TARGETS <= by_batch[
         "manual_batch_079_phase_1573e_1573i_retroactive"
     ]
