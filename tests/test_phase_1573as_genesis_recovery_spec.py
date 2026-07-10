@@ -75,6 +75,40 @@ def test_freeze_from_epoch_above_current_is_kept() -> None:
     assert tx.validate_against_record(record, _SEED, current_epoch=100) == 200
 
 
+def test_freeze_from_epoch_float_rejected() -> None:
+    record, tx = _record_and_tx()
+    tx.freeze_from_epoch = 100.5  # type: ignore[assignment]
+
+    with pytest.raises(GenesisRecordError) as exc:
+        tx.validate_against_record(record, _SEED, current_epoch=100)
+    assert exc.value.token == "cdl_069_recovery_invalid_epoch"
+
+
+def test_freeze_from_epoch_bool_rejected() -> None:
+    record, tx = _record_and_tx()
+    tx.freeze_from_epoch = True  # type: ignore[assignment]
+
+    with pytest.raises(GenesisRecordError) as exc:
+        tx.validate_against_record(record, _SEED, current_epoch=100)
+    assert exc.value.token == "cdl_069_recovery_invalid_epoch"
+
+
+def test_current_epoch_float_rejected() -> None:
+    record, tx = _record_and_tx(freeze_from_epoch=200)
+
+    with pytest.raises(GenesisRecordError) as exc:
+        tx.validate_against_record(record, _SEED, current_epoch=100.5)  # type: ignore[arg-type]
+    assert exc.value.token == "cdl_069_recovery_invalid_epoch"
+
+
+def test_negative_epoch_rejected() -> None:
+    record, tx = _record_and_tx(freeze_from_epoch=-1)
+
+    with pytest.raises(GenesisRecordError) as exc:
+        tx.validate_against_record(record, _SEED, current_epoch=100)
+    assert exc.value.token == "cdl_069_recovery_invalid_epoch"
+
+
 def test_recovery_spec_canonical_json_encoding() -> None:
     encoded = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_SPHINCS, pk_hex="aa" * 16)
 
