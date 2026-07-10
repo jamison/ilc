@@ -54058,6 +54058,242 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - phase prompt hardened and executed.",
+      "manual_read_summary": "Phase prompt authorizes the sensitive CDL-002 amendment that reframes key compromise response as credential supersession and compromise signaling, with root identity keys explicitly non-revocable and only forward-supersedable through precommitted on-graph policy.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573av"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "phase_prompt_added",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573av_g8_cdl002_credential_supersession_reframe.md"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - constitutional decision log amended.",
+      "manual_read_summary": "CDL register row for CDL-002 is amended to Credential Supersession and Compromise Signaling, records amendment_phase 1573av, and states the root-key non-revocation / delegated credential supersession boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "cdl:CDL-002"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1573av"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "governance_artifact_modified",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - CDL-002 specification amended.",
+      "manual_read_summary": "CDL-002 spec now embeds the canonical root identity key non-revocation principle, a key-class distinction table, delegated signer scope boundary, and non-execution record for the amendment.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:CDL-002"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "governance_artifact_modified",
+      "repo_path": "docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - key compromise runtime scope note added.",
+      "manual_read_summary": "Runtime module keeps existing delegated signer compromise-response behavior but now declares CDL_002_SCOPE delegated_signer_only and CDL_002_SCOPE_RATIFIED_PHASE 1573av, preventing interpretation as root identity revocation machinery.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-002"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "runtime_artifact_modified",
+      "repo_path": "ilc_core/security/key_compromise_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - regression tests added.",
+      "manual_read_summary": "Focused tests pin the canonical CDL-002 root-key non-revocation paragraph, key-class table, CDL register amendment, runtime scope constants, governance no-invented-recovery rule, and preservation of delegated runtime trigger behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/security/key_compromise_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "test_artifact_added",
+      "repo_path": "tests/test_phase_1573av_cdl002_reframe.py"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - walkthrough added.",
+      "manual_read_summary": "Walkthrough attests the CDL mutation authorization, precondition checks, direct reads, CDL register/spec/runtime scope changes, verification commands, Atlas registration boundary, non-claims, and output tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573av_g8_cdl002_credential_supersession_reframe.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573av"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573av_cdl002_credential_supersession_reframe_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - STATUS updated.",
+      "manual_read_summary": "STATUS entry records the CDL-002 credential supersession reframe, root-key non-revocation principle, key-class table, runtime delegated-signer scope note, behavior preservation, non-execution boundary, and public path block.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573av_cdl002_credential_supersession_reframe_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573av"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_125_phase_1573av_cdl002_reframe",
+      "chronology_note": "2026-07-10 Phase 1573av - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records candidate semantic edges for the CDL-002 amendment prompt, constitutional register row, amended spec, scoped runtime note, focused tests, walkthrough, and STATUS tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573av_cdl002_credential_supersession_reframe_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573av"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
