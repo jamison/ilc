@@ -50359,6 +50359,240 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 hardened canonical Genesis accumulation SIM prompt.",
+      "manual_read_summary": "Prompt defines the non-sensitive canonical Genesis accumulation SIM using the Phase 1573ab C_max denominator, requiring deterministic script output, committed evidence, tests, walkthrough, and no activation claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "cdl:CDL-029"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573ac"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ac_g8_canonical_genesis_accumulation_sim.md"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 canonical Genesis accumulation SIM script.",
+      "manual_read_summary": "Script runs a deterministic H=48 monthly Genesis accumulation sensitivity grid using C_MAX_ILC and the Phase 1573ab governor runtime, emits canonical JSON, and writes committed evidence under docs/specs.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "accepted",
+          "target": "cdl:CDL-029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "ilc_core/analysis/genesis_accrual_governor.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "simulations/sim_genesis_accumulation_canonical_1573ac.py"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 committed machine-readable SIM evidence.",
+      "manual_read_summary": "JSON evidence records the deterministic grid, canonical constants, assumption registry, p10/p50/p90 reach epochs 15/22/42, all scenario rows, and output_sha256.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "accepted",
+          "target": "cdl:CDL-029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "simulations/sim_genesis_accumulation_canonical_1573ac.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_accumulation_canonical_sim_1573ac_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 human-readable SIM evidence summary.",
+      "manual_read_summary": "Spec summarizes canonical constants, C_max mode declaration, deterministic output hash, p10/p50/p90 reach epochs, assumption labels, external-communication-safe claims, and residual non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "accepted",
+          "target": "cdl:CDL-029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_phase_305_genesis_accumulation_canonicalization_checklist_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_genesis_accumulation_canonical_sim_1573ac_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_accumulation_canonical_sim_1573ac_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 SIM contract tests.",
+      "manual_read_summary": "Tests verify deterministic rerun hash equality, committed JSON payload equality, scenario-count lock, p10/p50/p90 values, no epoch-zero reach, and assumption-label presence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ac_g8_canonical_genesis_accumulation_sim.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "simulations/sim_genesis_accumulation_canonical_1573ac.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_genesis_accumulation_canonical_sim_1573ac_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ac_canonical_genesis_accumulation_sim.py"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 execution walkthrough.",
+      "manual_read_summary": "Walkthrough records preconditions, simulation parameters, p10/p50/p90 results, deterministic hash, Phase 305 checklist satisfaction, verification commands, graph_delta, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ac_g8_canonical_genesis_accumulation_sim.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:genesis_accumulation_canonical_sim_complete_phase_1573ac"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573ac_canonical_genesis_accumulation_sim_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_109_phase_1573ac_canonical_genesis_accumulation_sim",
+      "chronology_note": "2026-07-10 Phase 1573ac \u2014 STATUS token record.",
+      "manual_read_summary": "STATUS records Phase 1573ac completion, p10/p50/p90 evidence, Phase 305 checklist satisfaction, non-activation boundaries, and public-path block.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ac_g8_canonical_genesis_accumulation_sim.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:genesis_accumulation_canonical_sim_complete_phase_1573ac"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:phase_305_canonicalization_checklist_satisfied_phase_1573ac"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {

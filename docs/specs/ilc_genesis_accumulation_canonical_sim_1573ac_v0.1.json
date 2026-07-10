@@ -1,0 +1,872 @@
+{
+  "artifact": "phase_1573ac_genesis_accumulation_canonical_sim",
+  "assumption_registry": [
+    {
+      "anchor": "CDL-026",
+      "label": "Canonical",
+      "name": "C_max",
+      "value": 25920000.0
+    },
+    {
+      "anchor": "CDL-027",
+      "label": "Canonical",
+      "name": "H",
+      "value": 48
+    },
+    {
+      "anchor": "CDL-029",
+      "label": "Canonical",
+      "name": "allocation_split",
+      "value": "80/15/5"
+    },
+    {
+      "anchor": "0.05 * C_max",
+      "label": "Derived",
+      "name": "G_max",
+      "value": 1296000.0
+    },
+    {
+      "anchor": "Phase 1573ac deterministic sensitivity grid",
+      "label": "Exploratory",
+      "name": "genesis_subsidy_factor_grid",
+      "value": "1.85..5.3"
+    }
+  ],
+  "canonical_constants": {
+    "c_max_ilc": 25920000.0,
+    "g_max_ilc": 1296000.0,
+    "genesis_allocation_fraction": 0.05,
+    "h_halving_epochs": 48,
+    "horizon_epochs": 480,
+    "issuance_epoch_duration": "1 month",
+    "theta_hard": 0.05
+  },
+  "cdl_029_amendment_2_dependency": "cdl_029_amendment_2_cmax_denominator_phase_1573aa",
+  "fixed_seed": "phase_1573ac_grid_v1_no_prng",
+  "mode": "theoretical_cap_cmax_denominator",
+  "output_sha256": "47b4efc5db83916a00b1ec71e86412613b9f5801212312eaa76a333b2ecd6d2f",
+  "runtime_version": "genesis_accrual_governor_runtime_1573ab.v0.1",
+  "scenario_grid": {
+    "genesis_subsidy_factor_max": 5.3,
+    "genesis_subsidy_factor_min": 1.85,
+    "genesis_subsidy_factor_step": 0.0345,
+    "scenario_count": 101
+  },
+  "scenarios": [
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 1.85,
+      "reach_gmax_epoch": 53,
+      "scenario_index": 0
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 1.8845,
+      "reach_gmax_epoch": 52,
+      "scenario_index": 1
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 1.919,
+      "reach_gmax_epoch": 50,
+      "scenario_index": 2
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 1.9535,
+      "reach_gmax_epoch": 49,
+      "scenario_index": 3
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 1.988,
+      "reach_gmax_epoch": 48,
+      "scenario_index": 4
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.0225,
+      "reach_gmax_epoch": 47,
+      "scenario_index": 5
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.057,
+      "reach_gmax_epoch": 46,
+      "scenario_index": 6
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.0915,
+      "reach_gmax_epoch": 44,
+      "scenario_index": 7
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.126,
+      "reach_gmax_epoch": 43,
+      "scenario_index": 8
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.1605,
+      "reach_gmax_epoch": 42,
+      "scenario_index": 9
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.195,
+      "reach_gmax_epoch": 42,
+      "scenario_index": 10
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.2295,
+      "reach_gmax_epoch": 41,
+      "scenario_index": 11
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.264,
+      "reach_gmax_epoch": 40,
+      "scenario_index": 12
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.2985,
+      "reach_gmax_epoch": 39,
+      "scenario_index": 13
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.333,
+      "reach_gmax_epoch": 38,
+      "scenario_index": 14
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.3675,
+      "reach_gmax_epoch": 37,
+      "scenario_index": 15
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.402,
+      "reach_gmax_epoch": 37,
+      "scenario_index": 16
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.4365,
+      "reach_gmax_epoch": 36,
+      "scenario_index": 17
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.471,
+      "reach_gmax_epoch": 35,
+      "scenario_index": 18
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.5055,
+      "reach_gmax_epoch": 35,
+      "scenario_index": 19
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.54,
+      "reach_gmax_epoch": 34,
+      "scenario_index": 20
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.5745,
+      "reach_gmax_epoch": 34,
+      "scenario_index": 21
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.609,
+      "reach_gmax_epoch": 33,
+      "scenario_index": 22
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.6435,
+      "reach_gmax_epoch": 32,
+      "scenario_index": 23
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.678,
+      "reach_gmax_epoch": 32,
+      "scenario_index": 24
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.7125,
+      "reach_gmax_epoch": 31,
+      "scenario_index": 25
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.747,
+      "reach_gmax_epoch": 31,
+      "scenario_index": 26
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.7815,
+      "reach_gmax_epoch": 30,
+      "scenario_index": 27
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.816,
+      "reach_gmax_epoch": 30,
+      "scenario_index": 28
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.8505,
+      "reach_gmax_epoch": 29,
+      "scenario_index": 29
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.885,
+      "reach_gmax_epoch": 29,
+      "scenario_index": 30
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.9195,
+      "reach_gmax_epoch": 29,
+      "scenario_index": 31
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.954,
+      "reach_gmax_epoch": 28,
+      "scenario_index": 32
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 2.9885,
+      "reach_gmax_epoch": 28,
+      "scenario_index": 33
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.023,
+      "reach_gmax_epoch": 27,
+      "scenario_index": 34
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.0575,
+      "reach_gmax_epoch": 27,
+      "scenario_index": 35
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.092,
+      "reach_gmax_epoch": 27,
+      "scenario_index": 36
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.1265,
+      "reach_gmax_epoch": 26,
+      "scenario_index": 37
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.161,
+      "reach_gmax_epoch": 26,
+      "scenario_index": 38
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.1955,
+      "reach_gmax_epoch": 25,
+      "scenario_index": 39
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.23,
+      "reach_gmax_epoch": 25,
+      "scenario_index": 40
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.2645,
+      "reach_gmax_epoch": 25,
+      "scenario_index": 41
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.299,
+      "reach_gmax_epoch": 24,
+      "scenario_index": 42
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.3335,
+      "reach_gmax_epoch": 24,
+      "scenario_index": 43
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.368,
+      "reach_gmax_epoch": 24,
+      "scenario_index": 44
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.4025,
+      "reach_gmax_epoch": 24,
+      "scenario_index": 45
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.437,
+      "reach_gmax_epoch": 23,
+      "scenario_index": 46
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.4715,
+      "reach_gmax_epoch": 23,
+      "scenario_index": 47
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.506,
+      "reach_gmax_epoch": 23,
+      "scenario_index": 48
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.5405,
+      "reach_gmax_epoch": 22,
+      "scenario_index": 49
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.575,
+      "reach_gmax_epoch": 22,
+      "scenario_index": 50
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.6095,
+      "reach_gmax_epoch": 22,
+      "scenario_index": 51
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.644,
+      "reach_gmax_epoch": 22,
+      "scenario_index": 52
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.6785,
+      "reach_gmax_epoch": 21,
+      "scenario_index": 53
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.713,
+      "reach_gmax_epoch": 21,
+      "scenario_index": 54
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.7475,
+      "reach_gmax_epoch": 21,
+      "scenario_index": 55
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.782,
+      "reach_gmax_epoch": 21,
+      "scenario_index": 56
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.8165,
+      "reach_gmax_epoch": 21,
+      "scenario_index": 57
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.851,
+      "reach_gmax_epoch": 20,
+      "scenario_index": 58
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.8855,
+      "reach_gmax_epoch": 20,
+      "scenario_index": 59
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.92,
+      "reach_gmax_epoch": 20,
+      "scenario_index": 60
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.9545,
+      "reach_gmax_epoch": 20,
+      "scenario_index": 61
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 3.989,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 62
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.0235,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 63
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.058,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 64
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.0925,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 65
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.127,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 66
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.1615,
+      "reach_gmax_epoch": 19,
+      "scenario_index": 67
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.196,
+      "reach_gmax_epoch": 18,
+      "scenario_index": 68
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.2305,
+      "reach_gmax_epoch": 18,
+      "scenario_index": 69
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.265,
+      "reach_gmax_epoch": 18,
+      "scenario_index": 70
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.2995,
+      "reach_gmax_epoch": 18,
+      "scenario_index": 71
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.334,
+      "reach_gmax_epoch": 18,
+      "scenario_index": 72
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.3685,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 73
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.403,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 74
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.4375,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 75
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.472,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 76
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.5065,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 77
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.541,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 78
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.5755,
+      "reach_gmax_epoch": 17,
+      "scenario_index": 79
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.61,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 80
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.6445,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 81
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.679,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 82
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.7135,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 83
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.748,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 84
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.7825,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 85
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.817,
+      "reach_gmax_epoch": 16,
+      "scenario_index": 86
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.8515,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 87
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.886,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 88
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.9205,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 89
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.955,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 90
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 4.9895,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 91
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.024,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 92
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.0585,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 93
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.093,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 94
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.1275,
+      "reach_gmax_epoch": 15,
+      "scenario_index": 95
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.162,
+      "reach_gmax_epoch": 14,
+      "scenario_index": 96
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.1965,
+      "reach_gmax_epoch": 14,
+      "scenario_index": 97
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.231,
+      "reach_gmax_epoch": 14,
+      "scenario_index": 98
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.2655,
+      "reach_gmax_epoch": 14,
+      "scenario_index": 99
+    },
+    {
+      "final_genesis_cumulative_ilc": 1296000.0,
+      "final_genesis_share_ratio": 0.05,
+      "first_cap_block_epoch": null,
+      "genesis_subsidy_factor": 5.3,
+      "reach_gmax_epoch": 14,
+      "scenario_index": 100
+    }
+  ],
+  "summary": {
+    "not_reached_count": 0,
+    "p10_reach_epoch": 15,
+    "p50_reach_epoch": 22,
+    "p90_reach_epoch": 42,
+    "reach_count": 101
+  }
+}
