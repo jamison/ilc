@@ -52391,6 +52391,242 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - prompt hardened.",
+      "manual_read_summary": "Prompt defines fake-key Genesis recovery vectors and was hardened to require a private test-scoped SLH-DSA helper, focused tests, walkthrough, STATUS tokens, and Atlas registration without changing production recovery runtime.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573at_g8_genesis_recovery_fake_key_vectors.md"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - Cargo target added.",
+      "manual_read_summary": "Cargo manifest now declares the private genesis_recovery_fake_vector binary used for fake-key SLH-DSA test vector generation and verification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573at_g8_genesis_recovery_fake_key_vectors.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_consensus/Cargo.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - private fake-vector helper added.",
+      "manual_read_summary": "Rust helper uses fips205 SLH-DSA-SHA2-128s with deterministic fake seeds to generate and verify recovery authorization vectors without reading real Genesis material.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - fake-vector document added.",
+      "manual_read_summary": "Vector document records deterministic fake public key, domain separator, message digest, signature length, and signature prefix/suffix for the private fake-key SLH-DSA recovery test path.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/specs/ilc_genesis_recovery_fake_key_test_vectors_1573at_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - fake-key tests added.",
+      "manual_read_summary": "Tests build the private helper and verify fake SLH-DSA signature acceptance/rejection plus Genesis recovery transaction rejection, deterministic encoding, freeze clamping, encoding mismatch, two-factor dependency, domain separator, vector doc, and STATUS tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/identity/genesis_record_schema.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tests/test_phase_1573at_genesis_recovery_fake_key_vectors.py"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - walkthrough added.",
+      "manual_read_summary": "Walkthrough records direct-read sources, prompt hardening, private helper selection, vector summary, non-claims, and verification commands.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573at_g8_genesis_recovery_fake_key_vectors.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573at_genesis_recovery_fake_key_vectors_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - STATUS updated.",
+      "manual_read_summary": "STATUS entry records fake-key vectors committed, fake-key SPHINCS/SLH-DSA verify path proven, public path blocked, and no production recovery activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573at_g8_genesis_recovery_fake_key_vectors.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_119_phase_1573at_genesis_recovery_fake_key_vectors",
+      "chronology_note": "2026-07-10 Phase 1573at - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for fake-key Genesis recovery vector artifacts with explicit IMPLEMENTS and TESTS edges.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573at_g8_genesis_recovery_fake_key_vectors.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
