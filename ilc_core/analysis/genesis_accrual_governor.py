@@ -9,6 +9,9 @@ from ilc_core.exceptions import GenesisAccrualGovernorError
 
 THETA_HARD = 1.0 / 20.0
 THETA_SOFT = math.exp(-3.0)
+C_MAX_ILC = 25_920_000.0
+GENESIS_ACCRUAL_GOVERNOR_RUNTIME_VERSION = "genesis_accrual_governor_runtime_1573ab.v0.1"
+CDL_029_AMENDMENT_2_DEPENDENCY = "cdl_029_amendment_2_cmax_denominator_phase_1573aa"
 _RATIO_TOLERANCE = 1e-12
 
 
@@ -133,7 +136,7 @@ def compute_genesis_share_ratio(signal: Mapping[str, object]) -> float:
     total_issuance = resolved_signal["total_cumulative_issuance"]
     if total_issuance == 0.0:
         return 0.0
-    return resolved_signal["genesis_cumulative_accrual"] / total_issuance
+    return resolved_signal["genesis_cumulative_accrual"] / C_MAX_ILC
 
 
 def compute_taper_multiplier(
