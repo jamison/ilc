@@ -360,6 +360,36 @@ class TestSyncChannelRegistry:
         assert result["last_sync"]["ok"] is False
         assert "max_sources_invalid" in result["last_sync"]["errors"]
 
+    @pytest.mark.parametrize("max_sources", [True, 2.5, "2"])
+    def test_sync_max_sources_rejects_non_integer_values(self, tmp_path, max_sources):
+        """Sync rejects bool, float, and string max_sources before window arithmetic."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+
+        result = call_sync(
+            channel_file, key, dest_dir, max_sources=max_sources
+        )
+
+        assert result["ok"] is False
+        assert "max_sources_invalid" in result["errors"]
+        assert result["last_sync"]["ok"] is False
+        assert "max_sources_invalid" in result["last_sync"]["errors"]
+
+    @pytest.mark.parametrize("source_index", [True, 1.5, "1"])
+    def test_sync_source_index_rejects_non_integer_values(self, tmp_path, source_index):
+        """Sync rejects bool, float, and string source indexes before slicing."""
+        bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
+        dest_dir = tmp_path / "installed"
+
+        result = call_sync(
+            channel_file, key, dest_dir, source_index=source_index
+        )
+
+        assert result["ok"] is False
+        assert "source_index_out_of_range" in result["errors"]
+        assert result["last_sync"]["ok"] is False
+        assert "source_index_out_of_range" in result["last_sync"]["errors"]
+
     def test_sync_result_contain_freshness_fields(self, tmp_path):
         """Sync result contains freshness telemetry fields."""
         bundle_dir, channel_file, key = self._create_bundle_and_channel(tmp_path)
