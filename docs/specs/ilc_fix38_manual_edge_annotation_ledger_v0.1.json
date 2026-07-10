@@ -50793,6 +50793,192 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 prompt hardening before execution.",
+      "manual_read_summary": "Hardened Phase 1573ae prompt for ProjectionPolicyNode and SigningGroupRulesNode registration; binds ProjectionPolicyNode to the projection policy spec, SigningGroupRulesNode to the glossary and AtlasSliceManifest authority-boundary spec, and ADR-0020 to the actual knowledge-node-first ADR path.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1573ae_projection_signing_group_lmdb_registration"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 ProjectionPolicyNode LMDB write script.",
+      "manual_read_summary": "Durable local Atlas safe-writer script that materializes the CDL-098 authority alias, ProjectionPolicyNode fields from the graph projection naming policy, and the CDL-098 GOVERNS edge to that knowledge node.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "knowledge:projection_policy:graph_projection_naming_policy_v0.1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/add_projection_policy_node_1573ae.py"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 SigningGroupRulesNode LMDB write script.",
+      "manual_read_summary": "Durable local Atlas safe-writer script that materializes the SigningGroupRulesNode for AtlasSliceManifest public signing authority boundaries and the CDL-098 GOVERNS edge to that knowledge node.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "knowledge:signing_group_rules:atlas_slice_manifest_signing_v0.1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/add_signing_group_rules_node_1573ae.py"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 focused LMDB knowledge-node tests.",
+      "manual_read_summary": "Focused regression tests query the Atlas LMDB for the ProjectionPolicyNode, SigningGroupRulesNode, CDL-098 GOVERNS edges, ADR-0035 non-claim, and durable write-script paths.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "knowledge:projection_policy:graph_projection_naming_policy_v0.1"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "knowledge:signing_group_rules:atlas_slice_manifest_signing_v0.1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ae_projection_and_signing_group_nodes.py"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 execution walkthrough.",
+      "manual_read_summary": "Walkthrough records source reads, prompt hardening, sequential safe-writer LMDB writes, graph deltas, output tokens, verification results, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:projection_policy_node_added_phase_1573ae"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:signing_group_rules_node_added_phase_1573ae"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573ae_projection_policy_and_signing_group_nodes_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_111_phase_1573ae_projection_and_signing_group_nodes",
+      "chronology_note": "2026-07-10 Phase 1573ae \u2014 STATUS token record.",
+      "manual_read_summary": "STATUS records Phase 1573ae completion, ProjectionPolicyNode and SigningGroupRulesNode tokens, local unsigned Atlas LMDB scope, and public-path block.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ae_g8_projection_policy_and_signing_group_nodes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:projection_policy_node_added_phase_1573ae"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:signing_group_rules_node_added_phase_1573ae"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
