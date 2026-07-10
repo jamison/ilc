@@ -51748,6 +51748,267 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - prompt hardened before AtlasSliceManifest CLI implementation.",
+      "manual_read_summary": "Phase prompt defines the bounded local AtlasSliceManifest build, dev-sign, and verify CLI scope and records the non-claim that Genesis and ML-DSA production signing remain Phase 1575 work.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573ap"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ap_g8_homoiconic_build_pipeline_cli.md"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - AtlasSliceManifest runtime added.",
+      "manual_read_summary": "Runtime source implements deterministic AtlasSliceManifest construction from Atlas LMDB projection nodes, canonical JSON and DAG-CBOR commitments, CIDv1 and SHA-256 checks, private-projection rejection, and Ed25519 COSE-Sign1 dev/test signing and verification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/bundle/atlas_slice_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - Atlas CLI dispatch extended.",
+      "manual_read_summary": "Atlas LMDB CLI handlers dispatch build-slice, sign-manifest, and verify-slice to the new AtlasSliceManifest runtime while preserving local-only non-claims and explicit dev/test signing boundaries.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPORTS_MODULE",
+          "target": "ilc_core/bundle/atlas_slice_manifest.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPORTS_MODULE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/cli/atlas_lmdb_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - top-level CLI parser extended.",
+      "manual_read_summary": "Top-level CLI parser adds the build-slice, sign-manifest, and verify-slice Atlas subcommands with explicit arguments for LMDB input, manifest paths, Ed25519 dev/test keys, and signature policy.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPORTS_MODULE",
+          "target": "ilc_core/cli/atlas_lmdb_cli.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPORTS_MODULE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - AtlasSliceManifest unit tests added.",
+      "manual_read_summary": "Unit tests cover deterministic CID and canonical JSON output, DAG-CBOR hash commitments, float rejection, unsigned default behavior, dev/test signing verification, wrong-key rejection, and tamper detection.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/bundle/atlas_slice_manifest.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "test_evidence_added",
+      "repo_path": "tests/test_atlas_slice_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - Atlas build pipeline CLI tests added.",
+      "manual_read_summary": "CLI integration tests exercise real parser and dispatch paths for build-slice, private projection rejection, sign-manifest, verify-slice success, unsigned rejection, and wrong public key rejection.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/atlas_lmdb_cli.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "test_evidence_added",
+      "repo_path": "tests/test_atlas_build_pipeline_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - walkthrough added.",
+      "manual_read_summary": "Walkthrough records prompt hardening, implementation summary, dev/test signing boundary, explicit non-claims, verification commands, and the requirement for final post-registration validation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ap_g8_homoiconic_build_pipeline_cli.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573ap"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573ap_homoiconic_build_pipeline_cli_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - STATUS updated.",
+      "manual_read_summary": "STATUS entry records Phase 1573ap completion tokens, local AtlasSliceManifest CLI implementation, Ed25519 dev/test signing boundary, and public path non-activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ap_g8_homoiconic_build_pipeline_cli.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573ap"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_116_phase_1573ap_atlas_slice_manifest_cli",
+      "chronology_note": "2026-07-10 Phase 1573ap - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for the AtlasSliceManifest runtime, CLI wiring, tests, walkthrough, and phase status artifacts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ap_g8_homoiconic_build_pipeline_cli.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573ap"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {

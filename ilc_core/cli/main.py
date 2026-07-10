@@ -1527,6 +1527,75 @@ def _build_parser() -> JsonArgumentParser:
                 help="Validate only; accepted for explicitness and remains the default.",
             )
             p_atlas_plan.add_argument("--receipt", default="", help="Optional receipt path")
+
+            p_atlas_build_slice = atlas_subparsers.add_parser(
+                "build-slice",
+                help="Build an unsigned local AtlasSliceManifest from an Atlas projection",
+            )
+            p_atlas_build_slice.add_argument("--lmdb", required=True, help="Path to Atlas LMDB root")
+            p_atlas_build_slice.add_argument(
+                "--slice-variant",
+                required=True,
+                choices=("core", "bridge", "full"),
+                help="AtlasSliceManifest variant to build",
+            )
+            p_atlas_build_slice.add_argument(
+                "--projection",
+                required=True,
+                help="Atlas graph_projection label to include",
+            )
+            p_atlas_build_slice.add_argument(
+                "--slice-version",
+                default="0.1",
+                help="AtlasSliceManifest slice_version value",
+            )
+            p_atlas_build_slice.add_argument(
+                "--output",
+                default="",
+                help="Optional output JSON path; stdout payload is always emitted",
+            )
+
+            p_atlas_sign_manifest = atlas_subparsers.add_parser(
+                "sign-manifest",
+                help="Dev/test-sign an AtlasSliceManifest with Ed25519 COSE-Sign1",
+            )
+            p_atlas_sign_manifest.add_argument(
+                "--manifest",
+                required=True,
+                help="Unsigned AtlasSliceManifest JSON path",
+            )
+            p_atlas_sign_manifest.add_argument(
+                "--private-key-hex",
+                required=True,
+                help="32-byte Ed25519 private key seed hex for dev/test signing",
+            )
+            p_atlas_sign_manifest.add_argument(
+                "--output",
+                default="",
+                help="Optional signed output JSON path; default overwrites --manifest",
+            )
+
+            p_atlas_verify_slice = atlas_subparsers.add_parser(
+                "verify-slice",
+                help="Verify AtlasSliceManifest deterministic commitments and dev/test signature",
+            )
+            p_atlas_verify_slice.add_argument(
+                "--manifest",
+                required=True,
+                help="Signed AtlasSliceManifest JSON path",
+            )
+            p_atlas_verify_slice.add_argument(
+                "--public-key-hex",
+                default="",
+                help="32-byte Ed25519 public key hex for signature verification",
+            )
+            p_atlas_verify_slice.add_argument(
+                "--allow-unsigned",
+                dest="require_signature",
+                action="store_false",
+                help="Verify deterministic commitments without requiring a signature",
+            )
+            p_atlas_verify_slice.set_defaults(require_signature=True)
             continue
 
         if command == "bootstrap":
