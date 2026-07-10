@@ -28,23 +28,21 @@ EXACT_REQUIRED_MAIN_PATHS = {
 _CERT_PEM = textwrap.dedent(
     """\
     -----BEGIN CERTIFICATE-----
-    MIIDCTCCAfGgAwIBAgIUJyHAyiCrnelqu8A0dVbG9QA7mIkwDQYJKoZIhvcNAQEL
-    BQAwFDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTI2MDQwMTA3MTUzOVoXDTI2MDQw
-    MjA3MTUzOVowFDESMBAGA1UEAwwJbG9jYWxob3N0MIIBIjANBgkqhkiG9w0BAQEF
-    AAOCAQ8AMIIBCgKCAQEAmuEqPXvtZPoMGeBS3RQLDDAQDL2dSQOA1OQroSUYqzxq
-    GItc1SnDbMrwmpH5f3tr12ynlUGsmHE2yMmbh3bCzt4UVWPEY9Vqkn/28TCSlPZ7
-    MQ9dHRTj9a22jw25PE/76HzU0pCKXqHRXG/2+IJwT8B9iUkHGN+Gb4behEm7D7qh
-    xOQkr2EKuTGCFO5bAGKee4bBAavpLcQk0SW++7hKTSFgE2WWQvTyqe30a2UFvIPU
-    F9m5eVzrSlElh+1Gnehrk6yk5N+MofjoMmyAX5PbsgG+sAq1Arj2hRVvrBIojQ3q
-    qEHe9gE07leREMNqWQnD6aOcdKN3jJ7Q1RlOyS5wPwIDAQABo1MwUTAdBgNVHQ4E
-    FgQUlURz0tvvmz3zvJeiA3xiGt7N9ngwHwYDVR0jBBgwFoAUlURz0tvvmz3zvJei
-    A3xiGt7N9ngwDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAWDa+
-    eX311yStBkHDDSDq1gYqYJIsmnCj4ikaEqM+99Jed3V4C0IeFPcKuCm9K4JJSPy2
-    t9qmP2gSWTk7qEmhkeL9q9yakXvmrplXLUrBpJJTjJe5fnk8hlYGD4Fn3gxVajAF
-    lVRRcOb2JQpf3U1Q36/YqyuQWEFZL+0s6S71F+pA//KAhF+xSZHHjABnpYLWI9Wq
-    t0L8vc+ulxcjvH0+MbIdARIg/U4vLMMtaP7tUjzW4Da4k49yyG+norSxH3Fjny3L
-    xLNUe5UQw5w5MKzMHZnLOaOejYDR4X14nJQGic9dOi//j85C99nRAoARj9mzKZ+/
-    HvxRTHxHMY2Mgd+IEA==
+    MIICyTCCAbGgAwIBAgIJALJLJ4bAeT8DMA0GCSqGSIb3DQEBCwUAMBQxEjAQBgNV
+    BAMMCWxvY2FsaG9zdDAeFw0yNjA3MTAxNDE4MjBaFw0zNjA3MDcxNDE4MjBaMBQx
+    EjAQBgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+    ggEBAJE+5guqHASC9IyoFNkhOSWw+iCus2wGUZPdDRV5vXYkVTaL0mEj4Q9ezPz+
+    Wiv+XtM93ureuPClQ/CnT1XVYteMoNX+qXEtqhMfQZAOB90b1pyBHQBn75M+gg+x
+    9EGkulzBUttuoUIFdgmMnCqWVQS+nZSwSFwwd96473F9lAgEQ09ECY05aIduQF0A
+    5tcHzI0xWNa4V3EPeezpRQabeTZycApgqFPqPN6OhphgJZeXMBvihZa9nRPUxF5M
+    j+vUYL12S1Em5hZtLf2oh+2xwDBTLi2AemSgqTmJvE9d0guo8pNk8BPp3Ae6KB6V
+    5yW+HaIQWPhjTLoT6zXglQ1ASqkCAwEAAaMeMBwwGgYDVR0RBBMwEYIJbG9jYWxo
+    b3N0hwR/AAABMA0GCSqGSIb3DQEBCwUAA4IBAQBsDH5g6zUCQTJ7TaGecyJNN3Eu
+    Dwz5dWRwyks1bDH5kQGQnsnOLfSuN2O+8b/BoJeNCGw0Sn+Kq4e32CIRFTG4GY7R
+    V/j2opU6WMeqORB6HGE5FRo7uDBzyJ0FDh1kuR32UYgwbtbMNgv+/nhcDoJ44jeY
+    ZS/ejGuUTsK+aewxhWVvV+6fiYOC0GmnVQQiNaG2JR5TJFeKTcykqBkbex8oXarE
+    WM1NGBQlk4xlV2hBX6N2/opCbY7ICrFg8b80tDV5Qty/IqvpJdH4y8Q9M9NA2omg
+    LHO1jnPCGm/LLonND1QxqEzQoe58Yl+bYtLsjnX+lNdm+9ZI+YgXmOlNpoKI
     -----END CERTIFICATE-----
     """
 )
@@ -52,32 +50,32 @@ _CERT_PEM = textwrap.dedent(
 _KEY_PEM = textwrap.dedent(
     """\
     -----BEGIN PRIVATE KEY-----
-    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCa4So9e+1k+gwZ
-    4FLdFAsMMBAMvZ1JA4DU5CuhJRirPGoYi1zVKcNsyvCakfl/e2vXbKeVQayYcTbI
-    yZuHdsLO3hRVY8Rj1WqSf/bxMJKU9nsxD10dFOP1rbaPDbk8T/vofNTSkIpeodFc
-    b/b4gnBPwH2JSQcY34Zvht6ESbsPuqHE5CSvYQq5MYIU7lsAYp57hsEBq+ktxCTR
-    Jb77uEpNIWATZZZC9PKp7fRrZQW8g9QX2bl5XOtKUSWH7Uad6GuTrKTk34yh+Ogy
-    bIBfk9uyAb6wCrUCuPaFFW+sEiiNDeqoQd72ATTuV5EQw2pZCcPpo5x0o3eMntDV
-    GU7JLnA/AgMBAAECggEAPYyi6TlBL+JRAc2MkLAg7dCB6FZIVdZPEgu1LP6djZte
-    PG/RziKhN7B0qrC9OsTVKBDVjnLBgPlpAKViKhTvuR83bHHP/662Ag9ZlyMq9Yj4
-    jxggdGizaRSGWtZk2Uud/BfzydRIMPBUz8vtFXhc4szH9tFvQRq/hb3O2zqj3M07
-    m7q0gWX4qday7xuhrBoVmhoe3O7gNxENIvzpZCYdgbWFruqGFSFeJloYQ+YCtr8B
-    WO6M03Sry/WDbUw9u0hAUBcoDju5ezfqxqvDs7H0S5u+EOO5zcM85ZtKPJFzo0k7
-    NtAU4vkmOkpXD0fLdeXTd145CATPb/uGSZpm2lhsUQKBgQDNLB7NHvVz6kD4H7C8
-    v5CYFOksHmzJ5eenjW6wQg0BNw8+nvXIkbotWUIppRyhq5t2tuYMmSeprDRyuPYf
-    UnBQ8QuV8PB7DBbV+TSONeWqVlcKeqRD15Go+z0B4DF3KQdvZd2e3nVzYCMIN9hd
-    0yd/+M85dbWuAxJxiW4L5bdfsQKBgQDBP4M2gdBpsE2NGa/s9ZMJYdicqsUR509g
-    oFni8J6xTazQ3+TTm6jbREsk4ArxFHu/7uDp2h0m/lze0PRIdW+G6q7vnPYQqDxG
-    ZtJCAwPmVciZH2EtMuiQzBQas1yLnoLY2pJBLDOwLsgKNcCxJIlIJBArcCUHTUt+
-    +qskza467wKBgHdYlMoomgrFVul+NaZ1oDx23XPGdu2yiGAUizCIG1x7lKiOetYi
-    vrOmWjAzVUZNtm8F0Se+5y1xeEjLgo+Rure6n0ynDJvm2lm5TnLysxe0hYkY8fhs
-    qtQq4L/4k42HFkYccR/6s0NbxsT/ByL8sttj9dasu/Pu4YmdsZ/GDjbhAoGBAJif
-    wNHb1O6j/5vhHcDYcziFvr59YQey2E5IVrWVtL/zyPlu2xsFZWdHmNGW4Q1mUBZW
-    Y+xOB5g0bMTN4yEXHu4/i8pS/URKmtA/hO/90aapObU1w1ofSu6RP4+W+RCMMGt0
-    tO4kKu6LBBKMQZOmd4YydVLZT2Vk9qti7qgyidihAoGAfCkCMVVaoJwLya4G6lRg
-    MwmTr33+KmZPgDXHrhK61nmnZV+dj06Y5FKXyBuiY2kCm4sTfae6UDRCzwXVpY52
-    INm9arf6osBw5qoWlmNcOWVt5R2bbptHgNFfdeVtqNQLq7A4phhqpJgbTwfAySdd
-    7r7LPPxpLIkIn0gKmleNDMc=
+    MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCRPuYLqhwEgvSM
+    qBTZITklsPogrrNsBlGT3Q0Veb12JFU2i9JhI+EPXsz8/lor/l7TPd7q3rjwpUPw
+    p09V1WLXjKDV/qlxLaoTH0GQDgfdG9acgR0AZ++TPoIPsfRBpLpcwVLbbqFCBXYJ
+    jJwqllUEvp2UsEhcMHfeuO9xfZQIBENPRAmNOWiHbkBdAObXB8yNMVjWuFdxD3ns
+    6UUGm3k2cnAKYKhT6jzejoaYYCWXlzAb4oWWvZ0T1MReTI/r1GC9dktRJuYWbS39
+    qIftscAwUy4tgHpkoKk5ibxPXdILqPKTZPAT6dwHuigeleclvh2iEFj4Y0y6E+s1
+    4JUNQEqpAgMBAAECggEAD9E6ujB3RqKAQUUYqCCvGYSxaJe94Fi7z492Gk2crV39
+    jagibAO9QbBAQJjudvYHm5eUTB2fJE3LHU0LHbzUO8cLyOInz7R6XgS8XhS5FIIw
+    l/CTmPS4qV9YSJ9Hi1KGHQ3MmSruEsOHfDi81QJ0FcUwYf3kk22P0Ehxgvl7AnhS
+    YHvxjULbrrYipdxKiuWckiL0h8ZjviWPf16rsunSl3Zk/7gW5LfIEC8zueUCGxDX
+    jFxtXQyBxScJZ/XKDpKzMsi7cA6NBymvogj1Aj9KI0wYW5aoa2qzJRcay5DFG5z9
+    qyyElPcSJKbp0DadeVeSelXcyoQODa1Ovr21f0Lf1QKBgQDBD4Zj3Yp96J152UCm
+    RC4FyLy05zVR9qQABYf2pu9bY1lWqgykrGVsVTyF9ip8cbC7A6IW8tC0ycsAJX8M
+    CYpx9fJMGLDw+AV+kdAAfCTRBo05K/oxEnKcSAydGZwVVeuLdVvLgvdPZTE7ElS9
+    0g9fQeYTVR1l1cN85koxsMAznwKBgQDAmNQ1MUPGzWFshLi9txvwUC8Z/dOZ9VVb
+    hmIXwnAf7kBuayhW16rO4zxE0WMt04vB63OgsmvbEMwontghxKIt//DRGZ0NV0Sv
+    G8OdmoCwXuMz99bZTFQyCjGe8+qISnycztRQ4isTXs+3Kt8kPCaNz9B8gSGCifI5
+    AdeXFgoctwKBgDeTcop5Eg8g0YRsKBI0+lKr8LbbABxyNc/Tx8oXUDwso2ExXqZh
+    AmlnOB8QODbOu6N6bkTQ7Ye9t3R5VtNuQ65+sJt7WCRmIZ7H9urM0gRiMHFO2Z0a
+    xGd8zjTDVI1HyKDCzgQN1YfDh6KLql1ihQ5U+BiEngvct4PS/3TCfvHdAoGAOiMo
+    E7J+WhmPKhnaRnJqvZ0GytrDMDtNe+ZR4AgynoDl9C7mq2hIyFDx1Xg7bw7npi7z
+    5XNWeXdVmYFxjqfzqN0UjZokvW01b4J7By0nYZYTEZHjyg5vb/eByRCqIGATw6Xv
+    k0biZ+N74jfPyflaTf6IWb0FJ4mKk8jJknL1tHsCgYEAo73O8mXYDQ6CSkG0zkjj
+    1ARqufGDA+3ahE57EIdA5Q2LntdQM27L5cj2b809NIfCFtgaec21RZHNObX58m9o
+    Ltfbj0pPjJWj4a4EMKVSLVVU0B+UWFZH/QWnRt4AC0rmlHVKP1Kws4Y9NU7gMum+
+    PCykcpTjJERYPfRq2L4rCME=
     -----END PRIVATE KEY-----
     """
 )
@@ -100,6 +98,7 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         bind_port=0,
         tls_cert_path=cert_path,
         tls_key_path=key_path,
+        tls_ca_cert_path=cert_path,
         verify_peer_tls=False,
         allow_private_peer_endpoints_for_tests=True,
     )
@@ -215,6 +214,7 @@ def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_field
         'tls_key_path',
     ]
     assert 'verify_peer_tls' in field_names
+    assert 'tls_ca_cert_path' in field_names
     cert_path, key_path = _write_tls_material(tmp_path)
     config = runtime.TransportRuntimeConfig(
         transport_kind='http',
@@ -224,6 +224,7 @@ def test_transport_runtime_config_requires_explicit_transport_kind_and_tls_field
         tls_key_path=key_path,
     )
     assert config.verify_peer_tls is True
+    assert config.tls_ca_cert_path == ''
     with pytest.raises(TypeError):
         runtime.TransportRuntimeConfig(bind_host='127.0.0.1', bind_port=0, tls_cert_path='a', tls_key_path='b')
 
@@ -451,7 +452,7 @@ def test_loopback_send_receive_over_real_http_returns_success_status_code(tmp_pa
     client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
     server_transport.start()
     try:
-        endpoint = f"https://127.0.0.1:{server_transport.state['bound_port']}"
+        endpoint = f"https://localhost:{server_transport.state['bound_port']}"
         status = client_transport.send_gossip(
             endpoint,
             gossip_type='centrality_delta',
@@ -499,7 +500,7 @@ def test_loopback_rejects_oversized_payload_before_buffering(tmp_path: Path) -> 
     client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
     server_transport.start()
     try:
-        endpoint = f"https://127.0.0.1:{server_transport.state['bound_port']}"
+        endpoint = f"https://localhost:{server_transport.state['bound_port']}"
         request = urllib.request.Request(
             url=f"{endpoint}/ilc/gossip/centrality_delta",
             data=b'x' * (runtime.MAX_INBOUND_PAYLOAD_BYTES + 1),

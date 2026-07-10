@@ -73,6 +73,7 @@ def _write_testbed_config(tmp_path: Path) -> Path:
     payload = json.loads(config_path.read_text(encoding='utf-8'))
     payload['transport']['allow_private_peer_endpoints_for_tests'] = True
     payload['transport']['verify_peer_tls'] = False
+    payload['transport']['tls_ca_cert_path'] = 'cert.pem'
     config_path.write_text(json.dumps(payload), encoding='utf-8')
     return config_path
 
@@ -161,6 +162,7 @@ def test_testbed_opt_in_allows_tailscale_peer_and_disables_peer_tls_verification
     assert context.peer_registry.get_peers() == ['https://100.112.32.42:443']
     assert context.transport_config.allow_private_peer_endpoints_for_tests is True
     assert context.transport_config.verify_peer_tls is False
+    assert context.transport_config.tls_ca_cert_path.endswith('cert.pem')
 
 
 def test_valid_genesis_import_reference_loads_successfully(tmp_path: Path) -> None:

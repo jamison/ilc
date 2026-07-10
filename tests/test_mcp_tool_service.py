@@ -395,6 +395,22 @@ class TestMCPAuditTrail:
             events = list(node.event_log.iter_events())
             assert len(events) == 5
 
+    def test_audit_sampling_uses_integer_digest_rolls(self) -> None:
+        """Seeded audit sampling must not convert digest material to float."""
+
+        service = MCPToolService(audit_sample_rate=0.5, audit_rng_seed=42)
+        roll = service._sample_roll64(tool_name="ilc.capabilities.get", input_payload={})
+
+        assert isinstance(roll, int)
+        assert 0 <= roll < (1 << 64)
+        source = Path(svc_module.__file__).read_text(encoding="utf-8")
+        assert "float(1 << 64)" not in source
+
+    @pytest.mark.parametrize("bad_rate", [True, -0.1, 1.1, float("nan"), "bad"])
+    def test_audit_sample_rate_rejects_invalid_values(self, bad_rate) -> None:
+        with pytest.raises(ValueError, match="audit_sample_rate_invalid"):
+            MCPToolService(audit_sample_rate=bad_rate)  # type: ignore[arg-type]
+
     def test_audit_rate_limit(self) -> None:
         """max_per_minute=1 drops events beyond the limit."""
         

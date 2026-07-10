@@ -908,6 +908,8 @@ def send_message(
         "plaintext_stored": False,
         "receipt": receipt_token,
         "transport": transport,
+        # Local mailbox display/file-name metadata only. This timestamp is not
+        # used for protocol ordering, replay protection, receipts, or authority.
         "ts": int(time.time()),
     }
     target_dir = sent_dir(home) / contact_id
