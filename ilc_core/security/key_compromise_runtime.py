@@ -10,6 +10,16 @@ from .signer_lineage_runtime import (
     SignerLineageRegistry,
 )
 
+# CDL-002 Phase 1573av amendment: this runtime handles delegated signer
+# supersession only. It must not be applied to root identity keys.
+# Root identity keys are not revocable; they are only forward-supersedable
+# through a precommitted on-graph recovery/succession policy (Phase 1573as/1573at).
+# The TRIGGER_COERCION_SIGNAL, TRIGGER_CUSTODY_LOSS, and TRIGGER_CRYPTO_COMPROMISE
+# paths that route to COMPROMISE_CONFIRMED are valid for default-off delegated
+# signer machinery only. This runtime must not be activated for root identity
+# operations without explicit constitutional authority beyond this note.
+CDL_002_SCOPE = "delegated_signer_only"
+CDL_002_SCOPE_RATIFIED_PHASE = "1573av"
 
 COMPROMISE_SUSPECTED = "suspected"
 COMPROMISE_CONFIRMED = "confirmed"
