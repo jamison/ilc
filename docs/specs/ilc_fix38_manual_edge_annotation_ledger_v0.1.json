@@ -53497,6 +53497,383 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP public-RC surface disposition prompt.",
+      "manual_read_summary": "Phase prompt defines MCP as dormant reference implementation, requires public-RC subtree exclusion, preserves MCP tests and future reactivation path, and bars runtime activation or deletion in this phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573aw_g8_mcp_public_rc_surface_disposition.md"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP disposition spec added.",
+      "manual_read_summary": "Spec classifies MCP as dormant reference implementation, excludes ilc_core/mcp and ilc_core/cli/mcp_cli.py from public-RC mirror/package exports, and records a future explicit reactivation path.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "mcp:public_rc_surface_disposition"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP package root header annotated.",
+      "manual_read_summary": "MCP package root now carries PUBLIC_RC_EXCLUDE metadata identifying the package as dormant reference implementation outside the public-RC distribution surface.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/mcp/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP service header annotated.",
+      "manual_read_summary": "MCP service module retains existing logic and gains PUBLIC_RC_EXCLUDE metadata marking it dormant and excluded from public-RC distribution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/mcp/service.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP node service header annotated.",
+      "manual_read_summary": "Node-bound MCP service adapter retains existing logic and gains PUBLIC_RC_EXCLUDE metadata marking it dormant and excluded from public-RC distribution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/mcp/node_service.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP schema loader header annotated.",
+      "manual_read_summary": "MCP schema loader retains existing package-resource and docs fallback behavior while carrying PUBLIC_RC_EXCLUDE metadata for public-RC distribution exclusion.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/mcp/schema.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP schema package marker header annotated.",
+      "manual_read_summary": "MCP schema package marker carries PUBLIC_RC_EXCLUDE metadata while JSON schema resources remain unmodified and are excluded by subtree policy.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/mcp/schemas/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP CLI adapter header annotated.",
+      "manual_read_summary": "Standalone MCP CLI adapter retains existing logic and gains PUBLIC_RC_EXCLUDE metadata marking it dormant and excluded from public-RC distribution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "mcp:public_rc_dormant_surface_classification"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/cli/mcp_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - public mirror excludes MCP runtime subtree.",
+      "manual_read_summary": "Public mirror generation now excludes ilc_core/mcp/ and ilc_core/cli/mcp_cli.py by path policy so MCP JSON schema resources are excluded without modifying JSON content.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_mcp_public_rc_surface_disposition_1573aw_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "public_mirror:mcp_runtime_exclusion_policy"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tools/scripts/generate_public_mirror.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - MCP disposition tests added.",
+      "manual_read_summary": "Tests pin that MCP is absent from the main CLI dispatcher, MCP Python files carry exclusion headers, mirror tooling excludes the MCP subtree, MCP schema JSON files remain unmodified, the disposition spec exists, and STATUS tokens are present.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573aw_mcp_public_rc_surface_disposition_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "mcp:public_rc_surface_disposition"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tests/test_phase_1573aw_mcp_surface_disposition.py"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - walkthrough added.",
+      "manual_read_summary": "Walkthrough records MCP dormant public-RC surface classification, path-based mirror exclusion, verification commands, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573aw_mcp_public_rc_surface_disposition_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - STATUS updated.",
+      "manual_read_summary": "STATUS entry records MCP dormant public-RC surface disposition and public distribution exclusion tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573aw_mcp_public_rc_surface_disposition_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_123_phase_1573aw_mcp_surface_disposition",
+      "chronology_note": "2026-07-10 Phase 1573aw - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for the MCP public-RC surface disposition, mirror exclusion, tests, walkthrough, and STATUS update.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573aw_mcp_public_rc_surface_disposition_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aw"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
