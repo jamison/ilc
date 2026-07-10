@@ -1078,6 +1078,14 @@ def _bundle_validate_local(
 def _run_bundle_subcommand(args: argparse.Namespace, _graph_state_path: Path) -> tuple[str, dict[str, Any]]:
     bundle_state_path = _default_bundle_state_path()
     subcommand = getattr(args, "bundle_subcommand", None)
+    if subcommand == "generate-layer0":
+        try:
+            from ilc_core.cli.bundle_cli import generate_layer0_bundle_cli
+
+            return _bundle_command_token(args), generate_layer0_bundle_cli(args)
+        except ValueError as exc:
+            raise BundleCommandError("bundle_invalid_input", str(exc)) from exc
+
     bundle_cid = str(getattr(args, "bundle_cid", ""))
     if not subcommand or not bundle_cid:
         raise BundleCommandError("bundle_invalid_input", "bundle_subcommand_missing")
@@ -1197,6 +1205,32 @@ def _build_parser() -> JsonArgumentParser:
                 dest="bundle_graph_state",
                 required=True,
                 help="Path used only for validate-local graph-state checks",
+            )
+            p_bundle_generate_layer0 = bundle_subparsers.add_parser(
+                "generate-layer0",
+                help="Generate an unsigned ADR-0009 Layer0 protocol bundle",
+            )
+            p_bundle_generate_layer0.add_argument("--bundle-id", required=True, help="Bundle ID")
+            p_bundle_generate_layer0.add_argument("--version", required=True, help="Bundle version")
+            p_bundle_generate_layer0.add_argument(
+                "--schemas",
+                default="",
+                help="Path to JSON file containing a list of schema records",
+            )
+            p_bundle_generate_layer0.add_argument(
+                "--parameters",
+                default="",
+                help="Path to JSON file containing a parameters object",
+            )
+            p_bundle_generate_layer0.add_argument(
+                "--include-truth-primitives",
+                action="store_true",
+                help="Include ratified Layer0 truth primitive schemas",
+            )
+            p_bundle_generate_layer0.add_argument(
+                "--output",
+                default="",
+                help="Optional path for atomic canonical JSON output",
             )
             continue
 
