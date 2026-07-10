@@ -51340,6 +51340,193 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - prompt hardening before execution.",
+      "manual_read_summary": "Prompt defines a non-sensitive HB-002 bootstrap gossip protocol specification phase with explicit no-public-distribution boundary and compatibility requirements for Phases 1573ao and 1573ap.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_hb002_bootstrap_gossip_protocol_spec_1573an_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1573an_hb002_bootstrap_gossip_protocol"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - HB-002 bootstrap gossip protocol spec.",
+      "manual_read_summary": "Spec defines known-peer bootstrap request and response schemas, ServingReceipt integration, verification order, and compatibility requirements for Layer0ProtocolBundle and AtlasSliceManifest carriage while preserving no-public-distribution non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "obligation:HB-002"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_distribution_authority"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_hb002_bootstrap_gossip_protocol_spec_1573an_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - focused conformance tests.",
+      "manual_read_summary": "Tests verify the spec is private, schema versions are pinned, ServingReceipt path and response cap remain unchanged, Layer0 bundle generation is deterministic, SHA-256 matches DAG-CBOR bytes, and no public distribution authority is claimed.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_hb002_bootstrap_gossip_protocol_spec_1573an_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/bundle/layer0_protocol_bundle.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/serving_receipt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573an_hb002_spec_conformance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - execution walkthrough.",
+      "manual_read_summary": "Walkthrough records preconditions, direct-read findings, schema summary, downstream compatibility requirements, verification results, graph registration, tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:hb002_bootstrap_gossip_protocol_spec_complete_phase_1573an"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573an_hb002_bootstrap_gossip_protocol_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - STATUS token record.",
+      "manual_read_summary": "STATUS records 1573an completion tokens and confirms no public distribution authority, runtime activation, public push, CDL mutation, ADR opening, Genesis signing, or economic activation occurred.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:hb002_bootstrap_gossip_protocol_spec_complete_phase_1573an"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_114_phase_1573an_hb002_bootstrap_gossip_spec",
+      "chronology_note": "2026-07-10 Phase 1573an - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for the HB-002 bootstrap gossip protocol spec phase artifacts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573an_g8_hb002_bootstrap_gossip_protocol_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:hb002_bootstrap_gossip_protocol_spec_complete_phase_1573an"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
