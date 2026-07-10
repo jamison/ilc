@@ -75,6 +75,23 @@ def test_manifest_float_rejected() -> None:
         raise AssertionError("float was accepted")
 
 
+def test_manifest_rejects_bool_cross_section_ref_count() -> None:
+    try:
+        build_atlas_slice_manifest(
+            slice_version="0.1",
+            section_label="core",
+            source_lmdb_root_sha256="c" * 64,
+            projection_filter="genesis_core_star_map",
+            root_pointers=("node:a",),
+            content_entries=_entries(),
+            cross_section_ref_count=True,
+        )
+    except ValueError as exc:
+        assert str(exc) == "atlas_slice_manifest_cross_section_ref_count_invalid"
+    else:
+        raise AssertionError("bool cross_section_ref_count was accepted")
+
+
 def test_manifest_public_rc_exclude_is_true_and_unsigned_by_default() -> None:
     manifest = _manifest()
 
@@ -137,3 +154,15 @@ def test_manifest_json_round_trip_and_tamper_rejected() -> None:
         }
     else:
         raise AssertionError("tampered manifest was accepted")
+
+
+def test_manifest_json_rejects_bool_cross_section_ref_count() -> None:
+    payload = _manifest().to_json_dict()
+    payload["cross_section_ref_count"] = False
+
+    try:
+        manifest_from_json_dict(payload)
+    except ValueError as exc:
+        assert str(exc) == "atlas_slice_manifest_cross_section_ref_count_invalid"
+    else:
+        raise AssertionError("bool cross_section_ref_count was accepted")
