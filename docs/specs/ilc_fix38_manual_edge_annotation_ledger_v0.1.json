@@ -49777,6 +49777,218 @@
         "ATTESTATION"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — prompt hardened for actual Phase 1562 STATUS token and runtime version source check.",
+      "manual_read_summary": "Phase prompt defines the 1573z invite token CLI plumbing scope, including InviteBatchRecord, InviteRedemptionRecord, SigningLevel, default-off invite CLI requirements, nonce privacy constraints, tests, and non-activation boundaries.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-090",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — invite record runtime extension.",
+      "manual_read_summary": "Runtime module now extends private invitation provenance with InviteBatchRecord, InviteRedemptionRecord, invite nullifier derivation, nonce Merkle root derivation, CDL-042/CDL-069 agent_id derivation helper, and the three-value SigningLevel enum while preserving the Phase 1562 provenance record.",
+      "repo_path": "ilc_core/genesis/invitation_provenance_record.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-042",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-090",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:invite_batch_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:invite_redemption_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:three_signing_levels_committed_phase_1573z"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — invite CLI plumbing added without production graph writes.",
+      "manual_read_summary": "CLI module now exposes default-off local invite plumbing under the existing identity hierarchy: identity invite create and invite-aware identity init, both gated by --enable-invites and limited to local artifacts or local identity state.",
+      "repo_path": "ilc_core/cli/main.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0041_Agent_INIT_and_Ingestion_Protocol.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:invite_cli_plumbing_committed_phase_1573z"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — focused regression tests.",
+      "manual_read_summary": "Focused test file verifies invite batch single-record behavior, idempotent redemption nullifiers and CIDs, inviter-chain preservation, raw nonce exclusion from graph-facing records, no identity-node creation, SigningLevel defaults, CLI help discoverability, default-off invite command gating, and local redemption state behavior.",
+      "repo_path": "tests/test_phase_1573z_invite_token_cli_plumbing.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invitation_provenance_record.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — walkthrough evidence.",
+      "manual_read_summary": "Walkthrough records direct-read preconditions, implementation details, invite CLI gate behavior, verification results, graph_delta, output tokens, and non-claims for Phase 1573z.",
+      "repo_path": "docs/phases/phase_1573z_invite_token_cli_plumbing_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:invite_batch_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:invite_redemption_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:invite_cli_plumbing_committed_phase_1573z"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_106_phase_1573z_invite_token_cli_plumbing",
+      "chronology_note": "2026-07-10 Phase 1573z — STATUS token record.",
+      "manual_read_summary": "STATUS records Phase 1573z completion, emitted invite batch/redemption/CLI/signing-level tokens, default-off CLI posture, and retained public-path block.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573z_g8_invite_token_cli_plumbing.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:invite_batch_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:invite_redemption_record_runtime_committed_phase_1573z"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:invite_cli_plumbing_committed_phase_1573z"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
