@@ -185,6 +185,13 @@ def _optional_bool(raw: dict[str, Any], key: str, default: bool) -> bool:
     return value
 
 
+def _optional_string(raw: dict[str, Any], key: str) -> str:
+    value = raw.get(key, "")
+    if value == "":
+        return ""
+    return _require_string(value, 'peer_config_invalid_optional_string')
+
+
 def load_static_peer_config(
     config_path: str | Path,
     *,
@@ -209,6 +216,7 @@ def load_static_peer_config(
     bind_host = _require_string(transport_raw.get('bind_host'), 'peer_config_missing_required_key')
     tls_cert_path = _require_string(transport_raw.get('tls_cert_path'), 'peer_config_missing_required_key')
     tls_key_path = _require_string(transport_raw.get('tls_key_path'), 'peer_config_missing_required_key')
+    tls_ca_cert_path = _optional_string(transport_raw, 'tls_ca_cert_path')
     transport_allow_private_peer_endpoints = _optional_bool(
         transport_raw,
         'allow_private_peer_endpoints_for_tests',
@@ -245,6 +253,7 @@ def load_static_peer_config(
             'bind_port': bind_port,
             'tls_cert_path': _resolve_path(tls_cert_path, base_dir),
             'tls_key_path': _resolve_path(tls_key_path, base_dir),
+            'tls_ca_cert_path': _resolve_path(tls_ca_cert_path, base_dir) if tls_ca_cert_path else '',
             'allow_private_peer_endpoints_for_tests': effective_allow_private,
             'verify_peer_tls': transport_verify_peer_tls,
         },
@@ -305,6 +314,7 @@ def build_node_startup_context(
         bind_port=transport['bind_port'],
         tls_cert_path=transport['tls_cert_path'],
         tls_key_path=transport['tls_key_path'],
+        tls_ca_cert_path=transport['tls_ca_cert_path'],
         verify_peer_tls=transport['verify_peer_tls'],
         allow_private_peer_endpoints_for_tests=transport['allow_private_peer_endpoints_for_tests'],
     )

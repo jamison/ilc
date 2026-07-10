@@ -122,7 +122,8 @@ class PrivacyLane:
         # Epoch tick — enforce max_wait (obligation 3)
         forced = lane.enforce_max_wait(current_epoch=5)
         for group in forced:
-            assert group.degraded_anonymity
+            if not group.degraded_anonymity:
+                raise RuntimeError("privacy_lane_degraded_anonymity_invariant_violation")
             settle(group.transfers)
 
     Token: row5_b_impl_privacy_lane_api

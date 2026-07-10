@@ -32,7 +32,6 @@ from ilc_core.network.d2d.gossip_peer_registry import (
 )
 from ilc_core.network.d2d.tls_policy import (
     D2D_PUBLIC_MODE_ENV,
-    should_disable_tls_verification,
 )
 
 
@@ -153,6 +152,7 @@ class TransportRuntimeConfig:
     bind_port: int
     tls_cert_path: str
     tls_key_path: str
+    tls_ca_cert_path: str = ""
     request_timeout_seconds: float = 2.0
     verify_peer_tls: bool = True
     allow_private_peer_endpoints_for_tests: bool = False
@@ -365,16 +365,20 @@ class HttpGossipTransportRuntime:
             "tls_key_path_not_found",
         )
         context = ssl.create_default_context()
-        if should_disable_tls_verification(
-            insecure_requested=not self.config.verify_peer_tls,
-            stacklevel=2,
-        ):
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
-        elif not self.config.verify_peer_tls and os.environ.get(D2D_PUBLIC_MODE_ENV) == "1":
+        if self.config.tls_ca_cert_path:
+            ca_path = _require_path(
+                self.config.tls_ca_cert_path,
+                "tls_ca_cert_path_required",
+                "tls_ca_cert_path_not_found",
+            )
+            try:
+                context.load_verify_locations(cafile=str(ca_path))
+            except ssl.SSLError as exc:
+                raise ValueError("tls_ca_context_load_failed") from exc
+        if not self.config.verify_peer_tls:
             self._record(
                 "tls_insecure_bypass_ignored",
-                reason="public_mode_requires_tls_verification",
+                reason="runtime_requires_tls_verification",
             )
         return context
 

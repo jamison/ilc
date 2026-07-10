@@ -8,7 +8,8 @@ No HTTP/network dependencies - all communication is in-process.
 
 from __future__ import annotations
 
-import random
+import hashlib
+import secrets
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -20,7 +21,7 @@ class InProcessGossipBus:
     In-process gossip routing with deterministic fanout.
     
     Routes events between registered nodes without network I/O.
-    Uses a seeded RNG for reproducible fanout selection.
+    Uses hash-derived seeded ordering for reproducible fanout selection.
     """
     
     def __init__(self, seed: Optional[int] = None) -> None:
@@ -31,7 +32,9 @@ class InProcessGossipBus:
             seed: Optional RNG seed for deterministic fanout.
         """
         self._nodes: Dict[str, ILCNodeV0] = {}
-        self._rng = random.Random(seed)
+        self._seed = seed
+        self._broadcast_counter = 0
+        self._secure_rng = secrets.SystemRandom()
     
     def register(self, node: ILCNodeV0) -> None:
         """
@@ -68,9 +71,9 @@ class InProcessGossipBus:
             if node_id != source_node_id
         ]
         
-        # Select up to fanout targets
+        # Select up to fanout targets.
         num_targets = min(fanout, len(eligible))
-        targets = self._rng.sample(eligible, num_targets) if eligible else []
+        targets = self._select_targets(eligible, num_targets) if eligible else []
         
         # Deliver to each target
         for node_id in targets:
@@ -78,6 +81,22 @@ class InProcessGossipBus:
             node._record_event(kind, payload)
         
         return targets
+
+    def _select_targets(self, eligible: List[str], num_targets: int) -> List[str]:
+        if self._seed is None:
+            return self._secure_rng.sample(eligible, num_targets)
+
+        counter = self._broadcast_counter
+        self._broadcast_counter += 1
+        ranked = sorted(
+            eligible,
+            key=lambda node_id: hashlib.sha256(
+                f"ilc-devnet-fanout-v1:{self._seed}:{counter}:{node_id}".encode(
+                    "utf-8"
+                )
+            ).hexdigest(),
+        )
+        return ranked[:num_targets]
 
 
 class InProcessDevnet:
@@ -208,4 +227,3 @@ class InProcessDevnet:
             devnet.add_node(node)
         
         return devnet
-

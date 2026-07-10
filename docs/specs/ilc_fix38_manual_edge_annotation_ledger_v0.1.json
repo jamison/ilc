@@ -53004,6 +53004,499 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - HTTP gossip TLS verification fail-closed.",
+      "manual_read_summary": "HTTP gossip transport runtime ignores insecure peer-TLS bypass requests, records tls_insecure_bypass_ignored, and supports explicit tls_ca_cert_path trust loading instead of disabling certificate verification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:tls_verification_fail_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - truth primitive fetch TLS verification fail-closed.",
+      "manual_read_summary": "Truth primitive fetch runtime now constructs a verified default TLS client context unconditionally and no longer honors insecure skip-verify environment toggles.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:tls_verification_fail_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/network/d2d/truth_primitive_fetch_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - truth primitive gossip TLS verification fail-closed.",
+      "manual_read_summary": "Truth primitive gossip runtime now constructs a verified default TLS client context unconditionally and no longer honors insecure skip-verify environment toggles.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:tls_verification_fail_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/network/d2d/truth_primitive_gossip_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - node startup TLS CA path wiring.",
+      "manual_read_summary": "Node startup config loader accepts optional tls_ca_cert_path, resolves it relative to the config file, and passes it into TransportRuntimeConfig for verified local CA trust.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:tls_verification_fail_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/node/node_startup_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - mining benchmark predictable PRNG removed.",
+      "manual_read_summary": "Mining benchmark removes production-module random and np.random use; fallback work uses SystemRandom and NumPy matrix paths use deterministic non-random matrices.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:no_predictable_prng_ilc_core"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/mining/benchmark.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - devnet predictable PRNG removed.",
+      "manual_read_summary": "In-process devnet removes random.Random, using SystemRandom for unseeded fanout and hash-derived deterministic ordering for seeded reproducible fanout.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:no_predictable_prng_ilc_core"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/node/devnet.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - MCP audit sampling integerized.",
+      "manual_read_summary": "MCP tool service converts audit_sample_rate to an integer threshold and compares integer 64-bit rolls, eliminating float conversion of SHA-256 digest-derived sampling values.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:integer_sampling"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/mcp/service.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - privacy lane docstring invariant hardened.",
+      "manual_read_summary": "PrivacyLane documentation example now raises on degraded-anonymity invariant violation instead of demonstrating an assert that would be stripped under optimized Python.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "security:no_assert_for_runtime_invariant"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/privacy/lane.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - CCSS sent-record timestamp classified.",
+      "manual_read_summary": "CCSS runtime documents sent-record ts as local mailbox display and filename metadata only, not protocol ordering, replay protection, receipts, or graph authority.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "ccss:local_mailbox_metadata_boundary"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/ccss/runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - TLS/startup regression tests hardened.",
+      "manual_read_summary": "Transport hardening tests now assert insecure TLS bypass is ignored, client contexts remain verifying, local CA trust is explicit, and loopback tests use a current localhost certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_1224_fix1_post_closure_audit_hardening.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - HTTP transport loopback TLS tests updated.",
+      "manual_read_summary": "HTTP transport loopback tests now pass explicit tls_ca_cert_path, use localhost SAN validation, and pin the new TransportRuntimeConfig CA field default.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_568_real_http_transport_wrapper_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - transport fallback TLS tests updated.",
+      "manual_read_summary": "Transport fallback tests now exercise verified loopback TLS through explicit CA material and localhost endpoint validation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_gossip_transport_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_569_transport_hardening_and_http2_fallback.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - startup config TLS CA test updated.",
+      "manual_read_summary": "Static peer startup config test now covers tls_ca_cert_path parsing and propagation into TransportRuntimeConfig.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/node/node_startup_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_570_static_peer_config_json_loader_and_startup_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - MCP sampling tests added.",
+      "manual_read_summary": "MCP tool service tests now pin integer 64-bit audit sampling rolls and reject invalid sample rates including bool, out-of-range values, NaN, and strings.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/mcp/service.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_mcp_tool_service.py"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - walkthrough added.",
+      "manual_read_summary": "Walkthrough records the transport TLS, PRNG, MCP sampling, privacy-lane assert, CCSS timestamp classification, verification commands, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "phase:1573at-Fix3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573at-Fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - STATUS updated.",
+      "manual_read_summary": "STATUS entry records TLS fail-closed, PRNG removal, MCP integer sampling, privacy-lane assert hardening, CCSS timestamp classification, and routed gossip-buffer audit tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at-Fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_122_phase_1573at_fix3_security_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix3 - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata and semantic edge classifications for the transport, PRNG, sampling, and timestamp-classification hardening fix.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix3_security_audit_transport_prng_sampling_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at-Fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {

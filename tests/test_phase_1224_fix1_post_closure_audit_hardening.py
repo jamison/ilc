@@ -32,7 +32,7 @@ class _FakeResponse:
         return out
 
 
-def test_fix1_fetch_tls_verification_default_and_explicit_insecure_opt_out(monkeypatch):
+def test_fix1_fetch_tls_verification_default_and_insecure_opt_out_ignored(monkeypatch):
     monkeypatch.delenv("ILC_D2D_PUBLIC_MODE", raising=False)
     monkeypatch.delenv("ILC_D2D_INSECURE_SKIP_TLS_VERIFY", raising=False)
     verified = fetch_rt._client_ssl_context()
@@ -40,10 +40,9 @@ def test_fix1_fetch_tls_verification_default_and_explicit_insecure_opt_out(monke
     assert verified.check_hostname is True
 
     monkeypatch.setenv("ILC_D2D_INSECURE_SKIP_TLS_VERIFY", "1")
-    with pytest.warns(RuntimeWarning, match="TLS verification is disabled"):
-        insecure = fetch_rt._client_ssl_context()
-    assert insecure.verify_mode == ssl.CERT_NONE
-    assert insecure.check_hostname is False
+    verified = fetch_rt._client_ssl_context()
+    assert verified.verify_mode == ssl.CERT_REQUIRED
+    assert verified.check_hostname is True
 
 
 def test_fix81_fetch_tls_public_mode_ignores_insecure_opt_out(monkeypatch):
@@ -66,18 +65,17 @@ def test_fix81_gossip_tls_public_mode_ignores_insecure_opt_out(monkeypatch):
     assert verified.check_hostname is True
 
 
-def test_fix81_gossip_tls_dev_opt_out_warns(monkeypatch):
+def test_fix81_gossip_tls_dev_opt_out_ignored(monkeypatch):
     monkeypatch.delenv("ILC_D2D_PUBLIC_MODE", raising=False)
     monkeypatch.setenv("ILC_D2D_INSECURE_SKIP_TLS_VERIFY", "1")
 
-    with pytest.warns(RuntimeWarning, match="TLS verification is disabled"):
-        insecure = gossip_rt._client_ssl_context()
+    verified = gossip_rt._client_ssl_context()
 
-    assert insecure.verify_mode == ssl.CERT_NONE
-    assert insecure.check_hostname is False
+    assert verified.verify_mode == ssl.CERT_REQUIRED
+    assert verified.check_hostname is True
 
 
-def test_fix1_http_gossip_tls_verification_default_and_explicit_testbed_opt_out(monkeypatch, tmp_path):
+def test_fix1_http_gossip_tls_verification_default_and_testbed_opt_out_ignored(monkeypatch, tmp_path):
     monkeypatch.delenv("ILC_D2D_PUBLIC_MODE", raising=False)
     cert = tmp_path / "cert.pem"
     key = tmp_path / "key.pem"
@@ -101,10 +99,10 @@ def test_fix1_http_gossip_tls_verification_default_and_explicit_testbed_opt_out(
             verify_peer_tls=False,
         )
     )
-    with pytest.warns(RuntimeWarning, match="TLS verification is disabled"):
-        insecure = insecure_runtime._client_ssl_context()
-    assert insecure.verify_mode == ssl.CERT_NONE
-    assert insecure.check_hostname is False
+    verified = insecure_runtime._client_ssl_context()
+    assert verified.verify_mode == ssl.CERT_REQUIRED
+    assert verified.check_hostname is True
+    assert insecure_runtime.state["event_log"][-1]["event"] == "tls_insecure_bypass_ignored"
 
 
 def test_fix81_http_gossip_public_mode_overrides_testbed_opt_out(monkeypatch, tmp_path):
@@ -129,6 +127,17 @@ def test_fix81_http_gossip_public_mode_overrides_testbed_opt_out(monkeypatch, tm
     assert verified.verify_mode == ssl.CERT_REQUIRED
     assert verified.check_hostname is True
     assert runtime.state["event_log"][-1]["event"] == "tls_insecure_bypass_ignored"
+
+
+def test_fix2_no_runtime_tls_client_disables_certificate_verification() -> None:
+    for path in (
+        Path(fetch_rt.__file__),
+        Path(gossip_rt.__file__),
+        Path("ilc_core/network/d2d/http_gossip_transport_runtime.py"),
+    ):
+        source = path.read_text(encoding="utf-8")
+        assert "ssl.CERT_NONE" not in source
+        assert "verify_mode = " not in source
 
 
 def test_fix1_want_block_oversize_response_fails_closed():

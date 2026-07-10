@@ -30,6 +30,7 @@ def _config(tmp_path: Path, *, transport_kind: str = runtime.TRANSPORT_KIND_HTTP
         bind_port=0,
         tls_cert_path=cert_path,
         tls_key_path=key_path,
+        tls_ca_cert_path=cert_path,
         verify_peer_tls=False,
         allow_private_peer_endpoints_for_tests=True,
     )
@@ -81,7 +82,7 @@ def test_explicit_http_fallback_path_succeeds_in_loopback_mode(tmp_path: Path) -
     client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
     server_transport.start()
     try:
-        endpoint = f"https://127.0.0.1:{server_transport.state['bound_port']}"
+        endpoint = f"https://localhost:{server_transport.state['bound_port']}"
         status = client_transport.send_gossip(
             endpoint,
             gossip_type='centrality_delta',

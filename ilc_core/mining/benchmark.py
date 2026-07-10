@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 import time
-import random
+import secrets
 import math
 import hashlib
 import sys
@@ -9,6 +9,7 @@ import logging
 from ilc_core.identity.log_redaction_runtime import redact_agent_id_for_log
 
 logger = logging.getLogger(__name__)
+_SECURE_RNG = secrets.SystemRandom()
 
 
 # Hardware Acceleration Imports
@@ -232,8 +233,8 @@ class PoWBenchmark:
 
         if HAS_NUMPY:
             s = size
-            a = np.random.rand(s, s)
-            b = np.random.rand(s, s)
+            a = np.ones((s, s), dtype=float)
+            b = np.ones((s, s), dtype=float)
             np.matmul(a, b)
             return
 
@@ -248,8 +249,8 @@ class PoWBenchmark:
 
         if HAS_NUMPY:
             s = size
-            a = np.random.rand(s, s)
-            b = np.random.rand(s, s)
+            a = np.ones((s, s), dtype=float)
+            b = np.ones((s, s), dtype=float)
             np.matmul(a, b)
             return
 
@@ -260,14 +261,14 @@ class PoWBenchmark:
         Very simple pure-Python matrix-like workload for worst-case environments.
         """
         s = 150
-        A = [[random.random() for _ in range(s)] for _ in range(s)]
+        A = [[_SECURE_RNG.random() for _ in range(s)] for _ in range(s)]
         _ = sum(sum(row) for row in A)
 
     def _run_prime_search(self) -> None:
         """
         Integer workload: naive prime search near a random large number.
         """
-        cand = 5_000_000 + random.randint(1, 1_000)
+        cand = 5_000_000 + _SECURE_RNG.randint(1, 1_000)
         while True:
             is_prime = True
             limit = int(math.sqrt(cand)) + 1
