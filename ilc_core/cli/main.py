@@ -394,6 +394,54 @@ def _write_identity_state(path: Path, state: dict[str, Any]) -> None:
     path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def _write_local_json_file(path: str, payload: dict[str, Any]) -> str:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    return str(target)
+
+
+def _read_local_json_file(path: str) -> dict[str, Any]:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("json_payload_not_object")
+    return data
+
+
+def _require_invite_cli_enabled(args: argparse.Namespace) -> None:
+    if not bool(getattr(args, "enable_invites", False)):
+        raise ValueError("invite_cli_not_enabled_use_enable_invites")
+
+
+def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    _require_invite_cli_enabled(args)
+    invite_subcommand = getattr(args, "identity_invite_subcommand", None)
+    if invite_subcommand != "create":
+        raise ValueError(f"unknown_identity_invite_subcommand:{invite_subcommand}")
+
+    from ilc_core.genesis.invitation_provenance_record import build_invite_batch_record
+
+    record, private_nonces = build_invite_batch_record(
+        inviter_cid=str(args.inviter_cid),
+        batch_id=str(args.batch_id),
+        count=int(args.count),
+        created_epoch=int(args.created_epoch),
+        inviter_sig=str(args.inviter_sig),
+    )
+    output = {
+        "private_invite_nonces": list(private_nonces),
+        "record_cid": record.canonical_cid(),
+        "record_type": "InviteBatchRecord",
+        "runtime_version": "invite_batch_runtime_1573z.v0.1",
+        "invite_batch_record": record.to_dict(),
+        "production_graph_write": False,
+    }
+    output_path = getattr(args, "output", "") or ""
+    if output_path:
+        return {"action": "invite-create", "output_path": _write_local_json_file(output_path, output)}
+    return {"action": "invite-create", "output": output}
+
+
 def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -> dict[str, Any]:
     state_path = _identity_state_path(graph_state_path)
     subcommand = getattr(args, "identity_subcommand", None)
@@ -409,6 +457,9 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
 
     current = _load_identity_state(state_path)
 
+    if subcommand == "invite":
+        return _run_identity_invite_subcommand(args)
+
     if subcommand == "init":
         if current is not None:
             raise ValueError("identity_already_initialized")
@@ -421,6 +472,40 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
             "rotation_count": 0,
             "updated_at": _now_rfc3339_utc(),
         }
+        invite_path = getattr(args, "invite", None)
+        if invite_path:
+            _require_invite_cli_enabled(args)
+            from ilc_core.genesis.invitation_provenance_record import (
+                build_invite_redemption_record,
+                invite_batch_record_from_dict,
+            )
+
+            invite_payload = _read_local_json_file(invite_path)
+            batch_payload = invite_payload.get("invite_batch_record")
+            nonce_values = invite_payload.get("private_invite_nonces")
+            if not isinstance(batch_payload, dict):
+                raise ValueError("invite_batch_record_missing")
+            if not isinstance(nonce_values, list) or len(nonce_values) == 0:
+                raise ValueError("invite_nonce_missing")
+            identity_seed_hex = getattr(args, "identity_seed_hex", "") or ""
+            redeemer_pubkey_cid = getattr(args, "redeemer_pubkey_cid", "") or ""
+            if not identity_seed_hex:
+                raise ValueError("identity_seed_hex_required_for_invite_redemption")
+            if not redeemer_pubkey_cid:
+                raise ValueError("redeemer_pubkey_cid_required_for_invite_redemption")
+            batch = invite_batch_record_from_dict(batch_payload)
+            redemption = build_invite_redemption_record(
+                batch=batch,
+                nonce=str(nonce_values[0]),
+                nonce_membership_proof=(),
+                redeemer_pubkey_cid=redeemer_pubkey_cid,
+                identity_seed=identity_seed_hex,
+                redemption_epoch=int(getattr(args, "redemption_epoch", 0)),
+            )
+            state["invite_redemption_record"] = redemption.to_dict()
+            state["invite_redemption_record_cid"] = redemption.canonical_cid()
+            state["invite_runtime_version"] = "invite_batch_runtime_1573z.v0.1"
+            state["production_graph_write"] = False
         _write_identity_state(state_path, state)
         return {"action": "init", "state_path": str(state_path), "state": state}
 
@@ -1552,6 +1637,73 @@ def _build_parser() -> JsonArgumentParser:
         p_init = identity_subparsers.add_parser("init", help="Initialize local identity state")
         p_init.add_argument("--lineage-id", default="lineage-local", help="Lineage identifier")
         p_init.add_argument("--key-ref", default="key-local-0", help="Initial key reference")
+        p_init.add_argument(
+            "--invite",
+            default="",
+            help="Local invite batch JSON file for invite-aware identity initialization",
+        )
+        p_init.add_argument(
+            "--enable-invites",
+            action="store_true",
+            help="Explicitly enable default-off invite CLI plumbing",
+        )
+        p_init.add_argument(
+            "--identity-seed-hex",
+            default="",
+            help="Hex identity seed used only to derive the invite redemption agent_id",
+        )
+        p_init.add_argument(
+            "--redeemer-pubkey-cid",
+            default="",
+            help="CID of the redeemer identity public key material",
+        )
+        p_init.add_argument(
+            "--redemption-epoch",
+            type=int,
+            default=0,
+            help="Epoch recorded in the local InviteRedemptionRecord",
+        )
+
+        p_invite = identity_subparsers.add_parser(
+            "invite",
+            help="Default-off local invite batch plumbing",
+        )
+        invite_subparsers = p_invite.add_subparsers(
+            dest="identity_invite_subcommand",
+            required=True,
+        )
+        p_invite_create = invite_subparsers.add_parser(
+            "create",
+            help="Create a local InviteBatchRecord and private nonce bundle",
+        )
+        p_invite_create.add_argument("--count", type=int, required=True, help="Number of invite tokens")
+        p_invite_create.add_argument("--output", default="", help="Path to write the local invite batch JSON")
+        p_invite_create.add_argument(
+            "--enable-invites",
+            action="store_true",
+            help="Explicitly enable default-off invite CLI plumbing",
+        )
+        p_invite_create.add_argument(
+            "--inviter-cid",
+            default="genesis_agent:01",
+            help="Inviter CID copied into the InviteBatchRecord",
+        )
+        p_invite_create.add_argument(
+            "--batch-id",
+            default="genesis-invite-batch-local",
+            help="Unique local batch identifier",
+        )
+        p_invite_create.add_argument(
+            "--created-epoch",
+            type=int,
+            default=0,
+            help="Issuance epoch recorded in the InviteBatchRecord",
+        )
+        p_invite_create.add_argument(
+            "--inviter-sig",
+            default="genesis",
+            help="Inviter signature placeholder or signature reference",
+        )
 
         identity_subparsers.add_parser("show", help="Show local identity state")
 

@@ -9,14 +9,30 @@ from __future__ import annotations
 
 import hashlib
 import os
+import secrets
 import tempfile
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Mapping
 
 from ilc_core.private_json_guardrails import canonical_json, reject_float
 
 INVITATION_PROVENANCE_RUNTIME_VERSION = "invitation_provenance_chain_runtime_1562.v0.1"
+INVITE_BATCH_RUNTIME_VERSION = "invite_batch_runtime_1573z.v0.1"
+INVITE_NULLIFIER_DOMAIN = b"ilc-invite-nullifier-v1:"
+INVITE_NONCE_LEAF_DOMAIN = b"ilc-invite-nonce-leaf-v1:"
+INVITE_NONCE_NODE_DOMAIN = b"ilc-invite-nonce-node-v1:"
+AGENT_ID_DERIVATION_DOMAIN = b"ilc-agent-id-v1:"
+
+
+class SigningLevel(Enum):
+    AUTONOMOUS = "autonomous"
+    SESSION = "session"
+    MANUAL = "manual"
+
+
+DEFAULT_SIGNING_LEVEL = SigningLevel.AUTONOMOUS
 
 
 class InvitationProvenanceError(ValueError):
@@ -47,6 +63,66 @@ class InvitationProvenanceRecord:
             "serving_receipt_id": self.serving_receipt_id,
             "timestamp_epoch": self.timestamp_epoch,
         }
+
+
+@dataclass(frozen=True)
+class InviteBatchRecord:
+    inviter_cid: str
+    batch_id: str
+    count: int
+    nonce_merkle_root: str
+    created_epoch: int
+    inviter_sig: str
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "batch_id": self.batch_id,
+            "count": self.count,
+            "created_epoch": self.created_epoch,
+            "inviter_cid": self.inviter_cid,
+            "inviter_sig": self.inviter_sig,
+            "nonce_merkle_root": self.nonce_merkle_root,
+        }
+
+    def canonical_cid(self) -> str:
+        _validate_invite_batch_record(self)
+        return _sha256_payload(
+            {
+                "record": self.to_dict(),
+                "rule_version": INVITE_BATCH_RUNTIME_VERSION,
+            }
+        )
+
+
+@dataclass(frozen=True)
+class InviteRedemptionRecord:
+    batch_id: str
+    redemption_nullifier: str
+    nonce_membership_proof: tuple[str, ...]
+    redeemer_pubkey_cid: str
+    redeemer_agent_id: str
+    redemption_epoch: int
+    inviter_cid: str
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "batch_id": self.batch_id,
+            "inviter_cid": self.inviter_cid,
+            "nonce_membership_proof": self.nonce_membership_proof,
+            "redeemer_agent_id": self.redeemer_agent_id,
+            "redeemer_pubkey_cid": self.redeemer_pubkey_cid,
+            "redemption_epoch": self.redemption_epoch,
+            "redemption_nullifier": self.redemption_nullifier,
+        }
+
+    def canonical_cid(self) -> str:
+        _validate_invite_redemption_record(self)
+        return _sha256_payload(
+            {
+                "record": self.to_dict(),
+                "rule_version": INVITE_BATCH_RUNTIME_VERSION,
+            }
+        )
 
 
 def build_invitation_record(
@@ -91,6 +167,126 @@ def build_invitation_record(
         record_hash=record_hash,
         rule_version=INVITATION_PROVENANCE_RUNTIME_VERSION,
         parent_invite_id=None,
+    )
+
+
+def build_invite_batch_record(
+    *,
+    inviter_cid: str,
+    batch_id: str,
+    count: int,
+    created_epoch: int,
+    inviter_sig: str,
+    nonces: tuple[bytes, ...] | None = None,
+) -> tuple[InviteBatchRecord, tuple[str, ...]]:
+    _require_non_empty_str(inviter_cid, "invite_batch_missing_inviter_cid")
+    _require_non_empty_str(batch_id, "invite_batch_missing_batch_id")
+    _require_positive_count(count)
+    _require_protocol_epoch(created_epoch)
+    _require_non_empty_str(inviter_sig, "invite_batch_missing_inviter_sig")
+    nonce_values = nonces if nonces is not None else tuple(secrets.token_bytes(32) for _ in range(count))
+    if len(nonce_values) != count:
+        raise InvitationProvenanceError("invite_batch_nonce_count_mismatch")
+    for nonce in nonce_values:
+        _require_nonce_bytes(nonce)
+    record = InviteBatchRecord(
+        inviter_cid=inviter_cid,
+        batch_id=batch_id,
+        count=count,
+        nonce_merkle_root=invite_nonce_merkle_root(nonce_values),
+        created_epoch=created_epoch,
+        inviter_sig=inviter_sig,
+    )
+    _validate_invite_batch_record(record)
+    return record, tuple(nonce.hex() for nonce in nonce_values)
+
+
+def build_invite_redemption_record(
+    *,
+    batch: InviteBatchRecord,
+    nonce: bytes | str,
+    nonce_membership_proof: tuple[str, ...],
+    redeemer_pubkey_cid: str,
+    identity_seed: bytes | str,
+    redemption_epoch: int,
+) -> InviteRedemptionRecord:
+    _validate_invite_batch_record(batch)
+    _require_protocol_epoch(redemption_epoch)
+    _require_non_empty_str(redeemer_pubkey_cid, "invite_redemption_missing_redeemer_pubkey_cid")
+    record = InviteRedemptionRecord(
+        batch_id=batch.batch_id,
+        redemption_nullifier=derive_invite_redemption_nullifier(batch.batch_id, nonce),
+        nonce_membership_proof=nonce_membership_proof,
+        redeemer_pubkey_cid=redeemer_pubkey_cid,
+        redeemer_agent_id=derive_agent_id_from_identity_seed(identity_seed),
+        redemption_epoch=redemption_epoch,
+        inviter_cid=batch.inviter_cid,
+    )
+    _validate_invite_redemption_record(record)
+    return record
+
+
+def derive_invite_redemption_nullifier(batch_id: str, nonce: bytes | str) -> str:
+    _require_non_empty_str(batch_id, "invite_redemption_missing_batch_id")
+    nonce_bytes = _coerce_nonce_bytes(nonce)
+    return hashlib.sha256(INVITE_NULLIFIER_DOMAIN + batch_id.encode("utf-8") + b":" + nonce_bytes).hexdigest()
+
+
+def derive_agent_id_from_identity_seed(identity_seed: bytes | str) -> str:
+    seed = _coerce_identity_seed_bytes(identity_seed)
+    return hashlib.sha384(AGENT_ID_DERIVATION_DOMAIN + seed).hexdigest()
+
+
+def invite_nonce_merkle_root(nonces: tuple[bytes, ...]) -> str:
+    if len(nonces) == 0:
+        raise InvitationProvenanceError("invite_batch_empty_nonce_set")
+    level = [_invite_nonce_leaf_hash(nonce) for nonce in nonces]
+    while len(level) > 1:
+        next_level: list[bytes] = []
+        for index in range(0, len(level), 2):
+            left = level[index]
+            right = level[index + 1] if index + 1 < len(level) else left
+            next_level.append(hashlib.sha256(INVITE_NONCE_NODE_DOMAIN + left + right).digest())
+        level = next_level
+    return level[0].hex()
+
+
+def invite_batch_record_from_dict(payload: Mapping[str, object]) -> InviteBatchRecord:
+    reject_float(payload, "invite_batch_float_not_allowed")
+    record = InviteBatchRecord(
+        inviter_cid=_required_str(payload, "inviter_cid"),
+        batch_id=_required_str(payload, "batch_id"),
+        count=_required_int(payload, "count"),
+        nonce_merkle_root=_required_str(payload, "nonce_merkle_root"),
+        created_epoch=_required_int(payload, "created_epoch"),
+        inviter_sig=_required_str(payload, "inviter_sig"),
+    )
+    _validate_invite_batch_record(record)
+    return record
+
+
+def invite_redemption_record_from_dict(payload: Mapping[str, object]) -> InviteRedemptionRecord:
+    reject_float(payload, "invite_redemption_float_not_allowed")
+    proof = payload.get("nonce_membership_proof")
+    if not isinstance(proof, (list, tuple)) or any(not isinstance(item, str) for item in proof):
+        raise InvitationProvenanceError("invite_redemption_invalid_nonce_membership_proof")
+    record = InviteRedemptionRecord(
+        batch_id=_required_str(payload, "batch_id"),
+        redemption_nullifier=_required_str(payload, "redemption_nullifier"),
+        nonce_membership_proof=tuple(proof),
+        redeemer_pubkey_cid=_required_str(payload, "redeemer_pubkey_cid"),
+        redeemer_agent_id=_required_str(payload, "redeemer_agent_id"),
+        redemption_epoch=_required_int(payload, "redemption_epoch"),
+        inviter_cid=_required_str(payload, "inviter_cid"),
+    )
+    _validate_invite_redemption_record(record)
+    return record
+
+
+def invite_record_canonical_json(record: InviteBatchRecord | InviteRedemptionRecord) -> str:
+    return canonical_json(
+        record.to_dict(),
+        float_token="invite_record_float_not_allowed",
     )
 
 
@@ -222,6 +418,33 @@ def _sha256_payload(payload: Mapping[str, object]) -> str:
     return hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 
+def _invite_nonce_leaf_hash(nonce: bytes) -> bytes:
+    _require_nonce_bytes(nonce)
+    return hashlib.sha256(INVITE_NONCE_LEAF_DOMAIN + nonce).digest()
+
+
+def _validate_invite_batch_record(record: InviteBatchRecord) -> None:
+    reject_float(record.to_dict(), "invite_batch_float_not_allowed")
+    _require_non_empty_str(record.inviter_cid, "invite_batch_missing_inviter_cid")
+    _require_non_empty_str(record.batch_id, "invite_batch_missing_batch_id")
+    _require_positive_count(record.count)
+    _require_sha256_hex(record.nonce_merkle_root, "invite_batch_invalid_nonce_merkle_root")
+    _require_protocol_epoch(record.created_epoch)
+    _require_non_empty_str(record.inviter_sig, "invite_batch_missing_inviter_sig")
+
+
+def _validate_invite_redemption_record(record: InviteRedemptionRecord) -> None:
+    reject_float(record.to_dict(), "invite_redemption_float_not_allowed")
+    _require_non_empty_str(record.batch_id, "invite_redemption_missing_batch_id")
+    _require_sha256_hex(record.redemption_nullifier, "invite_redemption_invalid_nullifier")
+    for proof_hash in record.nonce_membership_proof:
+        _require_sha256_hex(proof_hash, "invite_redemption_invalid_nonce_membership_proof")
+    _require_non_empty_str(record.redeemer_pubkey_cid, "invite_redemption_missing_redeemer_pubkey_cid")
+    _require_non_empty_str(record.redeemer_agent_id, "invite_redemption_missing_redeemer_agent_id")
+    _require_protocol_epoch(record.redemption_epoch)
+    _require_non_empty_str(record.inviter_cid, "invite_redemption_missing_inviter_cid")
+
+
 def _validate_record_shape(record: InvitationProvenanceRecord) -> None:
     reject_float(record.to_dict(), "invitation_provenance_float_not_allowed")
     _require_non_empty_str(record.invite_id, "invitation_provenance_missing_invite_id")
@@ -270,11 +493,75 @@ def _require_positive_depth(value: int) -> None:
         raise InvitationProvenanceError("invitation_provenance_invalid_invite_depth")
 
 
+def _require_positive_count(value: int) -> None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise InvitationProvenanceError("invite_batch_invalid_count")
+
+
+def _require_sha256_hex(value: object, token: str) -> None:
+    if (
+        not isinstance(value, str)
+        or len(value) != 64
+        or any(char not in "0123456789abcdef" for char in value)
+    ):
+        raise InvitationProvenanceError(token)
+
+
+def _require_nonce_bytes(value: object) -> None:
+    if not isinstance(value, bytes) or len(value) == 0:
+        raise InvitationProvenanceError("invite_nonce_invalid")
+
+
+def _coerce_nonce_bytes(value: bytes | str) -> bytes:
+    if isinstance(value, bytes):
+        _require_nonce_bytes(value)
+        return value
+    if isinstance(value, str):
+        try:
+            nonce = bytes.fromhex(value)
+        except ValueError as exc:
+            raise InvitationProvenanceError("invite_nonce_invalid") from exc
+        _require_nonce_bytes(nonce)
+        return nonce
+    raise InvitationProvenanceError("invite_nonce_invalid")
+
+
+def _coerce_identity_seed_bytes(value: bytes | str) -> bytes:
+    if isinstance(value, bytes):
+        if len(value) == 0:
+            raise InvitationProvenanceError("identity_seed_invalid")
+        return value
+    if isinstance(value, str):
+        try:
+            seed = bytes.fromhex(value)
+        except ValueError as exc:
+            raise InvitationProvenanceError("identity_seed_invalid") from exc
+        if len(seed) == 0:
+            raise InvitationProvenanceError("identity_seed_invalid")
+        return seed
+    raise InvitationProvenanceError("identity_seed_invalid")
+
+
 __all__ = [
+    "AGENT_ID_DERIVATION_DOMAIN",
+    "DEFAULT_SIGNING_LEVEL",
+    "INVITE_BATCH_RUNTIME_VERSION",
+    "INVITE_NULLIFIER_DOMAIN",
     "INVITATION_PROVENANCE_RUNTIME_VERSION",
+    "InviteBatchRecord",
+    "InviteRedemptionRecord",
     "InvitationProvenanceError",
     "InvitationProvenanceRecord",
+    "SigningLevel",
+    "build_invite_batch_record",
+    "build_invite_redemption_record",
     "build_invitation_record",
+    "derive_agent_id_from_identity_seed",
+    "derive_invite_redemption_nullifier",
+    "invite_batch_record_from_dict",
+    "invite_nonce_merkle_root",
+    "invite_record_canonical_json",
+    "invite_redemption_record_from_dict",
     "invitation_record_from_dict",
     "verify_chain_depth",
     "verify_record_hash",
