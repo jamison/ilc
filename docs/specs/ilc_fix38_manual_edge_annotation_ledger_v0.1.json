@@ -50593,6 +50593,206 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 CDL-102 opening prompt.",
+      "manual_read_summary": "Prompt defines the sensitive opening-only CDL lane for inviter-chaining economics, requires next-number assignment, forbids reuse of CDL-091, and requires separate CDL mutation commit.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/PLANNING_INDEX.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573ad"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573ad_g8_inviter_chaining_cdl_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 CDL register row added for CDL-102.",
+      "manual_read_summary": "Constitutional decision log now contains CDL-102 as an open inviter-chaining economics lane with CDL-091 disambiguation and explicit non-activation fields.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "accepted",
+          "target": "cdl:CDL-102"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "cdl:CDL-091"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:cdl_102_inviter_chaining_economics_opened_phase_1573ad"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 CDL-102 opening evidence document.",
+      "manual_read_summary": "Opening document records CDL-102 scope, inviter attribution chain, CDL-091 disambiguation, open questions, ADR/INIT carry-forward dependencies, non-claims, and deferred ratification boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "accepted",
+          "target": "cdl:CDL-102"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "adr:ADR-0038"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "adr:ADR-0041"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "ilc_core/genesis/invitation_provenance_record.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_102_inviter_chaining_economics_opening_1573ad_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 CDL-102 opening tests.",
+      "manual_read_summary": "Tests verify the CDL-102 row is open, opening token is present exactly once, CDL-091 remains Jury Incentive Economics, the evidence doc exists, and non-activation language is present.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ad_g8_inviter_chaining_cdl_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_102_inviter_chaining_economics_opening_1573ad_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573ad_inviter_chaining_cdl_opening.py"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 execution walkthrough.",
+      "manual_read_summary": "Walkthrough records preconditions, CDL-102 assignment, open questions, verification commands, graph_delta, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ad_g8_inviter_chaining_cdl_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:cdl_102_inviter_chaining_economics_opened_phase_1573ad"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573ad_inviter_chaining_cdl_opening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_110_phase_1573ad_cdl102_inviter_chaining_opening",
+      "chronology_note": "2026-07-10 Phase 1573ad \u2014 STATUS token record.",
+      "manual_read_summary": "STATUS records Phase 1573ad completion, sensitive mutation environment, CDL-102 opening token, CDL-091 separation, and public-path block.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573ad_g8_inviter_chaining_cdl_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:cdl_102_inviter_chaining_economics_opened_phase_1573ad"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
