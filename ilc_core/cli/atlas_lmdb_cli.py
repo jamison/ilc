@@ -19,6 +19,15 @@ import os
 from pathlib import Path
 from typing import Any
 
+from cryptography.hazmat.primitives.asymmetric import ed25519
+
+from ilc_core.bundle.atlas_slice_manifest import (
+    build_atlas_slice_manifest_from_lmdb,
+    load_atlas_slice_manifest,
+    sign_atlas_slice_manifest,
+    verify_atlas_slice_manifest,
+    write_atlas_slice_manifest,
+)
 from ilc_core.ledger.exact_numeric import normalize_json_scalars
 from ilc_core.storage.genesis_atlas_lmdb_writer import (
     AtlasLmdbSafeWriter,
@@ -81,6 +90,26 @@ def run_atlas_command(args: argparse.Namespace) -> dict[str, Any]:
             input_path=str(getattr(args, "input", "") or ""),
             write=bool(getattr(args, "write", False)),
             receipt_path=str(getattr(args, "receipt", "") or ""),
+        )
+    if subcommand == "build-slice":
+        return handle_atlas_build_slice(
+            lmdb_path=lmdb_path,
+            slice_variant=str(getattr(args, "slice_variant", "") or ""),
+            projection=str(getattr(args, "projection", "") or ""),
+            output_path=str(getattr(args, "output", "") or ""),
+            slice_version=str(getattr(args, "slice_version", "") or "0.1"),
+        )
+    if subcommand == "sign-manifest":
+        return handle_atlas_sign_manifest(
+            manifest_path=str(getattr(args, "manifest", "") or ""),
+            private_key_hex=str(getattr(args, "private_key_hex", "") or ""),
+            output_path=str(getattr(args, "output", "") or ""),
+        )
+    if subcommand == "verify-slice":
+        return handle_atlas_verify_slice(
+            manifest_path=str(getattr(args, "manifest", "") or ""),
+            public_key_hex=str(getattr(args, "public_key_hex", "") or ""),
+            require_signature=bool(getattr(args, "require_signature", True)),
         )
     raise AtlasLmdbCliError("atlas_subcommand_missing", "atlas subcommand is required")
 
@@ -338,6 +367,104 @@ def handle_atlas_apply_node_edge_plan(
         writer.close()
 
 
+def handle_atlas_build_slice(
+    *,
+    lmdb_path: str,
+    slice_variant: str,
+    projection: str,
+    output_path: str,
+    slice_version: str,
+) -> dict[str, Any]:
+    """Build an unsigned local AtlasSliceManifest."""
+
+    manifest = build_atlas_slice_manifest_from_lmdb(
+        lmdb_path=lmdb_path,
+        slice_variant=slice_variant,
+        projection=projection,
+        slice_version=slice_version,
+    )
+    if output_path:
+        write_atlas_slice_manifest(output_path, manifest)
+    return {
+        "subcommand": "build-slice",
+        "version": ATLAS_LMDB_CLI_VERSION,
+        "manifest": manifest.to_json_dict(),
+        "output_path": output_path,
+        "non_claims": {
+            "genesis_signing": False,
+            "ml_dsa_manifest_signing": False,
+            "public_graph_publication": False,
+            "public_rc_activation": False,
+        },
+        "read_only": True,
+    }
+
+
+def handle_atlas_sign_manifest(
+    *,
+    manifest_path: str,
+    private_key_hex: str,
+    output_path: str,
+) -> dict[str, Any]:
+    """Dev/test-sign an AtlasSliceManifest with Ed25519 COSE-Sign1."""
+
+    if not manifest_path:
+        raise AtlasLmdbCliError("atlas_manifest_missing", "--manifest must be provided")
+    private_key = _ed25519_private_key_from_hex(private_key_hex)
+    signed = sign_atlas_slice_manifest(
+        load_atlas_slice_manifest(manifest_path),
+        private_key=private_key,
+    )
+    target_path = output_path or manifest_path
+    write_atlas_slice_manifest(target_path, signed)
+    return {
+        "subcommand": "sign-manifest",
+        "version": ATLAS_LMDB_CLI_VERSION,
+        "cidv1": signed.cidv1,
+        "dev_signed": signed.dev_signed,
+        "output_path": target_path,
+        "signature_profile": "ed25519_cose_sign1_dev_test_only",
+        "non_claims": {
+            "genesis_signing": False,
+            "ml_dsa_manifest_signing": False,
+            "public_graph_publication": False,
+            "public_rc_activation": False,
+        },
+        "read_only": True,
+    }
+
+
+def handle_atlas_verify_slice(
+    *,
+    manifest_path: str,
+    public_key_hex: str,
+    require_signature: bool,
+) -> dict[str, Any]:
+    """Verify deterministic manifest commitments and dev/test signature."""
+
+    if not manifest_path:
+        raise AtlasLmdbCliError("atlas_manifest_missing", "--manifest must be provided")
+    public_key = _ed25519_public_key_from_hex(public_key_hex) if public_key_hex else None
+    manifest = load_atlas_slice_manifest(manifest_path)
+    try:
+        verify_atlas_slice_manifest(
+            manifest,
+            public_key=public_key,
+            require_signature=require_signature,
+        )
+    except ValueError as exc:
+        raise AtlasLmdbCliError(str(exc).split(":", 1)[0], str(exc)) from exc
+    return {
+        "subcommand": "verify-slice",
+        "version": ATLAS_LMDB_CLI_VERSION,
+        "cidv1": manifest.cidv1,
+        "dev_signed": manifest.dev_signed,
+        "signature_required": require_signature,
+        "verdict": "pass",
+        "read_only": True,
+    }
+
+
 def _open_writer(lmdb_path: str) -> AtlasLmdbSafeWriter:
     if not isinstance(lmdb_path, str) or not lmdb_path.strip():
         raise AtlasLmdbCliError("atlas_lmdb_path_missing", "--lmdb must be provided")
@@ -347,6 +474,37 @@ def _open_writer(lmdb_path: str) -> AtlasLmdbSafeWriter:
     if not data_file.exists() or not lock_file.exists():
         raise AtlasLmdbCliError("atlas_lmdb_not_found", f"LMDB not found: {root}")
     return AtlasLmdbSafeWriter(root)
+
+
+def _ed25519_private_key_from_hex(value: str) -> ed25519.Ed25519PrivateKey:
+    if not value:
+        raise AtlasLmdbCliError(
+            "atlas_manifest_private_key_missing",
+            "--private-key-hex must be provided for dev/test signing",
+        )
+    try:
+        raw = bytes.fromhex(value)
+    except ValueError as exc:
+        raise AtlasLmdbCliError("atlas_manifest_private_key_invalid", "invalid hex") from exc
+    if len(raw) != 32:
+        raise AtlasLmdbCliError(
+            "atlas_manifest_private_key_invalid",
+            "Ed25519 private key seed must be 32 bytes",
+        )
+    return ed25519.Ed25519PrivateKey.from_private_bytes(raw)
+
+
+def _ed25519_public_key_from_hex(value: str) -> ed25519.Ed25519PublicKey:
+    try:
+        raw = bytes.fromhex(value)
+    except ValueError as exc:
+        raise AtlasLmdbCliError("atlas_manifest_public_key_invalid", "invalid hex") from exc
+    if len(raw) != 32:
+        raise AtlasLmdbCliError(
+            "atlas_manifest_public_key_invalid",
+            "Ed25519 public key must be 32 bytes",
+        )
+    return ed25519.Ed25519PublicKey.from_public_bytes(raw)
 
 
 def _metadata_snapshot(writer: AtlasLmdbSafeWriter) -> dict[str, Any]:
@@ -654,6 +812,7 @@ def _edge_summary(edges: list[dict[str, Any]]) -> list[dict[str, str]]:
 __all__ = [
     "ATLAS_LMDB_CLI_VERSION",
     "AtlasLmdbCliError",
+    "handle_atlas_build_slice",
     "handle_atlas_edges",
     "handle_atlas_node",
     "handle_atlas_status",
@@ -661,5 +820,7 @@ __all__ = [
     "handle_atlas_register_phase_files",
     "handle_atlas_apply_edge_batch",
     "handle_atlas_apply_node_edge_plan",
+    "handle_atlas_sign_manifest",
+    "handle_atlas_verify_slice",
     "run_atlas_command",
 ]
