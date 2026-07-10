@@ -50979,6 +50979,184 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 prompt hardening before execution.",
+      "manual_read_summary": "Hardened Phase 1573af prompt to make it a mid-block coherence checkpoint rather than the final pre-1574 gate, and replaced stale 1573q, 1573x, 1573y, 1573ad, and 1573ae token references with actual emitted tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_window_1573o_1575_remaining_phases_guidance_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1573af_mid_block_coherence"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 mid-block coherence report.",
+      "manual_read_summary": "Report confirms all Phase 1573p through 1573ae required tokens, summarizes CCSS privacy, AtlasSliceManifest, invite/economics, OBL, and graph hygiene lanes, and records remaining pre-1574 phases before final coherence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:all_1573p_1573ae_phases_token_complete_phase_1573af"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_mid_block_coherence_report_1573af_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 context capsule snapshot.",
+      "manual_read_summary": "Capsule v5.71 supersedes v5.70 as a private mid-block snapshot through 1573ae and records that 1573ar remains the final pre-1574 coherence gate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "docs/specs/ilc_antigravity_context_capsule_v5.70_pre_block6.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_antigravity_context_capsule_v5.71_mid_block_1573af.md"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 focused coherence tests.",
+      "manual_read_summary": "Tests verify all required 1573p-1573ae tokens, mid-block report lane coverage, capsule supersession, and non-authorization floor.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_mid_block_coherence_report_1573af_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_antigravity_context_capsule_v5.71_mid_block_1573af.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1573af_pre_1574_coherence.py"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 execution walkthrough.",
+      "manual_read_summary": "Walkthrough records the token audit table, prompt hardening, deliverables, verification commands, output tokens, graph_delta, and non-claims for the mid-block coherence checkpoint.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:mid_block_coherence_snapshot_committed_phase_1573af"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1573af_pre_1574_coherence_capsule_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_112_phase_1573af_mid_block_coherence",
+      "chronology_note": "2026-07-10 Phase 1573af \u2014 STATUS token record.",
+      "manual_read_summary": "STATUS records 1573af completion, compatibility tokens, mid-block snapshot token, public-path block, and the boundary that 1573ar remains the final pre-1574 coherence gate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573af_g8_pre_1574_coherence_capsule.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:mid_block_coherence_snapshot_committed_phase_1573af"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
