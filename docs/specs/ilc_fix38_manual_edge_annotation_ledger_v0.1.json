@@ -49989,6 +49989,216 @@
         "PROVENANCE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — hardened prompt line-reference drift before sensitive execution.",
+      "manual_read_summary": "Phase prompt governs CDL-029 Amendment 2 execution and was hardened to avoid a stale source line reference for compute_genesis_share_ratio while preserving the sensitive CDL mutation boundary.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573aa_g8_cdl029_cmax_denominator_amendment.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-029",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — CDL-029 Amendment 2 register mutation.",
+      "manual_read_summary": "Constitutional decision log CDL-029 row now records Amendment 2, amendment_count 2, the C_max denominator token, evidence document path, and a clause selecting C_MAX_ILC rather than total_cumulative_issuance for Genesis share-ratio evaluation while preserving Amendment 1 dust routing.",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-029",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-026",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aa_g8_cdl029_cmax_denominator_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:cdl_029_amendment_2_cmax_denominator_phase_1573aa"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — Amendment 2 evidence document.",
+      "manual_read_summary": "Evidence document explains the total_cumulative_issuance denominator bug, ratifies C_MAX_ILC as the Genesis share-ratio denominator, records the 1,296,000 ILC bootstrap tranche design intent, references denominator-mode simulation evidence, and preserves Amendment 1 non-claims.",
+      "repo_path": "docs/specs/ilc_cdl_029_amendment_2_cmax_denominator_evidence_1573aa_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-029",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-026",
+          "review_status": "accepted"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_accumulation_dynamics_analysis_298_v0.3.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:CDL-029"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:cdl_029_amendment_2_cmax_denominator_phase_1573aa"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — focused amendment regression tests.",
+      "manual_read_summary": "Focused test file verifies Amendment 2 evidence tokens, CDL-029 amendment_2 fields, runtime non-change before Phase 1573ab, CDL-026 C_max binding, and preservation of Phase 1351a Amendment 1 residual routing.",
+      "repo_path": "tests/test_phase_1573aa_cdl029_cmax_denominator_amendment.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aa_g8_cdl029_cmax_denominator_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_029_amendment_2_cmax_denominator_evidence_1573aa_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/analysis/genesis_accrual_governor.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — walkthrough evidence.",
+      "manual_read_summary": "Walkthrough records preconditions, direct-read source checks, separate sensitive CDL mutation commit, evidence document content, focused verification results, graph_delta, output tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1573aa_cdl029_cmax_denominator_amendment_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aa_g8_cdl029_cmax_denominator_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:cdl_029_amendment_2_cmax_denominator_phase_1573aa"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:genesis_share_ratio_denominator_constitutionalized_cmax_phase_1573aa"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_107_phase_1573aa_cdl029_cmax_denominator",
+      "chronology_note": "2026-07-10 Phase 1573aa — STATUS token record.",
+      "manual_read_summary": "STATUS records Phase 1573aa completion tokens, the separate authorized CDL mutation, runtime-fix deferral to Phase 1573ab, and retained public-path block.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aa_g8_cdl029_cmax_denominator_amendment.md",
+          "review_status": "accepted"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:cdl_029_amendment_2_cmax_denominator_phase_1573aa"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:genesis_share_ratio_denominator_constitutionalized_cmax_phase_1573aa"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
