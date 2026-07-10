@@ -342,9 +342,18 @@ def _resolve_sync_window(
     if not sources:
         return [], [f"sources_missing:{channel}"]
         
+    if isinstance(source_index, bool) or not isinstance(source_index, int):
+        return [], ["source_index_out_of_range"]
+
     if source_index < 0 or source_index >= len(sources):
         return [], ["source_index_out_of_range"]
-        
+
+    if (
+        max_sources is not None
+        and (isinstance(max_sources, bool) or not isinstance(max_sources, int))
+    ):
+        return [], ["max_sources_invalid"]
+
     if max_sources is not None and max_sources < 1:
         return [], ["max_sources_invalid"]
         

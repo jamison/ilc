@@ -52801,6 +52801,209 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - AtlasSliceManifest integer guard hardened.",
+      "manual_read_summary": "AtlasSliceManifest runtime rejects bool cross_section_ref_count values in direct builder and JSON deserialization paths while preserving deterministic manifest construction and signature verification behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:atlas_slice_manifest_build_pipeline"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/bundle/atlas_slice_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - registry sync window integer guard hardened.",
+      "manual_read_summary": "Canonical bundle key registry sync rejects non-integer source_index and max_sources values before failover window arithmetic or source-list slicing.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/canon_bundle_key_registry_channel_v0.2.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:canon_bundle_key_registry_channel"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/ledger/canon_bundle_key_registry_sync.py"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - AtlasSliceManifest regression tests added.",
+      "manual_read_summary": "Tests deterministic AtlasSliceManifest behavior and now pins rejection of bool cross_section_ref_count values in builder and JSON parser paths.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix2_int_field_bool_float_coercion_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/bundle/atlas_slice_manifest.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_atlas_slice_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - registry sync regression tests added.",
+      "manual_read_summary": "Tests canonical bundle key registry sync behavior and now pins bool, float, and string rejection for source_index and max_sources window controls.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix2_int_field_bool_float_coercion_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ledger/canon_bundle_key_registry_sync.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_canon_bundle_key_registry_sync.py"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - walkthrough added.",
+      "manual_read_summary": "Walkthrough records the int-field bool/float coercion audit finding, code changes, verification commands, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "phase:1573at-Fix2"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573at-Fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573at_fix2_int_field_bool_float_coercion_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - STATUS updated.",
+      "manual_read_summary": "STATUS entry records AtlasSliceManifest and canon bundle sync integer guard hardening tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix2_int_field_bool_float_coercion_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at-Fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_121_phase_1573at_fix2_int_field_coercion_hardening",
+      "chronology_note": "2026-07-10 Phase 1573at-Fix2 - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for the int-field bool/float coercion hardening fix.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/phases/phase_1573at_fix2_int_field_bool_float_coercion_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573at-Fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {

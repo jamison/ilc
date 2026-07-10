@@ -470,7 +470,11 @@ def _validate_common_inputs(
     _require_sha256_hex(source_lmdb_root_sha256, "atlas_slice_manifest_source_root_invalid")
     if receipt_sha256 is not None:
         _require_sha256_hex(receipt_sha256, "atlas_slice_manifest_receipt_sha_invalid")
-    if not isinstance(cross_section_ref_count, int) or cross_section_ref_count < 0:
+    if (
+        isinstance(cross_section_ref_count, bool)
+        or not isinstance(cross_section_ref_count, int)
+        or cross_section_ref_count < 0
+    ):
         raise ValueError("atlas_slice_manifest_cross_section_ref_count_invalid")
     if not root_pointers or not all(isinstance(item, str) and item for item in root_pointers):
         raise ValueError("atlas_slice_manifest_root_pointers_invalid")
@@ -582,7 +586,7 @@ def _optional_str(payload: Mapping[str, object], key: str) -> str | None:
 
 def _require_int(payload: Mapping[str, object], key: str) -> int:
     value = payload.get(key)
-    if not isinstance(value, int):
+    if isinstance(value, bool) or not isinstance(value, int):
         raise ValueError(f"atlas_slice_manifest_{key}_invalid")
     return value
 
