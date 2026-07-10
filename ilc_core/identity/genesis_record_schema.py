@@ -247,6 +247,10 @@ class RecoveryTransaction:
         Returns the effective_freeze_epoch (clamped per finding I4).
         Raises GenesisRecordError on any validation failure.
         """
+        _require_epoch_int("current_epoch", current_epoch)
+        if self.freeze_from_epoch is not None:
+            _require_epoch_int("freeze_from_epoch", self.freeze_from_epoch)
+
         # 1. old_canonical_root_pk must match the genesis record's current key
         if self.old_canonical_root_pk != genesis_record.canonical_root_pk:
             raise GenesisRecordError(
@@ -315,3 +319,11 @@ def _require_hex(name: str, value: str, expected_len: int, token: str) -> None:
         )
     if not all(c in "0123456789abcdef" for c in value):
         raise GenesisRecordError(token, f"{name} must be lowercase hex")
+
+
+def _require_epoch_int(name: str, value: int) -> None:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise GenesisRecordError(
+            "cdl_069_recovery_invalid_epoch",
+            f"{name} must be a non-negative integer epoch",
+        )
