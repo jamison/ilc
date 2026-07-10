@@ -52009,6 +52009,209 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - prompt hardened before sensitive CDL prelock.",
+      "manual_read_summary": "Phase prompt records the sensitive CDL-102 prelock scope, corrected 1573z status token, exact nullifier implementation boundary, and non-activation constraints.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_102_inviter_chaining_economics_opening_1573ad_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aq"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1573aq_g8_inviter_chaining_cdl_prelock.md"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - CDL-102 prelock document added.",
+      "manual_read_summary": "Prelock document locks 1573z InviteBatchRecord and InviteRedemptionRecord field/type boundaries, nullifier construction, raw nonce non-storage, and defers unresolved max-depth and economics parameters to 1576m.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PRELOCK_FOR",
+          "review_status": "accepted",
+          "target": "cdl:102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:102"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PRELOCK_FOR",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_102_inviter_chaining_economics_prelock_1573aq_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - CDL register updated.",
+      "manual_read_summary": "Constitutional decision log row for CDL-102 was updated from open to prelocked with Phase 1573aq prelock token, raw nonce boundary, max-depth deferral, and 1576m ratification dependency.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_102_inviter_chaining_economics_prelock_1573aq_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:102"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - focused tests added.",
+      "manual_read_summary": "Regression tests pin CDL-102 prelocked status, exact nullifier construction, raw nonce non-storage, dataclass fields, status tokens, and non-activation boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/specs/ilc_cdl_102_inviter_chaining_economics_prelock_1573aq_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_102_inviter_chaining_economics_prelock_1573aq_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "test_evidence_added",
+      "repo_path": "tests/test_phase_1573aq_inviter_chaining_cdl_prelock.py"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - walkthrough added.",
+      "manual_read_summary": "Walkthrough records direct-read sources, prompt hardening corrections, locked versus deferred parameters, non-claims, and verification commands.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aq_g8_inviter_chaining_cdl_prelock.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1573aq"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "phase_evidence_added",
+      "repo_path": "docs/phases/phase_1573aq_inviter_chaining_cdl_prelock_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - STATUS updated.",
+      "manual_read_summary": "STATUS entry records CDL-102 prelocked status, max-depth deferral to 1576m, public path blocked, and sensitive mutation authorization boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aq_g8_inviter_chaining_cdl_prelock.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aq"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_117_phase_1573aq_inviter_chaining_cdl_prelock",
+      "chronology_note": "2026-07-10 Phase 1573aq - Fix38 ledger update.",
+      "manual_read_summary": "Ledger update records graph metadata for the sensitive CDL-102 prelock phase artifacts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "accepted",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1573aq_g8_inviter_chaining_cdl_prelock.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:1573aq"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
     }
   ],
   "boundary": {
