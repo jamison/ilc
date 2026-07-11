@@ -54526,6 +54526,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_127_phase_fix86_content_layer_edge_recipe",
+      "chronology_note": "2026-07-11 Phase 1545p-Fix86 \u2014 content-layer edge type recipe annotation phase prompt registered and runtime-count hardened",
+      "manual_read_summary": "Phase 1545p-Fix86 artifact for annotating the 13 irreducible content-layer edge types produced by the six agent-issuable truth primitives; runtime preflight included supported_by from refute.claim evidence edges. The prompt was corrected from 12 to 13 after direct runtime read.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "adr:0035_homoiconic_type_definition_system"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "invariant:phase1387h_attestation_provenance_recipe_v1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only \u2014 EVIDENCES invariant:phase1387h_attestation_provenance_recipe_v1",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1545p_fix86_g10_content_layer_edge_type_recipe_annotation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_127_phase_fix86_content_layer_edge_recipe",
+      "chronology_note": "2026-07-11 Phase 1545p-Fix86 \u2014 content-layer edge type recipe annotation spec committed",
+      "manual_read_summary": "Phase 1545p-Fix86 artifact for annotating the 13 irreducible content-layer edge types produced by the six agent-issuable truth primitives; runtime preflight included supported_by from refute.claim evidence edges. The spec defines the irreducible output table and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "adr:0035_homoiconic_type_definition_system"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "invariant:phase1387h_attestation_provenance_recipe_v1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only \u2014 EVIDENCES invariant:phase1387h_attestation_provenance_recipe_v1",
+      "repo_path": "docs/specs/ilc_fix86_content_layer_edge_type_recipe_annotation_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_127_phase_fix86_content_layer_edge_recipe",
+      "chronology_note": "2026-07-11 Phase 1545p-Fix86 \u2014 content-layer edge type recipe annotation walkthrough committed",
+      "manual_read_summary": "Phase 1545p-Fix86 artifact for annotating the 13 irreducible content-layer edge types produced by the six agent-issuable truth primitives; runtime preflight included supported_by from refute.claim evidence edges. The walkthrough records pre/post LMDB hashes, node and edge deltas, and safe-writer invariant results.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "adr:0035_homoiconic_type_definition_system"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "artifact:genesis_source_tree_manifest_candidate_1545p_fix38"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "invariant:phase1387h_attestation_provenance_recipe_v1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only \u2014 EVIDENCES invariant:phase1387h_attestation_provenance_recipe_v1",
+      "repo_path": "docs/phases/phase_1545p_fix86_content_layer_edge_type_recipe_annotation_walkthrough.md"
     }
   ],
   "boundary": {
