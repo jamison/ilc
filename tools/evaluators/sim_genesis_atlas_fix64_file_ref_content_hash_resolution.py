@@ -452,6 +452,7 @@ def process_tier(
     node_updates: dict[str, dict[str, Any]] = {}
     counterpart_updates: dict[str, dict[str, Any]] = {}
     same_source_edges: list[dict[str, Any]] = []
+    stale_same_source_semantics: list[tuple[str, str, str]] = []
     escalations: list[dict[str, Any]] = []
     entries: list[dict[str, Any]] = []
     already_resolved_count = 0
@@ -513,6 +514,9 @@ def process_tier(
             raise RuntimeError("fix64_counterpart_resolution_internal_error")
 
         existing_same_source_targets = indexes["same_source_targets"].get(node_id, [])
+        for existing_target in existing_same_source_targets:
+            if existing_target != target_id:
+                stale_same_source_semantics.append((node_id, "SAME_SOURCE", existing_target))
         matching_existing_edge = target_id in existing_same_source_targets
         if (
             node.get("source_sha256") == identity.sha256
@@ -563,6 +567,7 @@ def process_tier(
         "escalations": escalations,
         "file_ref_updates": node_updates,
         "same_source_edges": same_source_edges,
+        "stale_same_source_semantics": stale_same_source_semantics,
         "tier": tier,
     }
 
@@ -764,6 +769,7 @@ def summarize_tier_result(result: dict[str, Any]) -> dict[str, Any]:
         "new_counterpart_nodes": len(result["created_nodes"]),
         "resolved_or_updated": sum(1 for entry in entries if entry.get("disposition") == "resolved"),
         "same_source_edges_prepared": len(result["same_source_edges"]),
+        "stale_same_source_edges_removed": len(result["stale_same_source_semantics"]),
         "tier": result["tier"],
     }
 
@@ -777,6 +783,22 @@ def apply_resolution_result(
 ) -> dict[str, Any]:
     field_updates = dict(result["counterpart_updates"])
     field_updates.update(result["file_ref_updates"])
+    removal_receipt: dict[str, Any] = {
+        "removed_edge_count": 0,
+        "status": "PASS",
+    }
+    if result["stale_same_source_semantics"]:
+        removal_receipt = writer.remove_edges_by_semantic(
+            result["stale_same_source_semantics"],
+            phase=f"{phase}:stale_same_source_removal",
+            dry_run=False,
+            metadata={
+                "operation": f"{operation}_stale_same_source_removal",
+                "tier": result["tier"],
+            },
+        )
+        if removal_receipt["status"] != "PASS":
+            raise ValueError(f"fix64_stale_same_source_removal_status:{removal_receipt['status']}")
     plan = AtlasLmdbWritePlan(
         nodes_to_add=result["created_nodes"],
         edges_to_add=result["same_source_edges"],
@@ -805,6 +827,7 @@ def apply_resolution_result(
         raise ValueError(f"fix64_update_status:{update_receipt['status']}")
     return {
         "apply_plan": apply_receipt,
+        "remove_stale_same_source": removal_receipt,
         "update_node_fields": update_receipt,
     }
 
