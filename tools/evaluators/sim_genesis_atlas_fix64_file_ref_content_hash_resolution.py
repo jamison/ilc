@@ -513,6 +513,7 @@ def process_tier(
         if not target_id:
             raise RuntimeError("fix64_counterpart_resolution_internal_error")
 
+        same_source_required = identity.identity_kind == "repo_file"
         existing_same_source_targets = indexes["same_source_targets"].get(node_id, [])
         for existing_target in existing_same_source_targets:
             if existing_target != target_id:
@@ -521,7 +522,7 @@ def process_tier(
         if (
             node.get("source_sha256") == identity.sha256
             and node.get("source_path") == repo_path
-            and matching_existing_edge
+            and (matching_existing_edge or not same_source_required)
         ):
             already_resolved_count += 1
             entry.update(
@@ -530,23 +531,30 @@ def process_tier(
                     "counterpart_status": target_status,
                     "disposition": "already_resolved",
                     "sha256": identity.sha256,
+                    "same_source_edge_status": (
+                        "present" if matching_existing_edge else "not_applicable_non_repo_file_identity"
+                    ),
                 }
             )
             entries.append(entry)
             continue
 
         node_updates[node_id] = file_ref_patch(node, identity)
-        same_source = edge(
-            source=node_id,
-            edge_type_value="SAME_SOURCE",
-            target=target_id,
-            evidence=f"{repo_path}:sha256:{identity.sha256}",
-            status="fix64_same_source_identity_link",
-        )
-        if (node_id, "SAME_SOURCE", target_id) not in indexes["edge_semantics"]:
-            same_source_edges.append(same_source)
-            indexes["edge_semantics"].add((node_id, "SAME_SOURCE", target_id))
-            indexes["same_source_targets"].setdefault(node_id, []).append(target_id)
+        same_source_edge_status = "not_applicable_non_repo_file_identity"
+        if same_source_required:
+            same_source = edge(
+                source=node_id,
+                edge_type_value="SAME_SOURCE",
+                target=target_id,
+                evidence=f"{repo_path}:sha256:{identity.sha256}",
+                status="fix64_same_source_identity_link",
+            )
+            same_source_edge_status = "already_present"
+            if (node_id, "SAME_SOURCE", target_id) not in indexes["edge_semantics"]:
+                same_source_edges.append(same_source)
+                indexes["edge_semantics"].add((node_id, "SAME_SOURCE", target_id))
+                indexes["same_source_targets"].setdefault(node_id, []).append(target_id)
+                same_source_edge_status = "prepared"
 
         entry.update(
             {
@@ -554,6 +562,7 @@ def process_tier(
                 "counterpart_status": target_status,
                 "disposition": "resolved",
                 "sha256": identity.sha256,
+                "same_source_edge_status": same_source_edge_status,
                 "size_bytes": identity.size_bytes,
             }
         )
@@ -640,11 +649,20 @@ def post_counts(writer: AtlasLmdbSafeWriter) -> dict[str, int]:
         for edge in edges
         if edge_type(edge) == "SAME_SOURCE"
     }
+    same_source_not_applicable = 0
+    same_source_required_missing = 0
+    for node in refs:
+        repo_path = path_for_file_ref(node)
+        identity = path_identity(repo_path) if repo_path else None
+        if identity is not None and identity.identity_kind != "repo_file":
+            same_source_not_applicable += 1
+            continue
+        if candidate_id(node) not in same_source_sources:
+            same_source_required_missing += 1
     return {
         "file_ref_count": len(refs),
-        "file_refs_missing_same_source": sum(
-            1 for node in refs if candidate_id(node) not in same_source_sources
-        ),
+        "file_refs_missing_same_source": same_source_required_missing,
+        "file_refs_same_source_not_applicable": same_source_not_applicable,
         "file_refs_missing_source_path": sum(1 for node in refs if not node.get("source_path")),
         "file_refs_missing_source_sha256": sum(1 for node in refs if not node.get("source_sha256")),
         "same_source_edge_count": sum(1 for edge in edges if edge_type(edge) == "SAME_SOURCE"),
