@@ -54806,6 +54806,196 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1575b_fix3_public_rc_atlas_slice_readiness_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 economic intent reconciliation prompt committed",
+      "manual_read_summary": "Sensitive phase prompt authorizing the public-RC economic intent reconciliation: direct-read conflict audit, Option A/B/C decision structure, activation matrix patch requirements, Phase 1575 hard stop, walkthrough, status, and LMDB ledger registration requirements.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_pre_public_rc_no_deferral_strike_force_forward_plan_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "policy:public_rc_economic_intent"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1574_fix1_g10_block6_public_rc_economic_activation_intent_reconciliation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 economic intent reconciliation memo committed",
+      "manual_read_summary": "Load-bearing reconciliation memo that records the conflict between roadmap claimability requirements and default-off economic rows, selects Option B, defines the private economic soft-RC gate sequence, and emits the public RC economic intent reconciliation token.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_launch_roadmap_three_machines_seven_agents_v1.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_pre_public_rc_no_deferral_strike_force_forward_plan_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_window_1565_1575_block6_candidate_phase_grouping_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "policy:public_rc_economic_intent"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_economic_intent_reconciled_phase_1574_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 activation matrix economic rows patched",
+      "manual_read_summary": "Activation matrix amendment adding pending_private_economic_soft_rc_gate and moving rows 5-9 and 20-21 from final default-off posture to provisional status pending Phase 1575a private economic soft-RC and Phase 1575b certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "policy:public_rc_economic_intent"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 Phase 1575 publication prompt hardened",
+      "manual_read_summary": "Phase 1575 publication prompt amendment adding the economics-intent hard stop that blocks public publication until Option B, private economic soft-RC evidence, Economic Activation Certificate, bootstrap readiness, slice readiness, and installer readiness are dispositioned.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "policy:public_rc_economic_intent"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575_g10_block6_public_rc_gate_001.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 economic intent walkthrough committed",
+      "manual_read_summary": "Walkthrough attesting the Phase 1574-Fix1 direct reads, selected Option B, row-level matrix changes, Phase 1575 hard stop, forward sequence, verification outputs, and non-activation boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:public_rc_economic_intent_reconciled_phase_1574_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1574_fix1_public_rc_economic_intent_reconciliation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_129_phase_1574_fix1_public_rc_economic_intent",
+      "chronology_note": "2026-07-12 Phase 1574-Fix1 \u2014 STATUS tokens appended",
+      "manual_read_summary": "Append-only status update recording Phase 1574-Fix1 completion, Option B selection, activation matrix provisional row posture, Phase 1575 hard stop, and explicit non-activation/non-publication tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:public_rc_economic_intent_reconciled_phase_1574_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
