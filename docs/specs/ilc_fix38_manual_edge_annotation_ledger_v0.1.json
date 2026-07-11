@@ -54613,6 +54613,199 @@
       ],
       "recommended_graph_action": "support_only \u2014 EVIDENCES invariant:phase1387h_attestation_provenance_recipe_v1",
       "repo_path": "docs/phases/phase_1545p_fix86_content_layer_edge_type_recipe_annotation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 public-RC Atlas slice readiness prompt registered",
+      "manual_read_summary": "Phase prompt for a NON-SENSITIVE public-RC Atlas slice readiness audit that prepares unsigned Core and Economic slice fixtures while blocking publication consumption until sensitive economic gates pass.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_atlas_slice_readiness_gate_committed_phase_1575b_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix3_g10_public_rc_atlas_slice_homoiconic_readiness_gate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 public-RC Atlas slice readiness gate spec committed",
+      "manual_read_summary": "Defines the bounded Core Public-RC Slice and Economic Soft-RC Slice readiness standard, records why full private Atlas completion is not a launch blocker, and blocks publication consumption pending sensitive economic gates.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_atlas_slice_manifest_build_pipeline_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_whole_graph_atlas_objective_contract_1545p_fix24_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_atlas_slice_readiness_gate_committed_phase_1575b_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 Core Public-RC Slice fixture committed",
+      "manual_read_summary": "Deterministic unsigned AtlasSliceManifest fixture for the bounded Core Public-RC Slice readiness gate, including origin mode, authority source, export category, content hash, and recipe status for each entry.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/fixtures/starmap/core_public_rc_slice_fixture.json"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 Economic Soft-RC Slice fixture committed",
+      "manual_read_summary": "Deterministic unsigned AtlasSliceManifest fixture for the Economic Soft-RC Slice readiness gate, explicitly waiting for the sensitive 1575b activation certificate before publication consumption.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/fixtures/starmap/economic_soft_rc_slice_fixture.json"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 slice readiness tests committed",
+      "manual_read_summary": "Focused tests for the public-RC Atlas slice readiness fixtures, covering manifest parseability, canonical JSON, private-material exclusion, origin/authority/hash/recipe metadata, commit.epoch exemption, and bool rejection.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/bundle/atlas_slice_manifest.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1575b_fix3_public_rc_atlas_slice_readiness.py"
+    },
+    {
+      "annotation_batch": "manual_batch_128_phase_1575b_fix3_public_rc_atlas_slice_readiness",
+      "chronology_note": "2026-07-11 Phase 1575b-Fix3 \u2014 slice readiness walkthrough committed",
+      "manual_read_summary": "Walkthrough attesting the Phase 1575b-Fix3 slice readiness gate, direct-read evidence, fixture categories, excluded categories, recipe coverage, and passing test outputs.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_atlas_slice_readiness_gate_1575b_fix3_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:public_rc_atlas_slice_readiness_gate_committed_phase_1575b_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1575b_fix3_public_rc_atlas_slice_readiness_walkthrough.md"
     }
   ],
   "boundary": {
