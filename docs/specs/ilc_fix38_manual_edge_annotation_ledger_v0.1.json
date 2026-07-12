@@ -54996,6 +54996,469 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 prompt registered and executed from local worktree lane",
+      "manual_read_summary": "Phase prompt for the private economic soft-RC production-candidate rehearsal, including local worktree isolation, fail-closed public-RC exclusion, import-closure gates, deterministic runner requirements, evidence package requirements, and non-publication boundaries.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "policy:private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_g10_private_economic_soft_rc_production_candidate_rehearsal.md"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 economic activation surfaces fail-closed for public RC",
+      "manual_read_summary": "Seven runtime modules now carry PUBLIC_RC_EXCLUDE economic_activation_pending_1575b headers: six activation-capable economic surfaces plus canonical_economic_event.py as a cascade exclusion because it imports the private emission path.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/epoch_emission_production_path.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 conversion candidate private helper extracted",
+      "manual_read_summary": "Adds private _build_candidates helper for excluded rehearsal tooling while retaining the public guard on generate_conversion_candidates and keeping the helper out of __all__.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/ledger/conversion_candidate_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 remaining economic runtime surfaces excluded pending 1575b",
+      "manual_read_summary": "Validator admission/ejection, treasury/reward distribution, ejected-stake distribution, productive ECU bounty, and canonical economic event modules are kept out of the public-RC source export until the 1575b certificate decides row-level public_rc_live status.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/validator/validator_admission_ejection_production_path.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 remaining economic runtime surfaces excluded pending 1575b",
+      "manual_read_summary": "Treasury and validator reward production path remains private pending 1575b row-level economic activation certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/treasury_validator_reward_production_path.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 remaining economic runtime surfaces excluded pending 1575b",
+      "manual_read_summary": "Ejected-stake distribution production path remains private pending 1575b row-level economic activation certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/ejected_stake_distribution_production_path.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 remaining economic runtime surfaces excluded pending 1575b",
+      "manual_read_summary": "Productive ECU expansion bounty runtime remains private pending 1575b row-level economic activation certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 canonical economic event cascade exclusion",
+      "manual_read_summary": "Canonical economic event emitter is cascade-excluded because it imports the private emission activation surface; 1575b must remove this header only if row 5 is certified public_rc_live and import closure remains clean.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_public_rc_economic_intent_reconciliation_memo_1574_fix1_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:pending_private_economic_soft_rc_gate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/canonical_economic_event.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 pre-existing public-RC import closure hardened",
+      "manual_read_summary": "Moves two bundle CLI imports of excluded private helper modules from module scope to function scope so the public-RC exclusion scanner has zero top-level violations.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "tools/check_public_rc_exclude_imports.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "policy:public_rc_exclude_import_closure"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/cli/bundle_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 private rehearsal runner committed",
+      "manual_read_summary": "Private PUBLIC_RC_EXCLUDE runner exercising the guarded economic surfaces in memory, writing deterministic evidence JSON, and preserving all activation guards.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_g10_private_economic_soft_rc_production_candidate_rehearsal.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_complete"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/phase_1575a_economic_soft_rc_rehearsal_runner.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 focused test coverage committed",
+      "manual_read_summary": "Tests assert PUBLIC_RC_EXCLUDE header placement, import closure scanner cleanliness, source export absence for excluded economic modules, private helper non-export, deterministic runner output, row coverage, and guard preservation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_g10_private_economic_soft_rc_production_candidate_rehearsal.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575a_economic_soft_rc_rehearsal_runner.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tests/test_phase_1575a_economic_soft_rc_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 activation surface closure test committed",
+      "manual_read_summary": "Tests assert header placement, scanner success, source export manifest exclusion, and private conversion helper non-export for Phase 1575a activation surface closure.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_g10_private_economic_soft_rc_production_candidate_rehearsal.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "policy:public_rc_exclude_import_closure"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tests/test_phase_1575a_activation_surface_closure.py"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 evidence package committed",
+      "manual_read_summary": "Private evidence package records guard snapshots, row evidence, root hashes, export disposition table, import closure result, source export closure result, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_g10_private_economic_soft_rc_production_candidate_rehearsal.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_complete"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 walkthrough committed",
+      "manual_read_summary": "Walkthrough records preconditions, isolated worktree execution, implementation changes, evidence outputs, verification commands, and non-activation boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_complete"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1575a_economic_soft_rc_production_candidate_rehearsal_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 status and planning updated",
+      "manual_read_summary": "STATUS and PLANNING_INDEX record Phase 1575a completion pending human disposition and preserve the boundary that Phase 1575b must not certify rows before evidence acceptance.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_complete"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_130_phase_1575a_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a \u2014 planning index updated",
+      "manual_read_summary": "Planning index addendum records Phase 1575a completion pending human disposition, fail-closed public-RC export posture, and the requirement that 1575b must not move rows to public_rc_live before Genesis Agent evidence acceptance.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_complete"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {
