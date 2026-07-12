@@ -10,10 +10,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from ilc_core.bundle.layer0_protocol_bundle import generate_layer0_protocol_bundle
-from ilc_core.private_json_guardrails import canonical_json
-
-
 def _load_json(path_raw: str, *, default: Any) -> Any:
     if path_raw == "":
         return default
@@ -45,6 +41,9 @@ def _atomic_write_text(path: Path, body: str) -> None:
 
 def generate_layer0_bundle_cli(args: Any) -> dict[str, Any]:
     """Generate an unsigned Layer0 protocol bundle for CLI output."""
+
+    from ilc_core.bundle.layer0_protocol_bundle import generate_layer0_protocol_bundle
+    from ilc_core.private_json_guardrails import canonical_json
 
     schemas = _load_json(str(getattr(args, "schemas", "") or ""), default=[])
     parameters = _load_json(str(getattr(args, "parameters", "") or ""), default={})
