@@ -55459,6 +55459,237 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 correction prompt registered",
+      "manual_read_summary": "Phase prompt for correcting the 1575a rehearsal audit findings: guard-bypass helper removal, corrected conservation identity, real two-run determinism, durable evidence, allow_nan hardening, and guard key completeness.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_fix1_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_fix1_g10_economic_soft_rc_rehearsal_corrections.md"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 conversion guard-bypass helper removed",
+      "manual_read_summary": "Removes the private _build_candidates helper from conversion_candidate_runtime.py and keeps deterministic candidate construction behind the public activation guard in generate_conversion_candidates.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_fix1_g10_economic_soft_rc_rehearsal_corrections.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:guard_bypass_helper_removed_phase_1575a_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/ledger/conversion_candidate_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 private runner corrected",
+      "manual_read_summary": "Excluded rehearsal runner now constructs conversion candidates locally, checks complete guard keys, writes allow_nan-safe JSON, writes durable evidence, computes two independent row builds, and asserts treasury plus validator reward identities.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_fix1_g10_economic_soft_rc_rehearsal_corrections.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_fix1_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tools/phase_1575a_economic_soft_rc_rehearsal_runner.py"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 focused tests hardened",
+      "manual_read_summary": "Phase 1575a focused tests now assert runtime helper removal, conservation identity, independent determinism roots, durable canonical evidence, and guard preservation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_fix1_g10_economic_soft_rc_rehearsal_corrections.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575a_economic_soft_rc_rehearsal_runner.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_1575a_economic_soft_rc_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 activation surface closure test updated",
+      "manual_read_summary": "Activation surface test now asserts the conversion guard-bypass helper is removed from the runtime and remains absent from __all__.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575a_fix1_g10_economic_soft_rc_rehearsal_corrections.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ledger/conversion_candidate_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tests/test_phase_1575a_activation_surface_closure.py"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 evidence and walkthrough updated",
+      "manual_read_summary": "Evidence, durable evidence JSON, walkthrough, STATUS, and PLANNING_INDEX record the corrected conservation identity, independent determinism check, and pending-human-review disposition boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/specs/ilc_economic_soft_rc_evidence_1575a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_fix1_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1575a_fix1_economic_soft_rc_rehearsal_corrections_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 durable evidence JSON committed",
+      "manual_read_summary": "Durable evidence JSON generated by the corrected runner under the private production-candidate namespace with conservation_identity_verified true and settlement_root_deterministic_replay true.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "tools/phase_1575a_economic_soft_rc_rehearsal_runner.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_fix1_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/block6_economic_soft_rc_production_candidate_1575a/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_132_phase_1575a_fix1_economic_soft_rc",
+      "chronology_note": "2026-07-12 Phase 1575a-Fix1 \u2014 status and planning updated",
+      "manual_read_summary": "STATUS and PLANNING_INDEX record Fix1 completion, corrected evidence posture, and the fact that the final freeze-retain disposition token remains pending human review.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "confirmed",
+          "target": "docs/phases/phase_1575a_fix1_economic_soft_rc_rehearsal_corrections_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROVENANCE",
+          "target": "phase:economic_soft_rc_rehearsal_1575a_fix1_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PROVENANCE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
