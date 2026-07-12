@@ -56182,6 +56182,75 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_136_phase_1575b_fix7_wallet_visible_balance_certificate",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix7: wallet-visible ILC balance certificate",
+      "manual_read_summary": "Wallet-visible ILC balance certificate; certifies read-only settled balance visibility as the minimum public-RC wallet claim while deferring withdrawal/transfer/spend, public claimability, CDL-057 witness completion, and activation certificate decisions.",
+      "repo_path": "docs/specs/ilc_phase_1575b_fix7_wallet_visible_ilc_balance_certificate_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_048",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "obl:OBL-040",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_rc0_1_settlement_wallet_boundary_lock_576_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_visible_ilc_balance_certificate_committed_phase_1575b_fix7",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_136_phase_1575b_fix7_wallet_visible_balance_certificate",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix7: wallet-visible ILC balance certificate",
+      "manual_read_summary": "STATUS update recording Fix7 wallet-visible balance certificate tokens, read-only wallet minimum claim, deferred claimability decision route, test pass count, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_visible_ilc_balance_certificate_committed_phase_1575b_fix7",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
