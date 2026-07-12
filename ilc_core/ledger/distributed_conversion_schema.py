@@ -363,6 +363,16 @@ def attach_cdl057_witness_ref(
     witness_runtime: Any,
 ) -> ConversionCandidate:
     witness_ref = CDL057_WITNESS_ABSENT_TOKEN
+    getter_for_candidate = getattr(witness_runtime, "get_witness_ref_for_candidate", None)
+    if callable(getter_for_candidate):
+        try:
+            maybe_ref = getter_for_candidate(candidate)
+        except Exception:
+            maybe_ref = None
+        if isinstance(maybe_ref, str) and maybe_ref.strip():
+            witness_ref = maybe_ref.strip()
+            return replace(candidate, cdl057_witness_ref=witness_ref)
+
     getter = getattr(witness_runtime, "get_latest_witness_ref", None)
     if callable(getter):
         try:
