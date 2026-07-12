@@ -55690,6 +55690,45 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_133_phase_1575b_fix5_gap_closure_spec",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix5: ECU-to-ILC value-path gap closure spec",
+      "manual_read_summary": "Maps the three blocking preconditions for public-RC ECU-to-ILC conversion activation, distinguishes CDL-048 local activation from public-RC live authority, cites OBL-040 pre-RC closure scope, and recommends a pre-1575b CDL-057 witness-lane rehearsal.",
+      "repo_path": "docs/specs/ilc_phase_1575b_fix5_ecu_to_ilc_value_path_gap_closure_spec_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_048",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_089",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "obl:OBL-040",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
     }
   ],
   "boundary": {
