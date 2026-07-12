@@ -59,6 +59,6 @@ def test_phase_1575a_source_export_manifest_excludes_activation_surfaces(tmp_pat
     assert not (EXCLUDED_MODULES & included)
 
 
-def test_phase_1575a_build_candidates_helper_stays_private() -> None:
-    assert hasattr(conversion_candidate_runtime, "_build_candidates")
+def test_phase_1575a_build_candidates_helper_removed_from_runtime() -> None:
+    assert not hasattr(conversion_candidate_runtime, "_build_candidates")
     assert "_build_candidates" not in conversion_candidate_runtime.__all__
