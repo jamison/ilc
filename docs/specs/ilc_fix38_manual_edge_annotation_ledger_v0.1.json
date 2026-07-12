@@ -56251,6 +56251,202 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "Phase prompt for the CDL-057 witness-lane rehearsal; defines the witness gate adapter scope, fail-closed checks, receipt-level non-finding, CDL-089 boundary, evidence requirements, and verification commands.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix8_g10_cdl057_witness_lane_rehearsal.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_057",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_089",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "CDL-057 witness gate adapter implementing get_latest_witness_ref from epoch-boundary witness records and is_batch_eligible_for_public_rc_certification for Phase 1575b row-6 governance gating; no minting, settlement, wallet, or public-serving authority is granted.",
+      "repo_path": "ilc_core/epoch/cdl057_witness_gate_adapter.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_057",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_089",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_phase_1575b_fix8_cdl057_witness_lane_rehearsal_evidence_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "Focused private rehearsal tests covering deterministic witness records, adapter live and empty paths, fail-closed absent witness handling, resolution verification, governance eligibility, CDL-089 no-authority escalation, receipt-level non-finding, and retained evidence generation.",
+      "repo_path": "tests/test_phase_1575b_fix8_cdl057_witness_lane_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/epoch/cdl057_witness_gate_adapter.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "Evidence document recording live witness-ref replacement, absent-token fail-closed behavior, live and absent resolution verification, governance gate consumption rule for Phase 1575b, receipt-level witness linkage non-finding, CDL-089 no-authority boundary, guard snapshot, and 17-test pass record.",
+      "repo_path": "docs/specs/ilc_phase_1575b_fix8_cdl057_witness_lane_rehearsal_evidence_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_057",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_089",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl057_witness_lane_rehearsal_passed_phase_1575b_fix8",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "Retained production-candidate JSON evidence generated by the Fix8 focused tests; records six guard snapshot, live verifier root, fail-closed checks, governance eligibility outcomes, and receipt-level non-finding.",
+      "repo_path": "out/block6_cdl057_witness_lane_rehearsal_fix8/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl057_witness_lane_rehearsal_passed_phase_1575b_fix8",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_137_phase_1575b_fix8_cdl057_witness_lane_rehearsal",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix8: CDL-057 witness-lane rehearsal",
+      "manual_read_summary": "STATUS update recording Fix8 completion tokens, preconditions, live witness ref, verifier root, governance eligibility gate results, receipt-level non-finding, CDL-089 boundary, guard snapshot, test pass count, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl057_witness_lane_rehearsal_passed_phase_1575b_fix8",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
