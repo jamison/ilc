@@ -55842,6 +55842,346 @@
         "CLASSIFIED_BY"
       ],
       "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Validated SENSITIVE phase prompt for distributed private ECU-to-ILC rehearsal; requires exact GO, temp VPS staging, no public serving, no production wallet writes, and pass tokens only after cross-host equality.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix6a_g10_distributed_private_ecu_to_ilc_rehearsal.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_phase_1575b_fix6_private_ecu_to_ilc_rehearsal_evidence_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Host-local private runner that exercises CDL-048 conversion, lifecycle wallet commit, claimability proof binding, and CDL-057 candidate/resolution absent-witness boundary; emits strict retained JSON.",
+      "repo_path": "tools/phase_1575b_fix6a_distributed_private_rehearsal_runner.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix6a_g10_distributed_private_ecu_to_ilc_rehearsal.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1575b-Fix6a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Private distributed orchestrator that stages a clean git archive on Tailscale VPS temp directories, runs host-local evidence generation, fetches per-host JSON, and fails closed on divergence or no remote success.",
+      "repo_path": "tools/phase_1575b_fix6a_run_distributed_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix6a_g10_distributed_private_ecu_to_ilc_rehearsal.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1575b-Fix6a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Focused private test coverage for Fix6a runner evidence fields, strict JSON output, cross-host aggregate pass, divergence rejection, and no-remote failure.",
+      "repo_path": "tests/test_phase_1575b_fix6a_distributed_private_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575b_fix6a_distributed_private_rehearsal_runner.py",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575b_fix6a_run_distributed_rehearsal.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Human-readable retained evidence summary for Fix6a; records source commit, local/VPS hosts, matched roots, guard/authority boundary, and non-claims.",
+      "repo_path": "docs/specs/ilc_phase_1575b_fix6a_distributed_private_rehearsal_evidence_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:distributed_private_ecu_to_ilc_rehearsal_passed_phase_1575b_fix6a",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_048",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_089",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Machine-readable aggregate Fix6a evidence; records four successful hosts, zero divergence, matched roots, no remote failures, and retained_distributed_private_candidate disposition.",
+      "repo_path": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:distributed_private_ecu_to_ilc_rehearsal_passed_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Per-host Fix6a retained JSON evidence for local; records host-local runtime, matched conversion/proof roots, guard snapshot, and false authority flags.",
+      "repo_path": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/hosts/local.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:vps_private_rehearsal_roots_matched_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Per-host Fix6a retained JSON evidence for ilc-node-2; records host-local runtime, matched conversion/proof roots, guard snapshot, and false authority flags.",
+      "repo_path": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/hosts/ilc-node-2.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:vps_private_rehearsal_roots_matched_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Per-host Fix6a retained JSON evidence for ilc-node-3; records host-local runtime, matched conversion/proof roots, guard snapshot, and false authority flags.",
+      "repo_path": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/hosts/ilc-node-3.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:vps_private_rehearsal_roots_matched_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "Per-host Fix6a retained JSON evidence for ilc-node-6; records host-local runtime, matched conversion/proof roots, guard snapshot, and false authority flags.",
+      "repo_path": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/hosts/ilc-node-6.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:vps_private_rehearsal_roots_matched_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_135_phase_1575b_fix6a_distributed_private_rehearsal",
+      "chronology_note": "2026-07-12 Phase 1575b-Fix6a: distributed private ECU-to-ILC rehearsal across local control and private Tailscale VPS hosts",
+      "manual_read_summary": "STATUS update recording Fix6a distributed private rehearsal completion tokens, source commit, host list, matched roots, false authority flags, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:distributed_private_ecu_to_ilc_rehearsal_passed_phase_1575b_fix6a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
