@@ -9,6 +9,7 @@ __all__ = [
     "confidential_coordination_sealed_sender",
     "confidential_coordination_shard",
     "local_graph_memory_projection",
+    "openclaw_idle_mining",
     "openclaw_local_capture",
     "public_fetch_p2p_readiness",
     "registry_manifest",
