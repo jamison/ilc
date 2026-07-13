@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -32,8 +33,10 @@ from ilc_core.sidecars.openclaw_local_capture import (
 )
 
 EVIDENCE_PATH = Path("out/block6_openclaw_two_vps_fix2e/evidence_records.json")
+REAL_EVIDENCE_PATH = Path("out/block6_openclaw_two_vps_fix2e_fix1/evidence_records.json")
 PROFILE = "openclaw_public_rc_bootstrap"
 REQUIRED_REAL_ENV = ("ILC_FIX2E_VPS_A", "ILC_FIX2E_VPS_B")
+REQUIRED_REAL_WORKDIR_ENV = ("ILC_FIX2E_VPS_A_WORKDIR", "ILC_FIX2E_VPS_B_WORKDIR")
 
 
 def _node_fixture(node_label: str, idx: int) -> dict[str, str]:
@@ -311,22 +314,96 @@ def build_fixture_evidence() -> dict[str, Any]:
 
 
 def run_real_mode() -> int:
-    missing = [name for name in REQUIRED_REAL_ENV if not os.environ.get(name)]
+    missing = [
+        name
+        for name in (*REQUIRED_REAL_ENV, *REQUIRED_REAL_WORKDIR_ENV)
+        if not os.environ.get(name)
+    ]
     if missing:
         print(
             "fix2e_real_vps_targets_required: " + ",".join(missing),
             file=sys.stderr,
         )
         return 2
-    targets = [os.environ[name] for name in REQUIRED_REAL_ENV]
-    for target in targets:
-        subprocess.run(
-            ["ssh", target, "python3", "--version"],
+    nodes = [
+        ("vps_a", os.environ["ILC_FIX2E_VPS_A"], os.environ["ILC_FIX2E_VPS_A_WORKDIR"]),
+        ("vps_b", os.environ["ILC_FIX2E_VPS_B"], os.environ["ILC_FIX2E_VPS_B_WORKDIR"]),
+    ]
+    remote_results = []
+    for label, target, workdir in nodes:
+        _validate_remote_workdir(workdir)
+        quoted_workdir = shlex.quote(workdir)
+        result = subprocess.run(
+            [
+                "ssh",
+                "-o",
+                "BatchMode=yes",
+                target,
+                f"cd {quoted_workdir} && PYTHONPATH=. python3 tools/openclaw_two_vps_integration_rehearsal.py --fixture",
+            ],
             check=True,
             capture_output=True,
             text=True,
         )
-    print("fix2e_real_vps_probe_complete")
+        evidence = subprocess.run(
+            [
+                "ssh",
+                "-o",
+                "BatchMode=yes",
+                target,
+                f"cat {quoted_workdir}/out/block6_openclaw_two_vps_fix2e/evidence_records.json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(evidence.stdout)
+        remote_results.append(
+            {
+                "fixture_mode_run": payload["fixture_mode_run"],
+                "node_label": label,
+                "remote_evidence_sha256": hashlib.sha256(
+                    evidence.stdout.encode("utf-8")
+                ).hexdigest(),
+                "remote_stdout_sha256": hashlib.sha256(
+                    result.stdout.encode("utf-8")
+                ).hexdigest(),
+                "remote_target_redacted": True,
+                "two_agent_attribution_confirmed": payload[
+                    "two_agent_attribution_confirmed"
+                ],
+            }
+        )
+    summary = {
+        "cross_node_replay_prevention_gap": "redeemer_key_binding_required",
+        "distributed_task_reservation_gap": "shared_coordinator_required",
+        "no_clawhub_listing": True,
+        "no_ecu_minting": True,
+        "no_epoch_transition": True,
+        "no_guard_clearance": True,
+        "no_ilc_settlement": True,
+        "no_openclaw_publication": True,
+        "no_public_graph_submission": True,
+        "no_public_rc_activation": True,
+        "no_wallet_write": True,
+        "phase": "1575b-Fix2e-Fix1",
+        "private_values_redacted": True,
+        "real_vps_mode": {
+            "node_count": len(remote_results),
+            "run": True,
+            "status": "passed",
+        },
+        "remote_results": remote_results,
+        "schema_version": "ilc_openclaw_two_vps_real_rehearsal_1575b_fix2e_fix1.v0.1",
+        "semantic_duplicate_detection_gap": "future_graph_intelligence_required",
+        "vps_targets_redacted": True,
+    }
+    summary["evidence_sha256"] = hashlib.sha256(
+        _stable_json_bytes({k: v for k, v in summary.items() if k != "evidence_sha256"})
+    ).hexdigest()
+    _atomic_write_json(REAL_EVIDENCE_PATH, summary)
+    print(REAL_EVIDENCE_PATH)
+    print(summary["evidence_sha256"])
     return 0
 
 
@@ -362,6 +439,16 @@ def _hash_optional(value: str | None) -> str | None:
     if value is None:
         return None
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _validate_remote_workdir(value: str) -> None:
+    if not value.startswith("/home/ilcops/block6_rehearsal/"):
+        raise ValueError("fix2e_remote_workdir_outside_rehearsal_root")
+    if any(part in value for part in ("..", "\n", "\r", "\t", " ")):
+        raise ValueError("fix2e_remote_workdir_invalid")
+    allowed_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_./-")
+    if any(char not in allowed_chars for char in value):
+        raise ValueError("fix2e_remote_workdir_invalid")
 
 
 def main() -> int:
