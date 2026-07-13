@@ -61,6 +61,8 @@ TASK_SUBTYPES = {
 
 MAX_STRING_CHARS = 8192
 MAX_HISTORY_RECORDS = 256
+MAX_MAPPING_KEYS = 64
+MAX_SEQUENCE_ITEMS = 64
 MAX_TASKS_PER_IDLE_WINDOW = 4
 MAX_TASKS_PER_TYPE_PER_WINDOW = 1
 
@@ -354,11 +356,15 @@ def _validate_payload(value: Any, *, depth: int = 0) -> None:
     if value is None or isinstance(value, int):
         return
     if isinstance(value, Mapping):
+        if len(value) > MAX_MAPPING_KEYS:
+            raise ValueError("openclaw_idle_mapping_too_wide")
         for key, nested in value.items():
             _require_non_empty_string(key, "openclaw_idle_mapping_key_invalid")
             _validate_payload(nested, depth=depth + 1)
         return
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        if len(value) > MAX_SEQUENCE_ITEMS:
+            raise ValueError("openclaw_idle_sequence_too_long")
         for nested in value:
             _validate_payload(nested, depth=depth + 1)
         return
