@@ -57,12 +57,16 @@ It contains these Decimal-compatible scores in `[0, 1]`:
 The estimate is local and non-binding. Local novelty is measured against local
 capture context only and is not public graph novelty. The estimate is not a
 balance, claimability proof, settlement amount, wallet value, or guarantee.
+It also includes `ecu_range.floor` and `ecu_range.ceiling` for local private
+thresholding. Those range values are not claimable ECU.
 
 ## ConsentGate Rule
 
 ConsentGate is a synchronous policy API. A local agent may prepare private
 candidate records, classify them, estimate them, and show status. A submission
 intent requires `consent_state = approved_for_public_submission`.
+Unknown actions are rejected. Non-`submit` allowlisted actions stay local
+private.
 
 The regular human touchpoint is:
 
