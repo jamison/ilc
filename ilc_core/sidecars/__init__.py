@@ -10,6 +10,7 @@ __all__ = [
     "confidential_coordination_shard",
     "local_graph_memory_projection",
     "openclaw_idle_mining",
+    "openclaw_invite_bootstrap",
     "openclaw_local_capture",
     "public_fetch_p2p_readiness",
     "registry_manifest",
