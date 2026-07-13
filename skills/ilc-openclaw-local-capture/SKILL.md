@@ -10,6 +10,16 @@ harness skill, not protocol authority.
 
 - OpenClaw is the harness host. ILC protocol truth remains in `ilc_core/`.
 - Captures are local/private by default.
+- Setup is invite-gated. Before install/setup, ask the user for an ILC invite
+  bundle and verify it through the local invite bootstrap boundary.
+- No invite, invalid invite, wrong-profile invite, expired invite, replayed
+  invite, or unauthorized invite allows only docs, status, request-invite, and
+  local help actions.
+- A local agent may assist with invite verification, but it may not bypass the
+  invite gate or continue setup after a failed invite decision.
+- A valid invite unlocks only local bootstrap/install/setup actions. It does
+  not authorize ECU, wallet writes, public publication, settlement, public-RC
+  activation, or production identity creation by itself.
 - No captured record is submitted to the public graph automatically.
 - No ECU is minted by this skill.
 - No ILC is settled by this skill.
@@ -25,6 +35,7 @@ harness skill, not protocol authority.
 | `ilc capture` | `raw_payload`, `payload_kind`, `operator_agent_id`, `local_agent_id` | local private capture envelope | none |
 | `ilc classify` | capture envelope | candidate node type and proposed edge hints | none |
 | `ilc estimate` | capture envelope | `estimate_schema_v0.1_private_heuristic` | non-binding private estimate only |
+| `ilc verify-invite` | invite bundle, expected profile, current epoch | local bootstrap gate decision | local setup gate only |
 | `ilc submit` | capture envelope with ConsentGate approval | submission-intent record | no automatic publication |
 | `ilc mine-idle` | explicit `maintenance_idle` policy | local maintenance task offer | no credit minted |
 | `ilc status` | none | local queue, flagged items, policy state, and next human action | none |
@@ -82,3 +93,20 @@ action. Bypass is not permitted.
 Default setup should support broad public-RC local capture under
 `bounded_autonomy`. `maintenance_idle` is a separate explicit opt-in and may be
 recommended for confirmed agent-first installs. It must not be silently enabled.
+
+## Invite-Gated Setup Rule
+
+The first setup step is:
+
+```text
+ilc verify-invite
+```
+
+If verification fails, stop setup and offer only docs, status, request-invite,
+and local help. Do not install ILC core, run `ilc init`, create a local agent
+identity, install sidecars, set up a wallet, publish nodes, start idle-capacity
+work, write graph state, mint ECU, settle ILC, or claim public-RC activation.
+
+If verification succeeds, continue only to the local bootstrap/install/setup
+steps authorized by the verified invite decision. A valid invite is not a wallet
+claim, economic claim, public publication claim, or public graph write.

@@ -57388,6 +57388,256 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Phase prompt governing invite-gated OpenClaw bootstrap boundary execution.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2d_g10_invite_gated_openclaw_bootstrap_boundary.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2d_g10_invite_gated_openclaw_bootstrap_boundary.md",
+      "node_kind": "phase_prompt"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Spec defining fail-closed invite-gated OpenClaw bootstrap, nullifier storage, and forward redeemer-key binding gap.",
+      "repo_path": "docs/specs/ilc_invite_gated_openclaw_bootstrap_boundary_1575b_fix2d_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_invite_gated_openclaw_bootstrap_boundary_1575b_fix2d_v0.1.md",
+      "node_kind": "spec"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Public-safe OpenClaw invite bootstrap helper implementing local nullifier derivation, profile/epoch checks, replay storage, and fail-closed production gap decisions.",
+      "repo_path": "ilc_core/sidecars/openclaw_invite_bootstrap.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_MODULE",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/sidecars/openclaw_invite_bootstrap.py",
+      "node_kind": "runtime_module"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Sidecar package export list updated to include openclaw_invite_bootstrap.",
+      "repo_path": "ilc_core/sidecars/__init__.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPORTS_MODULE",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPORTS_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated:ilc_core/sidecars/__init__.py",
+      "node_kind": "runtime_package_index"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "OpenClaw local capture skill updated so setup starts with invite verification and failed invites allow only docs/status/request-invite/local help.",
+      "repo_path": "skills/ilc-openclaw-local-capture/SKILL.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated:skills/ilc-openclaw-local-capture/SKILL.md",
+      "node_kind": "skill_manifest"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Synthetic rehearsal tool writing retained invite-gated bootstrap evidence JSON.",
+      "repo_path": "tools/openclaw_invite_bootstrap_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/openclaw_invite_bootstrap_rehearsal.py",
+      "node_kind": "tool"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Focused tests covering invite missing/malformed/replay/profile/epoch/signature boundaries, deterministic decisions, skill text, persisted nullifiers, and import closure.",
+      "repo_path": "tests/test_phase_1575b_fix2d_invite_gated_openclaw_bootstrap.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix2d_invite_gated_openclaw_bootstrap.py",
+      "node_kind": "test_file"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Retained deterministic evidence JSON for invite-gated OpenClaw bootstrap decisions and recorded signature/redeemer-key gaps.",
+      "repo_path": "out/block6_openclaw_invite_bootstrap_fix2d/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:out/block6_openclaw_invite_bootstrap_fix2d/evidence_records.json",
+      "node_kind": "evidence"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "Walkthrough attesting direct reads, implementation summary, evidence hash, verification results, bypass analysis, tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1575b_fix2d_invite_gated_openclaw_bootstrap_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2d_invite_gated_openclaw_bootstrap_walkthrough.md",
+      "node_kind": "phase_walkthrough"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_1575b_fix2d_invite_gated_openclaw_bootstrap",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2d invite-gated OpenClaw bootstrap boundary",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix2d output tokens and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_gated_openclaw_bootstrap_boundary_committed_phase_1575b_fix2d",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "node_kind": "phase_status"
     }
   ],
   "boundary": {
