@@ -56729,6 +56729,261 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a prompt execution",
+      "manual_read_summary": "Phase prompt governing the OpenClaw local capture and private ECU estimate skill MVP with corrected Fix4 token dependencies and non-publication boundaries.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2a_g10_openclaw_local_capture_ecu_estimate_skill_mvp.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_harness_architecture_spec_1459p_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0026_Protocol_vs_Harness_Product_Boundary.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2a_g10_openclaw_local_capture_ecu_estimate_skill_mvp.md"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a skill manifest",
+      "manual_read_summary": "Local OpenClaw capture skill manifest defining machine-readable capture, classify, estimate, submit, mine-idle, and status actions with explicit non-authority boundaries.",
+      "repo_path": "skills/ilc-openclaw-local-capture/SKILL.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_agent_skills_surface_spec_621_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:skills/ilc-openclaw-local-capture/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a spec",
+      "manual_read_summary": "Spec defining the OpenClaw local capture envelope, raw payload hash rule, candidate allowlist, ConsentGate rule, and non-binding private ECU estimate schema.",
+      "repo_path": "docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_core_vs_agentic_harness_boundary_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a runtime helper",
+      "manual_read_summary": "Public-safe local OpenClaw capture helper implementing deterministic raw-payload hashing, input bounds, ConsentGate submission-intent policy, and non-binding private ECU estimates without importing excluded private harness modules.",
+      "repo_path": "ilc_core/sidecars/openclaw_local_capture.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_MODULE",
+          "target": "docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/sidecars/openclaw_local_capture.py"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a sidecar package index",
+      "manual_read_summary": "Sidecar package export list updated to include openclaw_local_capture.",
+      "repo_path": "ilc_core/sidecars/__init__.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_local_capture_skill_mvp_committed_phase_1575b_fix2a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:ilc_core/sidecars/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a rehearsal tool",
+      "manual_read_summary": "Synthetic local OpenClaw capture rehearsal writer producing deterministic retained evidence JSON without live provider, graph, wallet, or economic calls.",
+      "repo_path": "tools/openclaw_local_capture_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_local_capture.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/openclaw_local_capture_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a tests",
+      "manual_read_summary": "Focused tests for stable raw-payload hashing, envelope separation, numeric rejection, ConsentGate behavior, non-binding Decimal estimates, allowlist rejection, identity separation, created_epoch, and deterministic evidence.",
+      "repo_path": "tests/test_phase_1575b_fix2a_openclaw_local_capture_skill.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_local_capture.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix2a_openclaw_local_capture_skill.py"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a retained evidence",
+      "manual_read_summary": "Retained deterministic evidence JSON for the local OpenClaw capture rehearsal, including no-publication, no-public-graph-submission, no-wallet-write, no-minting, no-settlement, and no-activation flags.",
+      "repo_path": "out/block6_openclaw_local_capture_fix2a/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_local_capture_skill_mvp_committed_phase_1575b_fix2a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:out/block6_openclaw_local_capture_fix2a/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a walkthrough",
+      "manual_read_summary": "Walkthrough recording direct reads, implementation summary, evidence hash, verification results, tokens, and non-claims for OpenClaw local capture.",
+      "repo_path": "docs/phases/phase_1575b_fix2a_openclaw_local_capture_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:openclaw_local_capture_skill_mvp_committed_phase_1575b_fix2a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2a_openclaw_local_capture_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_142_phase_1575b_fix2a_openclaw_local_capture",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a STATUS update",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix2a output tokens, verification summary, evidence hash, ledger batch, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_local_capture_skill_mvp_committed_phase_1575b_fix2a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ],
   "boundary": {
