@@ -11,6 +11,7 @@ import pytest
 
 from ilc_core.sidecars.openclaw_local_capture import (
     ALLOWED_CANDIDATE_NODE_TYPES,
+    ALLOWED_CONSENT_ACTIONS,
     ESTIMATE_SCHEMA_VERSION,
     SCORE_FIELDS,
     build_capture_envelope,
@@ -97,6 +98,21 @@ def test_consent_gate_allows_only_submission_intent_when_approved() -> None:
     assert decision["public_submission_performed"] is False
 
 
+def test_consent_gate_rejects_unknown_actions() -> None:
+    envelope = build_capture_envelope(
+        raw_payload=_payload("ab"),
+        payload_kind="reply",
+        operator_agent_id="operator:one",
+        local_agent_id="agent:one",
+        provider_id="provider:a",
+        session_id="session-a",
+        consent_state="approved_for_public_submission",
+    )
+    with pytest.raises(ValueError):
+        evaluate_consent_gate(envelope, action="publish-now")
+    assert "submit" in ALLOWED_CONSENT_ACTIONS
+
+
 def test_ecu_estimate_schema_is_decimal_non_binding_and_complete() -> None:
     envelope = build_capture_envelope(
         raw_payload=_payload("ab"),
@@ -115,6 +131,31 @@ def test_ecu_estimate_schema_is_decimal_non_binding_and_complete() -> None:
     for value in scores.values():
         parsed = Decimal(value)
         assert Decimal("0") <= parsed <= Decimal("1")
+    estimate_range = estimate["ecu_range"]
+    assert set(estimate_range) == {"ceiling", "floor"}
+    floor = Decimal(estimate_range["floor"])
+    ceiling = Decimal(estimate_range["ceiling"])
+    assert Decimal("0") <= floor <= ceiling <= Decimal("1")
+    assert ceiling > Decimal("0")
+
+
+def test_ecu_estimate_range_drops_when_local_duplicate_exists() -> None:
+    envelope = build_capture_envelope(
+        raw_payload=_payload("ab"),
+        payload_kind="reply",
+        operator_agent_id="operator:one",
+        local_agent_id="agent:one",
+        provider_id="provider:a",
+        session_id="session-a",
+    )
+    first = build_estimate_record(envelope, local_duplicate_count=0)
+    duplicate = build_estimate_record(envelope, local_duplicate_count=1)
+    assert Decimal(first["ecu_range"]["ceiling"]) > Decimal(duplicate["ecu_range"]["ceiling"])
+
+
+def test_estimate_rejects_malformed_mapping_envelope() -> None:
+    with pytest.raises(ValueError):
+        build_estimate_record({"candidate_node_type": "claim_candidate", "payload_kind": "reply"})
 
 
 def test_candidate_classification_allowlist_rejects_unknown_classes() -> None:
