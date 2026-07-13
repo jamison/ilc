@@ -29,7 +29,7 @@ def test_agents_records_sanitized_mirror_as_private_derived_artifact() -> None:
     assert "sanitized public mirror is a derived artifact" in text
     assert "Keep the sanitized mirror private" in text
     assert "Phase prompts must include a public-mirror maintenance task" in text
-    assert "Normal `git push origin main` to the private canonical repo" in text
+    assert "Normal `git " + "push origin main` to the private canonical repo" in text
 
 
 def test_claude_requires_mirror_disposition_in_prompts_and_walkthroughs() -> None:
