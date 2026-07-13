@@ -57979,6 +57979,131 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "node_kind": "phase_status"
+    },
+    {
+      "annotation_batch": "manual_batch_148_phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix2 OpenClaw real harness strike force",
+      "manual_read_summary": "Spec recording real OpenClaw harness installation, ILC source install, ILC skill visibility, node2 Gateway, node3 node host, and paired private control-plane connection.",
+      "repo_path": "docs/specs/ilc_openclaw_real_harness_strikeforce_1575b_fix2e_fix2_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_real_harnesses_installed_phase_1575b_fix2e_fix2",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing:docs/specs/ilc_openclaw_real_harness_strikeforce_1575b_fix2e_fix2_v0.1.md",
+      "node_kind": "spec"
+    },
+    {
+      "annotation_batch": "manual_batch_148_phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix2 OpenClaw real harness strike force",
+      "manual_read_summary": "Canonical ILC OpenClaw skill metadata fix adding OpenClaw-compatible frontmatter so the skill is visible and command-available in real OpenClaw workspaces.",
+      "repo_path": "skills/ilc-openclaw-local-capture/SKILL.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:ilc_openclaw_skill_visible_on_two_vps_phase_1575b_fix2e_fix2",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:skills/ilc-openclaw-local-capture/SKILL.md",
+      "node_kind": "skill"
+    },
+    {
+      "annotation_batch": "manual_batch_148_phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix2 OpenClaw real harness strike force",
+      "manual_read_summary": "Retained redacted evidence proving two real OpenClaw installs, two ILC source installs, two visible ILC skills, node2 Gateway, node3 node host, and paired node connection; records remote invoke scope blocker.",
+      "repo_path": "out/block6_openclaw_real_harness_strikeforce_fix2e_fix2/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_private_gateway_nodehost_communication_confirmed_phase_1575b_fix2e_fix2",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/block6_openclaw_real_harness_strikeforce_fix2e_fix2/evidence_records.json",
+      "node_kind": "evidence"
+    },
+    {
+      "annotation_batch": "manual_batch_148_phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix2 OpenClaw real harness strike force",
+      "manual_read_summary": "Walkthrough recording installation, skill visibility, private transport, paired connection, operator-scope blocker, and non-claims.",
+      "repo_path": "docs/phases/phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:openclaw_node3_paired_with_node2_gateway_phase_1575b_fix2e_fix2",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce_walkthrough.md",
+      "node_kind": "phase_walkthrough"
+    },
+    {
+      "annotation_batch": "manual_batch_148_phase_1575b_fix2e_fix2_openclaw_real_harness_strikeforce",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix2 OpenClaw real harness strike force",
+      "manual_read_summary": "STATUS update recording Fix2e-Fix2 tokens, evidence hash, communication boundary, remote invoke blocker, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_real_harnesses_installed_phase_1575b_fix2e_fix2",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "node_kind": "phase_status"
     }
   ],
   "boundary": {
