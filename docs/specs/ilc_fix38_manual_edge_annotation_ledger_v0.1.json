@@ -58291,6 +58291,94 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2f_pre_1575c_cleanliness_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_151_phase_1575c_public_rc_gate_blocked_signing_path",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001 blocked at production Genesis signing path",
+      "manual_read_summary": "Blocked Phase 1575c gate record: pre-signing readiness passed, production Genesis v0.4 signing path unavailable.",
+      "repo_path": "docs/specs/ilc_public_rc_gate_001_1575c_blocked_signing_path_v0.1.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_blocked_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_public_rc_gate_001_1575c_blocked_signing_path_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_151_phase_1575c_public_rc_gate_blocked_signing_path",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001 blocked at production Genesis signing path",
+      "manual_read_summary": "Walkthrough for Phase 1575c blocked public-RC gate attempt.",
+      "repo_path": "docs/phases/phase_1575c_public_rc_gate_001_blocked_walkthrough.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:public_rc_gate_001_blocked_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575c_public_rc_gate_001_blocked_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_151_phase_1575c_public_rc_gate_blocked_signing_path",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001 blocked at production Genesis signing path",
+      "manual_read_summary": "Machine-readable evidence for Phase 1575c blocked signing path.",
+      "repo_path": "out/block6_public_rc_gate_001_1575c/evidence_records.json",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "defect:production_genesis_signing_path_unavailable_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/block6_public_rc_gate_001_1575c/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_151_phase_1575c_public_rc_gate_blocked_signing_path",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001 blocked at production Genesis signing path",
+      "manual_read_summary": "STATUS entry recording blocked Phase 1575c attempt and non-authorization tokens.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_blocked_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ],
   "boundary": {
