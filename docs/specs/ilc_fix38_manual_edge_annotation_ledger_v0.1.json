@@ -57638,6 +57638,187 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "node_kind": "phase_status"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Phase prompt governing the two-node OpenClaw integration rehearsal, including fixture mode, guarded real-VPS mode, named gaps, and non-activation boundaries.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2e_g10_two_vps_openclaw_integration_test.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:two_vps_openclaw_integration_rehearsed_phase_1575b_fix2e",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575b_fix2e_g10_two_vps_openclaw_integration_test.md",
+      "node_kind": "phase_prompt"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Spec defining the two-node OpenClaw integration rehearsal, per-node invite/nullifier checks, attribution checks, ConsentGate checks, scheduler checks, exact duplicate checks, and named forward gaps.",
+      "repo_path": "docs/specs/ilc_openclaw_two_vps_integration_rehearsal_1575b_fix2e_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_core_vs_agentic_harness_boundary_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_integration_rehearsed_phase_1575b_fix2e",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_openclaw_two_vps_integration_rehearsal_1575b_fix2e_v0.1.md -> genesis:genesis_root_v0.4",
+      "node_kind": "spec"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Fixture and guarded-real-mode runner composing the local capture, idle-capacity, and invite-gated bootstrap helpers without changing ilc_core protocol authority.",
+      "repo_path": "tools/openclaw_two_vps_integration_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_openclaw_two_vps_integration_rehearsal_1575b_fix2e_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/openclaw_two_vps_integration_rehearsal.py",
+      "node_kind": "tool"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Focused tests for named gap fields, redaction, per-node nullifier persistence, cross-node replay non-claim, distributed reservation non-claim, exact duplicate suppression, status scoping, and real-mode fail-closed behavior.",
+      "repo_path": "tests/test_phase_1575b_fix2e_two_vps_openclaw_integration.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/openclaw_two_vps_integration_rehearsal.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix2e_two_vps_openclaw_integration.py",
+      "node_kind": "test_file"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Retained evidence for fixture-mode two-node OpenClaw integration, including per-node invite/nullifier checks, attribution, ConsentGate independence, scheduler independence, exact duplicate suppression, and named gap records.",
+      "repo_path": "out/block6_openclaw_two_vps_fix2e/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_integration_rehearsed_phase_1575b_fix2e",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/block6_openclaw_two_vps_fix2e/evidence_records.json",
+      "node_kind": "evidence"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "Walkthrough attesting direct reads, implementation summary, evidence hashes, verification commands, per-node results, named gap table, and non-claims.",
+      "repo_path": "docs/phases/phase_1575b_fix2e_two_vps_openclaw_integration_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:two_vps_openclaw_integration_rehearsed_phase_1575b_fix2e",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2e_two_vps_openclaw_integration_walkthrough.md",
+      "node_kind": "phase_walkthrough"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_1575b_fix2e_two_vps_openclaw_integration",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e two-node OpenClaw integration rehearsal",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix2e output tokens, verification summary, named gaps, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_integration_rehearsed_phase_1575b_fix2e",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "node_kind": "phase_status"
     }
   ],
   "boundary": {
