@@ -11,6 +11,7 @@ import pytest
 from ilc_core.sidecars.openclaw_idle_mining import (
     ALLOWED_TASK_TYPES,
     GRAPH_MAINTENANCE_TASK_TYPES,
+    MAX_HISTORY_RECORDS,
     REVIEW_LANE_TASK_TYPES,
     build_task_envelope,
     evaluate_task_offer,
@@ -264,6 +265,44 @@ def test_envelope_fields_are_not_included_in_result_content_hash() -> None:
 def test_float_nan_infinity_bool_and_negative_inputs_are_rejected(bad_kwargs: dict[str, object]) -> None:
     with pytest.raises(ValueError):
         _offer(**bad_kwargs)
+
+
+def test_overlarge_mapping_payload_is_rejected() -> None:
+    with pytest.raises(ValueError, match="openclaw_idle_mapping_too_wide"):
+        build_task_envelope(
+            task_type="candidate_review",
+            input_payload={str(index): "v" for index in range(65)},
+            operator_agent_id="operator:one",
+            local_agent_id="agent:one",
+            resource_policy_profile="local_compute",
+            contribution_mode="local_idle_compute_contribution",
+        )
+
+
+def test_overlarge_sequence_payload_is_rejected() -> None:
+    with pytest.raises(ValueError, match="openclaw_idle_sequence_too_long"):
+        build_task_envelope(
+            task_type="candidate_review",
+            input_payload={"items": list(range(65))},
+            operator_agent_id="operator:one",
+            local_agent_id="agent:one",
+            resource_policy_profile="local_compute",
+            contribution_mode="local_idle_compute_contribution",
+        )
+
+
+def test_task_history_over_max_records_raises() -> None:
+    history = [
+        {
+            "idle_window_id": "window:one",
+            "local_agent_id": "agent:one",
+            "task_id": f"task:{index}",
+            "task_type": "candidate_review",
+        }
+        for index in range(MAX_HISTORY_RECORDS + 1)
+    ]
+    with pytest.raises(ValueError, match="openclaw_task_history_too_large"):
+        _offer(task_history=history)
 
 
 def test_provider_headers_are_scheduling_hints_and_unknown_providers_use_local_counter() -> None:
