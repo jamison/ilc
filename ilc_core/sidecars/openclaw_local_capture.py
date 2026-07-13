@@ -55,6 +55,16 @@ ALLOWED_CONSENT_STATES = frozenset(
         "rejected",
     }
 )
+ALLOWED_CONSENT_ACTIONS = frozenset(
+    {
+        "capture",
+        "classify",
+        "estimate",
+        "mine-idle",
+        "status",
+        "submit",
+    }
+)
 
 SCORE_FIELDS = (
     "novelty_score",
@@ -206,7 +216,7 @@ def estimate_private_ecu(
     *,
     local_duplicate_count: int = 0,
 ) -> dict[str, str]:
-    data = envelope.to_dict() if isinstance(envelope, CaptureEnvelope) else dict(envelope)
+    data = _coerce_envelope_data(envelope)
     if type(local_duplicate_count) is not int or local_duplicate_count < 0:
         raise ValueError("openclaw_duplicate_count_invalid")
     node_type = str(data.get("candidate_node_type", ""))
@@ -234,7 +244,9 @@ def build_estimate_record(
     local_duplicate_count: int = 0,
 ) -> dict[str, Any]:
     scores = estimate_private_ecu(envelope, local_duplicate_count=local_duplicate_count)
+    estimate_range = _estimate_range(scores)
     return {
+        "ecu_range": estimate_range,
         "estimate_label": "non_binding_private_projection",
         "estimate_schema": ESTIMATE_SCHEMA_VERSION,
         "local_novelty_only": True,
@@ -250,8 +262,9 @@ def evaluate_consent_gate(
     *,
     action: str,
 ) -> dict[str, Any]:
-    data = envelope.to_dict() if isinstance(envelope, CaptureEnvelope) else dict(envelope)
+    data = _coerce_envelope_data(envelope)
     _require_non_empty_string(action, "openclaw_consent_action_invalid")
+    _require_member(action, ALLOWED_CONSENT_ACTIONS, "openclaw_consent_action_invalid")
     consent_state = data.get("consent_state")
     if consent_state not in ALLOWED_CONSENT_STATES:
         raise ValueError("openclaw_consent_state_invalid")
@@ -349,14 +362,82 @@ def _coerce_edges(edges: Sequence[Mapping[str, str]]) -> tuple[Mapping[str, str]
     return tuple(out)
 
 
+def _coerce_envelope_data(envelope: CaptureEnvelope | Mapping[str, Any]) -> dict[str, Any]:
+    data = envelope.to_dict() if isinstance(envelope, CaptureEnvelope) else dict(envelope)
+    required = {
+        "candidate_edges",
+        "candidate_node_type",
+        "capture_id",
+        "consent_state",
+        "created_epoch",
+        "local_agent_id",
+        "operator_agent_id",
+        "payload_kind",
+        "privacy_class",
+        "provider_id",
+        "raw_payload_sha256",
+        "session_id_hash",
+        "source_harness",
+    }
+    if not required.issubset(data):
+        raise ValueError("openclaw_capture_envelope_invalid")
+    _require_non_empty_string(data["capture_id"], "openclaw_capture_id_invalid")
+    capture_id = data["capture_id"]
+    if not capture_id.startswith("openclaw_capture:"):
+        raise ValueError("openclaw_capture_id_invalid")
+    _require_sha256_hex(capture_id.removeprefix("openclaw_capture:"), "openclaw_capture_id_invalid")
+    _require_non_empty_string(data["source_harness"], "openclaw_source_harness_invalid")
+    _require_non_empty_string(data["operator_agent_id"], "openclaw_operator_agent_id_invalid")
+    _require_non_empty_string(data["local_agent_id"], "openclaw_local_agent_id_invalid")
+    _require_non_empty_string(data["provider_id"], "openclaw_provider_id_invalid")
+    _require_sha256_hex(data["session_id_hash"], "openclaw_session_id_hash_invalid")
+    _require_sha256_hex(data["raw_payload_sha256"], "openclaw_raw_payload_sha256_invalid")
+    _require_member(data["payload_kind"], ALLOWED_PAYLOAD_KINDS, "openclaw_payload_kind_invalid")
+    _require_member(data["privacy_class"], ALLOWED_PRIVACY_CLASSES, "openclaw_privacy_class_invalid")
+    _require_member(data["candidate_node_type"], ALLOWED_CANDIDATE_NODE_TYPES, "openclaw_candidate_node_type_invalid")
+    _require_member(data["consent_state"], ALLOWED_CONSENT_STATES, "openclaw_consent_state_invalid")
+    if type(data["created_epoch"]) is not int or data["created_epoch"] < 0:
+        raise ValueError("openclaw_created_epoch_invalid")
+    data["candidate_edges"] = [dict(edge) for edge in _coerce_edges(data["candidate_edges"])]
+    return data
+
+
+def _estimate_range(scores: Mapping[str, str]) -> dict[str, str]:
+    values = {key: Decimal(scores[key]) for key in SCORE_FIELDS}
+    positive = (
+        values["novelty_score"] * Decimal("0.30")
+        + values["reuse_potential"] * Decimal("0.25")
+        + values["evidence_strength"] * Decimal("0.25")
+        + values["falsifiability"] * Decimal("0.20")
+    )
+    penalty = (
+        values["duplicate_risk"] * Decimal("0.50")
+        + values["privacy_risk"] * Decimal("0.50")
+    )
+    ceiling = max(Decimal("0.00"), positive * max(Decimal("0.00"), Decimal("1.00") - penalty))
+    floor = ceiling * Decimal("0.50")
+    return {
+        "ceiling": _decimal_score(ceiling),
+        "floor": _decimal_score(floor),
+    }
+
+
 def _decimal_score(value: Decimal) -> str:
     if not value.is_finite() or value < Decimal("0") or value > Decimal("1"):
         raise ValueError("openclaw_estimate_score_invalid")
     return str(value.quantize(Decimal("0.01")))
 
 
+def _require_sha256_hex(value: object, token: str) -> None:
+    if type(value) is not str or len(value) != 64:
+        raise ValueError(token)
+    if any(char not in "0123456789abcdef" for char in value):
+        raise ValueError(token)
+
+
 __all__ = [
     "ALLOWED_CANDIDATE_NODE_TYPES",
+    "ALLOWED_CONSENT_ACTIONS",
     "ALLOWED_CONSENT_STATES",
     "ALLOWED_PAYLOAD_KINDS",
     "ALLOWED_PRIVACY_CLASSES",

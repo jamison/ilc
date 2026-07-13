@@ -56984,6 +56984,179 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 runtime hardening",
+      "manual_read_summary": "OpenClaw local capture helper hardened after direct code audit: estimate records now include non-binding private floor/ceiling range values, mapping inputs are validated as full capture envelopes, and ConsentGate actions are allowlisted.",
+      "repo_path": "ilc_core/sidecars/openclaw_local_capture.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_MODULE",
+          "target": "docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated:ilc_core/sidecars/openclaw_local_capture.py"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 spec update",
+      "manual_read_summary": "OpenClaw local capture spec updated to record non-binding private ECU range fields and unknown ConsentGate action rejection.",
+      "repo_path": "docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/architecture/ilc_core_vs_agentic_harness_boundary_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated:docs/specs/ilc_openclaw_local_capture_skill_mvp_1575b_fix2a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 skill manifest update",
+      "manual_read_summary": "OpenClaw local capture skill manifest updated to describe private floor/ceiling estimate range and ConsentGate action allowlist behavior.",
+      "repo_path": "skills/ilc-openclaw-local-capture/SKILL.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_agent_skills_surface_spec_621_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated:skills/ilc-openclaw-local-capture/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 tests",
+      "manual_read_summary": "Focused OpenClaw local capture tests extended for non-binding ECU range output, duplicate-range reduction, malformed mapping rejection, and unknown ConsentGate action rejection.",
+      "repo_path": "tests/test_phase_1575b_fix2a_openclaw_local_capture_skill.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_local_capture.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix2a_openclaw_local_capture_skill.py"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 retained evidence",
+      "manual_read_summary": "Retained deterministic evidence JSON regenerated with private ECU range fields and unchanged non-publication flags.",
+      "repo_path": "out/block6_openclaw_local_capture_fix2a/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_private_ecu_estimate_range_committed_phase_1575b_fix2a_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:out/block6_openclaw_local_capture_fix2a/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 walkthrough",
+      "manual_read_summary": "Walkthrough documenting direct code audit findings, patch scope, regenerated evidence hash, verification, tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:openclaw_private_ecu_estimate_range_committed_phase_1575b_fix2a_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_1575b_fix2a_fix1_openclaw_capture_audit_hardening",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2a-Fix1 STATUS update",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix2a-Fix1 audit hardening tokens, evidence hash, verification summary, ledger batch, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:openclaw_private_ecu_estimate_range_committed_phase_1575b_fix2a_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ],
   "boundary": {
