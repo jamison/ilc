@@ -56597,6 +56597,138 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_138_phase_1575b_economic_activation_certificate",
+      "chronology_note": "2026-07-13 Phase 1575b: Economic Activation Certificate",
+      "manual_read_summary": "Phase prompt for the Economic Activation Certificate; defines hard-stop evidence checks, anti-circularity rule, row-by-row verdict requirements, Row 6 CDL-057 witness-gate callout, wallet visibility boundary, and non-activation constraints.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575b_g10_economic_activation_certificate.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_138_phase_1575b_economic_activation_certificate",
+      "chronology_note": "2026-07-13 Phase 1575b: Economic Activation Certificate",
+      "manual_read_summary": "Economic activation certificate recording row-by-row public_rc_live verdicts for activation matrix rows 5-9 and 20-21, consuming Fix5/Fix6/Fix6a/Fix7/Fix8/Fix9 evidence while preserving guard-closed runtime boundaries.",
+      "repo_path": "docs/specs/ilc_phase_1575b_economic_activation_certificate_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_phase_1575b_fix5_ecu_to_ilc_value_path_gap_closure_spec_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out/block6_cdl057_witness_lane_rehearsal_fix8/evidence_records.json",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out/block6_ecu_to_ilc_distributed_private_rehearsal_fix6a/evidence_records.json",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out/block6_epoch_0_to_1_private_transition_rehearsal_fix9/evidence_records.json",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_phase_1575b_economic_activation_certificate_v0.1.md -> genesis:genesis_root_v0.4"
+    },
+    {
+      "annotation_batch": "manual_batch_138_phase_1575b_economic_activation_certificate",
+      "chronology_note": "2026-07-13 Phase 1575b: activation matrix updated with final verdicts",
+      "manual_read_summary": "Block 6 public-RC activation matrix updated with §8 Phase 1575b final verdicts: rows 5-9 and 20-21 moved from pending_private_economic_soft_rc_gate to public_rc_live policy posture while all runtime guards remain closed.",
+      "repo_path": "docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_activation_certificate_complete_phase_1575b",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_138_phase_1575b_economic_activation_certificate",
+      "chronology_note": "2026-07-13 Phase 1575b: Economic Activation Certificate",
+      "manual_read_summary": "STATUS update recording Phase 1575b final row verdicts, Row 6 witness-gate callout, wallet visibility decision, guard snapshot, source export result, tests passed, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:economic_activation_certificate_complete_phase_1575b",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
