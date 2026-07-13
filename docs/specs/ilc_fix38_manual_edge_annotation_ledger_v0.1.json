@@ -57819,6 +57819,166 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "node_kind": "phase_status"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "Spec recording the real two-VPS OpenClaw execution closure for the prior Fix2e not-configured boundary, including retained evidence hashes and named carry-forward gaps.",
+      "repo_path": "docs/specs/ilc_openclaw_two_vps_real_execution_fix1_1575b_fix2e_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_real_execution_passed_phase_1575b_fix2e_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing:docs/specs/ilc_openclaw_two_vps_real_execution_fix1_1575b_fix2e_v0.1.md",
+      "node_kind": "spec"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "Runner hardened so real mode requires explicit remote rehearsal workdirs, rejects unsafe workdir characters, shell-quotes remote workdirs, executes fixture mode on two reachable VPS nodes, and retains redacted local evidence.",
+      "repo_path": "tools/openclaw_two_vps_integration_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_openclaw_two_vps_real_execution_fix1_1575b_fix2e_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:two_vps_openclaw_real_execution_passed_phase_1575b_fix2e_fix1"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/openclaw_two_vps_integration_rehearsal.py",
+      "node_kind": "tool"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "Regression tests covering Fix2e/Fix2e-Fix1 runner behavior, including fail-closed real mode when explicit remote workdirs are absent and rejection of unsafe remote workdir metacharacters.",
+      "repo_path": "tests/test_phase_1575b_fix2e_two_vps_openclaw_integration.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/openclaw_two_vps_integration_rehearsal.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "phase:real_vps_mode_requires_explicit_rehearsal_workdirs_phase_1575b_fix2e_fix1"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix2e_two_vps_openclaw_integration.py",
+      "node_kind": "test_file"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "Retained redacted evidence JSON proving real_vps_mode.run=true, real_vps_mode.status=passed, node_count=2, and named carry-forward gaps remain explicit.",
+      "repo_path": "out/block6_openclaw_two_vps_fix2e_fix1/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_real_execution_passed_phase_1575b_fix2e_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/block6_openclaw_two_vps_fix2e_fix1/evidence_records.json",
+      "node_kind": "evidence"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "Walkthrough recording VPS reachability, private bundle hash, real-mode command, retained evidence hashes, named gaps, verification commands, and non-claims.",
+      "repo_path": "docs/phases/phase_1575b_fix2e_fix1_real_vps_openclaw_integration_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:real_vps_openclaw_evidence_retained_phase_1575b_fix2e_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix2e_fix1_real_vps_openclaw_integration_walkthrough.md",
+      "node_kind": "phase_walkthrough"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_1575b_fix2e_fix1_real_vps_openclaw_execution",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix2e-Fix1 real VPS OpenClaw execution",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix2e-Fix1 output tokens, evidence hashes, named gaps, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:two_vps_openclaw_real_execution_passed_phase_1575b_fix2e_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "node_kind": "phase_status"
     }
   ],
   "boundary": {

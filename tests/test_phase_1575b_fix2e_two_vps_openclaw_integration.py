@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from ilc_core.sidecars.openclaw_local_capture import raw_payload_sha256
 
 RUNNER = Path("tools/openclaw_two_vps_integration_rehearsal.py")
@@ -105,3 +107,42 @@ def test_runner_refuses_real_vps_execution_without_explicit_targets() -> None:
     )
     assert result.returncode == 2
     assert "fix2e_real_vps_targets_required" in result.stderr
+
+
+def test_runner_refuses_real_vps_execution_without_explicit_workdirs() -> None:
+    env = dict(os.environ)
+    env["ILC_FIX2E_VPS_A"] = "node-a"
+    env["ILC_FIX2E_VPS_B"] = "node-b"
+    env.pop("ILC_FIX2E_VPS_A_WORKDIR", None)
+    env.pop("ILC_FIX2E_VPS_B_WORKDIR", None)
+    result = subprocess.run(
+        [sys.executable, str(RUNNER), "--real"],
+        check=False,
+        capture_output=True,
+        env=env,
+        text=True,
+    )
+    assert result.returncode == 2
+    assert "ILC_FIX2E_VPS_A_WORKDIR" in result.stderr
+    assert "ILC_FIX2E_VPS_B_WORKDIR" in result.stderr
+
+
+def test_remote_workdir_rejects_shell_metacharacters() -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("fix2e_runner", RUNNER)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    valid = "/home/ilcops/block6_rehearsal/fix2e_fix1_openclaw_real_vps/current"
+    module._validate_remote_workdir(valid)
+    for value in (
+        "/home/ilcops/block6_rehearsal/fix2e;uname",
+        "/home/ilcops/block6_rehearsal/fix2e$(uname)",
+        "/home/ilcops/block6_rehearsal/fix2e`uname`",
+        "/home/ilcops/block6_rehearsal/fix2e|cat",
+    ):
+        with pytest.raises(ValueError, match="fix2e_remote_workdir_invalid"):
+            module._validate_remote_workdir(value)
