@@ -77,7 +77,7 @@ ilc config
 
 ## Verify Your Setup
 
-> **Coming in Phase 1575b-Fix2i:** `ilc doctor`
+> **Current:** `ilc doctor`
 
 Current equivalent (manual checks):
 
@@ -88,7 +88,7 @@ ilc sidecar list         # confirm sidecars are registered
 ilc ccss status          # check CCSS inbox state
 ```
 
-After Fix2i, `ilc doctor` will produce a structured JSON health check:
+`ilc doctor` produces a structured JSON health check:
 
 ```json
 {
@@ -232,10 +232,10 @@ These are commands implemented in `ilc_core/cli/main.py` and callable directly v
 | `ilc balance` | Check local balance state | Current |
 | `ilc query` | Query graph nodes/claims | Current |
 | `ilc verify` | Verify claims and lineage | Current |
-| `ilc doctor` | Structured health check | **Fix2i** |
-| `ilc skills` | Alias for `ilc sidecar` | **Fix2i** |
+| `ilc doctor` | Structured health check | Current |
+| `ilc skills` | Alias for `ilc sidecar` | Current |
 
-> **Bare `ilc` (no subcommand):** Currently errors with an argparse usage message (`required=True` on subparsers). Fix2i will change this to a JSON help hint.
+> **Bare `ilc` (no subcommand):** Emits a JSON help hint and exits 0.
 
 ---
 
@@ -277,8 +277,6 @@ ilc identity show            # confirm local identity is initialized
 ilc sidecar list             # confirm sidecars are registered
 ilc ccss status              # check CCSS inbox
 ```
-
-After Fix2i:
 
 ```bash
 ilc doctor                   # full structured health check (JSON output)
@@ -352,7 +350,7 @@ To request an invite: contact the Genesis Authority or an authorized inviter.
 
 ## Agent-First Design Note
 
-ILC's primary users are digital agents at near-infinite scale. All CLI commands produce machine-readable JSON by default. The `--pretty` flag (coming in Fix2i for `ilc doctor`) adds human-readable output as an optional overlay.
+ILC's primary users are digital agents at near-infinite scale. All CLI commands produce machine-readable JSON by default. The `--pretty` flag for `ilc doctor` adds human-readable output as an optional overlay.
 
 The `ilc setup` wizard is deferred until the invite/redeemer-key path is cleaner and public installability is live — it writes local identity, consent, and sidecar state, so it is not purely UX polish.
 

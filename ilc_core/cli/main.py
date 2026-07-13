@@ -44,8 +44,10 @@ OPERATIONAL_COMMANDS = (
     "agent",
     "node",
     "sidecar",
+    "skills",
     "ccss",
     "atlas",
+    "doctor",
     "bootstrap",
     "submit",
     "version",
@@ -379,6 +381,14 @@ def _identity_state_path(graph_state_path: Path) -> Path:
     return graph_state_path.with_name(".ilc_d2e04_identity_state.json")
 
 
+def _home_ilc_state_path(filename: str) -> Path:
+    return Path.home() / ".ilc" / filename
+
+
+def _ccss_home_path() -> Path:
+    return Path.home() / ".ilc" / "ccss"
+
+
 def _load_identity_state(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
@@ -406,6 +416,16 @@ def _read_local_json_file(path: str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("json_payload_not_object")
     return data
+
+
+def _read_json_object(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
 
 
 def _require_invite_cli_enabled(args: argparse.Namespace) -> None:
@@ -538,6 +558,83 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
         }
 
     raise ValueError(f"unknown_identity_subcommand:{subcommand}")
+
+
+def _doctor_check_json_object(path: Path, required_field: str | None = None) -> bool:
+    data = _read_json_object(path)
+    if data is None:
+        return False
+    if required_field is not None:
+        value = data.get(required_field)
+        return isinstance(value, str) and bool(value)
+    return True
+
+
+def _run_doctor_subcommand(args: argparse.Namespace, graph_state_path: Path) -> dict[str, Any]:
+    identity_path = _identity_state_path(graph_state_path)
+    graph_path = graph_state_path
+    balance_path = _default_balance_state_path()
+    invite_nullifier_path = _home_ilc_state_path("invite_nullifiers.json")
+    consent_gate_path = _home_ilc_state_path("consent_gate.json")
+    sidecar_registry_path = _home_ilc_state_path("sidecar_registry.json")
+    ccss_path = _ccss_home_path()
+
+    checks = {
+        "ilc_core_importable": True,
+        "identity_initialized": _doctor_check_json_object(identity_path, "lineage_id"),
+        "invite_nullifier_store_present": invite_nullifier_path.exists(),
+        "consent_gate_configured": _doctor_check_json_object(consent_gate_path, "autonomy_level"),
+        "sidecar_registry_present": sidecar_registry_path.exists(),
+        "local_graph_state_readable": _doctor_check_json_object(graph_path),
+        "balance_state_present": balance_path.exists(),
+        "ccss_identity_present": ccss_path.is_dir(),
+    }
+    if not checks["identity_initialized"]:
+        verdict = "not_setup"
+        next_action = "ilc identity init"
+        exit_code = 1
+    elif all(checks.values()):
+        verdict = "ready"
+        next_action = "none"
+        exit_code = 0
+    else:
+        verdict = "partial_setup"
+        next_action = "ilc sidecar recipe apply"
+        exit_code = 0
+    return {
+        "_exit_code": exit_code,
+        "checks": checks,
+        "next_action": next_action,
+        "paths": {
+            "balance_state": str(balance_path),
+            "ccss_home": str(ccss_path),
+            "consent_gate": str(consent_gate_path),
+            "graph_state": str(graph_path),
+            "identity_state": str(identity_path),
+            "invite_nullifiers": str(invite_nullifier_path),
+            "sidecar_registry": str(sidecar_registry_path),
+        },
+        "pretty_requested": bool(getattr(args, "pretty", False)),
+        "read_only": True,
+        "subcommand": "doctor",
+        "verdict": verdict,
+    }
+
+
+def _format_doctor_pretty(data: dict[str, Any]) -> str:
+    checks = data.get("checks")
+    if not isinstance(checks, dict):
+        checks = {}
+    lines = [
+        "ILC doctor",
+        f"verdict: {data.get('verdict', 'unknown')}",
+        f"next_action: {data.get('next_action', 'unknown')}",
+        "",
+        "checks:",
+    ]
+    for key in sorted(checks):
+        lines.append(f"  {key:<32} {'pass' if checks[key] else 'missing'}")
+    return "\n".join(lines)
 
 
 def _load_balance_state(path: Path) -> dict[str, Any] | None:
@@ -1133,7 +1230,7 @@ def _build_parser() -> JsonArgumentParser:
         help=argparse.SUPPRESS,
     )
 
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command", required=False)
     for command in ALL_COMMANDS:
         if command == "query":
             query_parser = subparsers.add_parser("query", help="Prototype `query` command")
@@ -1282,10 +1379,12 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
-        if command == "sidecar":
+        if command in {"sidecar", "skills"}:
             sidecar_parser = subparsers.add_parser(
-                "sidecar",
-                help="Sidecar discovery and recipe commands",
+                command,
+                help="Sidecar discovery and recipe commands"
+                if command == "sidecar"
+                else "Alias for sidecar discovery and recipe commands",
             )
             sidecar_subparsers = sidecar_parser.add_subparsers(
                 dest="sidecar_subcommand",
@@ -1322,11 +1421,29 @@ def _build_parser() -> JsonArgumentParser:
             p_recipe_apply.add_argument("--name", default="Local ILC User")
             p_recipe_apply.add_argument("--peer-endpoint", default="")
             p_recipe_apply.add_argument("--overwrite-identity", action="store_true")
+            if command == "skills":
+                p_skills_install = sidecar_subparsers.add_parser(
+                    "install",
+                    help="Reserved ClawHub-backed skill install command",
+                )
+                p_skills_install.add_argument("skill_id")
 
             # External sidecars are dispatched via the _SIDECAR_PASSTHROUGH
             # short-circuit in main() before argparse runs — they do NOT
             # appear here as subcommands so ilc sidecar --help stays clean.
             # Use `ilc sidecar list` to discover available sidecars.
+            continue
+
+        if command == "doctor":
+            doctor_parser = subparsers.add_parser(
+                "doctor",
+                help="Read-only local ILC health check",
+            )
+            doctor_parser.add_argument(
+                "--pretty",
+                action="store_true",
+                help="Emit human-readable health output instead of JSON",
+            )
             continue
 
         if command == "ccss":
@@ -1842,9 +1959,11 @@ def _run_top_level_command(
         "bootstrap",
         "bundle",
         "ccss",
+        "doctor",
         "node",
         "query",
         "sidecar",
+        "skills",
         "verify",
     }
     if command not in stateless_commands:
@@ -1874,10 +1993,13 @@ def _run_top_level_command(
 
         data = run_node_command(args)
         return _success_payload(command, data)
-    if command == "sidecar":
+    if command in {"sidecar", "skills"}:
         from ilc_core.cli.sidecar_cli import run_sidecar_command
 
         data = run_sidecar_command(args)
+        return _success_payload("sidecar" if command == "skills" else command, data)
+    if command == "doctor":
+        data = _run_doctor_subcommand(args, graph_state_path)
         return _success_payload(command, data)
     if command == "ccss":
         from ilc_core.cli.ccss_cli import run_ccss_command
@@ -2024,7 +2146,35 @@ def main() -> int:
     parser = _build_parser()
     args = parser.parse_args()
 
+    if args.command is None:
+        _write_json_payload(
+            {
+                "help": "run 'ilc --help' for full command reference",
+                "hint": "ILC — Intelligent Labor Coin CLI",
+                "ok": True,
+                "quick_start": [
+                    "ilc identity init   # initialize local agent identity",
+                    "ilc doctor          # check configuration health",
+                    "ilc sidecar list    # list installed sidecars",
+                    "ilc ccss status     # check CCSS inbox",
+                    "ilc version         # show version",
+                ],
+            }
+        )
+        return 0
+
     command = str(args.command)
+
+    if command == "skills" and getattr(args, "sidecar_subcommand", "") == "install":
+        _write_json_payload(
+            {
+                "error": "sidecar_install_requires_clawhub_post_fix2g",
+                "note": "ClawHub-backed sidecar install is planned for Phase 1575b-Fix2g after public RC.",
+                "ok": False,
+            },
+            stderr=True,
+        )
+        return 1
 
     if args.simulate_network_error:
         code, payload = _simulate_network_error_result(command)
@@ -2036,6 +2186,10 @@ def main() -> int:
     try:
         payload = _run_top_level_command(command, args, graph_state_path)
         data = payload.get("data") or {}
+        exit_code = int(data.pop("_exit_code", 0))
+        if command == "doctor" and bool(getattr(args, "pretty", False)):
+            print(_format_doctor_pretty(data))
+            return exit_code
         # Machine-readable raw output — print bare value, no JSON wrapper.
         # Used by: ilc ccss inbox --count
         raw_val = data.get("_raw")
@@ -2058,7 +2212,7 @@ def main() -> int:
         # ilc ccss status exits 1 when messages are waiting (shell-condition friendly).
         if data.get("subcommand") == "status" and data.get("has_messages"):
             return 1
-        return 0
+        return exit_code
     except QueryCommandError as exc:
         code, payload = _query_error_result(args, exc)
     except VerifyCommandError as exc:
