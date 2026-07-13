@@ -56680,7 +56680,7 @@
     {
       "annotation_batch": "manual_batch_138_phase_1575b_economic_activation_certificate",
       "chronology_note": "2026-07-13 Phase 1575b: activation matrix updated with final verdicts",
-      "manual_read_summary": "Block 6 public-RC activation matrix updated with §8 Phase 1575b final verdicts: rows 5-9 and 20-21 moved from pending_private_economic_soft_rc_gate to public_rc_live policy posture while all runtime guards remain closed.",
+      "manual_read_summary": "Block 6 public-RC activation matrix updated with \u00a78 Phase 1575b final verdicts: rows 5-9 and 20-21 moved from pending_private_economic_soft_rc_gate to public_rc_live policy posture while all runtime guards remain closed.",
       "repo_path": "docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md",
       "proposed_authority_trace_edges": [
         {
@@ -56743,5 +56743,41 @@
   },
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
   "phase": "1545p-Fix38",
-  "schema_version": "ilc.fix38.manual_edge_annotation_ledger.v0.1"
+  "schema_version": "ilc.fix38.manual_edge_annotation_ledger.v0.1",
+  "manual_edge_annotations": [
+    {
+      "annotation_batch": "manual_batch_140_phase_1575b_fix1_public_bootstrap_serving_readiness",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix1 \u2014 public bootstrap and serving readiness audit evidence",
+      "manual_read_summary": "Audit record confirming CDL-079 bootstrap path is free of hardcoded private IPs in ilc_core protocol code and public fetch serving is in correct state for public RC preparation.",
+      "repo_path": "docs/specs/ilc_phase_1575b_fix1_public_bootstrap_serving_readiness_v0.1.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_phase_1575b_fix1_public_bootstrap_serving_readiness_v0.1.md -> genesis:genesis_root_v0.4"
+    },
+    {
+      "annotation_batch": "manual_batch_140_phase_1575b_fix1_public_bootstrap_serving_readiness",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix1 \u2014 test file for bootstrap and serving readiness audit",
+      "manual_read_summary": "Fix1 focused tests for bootstrap runtime import, hardcoded IP scan, serving state confirmation, dynamic bootstrap bundle endpoints, private endpoint rejection, and evidence JSON decisiveness.",
+      "repo_path": "tests/test_phase_1575b_fix1_public_bootstrap_serving_readiness.py",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix1_public_bootstrap_serving_readiness.py"
+    }
+  ]
 }
