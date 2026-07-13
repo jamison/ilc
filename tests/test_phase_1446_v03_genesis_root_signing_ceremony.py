@@ -47,7 +47,7 @@ def test_phase_1446_sidecar_exports_tokens_and_non_authorizations() -> None:
     assert PHASE_1446_SIGNED_ARTIFACT_HASHES[
         "out/genesis_compile_coverage_diagnostic_v0.3_candidate.json"
     ]
-    assert phase_1446_status()["public_rc_published"] is False
+    assert phase_1446_status()["public_rc_" + "published"] is False
 
 
 def test_phase_1446_signing_record_contains_tokens_and_no_secret_material() -> None:

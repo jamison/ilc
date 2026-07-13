@@ -56778,6 +56778,174 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:tests/test_phase_1575b_fix1_public_bootstrap_serving_readiness.py"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "Phase 1575b-Fix4 StarMap Installer Sidecar MVP recipe/spec.",
+      "repo_path": "docs/specs/ilc_starmap_installer_sidecar_mvp_1575b_fix4_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:starmap_installer_sidecar_recipe_defined_phase_1575b_fix4",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_starmap_installer_sidecar_mvp_1575b_fix4_v0.1.md -> genesis:genesis_root_v0.4"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "Local StarMap installer runtime implementing verify/materialize/receipt over bounded AtlasSliceManifest fixtures.",
+      "repo_path": "ilc_core/sidecars/starmap_installer.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_starmap_installer_sidecar_mvp_1575b_fix4_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "runtime_source_added:ilc_core/sidecars/starmap_installer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "CLI wrapper exposing verify, materialize, and receipt commands for the local StarMap installer MVP.",
+      "repo_path": "tools/ilc_starmap_installer.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "ilc_core/sidecars/starmap_installer.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "tool_added:tools/ilc_starmap_installer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "Focused tests for fixture verification, deterministic hashing, rejection paths, materialization, receipts, and no publication command surface.",
+      "repo_path": "tests/test_phase_1575b_fix4_starmap_installer_sidecar.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/starmap_installer.py",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575b_fix4_starmap_installer_sidecar.py"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "Retained evidence for Core Public-RC Slice and Economic Soft-RC Slice verification, dry-run materialization, and deterministic receipts.",
+      "repo_path": "out/block6_starmap_installer_sidecar_fix4/evidence_records.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_slice_installability_rehearsed_phase_1575b_fix4",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/block6_starmap_installer_sidecar_fix4/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "Phase walkthrough recording direct reads, implementation boundary, verification commands, grep caveat, and non-activation boundary.",
+      "repo_path": "docs/phases/phase_1575b_fix4_starmap_installer_sidecar_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:starmap_installer_mvp_cli_committed_phase_1575b_fix4",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575b_fix4_starmap_installer_sidecar_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_1575b_fix4_starmap_installer_sidecar_mvp",
+      "chronology_note": "2026-07-13 Phase 1575b-Fix4 \u2014 StarMap Installer Sidecar MVP",
+      "manual_read_summary": "STATUS update recording Phase 1575b-Fix4 output tokens and verification summary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:starmap_installer_mvp_cli_committed_phase_1575b_fix4",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
