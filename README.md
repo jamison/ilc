@@ -43,28 +43,18 @@ Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
 > and current phase documents before acting. Direct-read every path before treating it as current.
 
 ```toon
-acting_rule: direct_read_authority_files_before_acting
-authority_files[4]: docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_constitutional_decision_log_v0.1.md,docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md
-build_install[2]: pip install -e .,cd ilc_consensus && cargo build --release
-build_smoke[3]: python3 tools/genesis_boot.py,python3 run_node.py,python3 tools/demo_walkthrough.py
-claim_lifecycle[5]: assert,challenge,refute,revise,reuse
-ecu: Epistemic_Compute_Unit;formula=W_e=delta_H/E_cost;minting=not_active
-governance: mechanism=CDL+ADR;sensitive_phases=explicit_human_GO_required;self_authorization=false
-graph: substrate=ADR-0029;commitment=merkle_laplacian_dual;lmdb=out/genesis_base_graph_v0.4_unified.lmdb
-homoiconicity: governance_and_knowledge_compile_from_same_primitives
-hyperedge_types[4]: panel,co_authorship,refutation_coalition,epoch_boundary
-id_name: Intelligent Labor Coin
-id_shortname: ILC
-id_tagline: evidence_first_epistemic_economy_for_human_ai_civilization
-ilc: Intelligent_Labor_Coin;symbol=ILC;supply_cap=25920000;settlement=not_live
-orientation_only[2]: README.md,HUMANS.md
-protocol_model: popperian_epistemic_graph
-repo_private_dev: github.com/jamison/ilc-core
-repo_public: github.com/jamison/ilc
-security_rules[6]: canonical_json_sort_keys,no_random_in_ilc_core_runtime,no_float_economic_state,no_assert_production,tls_verification_required,atomic_protocol_writes
-sidecar_scope: optional_components_using_ilc_as_trust_substrate;spec=sidecars.md;cli=ilc_sidecar_name
-sidecar_surfaces[4]: ilc_graphics_sidecar,ilc_ccss_sidecar,ilc_timecapsule_sidecar,ilc_openclaw_skill_surface
-status_inactive[6]: mainnet,production_minting,public_settlement,production_wallet_writes,epoch_0_to_1,clawhub_publication
-status_public_rc: live_by_phase_1575c_gate
-truth_primitives[7]: assert.truth,validate.claim,contradict.assert,refute.claim,revise.assert,link.claim,commit.epoch
+auth[4]: docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_constitutional_decision_log_v0.1.md,docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md
+b[7]: pip_install_editable,cargo_build_release,pytest_q,cargo_test,genesis_boot,run_node,demo_walkthrough
+c[5]: assert,challenge,refute,revise,reuse
+e[2]: ECU=W_e=dH/E_cost;mint=0,ILC=cap25920000;settle=0
+ep[9]: ilc=ilc_core/cli/main.py,atlas=ilc_core/cli/atlas_lmdb_cli.py,sidecar=ilc_core/cli/sidecar_cli.py,node=run_node.py,genesis=tools/genesis_boot.py,demo=tools/demo_walkthrough.py,release=tools/public_release_prepare_update.py,rust=ilc_consensus/src/main.rs,pq=ilc_consensus/src/pq_sign_main.rs
+g[7]: sub=ADR0029,com=MLD,lmdb=out/genesis_base_graph_v0.4_unified.lmdb,panel,co_authorship,refutation_coalition,epoch_boundary
+orient[2]: README.md,HUMANS.md
+p[7]: assert.truth,validate.claim,contradict.assert,refute.claim,revise.assert,link.claim,commit.epoch
+r[2]: pub=github.com/jamison/ilc,dev=github.com/jamison/ilc-core
+rule: read_auth;read_path;read_code;no_readme_authority
+s[7]: rc=1575c_live,mainnet=0,mint=0,settle=0,wallet=0,e01=0,ch=0
+sw[13]: py=ilc_core,rs=ilc_consensus,cli=ilc_core/cli+run_node.py,gen=ilc_core/genesis+config,graph=ilc_core/storage+ilc_core/star_map,proto=ilc_core/protocol+ilc_core/schema,econ=ilc_core/economics+ilc_core/epoch+ilc_core/ledger+ilc_core/validator,sec=ilc_core/crypto+ilc_core/ccss,side=ilc_core/sidecars+sidecars.md,ops=tools+deploy+automation,docs=docs+whitepaper+QUICKSTART.md,test=tests+ilc_consensus/tests,sim=simulations+docs/sims
+v: readme_toon_v4_swmap
+x[6]: cjson_sort,rand0_core,float0_econ,assert0_prod,tls_required,atomic_writes
 ```
