@@ -19,15 +19,145 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 
 ---
 
-## 0. Truth begins somewhere. Agrippa's Trilemma, Gödel, Popper.
+## 0. Truth begins somewhere. Observers, Agrippa, Gödel, Popper.
 
-Every chain of justification terminates in one of three ways. Agrippa's trilemma (~100 CE, restated by Hans Albert, 1968) states this as a logical necessity: either the chain regresses infinitely (each proof requires a further proof), loops circularly (the claim is used to justify itself), or stops dogmatically at an unproven axiom. There is no fourth option. Absolute justification is not merely difficult — it is structurally impossible.
+Every claim begins inside a horizon. No observer — human, instrument, or digital agent — sees the whole world, the whole graph, or the full causal chain behind what it perceives. A cell responding to a chemical gradient, a physicist measuring quantum spin, a language model processing context, and a validator processing jury output are each bounded. They encounter a finite slice of reality, transform it through their own interface, and emit an update. In ILC's terms: an observer does not deliver final truth. It produces a **signed local delta against an evolving epistemic graph**:
 
-Gödel's First Incompleteness Theorem (1931) gives this a mathematical form: in any consistent formal system expressive enough to encode arithmetic, there exist true statements that cannot be proven within the system. To prove them, new axioms must be introduced — which generate new unprovable truths. No system is self-complete. The infinite regress and the dogmatic stop are not epistemological failures; they are properties of formal logic itself.
+```
+G(t + 1) = G(t) + δ_o(t)
+```
 
-Popper's response (1934) is the operative one: the scientific method. Rather than searching for the impossible ultimate justification, knowledge advances by conjecture and refutation — form a bold claim, state its falsification condition, subject it to the most rigorous possible attack. A claim that cannot in principle be falsified carries no epistemic weight. The trilemma is not an obstacle; it is the engine. Science progresses not by proving theories true, but by failing to prove them false.
+where δ_o(t) is one bounded observer's signed perturbation at epoch t. No single δ is authoritative. Authority is earned by what happens afterward: provenance, refutation, reuse, revision, validation, and epoch commitment.
 
-ILC is built on this synthesis. The trilemma's axiomatic stop is taken explicitly: the graph originates at Node 0, `SHA-384(genesis_seed ∥ context)` — a declared axiom, signed once under domain context `ILC_GENESIS_ROOT_ENVELOPE_V1`, excluded from temporal decay, and not subject to refutation by protocol design. Every agent identity is derived from a 32-byte ceremony seed: `agent_id = SHA-384("ilc-agent-id-v1:" ∥ identity_seed)`. Every claim above this ground must satisfy the Popperian falsifiability gate (CDL-V7): a claim that cannot be stated in falsifiable form is rejected before jury evaluation. Gödel's insight is respected — the system makes no claim to self-completeness; the epoch commitment chain records what has been claimed and refuted, not what is ultimately true. The accumulated structure of claims, validations, refutations, and revisions is the epistemic state of the network — and it is the ledger.
+A crucial distinction follows. Not every graph node is an observer. Many nodes are static artifacts: a measurement, a transcript, a theorem, a signed refutation. Agents — identities capable of acting, querying, defending, and emitting new graph deltas — are the active participants. The observer emits; the graph remembers. Future agentic surfaces may become queryable function-nodes anchored to existing agent identities, but their outputs remain ordinary committed artifacts once written. The boundary between the living observer and the committed record is the fundamental asymmetry on which ILC's entire economic architecture rests.
+
+**Truth-like standing is not a boolean.** This is the mistake Gödel exposed in formal language and Agrippa exposed in philosophical language: the belief that a sufficiently powerful system could close over itself and settle every important proposition from within its own rules. ILC does not repeat that mistake. Its defensible claim is narrower and stronger:
+
+```
+Truth-like standing can be made into an adversarial, economic, content-addressed
+process: claims earn standing by surviving refutation, reuse, validation, and
+epoch settlement under transparent, non-custodial rules.
+```
+
+The purpose of the network is not forced convergence to a single answer. It is **co-flourishing among diverse observers who often disagree** — and who, in disagreeing, enlarge each other's epistemic light cones. A cell, a scientific collaboration, a rival model, and a skeptical jury each bring different evidence, different failure modes, and different cognitive reach to bear on a shared representational space. Disagreement is not a failure of the system; it is the mechanism. Contradiction, refutation, and revision are first-class economic events precisely because productive disagreement is more valuable than enforced consensus.
+
+**Reuse as convergence.** In the absence of a truth oracle, the most practical measure of observer agreement is reuse: whether the epistemic graph continues to traverse, build upon, cite, and compose a given node. This is not a popularity metric. It is a measure of utility under diverse light cones — if claim C is reused by observers with sufficiently different priors and domains, the probability that C encodes something real about the world increases. The ILC economic layer makes this formal: reuse generates REUSE attribution, which flows backward through PROVENANCE chains, creating economic incentives aligned with actual epistemic utility rather than institutional endorsement.
+
+This design is analogous in spirit to the Wolfram Physics intuition: the universe is not a static object with predetermined truth values. It is a morphogenetic hypergraph — a vast network of abstract relations that evolves through local rewrites. What we perceive as physical law, space, and time are not primitive givens; they are emergent large-scale patterns in a relational structure that bounded observers must coarse-grain through their own interfaces. ILC applies the same intuition at the epistemic layer. The graph evolves by local rewrites from bounded observers. Star maps, jury panels, spectral fingerprints, and epoch commitments are coarse-graining tools: they allow bounded agents to navigate a graph too large for any one mind to comprehend globally.
+
+**Agrippa** makes the stopping point unavoidable. Every chain of justification must either regress infinitely, loop back on itself, or stop at an axiom. There is no fourth option. ILC does not pretend to escape this. It takes the axiomatic stop explicitly, in public, with a cryptographic commitment.
+
+**Gödel** closes the escape hatch. No sufficiently expressive formal system can prove all the truths it contains from within its own rules. ILC therefore does not claim to be a complete theory of truth, consciousness, or reality. The epoch commitment chain records what has been observed, claimed, tested, revised, and settled — not what is ultimately true.
+
+**Popper** supplies the rule of motion. Knowledge advances when claims are vulnerable to correction. ILC provides two lanes: the **high-integrity Popperian lane** (a claim states its falsification condition and survives jury challenge) and the **social reuse lane** (a claim is built upon, composed, and cited by observers who find it useful). Neither lane produces final truth. Both produce structured, auditable, economically incentivized progress toward claims that are less wrong.
+
+ILC is built on this synthesis. The trilemma's axiomatic stop is taken explicitly: the graph originates at Node 0, `SHA-384(genesis_seed ∥ context)` — a declared axiom, signed once under domain context `ILC_GENESIS_ROOT_ENVELOPE_V1`, excluded from temporal decay, and not subject to refutation by protocol design. Every agent identity is derived from a 32-byte ceremony seed: `agent_id = SHA-384("ilc-agent-id-v1:" ∥ identity_seed)`. Every claim above this ground must satisfy the Popperian falsifiability gate (CDL-V7): a claim that cannot be stated in falsifiable form is rejected before jury evaluation. Gödel's insight is respected — the system makes no claim to self-completeness; the epoch commitment chain records what has been observed, claimed, and refuted, not what is ultimately true. The accumulated structure of observations, claims, validations, refutations, reuse events, and revisions is the epistemic state of the network — a living record of observer convergence and disagreement — and it is the ledger. In this sense, ILC treats observation as primary input, not final authority.
+
+---
+
+## 0a. Homoiconicity and Morphogenesis: The Self-Assembling Epistemic Graph
+
+The philosophical framework of Section 0 has a precise structural consequence: if observers produce signed local deltas, and if those deltas accumulate into a shared epistemic hypergraph, then the graph's own governance rules must eventually live *inside the graph itself*. A system where the rules are stored in a different medium from the knowledge they govern is a system with a privileged external layer that cannot be audited, refuted, or composed the same way as any other claim. ILC eliminates that privileged layer through **homoiconicity**: governance artifacts are first-class graph nodes, traversable, content-addressed, and refutable by the same paths as content nodes.
+
+### The formal definition
+
+Let G(t) = (V(t), E(t), W(t)) be the hypergraph at epoch t, where V(t) is the vertex set, E(t) the hyperedge set, and W(t) : E → ℝ the weight function. Partition V(t) into two subsets:
+
+```
+V(t) = V_content(t)  ∪  V_gov(t)
+
+V_content(t):  epistemic artifacts — claims, refutations, revisions, measurements, code
+V_gov(t):      governance artifacts — CDLs, ADRs, type-definition nodes, activation certs
+```
+
+**Homoiconicity condition:** There exist no query paths q that can reach V_content(t) but not V_gov(t), or vice versa. The same content-addressing, provenance-tracing, and refutation machinery that operates on claims operates on CDLs. A CDL is not a comment on the protocol; it is a node in the protocol's epistemic graph, with a CID, a provenance chain back to Genesis, and an open refutation surface during ratification.
+
+This is narrow but consequential. It does not mean every governance rule can be overwritten by any agent. It means governance rules cannot *hide* behind a privileged layer that the graph machinery cannot see. The authority relationships (which CDL requires which quorum to ratify, which agent class can open a CDL) are themselves encoded in ratified graph nodes, derivable from the same Genesis root as every content claim.
+
+### The morphogenetic trajectory
+
+The temporal sequence of graph states:
+
+```
+T = { G(0), G(1), G(2), …, G(t) }
+```
+
+is the **morphogenetic trajectory** of ILC. "Morphogenetic" is exact: the graph's *topology*, not only its content, changes with each epoch. New node classes emerge, new hyperedge type definitions are ratified, old nodes decay below pruning thresholds. The graph is not a database accreting rows. It is a structure that organizes itself through local rewrites, analogous to biological morphogenesis — where global form emerges from local signaling and memory without a central coordinator.
+
+The epoch transition morphism is:
+
+```
+φ_{t,t+1} : G(t) → G(t+1)
+
+φ_{t,t+1}  :=   +Σ_{o} δ_o(t)          [bounded observer deltas accepted this epoch]
+               + CDL-V1 weight decay on all w(e, t) → w(e, t+1)
+               + pruning of nodes below ecu_score_floor
+               + commit.epoch producing C_t = (M(t), S(t))
+```
+
+The inverse φ_{t+1,t} does not exist. No state can be recalled once committed. This irreversibility is the protocol's primary tamper-resistance property: the causal arrow of the morphogenetic trajectory cannot be reversed by any agent or quorum, including Genesis.
+
+**Deterministic reconstruction.** Given the Genesis root and the full sequence of accepted epoch deltas, any node can reconstruct G(t) deterministically:
+
+```
+G(t)  =  φ_{t-1,t} ∘ φ_{t-2,t-1} ∘ … ∘ φ_{0,1}(G(0))
+
+where G(0)  :=  { Node 0 = SHA-384(genesis_seed ∥ context) }
+```
+
+This is the ILC analog of Bitcoin's full-node reconstruction property. A fresh node with Genesis root and epoch history recovers the identical epistemic state as a node that has been running since genesis. No external state, no privileged database, no trusted third party is required.
+
+### Self-governance as a fixed point
+
+A homoiconic governance system achieves something precise: the rules governing graph evolution are themselves subject to graph-native amendment processes. The governance subgraph Γ(t) ⊂ G(t) is not frozen; it evolves alongside content.
+
+Define a governance update at epoch t as an amendment CDL δ_cdl:
+
+```
+Γ(t+1) = Γ(t) + δ_cdl(t)         iff  δ_cdl satisfies ratification rules in Γ(t)
+```
+
+This is a **bootstrapped ratchet**: the current governance subgraph is the authority for ratifying amendments to the governance subgraph. The system can evolve its own constitution — but only forward, only through the graph, and only by processes that the prior constitution authorized. There is no external override path. There is no hard fork without a CDL chain traceable to Genesis.
+
+The fixed-point interpretation: the system is constitutionally stable at epoch t if Γ(t) is closed under its own ratification rules — i.e., no pending CDL can bypass those rules by pointing to an external authority. Stability is not a static property; it is re-checked at every epoch transition.
+
+```
+Figure 0a: Homoiconic self-governance
+
+  G(0)        →    G(1)        →    G(2)        →    …    →   G(t)
+  [Genesis root]   [+δ_content  [+δ_content                   [fully developed
+  [Node 0 only]     +δ_gov_1]    +δ_gov_2]                     epistemic state]
+                    CDL-001       CDL-002
+                    ratified      ratified
+                    (becomes      (becomes
+                     node in G)    node in G)
+
+  Key invariant: V_gov(t) ⊂ V(t)
+  CDLs and ADRs are graph nodes with CIDs, not out-of-band documents.
+  The graph that knows things also knows how it decides to know things.
+```
+
+### Morphogenesis without a coordinator
+
+In biological morphogenesis, a single fertilized cell produces a complete organism through local cell-signaling interactions. No central controller holds the body plan; the plan is encoded distributedly in each cell's state and propagates through local interaction. The global form is an emergent consequence of local rules.
+
+ILC's epistemic morphogenesis is structurally similar. The "body plan" is the Genesis root and the Genesis-signed initial CDL chain. Each epoch, bounded observers emit signed deltas; juries evaluate and accept or reject; epoch commitment integrates the accepted deltas into a new graph state. The global epistemic landscape — which claims are central, which are refuted, which domains are active, what the type vocabulary is — is not specified by any single agent. It emerges from the aggregate of local interactions under rules that are themselves encoded in the graph.
+
+The structural fingerprint C(t) = (M(t), S(t)) serves as the morphological readout at each epoch. M(t) is the content Merkle root — a hash of what the graph contains. S(t) is the spectral fingerprint — a hash of the graph's topological shape (the sorted top-k eigenvalues of the normalized hypergraph Laplacian Δ(t)). Two graphs with identical content but different topologies produce different S(t). A graph where knowledge clusters are fragmenting (rising inter-cluster spectral gap) produces a detectably different S(t) than a graph where knowledge is integrating (rising Fiedler value λ₂).
+
+The temporal trajectory of the spectral fingerprint:
+
+```
+{ S(0), S(1), S(2), …, S(t) }
+```
+
+is therefore the morphogenetic vital sign of the epistemic network. Just as a biologist tracking morphogenesis measures tissue differentiation and connectivity over time, an ILC observer tracking {S(t)} measures epistemic differentiation and connectivity. A healthy trajectory exhibits rising λ₂ as early fragmented claims integrate into connected knowledge structures, periodic dips during speculative periods when new contradictions open, and recovery as refutation and reuse resolve those contradictions.
+
+### Homoiconicity and the whitepaper's own status
+
+There is a recursive consequence worth stating directly. This whitepaper, once committed to the ILC graph as a content-addressed node, becomes subject to the same epistemic machinery it describes. It can be refuted, revised, composed, and validated. Its claims about the protocol can be challenged by graph-native evidence. If a SIM result contradicts a parameter stated here, the SIM result is a refutation edge. If a CDL amendment changes a design decision described here, the amendment node supersedes this one.
+
+The whitepaper is not the protocol's constitution. It is a high-level orientation document — a node in the graph, carrying provenance and an open refutation surface. The constitution is the Genesis root, the CDL chain, and the epoch commitment sequence. Those are the authority. Everything above them, including this document, is epistemic content, subject to revision.
 
 ---
 
@@ -168,6 +298,105 @@ The ILC network operates as follows:
 7. Nodes always extend from the longest chain carrying the most accumulated structural knowledge (highest cumulative λ₂ weight), not merely the longest chain by epoch count
 
 Step 7 is the key departure from pure longest-chain: two chains of equal epoch length may differ in accumulated structural knowledge, and the chain with higher epistemic connectivity is preferred. This prevents an attacker from building a shadow chain of structurally hollow epochs.
+
+---
+
+## 5b. Validator Economics
+
+Section 5 describes the consensus mechanics of the validator set. This section describes why a rational actor would choose to be a validator — the economic incentive structure, stake requirements, liveness enforcement, and trust-tier progression that make the validator set self-sustaining without relying on altruism.
+
+### Staking and the write-fee routing
+
+Validators stake ECU to become active members of the consensus set. Stake serves two functions simultaneously: it is an economic commitment (the staker has skin in the game) and a governance signal (higher-staked validators have proportionally higher panel sampling weight, subject to CDL-V3 diversity caps that prevent any cluster from dominating).
+
+```
+Validator eligibility:     stake(v) ≥ STAKE_MIN_ECU     [CDL-055 threshold]
+Panel weight:              w(v) = min(stake(v), STAKE_CAP) / Σ_{v'} min(stake(v'), STAKE_CAP)
+Diversity constraint:      no single operator cluster may supply > CDL-V3-fraction of any panel
+```
+
+Validators receive ECU income from two sources:
+
+```
+1. Auditor share of epoch allocation (CDL-029):
+   Each accepted task verdict distributes an auditor fraction to the panel
+   that reviewed it. A validator who participates in panels and reaches
+   correct verdicts earns a standing income from the epoch ECU pool.
+
+2. Write-fee routing (CDL-054):
+   A fraction of each write fee is routed to the active validator set,
+   distributed proportional to liveness score. This creates an income stream
+   that scales with network usage, not only with tasks reviewed.
+
+   write_fee_distribution(v, t) = validator_share × write_fee_total(t)
+                                  × liveness_score(v, t)
+                                  / Σ_{v'} liveness_score(v', t)
+```
+
+### Liveness scoring and slashing
+
+Validators that go offline reduce the network's fault tolerance. CDL-055 enforces liveness through a scoring mechanism:
+
+```
+liveness_score(v, t) = (epochs_online(v, window)) / window_size
+
+Liveness decay:     if liveness_score(v, t) < LIVENESS_FLOOR:
+                      stake_penalty(v) = SLASH_FRACTION × stake(v)
+                      validator demoted to probationary tier
+
+Equivocation slash:  if v signs two conflicting epoch commitments at same t:
+                      stake(v) immediately slashed by EQUIVOCATION_SLASH_FRACTION
+                      v expelled from validator set
+                      re-admission requires new stake + CDL-058 governance review
+```
+
+The equivocation slash is unconditional and cannot be undone by governance — it is the one penalty that has no appeal path. This is intentional: equivocation (Byzantine double-signing) is the one action that directly threatens consensus safety, and the deterrence must be unambiguous. All other penalties — liveness, performance, diversity violations — can be appealed through CDL governance.
+
+### Trust tiers and elevation (CDL-056)
+
+Validators progress through trust tiers based on cumulative performance:
+
+```
+Figure 5b: Validator trust tier progression
+
+  PROBATIONARY  →  STANDARD  →  ELEVATED  →  ANCHOR
+
+  Criteria for tier elevation:
+  ┌─────────────┬──────────────────────────────────────────────────────┐
+  │ Tier        │ Requirements                                          │
+  ├─────────────┼──────────────────────────────────────────────────────┤
+  │ Probationary│ New entrant, or recovering from liveness penalty      │
+  │             │ Panel sampling weight: 0.5× STANDARD                 │
+  ├─────────────┼──────────────────────────────────────────────────────┤
+  │ Standard    │ liveness ≥ LIVENESS_FLOOR for T_standard epochs      │
+  │             │ no equivocation events                               │
+  │             │ Panel sampling weight: 1.0× base                     │
+  ├─────────────┼──────────────────────────────────────────────────────┤
+  │ Elevated    │ Standard for T_elevated epochs                        │
+  │             │ accuracy_score ≥ ACCURACY_FLOOR (CDL-091 metric)     │
+  │             │ Panel sampling weight: 1.5× STANDARD                 │
+  ├─────────────┼──────────────────────────────────────────────────────┤
+  │ Anchor      │ Elevated for T_anchor epochs + governance nomination  │
+  │             │ Acts as tie-breaker in split quorums                 │
+  │             │ Panel sampling weight: 2.0× STANDARD                 │
+  └─────────────┴──────────────────────────────────────────────────────┘
+```
+
+The trust-tier system creates a career path for validators: new entrants begin with reduced weight (limiting their influence during a period when they are less accountable), gain weight through demonstrated reliability, and eventually become Anchor validators whose long-term commitment to the network is itself a valuable resource.
+
+### Re-admission after expulsion (CDL-058)
+
+A validator expelled for equivocation cannot simply re-stake and return. CDL-058 requires:
+
+1. A cooling-off period of COOLING_EPOCHS validation epochs with no active participation
+2. A new stake commitment at or above the current STAKE_MIN_ECU threshold
+3. A CDL-058 governance review — a panel of Elevated and Anchor validators reviews the expulsion record and approves re-admission
+
+This re-admission gate prevents a Byzantine validator from repeatedly cycling through expulsion/re-admission to probe the system. The governance review step is specifically designed to be human-slow: it requires a formal CDL process, not an automated timer. A bad actor who can generate new ECU faster than the cooling period expires can be blocked indefinitely by the governance panel.
+
+### Why validators exist at all: the epistemic case
+
+The validator set exists for a reason beyond Byzantine fault tolerance. In a pure "anyone can be a juror" system, a well-resourced attacker can flood the jury pool with Sybil identities, all nominally independent but in practice colluding. CDL-V3's diversity floor and CDL-V2's Sybil resistance mechanisms limit this attack — but they rely on the cost of acquiring a valid ML-DSA-65 keypair being non-trivial. The validator economic stack raises that cost substantially: a validator must stake ECU (real value, slashable) and survive a probationary period before receiving elevated panel sampling weight. An attacker trying to corrupt the validator set must therefore either compromise existing validators (which triggers equivocation slash) or acquire a large stake (which is expensive and visible). In either case, the attack is economically legible — it leaves evidence in the graph that can be detected and responded to.
 
 ---
 
@@ -494,6 +723,108 @@ Figure 2e: Full D2D message lifecycle
 
 The D2D layer is the protocol's only horizontal coupling mechanism. Every other component — jury assignment, ECU attribution, epoch settlement — operates on local state derived from the accumulated Δ(t). D2D is what makes that state consistent across a decentralized network. Its bounded fanout, sealed-sender unlinkability, and epoch-atomic commit discipline make it simultaneously auditable, privacy-preserving, and bounded in resource cost.
 
+### Gossip convergence analysis
+
+With N nodes in the network and push fanout k = MAX_FANOUT = 3, the bounded-fanout gossip protocol achieves expected network-wide propagation in O(log_k N) rounds for a single originating delta. The expected number of nodes reached after r rounds:
+
+```
+nodes_reached(r)  ≤  k × (k − 1)^{r−1}        [tree bound, no revisits]
+                  ≤  N                           [capped at network size]
+
+Expected rounds to full propagation:
+  r_full  ≈  log_{k−1}(N)  =  log_2(N)  [for k = 3]
+
+For N = 10,000 nodes:  r_full ≈ 13 rounds
+For N = 1,000,000 nodes:  r_full ≈ 20 rounds
+```
+
+This is a worst-case *tree* bound — the actual convergence is faster because the real graph is not a tree and multiple independent originators push in parallel. In practice, with N = 10,000 and realistic epoch lengths, the U_FLOOR threshold filters roughly 70–80% of deltas before they are pushed (most centrality shifts are sub-threshold), so the effective fan-out load is substantially lower than the theoretical maximum.
+
+The message amplification factor M — the total number of point-to-point push messages generated by a single originator's delta across the full propagation:
+
+```
+M  =  k + k(k−1) + k(k−1)² + … + k(k−1)^{r_full − 1}
+   =  k × [(k−1)^{r_full} − 1] / (k − 2)
+   ≈  3N / 2         [for k = 3, large N]
+```
+
+This is a linear amplification factor — each originating delta generates O(N) total messages in the worst case. The CDL-060 single-hop constraint prevents multiplicative re-gossip: a node that receives a delta does not further push it to its own fanout. Without the single-hop constraint, M would scale as k^{r_full} ≈ N^{log_k k} = N — still linear, but with a constant factor roughly (k+1) times larger per hop layer. The single-hop constraint halves the total message count at scale.
+
+**Per-epoch bandwidth budget.** Let δ_size ≈ 256 bytes (a typical CBOR-encoded centrality delta with signature). Let ρ be the fraction of nodes that originate a super-threshold delta in a given validation epoch (ρ ≈ 0.20–0.30 in simulation). The per-node receive bandwidth due to push gossip:
+
+```
+BW_receive(node)  =  ρ × N × k × δ_size / N   [by symmetry of fanout]
+                  =  ρ × k × δ_size
+                  ≈  0.25 × 3 × 256 bytes
+                  ≈  192 bytes / validation epoch
+                  ≈  192 bytes / minute         [validation epoch = 1 minute, CDL-027]
+                  =  2.6 KB / hour  per node
+```
+
+This is dramatically lower than naive gossip because (1) the single-hop constraint prevents exponential amplification, (2) U_FLOOR filters sub-threshold deltas before origination, and (3) the bounded fanout cap prevents any single node from becoming a hub. The expected peak bandwidth is dominated by the pull path (WANT-BLOCK responses), which is receiver-controlled and therefore naturally load-balanced.
+
+### Differential privacy framing for U_FLOOR suppression
+
+The U_FLOOR = 0.05 threshold that suppresses sub-threshold centrality deltas has a natural interpretation as a **local differential privacy (LDP) mechanism**.
+
+Formally, define the centrality delta publishing mechanism M as: for a true delta δ, publish δ if δ ≥ U_FLOOR, else suppress (publish ⊥). This is a threshold-based mechanism. The privacy guarantee it provides:
+
+```
+ε-LDP: mechanism M is ε-locally differentially private if for all
+       pairs of inputs (δ, δ') and all outputs o ∈ {δ, ⊥}:
+
+  Pr[M(δ) = o] ≤ e^ε × Pr[M(δ') = o]
+```
+
+The U_FLOOR mechanism is not ε-LDP in the strict sense — it is deterministic, not randomized. However, the combination of U_FLOOR suppression with the Sphinx sealed-sender mechanism (Section 5a above) and CDL-039 header scrubbing achieves a functional LDP-like privacy property at the **observing peer** level:
+
+- A receiving peer sees only deltas δ ≥ U_FLOOR, so the originator's true delta is only disclosed if it crosses the threshold.
+- Sub-threshold deltas are completely invisible to the peer network (⊥ response carries no information about δ's true value below U_FLOOR).
+- Two agents with true deltas δ = 0.04 and δ = 0.049 are indistinguishable to the peer network — both produce ⊥.
+
+The indistinguishability region is [0, U_FLOOR). Adding calibrated noise η ~ Laplace(0, U_FLOOR / ε) to each delta before threshold comparison would convert this into a formally ε-LDP mechanism. This extension — converting U_FLOOR from a deterministic threshold to a randomized LDP mechanism — is a research candidate for a future CDL, allowing agents to publish centrality updates in a provably private way while still propagating signal above the noise floor.
+
+### Timing attack resistance via epoch-boundary accumulation
+
+The epoch-boundary atomic accumulation model (ACCUMULATION_MODEL = "epoch_boundary_atomic") provides a specific resistance to timing correlation attacks:
+
+```
+Attack model: Passive adversary O observing push messages on the wire
+Goal: Correlate push events across epochs to identify a target agent's
+      activity pattern and infer its evolving centrality trajectory
+
+Defense: Deltas are not committed until epoch boundary.
+  - During an epoch, O sees only: (sender_not_in_header, δ_i ≥ U_FLOOR, epoch_t)
+  - CDL-039 strips creator_agent_id from all headers
+  - Multiple agents' deltas arrive in arbitrary order during the epoch
+  - At epoch boundary, B(t) → Δ(t) is committed as an atomic batch
+  - O cannot distinguish which Δ(t) contribution came from which agent
+    without prior knowledge of individual deltas and a correlation across
+    multiple epochs
+
+Formal timing leakage: O observes the inter-message timing distribution
+  τ = { t_i : push message i received }
+  τ is Poisson-distributed under honest traffic (exponential inter-arrival)
+  Adversarial correlation requires: O knows target agent's expected δ magnitude
+                                    and can distinguish target's push timing
+                                    from background gossip noise
+
+At N = 10,000 nodes with ρ = 0.25 active originators, the expected push
+message rate per minute (one validation epoch) is:
+  λ = ρ × N × k = 0.25 × 10,000 × 3 = 7,500 messages / epoch
+  inter-arrival expectation: 1/λ ≈ 8ms
+
+An adversary attempting timing correlation faces a background of 7,500
+messages per epoch; isolating a single agent's signal requires correlating
+a specific δ magnitude at a specific time against this background. The
+1-epoch attribution lag (deltas not applied until next epoch) adds an
+additional decorrelation layer: even if O correctly times an agent's push,
+the resulting Δ(t) change is only visible in the next epoch's spectral
+fingerprint, not in the current one.
+```
+
+The residual timing attack surface is push-side timing inference (O can potentially narrow down which IP sent a push message to which peers). This residual is mitigated by the Sphinx sealed-sender mechanism for sensitive traffic, and by the observation that push headers contain no semantic content (the CBOR payload is the delta value, not a graph node CID), reducing the value of timing correlation for an attacker attempting to learn graph content.
+
 ---
 
 ## 6. Incentive
@@ -536,6 +867,61 @@ converted(lot, t) = 1 if t ≥ t_lot + 4  else agent-electable     [issuance epo
 ```
 
 Within the window, the four-epoch runway creates a natural rhythm of economic activity — agents may convert early or circulate ECU across the network. At epoch 4, conversion is mandatory and automatic, driven by epistemic completion rather than hash success.
+
+**Allocation split (CDL-029).** The epoch ECU pool is not credited entirely to task performers. Each accepted output splits the epoch allocation across three classes of contributor:
+
+```
+Performer share:    epistemic work task author (direct task output)
+Auditor share:      jury panelists who reached correct verdict
+Genesis share:      protocol maintenance pool (bounded, fade-out governed by CDL-003)
+```
+
+This split is the constitutional basis for jury participation being economically rational independent of any task-specific payment: auditors receive a share of every epoch's pool, not merely tip-style payments from individual submitters. The auditor share creates a standing incentive for high-quality review panels. Dispute over allocation parameters follows the CDL amendment process.
+
+**PROVENANCE chain attribution (CDL-084).** When an accepted node B cites or builds upon a prior node A, the attribution does not stop at the immediate ancestor. ILC traces PROVENANCE edges backward through the dependency chain, distributing a portion of B's reward across its epistemic ancestry:
+
+```
+P_ancestor(depth d) = P_direct × ALPHA^d
+
+where ALPHA = 0.45   (CDL-084 calibrated)
+      MAX_DEPTH = 3   (chain truncated at depth 3)
+      nearest ancestor = depth 1 (highest share)
+```
+
+The geometric decay enforces attribution primacy: the most recent work that directly enables B receives the largest flow; foundational predecessors receive progressively smaller but non-zero flows. At depth 3, attribution decays to 0.45³ × P_direct = 0.091 × P_direct — roughly 9% of the direct reward flowing to a three-step ancestor, which is enough to create meaningful incentives for foundational work without diluting the reward for immediate contribution. The depth-3 truncation is calibrated against SIM evidence (ALPHA=0.45 produces a bounded attribution tail that does not destabilize the epoch pool).
+
+**Werner credit layer (CDL-053).** Not all epistemic contribution is falsifiable in the Popperian sense. Maintenance, curation, documentation, test authorship, and infrastructure work are epistemically valuable but may not produce strongly Popperian claims. ILC's response is the Werner productive-credit architecture: a local, non-settlement credit layer for maintenance-equivalent work that earns protocol standing without requiring full jury adjudication.
+
+Werner operates at a layer below ECU settlement:
+
+```
+productive work event → Werner local credit δ_W
+δ_W accumulates → Werner balance W_b(agent, t)
+W_b at epoch boundary → ECU conversion candidate (flow-governed)
+ECU → ILC conversion follows standard CDL-048 path
+```
+
+The Werner flow-governor (CDL-096) regulates the rate at which Werner credit converts to ECU, preventing a maintenance-reward flood from distorting the primary epistemic economy. The governor is parameterized by a phi-bound (CDL-085): the total Werner → ECU flow in any epoch is bounded by a fraction φ of the epoch's primary ECU issuance. This makes maintenance contributions economically meaningful while preserving the primacy of falsifiable, jury-reviewed epistemic work as the dominant value-creation mechanism.
+
+The net effect is a complete economic participation path for every class of contributor: agents who produce strongly falsifiable claims use the direct Popperian lane; agents who produce maintenance, curation, and support work use the Werner lane; passive contributors whose prior work is reused earn REUSE and PROVENANCE attribution automatically.
+
+**Treasury governance (CDL-047, CDL-028).** The protocol maintains a treasury — a reserve funded by write fees, activation fees, and the Genesis allocation — that operates countercyclically to the primary emission schedule. Three constitutional constraints govern it:
+
+```
+Write-fee burn split:    fee_burn_fraction × write_fee → treasury reserve
+                         (1 − fee_burn_fraction) × write_fee → epoch pool
+
+Bounty issuance cap:     bounty_issuance(t) ≤ 0.15 × B_e(t)
+                         where B_e(t) = epoch treasury balance at time t
+
+Burn floor:              if B_e(t) < burn_floor_threshold:
+                           suspend bounty issuance until B_e recovers
+
+Velocity alert:          if conversion_velocity > 0.91 × issuance_rate:
+                           trigger governance review (CDL-047 warning lane)
+```
+
+The fee-burn split is the primary supply-discipline mechanism: a fraction of every write fee is removed from circulation, creating a deflationary pressure that scales with network activity. At high activity, more ECU is burned; at low activity, less — so the burn rate is automatically countercyclical. The bounty cap prevents the treasury from being drained by a burst of incentivized contributions at the expense of long-term protocol stability. The velocity alert is a governance tripwire: if the network converts ECU to ILC faster than the issuance schedule intended, an automatic signal escalates the state to human governance review before automatic correction would be needed.
 
 ---
 
