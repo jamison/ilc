@@ -59451,6 +59451,176 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "Workflow spec separating the private development lane, current sanitized public release lane, and future graph-native homoiconic release lane; defines no-push release receipt schema, graph accounting requirements, failure blockers, and migration constraints.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_release_three_lane_workflow_spec_committed_phase_1575e"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_native_release_constraints_recorded_phase_1575e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_public_release_propagation_workflow_1575e_v0.1.md",
+      "repo_path": "docs/specs/ilc_public_release_propagation_workflow_1575e_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "Local-only no-push release preparation scaffold that records source commit, source export status, optional sanitized mirror metadata, and future homoiconic fields in deterministic JSON.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "phase:public_release_prepare_update_tool_scaffold_committed_phase_1575e"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:no_public_push_authorized_phase_1575e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/public_release_prepare_update.py",
+      "repo_path": "tools/public_release_prepare_update.py"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "Focused test coverage for release workflow spec sections, three-lane naming, deterministic receipt JSON, no-push boundary, source export status, mirror generator identity, and inactive graph-native exporter status.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tools/public_release_prepare_update.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_release_propagation_workflow_1575e_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575e_public_release_propagation_workflow.py",
+      "repo_path": "tests/test_phase_1575e_public_release_propagation_workflow.py"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "Walkthrough recording Phase 1575e preconditions, direct reads, receipt path and SHA-256, source export status, test results, no-push boundary, and emitted tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_release_propagation_receipt_schema_committed_phase_1575e"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:no_public_push_authorized_phase_1575e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575e_public_release_propagation_workflow_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575e_public_release_propagation_workflow_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "Planning index update recording Phase 1575e completion, release propagation receipt hash, three-lane workflow, graph-native exporter non-activation, next public release routing, and Phase 1575f/Window 1576 sequence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_release_three_lane_workflow_spec_committed_phase_1575e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_1575e_public_release_propagation_workflow",
+      "chronology_note": "2026-07-14 Phase 1575e \u2014 Public Release Propagation Workflow",
+      "manual_read_summary": "STATUS update recording Phase 1575e completion tokens, receipt hash, source export counts, graph-native non-activation, and no-push non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_release_prepare_update_tool_scaffold_committed_phase_1575e"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:no_public_push_authorized_phase_1575e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
