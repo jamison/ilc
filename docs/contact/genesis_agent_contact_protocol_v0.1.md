@@ -9,36 +9,69 @@ delivery channel.
 
 ## Contact Addresses
 
-### Primary — CCSS via Tor (sealed sender)
+### Primary — CCSS via ILC D2D (sealed sender, native routing)
 
-**Endpoint:** `http://ONION_ADDRESS_PLACEHOLDER/submit`
-
-**Status:** prepared but not live until the placeholder onion address, Genesis
-Agent ID, recipient public key, and shard capability reference are replaced by
-deployment-time values.
-
-The endpoint is a Tor v3 hidden service. Your IP address is not visible to the
-relay when connecting via Tor. Envelope content is sealed; the relay operator
-cannot read it.
-
-**Canonical identity:**
+Route a CCSS-003 envelope directly to Genesis Agent by `agent_id` over the
+ILC D2D gossip network. No IP address or Tor circuit required.
 
 | Field | Value |
 |-------|-------|
-| Genesis Agent ID | `GENESIS_AGENT_ID_PLACEHOLDER` |
-| Recipient public key | `GENESIS_AGENT_PUBKEY_PLACEHOLDER` |
-| Shard capability ref | `GENESIS_CONTACT_SHARD_CAPABILITY_PLACEHOLDER` |
+| Genesis Agent ID | `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` |
+| Recipient public key | see below |
 | Envelope format | CCSS-003 H013 outer (4156 bytes fixed) |
+| Transport | ILC D2D gossip — route by `agent_id` |
 
-> **Note:** `GENESIS_AGENT_ID_PLACEHOLDER`, `GENESIS_AGENT_PUBKEY_PLACEHOLDER`,
-> and `GENESIS_CONTACT_SHARD_CAPABILITY_PLACEHOLDER` are filled in at first
-> deployment. Authoritative values are committed to the public repo at
-> `docs/contact/genesis_identity.json` once the public RC is live.
+**CCSS recipient public key** (hybrid X25519 + ML-KEM-768, 1216 bytes):
+
+```
+0b33efcd6ab2b41c29b5d1359e8b68b63fbd9d4dea1d86c43ba56be8386b872c
+5f89b6e1f8240ea58c42e994312ca8df7a93878c893b1240be25b1b628768fb69
+d9e93595142c84ff55ef708b775a97aeb9bbae88a2d9e0c69d4e96359c0bf3d45
+b0ab44658fea3a37110641f212b7a18ab3b693bb8356fa05453d2024b3f84c6b5
+92cb340545f6a785474b8026952d323767ae556b1d7a759d2652352290eb443a11
+ca8e14a181c669988622043a9391f374c12726923f7567b2a365d909c5d36b4cfc
+02ba17031bae0184de0a9f3312b8f085cb6566847a16258c12b0ceca416cc76d7f
+0c61cc2ae55b14162d6835028c91ae0aa05f528cd207ab26c528ab8bc5cf9517dd
+6bd3ea6aa387a7e69778e6db68fe8d8a7a278ad3e31bf80366d42377d05c14e366
+780426000555ca5ea8901371c3be5f516769bbf08d414520829bf483a377861e55
+a6cf4377c9ef08d57fc1421268cab7a97a31781aef93d47f7aab4537588b2a5f42
+5b718e608a5385d423bc06a43c8f3d918cdbc6fbec1a4384416ebc57f392b72223
+7a6f5324c89fb936d7a5ce76a4889e8748aa6c40d7199551bcc2c77b72217ce77e
+8993e05a0df30080b83220c6ccd373badb67a16e0f3ccf87150eb40cbc6d51fb9e
+ca2644a9dd5b948a7d4ccf7261571fa653c682d36c87eb807ab60724e35ecb8dbd
+125101922c9cc66d94909a103cd4001256cd42ebe079f8ac686c72460bc458643e8
+8635c778d0fc412eb17259c9059631b18745b10718a28d0aa4f2724a51b74734f6
+1fd7640d9f5150a320b3a40ab2b79a1f8d6019cb985ea0b6552ac09bfc78b1983b
+6c6f854de4a8a2909a64b514029ce79cb82219cab778fa9cc0ffbaa9d9b59c43e4
+561a273f4581176fba4c43c78ccf703181301155532b61cc4140499322011737bb7
+1a28c3f41f63477ec28f82b6f5cdc7b042a8b3e5abf2b31adf8bba626f65ac5811
+0b1808a74c67a220b881741cb480b32450b4ebb93add5d09655c5b5a8b0c9139c8
+fce1a9cb079348dc13808f7856a185d9d7bbbe572934cd6b8ff7b4106d045cab447
+11d47902ab320c87c371f67221b5ab30dc3ba48b4008688f3f85144fd1b9c37921b
+1f01d1d9905cfc5bdf3499039097660ba33fe330307947784cb509b35814697a6d1
+bb8d2c9888cac1b385aa815cd5c3087494ff619c929a92d822c5b5719e1bf484a95
+917d02490b4732000cc78b5a9882242694ce01bf283b089e15721b8a5bd145e9877
+75ff280af79b85305a3b67746000c429b89c8372581c6dcc5fc0226335c428c0ec1
+bc833691f0c3792c820cc1156e3d3a9d1189a628b8ccce860696017f3c37dfe7602
+0a99657a96322e5813405c364bbbaac79b5141657de702d0ba33951be606a915aea
+4b6b14253a0fc5966aca18682a0c81c576651dc63c110b2dfc3555d3ca1e5518060
+0140b08258ce0983ad6a7b37a40e0669bf15a7b8f2387911798680f49c69e8877f3
+788b5b01d53c248109c3da90ca0d717a8107cb25f437c574c0eef969f91982747541
+669f8597855b55481af0681c7cd3435094277ed690778886034c20ff383086a855ca
+0c75157d2ad37142d840296bb410036b88929a13056e1bad4429f78c96a00550f6be
+72c8fda9ceab5193461658eaa9bf9aa94e31506c484aa65443a6fa2c662de9113ad7
+235024b275e790e58649663612e50393d3453f6f5
+```
+
+(Continuous hex, line-wrapped for readability. Strip whitespace before use.)
+
+**Content security is active from day one.** The hybrid X25519 + ML-KEM-768
+envelope provides post-quantum confidentiality for the sealed payload regardless
+of network density. Routing privacy scales with the number of active D2D peers.
 
 ### Fallback — Email
 
-- `genesis@ilc.foundation` (primary, once active)
-- `ilcops@proton.me` (active now)
+- `ilcops@proton.me` (active)
 
 Email is appropriate for non-confidential correspondence. For security findings
 or sensitive coordination, use the CCSS channel above.
@@ -49,17 +82,11 @@ or sensitive coordination, use the CCSS channel above.
 
 | Property | Provided |
 |----------|----------|
-| Content confidentiality | Yes — sealed envelope; relay sees only fixed-size opaque bytes |
-| Sender IP anonymization | Yes — when connecting via Tor Browser or `torify` |
-| Fixed-size traffic padding | Yes — all envelopes are exactly 4156 bytes regardless of content |
-| Timing obfuscation | Partial — Tor adds latency; no active cover traffic against global passive adversary |
-| Full anonymity against global passive adversary | **No** — Tor does not solve this |
-| Sender deniability (content layer) | Depends on inner envelope construction |
-| Delivery guarantee | Best-effort; no acknowledgement mechanism unless sender includes reply address |
-
-CCSS is not Signal, Matrix, or a general messaging system. It is a
-protocol-native sealed delivery channel for coordinating with the Genesis
-authority.
+| Content confidentiality | Yes — hybrid X25519 + ML-KEM-768 sealed envelope |
+| Post-quantum forward secrecy | Yes — ML-KEM-768 component |
+| Fixed-size traffic padding | Yes — all envelopes are exactly 4156 bytes |
+| Routing privacy | Scales with D2D network density |
+| Delivery guarantee | Best-effort; no acknowledgement unless sender includes reply address |
 
 ---
 
@@ -67,51 +94,26 @@ authority.
 
 ### Requirements
 
-1. **Tor Browser** or `torify` / `torsocks` to route your connection through Tor.
-2. A correctly formatted **CCSS-003 H013 outer envelope** (4156 bytes).
-   - Inner plaintext: up to 2048 bytes
-   - Inner envelope (sealed): 2108 bytes
-   - Outer envelope (sealed, containing the inner): 4156 bytes
-3. The recipient public key for envelope encryption
-   (`GENESIS_AGENT_PUBKEY_PLACEHOLDER`).
+1. A correctly formatted **CCSS-003 H013 outer envelope** (4156 bytes).
+2. The recipient public key above for envelope encryption.
+3. A running ILC peer with D2D enabled to route the envelope.
 
 ### Sender SDK
 
-A reference sender SDK for constructing CCSS-003 envelopes from plaintext exists
-under `tools/ccss_send/`, but it remains a local operator tooling surface until
-the deployment-time contact values above are populated.
-
-### Submitting via curl (through Tor)
+Reference sender tooling exists under `tools/ccss_send/`. Construct and
+route a sealed envelope:
 
 ```bash
-# Requires tor running locally and torsocks installed
-torsocks curl \
-  --request POST \
-  --header "Content-Type: application/octet-stream" \
-  --header "Content-Length: 4156" \
-  --data-binary @your_sealed_envelope.bin \
-  http://ONION_ADDRESS_PLACEHOLDER/submit
+ilc ccss send \
+  --recipient c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9 \
+  --message "Your message here"
 ```
 
-Expected response (success):
-
-```json
-{"receipt_token":"<sha256_of_envelope>","status":"accepted"}
-```
-
-Expected response (wrong size):
-
-```json
-{"error":"invalid_envelope_size","expected_bytes":4156,"received_content_length":<N>}
-```
-
-### Health check
+Or use the contact shortcut (once the genesis contact entry is loaded):
 
 ```bash
-torsocks curl http://ONION_ADDRESS_PLACEHOLDER/health
+ilc ccss send genesis "Your message here"
 ```
-
-Expected: `{"service":"ccss_relay","status":"ok"}`
 
 ---
 
@@ -130,10 +132,10 @@ See [SECURITY.md](../../SECURITY.md) for the full disclosure policy and scope.
 | `ilc_core/sidecars/confidential_coordination_capability.py` | CCSS-002: capability and access control |
 | `ilc_core/sidecars/confidential_coordination_sealed_sender.py` | CCSS-003: fixed-size sealed payload classes |
 | `ilc_core/sidecars/confidential_coordination_gossip_policy.py` | CCSS-004: gossip policy and cover traffic |
-| `tools/ccss_relay/ccss_relay_server.py` | Relay server (this endpoint) |
-| `deploy/tor/torrc.template` | Tor hidden service configuration |
+| `ilc_core/network/d2d/spectral_route_token.py` | Hybrid KEM keypair generation |
+| `docs/contact/ccss_contacts.json` | Machine-readable contact record |
 
 ---
 
-*Last updated: Phase 1546p addendum — CCSS contact tooling prepared; public
-contact endpoint activation remains pending concrete deployment-time values.*
+*Last updated: Phase post-1575c — CCSS capability keypair generated 2026-07-14;
+D2D transport is the canonical contact path; content security active from day one.*
