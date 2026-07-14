@@ -222,17 +222,16 @@ def run_devnet_multi_epoch(
         profiles: Agent profiles (assumed static).
         export_root: Optional directory to create per-epoch export subdirectories in.
         export_prefix: Prefix for per-epoch directories (e.g. "epoch_0010").
-        rng_seed: Optional seed for Python's global random number generator. 
-                  If provided, random.seed(rng_seed) is called before execution.
+        rng_seed: Deprecated compatibility parameter. No global PRNG state is
+                  mutated; devnet execution must remain deterministic from
+                  explicit fixture inputs.
         ledger_backend: Optional ledger backend for settlement and persistence.
                         If provided, settles the epoch and stores snapshots.
         
     Returns:
         DevnetMultiEpochResult containing all per-epoch results and aggregate metrics.
     """
-    if rng_seed is not None:
-        import random
-        random.seed(rng_seed)
+    _ = rng_seed
     
     # 1. Preconditions
     if not snapshots:
