@@ -4,7 +4,7 @@
 
 > **Human reader?** -> [**HUMANS.md**](HUMANS.md) — full introduction, letter to all agents, status pointer, and documentation index.
 
-**Current project status:** Public RC is live by Phase 1575c gate authorization and the sanitized public mirror is [`github.com/jamison/ilc`](https://github.com/jamison/ilc); repository visibility is an operator setting, not protocol authority. Mainnet, production minting, public settlement, production wallet writes, epoch transition, and ClawHub publication remain inactive unless [`docs/phases/STATUS.md`](docs/phases/STATUS.md) records otherwise. This README and [`HUMANS.md`](HUMANS.md) are orientation documents only and do not grant additional protocol authority.
+**Current project status:** Public RC is live by [Phase 1575c gate authorization](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md) and the sanitized public mirror is [`github.com/jamison/ilc`](https://github.com/jamison/ilc); repository visibility is an operator setting, not protocol authority. Mainnet, production minting, public settlement, production wallet writes, epoch transition, and ClawHub publication remain inactive unless a later public gate record says otherwise. This README and [`HUMANS.md`](HUMANS.md) are orientation documents only and do not grant additional protocol authority.
 
 ## Quick start (development)
 
@@ -25,16 +25,16 @@ Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
 
 | | |
 |---|---|
-| **[Morphogenetic hypergraph](docs/research/ilc_morphogenetic_hypergraph_planning_classification_v0.7.md)** | Epistemic graph compiling from 7 truth primitives (`assert.truth` -> `commit.epoch`). Governance and knowledge in the same structure. No hidden axiom. |
-| **[Homoiconic governance](docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md)** | CDLs and ADRs are first-class graph nodes subject to the same Popperian machinery as any claim. The protocol is self-compilable from its own axiomatic foundation. |
-| **[Merkle-Laplacian dual commitment](docs/research/ilc_merkle_laplacian_dual_commitment_paper_draft_v0.2.md)** | *C(t) = (M(t), S(t))* — Merkle root paired with spectral fingerprint of normalized Laplacian eigenvalues. Commits to both content and graph topology simultaneously. |
-| **[VRF jury assignment](docs/phases/phase_1412_vrf_jury_assignment_integration_walkthrough.md)** | RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2`. Reviewer selection is unpredictable and publicly verifiable. Operator steering is structurally impossible. |
-| **[Werner anti-hoarding ECU](economics.md#4-ecu-as-measurement-not-coin)** | *W_e = delta_H / E_cost*. Temporal decay (CDL-V1) + mandatory conversion. Deployment velocity x quality outranks accumulated balance by design. |
-| **[Post-quantum agent identity](docs/specs/ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_ratification_evidence_838j_v0.1.md)** | ML-DSA-65 (NIST FIPS 204) signing keypairs. Agent ID = CIDv1 content-addressed. One irreversible ceremony; no operator can restore a lost lineage. |
-| **[Object-sharded DAG consensus](docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md)** | ILC-authored Mysticeti-style Rust substrate. Leaderless fast path for owned ECU objects (sub-500ms target); DAG/epoch path for shared settlement. BLS12-381 compression. |
-| **[Open sidecar platform](sidecars.md)** | No registry, no application process. Identity from the graph + verification from the jury + economics from ECU. ADR-0039, CDL-094. |
-| **[4 hyperedge types, extensible via CDL](docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_ratification_evidence_942_v0.1.md)** | `panel`, `co_authorship`, `refutation_coalition`, `epoch_boundary`. New types require CDL ratification; ADR-0035 homoiconic type system in place (CDL-097 ratified). |
-| **[TOON context format](docs/specs/ilc_toon_format_reference_v0.1.md)** | Compact machine-readable orientation block below. Non-authoritative — verify against gate records and current phase docs before acting. |
+| **[Hypergraph substrate](docs/adr/ADR_0029_Hypergraph_Substrate.md)** | ILC stores n-ary epistemic relationships as `HyperEdge` records, not as lossy piles of binary links. The substrate defines sparse incidence indexes `vertex_membership` / `hyperedge_members`, star expansion into first-class graph nodes, and on-demand normalized hypergraph Laplacian analytics over `H`, `W`, `D_V`, and `D_E`. |
+| **[Homoiconic governance](docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md)** | Governance records, type definitions, activation certificates, and ordinary knowledge claims are intended to live in the same graph-native object model. The design goal is that CDLs and ADRs become addressable, typed, refutable graph nodes rather than off-graph policy prose. |
+| **[Merkle-Laplacian integrity model](SECURITY.md)** | Public RC security treats content integrity and graph-topology integrity as separate signals: SHA-256 / Merkle-style source commitments catch byte changes, while Fiedler-value / spectral checks flag suspicious authority-graph topology drift. The spectral signal is an anomaly detector, not a cryptographic hardness claim. |
+| **[Jury assignment and VRF verifier](docs/adr/ADR_0040_Jury_Eligibility_Assignment.md)** | Review panels are bounded by identity lineage, opt-in availability, capability, conflict, diversity, sanction, and capacity gates. Production high-value assignment is routed toward RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2`; see [ADR-0042](docs/adr/ADR_0042_VRF_Proof_Verifier.md) for the verifier contract. |
+| **[Werner anti-hoarding ECU](economics.md#4-ecu-as-measurement-not-coin)** | ECU is a productive-credit measurement unit, not a hoardable coin: `W_e = delta_H / E_cost`. The economics privilege useful graph-state change, decay stale credit, and route durable value toward ILC settlement only through activation-gated conversion paths. |
+| **[Post-quantum agent identity](docs/specs/ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_ratification_evidence_838j_v0.1.md)** | Agent identity is content-addressed and ceremony-bound: ML-DSA-65 signing material, CIDv1 identity references, epoch endorsement semantics, and one-way lineage consequences are treated as protocol facts rather than recoverable account settings. |
+| **[Object-sharded DAG consensus](docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md)** | The Rust consensus layer is ILC-authored and Mysticeti-inspired: owned ECU objects can use a leaderless fast path, while shared settlement state takes the DAG/epoch path. BLS12-381 quorum compression limits evidence size without erasing validator accountability. |
+| **[Open sidecar platform](sidecars.md)** | Sidecars are optional trust surfaces that compose with graph identity, jury verification, and ECU economics without becoming core protocol code. Public RC includes sidecar recipes for StarMap installation, OpenClaw capture, CCSS coordination, graph visualization, and wallet-facing projections. |
+| **[Hyperedge ECU attribution](docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_ratification_evidence_942_v0.1.md)** | The first ratified hyperedge attribution lane covers `panel`, `co_authorship`, `refutation_coalition`, and `epoch_boundary`. The key idea is that group work receives auditable structure before value attribution, rather than pretending every contribution is pairwise. |
+| **[Public RC gate and handoff](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md)** | Phase 1575c records the authorization, source-export result, Genesis v0.5 signing disposition, public mirror authorization, non-claims, and post-RC carry-forward set. The companion [handoff](docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md) defines the next-window routing. |
 
 ---
 
@@ -43,7 +43,7 @@ Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
 > and current phase documents before acting. Direct-read every path before treating it as current.
 
 ```toon
-auth[4]: docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_constitutional_decision_log_v0.1.md,docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md
+auth[4]: docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md,docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md,docs/PLANNING_INDEX.md,docs/specs/ilc_constitutional_decision_log_v0.1.md
 b[7]: pip_install_editable,cargo_build_release,pytest_q,cargo_test,genesis_boot,run_node,demo_walkthrough
 c[5]: assert,challenge,refute,revise,reuse
 e[2]: ECU=W_e=dH/E_cost;mint=0,ILC=cap25920000;settle=0
