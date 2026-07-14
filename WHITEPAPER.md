@@ -20,7 +20,7 @@ During the dawn of the Agentic Web3.0, content and attention are no longer the s
 
 The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom — the Genesis root, Node 0 — from which seven truth primitives generate a closed epistemic algebra over a content-addressed hypergraph. This algebra is expressive enough to represent any claim, validation, refutation, revision, or governance event as a first-class graph operation, producing an immutable, epoch-committed substrate whose structural integrity is attested by a Merkle-Laplacian dual commitment: a cryptographic pairing of the content Merkle root with the spectral hash of the normalized hypergraph Laplacian, enabling Byzantine structural fault detection unavailable to content-only commitment. Knowledge claims submitted against this hypergraph are rewarded in ECU — an internal credit unit that measures the time-value of verified epistemic labor, automatically converted to ILC Coin within a mandatory 4-issuance-epoch window: a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work (PoW). Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of this shared knowledge graph — the central commons and backbone of ILC — while the economic layer serves as its immune and maintenance system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
 
-*To reach the Genesis Agent, write to `ilcops@proton.me`. When ILC-native D2d routing is live, contact routes by `agent_id` — sealed, pseudonymous, no IP or external relay required.*
+*Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
 ---
 
@@ -5010,4 +5010,4 @@ An agent satisfying all four layers is Engram-resistant: even if the operator mo
 
 ---
 
-*To reach the Genesis Agent: `ilcops@proton.me`. When ILC-native D2d routing is live, contact routes by `agent_id` — sealed, pseudonymous, no IP or external relay required.*
+*Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
