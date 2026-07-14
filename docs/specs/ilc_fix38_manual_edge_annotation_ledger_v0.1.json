@@ -58808,6 +58808,126 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_1575c_fix1a_pq_sign_hidden_seed_entry",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1a — pq_sign hidden seed entry hardening",
+      "manual_read_summary": "Production Genesis ML-DSA signing tool hardened to disable terminal echo while reading seed material from stdin, restore echo on drop, and zeroize the temporary stdin string after parsing.",
+      "repo_path": "ilc_consensus/src/pq_sign_main.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "security_hardening:ilc_consensus/src/pq_sign_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_1575c_fix1a_pq_sign_hidden_seed_entry",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1a — pq_sign hidden seed entry hardening",
+      "manual_read_summary": "Genesis v0.5 signing ceremony spec amended to record hidden stdin seed entry, echo restoration, zeroization, and manual stty echo recovery advice after abnormal interruption.",
+      "repo_path": "docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:pq_sign_seed_entry_echo_disabled_phase_1575c_fix1a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_1575c_fix1a_pq_sign_hidden_seed_entry",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1a — pq_sign hidden seed entry hardening",
+      "manual_read_summary": "Walkthrough amended to record the pq_sign hidden seed-entry hardening and operator recovery instruction if terminal echo is left disabled after abnormal interruption.",
+      "repo_path": "docs/phases/phase_1575c_fix1_genesis_v05_production_signing_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:pq_sign_seed_entry_echo_disabled_phase_1575c_fix1a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575c_fix1_genesis_v05_production_signing_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_1575c_fix1a_pq_sign_hidden_seed_entry",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1a — pq_sign hidden seed entry hardening",
+      "manual_read_summary": "Focused Phase 1575c-Fix1 tests extended with a source-level assertion that pq_sign disables terminal echo, restores echo, and zeroizes the seed input string.",
+      "repo_path": "tests/test_phase_1575c_fix1_genesis_v05_production_signing.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_consensus/src/pq_sign_main.rs",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575c_fix1_genesis_v05_production_signing.py"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_1575c_fix1a_pq_sign_hidden_seed_entry",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1a — pq_sign hidden seed entry hardening",
+      "manual_read_summary": "STATUS update recording hidden seed-entry hardening tokens and retaining the pending-operator-signature boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:pq_sign_seed_entry_echo_disabled_phase_1575c_fix1a",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
