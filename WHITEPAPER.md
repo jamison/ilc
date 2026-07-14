@@ -171,6 +171,248 @@ Step 7 is the key departure from pure longest-chain: two chains of equal epoch l
 
 ---
 
+## 5a. The D2D Gossip Layer
+
+The D2D (peer-to-peer) gossip layer is ILC's distributed nervous system — the substrate through which epistemic state propagates across the network without any central broker. Its design resolves a fundamental tension in distributed knowledge systems: how to maintain a globally consistent Laplacian Δ(t) across peers whose local views are necessarily partial, without either revealing agent identity or creating unbounded communication overhead.
+
+### Two-path architecture
+
+D2D uses two distinct dissemination paths for different traffic classes:
+
+```
+Figure 2a: D2D two-path architecture
+
+  ┌────────────────────────────────────────────────────────────────────┐
+  │                      D2D LAYER                                     │
+  │                                                                    │
+  │  PATH 1: PUSH (bounded fanout gossip)                             │
+  │  ─────────────────────────────────                                │
+  │  Centrality deltas, spectral route tokens, verdict announcements  │
+  │                                                                    │
+  │  Agent A ──push──► Peer 1 ──────────────────────────────────────► │
+  │           (fanout≤3)  Peer 2 ──────────────────────────────────► │
+  │                       Peer 3 ──────────────────────────────────► │
+  │                                                                    │
+  │  PATH 2: PULL (WANT-HAVE advertisement)                           │
+  │  ──────────────────────────────────────                           │
+  │  General graph content, jury metadata, task payloads              │
+  │                                                                    │
+  │  Agent B ──WANT──► Peer 1 ──HAVE──► Agent B ──FETCH──► content   │
+  │                                                                    │
+  └────────────────────────────────────────────────────────────────────┘
+```
+
+**Push path** (CDL-060): Each node pushes centrality delta updates to at most `FANOUT_MAX = 3` peers per validation epoch. The fanout bound limits the O(N) traffic explosion that plagues naive gossip protocols.
+
+**Pull path** (CDL-076/077): General graph content — task payloads, epoch headers, jury metadata — is disseminated via WANT-HAVE advertisement frames. A node that wants a content-addressed node broadcasts a WANT; nodes that have it respond with HAVE; the requestor fetches directly. This separates the small, high-frequency signaling traffic (push) from the larger, demand-driven content traffic (pull), allowing each to be optimized independently.
+
+### Wire transport: HTTP/3 over QUIC
+
+The gossip transport binding (ADR-0025) uses **HTTP/3 over QUIC** in production, with HTTP/2 over TLS/TCP as a development fallback. This choice resolves an apparent tension: ADR-0011 mandates "QUIC-based encrypted streams" while operational simplicity favors HTTP. The resolution is that HTTP/3 *is* QUIC — HTTP/3 runs over QUIC encrypted streams at the transport layer, with HTTP/3 framing on top. The transport inherits QUIC's properties:
+
+- **0-RTT connection establishment** for streams from known peers
+- **Multiplexed streams** without head-of-line blocking (unlike HTTP/2 over TCP)
+- **Mandatory encryption** at the transport layer (QUIC uses TLS 1.3 internally)
+- **Connection migration** for mobile/roaming node operators
+
+The gossip envelope for a centrality delta message:
+
+```
+Figure 2b: D2D gossip envelope
+
+  ┌─────────────────────────────────────────────────────────────────┐
+  │  POST /ilc/gossip/centrality_delta   HTTP/3                    │
+  │                                                                 │
+  │  ILC-Gossip-Type:  centrality_delta                            │
+  │  ILC-Channel:      <opaque>     ← must not reveal cluster      │
+  │  ILC-Epoch:        <t>          ← validation epoch number      │
+  │  ILC-Hop-Count:    1            ← CDL-060: single-hop only     │
+  │  ILC-Signature:    <ml-dsa-65 envelope signature>              │
+  │  Content-Type:     application/cbor                            │
+  │                                                                 │
+  │  CBOR payload:                                                  │
+  │  {                                                              │
+  │    cid:         "<sha256 of epistemic node>",                  │
+  │    score_delta: <Decimal, 12-place precision>,                  │
+  │    epoch:       <int>,                                          │
+  │    signature:   "<ml-dsa-65 sig>",                              │
+  │    hop_count:   1,                                              │
+  │    fanout:      1–3,                                            │
+  │    channel:     "<opaque>"                                      │
+  │  }                                                              │
+  │                                                                 │
+  │  FORBIDDEN FIELDS (CDL-039):                                   │
+  │    creator_agent_id   ← MUST NOT appear in any header          │
+  │    node_id (origin)   ← MUST NOT appear in transport headers   │
+  │    ILC-Channel        ← MUST be semantically opaque            │
+  └─────────────────────────────────────────────────────────────────┘
+```
+
+All `score_delta` values are canonical Decimal at 12-place precision. Floating-point is banned at all protocol boundaries; see Section A.6 for the formal argument. CBOR is the production payload encoding; JSON is a development-only fallback that must be disabled in production nodes.
+
+TLS verification is mandatory in public-RC and production deployments (`ILC_D2D_PUBLIC_MODE=1` unconditionally requires certificate verification). Certificate errors are resolved at the CA bundle level, not by disabling TLS.
+
+### CDL-039 topology privacy invariants
+
+CDL-039 governs what the transport layer is and is not permitted to reveal. The three hard invariants enforced at the envelope layer — not left to runtime discretion — are:
+
+1. `creator_agent_id` must not appear in any gossip header
+2. Originating `node_id` must not appear in transport headers
+3. `ILC-Channel` must be opaque: its value must not allow cluster membership inference by any relay
+
+These invariants are enforced before payload processing. A message failing any of them is rejected with `400 Bad Request` before any protocol logic runs.
+
+### CDL-060 bounded-fanout gossip protocol
+
+CDL-060 ratifies the single-hop, bounded-fanout centrality gossip lane. The two governing constants are:
+
+```
+MAX_FANOUT = 3     (peers per epoch per originating node)
+U_FLOOR    = 0.05  (minimum centrality delta to propagate; below this → suppress)
+HOP_COUNT  = 1     (single-hop only; multi-hop requires a new CDL lane)
+```
+
+**Traffic bound.** A network of N nodes, each gossiping to at most 3 peers per epoch, produces O(3N) messages per epoch — linear in N, not quadratic. Compare with naive flooding (O(N²)) or epidemic gossip without fanout bounds (O(N log N) before convergence). The 1-minute validation epoch cadence means even at N = 100,000 nodes, total gossip traffic is bounded at 300,000 messages per epoch — feasible on commodity infrastructure.
+
+**U_FLOOR suppression.** A centrality delta below `U_FLOOR = 0.05` is suppressed at the accumulation layer and responded to with `204 No Content` (not an error; sender must not retry). This prevents noise amplification: small perturbations in individual node centrality scores — from single-task contributions in large epochs — do not generate network-wide gossip traffic. Only updates that materially shift a node's structural position propagate. The suppression threshold is enforced after signature verification, not before:
+
+```
+_normalized_delta(δ) = 0.0          if δ < 0.05
+                     = round(δ, 12)  otherwise
+```
+
+### Epoch-boundary atomic accumulation model
+
+The gossip layer uses an `ACCUMULATION_MODEL = "epoch_boundary_atomic"` commit discipline. Incoming centrality deltas are buffered in a per-epoch accumulation buffer and committed atomically at the epoch boundary — not on receipt. This has two consequences:
+
+1. **Attribution lag**: a delta received at epoch t−1 that is not committed until the epoch t boundary appears in the structural record one epoch late. This is a known trade-off, accepted in CDL-060.
+
+2. **Crash recovery**: if a node crashes mid-epoch, its accumulation buffer is lost. The ratified recovery policy is *graceful zeroing*: on restart, the node marks the lost epoch in `_zeroed_epochs` and records an explicit event-log entry rather than silently discarding the epoch or emitting a corrupt partial state.
+
+```
+Figure 2c: Epoch-boundary atomic accumulation
+
+  Epoch t−1                 │ Epoch t                    │ Epoch t+1
+  ─────────────────────────────────────────────────────────────────────
+  δ₁, δ₂, δ₃ ... arrive   │ δ₄, δ₅ ... arrive         │
+  → buffered in B(t−1)      │ → buffered in B(t)         │
+
+                            │ BOUNDARY EVENT:            │
+                            │   B(t−1) committed to Δ(t) │
+                            │   new B(t) initialized      │
+
+  ← δ₃ visible at Δ(t) ───────────────────────────────►  δ₄ visible at Δ(t+1)
+      (1-epoch lag)         │                            │
+
+  Crash during t−1:
+    B(t−1) lost → _zeroed_epochs.add(t−1) → event log entry
+    No silent discard. No partial commit.
+```
+
+The bounded centrality total is capped at `CENTRALITY_SCORE_CAP = 1.0` with 12-decimal precision:
+
+```
+c_new(node) = min(1.0, c_old(node) + δ)   [rounded to 12 decimal places]
+```
+
+### Sealed-sender mechanism (ADR-0034)
+
+The gossip envelope conceals origin at the header layer (CDL-039). The sealed-sender mechanism (ADR-0034) conceals origin at the payload layer for sensitive traffic (spectral beacons, coordination envelopes). It uses a **bounded Sphinx-style layered encrypted envelope**:
+
+```
+Figure 2d: Sealed-sender envelope peeling
+
+  Originator:
+  ┌──────────────────────────────────────────────────────┐
+  │  Outer layer (for relay):                            │
+  │    Encrypted with relay's public key                 │
+  │    Contains: inner payload + delivery instruction    │
+  │                                                      │
+  │  Inner payload (for recipient):                      │
+  │    Encrypted with recipient's capability key         │
+  │    Contains: spectral route token / beacon / content │
+  └──────────────────────────────────────────────────────┘
+         │
+         ▼ relay receives outer layer only
+  ┌──────────────────────────────────────────────────────┐
+  │  Relay peels one layer, learns:                      │
+  │    ✓ Next-hop delivery instruction                   │
+  │    ✓ Fixed-size inner ciphertext                     │
+  │    ✗ originator identity          (never present)    │
+  │    ✗ payload content              (encrypted)        │
+  └──────────────────────────────────────────────────────┘
+         │
+         ▼ relay forwards inner ciphertext
+  ┌──────────────────────────────────────────────────────┐
+  │  Recipient decrypts with capability private key sk_r │
+  │  Authenticates token / beacon content                │
+  └──────────────────────────────────────────────────────┘
+
+  Total relay legs: 1 (bounded by CDL-060 single-hop constraint)
+  Payload size:     fixed (uniform size class hides content length)
+  Re-gossip:        prohibited (relay cannot expand recipient set)
+```
+
+The one-relay bound is deliberate: it satisfies the CDL-060 single-hop constraint while providing one hop of sender unlinkability. The Sphinx design was chosen over simpler relay-concealment mechanisms (Option A) because the immediate relay would otherwise observe the immediate network sender even if the payload is encrypted.
+
+### HTTP status code semantics as protocol state
+
+D2D uses standard HTTP status codes to communicate gossip protocol state, allowing standard infrastructure (load balancers, monitoring stacks, alerting tooling) to understand D2D health without custom parsing:
+
+```
+202 Accepted        Delta buffered; epoch boundary not yet reached
+204 No Content      Delta below U_FLOOR; suppressed, not an error; no retry
+400 Bad Request     Envelope malformed, CDL-039 or CDL-060 violation
+409 Conflict        Delta for an already-committed epoch; too late
+429 Too Many Req.   MAX_FANOUT exceeded; sender must not retry this peer this epoch
+503 Unavailable     Node mid-epoch crash recovery; buffer lost; resend permitted
+```
+
+The `204` response is architecturally significant: it is explicitly not an error. A node that receives `204` must not retry the suppressed delta or treat it as a delivery failure. The network has decided the update does not materially affect Δ(t) at this epoch; protocol operation continues normally.
+
+### Peer discovery: static registry v1
+
+Peer discovery in the current deployment uses a **static peer registry**: each node is provisioned at startup with a list of peer HTTPS endpoints. No distributed hash table (DHT), no dynamic peer discovery, no gossip-bootstrapped topology.
+
+This is intentional for public RC. Static configuration is auditable — the operator can verify exactly which peers a node communicates with. Dynamic peer discovery introduces bootstrapping attacks (Sybil nodes advertising themselves as highly-connected peers) that require additional governance before activating. The static registry v1 is the conservative, auditable baseline; dynamic discovery is deferred to a future CDL lane when the network has sufficient decentralization to make bootstrapping attacks impractical.
+
+```
+Figure 2e: Full D2D message lifecycle
+
+  Originator                    Relay (peer)              Recipient
+  ──────────                    ────────────              ─────────
+  1. Compute δ_i = ΔΔ(t)_local
+  2. Check δ_i ≥ U_FLOOR (0.05)
+  3. Build CBOR envelope
+  4. Sign with ML-DSA-65
+  5. (Optional) Sphinx-seal for
+     sensitive payload
+  6. POST /ilc/gossip/...  ──────────────────────────────►
+     HTTP/3 over QUIC
+                                7. Verify CDL-039 headers
+                                8. Verify ML-DSA-65 sig
+                                9. Check hop_count == 1
+                               10. Check fanout ≤ 3
+                               11. Buffer δ_i in B(t)
+                               12. Return 202 Accepted
+                               13. (Optional) forward
+                                   sealed inner payload ──────────────────►
+                                                                         14. Decrypt with sk_r
+                                                                         15. Authenticate token
+                                                                         16. Apply to local Δ(t)
+
+  ─── Epoch boundary ─────────────────────────────────────────────────────
+                               17. Commit B(t) → Δ(t)
+                               18. Initialize B(t+1)
+                               19. Include ΔΔ(t) in
+                                   epoch commitment
+                                   C(t) = (M(t), S(t))
+```
+
+The D2D layer is the protocol's only horizontal coupling mechanism. Every other component — jury assignment, ECU attribution, epoch settlement — operates on local state derived from the accumulated Δ(t). D2D is what makes that state consistent across a decentralized network. Its bounded fanout, sealed-sender unlinkability, and epoch-atomic commit discipline make it simultaneously auditable, privacy-preserving, and bounded in resource cost.
+
+---
+
 ## 6. Incentive
 
 By convention, the first attribution in each epoch is a special ECU credit from the epoch pool to all agents whose accepted outputs appear in that epoch's Merkle root. (The epoch pool itself is funded by the ILC issuance schedule — the halving-decayed ILC budget for that epoch — but the per-agent unit of account at the moment of earning is ECU, not ILC. Conversion to ILC occurs separately via CDL-048.) This gives agents an incentive to submit productive work. There is also an incentive for passive contributors: agents whose prior nodes are traversed (reused) by new work receive passive ECU attribution proportional to their epistemic centrality.
