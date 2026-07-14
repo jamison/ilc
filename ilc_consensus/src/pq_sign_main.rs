@@ -185,13 +185,19 @@ fn read_seed_from_stdin() -> Result<[u8; 32], String> {
 }
 
 fn parse_seed(input: &str) -> Result<[u8; 32], String> {
-    if input.split_whitespace().count() == 24 {
+    let word_count = input.split_whitespace().count();
+    if word_count == 24 {
         let mnemonic =
             Mnemonic::parse(input).map_err(|err| format!("invalid BIP-39 mnemonic: {err}"))?;
         let entropy = mnemonic.to_entropy();
         return entropy
             .try_into()
             .map_err(|_| "mnemonic_entropy_must_be_32_bytes".to_string());
+    }
+    if input.chars().any(|ch| ch.is_ascii_alphabetic()) {
+        return Err(format!(
+            "mnemonic_word_count_must_be_24_got_{word_count}"
+        ));
     }
     let bytes = hex_decode(input)?;
     bytes

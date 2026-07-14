@@ -58928,6 +58928,78 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_1575c_fix1b_pq_sign_mnemonic_error_hardening",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1b — pq_sign mnemonic error hardening",
+      "manual_read_summary": "Production Genesis ML-DSA signing tool now counts mnemonic words before hex parsing and emits mnemonic_word_count_must_be_24_got_<N> for alphabetic non-24-word input instead of misleading invalid_hex_character.",
+      "repo_path": "ilc_consensus/src/pq_sign_main.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:pq_sign_mnemonic_word_count_error_hardened_phase_1575c_fix1b",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "security_hardening:ilc_consensus/src/pq_sign_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_1575c_fix1b_pq_sign_mnemonic_error_hardening",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1b — pq_sign mnemonic error hardening",
+      "manual_read_summary": "Focused Phase 1575c-Fix1 tests extended with a source-level assertion that mnemonic word count validation occurs before hex parsing.",
+      "repo_path": "tests/test_phase_1575c_fix1_genesis_v05_production_signing.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_consensus/src/pq_sign_main.rs",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575c_fix1_genesis_v05_production_signing.py"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_1575c_fix1b_pq_sign_mnemonic_error_hardening",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1b — pq_sign mnemonic error hardening",
+      "manual_read_summary": "STATUS update recording mnemonic word-count error hardening and retaining the pending-operator-signature boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:pq_sign_mnemonic_word_count_error_hardened_phase_1575c_fix1b",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
