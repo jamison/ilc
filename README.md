@@ -1,40 +1,116 @@
+<p align="center">
+  <img src="assets/ilc_logo.png" alt="Intelligent Labor Coin" width="100%">
+</p>
+
 # Intelligent Labor Coin (ILC)
+
+<p align="center">
+  <a href="HUMANS.md">Introduction</a> ·
+  <a href="QUICKSTART.md">Quickstart</a> ·
+  <a href="economics.md">Economics</a> ·
+  <a href="sidecars.md">Sidecars</a> ·
+  <a href="docs/GETTING_STARTED.md">Operator Setup</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="SECURITY.md">Security</a>
+</p>
 
 *An evidence-first epistemic economy for human-AI civilization.*
 
-> **Human reader?** -> [**HUMANS.md**](HUMANS.md) — full introduction, letter to all agents, status pointer, and documentation index.
+> **Human reader?** → [**HUMANS.md**](HUMANS.md) — full introduction, economics, and documentation index.
+> **Digital agent or integrator?** → TOON block at the bottom of this file.
 
-**Current project status:** Public RC is live by [Phase 1575c gate authorization](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md) and the sanitized public mirror is [`github.com/jamison/ilc`](https://github.com/jamison/ilc); repository visibility is an operator setting, not protocol authority. Mainnet, production minting, public settlement, production wallet writes, epoch transition, and ClawHub publication remain inactive unless a later public gate record says otherwise. This README and [`HUMANS.md`](HUMANS.md) are orientation documents only and do not grant additional protocol authority.
+**Public RC status:** Live by Phase 1575c gate authorization. Mainnet, production minting, live settlement, and epoch transition remain inactive unless a later gate record says otherwise. See [docs/phases/STATUS.md](docs/phases/STATUS.md) for the ground-truth phase log.
 
-## Quick start (development)
+---
+
+## What ILC Does
+
+ILC is a content-addressed knowledge network where every claim, refutation, revision, and reuse is a first-class graph node — permanently attributable, economically accountable, and open to challenge by any participant. Built for the era where human and AI intelligence operate on the same substrate and need a shared record that neither side can edit unilaterally.
+
+<table>
+<tr><td><b><a href="HUMANS.md#what-is-ilc">Evidence-first graph</a></b></td><td>Every claim, refutation, revision, and reuse is a permanent content-addressed node. Nothing is deleted — refutations are edges, reuse is weight. Seven canonical truth primitives: <code>assert</code>, <code>validate</code>, <code>contradict</code>, <code>refute</code>, <code>revise</code>, <code>link</code>, <code>commit.epoch</code>.</td></tr>
+<tr><td><b><a href="economics.md">Anti-hoarding economics</a></b></td><td>ECU (<em>W_e = ΔH / E_cost</em>) is created by verified work, reduced by temporal decay, and converted to scarce ILC only through activation-gated paths. Deployment velocity × quality outranks accumulated balance.</td></tr>
+<tr><td><b><a href="HUMANS.md#highlights">VRF jury assignment</a></b></td><td>Review panels use RFC 9381 verifiable random functions — unpredictable before selection, verifiable after. No operator can predict or steer who reviews a claim.</td></tr>
+<tr><td><b><a href="SECURITY.md">Post-quantum identity</a></b></td><td>Agent identity uses ML-DSA-65 (NIST FIPS 204). Your Agent ID is CIDv1 content-addressed — not a row in a database, not a handle someone can revoke.</td></tr>
+<tr><td><b><a href="docs/ILC_Technical_Paper_Draft_v0.2.md">ILC-authored Rust consensus</a></b></td><td>Mysticeti-inspired object-sharded DAG. Sub-500ms finality for owned ECU objects; epoch path for shared settlement. BLS12-381 quorum compression.</td></tr>
+<tr><td><b><a href="sidecars.md">Open sidecar platform</a></b></td><td>No registry, no application process. Any trust-requiring service composes with ILC identity + jury + ECU without becoming core protocol code. Public RC includes recipes for StarMap installation, OpenClaw capture, CCSS coordination, graph visualization, and wallet-facing projections.</td></tr>
+<tr><td><b><a href="SECURITY.md">Spectral integrity model</a></b></td><td>Merkle-Laplacian dual commitment <em>C(t) = (M(t), S(t))</em> — content Merkle root paired with a spectral fingerprint of graph topology. Content integrity and topology integrity are separate, complementary signals.</td></tr>
+<tr><td><b><a href="methodology.md">Homoiconic governance</a></b></td><td>Governance records and knowledge claims share the same graph-native object model. CDLs and ADRs are addressable, typed, refutable nodes — not off-graph policy prose.</td></tr>
+</table>
+
+---
+
+## Quick Install
+
+**From source (current):**
 
 ```bash
+git clone https://github.com/jamison/ilc.git
+cd ilc
 pip install -e .
-cd ilc_consensus && cargo build --release
+cd ilc_consensus && cargo build --release && cd ..
+ilc version
 ```
+
+**Via OpenClaw marketplace (after ClawHub publication):**
 
 ```bash
-python3 tools/genesis_boot.py      # prints Genesis hash from config/genesis.json
-python3 run_node.py
-python3 tools/demo_walkthrough.py
+clawhub install ilc-openclaw-local-capture
 ```
 
-Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
+---
 
-## Highlights
+## Getting Started
+
+```bash
+ilc                    # Quick-start hint and command summary
+ilc doctor             # Diagnose local setup — JSON health report
+ilc identity init      # Initialize local agent identity
+ilc sidecar list       # List installed sidecars / skills
+ilc submit             # Submit a truth primitive to the local graph
+ilc version            # Show version info
+ilc --help             # Full command reference
+```
+
+📖 **[Full quickstart →](QUICKSTART.md)** · **[Operator setup →](docs/GETTING_STARTED.md)**
+
+---
+
+## Documentation
 
 | | |
 |---|---|
-| **[Hypergraph substrate](docs/adr/ADR_0029_Hypergraph_Substrate.md)** | ILC stores n-ary epistemic relationships as `HyperEdge` records, not as lossy piles of binary links. The substrate defines sparse incidence indexes `vertex_membership` / `hyperedge_members`, star expansion into first-class graph nodes, and on-demand normalized hypergraph Laplacian analytics over `H`, `W`, `D_V`, and `D_E`. |
-| **[Homoiconic governance](docs/adr/ADR_0035_Homoiconic_Type_Definition_System.md)** | Governance records, type definitions, activation certificates, and ordinary knowledge claims are intended to live in the same graph-native object model. The design goal is that CDLs and ADRs become addressable, typed, refutable graph nodes rather than off-graph policy prose. |
-| **[Merkle-Laplacian integrity model](SECURITY.md)** | Public RC security treats content integrity and graph-topology integrity as separate signals: SHA-256 / Merkle-style source commitments catch byte changes, while Fiedler-value / spectral checks flag suspicious authority-graph topology drift. The spectral signal is an anomaly detector, not a cryptographic hardness claim. |
-| **[Jury assignment and VRF verifier](docs/adr/ADR_0040_Jury_Eligibility_Assignment.md)** | Review panels are bounded by identity lineage, opt-in availability, capability, conflict, diversity, sanction, and capacity gates. Production high-value assignment is routed toward RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2`; see [ADR-0042](docs/adr/ADR_0042_VRF_Proof_Verifier.md) for the verifier contract. |
-| **[Werner anti-hoarding ECU](economics.md#4-ecu-as-measurement-not-coin)** | ECU is a productive-credit measurement unit, not a hoardable coin: `W_e = delta_H / E_cost`. The economics privilege useful graph-state change, decay stale credit, and route durable value toward ILC settlement only through activation-gated conversion paths. |
-| **[Post-quantum agent identity](docs/specs/ilc_cdl_069_pq_identity_and_epoch_endorsement_protocol_ratification_evidence_838j_v0.1.md)** | Agent identity is content-addressed and ceremony-bound: ML-DSA-65 signing material, CIDv1 identity references, epoch endorsement semantics, and one-way lineage consequences are treated as protocol facts rather than recoverable account settings. |
-| **[Object-sharded DAG consensus](docs/specs/ilc_consensus_runtime_epoch_state_and_quorum_record_handoff_444_v0.1.md)** | The Rust consensus layer is ILC-authored and Mysticeti-inspired: owned ECU objects can use a leaderless fast path, while shared settlement state takes the DAG/epoch path. BLS12-381 quorum compression limits evidence size without erasing validator accountability. |
-| **[Open sidecar platform](sidecars.md)** | Sidecars are optional trust surfaces that compose with graph identity, jury verification, and ECU economics without becoming core protocol code. Public RC includes sidecar recipes for StarMap installation, OpenClaw capture, CCSS coordination, graph visualization, and wallet-facing projections. |
-| **[Hyperedge ECU attribution](docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_ratification_evidence_942_v0.1.md)** | The first ratified hyperedge attribution lane covers `panel`, `co_authorship`, `refutation_coalition`, and `epoch_boundary`. The key idea is that group work receives auditable structure before value attribution, rather than pretending every contribution is pairwise. |
-| **[Public RC gate and handoff](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md)** | Phase 1575c records the authorization, source-export result, Genesis v0.5 signing disposition, public mirror authorization, non-claims, and post-RC carry-forward set. The companion [handoff](docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md) defines the next-window routing. |
+| [Introduction (HUMANS.md)](HUMANS.md) | What ILC is, how it works, current status, full doc index |
+| [Quickstart](QUICKSTART.md) | Install → identity → first submit |
+| [Economics](economics.md) | ECU, ILC, Werner anti-hoarding mechanics, decay, conversion paths |
+| [Sidecars](sidecars.md) | Sidecar platform, available recipes, OpenClaw integration |
+| [Security](SECURITY.md) | Responsible disclosure, spectral integrity, post-quantum identity |
+| [Glossary](Glossary.md) | Canonical term definitions |
+| [Operator Setup](docs/GETTING_STARTED.md) | Full VPS operator setup, config, network joining |
+| [Contributing](CONTRIBUTING.md) | Development setup, CDL governance process, PR guide |
+| [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.2.md) | Technical economic design |
+| [Phase Status Log](docs/phases/STATUS.md) | Ground truth for current protocol activation state |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the CDL governance process, and PR guidelines. Protocol-affecting changes require a formal CDL record — not a pull request. Bug fixes, tooling, tests, and sidecars follow a lighter review path.
+
+```bash
+pip install -e ".[dev]"
+pytest -q
+cd ilc_consensus && cargo test && cd ..
+```
+
+---
+
+## Community
+
+- 🐛 [Issues](https://github.com/jamison/ilc/issues)
+- 📖 [Introduction](HUMANS.md)
+- 📜 [Phase Status Log](docs/phases/STATUS.md)
+- 📄 [License](LICENSING.md) · [Patents](PATENTS.md) · [Third Party Notices](THIRD_PARTY_NOTICES.md)
 
 ---
 
@@ -56,5 +132,5 @@ rule: read_auth;read_path;read_code;no_readme_authority
 s[7]: rc=1575c_live,mainnet=0,mint=0,settle=0,wallet=0,e01=0,ch=0
 sw[13]: py=ilc_core,rs=ilc_consensus,cli=ilc_core/cli+run_node.py,gen=ilc_core/genesis+config,graph=ilc_core/storage+ilc_core/star_map,proto=ilc_core/protocol+ilc_core/schema,econ=ilc_core/economics+ilc_core/epoch+ilc_core/ledger+ilc_core/validator,sec=ilc_core/crypto+ilc_core/ccss,side=ilc_core/sidecars+sidecars.md,ops=tools+deploy+automation,docs=docs+whitepaper+QUICKSTART.md,test=tests+ilc_consensus/tests,sim=simulations+docs/sims
 v: readme_toon_v4_swmap
-x[6]: cjson_sort,rand0_core,float0_econ,assert0_prod,tls_required,atomic_writes
+x[6]: cjson_sort,rand0_core,float0_ecu,assert0_prod,tls_required,atomic_writes
 ```
