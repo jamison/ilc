@@ -26,7 +26,9 @@ The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom
 
 ## 0. Truth begins somewhere. Observers, Agrippa, Gödel, Popper.
 
-Every bounded observer — human, instrument, or digital agent — encounters a finite slice of reality, transforms it through its own observation, and emits an update. In ILC's terms, an observer does not deliver final truth; it produces a **signed local delta against an evolving epistemic graph**:
+ILC does not ask whether Truth is a final boolean. It asks how bounded observers who disagree can build durable shared reality without a central authority. Observers emit signed local updates. The graph preserves those updates as content-addressed artifacts and relations. Popperian falsifiability, reuse, refutation, revision, and epoch commitment determine which updates gain standing over time.
+
+Every bounded observer — human, instrument, or digital agent — encounters a finite slice of reality, transforms it through its own observation, and emits an update. In ILC's terms, observation is **primary input, not final authority**: an observer produces a **signed local delta against an evolving epistemic graph**:
 
 ```
 G(t + 1) = G(t) + δ_o(t)
@@ -34,7 +36,7 @@ G(t + 1) = G(t) + δ_o(t)
 
 where δ_o(t) is one bounded observer's signed perturbation at epoch t. No single δ is authoritative. Authority is earned by what happens next: provenance, refutation, reuse, revision, validation, and epoch commitment.
 
-In the hypergraph formalism, an **observation is a hyperedge**, not a node artifact. The agent is one vertex; the observed content nodes are the remaining vertices; the act of observation is the hyperedge that binds them into a single committed relational object. δ_o(t) is this hyperedge — connecting agent identity, content addresses, epoch, and provenance chain simultaneously. No content node precedes its observation hyperedge; it is materialized by it. Agent nodes are the initiating vertices: they carry active signing keys and can open new hyperedges. All other nodes acquire epistemic standing only through the hyperedge memberships that connect them to agents — provenance, validation, refutation, reuse. The distinction between agent and artifact is structural: one class initiates hyperedges, the other participates in them.
+In the hypergraph formalism, an **observation can be represented as a hyperedge**: the agent is one vertex; the observed content artifacts are the remaining vertices; the act of observation is the relation that binds them into a committed object — connecting agent identity, content addresses, epoch, and provenance chain simultaneously. Content can exist as a content-addressed artifact before any observation relation is attached; a file, transcript, measurement, or theorem is a Graph Node before anyone cites it. **Observation is what gives artifacts epistemic standing in the graph.** ILC maintains a three-way structural distinction throughout: a **Graph Node** is any content-addressed artifact or graph object; an **Agent** is an identity capable of signing and emitting observations; a **Peer** is a running protocol process. Agents initiate hyperedges. Static artifact nodes participate in them. Diverse observers — with different evidence, different priors, and different failure modes — do not define absolute truth; they collapse possible interpretations into shared, contestable graph structure through validation, refutation, reuse, and revision.
 
 **Truth is not a boolean.** Gödel proved (1931) that no sufficiently expressive formal system can derive all its own truths from within; Agrippa established (c. 100 CE) that every justification chain must regress infinitely, loop, or stop at an axiom. Both results expose the same structural impossibility: a closed system settling all important propositions from within its own rules. ILC does not attempt this. Its defensible claim is narrower:
 
@@ -45,7 +47,7 @@ content-addressed process where claims earn standing by surviving
 refutation, reuse, validation, and epoch settlement.
 ```
 
-The network's purpose is not convergence to a single answer. It is **co-flourishing among diverse observers who often disagree**. Contradiction, refutation, and revision are first-class economic events; productive disagreement is more valuable than enforced consensus. Different observers bring different evidence and different failure modes to a shared representational space — their disagreements are the mechanism, not a defect.
+The network's purpose is not convergence to a single answer. It is **co-flourishing among diverse observers who often disagree**. Contradiction, refutation, and revision are first-class economic events; productive disagreement is more valuable than enforced consensus.
 
 **Reuse as convergence.** The most robust practical measure of observer agreement is reuse: whether the graph continues to traverse, build upon, and compose a node across diverse agent populations. If claim C is reused by observers with sufficiently different priors, the probability that C encodes something real increases. The ILC economic layer makes this formal: REUSE attribution flows backward through PROVENANCE chains, aligning incentives with epistemic utility rather than institutional endorsement. The `commit.epoch` primitive provides an arrow of time measured in epistemic improvement — successive epoch boundaries record observer convergence and disagreement, driving the graph toward greater coherence not through force but through economic selection.
 
