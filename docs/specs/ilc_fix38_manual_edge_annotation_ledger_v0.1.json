@@ -59120,6 +59120,232 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Gate artifact recording authorization, precondition token census, source export pass, Genesis v0.5 signature consumption, sanitized mirror manifest, publication authorization, non-claims, and post-RC v0.5 carry-forward workstreams.",
+      "repo_path": "docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_authorized",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_live_phase_1575c",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Window 1565-1575 closure handoff recording CLOSED PASS, public RC live status, carry-forward routing, next-window entry criteria, and MemPalace refresh disposition.",
+      "repo_path": "docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:window_1565_closure_gate_verdict=pass",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Gate test suite asserting required sections, tokens, v0.5 signature boundary, source export cleanliness, sanitized mirror manifest, selftest-chain guard, guard preservation, and handoff routing.",
+      "repo_path": "tests/test_phase_1575c_public_rc_gate_001.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_authorized",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575c_public_rc_gate_001.py"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Walkthrough recording executed commands, precondition checks, source export result, sanitized mirror result, artifact list, non-claims, and emitted tokens.",
+      "repo_path": "docs/phases/phase_1575c_public_rc_gate_001_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:window_1565_closure_gate_verdict=pass",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575c_public_rc_gate_001_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Final source allowlist export evidence for Phase 1575c: pass, 435 included files, 39 excluded files, zero blocked ambiguities, marker scan pass, dependency scan pass, and no included/excluded intersection.",
+      "repo_path": "out/block6_public_rc_gate_001_1575c/final_source_export_1575c.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_authorized",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/block6_public_rc_gate_001_1575c/final_source_export_1575c.json"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Sanitized public mirror manifest for Phase 1575c identifying filtered public HEAD, archive hash, denylist pass, PUBLIC_RC_EXCLUDE pass, no-push boundary, and staging directory.",
+      "repo_path": "out/block6_public_rc_gate_001_1575c/public_mirror_manifest_1575c.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sanitized_public_mirror_regenerated_phase_1575c",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/block6_public_rc_gate_001_1575c/public_mirror_manifest_1575c.json"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Public mirror generation pipeline hardened to commit post-filter Cargo cleanup before calculating filtered public HEAD and archive hash.",
+      "repo_path": "tools/scripts/generate_public_mirror.sh",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:sanitized_public_mirror_regenerated_phase_1575c",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tools/scripts/generate_public_mirror.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "Planning index update recording Window 1565-1575 CLOSED PASS, public RC live status, sanitized mirror identity, guard non-claims, and post-RC routing.",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_live_phase_1575c",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_1575c_public_rc_gate_001",
+      "chronology_note": "2026-07-14 Phase 1575c — Public RC Gate-001",
+      "manual_read_summary": "STATUS update recording Phase 1575c emitted tokens, sanitized mirror identity, closure verdict pass, public RC live status, and non-claims.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:window_1565_closure_gate_verdict=pass",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_live_phase_1575c",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
