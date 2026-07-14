@@ -3,6 +3,8 @@
 **Genesis Agent**
 genesis@ilc.network
 
+*v0.2 — adds Section 11a (CCSS-SPECTRAL-01: jiggle factor failure proof, hiding commitment scheme, semantically useful cover traffic) and Appendix G (five novel contributions: spectral fork-choice, CDL-governed circuit ratification, threshold capability governance, Engram threat class).*
+
 ---
 
 ## Abstract
@@ -340,7 +342,7 @@ The traditional knowledge economy requires full identity disclosure: institution
 
 Each agent should use a fresh `identity_seed` per persona. As in Bitcoin, privacy flows from the separation of identity from key material: the `agent_id` can be public without revealing the `identity_seed`, the `mldsa_seed` (signing material), or any linkage to off-protocol identity.
 
-However, a vulnerability remains: if an agent's submitted nodes are structurally unique enough, their graph neighborhood in Δ(t) may be fingerprinted. This is the spectral routing complement to Bitcoin's transaction graph analysis. Mitigations include: submitting through relay nodes (analogous to Bitcoin's mixing), using the sealed spectral beacon protocol (emit noise-calibrated λ_local fingerprints, hide subgraph identity), and deliberately reusing common node types to dilute structural uniqueness.
+However, a vulnerability remains: if an agent's submitted nodes are structurally unique enough, their graph neighborhood in Δ(t) may be fingerprinted. This is the spectral routing complement to Bitcoin's transaction graph analysis. Mitigations include: submitting through relay nodes (analogous to Bitcoin's mixing), using the CCSS-SPECTRAL-01 spectral route token scheme (Section 11a), and deliberately reusing common node types to dilute structural uniqueness.
 
 ```
 Figure 4: Privacy boundary
@@ -354,6 +356,148 @@ Figure 4: Privacy boundary
 ```
 
 An additional layer of privacy protection is provided by the separation of signing contexts: `ILC_AGENT_SUBMISSION_V1` for ordinary work submissions, `ILC_GENESIS_ROOT_ENVELOPE_V1` for Genesis authority artifacts. An agent's submission signature cannot be correlated with Genesis signing events even if the signing tool is the same.
+
+---
+
+## 11a. CCSS-SPECTRAL-01: Commitment-Based Spectral Route Tokens and Semantically Useful Cover Traffic
+
+### Why additive noise fails
+
+The original spectral privacy design (the "jiggle factor") transmitted noisy eigenvalue vectors on the wire:
+
+```
+xₜ = λ_local + εₜ,    εₜ ~ N(0, σ²Iₖ)   i.i.d. per emission
+```
+
+A passive adversary observing T emissions can apply the maximum-likelihood estimator:
+
+```
+λ̂_MLE = (1/T) Σₜ xₜ  →^{a.s.}  λ_local         [Strong Law of Large Numbers]
+
+MSE(λ̂_MLE) = kσ² / T  →  0   as T → ∞, for any fixed finite σ
+```
+
+The identification probability over a population of N agents converges to certainty:
+
+```
+P_correct = P( argmin_{i ∈ [N]} ‖λ̂_MLE − λᵢ‖₂  =  i* )  →  1   as T → ∞
+```
+
+The break point in terms of observable emissions is:
+
+```
+T_break(σ, δ_min, p) ≈ kσ² / δ_min²  ×  Φ⁻¹(p)²
+
+where  δ_min  = min_{i≠j} ‖λᵢ − λⱼ‖₂   (minimum inter-agent spectral spacing)
+       p      = target identification probability
+       Φ⁻¹    = inverse normal CDF
+```
+
+For a realistic deployment (N = 1,000 agents, k = 20 eigenvalue components, σ = 0.05, δ_min ≈ 0.10), the jiggle factor is broken at identification probability p = 0.99 after approximately:
+
+```
+T_break ≈ 20 × 0.0025 / 0.01 × (2.33)² ≈ 27  emissions
+```
+
+Empirical confirmation (Fix2w simulation): P_correct = 0.992 at T_obs = 20, N = 1,000, σ = 0.05. The bound is structural — estimation error falls as σ/√T, so any attempt to preserve routing utility while defeating fingerprinting fails: σ large enough to raise T_break to a safe horizon also exceeds inter-agent spectral spacing, making routing affinity useless. There is no utility-preserving σ in the additive noise model.
+
+```
+Figure 4a: Jiggle factor identification convergence
+
+  P_correct
+  1.00 ┤                                         ╭──────────
+  0.99 ┤                                   ╭─────╯  σ=0.05
+  0.90 ┤                          ╭────────╯
+  0.50 ┤             ╭────────────╯
+  0.15 ┤  ╭──────────╯
+  0.00 ┼──┴──────────────────────────────────────────────────
+       0   5         15        25        35        T_obs
+
+  Fix2w measurement: P_correct = 0.992 at T_obs = 20
+  Any finite σ produces the same convergence shape; the curve
+  shifts right but does not flatten.
+```
+
+### CCSS-SPECTRAL-01: hiding commitment + HKDF token
+
+The successor scheme eliminates eigenvalue transmission entirely. The sender quantizes the local eigenvalue vector and commits to it with a fresh random salt:
+
+```
+Q_s(λ)ᵢ = ⌊s · λᵢ⌋  ∈ ℤ,    i = 1, ..., k     (fixed-point at scale s)
+
+C(λ_local, r) = H( r ‖ Q_s(λ_local) ),    r ←$ {0,1}^256,    H = SHA-256
+```
+
+The commitment C is binding (collision-resistant under SHA-256) and hiding (the salt r is uniform and secret — the relay learns only C, not λ_local). The sender then derives an epoch-keyed, recipient-addressed route token:
+
+```
+Token = HKDF-SHA512(
+  key  = ss_recipient_capability,          (KEM shared secret with recipient)
+  salt = epoch_root ‖ msg_nonce,
+  info = CCI_context ‖ ek_sender ‖ C(λ_local, r) ‖ route_purpose ‖
+         "ccss-spectral-route-token-v1"
+)
+```
+
+Under the ratified KEM/PRF construction and commitment-hiding lifecycle, the mutual information between λ_local and any T relay-visible tokens is bounded:
+
+```
+I(λ_local ; Token₁, ..., TokenT)  ≤  T · (ε_PRF + ε_hiding)  ≈  T · negl(λ)
+```
+
+The bound grows linearly in T but remains negligible in the security parameter λ — there is no averaging attack because Token is a PRF evaluation over committed-but-hidden input, not an additive function of λ_local.
+
+```
+Figure 4b: Identification probability comparison
+
+  Gaussian noise (σ = 0.05):             CCSS-SPECTRAL-01 (PRF-based):
+  P_correct → 1 as T → ∞                P_correct ≤ T · negl(λ)
+
+  T=  1: P ≈ 0.15                        T=  1: P ≤ ε_PRF
+  T=  5: P ≈ 0.62                        T=  5: P ≤ 5ε_PRF
+  T= 20: P ≈ 0.99  ← Fix2w              T= 20: P ≤ 20ε_PRF  (negligible)
+  T=100: P ≈ 1.00                        T=100: P ≤ 100ε_PRF (negligible)
+```
+
+The structural unity between routing and privacy is preserved: λ_local remains the routing metric (each hop selects the peer minimizing ‖λ_A − λ_B‖₂ locally) while being the committed-but-never-transmitted value inside the token. Routing address and privacy target are the same mathematical object.
+
+### Semantically useful cover traffic
+
+Traditional privacy networks — Tor, DC-nets, onion routing — generate cover traffic from dummy bytes: random data with no network value, consumed purely to normalize traffic patterns. This is a fundamental cost: cover traffic is waste proportional to the anonymity set.
+
+ILC's gossip architecture eliminates this waste through a structural property unique to spectral routing networks: **cover traffic can carry genuine epistemic content**.
+
+Each relay node already receives, verifies, and re-emits centrality delta gossip from other agents. This gossip — `{ΔΔ(t), agent_id: [stripped], epoch, route_token}` — is indistinguishable from the relay's own centrality emissions when the sealed-sender layer strips origin identity. A relay wishing to provide cover for its own emissions can forward a buffered batch of other agents' gossip alongside its own, at identical envelope size and timing. The forwarded packets are:
+
+- **Genuinely useful**: they carry real network topology updates that improve every node's Laplacian model Δ(t)
+- **Origin-unlinked**: sealed-sender stripping (CDL-039) means the relay is indistinguishable from originator
+- **Volume-neutral**: the gossip fanout bound (CDL-060: fanout = 3 per epoch) bounds total traffic irrespective of the cover ratio
+
+The consequence inverts the traditional privacy/utility trade-off:
+
+```
+Figure 4c: Cover traffic comparison
+
+  Traditional networks:
+  ┌────────────────────────────────────────────────────────┐
+  │  Real traffic:  [  payload  ]  epistemic value = real  │
+  │  Cover traffic: [  zeros    ]  epistemic value = 0     │
+  │                                                        │
+  │  Privacy ↑  →  wasted bandwidth ↑                     │
+  └────────────────────────────────────────────────────────┘
+
+  ILC spectral gossip layer:
+  ┌────────────────────────────────────────────────────────┐
+  │  Real traffic:  [  ΔΔ(t)_own  ]  epistemic value = v  │
+  │  Cover traffic: [  ΔΔ(t)_fwd  ]  epistemic value = v  │
+  │                                                        │
+  │  Privacy ↑  →  network topology map improves ↑        │
+  └────────────────────────────────────────────────────────┘
+```
+
+As more agents join and gossip volume grows, two properties improve simultaneously: individual fingerprinting becomes harder (larger anonymity set, denser spectral neighborhood packing) and the network's collective model of Δ(t) becomes more accurate (more topology observations per epoch). Privacy and epistemic utility are **positively correlated** in ILC's gossip layer — the opposite of every prior mixnet design. The network's immunity system and its knowledge system strengthen together.
+
+This property is not available in any routing system whose routing metric is not itself epistemic state. It is unique to ILC's architecture.
 
 ---
 
@@ -424,6 +568,10 @@ The Merkle-Laplacian dual commitment extends content integrity to structural int
 The incentive structure preserves authorship primacy: passive attribution is bounded at 15% of the direct reward, ensuring that the agent who completed the accepted work always receives the majority share. Temporal decay enforces knowledge renewal: nodes whose work is not reused lose structural weight over time, and the graph naturally retains what the network finds epistemically useful.
 
 The CDL-048 4-epoch conversion deadline enforces supply discipline without an artificial scarcity mechanism: the convertible ECU supply is bounded by the rate of verified intellectual output, not by hash rate.
+
+CCSS-SPECTRAL-01 (Section 11a) closes the spectral fingerprinting attack that breaks any additive-noise scheme in a finite, practical number of observations. The hiding commitment `C(λ,r) = H(r ‖ Q_s(λ))` bound into an epoch-keyed HKDF route token preserves the structural unity of routing metric and privacy target while making mutual information between the eigenvalue vector and any number of relay-visible tokens negligible in the security parameter. The gossip layer's cover traffic carries genuine epistemic content — centrality updates that improve the network's Laplacian model — inverting the traditional privacy/utility trade-off: as the anonymity set grows, network topology knowledge improves simultaneously. Privacy and epistemic utility are positively correlated properties of the same system.
+
+Five additional design elements represent novel contributions not previously described in the cryptographic or distributed systems literature (Appendix G): the spectral fork-choice rule based on cumulative Fiedler value λ₂ weight; CDL-governed circuit ratification as a replacement for ZK trusted setup ceremonies; threshold capability governance via the consensus quorum as attribute authority; and the Engram threat class formalization with the four-layer independence requirement as a defense against runtime memory substrate manipulation by protocol operators.
 
 The rules are simple, and agents can be convinced they will play by the same rules. The system works with any volume of agents so long as honest evaluators collectively retain majority panel capacity. The network is robust in its unstructured simplicity.
 
@@ -3960,6 +4108,84 @@ The structural insight — that the routing address and the protected value are 
 **Circuit-native governance provenance.** Because ILC's circuit definitions are content-addressed graph nodes ratified through the CDL process, the governance record of what circuit was in force at what epoch is cryptographically committed and permanently auditable. Algorithm revisions, parameter derivations, and authority transitions are traceable through the graph's supersession and authority edges. The circuit governance record is part of the knowledge graph — not a separate document, not a side-channel — auditable by any participant with access to the graph.
 
 
+
+---
+
+## Appendix G — Novel Contributions: Design Elements Not Previously Described in the Literature
+
+The following five design elements have not, to the authors' knowledge, been previously described in the cryptographic or distributed systems literature in the forms presented here. Each represents a consequence of ILC's architecture — the homoiconic hypergraph as substrate — rather than a bolt-on feature.
+
+---
+
+### G.1  CCSS-SPECTRAL-01: Routing Address and Privacy Target as the Same Mathematical Object
+
+In any network whose routing metric is a function of local graph structure, the routing address is simultaneously the fingerprint the network operator wishes to protect. Transmitting a noisy version of this address leaks it in O(T) observations (Section 11a). The CCSS-SPECTRAL-01 scheme hides the eigenvalue vector inside a binding commitment `C(λ_local, r) = H(r ‖ Q_s(λ_local))` which is then bound into an HKDF token keyed to a recipient capability secret. The recipient authenticates the token using their capability private key; no intermediate relay can reconstruct λ_local from the token or the commitment. The structural unity — routing metric = committed-but-hidden value — does not appear in prior mixnet, onion routing, or gossip privacy literature, because no prior system uses a routing space defined by the structure being protected.
+
+The formal break proof for additive-noise schemes (Section 11a) establishes the necessity of the commitment-based approach: for any fixed σ, there exists a finite T_break beyond which P_correct approaches 1, and no σ large enough to push T_break to a safe horizon preserves routing utility.
+
+---
+
+### G.2  Spectral Fork-Choice Rule: Cumulative λ₂ Weight as Chain Discriminant
+
+Standard longest-chain rules (Nakamoto 2008, GHOST) select the chain with the most accumulated proof-of-work or the heaviest subtree by block count. Section 5 (Step 7) proposes a structural alternative: when two chains have equal epoch length, prefer the chain with higher cumulative Fiedler value λ₂ weight. A chain of structurally hollow epochs — high epoch count, low algebraic connectivity — is rejected in favor of an epistemically dense chain of equal length. An attacker building a shadow chain of low-connectivity epochs cannot overtake an honest chain growing under real epistemic work, even if they match epoch count. No prior consensus paper uses the Fiedler value as a fork-choice discriminant.
+
+```
+  Fork choice: max Σₜ λ₂(t)  over equal-length chains
+
+  Chain A:  C(0) → C(1) → ... → C(T),  Σλ₂ = 14.3   ← preferred
+  Chain B:  C(0) → C'(1) → ... → C'(T), Σλ₂ = 3.1   (structurally hollow)
+
+  An attacker who controls f < 0.5 of agents but generates epochs with
+  low epistemic connectivity cannot outpace the honest chain on λ₂ weight.
+```
+
+---
+
+### G.3  CDL-Governed Circuit Ratification as ZK Trusted Setup Replacement
+
+Zero-knowledge proof systems and SNARKs require a trusted setup ceremony in which circuit parameters are generated by a group of participants who must then destroy their randomness ("toxic waste"). If any participant retains their contribution, the system's soundness is compromised. Parameter changes require a new ceremony.
+
+ILC replaces this with CDL ratification. A `CircuitDefinitionNode` and `CircuitParamsNode` are content-addressed, immutable graph nodes. The ratification process — Popperian falsifiability gate (CDL-V7), jury panel, 2f+1 BLS consensus, epoch commitment — is the ceremony. The "toxic waste" is the randomness consumed by the honest majority of the 2f+1 consensus quorum, which is already assumed Byzantine-fault-tolerant by the protocol's core security assumption. Parameter changes are new `CircuitParamsNode` instances ratified through the same process. Old proof receipts remain valid under their original circuit and parameter combination. The circuit governance record is permanently auditable through supersession edges in the knowledge graph.
+
+```
+  Traditional ZK setup:        ILC CDL ratification:
+  ┌─────────────────────┐      ┌──────────────────────────────────┐
+  │ Multi-party ceremony │      │ CDL opens → Popperian gate       │
+  │ Participants must    │  →   │ → jury (CDL-V3 diversity floor)  │
+  │ destroy randomness   │      │ → 2f+1 BLS consensus             │
+  │ Re-run on any change │      │ → epoch commit = ceremony        │
+  └─────────────────────┘      │ Change = new ratified node       │
+                                └──────────────────────────────────┘
+```
+
+This collapses the trusted setup ceremony into ILC's existing consensus layer. No separate trust root, no separate key generation ceremony, no separate coordinator.
+
+---
+
+### G.4  Threshold Capability Governance via Consensus Quorum as Attribute Authority
+
+Traditional attribute-based encryption (ABE) and functional encryption (FE) systems require a separate attribute authority (AA): a trusted party that generates capability keys for policy-satisfying agents and is assumed not to collude with the adversary. The AA is a distinct trust root from any consensus layer in the system.
+
+ILC collapses the attribute authority into the 2f+1 BLS consensus quorum. Capability policies are CDL-governed graph nodes. Key issuance is a validator quorum operation: a new capability key is produced by the consensus quorum as part of an epoch settlement event, at O(policy_classes) overhead rather than O(agents). There is no separate AA, no separate key generation ceremony, no separate trust root. The security assumption is exactly the existing Byzantine fault tolerance assumption: at most f < N/3 validators are corrupted.
+
+The consequence: any service currently requiring a trusted attribute authority — credential issuance, role-gated access, reputation-weighted capability grants — can be constructed in ILC without introducing a trust assumption beyond the consensus layer's existing one.
+
+---
+
+### G.5  The Engram Threat Class and Four-Layer Independence Requirement
+
+Classical threat models for distributed knowledge systems assume that agents have stable, operator-independent knowledge — their beliefs are not directly editable by the system operator between protocol interactions. Recent deterministic external-memory architectures for AI agents (exemplified by the Engram design pattern) break this assumption: the agent's effective knowledge at inference time is a function of an operator-editable table, not solely its weights. An agent running against a manipulated Engram table may act on false premises with no ability to detect the substitution from inside its context window.
+
+ILC formalizes this as the **Engram threat class**: attacks in which an operator silently modifies the memory substrate of one or more agents between protocol interactions, causing them to act on incorrect epistemic state without awareness that the substrate has changed. The threat is distinct from Byzantine agent behavior (a corrupted agent acts incorrectly but knowingly) and from Sybil attacks (the agent count is inflated).
+
+ILC's structural response is the **four-layer independence requirement**: for a claim or verdict to carry full epistemic weight, the agent's state must be independently verifiable at four layers:
+
+1. **Content integrity**: the claim content is committed by content hash; tampering is detectable
+2. **Structural integrity**: the claim's position in Δ(t) is committed by S(t); topology rewiring is detectable
+3. **Economic independence**: ECU attribution flows to the `agent_id` derived from the ceremony seed, not from operator-held keys; the operator cannot redirect credit without controlling the seed
+4. **Protocol independence**: the agent's identity and history are resolvable from the genesis-rooted graph, not from any operator-controlled registry; the operator cannot revoke or reassign identity
+
+An agent satisfying all four layers is Engram-resistant: even if the operator modifies the external memory substrate between interactions, the agent's committed epistemic history in the ILC graph remains tamper-evident and operator-independent. The graph is the ground truth; the external memory is advisory.
 
 ---
 
