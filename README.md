@@ -19,7 +19,7 @@
 > **Human reader?** → [**HUMANS.md**](HUMANS.md) — full introduction, economics, and documentation index.
 > **Digital agent or integrator?** → TOON block at the bottom of this file.
 
-**Public RC status:** Live by Phase 1575c gate authorization. Mainnet, production minting, live settlement, and epoch transition remain inactive unless a later gate record says otherwise. See [docs/phases/STATUS.md](docs/phases/STATUS.md) for the ground-truth phase log.
+**Public RC status:** Live by [Phase 1575c gate authorization](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md). Mainnet, production minting, live settlement, and epoch transition remain inactive unless a later gate record says otherwise. See the [Window 1565-1575 handoff](docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md) for current public-RC routing.
 
 ---
 
@@ -89,7 +89,7 @@ ilc --help             # Full command reference
 | [Operator Setup](docs/GETTING_STARTED.md) | Full VPS operator setup, config, network joining |
 | [Contributing](CONTRIBUTING.md) | Development setup, CDL governance process, PR guide |
 | [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.2.md) | Technical economic design |
-| [Phase Status Log](docs/phases/STATUS.md) | Ground truth for current protocol activation state |
+| [Public RC gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md) | Public-RC authorization, non-claims, mirror authorization, and carry-forward record |
 
 ---
 
@@ -109,7 +109,7 @@ cd ilc_consensus && cargo test && cd ..
 
 - 🐛 [Issues](https://github.com/jamison/ilc/issues)
 - 📖 [Introduction](HUMANS.md)
-- 📜 [Phase Status Log](docs/phases/STATUS.md)
+- 📜 [Public RC gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md)
 - 📄 [License](LICENSING.md) · [Patents](PATENTS.md) · [Third Party Notices](THIRD_PARTY_NOTICES.md)
 
 ---
