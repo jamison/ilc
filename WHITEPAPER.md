@@ -376,6 +376,89 @@ Peer discovery in the current deployment uses a **static peer registry**: each n
 
 This is intentional for public RC. Static configuration is auditable — the operator can verify exactly which peers a node communicates with. Dynamic peer discovery introduces bootstrapping attacks (Sybil nodes advertising themselves as highly-connected peers) that require additional governance before activating. The static registry v1 is the conservative, auditable baseline; dynamic discovery is deferred to a future CDL lane when the network has sufficient decentralization to make bootstrapping attacks impractical.
 
+### Push vs pull: security and privacy asymmetries
+
+The two-path design is not an optimization choice — it is a **security and privacy partitioning**. Push and pull have fundamentally different threat profiles, and conflating them produces systems that are either trivially DoS-able or that leak more than intended. ILC resolves this by assigning each traffic class to the path whose threat model matches its content characteristics.
+
+```
+Figure 2f: Push vs pull security and privacy comparison
+
+  Property              │ PUSH (bounded fanout)         │ PULL (WANT-HAVE/WANT-BLOCK)
+  ──────────────────────┼───────────────────────────────┼───────────────────────────────
+  Initiator             │ Sender                        │ Receiver
+  Bandwidth control     │ Sender-controlled             │ Receiver-controlled  ✓ safer
+  DoS attack surface    │ HIGH — sender can force RAM   │ LOW — receiver chooses what
+                        │ onto receiver at will         │ it fetches, and when
+  Memory exhaustion     │ O(N×fanout×payload) worst     │ O(chosen_payload) bounded
+  Payload size limit    │ Strict: metadata only (CBOR   │ Relaxed: receiver controls
+                        │ delta, <4 KB canonical)       │ fetch; large payloads OK
+  Rate limiting         │ Per-epoch fanout cap (≤3)     │ Per-identity token bucket
+                        │ enforced by CDL-060           │ WANT_BLOCK_RATE = 10/min
+  Sybil amplification   │ High: 1 Sybil → N receivers  │ Low: receiver must choose
+                        │ flooded with unsolicited push │ to request from Sybil
+  Privacy (sender)      │ Origin stripped from headers  │ Origin stripped from headers
+                        │ (CDL-039) but timing reveals  │ (CDL-039); timing less
+                        │ you are active this epoch     │ revealing about liveness
+  Privacy (receiver)    │ Receiver is passive;          │ WANT announces interest
+                        │ no explicit disclosure        │ in a specific CID to peers
+  CID correlation risk  │ None (no CID in push metadata)│ Moderate: WANT frame leaks
+                        │                               │ which CIDs receiver lacks
+  Constitutional lock   │ CDL-036: full-payload push    │ CDL-036: ratified as the
+                        │ broadcast PERMANENTLY REJECTED│ canonical fetch path
+```
+
+**Why full-payload push is constitutionally locked out.** The governing ratification is CDL-036 ("header-first dissemination with CID-addressed pull fetch"). The CDL was not a performance decision — it was a threat-model decision. A permissionless network where any node can push arbitrary-size payloads to any peer it discovers is equivalent to a distributed amplification attack vector. A Sybil swarm with 100 nodes, each pushing 1 MB payloads with fanout 3 at every epoch boundary, injects 300 MB/epoch of uncontrolled traffic into each victim peer — with zero cost to the attacker beyond acquiring peer list slots. ILC's gossip layer operates on a **public permissionless network** assumption (threat model established Phase 391); this attack is not hypothetical. CDL-076 explicitly rejected full-payload push for truth primitive announcements on the same grounds.
+
+**The WANT-HAVE two-phase design (CDL-077).** A single-phase full-record fetch — "here is a list of CIDs I have, send me all the ones you want" — was rejected by CDL-077 because the DoS surface is symmetric: the responder must now service an arbitrary fetch without prior negotiation. The ratified two-phase protocol adds a required probe:
+
+```
+Figure 2g: Two-phase WANT-HAVE/WANT-BLOCK protocol
+
+  Requester (R)               Responder (S)
+  ─────────────               ─────────────
+  1. WANT-HAVE {cid₁, cid₂, cid₃}
+     ──────────────────────────────────────►
+                              2. HAVE {cid₁, cid₃}  (has these)
+                              ◄──────────────────────────────────
+  3. WANT-BLOCK cid₁
+     ──────────────────────────────────────►
+                              4. [token bucket check]
+                                 WANT_BLOCK_RATE ≤ 10/min per ML-DSA-65 identity
+                              5. Respond with cid₁ payload
+                              ◄──────────────────────────────────
+  6. WANT-BLOCK cid₃  (only if needed and within rate limit)
+     ──────────────────────────────────────►
+                              ...
+
+  Rate limiting: in-process per-identity token bucket keyed by agent's ML-DSA-65
+  public key. Not IP-based (trivially bypassed under NAT/Tor); identity-based
+  (bounded by the cost of generating a valid ML-DSA-65 keypair).
+```
+
+The HAVE response in step 2 is critical: it tells the requester which CIDs are locally available before any large payload is transferred. The requester can now make informed decisions about which CIDs to fetch, from which peers, in what order — without committing either party to a large transfer. This probe-then-fetch pattern is structurally equivalent to Bitcoin's `inv`/`getdata` message sequence, and serves the same function: it prevents receivers from being coerced into receiving data they did not request.
+
+**Per-identity rate limiting vs per-IP.** A naive push system rate-limits by IP address. This fails under IPv6 address rotation, carrier-grade NAT, and Tor (where all Tor exit nodes share IP space). ILC's pull rate limiting is keyed by the sender's ML-DSA-65 agent identity — the post-quantum public key that signs every protocol object. Generating a new identity costs the same work as generating a new ML-DSA-65 keypair (trivially cheap). For this reason, rate limiting alone does not eliminate Sybil-based DoS; it is one layer in a defense-in-depth stack that includes: (1) the fanout cap on push, (2) per-identity token bucket on pull, (3) static peer registry (no automatic peer acceptance), and (4) CDL-039's topology privacy (Sybil nodes cannot learn the network topology they need to target high-centrality peers).
+
+**Privacy asymmetry between push and pull.** The two paths have opposite privacy profiles for sender vs receiver:
+
+- **Push leaks sender activity, not content.** A node that pushes a centrality delta reveals to its fanout peers that it is active this epoch and has a non-trivial spectral update (δ ≥ U_FLOOR). The header strips `creator_agent_id` and `node_id` (CDL-039), so peer identity is not directly in the payload. But timing analysis can correlate push events across epochs to infer which network positions are active at epoch boundaries.
+
+- **Pull leaks receiver interest, not sender identity.** A WANT-HAVE frame announces to the responding peer which CIDs the requester lacks. This is a selective disclosure of the requester's knowledge state. In practice, the CIDs in a WANT frame are content-addressed hashes — their semantic content is not directly readable without context — but a well-positioned adversary with prior knowledge of the graph could correlate WANT frames to infer which work products or claims a receiver is tracking.
+
+The **net effect** is that push and pull leak complementary information. A passive network observer who sees both push and pull traffic from a single IP can attempt to correlate: "this IP pushed a delta at epoch t, then sent WANT frames for CIDs related to jury panel assignment X at epoch t+1." This is the primary reason the sealed-sender mechanism (ADR-0034) applies to both paths for sensitive traffic — the Sphinx-style outer encryption severs the IP-to-identity correlation that makes combined push+pull analysis possible.
+
+**Economic coupling to pull (CDL-078).** The relay incentive model reinforces the pull preference at the economic layer. When a peer responds to a WANT-BLOCK request and the recipient accepts the payload, the responding peer earns a centrality delta credit:
+
+```
+SERVE_CENTRALITY_DELTA    = 0.01   (per accepted WANT-BLOCK response)
+SERVE_CENTRALITY_MAX      = 0.10   (cap per epoch, across all responses)
+serve_event → epoch buffer B(t) → Δ(t) at epoch boundary
+```
+
+This creates an alignment between the network's security model and individual peer incentives: serving WANT-BLOCK requests is economically rewarded; unsolicited pushing is not. Peers that participate in the pull ecosystem accumulate centrality credit; peers that attempt to flood the network with unsolicited push traffic gain nothing and burn fanout budget.
+
+The result is a gossip layer where **security incentives and economic incentives point in the same direction**: pull is safer, more private for the sender, economically rewarded for the responder, and constitutionally locked as the canonical payload path. Push is reserved for the narrow class of traffic — small, urgent, bounded-size metadata — where low latency outweighs the extra DoS exposure.
+
 ```
 Figure 2e: Full D2D message lifecycle
 
