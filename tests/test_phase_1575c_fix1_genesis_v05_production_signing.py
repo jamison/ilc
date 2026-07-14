@@ -111,16 +111,17 @@ def test_domain_separator_and_signature_payload_hashes_match_recomputation() -> 
     ).hexdigest()
 
 
-def test_current_state_has_verified_v05_signature_but_no_public_rc_success() -> None:
+def test_current_state_has_verified_v05_signature_and_gate_consumption() -> None:
     status = STATUS_PATH.read_text()
     assert "genesis_v05_public_rc_envelope_unsigned_payload_committed_phase_1575c_fix1" in status
     assert "genesis_v05_public_rc_envelope_signed_phase_1575c_fix1" in status
     assert "genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1" in status
     assert "atlas_slice_manifest_v05_signed_phase_1575c_fix1" in status
     assert "phase_1575c_v05_signing_tokens_accepted_by_gate_phase_1575c_fix1" in status
-    assert "public_rc_gate_001_authorized" not in status
-    assert "public_rc_live_phase_1575c" not in status
-    assert "public_repository_push_authorized_phase_1575c" not in status
+    assert "genesis_v05_public_rc_envelope_consumed_phase_1575c" in status
+    assert "public_rc_gate_001_authorized" in status
+    assert "public_rc_live_phase_1575c" in status
+    assert "public_repository_push_authorized_phase_1575c" in status
 
 
 def test_signature_and_verification_records_exist_and_match_payload_hashes() -> None:
