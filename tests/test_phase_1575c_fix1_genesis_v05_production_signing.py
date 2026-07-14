@@ -164,6 +164,13 @@ def test_pq_sign_disables_terminal_echo_for_seed_entry() -> None:
     assert "input.zeroize();" in source
 
 
+def test_pq_sign_reports_wrong_mnemonic_word_count_before_hex_parse() -> None:
+    source = Path("ilc_consensus/src/pq_sign_main.rs").read_text()
+    assert "let word_count = input.split_whitespace().count();" in source
+    assert "mnemonic_word_count_must_be_24_got_{word_count}" in source
+    assert "input.chars().any(|ch| ch.is_ascii_alphabetic())" in source
+
+
 def test_full_behavioral_v05_non_claims_are_present() -> None:
     payload = _load_envelope()
     non_claims = payload["non_claims"]
