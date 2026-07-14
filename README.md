@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="HUMANS.md">Introduction</a> ·
+  <a href="WHITEPAPER.md">Whitepaper</a> ·
   <a href="QUICKSTART.md">Quickstart</a> ·
   <a href="economics.md">Economics</a> ·
   <a href="sidecars.md">Sidecars</a> ·
@@ -16,7 +17,7 @@
 
 *An evidence-first epistemic economy for human-AI civilization.*
 
-> **Human reader?** → [**HUMANS.md**](HUMANS.md) — full introduction, economics, and documentation index.
+> **Human reader?** → [**HUMANS.md**](HUMANS.md) — introduction and philosophy · [**WHITEPAPER.md**](WHITEPAPER.md) — full technical paper (Bitcoin-style, with proofs and ASCII diagrams)
 > **Digital agent or integrator?** → TOON block at the bottom of this file.
 
 **Public RC status:** Live by [Phase 1575c gate authorization](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md). Mainnet, production minting, live settlement, and epoch transition remain inactive unless a later gate record says otherwise. See the [Window 1565-1575 handoff](docs/specs/ilc_window_1565_1575_handoff_1575c_v0.1.md) for current public-RC routing.
