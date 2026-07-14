@@ -59000,6 +59000,126 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_156_phase_1575c_fix1c_genesis_v05_signature_verified",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1c — Genesis v0.5 signature verification complete",
+      "manual_read_summary": "Raw operator-produced detached ML-DSA-65 signature over the Genesis v0.5 public-RC signing payload.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.signature.hex",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_signed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/genesis_public_rc_signing_envelope_v0.5.signature.hex"
+    },
+    {
+      "annotation_batch": "manual_batch_156_phase_1575c_fix1c_genesis_v05_signature_verified",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1c — Genesis v0.5 signature verification complete",
+      "manual_read_summary": "Canonical non-secret signature record containing signature profile, payload hashes, signature hash, public key fingerprint, and detached signature hex.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.signature.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_signed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/genesis_public_rc_signing_envelope_v0.5.signature.json"
+    },
+    {
+      "annotation_batch": "manual_batch_156_phase_1575c_fix1c_genesis_v05_signature_verified",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1c — Genesis v0.5 signature verification complete",
+      "manual_read_summary": "Canonical verification record proving pq_sign verified the v0.5 signature payload with result signature_verified.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.verification.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/genesis_public_rc_signing_envelope_v0.5.verification.json"
+    },
+    {
+      "annotation_batch": "manual_batch_156_phase_1575c_fix1c_genesis_v05_signature_verified",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1c — Genesis v0.5 signature verification complete",
+      "manual_read_summary": "Phase 1575c public-RC gate prompt patched to consume verified v0.5 signing tokens and verification record instead of missing v0.4 signing tokens.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_g10_block6_public_rc_gate_001.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:phase_1575c_v05_signing_tokens_accepted_by_gate_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_g10_block6_public_rc_gate_001.md"
+    },
+    {
+      "annotation_batch": "manual_batch_156_phase_1575c_fix1c_genesis_v05_signature_verified",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1c — Genesis v0.5 signature verification complete",
+      "manual_read_summary": "STATUS update recording verified v0.5 signing tokens, v0.4 signing supersession, and no-public-RC/no-guard-clearance boundaries.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
