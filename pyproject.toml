@@ -11,13 +11,15 @@ requires-python = ">=3.10"
 license = {text = "AGPL-3.0-only"}
 dependencies = [
     "fastapi>=0.100.0",
+    "starlette>=1.0.1",
     "uvicorn>=0.20.0",
     "pydantic>=2.0.0",
+    "pydantic-settings>=2.14.2",
     "requests>=2.31.0",
     "httpx>=0.24.0",
     "numpy>=1.24.0",
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "grpcio>=1.80.0",
     "protobuf>=6.30.0",
     "PyNaCl==1.6.2",
@@ -38,7 +40,7 @@ consensus-only = [
 # These are Python packaging profiles only — not ADR-0009 protocol-native bundle layers.
 protocol-core = [
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
 ]
@@ -50,7 +52,7 @@ operator-node = [
     "httpx>=0.24.0",
     "numpy>=1.24.0",
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "grpcio>=1.80.0",
     "protobuf>=6.30.0",
     "PyNaCl==1.6.2",
@@ -66,7 +68,7 @@ openclaw-hosted = [
     "requests>=2.31.0",
     "httpx>=0.24.0",
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
 ]
@@ -80,7 +82,7 @@ public-rc = [
     "httpx>=0.24.0",
     "numpy>=1.24.0",
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "grpcio>=1.80.0",
     "protobuf>=6.30.0",
     "PyNaCl==1.6.2",
@@ -103,7 +105,7 @@ graph-viz = [
 # cryptography's ML-KEM support; liboqs remains out of the default install path
 # until a later phase vets its build/KAT posture.
 post-quantum = [
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
 ]
 # Full development environment including server, protocol, and test stack.
 # Usage: pip install -e ".[dev]"
@@ -116,7 +118,7 @@ dev = [
     "httpx>=0.24.0",
     "numpy>=1.24.0",
     "cbor2>=5.0.0",
-    "cryptography>=48.0.0",
+    "cryptography>=49.0.0",
     "grpcio>=1.80.0",
     "protobuf>=6.30.0",
     "PyNaCl==1.6.2",
