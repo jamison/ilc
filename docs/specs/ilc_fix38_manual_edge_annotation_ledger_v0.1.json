@@ -58640,6 +58640,174 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Specifies the narrow Genesis v0.5 public-RC signing envelope, canonical byte rules, operator-only ML-DSA signing boundary, verification command, and non-claims.",
+      "repo_path": "docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_spec_committed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Canonical unsigned Genesis v0.5 public-RC signing envelope binding public-RC source inputs, Atlas slice commitments, source export summary, Phase 1575c blocker remediation, supersession statement, and non-claims.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_unsigned_payload_committed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:out/genesis_public_rc_signing_envelope_v0.5.json"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Derived signature payload bytes equal to domain_separator_utf8_bytes concatenated with canonical unsigned envelope bytes.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.signature_payload.bin",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_v05_public_rc_envelope_unsigned_payload_committed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/genesis_public_rc_signing_envelope_v0.5.signature_payload.bin"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Non-secret operator signing request containing payload hashes, signing command, verification command, public key fingerprint, and pending-signature disposition.",
+      "repo_path": "out/genesis_public_rc_signing_envelope_v0.5.signing_request.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:blocked_with_named_defect:genesis_v05_operator_signature_not_provided_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "generated_evidence_added:out/genesis_public_rc_signing_envelope_v0.5.signing_request.json"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Focused tests for v0.5 envelope scope, canonical bytes, signature payload hash, pending-signature boundary, production verifier availability, dev/test signing rejection, non-claims, and six economic guards.",
+      "repo_path": "tests/test_phase_1575c_fix1_genesis_v05_production_signing.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_genesis_v05_public_rc_signing_ceremony_spec_1575c_fix1_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575c_fix1_genesis_v05_production_signing.py"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "Walkthrough recording direct reads, blocker remediation, v0.5 scope boundary, artifact hashes, operator signing command, verifier status, pending-signature disposition, tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1575c_fix1_genesis_v05_production_signing_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:genesis_v05_public_rc_envelope_unsigned_payload_committed_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575c_fix1_genesis_v05_production_signing_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_1575c_fix1_genesis_v05_signing_payload",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 public-RC signing envelope pending operator signature",
+      "manual_read_summary": "STATUS update recording v0.5 spec and unsigned payload tokens, precise pending-operator-signature blocker, and non-activation boundary.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:blocked_with_named_defect:genesis_v05_operator_signature_not_provided_phase_1575c_fix1",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md"
     }
   ]
 }
