@@ -36,6 +36,9 @@ SIGNATURE_PAYLOAD_PATH = Path(
 SIGNING_REQUEST_PATH = Path(
     "out/genesis_public_rc_signing_envelope_v0.5.signing_request.json"
 )
+SIGNATURE_HEX_PATH = Path(
+    "out/genesis_public_rc_signing_envelope_v0.5.signature.hex"
+)
 SIGNATURE_RECORD_PATH = Path(
     "out/genesis_public_rc_signing_envelope_v0.5.signature.json"
 )
@@ -108,26 +111,46 @@ def test_domain_separator_and_signature_payload_hashes_match_recomputation() -> 
     ).hexdigest()
 
 
-def test_current_state_is_pending_operator_signature_not_silent_success() -> None:
+def test_current_state_has_verified_v05_signature_but_no_public_rc_success() -> None:
     status = STATUS_PATH.read_text()
-    assert (
-        "blocked_with_named_defect:genesis_v05_operator_signature_not_provided_phase_1575c_fix1"
-        in status
-    )
     assert "genesis_v05_public_rc_envelope_unsigned_payload_committed_phase_1575c_fix1" in status
-    assert "genesis_v05_public_rc_envelope_signed_phase_1575c_fix1" not in status
-    assert (
-        "genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1"
-        not in status
-    )
+    assert "genesis_v05_public_rc_envelope_signed_phase_1575c_fix1" in status
+    assert "genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1" in status
+    assert "atlas_slice_manifest_v05_signed_phase_1575c_fix1" in status
+    assert "phase_1575c_v05_signing_tokens_accepted_by_gate_phase_1575c_fix1" in status
     assert "public_rc_gate_001_authorized" not in status
     assert "public_rc_live_phase_1575c" not in status
     assert "public_repository_push_authorized_phase_1575c" not in status
 
 
-def test_signature_and_verification_records_are_absent_until_successful_signing() -> None:
-    assert not SIGNATURE_RECORD_PATH.exists()
-    assert not VERIFICATION_RECORD_PATH.exists()
+def test_signature_and_verification_records_exist_and_match_payload_hashes() -> None:
+    assert SIGNATURE_HEX_PATH.exists()
+    assert SIGNATURE_RECORD_PATH.exists()
+    assert VERIFICATION_RECORD_PATH.exists()
+    signature_record = json.loads(SIGNATURE_RECORD_PATH.read_text())
+    verification_record = json.loads(VERIFICATION_RECORD_PATH.read_text())
+    assert signature_record["operator_signature_produced"] is True
+    assert signature_record["secret_material_handled_by_codex"] is False
+    assert verification_record["verification_result"] == "signature_verified"
+    assert verification_record["secret_material_handled_by_codex"] is False
+    assert signature_record["signature_payload_sha256"] == hashlib.sha256(
+        SIGNATURE_PAYLOAD_PATH.read_bytes()
+    ).hexdigest()
+    assert verification_record["signature_payload_sha256"] == signature_record[
+        "signature_payload_sha256"
+    ]
+
+
+def test_phase_1575c_gate_prompt_consumes_verified_v05_signing_path() -> None:
+    prompt = Path(
+        "docs/antigravity_tasks/antigravity_prompt__phase_1575c_g10_block6_public_rc_gate_001.md"
+    ).read_text()
+    assert "Genesis v0.5 Signing Envelope" in prompt
+    assert "genesis_v05_public_rc_envelope_signed_phase_1575c_fix1" in prompt
+    assert "genesis_v05_public_rc_envelope_signature_verified_phase_1575c_fix1" in prompt
+    assert "phase_1575c_v05_signing_tokens_accepted_by_gate_phase_1575c_fix1" in prompt
+    assert "genesis_v04_signed_phase_1575c" not in prompt
+    assert "atlas_slice_manifest_signed_phase_1575c" not in prompt
 
 
 def test_existing_production_verifier_binary_remains_reproducible() -> None:
