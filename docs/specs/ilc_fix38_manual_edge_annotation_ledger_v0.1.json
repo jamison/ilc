@@ -58379,6 +58379,50 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_152_phase_1575c_fix1_genesis_v05_signing_prompt",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 production signing ceremony prompt draft",
+      "manual_read_summary": "Sensitive phase prompt defining the narrow Genesis v0.5 public-RC signing-envelope remediation path for the Phase 1575c production-signing blocker.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix1_g10_genesis_v05_production_signing_ceremony.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "defect:production_genesis_signing_path_unavailable_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix1_g10_genesis_v05_production_signing_ceremony.md"
+    },
+    {
+      "annotation_batch": "manual_batch_152_phase_1575c_fix1_genesis_v05_signing_prompt",
+      "chronology_note": "2026-07-14 Phase 1575c-Fix1 — Genesis v0.5 production signing ceremony prompt draft",
+      "manual_read_summary": "Planning index addendum routing the blocked public-RC gate through Phase 1575c-Fix1 and recording the v0.5 signing-envelope boundary.",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_gate_001_blocked_phase_1575c"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {
