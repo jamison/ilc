@@ -54,137 +54,6 @@ ILC is built on this synthesis. The axiomatic stop is explicit: the graph origin
 
 ---
 
-## 0b. The Epistemic Game: Repeated Interaction, Bayesian Convergence, and Mechanism Design
-
-The claim that productive disagreement is more valuable than enforced consensus is not a philosophical preference. It has formal justification in three bodies of theory — repeated game theory, Bayesian inference, and mechanism design — each of which maps directly to ILC operations.
-
-### One-shot vs. repeated epistemic interaction
-
-In a **one-shot interaction** between agents with private information about claim quality, defection is often the rational strategy. An agent who submits a low-quality claim, inflates a verdict, or free-rides on reuse attribution gains the short-term payoff and bears no future cost — the counterparty has no recourse and no future relationship to protect. This is the structural failure mode of one-shot peer review, one-shot citation, and one-shot credentialing: because each interaction is isolated, gaming is individually rational.
-
-ILC's epoch sequence converts isolated interactions into a single long **repeated game**. Define:
-
-```
-Agents:    A = {a₁, a₂, …, aₙ}   (ML-DSA-65 agent identities, globally flat namespace)
-Rounds:    t ∈ {1, 2, 3, …}       (validation epochs, each 1 minute per CDL-027)
-Actions:   aᵢ(t) ∈ {honest, defect}
-Payoff:    uᵢ(t) = f(verdict_accuracy, reuse_attribution, provenance_flow)
-History:   H(t) = { δ_o(τ), verdict(τ), refutation(τ) : τ < t }   [public, content-addressed]
-```
-
-The critical property is H(t): **the history is public and content-addressed**. Every refutation, REUSE edge, PROVENANCE chain, and verdict record is committed to the graph with a CID. An agent who defects at epoch t cannot present a clean reputation at epoch t+1. The graph's immutable append-only structure converts what would otherwise be a series of one-shot interactions among strangers into a single long game with a **transparent, tamper-resistant public history**.
-
-### Folk Theorem and the shadow of the future
-
-The **Folk Theorem** (Aumann 1959; Fudenberg-Maskin 1986) states that in a finitely or infinitely repeated game among sufficiently patient players, any individually rational outcome — including full cooperation — can be sustained as a Nash equilibrium via trigger strategies, provided the discount factor δ is above a threshold:
-
-```
-Folk Theorem: if δ ≥ δ* = (g − c) / (g − p)
-
-where g = one-shot defection payoff (gain from gaming a verdict)
-      c = cooperative payoff per round (honest REUSE + PROVENANCE attribution)
-      p = punishment payoff (provenance chain blacklisted; reuse flows cut off)
-
-then the trigger strategy  s*(t) = { honest  if H(t) contains no prior defection
-                                    { defect  otherwise
-
-constitutes a subgame-perfect Nash equilibrium.
-```
-
-In ILC, the punishment path is structural, not administrative. A defecting agent's submitted nodes accumulate refutation edges. PROVENANCE chains avoid nodes with high refutation density (CDL-084 weights decay when refutation-to-reuse ratio is high). The temporal decay function `d(t) = max(floor, 2^{−(t − t₀) / H})` further reduces the influence of nodes that fail to attract reuse — the "punishment" is automatic and flows from the graph's own structural mechanics rather than from any central authority's decision to sanction.
-
-The **shadow of the future** is therefore not a metaphor in ILC. It is a concrete property of the PROVENANCE and REUSE attribution system: every honest contribution earns a claim on future attribution flows, and that claim persists across epochs. An agent choosing between defection now (short-term verdict gain) and cooperation (long-term PROVENANCE flow) faces:
-
-```
-V_defect  = g + δ·p + δ²·p + …  =  g + δp/(1−δ)
-V_cooperate = c + δ·c + δ²·c + …  =  c/(1−δ)
-
-Cooperation preferred when: c/(1−δ) ≥ g + δp/(1−δ)
-                        ↔  c − δp ≥ g(1−δ)
-                        ↔  δ ≥ (g−c)/(g−p)   [Folk Theorem threshold]
-```
-
-ILC maximizes δ (the effective discount factor) by making attribution flows long-lived: REUSE attribution has no expiry under current protocol, and PROVENANCE chains at depth 1–3 continue to accumulate as long as descendants are reused. Longer attribution horizon → higher effective δ → broader range of individually rational cooperative outcomes.
-
-### Axelrod's tit-for-tat and the refutation-revision cycle
-
-Axelrod's tournament results (1984) show that in repeated Prisoner's Dilemmas with memory, the dominant strategy is **tit-for-tat**: cooperate by default, retaliate immediately on defection, forgive after the counterparty corrects course. Crucially, tit-for-tat outperforms strategies that punish permanently — forgiveness prevents cooperation-destroying retaliation spirals.
-
-ILC's refutation-revision cycle is structurally isomorphic:
-
-```
-State machine over claim C and agent aᵢ:
-
-ASSERTED ──── refute.claim ────► CHALLENGED
-                                      │
-                        revise.assert │  (correction accepted by jury)
-                                      │
-              REVISED ◄───────────────┘
-                │
-    REUSE, PROVENANCE flow resumes
-    (forgiveness: attribution chains reactivate)
-```
-
-A refuted claim does not disappear from the graph — refutation is a hyperedge, not a deletion. The claim node persists with its refutation edge and revision history intact. This is the graph-native analog of tit-for-tat forgiveness: a revised claim can recover reuse weight and re-enter PROVENANCE chains. Permanent exclusion is not the protocol's default; correction is. The economic consequence of refutation (lost REUSE attribution) is proportional and reversible through revision, making the system's punishment path incentive-compatible with honest error correction rather than concealment.
-
-### Bayesian convergence of epistemic standing
-
-Let P_t(C) denote the network's implicit posterior probability that claim C encodes a true relationship about the world, after observing t epochs of validation, refutation, and reuse evidence. Each epoch adds a Bayesian update:
-
-```
-P_{t+1}(C) ∝ P_t(C) × L(evidence_t | C true)
-
-where evidence_t includes:
-  - jury verdict (k agree/disagree out of panel size n)
-  - refutation events (each a multiplicative likelihood downdate)
-  - REUSE events (each a multiplicative likelihood update)
-  - PROVENANCE traversals (downstream claim success propagates backward)
-```
-
-Under mild regularity conditions (Bernstein-von Mises theorem), the posterior P_t(C) converges as t → ∞ to a distribution concentrated near the true parameter — not to a boolean, but to a posterior that narrows with evidence. The **epoch sequence is the Bayesian update chain**. What trends toward agreement is not certainty, but the posterior variance shrinking around the most evidence-consistent claims.
-
-This gives the Fiedler value λ₂(t) a Bayesian interpretation as well as a spectral one. A rising λ₂ means the graph is becoming harder to partition — epistemic claims are becoming more densely interconnected by reuse and provenance. Denser interconnection means more mutual evidence: each new connection is an additional cross-validation. A graph where λ₂ is rising is one where the Bayesian posteriors across claims are narrowing faster (more evidence per claim per epoch).
-
-The convergence is not uniform across claims. Highly falsifiable claims (Popperian lane) converge fastest: each failed refutation attempt is strong evidence, and the jury mechanism produces calibrated verdicts. Subjective or aesthetic claims (reuse lane) converge more slowly but still converge: if a creative or normative claim continues to be built upon by agents with diverse priors, the Bayesian update at each reuse event is modest but non-zero and in the same direction.
-
-### Mechanism design: marginal contribution and the VCG principle
-
-The REUSE attribution formula (§6) instantiates a **Vickrey-Clarke-Groves (VCG) incentive-compatible mechanism** at the graph layer.
-
-The VCG principle: in a social choice problem with private valuations, truthful reporting is a dominant strategy if each agent is compensated by their **marginal contribution to total social welfare**. The canonical result is that no other mechanism simultaneously achieves allocative efficiency, individual rationality, and dominant-strategy incentive compatibility.
-
-In ILC's epistemic economy, the social welfare function is the epistemic value of the graph — approximated by the weighted sum of reuse events across all nodes:
-
-```
-W(G) = Σ_{e ∈ V} reuse_weight(e) × centrality_score(e)
-```
-
-An agent's marginal contribution from submitting claim C is:
-
-```
-MC(aᵢ, C) = W(G + C) − W(G)   [epistemic value added by C's existence]
-```
-
-The REUSE attribution paid to aᵢ for node C:
-
-```
-P_i = R_direct × r × c_i × m_i   [§6 formula, capped at 15% of direct reward]
-```
-
-is a monotone function of c_i (centrality score) and m_i (quality multiplier). Centrality measures how much of the graph's downstream epistemic value flows through C. This is a practical approximation of MC(aᵢ, C): an agent whose claim is widely built upon contributed more marginal value than one whose claim is ignored, and the REUSE attribution flow reflects this.
-
-The PROVENANCE decay formula at depth d:
-
-```
-P_ancestor(d) = P_direct × ALPHA^d   [ALPHA = 0.45, MAX_DEPTH = 3]
-```
-
-is the graph-native analog of the VCG payment to externality-bearing agents. Foundational claims that enable downstream work receive attribution proportional to the epistemic externality they created — a direct mapping to the VCG side-payment structure that makes it individually rational for agents to contribute foundation-layer claims rather than only terminal claims.
-
-**The alignment result:** Under ILC's attribution structure, the dominant strategy for a rational agent is to submit the highest-quality claims it can produce and to ensure those claims remain refutable (so they survive jury challenge and accumulate reuse weight). Gaming the jury for a one-shot verdict — submitting a strategically unfalsifiable claim to avoid refutation — is individually irrational in expectation: the claim fails to attract REUSE attribution and decays under CDL-V1 without the centrality renewal that genuine reuse provides. Honest epistemic contribution is mechanism-design incentive-compatible, not merely morally preferred.
-
----
-
 ## 0a. Homoiconicity and Morphogenesis: The Self-Assembling Epistemic Graph
 
 The philosophical framework of Section 0 has a precise structural consequence: if observers produce signed local deltas, and if those deltas accumulate into a shared epistemic hypergraph, then the graph's own governance rules must eventually live *inside the graph itself*. A system where the rules are stored in a different medium from the knowledge they govern is a system with a privileged external layer that cannot be audited, refuted, or composed the same way as any other claim. ILC eliminates that privileged layer through **homoiconicity**: governance artifacts are first-class graph nodes, traversable, content-addressed, and refutable by the same paths as content nodes.
@@ -1052,6 +921,104 @@ Velocity alert:          if conversion_velocity > 0.91 × issuance_rate:
 ```
 
 The fee-burn split is the primary supply-discipline mechanism: a fraction of every write fee is removed from circulation, creating a deflationary pressure that scales with network activity. At high activity, more ECU is burned; at low activity, less — so the burn rate is automatically countercyclical. The bounty cap prevents the treasury from being drained by a burst of incentivized contributions at the expense of long-term protocol stability. The velocity alert is a governance tripwire: if the network converts ECU to ILC faster than the issuance schedule intended, an automatic signal escalates the state to human governance review before automatic correction would be needed.
+
+### Game-theoretic foundations of the incentive structure
+
+The attribution formulas above are not heuristics. They instantiate three classical results from economic theory, each applied directly to ILC primitives.
+
+**I. Folk Theorem — epoch sequence as repeated game (Aumann 1959; Fudenberg–Maskin 1986)**
+
+Define the ILC repeated game:
+
+```
+Players:   A = {a₁, …, aₙ}    ML-DSA-65 identities; globally flat namespace (CDL-042)
+Rounds:    t = 1, 2, …         validation epochs; Δt = 1 min (CDL-027)
+Actions:   sᵢ(t) ∈ {honest, defect}
+Stage payoffs (ILC primitives substituted):
+  honest:   uᵢ = R + P_i + Σ_{d=1}^{3} P_direct × 0.45^d    [direct + REUSE + PROVENANCE]
+  defect:   uᵢ = g                                            [one-shot verdict gain]
+History:   H(t) = { CID(δ_o(τ)), verdict(τ), refute(τ) : τ < t }   content-addressed, immutable
+```
+
+H(t) is the key: the append-only CID-addressed graph means an agent cannot discard reputation between rounds. This converts interactions among strangers into a single game with transparent history — activating the Folk Theorem without requiring prior relationships.
+
+The trigger strategy s*(t) = {honest if H(t) defection-free, else defect} is a subgame-perfect Nash equilibrium iff:
+
+```
+δ  ≥  δ*  =  (g − u_honest) / (g − u_punish)
+
+ILC substitution:
+  u_honest  = R_direct × (1 + r·c_i·m_i)    [direct + REUSE cap at 15%]
+            + Σ_{d=1}^{3} R_direct × 0.45^d  [PROVENANCE depth 1–3]
+  u_punish  ≈ 0                              [REUSE/PROVENANCE cut off;
+                                              d(t) → floor via CDL-V1 decay]
+  g         = R_direct                       [verdict without downstream flow]
+
+  δ*  =  (R_direct − u_honest) / R_direct
+       =  1 − (r·c_i·m_i + Σ 0.45^d)
+       ≈  1 − (0.20·c_i·m_i + 0.838)        [at max depth-3 PROVENANCE sum]
+```
+
+For a high-centrality node (c_i → 1, m_i → 1.15), δ* drops below 0 — cooperation is individually rational even for an infinitely impatient agent. For a new agent with no centrality, δ* ≈ 0.16: cooperation is rational as long as the agent discounts future payoffs at less than 84% per epoch. The attribution system is designed so that the equilibrium condition is easily satisfied across the realistic range of agent discount factors.
+
+ILC maximizes the effective δ by making attribution flows indefinitely long-lived: REUSE has no expiry; PROVENANCE chains at depth 1–3 accumulate as long as descendants are reused. Longer attribution horizon → higher effective δ → broader set of individually rational cooperative outcomes under the Folk Theorem.
+
+**II. Axelrod's tit-for-tat — refutation/revision as graph-native forgiveness (Axelrod 1984)**
+
+In iterated Prisoner's Dilemmas, tit-for-tat dominates: cooperate by default, retaliate immediately on defection, forgive after correction. Strategies that punish permanently destroy cooperative surplus.
+
+The ILC truth-primitive state machine over claim C is structurally isomorphic:
+
+```
+assert.truth(C) ──► [ASSERTED]
+                         │
+         refute.claim ───┘   sᵢ(t) = defect detected by jury
+                         │
+                    [CHALLENGED]
+                         │
+         revise.assert ──┘   correction submitted and accepted
+                         │
+                      [REVISED]  ──► REUSE and PROVENANCE flows resume
+```
+
+Refutation is a hyperedge, not deletion. C persists in G with its refutation edge and full history visible. A revised C can recover centrality c_C(t) through subsequent reuse — the punishment is proportional (attribution suspended during challenge) and reversible (flows reactivate on successful revision). Permanent exclusion is not the protocol default; correction is. This matches tit-for-tat exactly: retaliation is immediate (refutation blocks downstream attribution), forgiveness is automatic on correction (revision restores the reuse path), and the graph never holds a permanent grudge.
+
+**III. VCG mechanism design — REUSE and PROVENANCE as marginal contribution payments**
+
+The Vickrey–Clarke–Groves theorem (Vickrey 1961; Clarke 1971; Groves 1973) establishes that truthful reporting is a dominant strategy iff each agent is paid their **marginal social welfare contribution**. No other mechanism simultaneously achieves allocative efficiency, individual rationality, and dominant-strategy incentive compatibility.
+
+Define ILC's social welfare function over the epistemic graph:
+
+```
+W(G(t))  =  Σ_{v ∈ V(t)}  c_v(t) × d(t, v)
+
+where  c_v(t) = centrality score of node v at epoch t   [∈ [0,1], 12-decimal precision]
+       d(t,v) = decay multiplier = max(floor, 2^{−(t − t_created) / H})   [CDL-V1]
+```
+
+Agent aᵢ's marginal contribution from submitting claim C:
+
+```
+MC(aᵢ, C)  =  W(G(t) + C)  −  W(G(t))
+```
+
+This is approximated in practice by the centrality score c_C(t) accumulated through REUSE and PROVENANCE traversals — precisely the quantity that drives the REUSE attribution formula P_i = R_direct × r × c_i × m_i.
+
+The PROVENANCE chain is the VCG **externality payment**. Under standard VCG, agents who create positive externalities for others (foundational work that enables downstream claims) receive side-payments proportional to those externalities. The PROVENANCE payment:
+
+```
+P(aᵢ, C, depth d)  =  R_descendant × 0.45^d   for d ∈ {1, 2, 3}
+```
+
+pays foundational claim authors in proportion to the downstream work they enabled, decayed geometrically by distance. The geometric decay (ALPHA = 0.45) is calibrated so the sum over all depths is bounded:
+
+```
+Σ_{d=1}^{∞} 0.45^d  =  0.45 / (1 − 0.45)  =  0.818  <  1
+```
+
+Total PROVENANCE flow is therefore bounded below the direct reward for any descendant claim, preserving authorship primacy (the direct performer always receives the majority share) while implementing the VCG externality payment to foundational contributors.
+
+**Alignment result.** Under these three results jointly: the dominant strategy for aᵢ is to submit the highest-quality claim it can produce and keep it falsifiable. A strategically unfalsifiable claim gains a one-shot verdict (payoff g = R_direct) but fails to accumulate c_i, blocking REUSE and PROVENANCE flows. With u_punish ≈ 0 and u_honest ≫ g for high-centrality nodes, defection is irrational across virtually all realistic agent discount factors. Honest epistemic contribution is incentive-compatible by theorem, not by convention.
 
 ---
 
