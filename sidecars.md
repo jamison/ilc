@@ -1,11 +1,64 @@
 # ILC Sidecars
 
-Sidecars are optional local or network-adjacent components that use ILC as a
-trust substrate without turning every application into core protocol code. The
-longer architecture record is
+Sidecars are optional local or network-adjacent components that compose with ILC identity, jury verification, and ECU economics without becoming core protocol code. A sidecar is not a separate authority root — it is a typed local runtime surface that submits signed protocol objects (truth primitives, receipts, CCSS envelopes) through the same graph machinery as any other participant.
+
+The architecture principle is deliberate: keeping application-layer semantics in sidecars lets the protocol core stay minimal and auditable while still supporting an open ecosystem of use cases — private messaging, knowledge marketplaces, graph visualization, wallet projection, prediction markets, and more.
+
+The longer architecture record is
 [`docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md`](docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md).
 
-The short version:
+## Public-RC Sidecar Catalog
+
+These sidecar tracks are documented and available at public RC:
+
+| Sidecar | Repo | Purpose |
+|---|---|---|
+| **OpenClaw local capture** | [`skills/ilc-openclaw-local-capture/`](skills/ilc-openclaw-local-capture/) | Capture, consent-gated ECU estimation, and invite-gated graph contribution via OpenClaw sessions. The primary human+AI participation surface. |
+| **CCSS — Confidential Coordination Suite** | [`ilc-ccss-sidecar/`](ilc-ccss-sidecar/) | Sealed-sender private messaging using fixed-size 4156-byte encrypted envelopes. Direct and Tor transport. D2d routing planned. |
+| **StarMap / Atlas Installer** | Via `ilc atlas` and `ilc bootstrap` | Materializes verified graph slices from the Genesis Atlas: download, hash-verify, and reconstruct a signed public-RC slice locally. |
+| **Graph Viz / Graphics Sidecar** | [`ilc-graphics-sidecar/`](ilc-graphics-sidecar/) | Human-readable graph exploration, authority tracing, public/private visibility inspection, and Genesis Atlas visualization. |
+| **TimeCapsule Sidecar** | [`ilc-timecapsule-sidecar/`](ilc-timecapsule-sidecar/) | Commit sealed Genesis-era material at genesis time and release it under a ratified release condition. |
+| **Wallet Sidecar** | [`ilc-wallet-sidecar/`](ilc-wallet-sidecar/) | Read-only wallet projection surface. Balance display, claimability state, and ECU/ILC balance queries. Write paths remain inactive under current activation gates. |
+| **Local graph / verifier sidecars** | [`ilc_core/sidecars/`](ilc_core/sidecars/) | Local graph projection, receipt verification, claimability checks, and sidecar registry/profile surfaces. |
+
+Installing or running a local sidecar does not activate public sidecar serving, public P2P, minting, settlement, wallet actions, or any constitutional gate. Those gates are recorded in [`docs/phases/STATUS.md`](docs/phases/STATUS.md).
+
+## Architecture: how sidecars compose with the protocol
+
+```
+  OpenClaw / human terminal / AI agent
+         │
+         ▼
+  ┌─────────────────────────────────────────┐
+  │  Sidecar (local runtime surface)        │
+  │  - capture / classify / estimate        │
+  │  - CCSS envelope construction           │
+  │  - graph projection queries             │
+  │  - receipt and claimability checks      │
+  └───────────────┬─────────────────────────┘
+                  │  signed typed protocol objects
+                  ▼
+  ┌─────────────────────────────────────────┐
+  │  ILC node core (ilc_core/)              │
+  │  - signature verification               │
+  │  - CID anchoring                        │
+  │  - graph state management               │
+  │  - ECU accounting (gated)               │
+  │  - epoch processing (gated)             │
+  └───────────────┬─────────────────────────┘
+                  │  consensus objects
+                  ▼
+  ┌─────────────────────────────────────────┐
+  │  ilc_consensus/ (Rust)                  │
+  │  - BLS12-381 quorum proofs              │
+  │  - DAG consensus                        │
+  │  - epoch settlement (gated)             │
+  └─────────────────────────────────────────┘
+```
+
+The sidecar boundary enforces: sidecars send signed typed payloads; the node core verifies signatures, anchors CIDs, and routes economic events through activation-gated paths. Application semantics live in sidecars; the core stays minimal.
+
+## The short version:
 
 - `ilc sidecar ...` is the stable namespace for sidecar discovery, inspection,
   recipes, and future package/profile management.
