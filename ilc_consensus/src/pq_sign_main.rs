@@ -15,11 +15,13 @@
 use std::fs;
 use std::io::{self, Read};
 use std::path::PathBuf;
+use std::process::{Command as ProcessCommand, Stdio};
 
 use bip39::Mnemonic;
 use fips204::ml_dsa_65;
 use fips204::traits::{KeyGen, SerDes as MldsaSerDes, Signer, Verifier};
 use getrandom::getrandom;
+use zeroize::Zeroize;
 
 const SIGNING_CONTEXT: &[u8] = b"ILC_GENESIS_ROOT_ENVELOPE_V1";
 const DEFAULT_PUBKEY_RECORD: &str = "docs/genesis/genesis_agent1_pubkey_record_838a.txt";
@@ -129,7 +131,9 @@ fn parse_args(args: &[String]) -> Command {
 
 fn sign_command(input_file: &PathBuf, pubkey_record: &PathBuf) -> Result<(), String> {
     let expected_pk_hex = read_mldsa_pk_hex(pubkey_record)?;
-    eprintln!("Enter Plate 2 ML-DSA-65 seed as 24 BIP-39 words or 64-char hex, then press Ctrl-D:");
+    eprintln!(
+        "Enter Plate 2 ML-DSA-65 seed as 24 BIP-39 words or 64-char hex, then press Ctrl-D:"
+    );
     let seed = read_seed_from_stdin()?;
     let (pk, sk) = ml_dsa_65::KG::try_keygen_with_rng(&mut SeedRng::new(&seed))
         .map_err(|err| format!("ML-DSA-65 key derivation failed: {err}"))?;
@@ -170,11 +174,14 @@ fn verify_command(
 }
 
 fn read_seed_from_stdin() -> Result<[u8; 32], String> {
+    let _echo_guard = TerminalEchoGuard::disable();
     let mut input = String::new();
-    io::stdin()
+    let result = io::stdin()
         .read_to_string(&mut input)
-        .map_err(|err| format!("cannot read stdin: {err}"))?;
-    parse_seed(input.trim())
+        .map_err(|err| format!("cannot read stdin: {err}"))
+        .and_then(|_| parse_seed(input.trim()));
+    input.zeroize();
+    result
 }
 
 fn parse_seed(input: &str) -> Result<[u8; 32], String> {
@@ -249,6 +256,36 @@ fn print_usage() {
 fn fail(message: &str) -> ! {
     eprintln!("{message}");
     std::process::exit(1);
+}
+
+struct TerminalEchoGuard {
+    restore: bool,
+}
+
+impl TerminalEchoGuard {
+    fn disable() -> Self {
+        let restore = run_stty(&["-echo"]);
+        Self { restore }
+    }
+}
+
+impl Drop for TerminalEchoGuard {
+    fn drop(&mut self) {
+        if self.restore {
+            let _ = run_stty(&["echo"]);
+            eprintln!();
+        }
+    }
+}
+
+fn run_stty(args: &[&str]) -> bool {
+    ProcessCommand::new("stty")
+        .args(args)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .is_ok_and(|status| status.success())
 }
 
 struct OsRandom;

@@ -156,6 +156,14 @@ def test_dev_test_atlas_signing_profile_is_not_accepted_as_production() -> None:
     assert '"public_rc_activation": False' in source
 
 
+def test_pq_sign_disables_terminal_echo_for_seed_entry() -> None:
+    source = Path("ilc_consensus/src/pq_sign_main.rs").read_text()
+    assert "TerminalEchoGuard::disable()" in source
+    assert 'run_stty(&["-echo"])' in source
+    assert 'run_stty(&["echo"])' in source
+    assert "input.zeroize();" in source
+
+
 def test_full_behavioral_v05_non_claims_are_present() -> None:
     payload = _load_envelope()
     non_claims = payload["non_claims"]
