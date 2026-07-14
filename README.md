@@ -43,67 +43,28 @@ Full operator setup: `docs/GETTING_STARTED.md` · `config/README.md`
 > and current phase documents before acting. Direct-read every path before treating it as current.
 
 ```toon
-authority:
-  activation_matrix: docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md
-  cdl_register: docs/specs/ilc_constitutional_decision_log_v0.1.md
-  humans: orientation_only
-  phase_log: docs/phases/STATUS.md
-  planning_index: docs/PLANNING_INDEX.md
-  readme: orientation_only
-  rule: direct_read_before_acting
-build:
-  install[2]: pip install -e .,cd ilc_consensus && cargo build --release
-  smoke[3]: python3 tools/genesis_boot.py,python3 run_node.py,python3 tools/demo_walkthrough.py
-economics:
-  ecu:
-    formula: W_e=delta_H/E_cost
-    minting: not_active
-    name: Epistemic Compute Unit
-  ilc:
-    name: Intelligent Labor Coin
-    settlement: not_live
-    supply_cap: 25920000
-    symbol: ILC
-governance:
-  mechanism[2]: CDL,ADR
-  self_authorization: false
-  sensitive_phases: explicit_human_GO_required
-graph:
-  commitment: merkle_laplacian_dual
-  hyperedge_types[4]: panel,co_authorship,refutation_coalition,epoch_boundary
-  lmdb: out/genesis_base_graph_v0.4_unified.lmdb
-  substrate: ADR-0029
-  type_governance: new_types_require_CDL_ratification
-id:
-  agent_page: README.md
-  human_page: HUMANS.md
-  name: Intelligent Labor Coin
-  private_dev_repo: github.com/jamison/ilc-core
-  public_repo: "https://github.com/jamison/ilc"
-  shortname: ILC
-  tagline: evidence_first_epistemic_economy_for_human_ai_civilization
-protocol:
-  artifacts[4]: claims,evidence,reviews,revisions
-  claim_lifecycle[5]: assert,challenge,refute,revise,reuse
-  homoiconicity: governance_and_knowledge_compile_from_same_primitives
-  model: popperian_epistemic_graph
-  truth_primitives[7]: assert.truth,validate.claim,contradict.assert,refute.claim,revise.assert,link.claim,commit.epoch
-security:
-  coding_standards[6]: canonical_json_sort_keys,no_random_in_ilc_core_runtime,no_float_economic_state,no_assert_production,tls_verification_required,atomic_protocol_writes
-  disclosure: follow_SECURITY.md
-sidecars:
-  cli_namespace: ilc sidecar <name>
-  current[4]: ilc_graphics_sidecar,ilc_ccss_sidecar,ilc_timecapsule_sidecar,ilc_openclaw_skill_surface
-  definition: optional_components_using_ilc_as_trust_substrate
-  spec: sidecars.md
-status:
-  authority_source: docs/phases/STATUS.md
-  clawhub: not_published
-  epoch_0_to_1: not_executed
-  mainnet: not_active
-  production_minting: not_active
-  production_wallet_writes: not_active
-  public_mirror: github.com/jamison/ilc
-  public_rc: live_by_phase_1575c_gate
-  public_settlement: not_live
+acting_rule: direct_read_authority_files_before_acting
+authority_files[4]: docs/phases/STATUS.md,docs/PLANNING_INDEX.md,docs/specs/ilc_constitutional_decision_log_v0.1.md,docs/specs/ilc_block6_public_rc_activation_matrix_1574_v0.1.md
+build_install[2]: pip install -e .,cd ilc_consensus && cargo build --release
+build_smoke[3]: python3 tools/genesis_boot.py,python3 run_node.py,python3 tools/demo_walkthrough.py
+claim_lifecycle[5]: assert,challenge,refute,revise,reuse
+ecu: Epistemic_Compute_Unit;formula=W_e=delta_H/E_cost;minting=not_active
+governance: mechanism=CDL+ADR;sensitive_phases=explicit_human_GO_required;self_authorization=false
+graph: substrate=ADR-0029;commitment=merkle_laplacian_dual;lmdb=out/genesis_base_graph_v0.4_unified.lmdb
+homoiconicity: governance_and_knowledge_compile_from_same_primitives
+hyperedge_types[4]: panel,co_authorship,refutation_coalition,epoch_boundary
+id_name: Intelligent Labor Coin
+id_shortname: ILC
+id_tagline: evidence_first_epistemic_economy_for_human_ai_civilization
+ilc: Intelligent_Labor_Coin;symbol=ILC;supply_cap=25920000;settlement=not_live
+orientation_only[2]: README.md,HUMANS.md
+protocol_model: popperian_epistemic_graph
+repo_private_dev: github.com/jamison/ilc-core
+repo_public: github.com/jamison/ilc
+security_rules[6]: canonical_json_sort_keys,no_random_in_ilc_core_runtime,no_float_economic_state,no_assert_production,tls_verification_required,atomic_protocol_writes
+sidecar_scope: optional_components_using_ilc_as_trust_substrate;spec=sidecars.md;cli=ilc_sidecar_name
+sidecar_surfaces[4]: ilc_graphics_sidecar,ilc_ccss_sidecar,ilc_timecapsule_sidecar,ilc_openclaw_skill_surface
+status_inactive[6]: mainnet,production_minting,public_settlement,production_wallet_writes,epoch_0_to_1,clawhub_publication
+status_public_rc: live_by_phase_1575c_gate
+truth_primitives[7]: assert.truth,validate.claim,contradict.assert,refute.claim,revise.assert,link.claim,commit.epoch
 ```
