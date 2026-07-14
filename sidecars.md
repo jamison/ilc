@@ -14,7 +14,7 @@ These sidecar tracks are documented and available at public RC:
 | Sidecar | Repo | Purpose |
 |---|---|---|
 | **OpenClaw local capture** | [`skills/ilc-openclaw-local-capture/`](skills/ilc-openclaw-local-capture/) | Capture, consent-gated ECU estimation, and invite-gated graph contribution via OpenClaw sessions. The primary human+AI participation surface. |
-| **CCSS — Confidential Coordination Suite** | [`ilc-ccss-sidecar/`](ilc-ccss-sidecar/) | Sealed-sender private messaging using fixed-size 4156-byte encrypted envelopes. Direct and Tor transport. D2d routing planned. |
+| **CCSS — Confidential Coordination Suite** | [`ilc-ccss-sidecar/`](ilc-ccss-sidecar/) | Sealed-sender private messaging using fixed-size 4156-byte encrypted envelopes. Native transport by agent_id via ILC D2D gossip. |
 | **StarMap / Atlas Installer** | Via `ilc atlas` and `ilc bootstrap` | Materializes verified graph slices from the Genesis Atlas: download, hash-verify, and reconstruct a signed public-RC slice locally. |
 | **Graph Viz / Graphics Sidecar** | [`ilc-graphics-sidecar/`](ilc-graphics-sidecar/) | Human-readable graph exploration, authority tracing, public/private visibility inspection, and Genesis Atlas visualization. |
 | **TimeCapsule Sidecar** | [`ilc-timecapsule-sidecar/`](ilc-timecapsule-sidecar/) | Commit sealed Genesis-era material at genesis time and release it under a ratified release condition. |
@@ -144,16 +144,14 @@ closed instead of guessing an endpoint.
 CCSS messages are fixed-size encrypted envelopes. The transport only carries an
 opaque 4156-byte blob.
 
-Current transport ladder:
+The canonical transport is **D2D by `agent_id`**: route the sealed envelope
+through the ILC peer gossip network to the recipient's agent identity. No IP
+address and no auxiliary relay is required. The recipient's CCSS capability public
+key (hybrid X25519 + ML-KEM-768) is published at registration and used to seal
+the envelope before routing.
 
-1. Direct transport: send to a reachable `host:port`.
-2. Tor transport: send to a `.onion` hidden service.
-3. D2d transport: planned ILC-native routing by `agent_id`.
-
-The D2d option is the intended ILC-native destination, but it requires a live
-D2d CCSS message type, recipient CCSS pubkeys in agent INIT records, and routing
-through the ILC peer network. Until those gates close, direct and Tor transport
-remain bootstrap paths.
+Direct `host:port` delivery is available for operator-to-operator deployments
+where both endpoints are known and reachable. It is not the Genesis contact path.
 
 ## Authority boundary
 
