@@ -59398,6 +59398,59 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_1575d_dependency_security_update",
+      "chronology_note": "2026-07-14 Phase 1575d \u2014 Dependency Security Update",
+      "manual_read_summary": "Walkthrough recording targeted dependency security updates for quinn-proto, anyhow, cryptography, starlette, and pydantic-settings; records Rust/Python test results, PRNG preflight hardening, security scans, evidence hash, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:dependency_security_audit_committed_phase_1575d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575d_dependency_security_update_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575d_dependency_security_update_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_1575d_dependency_security_update",
+      "chronology_note": "2026-07-14 Phase 1575d \u2014 Dependency Security Update",
+      "manual_read_summary": "STATUS update recording Phase 1575d dependency security completion tokens, patched dependency versions, retained evidence hash, security scan results, and explicit non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:quinn_proto_memory_exhaustion_patched_phase_1575d"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:dependency_security_audit_committed_phase_1575d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
