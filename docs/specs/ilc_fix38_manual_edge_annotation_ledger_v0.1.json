@@ -59621,6 +59621,93 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/STATUS.md",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1575c_fix3_genesis_core_slice_0",
+      "chronology_note": "2026-07-15 phase 1575c-Fix3 — Genesis Core Slice 0 authority package and signing ceremony",
+      "manual_read_summary": "SENSITIVE phase prompt that resolves source-file choice and node-addition decisions before producing and signing the 57-node Genesis Core Slice 0 authority package, then amending the Fix2 1,035-node package as Slice 1",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3_g10_genesis_core_slice_0_authority_package.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_v05_public_rc_atlas_graph_package_spec_1575c_fix2_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_v05_atlas_graph_package_scope_correction_1575c_fix2_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3_g10_genesis_core_slice_0_authority_package.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1575c_fix3_starmap_arch_spec",
+      "chronology_note": "2026-07-15 post-Fix3 forward planning — star map install/reconcile and Graph Viz architecture spec v0.1",
+      "manual_read_summary": "Forward-planning spec capturing the corrected architectural model for star map installation, LMDB reconciliation, and Graph Viz bounded-query design; input to the next Slice/StarMap phase prompt",
+      "repo_path": "docs/specs/ilc_star_map_install_reconcile_and_graph_viz_architecture_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_v05_atlas_graph_package_scope_correction_1575c_fix2_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_star_map_install_reconcile_and_graph_viz_architecture_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1575c_fix3_comprehensive_forward_plan",
+      "chronology_note": "2026-07-15 — comprehensive forward plan post-1575c reconciling all pending phases",
+      "manual_read_summary": "Authoritative reconciled forward plan listing all pending, deferred, and long-range phases from current position (post-1575e) to the planning frontier",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_post_rc_architectural_targets_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
