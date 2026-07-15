@@ -99,6 +99,11 @@ The Phase 1564 prior-window closure selftest is protected by `ILC_PHASE_1564_GAT
 
 Phase 1575c consumed the verified Genesis v0.5 public-RC signing envelope. This supersedes the earlier missing v0.4 production-signing-token expectation for this gate.
 
+Phase 1575c-Fix2 later corrected the scope of this statement: the Fix1 artifact
+is a signed public-RC envelope, not the immutable Atlas graph package itself.
+The graph-package materialization and signing payload were produced separately
+in Phase 1575c-Fix2.
+
 Signing profile: `ML-DSA-65`.
 
 | Artifact | SHA-256 |
@@ -213,3 +218,30 @@ The following workstreams from `docs/specs/ilc_post_rc_architectural_targets_v0.
 | Spec-vs-implementation governance | Before non-Python implementation ships | Yes | post_rc_carry_forward |
 
 Token emitted: `post_rc_v05_behavioral_graph_carry_forward_locked_phase_1575c`.
+
+## 11. Phase 1575c-Fix2 Atlas Graph Package Correction
+
+Phase 1575c-Fix2 is a corrective strike-force phase for the Genesis v0.5 Atlas
+graph package. It does not reopen the Phase 1575c public-RC gate verdict and
+does not authorize any additional public push by itself.
+
+Corrective facts:
+
+| Field | Value |
+|---|---|
+| Scope correction | Fix1 signed the public-RC envelope, not the Atlas graph package |
+| LMDB source | `out/genesis_base_graph_v0.4_unified.lmdb` |
+| Fix38 bad hub edges before repair | `2,611` invalid `SOURCE_TREE_MEMBER` edges |
+| Fix38 bad hub edges after repair | `0` |
+| Public graph package projection | `genesis_core_star_map` + `public_protocol_graph` |
+| Package nodes | `1,035` |
+| Package edges | `3,841` |
+| Projection digest | `65402e75945a86ccc14bd83610e5f721ea17ed14f6dd5e4d4547647a8853c900` |
+| Package file SHA-256 | `b85674e741611c1e2201f52e6dd6162b032a94d62bee8cb68d540a045b9569bd` |
+| Signature payload SHA-256 | `6cdd1d4f055c81a7dc7fcd787016fc56dca378eecc4169822f8dfee593000aa8` |
+| Current graph-package disposition | `blocked_with_named_defect:genesis_v05_atlas_graph_package_operator_signature_not_provided_phase_1575c_fix2` |
+
+The package intentionally excludes `support_candidate_graph`, private/excluded
+material, local overlays, and future local-user slice-inventory state. Those
+records may exist in a user's operational LMDB, but they are not part of the
+immutable public-RC Genesis v0.5 baseline graph package.
