@@ -20,6 +20,9 @@ Closure basis:
 - Phase 1575b Fix-series bootstrap, Atlas slice, StarMap installer, LMDB cleanliness, witness lane, wallet, settlement, and epoch-transition rehearsals.
 - Phase 1575c-Fix1 verified Genesis v0.5 public-RC signing envelope.
 - Phase 1575c sanitized public mirror regeneration and source export verification.
+- Phase 1575c-Fix2 corrected the envelope-vs-graph-package scope record,
+  repaired the Fix38 LMDB hub defect, and materialized the canonical public-RC
+  Atlas graph package pending operator signature.
 
 ## 2. Inputs and Inheritance
 
@@ -32,9 +35,10 @@ Key inherited inputs:
 | Public-RC activation matrix | committed and amended by 1575b certificate |
 | Economics soft-RC evidence | accepted as `freeze_retain_candidate` |
 | Genesis v0.5 public-RC envelope | signed and verified |
+| Genesis v0.5 public-RC Atlas graph package | materialized and LMDB-replay verified; operator signature pending |
 | Source allowlist export | pass |
 | Sanitized public mirror | regenerated, clean, no push by Codex |
-| Atlas LMDB cleanliness | confirmed pre-1575c |
+| Atlas LMDB cleanliness | confirmed pre-1575c; Fix38 hub defect repaired in 1575c-Fix2 |
 
 ## 3. Closure Verdict Summary
 
@@ -69,6 +73,8 @@ The following are not blockers to Window 1565-1575 closure, but they are routed 
 | ADR-0035 type registry runtime activation | Post-RC explicit GO after required governance conditions |
 | Werner policy/runtime activation | Post-RC economic/governance lane |
 | Graph-derived public mirror exporter | Post-RC graph/materialization lane |
+| Local graph-state and slice-installation inventory | Post-RC local-node/sidecar lane; track installed slices, hydrated content availability, and pending local nodes/edges not yet included in a star map |
+| Genesis v0.5 Atlas graph package operator signature | 1575c-Fix2 follow-up signing ceremony before claiming signed graph-package completion |
 
 ## 5. Next-Window Entry Criteria and Routing
 
@@ -81,6 +87,7 @@ Recommended first priorities:
 3. Guard-clearing activation procedure for rows certified `public_rc_live`.
 4. Behavioral spec node schema and language-neutral test vector extraction.
 5. Sidecar typed-subgraph schema and post-RC marketplace/installability rules.
+6. Local graph-state inventory and slice reconciliation store for day-to-day LMDB use.
 
 ## 6. MemPalace Refresh Disposition
 
