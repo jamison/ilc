@@ -70,6 +70,22 @@ def test_fix3h_partial_cap_routes_caught_rounding_residual_to_performer_metadata
     assert quote.rounding_residual_to_performer_pool_ilc == ILC_QUANTUM
 
 
+def test_fix3h_partial_cap_with_one_quantum_allowance_keeps_residual_metadata_orthogonal() -> None:
+    quote = build_allocation_distribution_quote(
+        1,
+        Decimal("1.000000001"),
+        genesis_overhead_remaining_allowance_ilc=ILC_QUANTUM,
+    )
+
+    assert quote.genesis_overhead_pool_ilc == ILC_QUANTUM
+    assert quote.genesis_partial_cap_excess_ilc == Decimal("0.050000000")
+    assert quote.genesis_partial_cap_excess_route == "performer_pool"
+    assert quote.genesis_partial_cap_excess_token == GENESIS_PARTIAL_CAP_EXCESS_TO_PERFORMER_POOL_TOKEN
+    assert quote.performer_reward_pool_ilc == Decimal("0.850000000")
+    assert quote.rounding_residual_to_genesis_overhead_ilc == ILC_QUANTUM
+    assert quote.rounding_residual_to_performer_pool_ilc == Decimal("0")
+
+
 def test_fix3h_production_path_caps_final_epoch_genesis_credit() -> None:
     remaining = Decimal("13500")
     result = compute_epoch_emission_production_path(
