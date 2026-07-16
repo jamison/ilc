@@ -58584,6 +58584,171 @@
       ],
       "recommended_graph_action": "graph_delta=support_only",
       "repo_path": "docs/phases/phase_1575c_fix3a_genesis_core_slice_0_pre_signing_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_1575c_fix3b_genesis_5pct_surface_reconciliation",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3b \u2014 Genesis 5% surface reconciliation certificate and activation-bound invariant spec.",
+      "manual_read_summary": "NON-SENSITIVE spec phase producing the canonical three-surface reconciliation certificate and ratifying six activation-bound invariants for the Genesis 5% value path before the Fix3 Core Slice 0 signing ceremony.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3b_g10_genesis_5pct_surface_reconciliation_certificate.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029_allocation_split",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:048_ecu_mandatory_conversion_deadline",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:028_fee_burn_split",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1575c_fix3b_genesis_5pct_surface_reconciliation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3b_g10_genesis_5pct_surface_reconciliation_certificate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_162_phase_1575c_fix3c_genesis_governor_decimal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3c \u2014 Decimal migration of genesis_accrual_governor.py monetary fields.",
+      "manual_read_summary": "NON-SENSITIVE code fix migrating float monetary ILC amounts (C_MAX_ILC, signal fields) to Decimal in the genesis accrual governor; closes Fix3b INV-2 part 1.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3c_g10_genesis_accrual_governor_decimal_migration.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029_allocation_split",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "ilc_core/analysis/genesis_accrual_governor.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3c_g10_genesis_accrual_governor_decimal_migration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1575c_fix3d_genesis_governor_wiring",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d \u2014 Wire genesis accrual governor into production path fail-closed.",
+      "manual_read_summary": "NON-SENSITIVE code fix adding genesis_cumulative_accrual_ilc parameter to compute_epoch_emission_production_path, auto-deriving cap_blocked from the governor, and closing CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3d_g10_genesis_governor_production_wiring.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029_allocation_split",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "ilc_core/epoch/epoch_emission_production_path.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3d_g10_genesis_governor_production_wiring.md"
+    },
+    {
+      "annotation_batch": "manual_batch_164_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 CDL-048 amendment and Genesis Agent 1 destination binding (SENSITIVE).",
+      "manual_read_summary": "SENSITIVE phase amending CDL-048 to set genesis_tranche_treatment=explicitly_applied_by_authorized_value_path and creating genesis_settlement_destination.py binding CDL-029 genesis_overhead_pool to Genesis Agent 1 agent_id; all write guards remain False.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3e_g10_genesis_destination_binding.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:048_ecu_mandatory_conversion_deadline",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029_allocation_split",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1575c_fix3e_genesis_destination_binding"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3e_g10_genesis_destination_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_165_phase_1575c_fix3f_genesis_retained_rehearsal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3f \u2014 Genesis 5% retained production-candidate rehearsal (SENSITIVE).",
+      "manual_read_summary": "SENSITIVE phase running the Genesis 5% value path end-to-end in a retained (not wiped) production-candidate namespace; produces durable settlement root evidence and destination-binding proof closing Fix3b INV-5 and INV-6.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3f_g10_genesis_retained_rehearsal.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029_allocation_split",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:048_ecu_mandatory_conversion_deadline",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1575c_fix3f_genesis_retained_rehearsal"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3f_g10_genesis_retained_rehearsal.md"
     }
   ],
   "boundary": {
