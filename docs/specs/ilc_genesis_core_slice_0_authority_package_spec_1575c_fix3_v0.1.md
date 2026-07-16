@@ -56,13 +56,13 @@ The Fix2 package was amended into Public-RC Baseline Slice 1 by adding the Core 
 | Schema version | `genesis_public_rc_baseline_slice_1_1575c_fix3.v0.1` |
 | Domain separator | `ilc-genesis-public-rc-baseline-slice-1` |
 | Package path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.json` |
-| Package SHA-256 | `e92ae8f6840f536b2273ef86c4945d9c79719ea1172f8b99ae1893e218fceb40` |
+| Package SHA-256 | `37e57cb137a849d77ab3f386235ec672edc091a22d0120b5bca226ebd87ef278` |
 | Signing payload path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signature_payload.bin` |
-| Signing payload SHA-256 | `1feffb7def0d43ac4bac02a24cc2213a4686a86630487d02aa9792f4658cd3e2` |
+| Signing payload SHA-256 | `1912afd8de4f7088cc04b624d7cb2b69d6705aa4d7e25fe6a8a56cf7ddb8f8d0` |
 | Signing request path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signing_request.json` |
 | Signature status | `blocked_pending_operator_signature` |
 
-Slice 1 received bounded projection-composability hardening before signing. The builder propagated Core Slice 0 metadata to overlapping nodes, mirrored edge `edge_type` into `type`, added projection-membership recipes to nodes and edges, and added projection rationales where absent. This is not a claim that Slice 1 has complete manual truth-axiom recipes.
+Slice 1 received bounded projection-composability hardening before signing. The builder propagated Core Slice 0 metadata to overlapping nodes, mirrored edge `edge_type` into `type`, added projection-membership recipes to nodes and edges, and added projection rationales where absent. The final package records `57` shared Core nodes, `89` shared Core edges, zero shared-edge structural conflicts, and Core Slice 0 authority metadata precedence for shared rows. This is not a claim that Slice 1 has complete manual truth-axiom recipes.
 
 ## 5. Signature Boundary
 

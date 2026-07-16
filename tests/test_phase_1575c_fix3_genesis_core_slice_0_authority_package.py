@@ -47,14 +47,31 @@ def test_fix3_builder_materializes_core_and_slice1_packages(tmp_path: Path) -> N
         "core_slice_0_package_sha256"
     ]
     assert slice1_package["slice_1_hardening_policy"] == {
+        "core_slice_0_authority_overlay_added": True,
         "edge_type_mirror_complete": True,
         "full_manual_truth_axiom_recipe_completion_claimed": False,
         "projection_membership_recipes_added": True,
         "slice_0_metadata_propagated_to_overlap": True,
     }
+    assert slice1_package["slice_0_slice_1_compatibility"]["shared_node_count"] == 57
+    assert slice1_package["slice_0_slice_1_compatibility"]["shared_edge_count"] == 89
+    assert slice1_package["slice_0_slice_1_compatibility"][
+        "shared_edge_structural_conflict_count"
+    ] == 0
+    assert slice1_package["slice_0_slice_1_compatibility"]["core_slice_0_only_node_ids"] == [
+        "cdl:098_genesis_graph_update_authority"
+    ]
     assert slice1_package["non_claims"][
         "slice_1_full_manual_truth_axiom_recipe_complete"
     ] is False
+    shared_nodes = [
+        node for node in slice1_package["nodes"] if node.get("core_slice_0_authority_overlay")
+    ]
+    assert len(shared_nodes) == 57
+    shared_edges = [
+        edge for edge in slice1_package["edges"] if edge.get("core_slice_0_authority_overlay")
+    ]
+    assert len(shared_edges) == 89
     assert not [
         node for node in slice1_package["nodes"] if not node.get("decomposition_recipe")
     ]
