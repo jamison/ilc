@@ -58477,6 +58477,35 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575f_g10_clawhub_skill_publication.md"
+    },
+    {
+      "annotation_batch": "manual_batch_160_phase_1575c_fix3a_genesis_core_slice_0_hardening",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3a: Genesis Core Slice 0 pre-signing hardening prompt",
+      "manual_read_summary": "NON-SENSITIVE phase prompt for the pre-signing hardening pass that closes all 7 metadata gaps in the 57-node Core Slice 0 source kernel, adds CDL-098 as the 58th node, and produces a deterministic audit report gating the Fix3 signing ceremony.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3a_g10_genesis_core_slice_0_pre_signing_hardening.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:098_genesis_graph_update_authority",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "artifact:genesis_core_star_map_v0.4",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only"
     }
   ],
   "boundary": {
@@ -59624,7 +59653,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_1575c_fix3_genesis_core_slice_0",
-      "chronology_note": "2026-07-15 phase 1575c-Fix3 — Genesis Core Slice 0 authority package and signing ceremony",
+      "chronology_note": "2026-07-15 phase 1575c-Fix3 \u2014 Genesis Core Slice 0 authority package and signing ceremony",
       "manual_read_summary": "SENSITIVE phase prompt that resolves source-file choice and node-addition decisions before producing and signing the 57-node Genesis Core Slice 0 authority package, then amending the Fix2 1,035-node package as Slice 1",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575c_fix3_g10_genesis_core_slice_0_authority_package.md",
       "proposed_authority_trace_edges": [
@@ -59658,7 +59687,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_1575c_fix3_starmap_arch_spec",
-      "chronology_note": "2026-07-15 post-Fix3 forward planning — star map install/reconcile and Graph Viz architecture spec v0.1",
+      "chronology_note": "2026-07-15 post-Fix3 forward planning \u2014 star map install/reconcile and Graph Viz architecture spec v0.1",
       "manual_read_summary": "Forward-planning spec capturing the corrected architectural model for star map installation, LMDB reconciliation, and Graph Viz bounded-query design; input to the next Slice/StarMap phase prompt",
       "repo_path": "docs/specs/ilc_star_map_install_reconcile_and_graph_viz_architecture_v0.1.md",
       "proposed_authority_trace_edges": [
@@ -59682,7 +59711,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_1575c_fix3_comprehensive_forward_plan",
-      "chronology_note": "2026-07-15 — comprehensive forward plan post-1575c reconciling all pending phases",
+      "chronology_note": "2026-07-15 \u2014 comprehensive forward plan post-1575c reconciling all pending phases",
       "manual_read_summary": "Authoritative reconciled forward plan listing all pending, deferred, and long-range phases from current position (post-1575e) to the planning frontier",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "proposed_authority_trace_edges": [
