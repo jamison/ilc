@@ -100,6 +100,39 @@ def test_fix3e_verify_destination_record_rejects_wallet_write_true() -> None:
         verify_genesis_settlement_destination_record(record)
 
 
+@pytest.mark.parametrize(
+    "field",
+    [
+        "genesis_wallet_write_authorized",
+        "genesis_settlement_write_authorized",
+        "genesis_minting_authorized",
+    ],
+)
+def test_fix3e_verify_destination_record_rejects_missing_guard(field: str) -> None:
+    record = get_genesis_settlement_destination_record()
+    record.pop(field)
+
+    with pytest.raises(ValueError, match=f"{field}_must_be_false"):
+        verify_genesis_settlement_destination_record(record)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "genesis_settlement_write_authorized",
+        "genesis_minting_authorized",
+    ],
+)
+def test_fix3e_verify_destination_record_rejects_each_write_guard_true(
+    field: str,
+) -> None:
+    record = get_genesis_settlement_destination_record()
+    record[field] = True
+
+    with pytest.raises(ValueError, match=f"{field}_must_be_false"):
+        verify_genesis_settlement_destination_record(record)
+
+
 def test_fix3e_verify_destination_record_rejects_wrong_agent_id() -> None:
     record = get_genesis_settlement_destination_record()
     record["agent_id"] = "agent:wrong"
@@ -143,3 +176,34 @@ def test_fix3e_reconciliation_verifier_accepts_destination_bound_treatment() -> 
 
     assert verification["verified"] is True
     assert verification["cdl048_applies_fixed_tranche"] is True
+
+
+def test_fix3e_reconciliation_rejects_legacy_applied_treatment() -> None:
+    cdl048_quote = _cdl048_quote()
+    cdl048_quote["genesis_tranche_treatment"] = "applied"
+
+    with pytest.raises(
+        ValueError,
+        match="cdl048_legacy_applied_treatment_rejected_phase_1575c_fix3e",
+    ):
+        build_genesis_tranche_reconciliation_quote(
+            fee_burn_quote=_fee_burn_quote(),
+            allocation_quote=_allocation_quote(),
+            cdl048_conversion_quote=cdl048_quote,
+        )
+
+
+def test_fix3e_reconciliation_verifier_rejects_fixed_tranche_without_fix3e_treatment() -> None:
+    quote = build_genesis_tranche_reconciliation_quote(
+        fee_burn_quote=_fee_burn_quote(),
+        allocation_quote=_allocation_quote(),
+        cdl048_conversion_quote=_cdl048_quote(),
+    )
+    record = quote.to_canonical_record()
+    record["cdl048_genesis_tranche_treatment"] = "applied"
+
+    with pytest.raises(
+        ValueError,
+        match="cdl048_fixed_tranche_requires_fix3e_treatment",
+    ):
+        verify_genesis_tranche_reconciliation_record(record)

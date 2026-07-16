@@ -85,7 +85,7 @@ def verify_genesis_settlement_destination_record(record: dict[str, Any]) -> None
     if not isinstance(record, dict):
         raise ValueError("genesis_settlement_destination_must_be_dict")
     for field in _FORBIDDEN_TRUE_FIELDS:
-        if record.get(field) is True:
+        if record.get(field) is not False:
             raise ValueError(f"genesis_settlement_{field}_must_be_false")
     if record.get("agent_id") != GENESIS_AGENT1_AGENT_ID:
         raise ValueError("genesis_settlement_agent_id_mismatch")
