@@ -193,7 +193,7 @@ def _cdl048_tranche_treatment(cdl048_quote: dict[str, Any]) -> tuple[str, bool]:
     if treatment == "explicitly_deferred":
         return "explicitly_deferred", False
     if treatment == "applied":
-        return "applied", True
+        raise ValueError("cdl048_legacy_applied_treatment_rejected_phase_1575c_fix3e")
     if treatment == CDL_048_GENESIS_TRANCHE_TREATMENT:
         return CDL_048_GENESIS_TRANCHE_TREATMENT, True
     raise ValueError("cdl048_genesis_tranche_treatment_invalid_phase_1568_fix2q")
@@ -414,6 +414,10 @@ def verify_genesis_tranche_reconciliation_record(record: dict[str, Any]) -> dict
     if not required_tokens.issubset(set(tokens)):
         raise ValueError("genesis_tranche_reconciliation_tokens_missing_phase_1568_fix2q")
     token_set = set(tokens)
+    if quote.get("cdl048_applies_fixed_tranche") is True and quote.get(
+        "cdl048_genesis_tranche_treatment"
+    ) != CDL_048_GENESIS_TRANCHE_TREATMENT:
+        raise ValueError("cdl048_fixed_tranche_requires_fix3e_treatment")
     if quote.get("cdl048_genesis_tranche_treatment") == CDL_048_GENESIS_TRANCHE_TREATMENT:
         if quote.get("cdl048_applies_fixed_tranche") is not True:
             raise ValueError("cdl048_applied_treatment_must_apply_fixed_tranche")

@@ -60380,6 +60380,36 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3e_genesis_destination_binding_walkthrough.md",
       "repo_path": "docs/phases/phase_1575c_fix3e_genesis_destination_binding_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_167_phase_1575c_fix3e_fix1_destination_binding_hardening",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e-Fix1 \u2014 Genesis destination binding hardening",
+      "manual_read_summary": "Post-audit hardening rejecting the legacy CDL-048 treatment string applied for new reconciliation quotes, requiring Fix3e treatment and tokens for any fixed-tranche claim, and requiring explicit false destination write guards.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_legacy_applied_rejected_phase_1575c_fix3e_fix1"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:fix3f_requires_explicit_fix3e_treatment_phase_1575c_fix3e_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+      "repo_path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py"
     }
   ],
   "phase": "1545p-Fix38",
