@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 import pytest
 
 from ilc_core.analysis.node_value_governance_conformance import (
@@ -83,8 +85,8 @@ def test_phase_219_conformance_report_is_deterministic() -> None:
     events = _sample_events()
     allocations = _sample_allocations()
     signal = {
-        "genesis_cumulative_accrual": 2.0,
-        "total_cumulative_issuance": 80.0,
+        "genesis_cumulative_accrual": Decimal("2"),
+        "total_cumulative_issuance": Decimal("80"),
     }
 
     report_a = build_node_value_governance_conformance_report(
@@ -110,8 +112,8 @@ def test_phase_219_report_delegates_refutation_and_governor_evaluators(
     events = _sample_events()
     allocations = _sample_allocations()
     signal = {
-        "genesis_cumulative_accrual": 2.0,
-        "total_cumulative_issuance": 80.0,
+        "genesis_cumulative_accrual": Decimal("2"),
+        "total_cumulative_issuance": Decimal("80"),
     }
     calls: dict[str, int] = {"refutation": 0, "governor": 0}
 

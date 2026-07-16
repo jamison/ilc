@@ -2,17 +2,22 @@
 from __future__ import annotations
 
 import math
+from decimal import Decimal, InvalidOperation
 from typing import Iterable, Mapping, TypedDict
 
+from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.exceptions import GenesisAccrualGovernorError
 
 
 THETA_HARD = 1.0 / 20.0
 THETA_SOFT = math.exp(-3.0)
-C_MAX_ILC = 25_920_000.0
-GENESIS_ACCRUAL_GOVERNOR_RUNTIME_VERSION = "genesis_accrual_governor_runtime_1573ab.v0.1"
+GENESIS_ACCRUAL_GOVERNOR_RUNTIME_VERSION = "genesis_accrual_governor_runtime_1575c_fix3c.v0.1"
+GENESIS_ACCRUAL_GOVERNOR_DECIMAL_MIGRATION_TOKEN = (
+    "genesis_accrual_governor_decimal_migration_1575c_fix3c.v0.1"
+)
 CDL_029_AMENDMENT_2_DEPENDENCY = "cdl_029_amendment_2_cmax_denominator_phase_1573aa"
 _RATIO_TOLERANCE = 1e-12
+_RATIO_TOLERANCE_STR = "0.000000000001"
 
 
 class GenesisAccrualGovernorPolicy(TypedDict):
@@ -22,8 +27,8 @@ class GenesisAccrualGovernorPolicy(TypedDict):
 
 
 class GenesisAccrualSignal(TypedDict):
-    genesis_cumulative_accrual: float
-    total_cumulative_issuance: float
+    genesis_cumulative_accrual: Decimal
+    total_cumulative_issuance: Decimal
 
 
 class GenesisAccrualGovernorReport(TypedDict):
@@ -34,8 +39,8 @@ class GenesisAccrualGovernorReport(TypedDict):
 
 class GenesisAccrualTrajectoryRow(TypedDict):
     step_index: int
-    genesis_cumulative_accrual: float
-    total_cumulative_issuance: float
+    genesis_cumulative_accrual: Decimal
+    total_cumulative_issuance: Decimal
     genesis_share_ratio: float
     taper_multiplier: float
     cap_blocked: bool
@@ -48,7 +53,26 @@ DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY: GenesisAccrualGovernorPolicy = {
 }
 
 
-def _require_finite_non_negative(value: object, token: str) -> float:
+def _require_monetary_decimal(value: object, token: str) -> Decimal:
+    """Accept Decimal or int for ILC monetary amounts; reject float and bool."""
+    if isinstance(value, bool) or isinstance(value, float):
+        raise GenesisAccrualGovernorError(token)
+    if isinstance(value, Decimal):
+        normalized = value
+    elif isinstance(value, int):
+        normalized = Decimal(value)
+    else:
+        try:
+            normalized = Decimal(str(value))
+        except (InvalidOperation, ValueError):
+            raise GenesisAccrualGovernorError(token) from None
+    if not normalized.is_finite() or normalized < Decimal("0"):
+        raise GenesisAccrualGovernorError(token)
+    return normalized
+
+
+def _require_ratio_parameter(value: object, token: str) -> float:
+    """Accept float or int for dimensionless ratio parameters, not money."""
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise GenesisAccrualGovernorError(token)
     normalized = float(value)
@@ -72,15 +96,15 @@ def validate_genesis_accrual_governor_policy(
     if set(policy.keys()) != required_keys:
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_policy_keys")
 
-    theta_hard = _require_finite_non_negative(
+    theta_hard = _require_ratio_parameter(
         policy.get("theta_hard"),
         "genesis_accrual_governor_invalid_theta_hard",
     )
-    theta_soft = _require_finite_non_negative(
+    theta_soft = _require_ratio_parameter(
         policy.get("theta_soft"),
         "genesis_accrual_governor_invalid_theta_soft",
     )
-    taper_steepness = _require_finite_non_negative(
+    taper_steepness = _require_ratio_parameter(
         policy.get("taper_steepness"),
         "genesis_accrual_governor_invalid_taper_steepness",
     )
@@ -108,21 +132,21 @@ def validate_genesis_accrual_signal(
     if set(signal.keys()) != required_keys:
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_signal_keys")
 
-    genesis_cumulative_accrual = _require_finite_non_negative(
+    genesis_cumulative_accrual = _require_monetary_decimal(
         signal.get("genesis_cumulative_accrual"),
         "genesis_accrual_governor_invalid_genesis_cumulative_accrual",
     )
-    total_cumulative_issuance = _require_finite_non_negative(
+    total_cumulative_issuance = _require_monetary_decimal(
         signal.get("total_cumulative_issuance"),
         "genesis_accrual_governor_invalid_total_cumulative_issuance",
     )
 
     if (
-        total_cumulative_issuance == 0.0
-        and genesis_cumulative_accrual > 0.0
+        total_cumulative_issuance == Decimal("0")
+        and genesis_cumulative_accrual > Decimal("0")
     ):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_inconsistent_zero_issuance")
-    if genesis_cumulative_accrual > total_cumulative_issuance + _RATIO_TOLERANCE:
+    if genesis_cumulative_accrual > total_cumulative_issuance + Decimal(_RATIO_TOLERANCE_STR):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_accrual_exceeds_issuance")
 
     return {
@@ -134,9 +158,9 @@ def validate_genesis_accrual_signal(
 def compute_genesis_share_ratio(signal: Mapping[str, object]) -> float:
     resolved_signal = validate_genesis_accrual_signal(signal)
     total_issuance = resolved_signal["total_cumulative_issuance"]
-    if total_issuance == 0.0:
+    if total_issuance == Decimal("0"):
         return 0.0
-    return resolved_signal["genesis_cumulative_accrual"] / C_MAX_ILC
+    return float(resolved_signal["genesis_cumulative_accrual"] / C_MAX_ILC)
 
 
 def compute_taper_multiplier(
@@ -193,8 +217,8 @@ def simulate_genesis_accrual_governor_trajectory(
     validate_genesis_accrual_governor_policy(policy)
 
     trajectory: list[GenesisAccrualTrajectoryRow] = []
-    prev_accrual = 0.0
-    prev_issuance = 0.0
+    prev_accrual = Decimal("0")
+    prev_issuance = Decimal("0")
     prev_ratio = -1.0
 
     for step_index, raw_row in enumerate(cumulative_rows):
@@ -202,9 +226,9 @@ def simulate_genesis_accrual_governor_trajectory(
         accrual = resolved_signal["genesis_cumulative_accrual"]
         issuance = resolved_signal["total_cumulative_issuance"]
 
-        if accrual < prev_accrual - _RATIO_TOLERANCE:
+        if accrual < prev_accrual - Decimal(_RATIO_TOLERANCE_STR):
             raise GenesisAccrualGovernorError("genesis_accrual_governor_non_monotonic_accrual")
-        if issuance < prev_issuance - _RATIO_TOLERANCE:
+        if issuance < prev_issuance - Decimal(_RATIO_TOLERANCE_STR):
             raise GenesisAccrualGovernorError("genesis_accrual_governor_non_monotonic_issuance")
 
         ratio = compute_genesis_share_ratio(resolved_signal)
