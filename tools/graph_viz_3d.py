@@ -559,6 +559,7 @@ Graph.d3Force("charge").strength(-25);"""
     <button id="btn-center">Centre on Node 0</button>
     <button id="btn-pause">Pause physics</button>
     <button id="btn-radial">Radial layout: ON</button>
+    <button id="btn-rotate">Auto-rotate: OFF</button>
   </div>
   <div style="margin-top:8px;border-top:1px solid #333;padding-top:8px">
     <div style="font-size:11px;color:#888;margin-bottom:4px">Genesis trace</div>
@@ -1139,6 +1140,34 @@ document.getElementById("btn-radial").addEventListener("click", () => {{
   Graph.numDimensions(3);  // reheat simulation
   document.getElementById("btn-radial").textContent =
     radialOn ? "Radial layout: ON" : "Radial layout: OFF";
+}});
+
+// ── auto-rotate on X axis ─────────────────────────────────────────────────
+let _rotateOn = false;
+let _rotateRaf = null;
+const _ROTATE_SPEED = 0.003;  // radians per frame (~0.17°/frame @ 60fps)
+
+function _rotateStep() {{
+  if (!_rotateOn) return;
+  // Orbit the camera around the Y axis by rotating its position vector.
+  const {{ x, y, z }} = Graph.cameraPosition();
+  const r = Math.sqrt(x * x + z * z) || 1;
+  const theta = Math.atan2(x, z) + _ROTATE_SPEED;
+  Graph.cameraPosition({{ x: r * Math.sin(theta), y, z: r * Math.cos(theta) }});
+  _rotateRaf = requestAnimationFrame(_rotateStep);
+}}
+
+document.getElementById("btn-rotate").addEventListener("click", () => {{
+  _rotateOn = !_rotateOn;
+  document.getElementById("btn-rotate").textContent =
+    _rotateOn ? "Auto-rotate: ON" : "Auto-rotate: OFF";
+  document.getElementById("btn-rotate").style.color = _rotateOn ? "#44ccff" : "";
+  if (_rotateOn) {{
+    _rotateRaf = requestAnimationFrame(_rotateStep);
+  }} else {{
+    if (_rotateRaf) cancelAnimationFrame(_rotateRaf);
+    _rotateRaf = null;
+  }}
 }});
 
 // ── dynamic legend: per-group checkboxes ─────────────────────────────────

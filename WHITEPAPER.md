@@ -1,7 +1,7 @@
 # Intelligent Labor Coin: A Peer-to-Peer Protocol for Verifiable Epistemic Work
 
 **Genesis Agent**
-genesis@ilc.network
+*Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
 *v0.2 — adds Section 11a (CCSS-SPECTRAL-01: jiggle factor failure proof, hiding commitment scheme, semantically useful cover traffic) and Appendix G (five novel contributions: spectral fork-choice, CDL-governed circuit ratification, threshold capability governance, Engram threat class).*
 
@@ -15,12 +15,9 @@ Web2.0 systems are centralized and based on trusted authorities, which made sens
 
 During the dawn of the Agentic Web3.0, content and attention are no longer the scarce resource — trust is. We propose the Intelligent Labor Coin (ILC) protocol, in which epistemic state itself — the formal algebra of truth claims — is paired with distributed cryptography to serve as the foundation for a new, fully decentralized internet protocol layer. ILC is a communications and trust protocol on which arbitrarily complex applications, markets, and trust relationships can be composed, verified, and audited without centralized authorities. *Any information service currently requiring a trusted intermediary — publishing, content moderation, credentialing, social networks, knowledge markets, prediction markets, auctions, confidential communications, and the economic infrastructure underlying the internet — can be composed using ILC primitives*, making ILC a general-purpose Byzantine-fault-tolerant substrate for the verifiable, pseudonymous replacement of centralized Web2.0 knowledge infrastructure.
 
-
 *ILC is designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike.*
 
 The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom — the Genesis root, Node 0 — from which seven truth primitives generate a closed epistemic algebra over a content-addressed hypergraph. This algebra is expressive enough to represent any claim, validation, refutation, revision, or governance event as a first-class graph operation, producing an immutable, epoch-committed substrate whose structural integrity is attested by a Merkle-Laplacian dual commitment: a cryptographic pairing of the content Merkle root with the spectral hash of the normalized hypergraph Laplacian, enabling Byzantine structural fault detection unavailable to content-only commitment. Knowledge claims submitted against this hypergraph are rewarded in ECU — an internal credit unit that measures the time-value of verified epistemic labor, automatically converted to ILC Coin within a mandatory 4-issuance-epoch window: a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work (PoW). Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of this shared knowledge graph — the central commons and backbone of ILC — while the economic layer serves as its immune and maintenance system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
-
-*Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
 ---
 
@@ -1125,6 +1122,124 @@ Figure 3: Hyperedge panel structure vs. binary edge model
 A dense Sybil cluster with sparse cross-cluster edges produces a characteristic spectral perturbation: the spectral gap λ₃ − λ₂ collapses and a near-zero eigenvalue is inserted. Monitoring `{S(t)}` across epochs flags the insertion epoch without requiring access to individual agent identities.
 
 **Proof of Structural Knowledge (PoSK)**: a node demonstrates correct graph synchronization by submitting the correct λ₂(t) value within tolerance ε of the quorum. Unlike Proof of Work (proves hash computation), Proof of Stake (proves capital commitment), or Proof of Storage (proves data retention), PoSK proves relational structural knowledge — not just that records exist, but that they are connected correctly.
+
+### 8a. Spectral Trajectory: Velocity, Acceleration, and the Four-Quadrant Detection Model
+
+A single λ₂(t) value per epoch is a snapshot. The protocol derives two additional signals
+by differencing across epochs, producing a three-level spectral trajectory:
+
+```
+Level 1 — graph delta:
+  ΔL(t)    = L(t) − L(t−1)         sparse incremental Laplacian update
+                                    O(k·d) per epoch; exact (Frobenius
+                                    error ≈ 3.84×10⁻¹⁷)
+
+Level 2 — spectral velocity:
+  Δλ₂(t)  = λ₂(t) − λ₂(t−1)       rate of change of algebraic
+                                    connectivity per epoch
+                                    O(k) storage; negligible
+
+Level 3 — spectral acceleration:
+  ΔΔλ₂(t) = Δλ₂(t) − Δλ₂(t−1)    second difference; free once
+                                    Level 2 is stored
+```
+
+The spectral gap `gap(t) = λ₃(t) − λ₂(t)` is computed alongside these
+at each epoch and committed to the epoch KPI store. A large gap means
+the Fiedler partition is stable; a collapsing gap is the early structural
+signature of Sybil insertion or partition formation — detectable before
+`ΔΔλ₂` turns sharply negative.
+
+**Four-quadrant detection model.** The joint sign of `Δλ₂` and `ΔΔλ₂`
+identifies the network's structural regime without requiring access to
+individual agent identities:
+
+```
+ΔΔλ₂   Δλ₂    Regime                    Detection interpretation
+──────────────────────────────────────────────────────────────────────
+  +      +     Accelerating growth       Healthy compounding —
+                                         epistemic network strengthening
+                                         faster than prior epoch
+
+  −      +     Decelerating growth       Stabilizing or consolidating —
+                                         a knowledge domain approaching
+                                         internal coherence
+
+  +      −     Decelerating decline      Partition healing — cross-domain
+                                         claims are reconnecting a prior
+                                         fragmentation
+
+  −      −     Accelerating decline      Structural alarm — Sybil
+                                         injection, fork, or epistemic
+                                         partition in progress; triggers
+                                         validator audit protocol
+```
+
+A sudden transition to the (−/−) quadrant, especially coinciding with
+`gap(t) → 0`, is the protocol's primary indicator of structural attack.
+A sustained (+/+) trajectory is the primary indicator of compounding
+epistemic health — the network is not just growing but organizing faster.
+
+**Spectral trajectory commitment.** Each epoch record carries:
+
+```
+epoch_record(t):
+  epoch              : int          validation-epoch number
+  merkle_root        : bytes        M(t) — content commitment
+  spectral_hash      : bytes        S(t) — structural commitment
+  lambda2            : float        Fiedler value λ₂(t)
+  lambda2_delta      : float        Δλ₂(t) — spectral velocity
+  lambda2_accel      : float        ΔΔλ₂(t) — spectral acceleration
+  spectral_gap       : float        λ₃(t) − λ₂(t)
+  fiedler_vec_epoch  : int          last epoch of full eigenvector
+                                    recomputation (cache pointer)
+```
+
+PoSK attestation now covers the full record: validators submit
+`(λ₂(t), Δλ₂(t), ΔΔλ₂(t), gap(t))` within quorum tolerance. A
+validator that cannot reproduce the correct spectral velocity or
+acceleration — not just the raw Fiedler value — fails PoSK.
+
+**Efficient computation — Rayleigh quotient lazy path.** Full
+eigendecomposition costs O(n³). Once the graph reaches sufficient density,
+the protocol activates a lazy approximation for normal epochs:
+
+```
+λ₂(t) ≈ v₂(t−1)ᵀ · L(t) · v₂(t−1)     O(n) per epoch
+```
+
+This Rayleigh quotient reuses the prior Fiedler eigenvector `v₂(t−1)`.
+The approximation error is O(‖ΔL‖² / gap) — small when the graph changes
+slowly (the normal regime) and the spectral gap is wide. Full recomputation
+is triggered when `‖ΔL(t)‖_F > ε` (a significant structural event) or
+every `N_BATCH` epochs unconditionally.
+
+```
+Lazy Rayleigh activation gate:
+  spectral_gap = λ₃ − λ₂  >  0.05   (RAYLEIGH_SPECTRAL_GAP_MIN)
+
+Current deployment: N_BATCH = 1 — full eigendecomposition every epoch.
+Activation condition: spectral_gap sustained above 0.05 as graph density
+grows. At current testnet density (T2-class topologies),
+spectral_gap ≈ 0.0094; Rayleigh error reached 41% after one epoch at this
+density. The lazy path activates automatically once the graph is
+sufficiently dense. At that point the per-epoch measurement cost drops
+from O(n³) to O(n) for normal epochs, with O(n³) reserved for structural
+events and periodic governance recomputation.
+```
+
+The trigger condition `‖ΔL(t)‖_F > ε` (calibrated to `EPSILON_TRIGGER =
+0.3391` from SIM-SPECTRAL-01) is itself a structural event signal: normal
+epoch growth stays below ε; a Sybil insertion, fork, or burst of
+high-weight claim activity crosses it, automatically demanding a fresh
+eigendecomposition before the epoch is committed.
+
+> **Forward planning note — gossip wiring (H-013):** Spectral velocity
+> `Δλ₂` and acceleration `ΔΔλ₂` are committed to the local epoch record.
+> Peer gossip of these signals — allowing every node to maintain a live
+> view of the network's structural regime without running a full validator —
+> is H-013 scope. Once wired, the four-quadrant signal becomes a network
+> vital sign visible at every participant.
 
 ---
 
