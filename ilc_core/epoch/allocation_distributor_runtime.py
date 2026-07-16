@@ -3,9 +3,9 @@
 
 This module computes allocation quotes only. It does not implement full
 Genesis-tranche realization. Phase 1351a adds settlement-bound sub-quantum
-residual routing after theta_hard, but full post-cap Genesis-tranche routing
-remains fail-closed and intentionally does not import the float-based Genesis
-accrual governor.
+residual routing after theta_hard. Phase 1575c-Fix3d wires the Decimal Genesis
+accrual governor in the production emission path; this allocator still accepts
+the resulting cap-blocked signal as an input and performs split-quote routing.
 """
 
 from __future__ import annotations
@@ -44,6 +44,9 @@ GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN = (
 )
 CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN = (
     "cdl_029_post_theta_hard_routing_implementation_deferred_pending_decimal_governor"
+)
+CDL_029_POST_THETA_HARD_ROUTING_GOVERNOR_WIRED_TOKEN = (
+    "cdl_029_post_theta_hard_routing_governor_wired_phase_1575c_fix3d"
 )
 CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN = (
     "cdl_029_post_theta_hard_dust_routing_amendment_phase_1351a.v0.1"
@@ -372,6 +375,7 @@ __all__ = [
     "CDL_029_ALLOCATION_DISTRIBUTOR_RUNTIME_TOKEN",
     "CDL_029_DEPENDENCY",
     "CDL_029_POST_THETA_HARD_ROUTING_AMENDMENT_TOKEN",
+    "CDL_029_POST_THETA_HARD_ROUTING_GOVERNOR_WIRED_TOKEN",
     "CDL_029_POST_THETA_HARD_ROUTING_IMPLEMENTATION_DEFERRED_TOKEN",
     "CDL_083_UPHELD_REFUTATION_RECIPIENTS_PRIMARY_DUST_ROUTE_TOKEN",
     "FINDING_1_ROUNDING_RESIDUAL_CAP_BLOCKED_RESOLVED_TOKEN",
