@@ -59980,6 +59980,64 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_1575c_fix3b_genesis_5pct_certificate",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3b \u2014 Genesis 5% surface reconciliation certificate",
+      "manual_read_summary": "Certificate reconciling CDL-029 Genesis overhead allocation, CDL-048 fixed Genesis lifetime tranche, and CDL-028 Genesis burn pool; records six activation-bound invariants and non-claims before Decimal migration, production wiring, destination binding, and retained rehearsal.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_surface_reconciliation_certificate_committed_phase_1575c_fix3b"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_genesis_5pct_surface_reconciliation_certificate_1575c_fix3b_v0.1.md",
+      "repo_path": "docs/specs/ilc_genesis_5pct_surface_reconciliation_certificate_1575c_fix3b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_1575c_fix3b_walkthrough",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3b \u2014 Genesis 5% surface reconciliation walkthrough",
+      "manual_read_summary": "Walkthrough recording Fix3b delivery summary, key outcomes, carry-forward phases, and non-activation boundary for the Genesis 5% surface reconciliation certificate.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_surface_reconciliation_certificate_committed_phase_1575c_fix3b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_activation_bound_invariants_recorded_phase_1575c_fix3b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3b_genesis_5pct_surface_reconciliation_certificate_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575c_fix3b_genesis_5pct_surface_reconciliation_certificate_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
