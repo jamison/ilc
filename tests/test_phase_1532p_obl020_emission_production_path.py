@@ -12,10 +12,12 @@ from ilc_core.epoch.allocation_distributor_runtime import (
 )
 from ilc_core.epoch.epoch_emission_production_path import (
     CDL_EMISSION_AUTHORITY_TOKENS,
+    GENESIS_GOVERNOR_WIRING_TOKEN,
     PRODUCTION_EMISSION_NOT_ACTIVATED,
     EpochEmissionProductionResult,
     compute_epoch_emission_production_path,
 )
+from ilc_core.analysis.genesis_accrual_governor import C_MAX_ILC, THETA_HARD
 from ilc_core.epoch.issuance_economics_integration_gate import (
     ISSUANCE_ECONOMICS_INTEGRATION_GATE_PASS,
 )
@@ -53,6 +55,7 @@ def test_phase_1532p_returns_default_off_production_result() -> None:
     assert result.emission_quote.issuance_epoch == 3
     assert result.fee_burn_quote.issuance_epoch == 3
     assert result.allocation_quote.issuance_epoch == 3
+    assert result.governor_report is None
     assert (
         result.allocation_quote.total_epoch_allocation_ilc
         == result.fee_burn_quote.remaining_fee_pool_ilc
@@ -114,7 +117,7 @@ def test_phase_1537p_fix1_bounds_upheld_refutation_recipients() -> None:
             0,
             Decimal("0"),
             Decimal("0.000000001"),
-            genesis_overhead_cap_blocked=True,
+            _test_only_genesis_cap_blocked_override=True,
             upheld_refutation_recipients=too_many_recipients,
         )
 
@@ -124,6 +127,48 @@ def test_phase_1537p_fix1_bounds_upheld_refutation_recipients() -> None:
             0,
             Decimal("0"),
             Decimal("0.000000001"),
-            genesis_overhead_cap_blocked=True,
+            _test_only_genesis_cap_blocked_override=True,
             upheld_refutation_recipients=[too_long_recipient],
+        )
+
+
+def test_fix3d_governor_report_populated_when_signal_supplied() -> None:
+    result = compute_epoch_emission_production_path(
+        3,
+        Decimal("1000.000000001"),
+        Decimal("250.000000009"),
+        genesis_cumulative_accrual_ilc=Decimal("500"),
+    )
+
+    assert result.governor_report is not None
+    assert result.governor_report["cap_blocked"] is False
+    assert result.allocation_quote.genesis_overhead_cap_blocked is False
+
+
+def test_fix3d_governor_blocks_cap_at_theta_hard() -> None:
+    at_cap = Decimal(str(THETA_HARD)) * C_MAX_ILC
+    result = compute_epoch_emission_production_path(
+        3,
+        Decimal("20000000"),
+        Decimal("0.000000001"),
+        genesis_cumulative_accrual_ilc=at_cap,
+    )
+
+    assert GENESIS_GOVERNOR_WIRING_TOKEN == (
+        "genesis_governor_wired_into_production_path_1575c_fix3d.v0.1"
+    )
+    assert result.governor_report is not None
+    assert result.governor_report["cap_blocked"] is True
+    assert result.allocation_quote.genesis_overhead_cap_blocked is True
+    assert result.allocation_quote.genesis_overhead_pool_ilc == Decimal("0")
+
+
+def test_fix3d_governor_fail_closes_nonzero_base_tranche_after_cap() -> None:
+    at_cap = Decimal(str(THETA_HARD)) * C_MAX_ILC
+    with pytest.raises(ValueError, match="genesis_overhead_base_cap_blocked_full_tranche_deferred"):
+        compute_epoch_emission_production_path(
+            3,
+            Decimal("20000000"),
+            Decimal("250.000000009"),
+            genesis_cumulative_accrual_ilc=at_cap,
         )
