@@ -60248,6 +60248,138 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:ilc_core/analysis/genesis_accrual_governor.py",
       "repo_path": "ilc_core/analysis/genesis_accrual_governor.py"
+    },
+    {
+      "annotation_batch": "manual_batch_166_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 CDL-048 Genesis tranche treatment amendment",
+      "manual_read_summary": "Sensitive CDL-048 amendment setting genesis_tranche_treatment to explicitly_applied_by_authorized_value_path, defining the fixed 5% Genesis tranche as the lifetime settlement right realized through cumulative CDL-029 overhead up to cap, and preserving all no-activation non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "AMENDS",
+          "review_status": "candidate",
+          "target": "cdl:048_ecu_mandatory_conversion_deadline"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_committed_phase_1575c_fix3e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "AMENDS",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_cdl_048_genesis_tranche_treatment_amendment_1575c_fix3e_v0.1.md",
+      "repo_path": "docs/specs/ilc_cdl_048_genesis_tranche_treatment_amendment_1575c_fix3e_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_166_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 Genesis settlement destination runtime",
+      "manual_read_summary": "Runtime module binding CDL-029 genesis_overhead_pool to Genesis Agent 1 agent_id from the Phase 838a key record while keeping wallet, settlement, and minting authorization guards false.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_committed_phase_1575c_fix3e"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/genesis_settlement_destination.py",
+      "repo_path": "ilc_core/epoch/genesis_settlement_destination.py"
+    },
+    {
+      "annotation_batch": "manual_batch_166_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 Genesis tranche reconciliation treatment update",
+      "manual_read_summary": "Reconciliation runtime now recognizes explicitly_applied_by_authorized_value_path, emits CDL048_TREATMENT_APPLIED_TOKEN and GENESIS_DESTINATION_BINDING_TOKEN, and verifies canonical applied-treatment records without enabling writes.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_committed_phase_1575c_fix3e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
+      "repo_path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_166_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 Genesis destination binding tests",
+      "manual_read_summary": "Focused tests pinning Fix3e tokens, matching Genesis Agent 1 agent_id to the Phase 838a key record, verifying all write guards remain false, rejecting wallet-write mutation, and accepting destination-bound reconciliation records.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_committed_phase_1575c_fix3e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575c_fix3e_genesis_destination_binding.py",
+      "repo_path": "tests/test_phase_1575c_fix3e_genesis_destination_binding.py"
+    },
+    {
+      "annotation_batch": "manual_batch_166_phase_1575c_fix3e_genesis_destination_binding",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3e \u2014 Genesis destination binding walkthrough",
+      "manual_read_summary": "Walkthrough recording exact GO phrase receipt, CDL mutation authority, destination binding, all false write guards, burn-pool non-routing, verification commands, and carry-forward to Fix3f retained rehearsal.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_destination_binding_committed_phase_1575c_fix3e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3e_genesis_destination_binding_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575c_fix3e_genesis_destination_binding_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
