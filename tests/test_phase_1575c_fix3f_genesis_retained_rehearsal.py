@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.analysis.genesis_accrual_governor import (
@@ -20,7 +21,11 @@ from ilc_core.epoch.genesis_settlement_destination import (
     get_genesis_settlement_destination_record,
     verify_genesis_settlement_destination_record,
 )
-from tools.genesis_5pct_retained_rehearsal_fix3f import build_rehearsal_evidence
+from tools.genesis_5pct_retained_rehearsal_fix3f import (
+    _exact_genesis_share_ratio_string,
+    _verify_fix3b_certificate_token,
+    build_rehearsal_evidence,
+)
 
 
 def test_fix3f_rehearsal_token_pinned() -> None:
@@ -47,6 +52,12 @@ def test_fix3f_all_fix3b_to_fix3e_tokens_importable() -> None:
     )
     assert CDL048_TREATMENT_APPLIED_TOKEN == (
         "cdl_048_genesis_tranche_treatment_applied_phase_1575c_fix3e.v0.1"
+    )
+
+
+def test_fix3f_reads_fix3b_token_from_certificate_file() -> None:
+    assert _verify_fix3b_certificate_token() == (
+        "genesis_5pct_surface_reconciliation_certificate_1575c_fix3b.v0.1"
     )
 
 
@@ -79,3 +90,16 @@ def test_fix3f_rehearsal_builder_is_deterministic_for_settlement_roots() -> None
         assert epoch["governor_cap_blocked"] is False
         assert epoch["cdl048_applies_fixed_tranche"] is True
         assert epoch["destination_agent_id"] == GENESIS_AGENT1_AGENT_ID
+
+
+def test_fix3f_ratio_evidence_uses_exact_decimal_rehearsal_inputs() -> None:
+    assert _exact_genesis_share_ratio_string(
+        cumulative=Decimal("10000"),
+        accrual=Decimal("500"),
+    ) == "0.00001929012345679012345679012346"
+
+    evidence = build_rehearsal_evidence(generated_at="2026-07-16T00:00:00+00:00")
+
+    assert evidence["epochs"][1]["genesis_share_ratio"] == (
+        "0.00001929012345679012345679012346"
+    )
