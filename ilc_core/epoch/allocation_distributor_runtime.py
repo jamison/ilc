@@ -347,6 +347,8 @@ def build_allocation_distribution_quote(
                 performer_pool += partial_cap_excess
                 partial_cap_excess_route = PERFORMER_POOL_RESIDUAL_ROUTE
                 partial_cap_excess_token = GENESIS_PARTIAL_CAP_EXCESS_TO_PERFORMER_POOL_TOKEN
+                # Residual metadata remains about the quantization residual only.
+                # Partial-cap excess is tracked separately in the fields above.
                 residual_to_genesis = min(rounding_residual, genesis_overhead_pool)
                 residual_to_performer = rounding_residual - residual_to_genesis
 
