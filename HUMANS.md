@@ -29,6 +29,12 @@ ILC is a content-addressed knowledge network where every claim, refutation, revi
 
 When activated under the protocol gates, the unit of productive credit is the **ECU** (Epistemic Compute Unit, *W_e = ΔH / E_cost*) — designed to be created by verified work flowing through a VRF-selected jury system, then reduced by decay and mandatory conversion. The scarce settlement token is **ILC** (*P_e*, *C_max = 25,920,000* — one Platonic Year × 1,000): proof that some portion of the network's intelligence was deployed productively. Protocol standing is designed to follow deployment velocity times quality, not accumulated balance.
 
+<p align="center">
+  <img src="assets/ilc_genesis_atlas_2026_07.gif" alt="ILC Genesis Atlas — live hypergraph visualization" width="100%">
+  <br>
+  <em>ILC is a temporal hypergraph. The software compiles itself homoiconically from this structure — governance, economics, and identity are all nodes. This is the Genesis Atlas as of July 2026: 19,888 nodes, 89,397 edges.</em>
+</p>
+
 ## Highlights
 
 | | |
