@@ -8,6 +8,7 @@ from ilc_core.analysis.genesis_accrual_governor import C_MAX_ILC, THETA_HARD
 from ilc_core.epoch.allocation_distributor_runtime import (
     CDL_029_POST_THETA_HARD_ROUTING_GOVERNOR_WIRED_TOKEN,
 )
+from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM
 from ilc_core.epoch.epoch_emission_production_path import (
     GENESIS_GOVERNOR_WIRING_DEPENDENCY,
     GENESIS_GOVERNOR_WIRING_TOKEN,
@@ -66,6 +67,19 @@ def test_fix3d_cap_blocked_true_at_theta_hard_boundary_for_residual_only_quote()
     assert result.allocation_quote.genesis_overhead_pool_ilc == Decimal("0")
 
 
+def test_fix3d_one_quantum_below_cap_is_not_blocked() -> None:
+    result = compute_epoch_emission_production_path(
+        3,
+        Decimal("20000000"),
+        Decimal("0.000000001"),
+        genesis_cumulative_accrual_ilc=(Decimal(str(THETA_HARD)) * C_MAX_ILC) - ILC_QUANTUM,
+    )
+
+    assert result.governor_report is not None
+    assert result.governor_report["cap_blocked"] is False
+    assert result.allocation_quote.genesis_overhead_cap_blocked is False
+
+
 def test_fix3d_cap_blocked_false_below_theta_hard() -> None:
     result = compute_epoch_emission_production_path(
         3,
@@ -77,6 +91,16 @@ def test_fix3d_cap_blocked_false_below_theta_hard() -> None:
     assert result.governor_report is not None
     assert result.governor_report["cap_blocked"] is False
     assert result.allocation_quote.genesis_overhead_cap_blocked is False
+
+
+def test_fix3d_epoch0_nonzero_accrual_is_rejected() -> None:
+    with pytest.raises(ValueError, match="genesis_accrual_governor_inconsistent_zero_issuance"):
+        compute_epoch_emission_production_path(
+            0,
+            Decimal("0"),
+            Decimal("0.000000001"),
+            genesis_cumulative_accrual_ilc=ILC_QUANTUM,
+        )
 
 
 def test_fix3d_test_only_override_is_explicit_and_type_checked() -> None:
