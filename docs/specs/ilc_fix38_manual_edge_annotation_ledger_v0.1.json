@@ -60410,6 +60410,108 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/genesis_tranche_reconciliation_runtime.py",
       "repo_path": "ilc_core/epoch/genesis_tranche_reconciliation_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1575c_fix3f_genesis_retained_rehearsal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3f \u2014 Genesis 5% retained rehearsal tool",
+      "manual_read_summary": "Tool generating retained production-candidate rehearsal evidence for the Genesis 5% value path, verifying Fix3b-Fix3e tokens, guard preservation, CDL-048 treatment, destination binding, and deterministic settlement roots.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GENERATES",
+          "review_status": "candidate",
+          "target": "out/genesis_5pct_retained_rehearsal_1575c_fix3f/rehearsal_evidence.json"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_retained_rehearsal_complete_phase_1575c_fix3f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GENERATES",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/genesis_5pct_retained_rehearsal_fix3f.py",
+      "repo_path": "tools/genesis_5pct_retained_rehearsal_fix3f.py"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1575c_fix3f_genesis_retained_rehearsal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3f \u2014 Genesis 5% retained rehearsal tests",
+      "manual_read_summary": "Focused tests pinning the retained rehearsal token, verifying Fix3b-Fix3e token imports, confirming all guards remain default-off, validating destination binding, and checking deterministic rehearsal evidence construction.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_retained_rehearsal_complete_phase_1575c_fix3f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575c_fix3f_genesis_retained_rehearsal.py",
+      "repo_path": "tests/test_phase_1575c_fix3f_genesis_retained_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1575c_fix3f_genesis_retained_rehearsal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3f \u2014 Genesis 5% retained rehearsal walkthrough",
+      "manual_read_summary": "Walkthrough recording exact GO phrase receipt, retained evidence path, evidence SHA-256, deterministic settlement roots, guard status, invariant closure, and readiness for Fix3 Core Slice 0 signing.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_retained_rehearsal_complete_phase_1575c_fix3f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3f_genesis_retained_rehearsal_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575c_fix3f_genesis_retained_rehearsal_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1575c_fix3f_genesis_retained_rehearsal",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3f \u2014 Retained Genesis 5% rehearsal evidence",
+      "manual_read_summary": "Retained production-candidate evidence JSON and digest for the Genesis 5% value path; evidence SHA-256 72d156d0106dde63de268b2529850e741285c0443bd60684cad6c0a28542fb6f.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_5pct_retained_rehearsal_complete_phase_1575c_fix3f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/genesis_5pct_retained_rehearsal_1575c_fix3f/rehearsal_evidence.json",
+      "repo_path": "out/genesis_5pct_retained_rehearsal_1575c_fix3f/rehearsal_evidence.json"
     }
   ],
   "phase": "1545p-Fix38",
