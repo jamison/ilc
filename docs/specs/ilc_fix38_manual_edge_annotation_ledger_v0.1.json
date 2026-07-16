@@ -60218,6 +60218,36 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3d_genesis_governor_wiring_walkthrough.md",
       "repo_path": "docs/phases/phase_1575c_fix3d_genesis_governor_wiring_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_164_phase_1575c_fix3d_fix1_boundary_precision",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d-Fix1 \u2014 Genesis governor boundary precision hardening",
+      "manual_read_summary": "Post-audit hardening correcting cap-blocked comparison to exact Decimal ratio semantics and strict Decimal accrual-vs-issuance validation, with regression tests for one quantum below cap and settlement-root governor-report exclusion.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_governor_decimal_cap_boundary_hardened_phase_1575c_fix3d_fix1"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:settlement_root_governor_report_exclusion_tested_phase_1575c_fix3d_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/analysis/genesis_accrual_governor.py",
+      "repo_path": "ilc_core/analysis/genesis_accrual_governor.py"
     }
   ],
   "phase": "1545p-Fix38",

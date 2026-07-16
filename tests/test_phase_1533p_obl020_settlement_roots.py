@@ -90,6 +90,22 @@ def test_phase_1533p_anti_circularity_excludes_settlement_root_hex() -> None:
     assert "settlement_root_hex" not in root.canonical_record_json
 
 
+def test_phase_1575c_fix3d_settlement_root_excludes_governor_report() -> None:
+    result = compute_epoch_emission_production_path(
+        7,
+        Decimal("1000.000000001"),
+        Decimal("123.456789123"),
+        genesis_cumulative_accrual_ilc=Decimal("10"),
+    )
+    assert result.governor_report is not None
+
+    root = compute_settlement_root(result)
+    payload = json.loads(root.canonical_record_json)
+
+    assert "governor_report" not in payload
+    assert "governor_report" not in root.canonical_record_json
+
+
 def test_phase_1537p_fix1_root_commits_to_canonical_event_payloads() -> None:
     result = _result()
     root = compute_settlement_root(result)
