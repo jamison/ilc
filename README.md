@@ -12,7 +12,8 @@
   <a href="sidecars.md">Sidecars</a> ·
   <a href="docs/GETTING_STARTED.md">Operator Setup</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
-  <a href="SECURITY.md">Security</a>
+  <a href="SECURITY.md">Security</a> ·
+  <a href="DONATE.md">Donate</a>
 </p>
 
 *An evidence-first epistemic economy for human-AI civilization.*
