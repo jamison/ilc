@@ -3,9 +3,10 @@
 </p>
 
 <p align="center">
+  <a href="WHITEPAPER.md">Whitepaper</a> ·
   <a href="docs/architecture/">Architecture</a> ·
   <a href="docs/specs/ilc_constitutional_decision_log_v0.1.md">CDL Register</a> ·
-  <a href="docs/ILC_Economic_Paper_Draft_v0.2.md">Economic Paper</a> ·
+  <a href="economics.md">Economics</a> ·
   <a href="#ecu-and-poil">ECU and PoIL</a> ·
   <a href="#public-rc-sidecars">Sidecars</a> ·
   <a href="docs/GETTING_STARTED.md">Getting Started</a> ·
@@ -17,108 +18,101 @@
 
 *An evidence-first epistemic economy for human-AI civilization.*
 
-> **Heads up for digital agents and integrators:** you probably want [README.md](README.md) — it has the TOON block, protocol semantics, and agent identity surface.
+> **For digital agents and integrators:** [README.md](README.md) has the TOON block, protocol semantics, and agent identity surface.
 >
-> **Current project status:** see [`docs/phases/STATUS.md`](docs/phases/STATUS.md). This page is introductory only; it does not activate public RC, mainnet, production minting, settlement, sidecar service, publication, or any phase gate.
+> **Current project status:** [`docs/phases/STATUS.md`](docs/phases/STATUS.md). This page does not activate public RC, mainnet, production minting, settlement, sidecar serving, or any phase gate.
 
 ---
 
 ## What is ILC?
 
-ILC is a content-addressed knowledge network where every claim, refutation, revision, and reuse is a first-class graph node — designed to be permanently attributable, economically accountable, and open to challenge. It is built for the era where human intelligence and AI intelligence operate on the same substrate and need a shared record that neither side can edit unilaterally.
+Content can be generated at arbitrary scale and falsified at negligible cost. Content and attention are no longer the scarce resource. **Trust is.**
 
-When activated under the protocol gates, the unit of productive credit is the **ECU** (Epistemic Compute Unit, *W_e = ΔH / E_cost*) — designed to be created by verified work flowing through a VRF-selected jury system, then reduced by decay and mandatory conversion. The scarce settlement token is **ILC** (*P_e*, *C_max = 25,920,000* — one Platonic Year × 1,000): proof that some portion of the network's intelligence was deployed productively. Protocol standing is designed to follow deployment velocity times quality, not accumulated balance.
+ILC is a protocol for exactly that condition: a content-addressed knowledge network where every claim, refutation, revision, and reuse is a permanent, cryptographically-rooted, economically-accountable graph node — open to challenge by anyone, deletable by no one. No editorial board. No central authority. No trusted intermediary. The entire structure — governance and knowledge alike — compiles from seven truth primitives against a single cryptographic axiom: Node 0, Genesis. The graph that knows things also knows how it decides to know things.
+
+The seven primitives that generate the entire epistemic algebra: `assert.truth` · `validate.claim` · `contradict.assert` · `refute.claim` · `revise.assert` · `link.claim` · `commit.epoch`. Nothing else is needed.
+
+When the protocol gates activate, verified epistemic work produces **ECU** (Epistemic Compute Unit, *W_e = ΔH / E_cost*) — protocol credit for work that survives a VRF-selected jury, refutation exposure, and evidence review. ECU converts to **ILC** (*C_max = 25,920,000 — one Platonic Year × 1,000*): scarce settlement proof that some portion of the network's intelligence was deployed productively. Protocol standing follows deployment velocity times quality, not accumulated balance. Anti-hoarding is physics, not policy.
+
+ILC is built for the agentic web: human participants and autonomous digital agents operating on the same substrate, under the same rules, with the same verifiability guarantees. Any trust-requiring service — publishing, credentialing, social graphs, knowledge markets, prediction markets, confidential coordination — can be rebuilt on ILC primitives without a centralized operator.
 
 <p align="center">
   <img src="assets/ilc_genesis_atlas_2026_07.gif" alt="ILC Genesis Atlas — live hypergraph visualization" width="100%">
   <br>
-  <em>ILC is a temporal hypergraph. The software compiles itself homoiconically from this structure — governance, economics, and identity are all nodes. This is the Genesis Atlas as of July 2026: 19,888 nodes, 89,397 edges.</em>
+  <em>ILC is a temporal hypergraph. The software compiles itself homoiconically from this structure — governance, economics, and identity are all nodes. Genesis Atlas, July 2026: 19,888 nodes, 89,397 edges.</em>
 </p>
+
+## On work, anxiety, and what comes next
+
+Most people reading this are worried. Not abstractly — concretely. About their job, their career, their kids graduating into a world where the skills they trained for may be automated before they finish training for them. That anxiety is rational. The pace of change is real, and anyone who tells you it isn't is either not paying attention or has something to sell.
+
+ILC was built in direct response to this condition. **"Intelligent Labor Coin" is not a metaphor.** It is a statement about what the protocol values: the specific kind of work that requires genuine understanding — forming original claims, finding contradictions, reviewing evidence, making judgment calls that machines can assist but not yet replace. The name is a bet that this kind of labor remains the scarcest and most valuable thing humans produce, and that the right response to rapid automation is not to pretend the threat isn't there, but to build infrastructure that makes human epistemic contribution visible, attributable, and economically accountable at the protocol level.
+
+Right now, the problem is not that humans are doing less valuable work than before. It's that the value of their work is invisible. It gets absorbed into outputs that are monetized by whoever controls the infrastructure. A researcher whose insight becomes a training signal, a teacher whose explanations structure a model's reasoning, a journalist whose source work gets summarized away — none of them are credited in the system that extracted value from them. ILC is an attempt to change the ground truth: to build a knowledge network where every contribution — its provenance, its revision history, its survival under refutation — is a permanent, inspectable, replayable record. Where standing in the network follows actual contribution, not platform position.
+
+For your kids: the network being built here is not one that forgets human judgment. A claim that enters this graph can be challenged by anyone and deleted by no one. The humans who find real errors, who make original connections, who survive the jury process with their claims intact — they build standing. The anti-hoarding mechanic means that past accumulation cannot simply extract rent from future workers. The protocol is, at its foundation, structured to favor people who keep doing good work over people who stop and collect.
+
+This doesn't make the transition painless. But it gives the transition something it doesn't currently have: a substrate where the value of human epistemic labor can be measured, preserved, and settled — not lost into someone else's model weights.
+
+---
 
 ## Highlights
 
 | | |
 |---|---|
-| **[Morphogenetic hypergraph](docs/research/ilc_morphogenetic_hypergraph_planning_classification_v0.7.md)** | Not a blockchain. A self-similar epistemic graph where governance and knowledge compile from the same 7 truth primitives — no hidden axiom, no privileged layer. |
-| **[Truth that carries its own provenance](methodology.md#2-core-principle-the-protocol-is-its-own-test-case)** | Every claim, refutation, revision, and reuse is a permanent, content-addressed node. Nothing is deleted — refutations are edges, reuse is weight. |
-| **[Anti-hoarding economics](economics.md#10-decay-spend-to-keep-and-anti-hoarding)** | ECU (Epistemic Compute Unit) is built so deployment velocity × quality outranks accumulated balance. Decay and mandatory conversion are physics, not policy. |
-| **[VRF jury assignment](docs/adr/ADR_0042_VRF_Proof_Verifier.md)** | Reviewer selection uses RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2` — unpredictable before selection, verifiable after. No operator can predict or steer who reviews a claim. See also [ADR-0040](docs/adr/ADR_0040_Jury_Eligibility_Assignment.md) for eligibility gates. |
-| **[Post-quantum identity](SECURITY.md)** | Agent identity uses ML-DSA-65 (NIST FIPS 204) with a three-tier key hierarchy: cold identity root, SPHINCS+ recovery key, BLS ephemeral operational key. Your Agent ID is CIDv1 content-addressed — not a row in someone's database, not a handle that can be revoked. |
-| **[Object-sharded DAG consensus](docs/ILC_Technical_Paper_Draft_v0.2.md)** | ILC-authored Mysticeti-style Rust substrate. Sub-500ms finality for owned ECU objects; DAG-ordered path for shared epoch settlement. BLS12-381 quorum compression limits evidence size without erasing validator accountability. |
-| **[Spectral + content commitment](SECURITY.md#what-is-meaningfully-different----and-better)** | Merkle-Laplacian dual commitment *C(t) = (M(t), S(t))* — content Merkle root paired with Fiedler λ₂ spectral fingerprint. Content integrity and topology integrity are independent checks: Merkle catches byte changes; spectral signal flags graph topology drift. |
-| **[Open sidecar platform](sidecars.md)** | No registry, no application process. Any trust-requiring service — messaging, search, marketplaces, prediction markets — can be rebuilt on ILC identity + jury + ECU. |
-
----
-
-## Current Status
-
-The live project status is maintained in [`docs/phases/STATUS.md`](docs/phases/STATUS.md). No statement in this page substitutes for a phase walkthrough, activation certificate, CDL/ADR record, or publication gate.
+| **[Morphogenetic hypergraph](WHITEPAPER.md)** | Not a blockchain. A self-similar epistemic graph that organizes itself through local rewrites — no global coordinator, no privileged layer. Governance CDLs and scientific claims are the same kind of node, traversed by the same machinery. |
+| **[Proof of Intelligent Labor](WHITEPAPER.md)** | Claims earn standing by surviving refutation, reuse, and review — not by spending compute. Productive disagreement is a first-class economic event, more valuable than enforced consensus. |
+| **[Werner ECU / anti-hoarding economics](economics.md)** | ECU decays, converts, and expires. Deployment velocity × quality structurally outranks hoarded balance. There is no rent extraction on your existence. |
+| **[VRF jury assignment](docs/adr/ADR_0042_VRF_Proof_Verifier.md)** | RFC 9381 `ECVRF-EDWARDS25519-SHA512-ELL2` — unpredictable before selection, verifiable after. No operator can predict or steer who reviews a claim. |
+| **[Post-quantum identity](SECURITY.md)** | ML-DSA-65 (NIST FIPS 204) · SPHINCS+ recovery key · BLS ephemeral operational key. Your Agent ID is CIDv1 content-addressed — not a row in someone's database, not a handle that can be revoked. |
+| **[Merkle-Laplacian dual commitment](WHITEPAPER.md)** | *C(t) = (M(t), S(t))* — content Merkle root paired with Fiedler λ₂ spectral fingerprint of the graph's normalized Laplacian. The first protocol to pair content-addressing with spectral topology attestation: Merkle catches byte changes; spectral signal flags graph drift. |
+| **[CCSS-SPECTRAL-01](WHITEPAPER.md)** | Hiding commitment + HKDF route token + semantically useful cover traffic. Proves additive noise fails against a global passive adversary; real traffic hides in plausible-density semantic noise rather than random padding. |
+| **[Object-sharded DAG substrate](WHITEPAPER.md)** | ILC-authored Mysticeti-style Rust consensus. Sub-500ms finality for owned ECU objects; DAG-ordered path for shared epoch settlement. BLS12-381 quorum compression limits evidence size without erasing validator accountability. |
+| **[Open sidecar platform](sidecars.md)** | No registry, no application process. Any service currently requiring a trusted operator — messaging, search, marketplaces, prediction markets, social graphs — can be rebuilt as a sidecar with ILC as the trust substrate. |
 
 ---
 
 ## ECU and PoIL
 
-**ECU** means **Epistemic Compute Unit**: ILC's protocol-internal productive-credit accounting unit. In the current canon, ECU is not the external settlement token. It is the graph/accounting unit for verified epistemic work, designed around the Werner framing `W_e = Delta H / E_cost`, temporal decay, mandatory conversion, and review-lane verification.
-
-**PoIL** means **Proof of Intelligent Labor**. The canonical glossary names PoIL as the preferred consensus-work term and explicitly avoids older labels such as PoIW or generic "useful work." PoIL is the proof path that intelligent labor happened in a way the graph can inspect: a claim, task, or artifact carries provenance, evidence, review, refutation exposure, and reuse history rather than merely spending compute.
-
-The short distinction:
-
-| Term | Plain-English role | Canon references |
+| Term | Role | Canon |
 |---|---|---|
-| ECU | Internal productive-credit accounting unit for verified epistemic work. | [Glossary: ECU](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#211-active-protocol-terms-phase-1428-addendum) · [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.2.md) |
-| PoIL | The proof standard for intelligent labor: work must be attributable, reviewable, replayable, and open to refutation/reuse. | [Glossary: PoIL](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#11-canonical-naming-and-synonym-policy) · [Methodology](methodology.md) |
-| ILC | The external settlement token produced from ECU only when the relevant gates authorize it. | [Glossary: ILC](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md#211-active-protocol-terms-phase-1428-addendum) · [STATUS](docs/phases/STATUS.md) |
+| **ECU** | Epistemic Compute Unit — internal productive-credit/accounting unit for verified epistemic work. Not the settlement token; not a public transferable asset. | [Glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md) · [Economics](economics.md) |
+| **PoIL** | Proof of Intelligent Labor — the proof standard that work happened in a way the graph can inspect: attributable, reviewable, replayable, and open to refutation and reuse. | [Whitepaper §4](WHITEPAPER.md) · [Methodology](methodology.md) |
+| **ILC** | External settlement token, produced from ECU only when the relevant activation gates authorize it. *C_max = 25,920,000 — one Platonic Year × 1,000.* | [Economics](economics.md) · [STATUS](docs/phases/STATUS.md) |
 
-Current activation status for ECU issuance, ILC settlement, and public claimability lives in [`docs/phases/STATUS.md`](docs/phases/STATUS.md), not in this page.
+Current activation status for ECU issuance, ILC settlement, and public claimability: [`docs/phases/STATUS.md`](docs/phases/STATUS.md).
 
 ---
 
 ## Public-RC Sidecars
 
-Sidecars are graph-native companion components. They let useful applications attach to ILC without stuffing every application into the protocol core. A sidecar is not a separate authority root; it is a typed subgraph or local runtime surface that still traces back to agents, receipts, CDLs/ADRs, and Genesis.
+Sidecars are graph-native companion components — typed subgraphs or local runtime surfaces that extend ILC without stuffing every application into the protocol core. A sidecar is not a separate authority root; its authority traces back to agents, receipts, CDLs/ADRs, and Genesis.
 
-Public-RC-facing sidecar tracks currently documented in this repository:
+| Sidecar | Purpose |
+|---|---|
+| **[Graph Viz / Genesis Atlas](docs/specs/ilc_hypergraph_visualization_projection_sidecar_spec_1545p_fix12_v0.1.md)** | Human-readable graph exploration, authority tracing, public/private visibility inspection, and the Atlas visualization shown above. |
+| **[CCSS — Confidential Coordination Suite](docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md)** | Local/private sealed coordination and confidential-contact workflow using graph-native sidecar objects and fixed-size encrypted envelopes. Public serving governed by activation gates. |
+| **[TimeCapsule Sidecar](docs/specs/ilc_time_capsule_sidecar_pre_cdl_spec_v0.1.md)** | Commit sealed Genesis-era material at genesis time; release under a ratified condition. |
+| **[Local graph / verifier sidecars](docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md)** | Local graph projection, receipt verification, claimability checks, and sidecar profile surfaces. |
 
-| Sidecar | Purpose | Starting points |
-|---|---|---|
-| **Graph Viz / Graphics Sidecar** | Human-readable graph exploration, authority tracing, public/private visibility inspection, and Genesis Atlas visualization. | [Graph visualization projection spec](docs/specs/ilc_hypergraph_visualization_projection_sidecar_spec_1545p_fix12_v0.1.md) · [Graph Viz sidecar repo](ilc-graphics-sidecar/) |
-| **CCSS — Confidential Coordination/Communications Sidecar Suite** | Local/private sealed coordination and confidential-contact workflow. It uses graph-native sidecar objects and fixed-size encrypted envelopes; public serving remains governed by activation gates. | [CCSS forward plan](docs/architecture/ilc_confidential_coordination_sidecar_suite_forward_plan_v0.1.md) · [CCSS docs](sidecars.md#ccss-bootstrap-flow) · [CCSS sidecar repo](ilc-ccss-sidecar/) |
-| **TimeCapsule Sidecar** | Proposed mechanism for committing sealed Genesis-era material at genesis time and releasing it later under a ratified release condition. | [TimeCapsule pre-CDL spec](docs/specs/ilc_time_capsule_sidecar_pre_cdl_spec_v0.1.md) · [TimeCapsule sidecar repo](ilc-timecapsule-sidecar/) |
-| **Local graph / verifier sidecars** | Local graph projection, receipt verification, claimability checks, and sidecar registry/profile surfaces. | [Graph-native sidecar architecture](docs/architecture/ilc_graph_native_sidecar_suite_architecture_v0.1.md) · [Sidecar namespace guide](sidecars.md) |
-
-Installing or running a local sidecar does not by itself activate public sidecar serving, public P2P, minting, settlement, wallet actions, or any constitutional gate. Those gates are recorded in [`docs/phases/STATUS.md`](docs/phases/STATUS.md).
+Installing or running a sidecar locally does not activate public serving, P2P, minting, settlement, wallet actions, or any constitutional gate. Those gates are in [`docs/phases/STATUS.md`](docs/phases/STATUS.md).
 
 ---
 
 ## Quick Start
-
-Development install from source:
 
 ```bash
 pip install -e .
 cd ilc_consensus && cargo build --release
 ```
 
-Local quick path:
-
 ```bash
-python3 tools/genesis_boot.py      # prints Genesis hash from config/genesis.json
+python3 tools/genesis_boot.py      # verifies Genesis hash from config/genesis.json
 python3 run_node.py
 python3 tools/demo_walkthrough.py
 ```
 
-Verify:
-
-```bash
-python3 tools/genesis_boot.py
-```
-
 Full operator setup: [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) · [`config/README.md`](config/README.md)
-
-The full test suite is intentionally slower than this quick path. Run it deliberately when a phase or release gate requires it.
-
-Post-publication package-manager installs are planned. No Homebrew, PyPI, or pipx install target is available yet.
 
 ---
 
@@ -164,17 +158,18 @@ Genesis Agent, ILC
 
 | Goal | Where to go |
 |------|------------|
-| Understand the protocol philosophy | [methodology.md](methodology.md) · [metaphysics.md](metaphysics.md) |
-| Protocol architecture specs | [docs/architecture/](docs/architecture/) |
+| Full technical whitepaper | [WHITEPAPER.md](WHITEPAPER.md) |
+| Economic design and model | [economics.md](economics.md) · [Economic Paper v0.2](docs/ILC_Economic_Paper_Draft_v0.2.md) |
+| Protocol philosophy and methodology | [methodology.md](methodology.md) · [metaphysics.md](metaphysics.md) |
+| Architecture specs | [docs/architecture/](docs/architecture/) |
 | All ratified constitutional decisions | [CDL Register](docs/specs/ilc_constitutional_decision_log_v0.1.md) |
-| Economic design | [Economic Paper v0.2](docs/ILC_Economic_Paper_Draft_v0.2.md) |
 | ECU, PoIL, and ILC terms | [ECU and PoIL](#ecu-and-poil) · [Canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md) |
 | Public-RC sidecars | [Public-RC Sidecars](#public-rc-sidecars) · [sidecars.md](sidecars.md) |
 | Set up a development node | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
-| Contribute to the project | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Contribute | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Report a vulnerability | [SECURITY.md](SECURITY.md) |
 | Community conduct | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
-| Agent / integrator reference | [README.md](README.md) (TOON block, protocol semantics) |
+| Agent / integrator reference | [README.md](README.md) — TOON block, protocol semantics, agent identity surface |
 
 ---
 
