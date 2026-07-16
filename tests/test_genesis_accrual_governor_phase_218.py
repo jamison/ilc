@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from decimal import Decimal
 
 import pytest
 
@@ -48,8 +49,8 @@ def test_phase_218_taper_is_monotonic_non_increasing_by_ratio() -> None:
 def test_phase_218_zero_issuance_edge_behavior() -> None:
     ratio = compute_genesis_share_ratio(
         {
-            "genesis_cumulative_accrual": 0.0,
-            "total_cumulative_issuance": 0.0,
+            "genesis_cumulative_accrual": Decimal("0"),
+            "total_cumulative_issuance": Decimal("0"),
         }
     )
     assert ratio == pytest.approx(0.0)
@@ -57,8 +58,8 @@ def test_phase_218_zero_issuance_edge_behavior() -> None:
     with pytest.raises(GenesisAccrualGovernorError) as exc_info:
         compute_genesis_share_ratio(
             {
-                "genesis_cumulative_accrual": 1.0,
-                "total_cumulative_issuance": 0.0,
+                "genesis_cumulative_accrual": Decimal("1"),
+                "total_cumulative_issuance": Decimal("0"),
             }
         )
     assert str(exc_info.value) == "genesis_accrual_governor_inconsistent_zero_issuance"
@@ -82,8 +83,8 @@ def test_phase_218_invalid_policy_and_input_values_fail_closed() -> None:
     with pytest.raises(GenesisAccrualGovernorError) as exc_negative:
         evaluate_genesis_accrual_governor(
             {
-                "genesis_cumulative_accrual": -1.0,
-                "total_cumulative_issuance": 10.0,
+                "genesis_cumulative_accrual": Decimal("-1"),
+                "total_cumulative_issuance": Decimal("10"),
             }
         )
     assert str(exc_negative.value) == "genesis_accrual_governor_invalid_genesis_cumulative_accrual"
@@ -91,11 +92,23 @@ def test_phase_218_invalid_policy_and_input_values_fail_closed() -> None:
 
 def test_phase_218_trajectory_simulation_is_deterministic() -> None:
     rows = [
-        {"genesis_cumulative_accrual": 0.0, "total_cumulative_issuance": 0.0},
-        {"genesis_cumulative_accrual": 1.0, "total_cumulative_issuance": 100.0},
-        {"genesis_cumulative_accrual": 2.0, "total_cumulative_issuance": 120.0},
-        {"genesis_cumulative_accrual": 4.0, "total_cumulative_issuance": 180.0},
-        {"genesis_cumulative_accrual": 8.0, "total_cumulative_issuance": 220.0},
+        {"genesis_cumulative_accrual": Decimal("0"), "total_cumulative_issuance": Decimal("0")},
+        {
+            "genesis_cumulative_accrual": Decimal("1"),
+            "total_cumulative_issuance": Decimal("100"),
+        },
+        {
+            "genesis_cumulative_accrual": Decimal("2"),
+            "total_cumulative_issuance": Decimal("120"),
+        },
+        {
+            "genesis_cumulative_accrual": Decimal("4"),
+            "total_cumulative_issuance": Decimal("180"),
+        },
+        {
+            "genesis_cumulative_accrual": Decimal("8"),
+            "total_cumulative_issuance": Decimal("220"),
+        },
     ]
     first = simulate_genesis_accrual_governor_trajectory(rows)
     second = simulate_genesis_accrual_governor_trajectory(rows)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any
 
 from ilc_core.analysis.genesis_accrual_governor import (
@@ -386,11 +387,20 @@ def test_phase_224_full_constitutional_pipeline_integration_smoke() -> None:
     assert reward_report["governor"]["total_distributed"] <= reward_report["governor"]["budget"] + 1e-9
 
     genesis_signal = {
-        "genesis_cumulative_accrual": sum(
-            row["reward_amount"] for row in reward_report["allocations"] if row["is_genesis"]
+        "genesis_cumulative_accrual": Decimal(
+            str(
+                sum(
+                    row["reward_amount"]
+                    for row in reward_report["allocations"]
+                    if row["is_genesis"]
+                )
+            )
         )
-        + 25.0,
-        "total_cumulative_issuance": reward_report["governor"]["total_distributed"] + 3000.0,
+        + Decimal("25"),
+        "total_cumulative_issuance": Decimal(
+            str(reward_report["governor"]["total_distributed"])
+        )
+        + Decimal("3000"),
     }
     governor_report = evaluate_genesis_accrual_governor(genesis_signal)
 
@@ -400,8 +410,8 @@ def test_phase_224_full_constitutional_pipeline_integration_smoke() -> None:
 
     cap_report = evaluate_genesis_accrual_governor(
         {
-            "genesis_cumulative_accrual": 5.0,
-            "total_cumulative_issuance": 100.0,
+            "genesis_cumulative_accrual": Decimal("1296000"),
+            "total_cumulative_issuance": Decimal("5000000"),
         }
     )
     assert cap_report["cap_blocked"] is True
