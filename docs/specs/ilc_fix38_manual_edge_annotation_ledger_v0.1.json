@@ -60038,6 +60038,84 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3b_genesis_5pct_surface_reconciliation_certificate_walkthrough.md",
       "repo_path": "docs/phases/phase_1575c_fix3b_genesis_5pct_surface_reconciliation_certificate_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_162_phase_1575c_fix3c_runtime",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3c \u2014 Genesis accrual governor Decimal migration runtime",
+      "manual_read_summary": "Runtime migration replacing local float C_MAX with canonical Decimal C_MAX_ILC import, rejecting float monetary inputs, and pinning the Fix3c Decimal migration token for the Genesis 5% cap governor.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_accrual_governor_decimal_migration_committed_phase_1575c_fix3c"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_5pct_surface_reconciliation_certificate_1575c_fix3b_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/analysis/genesis_accrual_governor.py",
+      "repo_path": "ilc_core/analysis/genesis_accrual_governor.py"
+    },
+    {
+      "annotation_batch": "manual_batch_162_phase_1575c_fix3c_tests",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3c \u2014 Genesis accrual governor Decimal migration tests",
+      "manual_read_summary": "Focused test file proving Decimal C_MAX, token/version pinning, float monetary rejection, non-finite Decimal rejection, and int/Decimal monetary acceptance.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:genesis_accrual_governor_decimal_migration_committed_phase_1575c_fix3c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575c_fix3c_genesis_governor_decimal_migration.py",
+      "repo_path": "tests/test_phase_1575c_fix3c_genesis_governor_decimal_migration.py"
+    },
+    {
+      "annotation_batch": "manual_batch_162_phase_1575c_fix3c_walkthrough",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3c \u2014 Genesis accrual governor Decimal migration walkthrough",
+      "manual_read_summary": "Walkthrough recording the Decimal migration, token pinning, focused and nearby test pass, and carry-forward to Fix3d production-path governor wiring.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_accrual_governor_decimal_migration_committed_phase_1575c_fix3c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3c_genesis_governor_decimal_migration_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575c_fix3c_genesis_governor_decimal_migration_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

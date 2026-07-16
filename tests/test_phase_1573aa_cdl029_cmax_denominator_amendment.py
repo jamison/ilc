@@ -41,13 +41,13 @@ def test_cdl029_row_contains_amendment_2_fields() -> None:
     assert "Amendment 1 post-theta-hard residual routing remains unchanged" in cdl029
 
 
-def test_current_governor_runtime_still_uses_total_cumulative_issuance_until_1573ab() -> None:
+def test_current_governor_runtime_uses_cmax_denominator_after_1573ab() -> None:
     governor = GOVERNOR.read_text(encoding="utf-8")
 
     assert 'required_keys = {"genesis_cumulative_accrual", "total_cumulative_issuance"}' in governor
     assert 'total_issuance = resolved_signal["total_cumulative_issuance"]' in governor
-    assert 'return resolved_signal["genesis_cumulative_accrual"] / total_issuance' in governor
-    assert "C_MAX_ILC" not in governor
+    assert 'return float(resolved_signal["genesis_cumulative_accrual"] / C_MAX_ILC)' in governor
+    assert "from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC" in governor
 
 
 def test_cmax_canonical_value_confirmed_in_cdl026_row() -> None:
