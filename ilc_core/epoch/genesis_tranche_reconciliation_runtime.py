@@ -18,6 +18,11 @@ from ilc_core.epoch.allocation_distributor_runtime import (
 )
 from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.epoch.fee_burn_split_runtime import FEE_BURN_RATIO, GENESIS_BURN_POOL_LABEL
+from ilc_core.epoch.genesis_settlement_destination import (
+    CDL048_TREATMENT_APPLIED_TOKEN,
+    CDL_048_GENESIS_TRANCHE_TREATMENT,
+    GENESIS_DESTINATION_BINDING_TOKEN,
+)
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, parse_non_negative_decimal
 
 
@@ -189,6 +194,8 @@ def _cdl048_tranche_treatment(cdl048_quote: dict[str, Any]) -> tuple[str, bool]:
         return "explicitly_deferred", False
     if treatment == "applied":
         return "applied", True
+    if treatment == CDL_048_GENESIS_TRANCHE_TREATMENT:
+        return CDL_048_GENESIS_TRANCHE_TREATMENT, True
     raise ValueError("cdl048_genesis_tranche_treatment_invalid_phase_1568_fix2q")
 
 
@@ -267,6 +274,9 @@ def build_genesis_tranche_reconciliation_quote(
     ]
     if treatment == "absent":
         tokens.append(CDL048_TRANCHE_TREATMENT_ABSENT_TOKEN)
+    if treatment == CDL_048_GENESIS_TRANCHE_TREATMENT:
+        tokens.append(CDL048_TREATMENT_APPLIED_TOKEN)
+        tokens.append(GENESIS_DESTINATION_BINDING_TOKEN)
 
     fee_burn_ratio = _record_amount(
         fee_record,
@@ -354,17 +364,16 @@ def verify_genesis_tranche_reconciliation_record(record: dict[str, Any]) -> dict
         token="genesis_tranche_reconciliation_must_be_object_phase_1568_fix2q",
     )
     _assert_no_forbidden_authorization(quote, surface="genesis_tranche_reconciliation")
+    if quote.get("quote_read_model_only") is not True:
+        raise ValueError("quote_read_model_only_must_be_true_phase_1568_fix2q")
     for field in (
-        "quote_read_model_only",
         "cdl028_genesis_burn_pool_is_fixed_tranche",
         "cdl029_genesis_overhead_is_full_tranche",
-        "cdl048_applies_fixed_tranche",
     ):
-        if field == "quote_read_model_only":
-            if quote.get(field) is not True:
-                raise ValueError(f"{field}_must_be_true_phase_1568_fix2q")
-        elif quote.get(field) is not False:
+        if quote.get(field) is not False:
             raise ValueError(f"{field}_must_be_false_phase_1568_fix2q")
+    if not isinstance(quote.get("cdl048_applies_fixed_tranche"), bool):
+        raise ValueError("cdl048_applies_fixed_tranche_must_be_bool_phase_1568_fix2q")
     for field in (
         "wallet_write_authorized",
         "treasury_write_authorized",
@@ -404,6 +413,15 @@ def verify_genesis_tranche_reconciliation_record(record: dict[str, Any]) -> dict
     }
     if not required_tokens.issubset(set(tokens)):
         raise ValueError("genesis_tranche_reconciliation_tokens_missing_phase_1568_fix2q")
+    token_set = set(tokens)
+    if quote.get("cdl048_genesis_tranche_treatment") == CDL_048_GENESIS_TRANCHE_TREATMENT:
+        if quote.get("cdl048_applies_fixed_tranche") is not True:
+            raise ValueError("cdl048_applied_treatment_must_apply_fixed_tranche")
+        if not {
+            CDL048_TREATMENT_APPLIED_TOKEN,
+            GENESIS_DESTINATION_BINDING_TOKEN,
+        }.issubset(token_set):
+            raise ValueError("genesis_destination_binding_tokens_missing_phase_1575c_fix3e")
 
     return {
         "cdl028_genesis_burn_pool_is_fixed_tranche": False,
@@ -421,11 +439,14 @@ def verify_genesis_tranche_reconciliation_record(record: dict[str, Any]) -> dict
 
 __all__ = [
     "CDL029_OVERHEAD_NOT_FULL_TRANCHE_TOKEN",
+    "CDL048_TREATMENT_APPLIED_TOKEN",
     "CDL048_TRANCHE_TREATMENT_ABSENT_TOKEN",
+    "CDL_048_GENESIS_TRANCHE_TREATMENT",
     "FIX2Q_SURFACES_RECONCILED_TOKEN",
     "FIXED_GENESIS_TRANCHE_FRACTION",
     "FIXED_GENESIS_TRANCHE_ILC",
     "GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN",
+    "GENESIS_DESTINATION_BINDING_TOKEN",
     "GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN",
     "GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN",
     "GENESIS_TRANCHE_RECONCILIATION_RUNTIME_VERSION",
