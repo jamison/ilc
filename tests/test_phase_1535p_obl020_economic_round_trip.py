@@ -26,7 +26,6 @@ def _round_trip():
         issuance_epoch=CANONICAL_EPOCH,
         cumulative_issued_before_epoch_ilc=CANONICAL_CUMULATIVE,
         total_epoch_fees_ilc=CANONICAL_FEES,
-        genesis_overhead_cap_blocked=False,
     )
     root = compute_settlement_root(result)
     events = emit_canonical_economic_event_records(result, root)

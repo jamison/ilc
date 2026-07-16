@@ -60116,6 +60116,108 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3c_genesis_governor_decimal_migration_walkthrough.md",
       "repo_path": "docs/phases/phase_1575c_fix3c_genesis_governor_decimal_migration_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1575c_fix3d_production_path",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d \u2014 Genesis governor production-path wiring",
+      "manual_read_summary": "Runtime change wiring the Decimal Genesis accrual governor into compute_epoch_emission_production_path through genesis_cumulative_accrual_ilc, deriving cap_blocked internally, and adding canonical-safe governor_report metadata.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:fix3b_inv2_decimal_safe_fail_closed_cap_satisfied_phase_1575c_fix3d"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_5pct_surface_reconciliation_certificate_1575c_fix3b_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/epoch_emission_production_path.py",
+      "repo_path": "ilc_core/epoch/epoch_emission_production_path.py"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1575c_fix3d_allocation_token",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d \u2014 CDL-029 post-theta governor wired token",
+      "manual_read_summary": "Allocation distributor token update recording that the historical pending_decimal_governor deferral is now resolved by production-path governor wiring while preserving split-quote routing boundaries.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CONSTRAINS",
+          "review_status": "candidate",
+          "target": "phase:genesis_governor_wiring_committed_phase_1575c_fix3d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/epoch/allocation_distributor_runtime.py",
+      "repo_path": "ilc_core/epoch/allocation_distributor_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1575c_fix3d_tests",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d \u2014 Genesis governor wiring tests",
+      "manual_read_summary": "Focused tests proving wiring token pinning, no-governor behavior without signal, governor_report population with signal, cap-block behavior at theta_hard, below-cap behavior, and explicit test-only override handling.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "phase:genesis_governor_wiring_committed_phase_1575c_fix3d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575c_fix3d_genesis_governor_wiring.py",
+      "repo_path": "tests/test_phase_1575c_fix3d_genesis_governor_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1575c_fix3d_walkthrough",
+      "chronology_note": "2026-07-16 Phase 1575c-Fix3d \u2014 Genesis governor wiring walkthrough",
+      "manual_read_summary": "Walkthrough recording governor signal behavior, canonical-safe report metadata, test-only override handling, fail-closed cap derivation, and carry-forward to Fix3e destination binding.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:genesis_governor_wiring_committed_phase_1575c_fix3d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575c_fix3d_genesis_governor_wiring_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575c_fix3d_genesis_governor_wiring_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
