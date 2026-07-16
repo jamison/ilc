@@ -16,6 +16,9 @@ GENESIS_DESTINATION_BINDING_TOKEN = (
 CDL048_TREATMENT_APPLIED_TOKEN = (
     "cdl_048_genesis_tranche_treatment_applied_phase_1575c_fix3e.v0.1"
 )
+GENESIS_5PCT_RETAINED_REHEARSAL_TOKEN = (
+    "genesis_5pct_retained_rehearsal_1575c_fix3f.v0.1"
+)
 GENESIS_SETTLEMENT_DESTINATION_RUNTIME_VERSION = (
     "genesis_settlement_destination_runtime_1575c_fix3e.v0.1"
 )
@@ -100,6 +103,7 @@ def verify_genesis_settlement_destination_record(record: dict[str, Any]) -> None
 __all__ = [
     "CDL048_TREATMENT_APPLIED_TOKEN",
     "CDL_048_GENESIS_TRANCHE_TREATMENT",
+    "GENESIS_5PCT_RETAINED_REHEARSAL_TOKEN",
     "GENESIS_AGENT1_AGENT_ID",
     "GENESIS_AGENT1_PUBKEY_RECORD_CEREMONY",
     "GENESIS_AGENT1_PUBKEY_RECORD_PATH",
