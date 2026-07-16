@@ -1,6 +1,6 @@
 # ILC Genesis Core Slice 0 Authority Package Spec — Phase 1575c-Fix3 v0.1
 
-Status: complete pending operator signatures
+Status: Core Slice 0 signed and verified; Public-RC Baseline Slice 1 pending operator signature
 Date: 2026-07-16
 Phase: 1575c-Fix3
 
@@ -41,7 +41,10 @@ The immutable v0.4 source remains independently committed by the v0.5 envelope t
 | Signing payload path | `out/genesis_v05_core_slice_0_1575c_fix3/genesis_core_slice_0_authority_package.signature_payload.bin` |
 | Signing payload SHA-256 | `e33d5e7f9d57661c08a06e6e6e8012dc701d46b187b5c5e965b4d769f94643b6` |
 | Signing request path | `out/genesis_v05_core_slice_0_1575c_fix3/genesis_core_slice_0_authority_package.signing_request.json` |
-| Signature status | `blocked_pending_operator_signature` |
+| Signature status | `verified` |
+| Signature path | `out/genesis_v05_core_slice_0_1575c_fix3/genesis_core_slice_0_authority_package.signature.hex` |
+| Signature verification record | `out/genesis_v05_core_slice_0_1575c_fix3/genesis_core_slice_0_authority_package.verification.json` |
+| Signature SHA-256 | `1cdabe3cac6203dc89fe7ed5175a02138e7242ebe0d665d36441387c11c4cc08` |
 
 ## 4. Public-RC Baseline Slice 1
 
@@ -53,17 +56,19 @@ The Fix2 package was amended into Public-RC Baseline Slice 1 by adding the Core 
 | Schema version | `genesis_public_rc_baseline_slice_1_1575c_fix3.v0.1` |
 | Domain separator | `ilc-genesis-public-rc-baseline-slice-1` |
 | Package path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.json` |
-| Package SHA-256 | `d923e935b2444e3f81f8041862409c6ec3cbfd1636d1dce82679f70f711f9083` |
+| Package SHA-256 | `e92ae8f6840f536b2273ef86c4945d9c79719ea1172f8b99ae1893e218fceb40` |
 | Signing payload path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signature_payload.bin` |
-| Signing payload SHA-256 | `2a5418a4c117f3e0819cb14e5063170660e6af8cb8b5cc17229179277c636188` |
+| Signing payload SHA-256 | `1feffb7def0d43ac4bac02a24cc2213a4686a86630487d02aa9792f4658cd3e2` |
 | Signing request path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signing_request.json` |
 | Signature status | `blocked_pending_operator_signature` |
+
+Slice 1 received bounded projection-composability hardening before signing. The builder propagated Core Slice 0 metadata to overlapping nodes, mirrored edge `edge_type` into `type`, added projection-membership recipes to nodes and edges, and added projection rationales where absent. This is not a claim that Slice 1 has complete manual truth-axiom recipes.
 
 ## 5. Signature Boundary
 
 Codex did not request, receive, echo, store, or process human-held seed material.
 
-The operator signature step remains pending. The signing requests contain the exact command pattern for the human operator:
+The remaining operator signature step is Public-RC Baseline Slice 1. The signing request contains the exact command pattern for the human operator:
 
 ```text
 ilc_consensus/target/debug/pq_sign --input-file <signature_payload.bin> > <signature.hex>
@@ -83,4 +88,4 @@ This phase does not sign raw LMDB bytes.
 
 This phase does not supersede the v0.5 public-RC signing envelope.
 
-This phase does not complete Core Slice 0 or Slice 1 signature verification because detached operator signatures are not yet present.
+This phase does not complete Slice 1 signature verification because the detached Slice 1 operator signature is not yet present.

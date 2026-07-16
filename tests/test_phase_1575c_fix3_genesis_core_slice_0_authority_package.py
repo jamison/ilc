@@ -46,6 +46,25 @@ def test_fix3_builder_materializes_core_and_slice1_packages(tmp_path: Path) -> N
     assert slice1_package["core_slice_0_authority_package_sha256"] == evidence[
         "core_slice_0_package_sha256"
     ]
+    assert slice1_package["slice_1_hardening_policy"] == {
+        "edge_type_mirror_complete": True,
+        "full_manual_truth_axiom_recipe_completion_claimed": False,
+        "projection_membership_recipes_added": True,
+        "slice_0_metadata_propagated_to_overlap": True,
+    }
+    assert slice1_package["non_claims"][
+        "slice_1_full_manual_truth_axiom_recipe_complete"
+    ] is False
+    assert not [
+        node for node in slice1_package["nodes"] if not node.get("decomposition_recipe")
+    ]
+    assert not [
+        edge for edge in slice1_package["edges"] if edge.get("type") != edge["edge_type"]
+    ]
+    assert not [
+        edge for edge in slice1_package["edges"] if not edge.get("decomposition_recipe")
+    ]
+    assert not [edge for edge in slice1_package["edges"] if not edge.get("rationale")]
     assert slice1_package["package_sha256"] == package_digest(slice1_package, "package_sha256")
 
     assert evidence["blocked_token"] == (
