@@ -51,7 +51,7 @@ Local replay output:
 Evidence SHA-256:
 
 ```text
-fdef6d15a2e6a0173857949670231263e393dbf5e71b43271c1e30ca67c4d6dd
+86770147cc780da5be5ed902c8a812d80ed7ca3ad2757b8f1daced5c7407e1f1
 ```
 
 Reach summary:
@@ -74,14 +74,15 @@ Representative scenarios:
 
 ## 5. Current-Code Findings
 
-The SIM records two important implementation facts:
+The SIM records two important implementation facts after Phase 1575c-Fix3h:
 
 | Finding | Result | Disposition |
 |---|---:|---|
 | `taper_multiplier_is_reported_but_not_applied_to_pre_cap_allocation` | `true` | The current production path uses the governor for `cap_blocked`, but the taper multiplier does not reduce the Genesis overhead allocation before cap |
-| `partial_cap_epoch_requires_residual_routing` | `true` | `98 / 101` scenarios quote more Genesis overhead in the cap-reaching epoch than remains in the fixed tranche |
+| `partial_cap_epoch_requires_residual_routing` | `false` | Closed by Phase 1575c-Fix3h. The cap-reaching epoch now clamps Genesis to the remaining fixed-tranche allowance |
+| `partial_cap_excess_to_performer_pool_scenario_count` | `98` | The `98 / 101` scenarios that previously over-quoted Genesis now route the partial-cap excess to the performer pool fallback |
 
-These are not SIM failures. They identify the next precise activation-bound economics question: whether the intended model is "5% until hard cap" or "sigmoid taper applied to the allocation amount before hard cap." If the former, the activation path still needs a partial-cap residual routing rule. If the latter, the production path must apply the taper multiplier to the Genesis overhead quote.
+These are not SIM failures. They separate the closed partial-cap routing rule from the remaining design observation: whether the intended model is "5% until hard cap" or "sigmoid taper applied to the allocation amount before hard cap." The current runtime implements the former: Genesis accrues the 5% overhead until the hard cap, the final epoch is clamped exactly to the remaining allowance, and any excess routes to the performer pool fallback.
 
 ## 6. Cap Probe
 
@@ -129,4 +130,4 @@ Required output tokens:
 - `genesis_5pct_long_horizon_production_path_sim_committed_phase_1575c_fix3g`
 - `genesis_5pct_current_code_reaches_cap_in_all_scenarios_phase_1575c_fix3g`
 - `genesis_taper_reported_not_applied_recorded_phase_1575c_fix3g`
-- `genesis_partial_cap_residual_routing_gap_recorded_phase_1575c_fix3g`
+- `genesis_partial_cap_residual_routing_gap_closed_phase_1575c_fix3h`

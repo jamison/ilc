@@ -64,6 +64,9 @@ PRODUCTION_ALLOCATION_DISTRIBUTION_NOT_ACTIVATED_PHASE_1351A_TOKEN = (
 GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN = (
     "genesis_overhead_base_cap_blocked_full_tranche_deferred_phase_1351a"
 )
+GENESIS_PARTIAL_CAP_EXCESS_TO_PERFORMER_POOL_TOKEN = (
+    "genesis_partial_cap_excess_to_performer_pool_phase_1575c_fix3h.v0.1"
+)
 SPLIT_QUOTE_CLARIFIED_NOT_FULL_GENESIS_TRANCHE_TOKEN = (
     "split_quote_clarified_not_full_genesis_tranche_phase_1347_fix1"
 )
@@ -105,6 +108,9 @@ class EpochAllocationDistributionQuote:
     performer_reward_pool_ilc: Decimal
     auditor_reward_pool_ilc: Decimal
     genesis_overhead_pool_ilc: Decimal
+    genesis_partial_cap_excess_ilc: Decimal
+    genesis_partial_cap_excess_route: str
+    genesis_partial_cap_excess_token: str
     rounding_residual_to_genesis_overhead_ilc: Decimal
     rounding_residual_to_upheld_refutation_recipients_ilc: Decimal
     rounding_residual_to_performer_pool_ilc: Decimal
@@ -131,6 +137,11 @@ class EpochAllocationDistributionQuote:
             "genesis_overhead_cap_blocked": self.genesis_overhead_cap_blocked,
             "genesis_overhead_pool_ilc": _decimal_to_string(self.genesis_overhead_pool_ilc),
             "genesis_overhead_pool_label": self.genesis_overhead_pool_label,
+            "genesis_partial_cap_excess_ilc": _decimal_to_string(
+                self.genesis_partial_cap_excess_ilc
+            ),
+            "genesis_partial_cap_excess_route": self.genesis_partial_cap_excess_route,
+            "genesis_partial_cap_excess_token": self.genesis_partial_cap_excess_token,
             "issuance_epoch": self.issuance_epoch,
             "issuance_epoch_duration": self.issuance_epoch_duration,
             "performer_fraction": _decimal_to_string(self.performer_fraction),
@@ -276,6 +287,7 @@ def build_allocation_distribution_quote(
     auditor_fraction: Decimal | int | str = AUDITOR_ALLOCATION_FRACTION,
     genesis_overhead_fraction: Decimal | int | str = GENESIS_OVERHEAD_ALLOCATION_FRACTION,
     genesis_overhead_cap_blocked: bool = False,
+    genesis_overhead_remaining_allowance_ilc: Decimal | int | str | None = None,
     upheld_refutation_recipients: list[str] | None = None,
 ) -> EpochAllocationDistributionQuote:
     epoch = _require_epoch_sequence(issuance_epoch)
@@ -299,6 +311,9 @@ def build_allocation_distribution_quote(
     residual_to_performer = Decimal("0")
     residual_refutation_recipient_allocations: tuple[tuple[str, Decimal], ...] = ()
     residual_route = GENESIS_RESIDUAL_ROUTE
+    partial_cap_excess = Decimal("0")
+    partial_cap_excess_route = "none"
+    partial_cap_excess_token = ""
     if cap_blocked:
         if genesis_overhead_base != Decimal("0"):
             raise ValueError(GENESIS_OVERHEAD_BASE_CAP_BLOCKED_FULL_TRANCHE_DEFERRED_TOKEN)
@@ -319,6 +334,21 @@ def build_allocation_distribution_quote(
     else:
         residual_to_genesis = rounding_residual
         genesis_overhead_pool = genesis_overhead_base + rounding_residual
+        if genesis_overhead_remaining_allowance_ilc is not None:
+            remaining_allowance = _quantize_ilc(
+                _require_decimal_amount(
+                    genesis_overhead_remaining_allowance_ilc,
+                    "genesis_overhead_remaining_allowance_ilc",
+                )
+            )
+            if genesis_overhead_pool > remaining_allowance:
+                partial_cap_excess = genesis_overhead_pool - remaining_allowance
+                genesis_overhead_pool = remaining_allowance
+                performer_pool += partial_cap_excess
+                partial_cap_excess_route = PERFORMER_POOL_RESIDUAL_ROUTE
+                partial_cap_excess_token = GENESIS_PARTIAL_CAP_EXCESS_TO_PERFORMER_POOL_TOKEN
+                residual_to_genesis = min(rounding_residual, genesis_overhead_pool)
+                residual_to_performer = rounding_residual - residual_to_genesis
 
     return EpochAllocationDistributionQuote(
         runtime_version=ALLOCATION_DISTRIBUTOR_RUNTIME_VERSION,
@@ -334,6 +364,9 @@ def build_allocation_distribution_quote(
         performer_reward_pool_ilc=performer_pool,
         auditor_reward_pool_ilc=auditor_pool,
         genesis_overhead_pool_ilc=genesis_overhead_pool,
+        genesis_partial_cap_excess_ilc=partial_cap_excess,
+        genesis_partial_cap_excess_route=partial_cap_excess_route,
+        genesis_partial_cap_excess_token=partial_cap_excess_token,
         rounding_residual_to_genesis_overhead_ilc=residual_to_genesis,
         rounding_residual_to_upheld_refutation_recipients_ilc=residual_to_refutation_recipients,
         rounding_residual_to_performer_pool_ilc=residual_to_performer,
@@ -384,6 +417,7 @@ __all__ = [
     "GENESIS_OVERHEAD_CAP_BLOCKED_DUST_ROUTING_DEFERRED_TOKEN",
     "GENESIS_OVERHEAD_CAP_BLOCKED_GUARD_TOKEN",
     "GENESIS_OVERHEAD_POOL_LABEL",
+    "GENESIS_PARTIAL_CAP_EXCESS_TO_PERFORMER_POOL_TOKEN",
     "GENESIS_RESIDUAL_ROUTE",
     "MAX_UPHELD_REFUTATION_RECIPIENT_ID_BYTES",
     "MAX_UPHELD_REFUTATION_RECIPIENTS",
