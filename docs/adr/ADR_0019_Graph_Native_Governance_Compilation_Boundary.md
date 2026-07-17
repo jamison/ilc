@@ -2,7 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-03-18
-**Author:** GPT-5 Codex, in collaboration with Genesis operator (project lead)
+**Author:** GPT-5 Codex, in collaboration with Genesis operator
 **Source:** Window 441+ planning discussion, 2026-03-18
 **Dependencies:** ADR-0007, ADR-0009, ADR-0011, ADM-003 v0.2, Window 434-440 handoff
 

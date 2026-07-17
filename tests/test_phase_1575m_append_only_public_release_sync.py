@@ -194,11 +194,12 @@ def test_tool_rejects_public_rc_exclude_marker(tmp_path: Path) -> None:
         )
 
 
-def test_tool_rejects_denylist_term(tmp_path: Path) -> None:
+@pytest.mark.parametrize("term", ["ilcops@proton.me", "Genesis operator", "jurisdiction_redacted"])
+def test_tool_rejects_denylist_term(tmp_path: Path, term: str) -> None:
     module = _load_tool_module()
     public_repo = _make_repo(tmp_path / "public")
     sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
-    (sanitized_tree / "leak.txt").write_text("ilcops@proton.me\n", encoding="utf-8")
+    (sanitized_tree / "leak.txt").write_text(f"{term}\n", encoding="utf-8")
     _git(["add", "leak.txt"], sanitized_tree)
     _git(["commit", "-q", "-m", "add denied term"], sanitized_tree)
     with pytest.raises(ValueError, match="denylist_term_found_in_sanitized_tree"):

@@ -2,7 +2,7 @@
 
 **Status:** Non-normative economic architecture document — for review and future CDL/ADR derivation  
 **Date:** 2026-03-05  
-**Authors:** Genesis operator (ILC Project Lead) + Claude Opus 4.6 (Strategic Architectural Reviewer)  
+**Authors:** Genesis operator + Claude Opus 4.6 (Strategic Architectural Reviewer)
 **Source conversation:** `Z_Past_Chats/2026_03_05_Opus_Conversation_Economic_Architecture_Deep_Dive.md` *(source provenance — full transcript not committed to repo; Z_Past_Chats/ is empty)*
 **Anchors:** CDL-025 through CDL-031 (ratified issuance parameters), ADM-001 v0.2 (four-layer architecture), CDL-034 (three-envelope node schema), CDL-V1 through CDL-V7 (enforcement mechanisms), Economic Paper Draft v0.2, ECU Profiles & Payout Scaling v0.2
 
