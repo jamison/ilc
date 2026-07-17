@@ -59025,6 +59025,263 @@
         "TESTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Hardened append-only public release receipt tool with ancestor, remote freshness, denylist, PUBLIC_RC_EXCLUDE, source-commit, and path/corpus-bound checks.",
+      "repo_path": "tools/public_release_append_only_sync.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=runtime_tool_updated:tools/public_release_append_only_sync.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Focused tests now cover 1575m-Fix1 hardening failure paths and deterministic receipt behavior.",
+      "repo_path": "tests/test_phase_1575m_append_only_public_release_sync.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=test_updated:tests/test_phase_1575m_append_only_public_release_sync.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Spec records 1575m-Fix1 pre-authorization hardening and deferred live-sync boundary.",
+      "repo_path": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SPECIFIES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Walkthrough records 1575m-Fix1 implementation, tests, blocked live-mirror disposition, and tokens.",
+      "repo_path": "docs/phases/phase_1575m_fix1_append_only_public_release_sync_hardening_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_artifact_added:docs/phases/phase_1575m_fix1_append_only_public_release_sync_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "STATUS entry records 1575m-Fix1 completion tokens and non-claims.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Forward plan now records the 1575m-Fix1 corpus blocker before live append-only sync.",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1575m_fix1_append_only_public_release_sync_hardening",
+      "chronology_note": "2026-07-17 Phase 1575m-Fix1 — append-only public release receipt pre-authorization hardening after Sonnet audit.",
+      "manual_read_summary": "Planning index addendum records 1575m-Fix1 hardening and next public-corpus cleanup action.",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_ancestor_check_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:append_only_public_release_denylist_scan_hardened_phase_1575m_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_current_corpus_blocked_by_denylist_phase_1575m_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=planning_updated:docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {

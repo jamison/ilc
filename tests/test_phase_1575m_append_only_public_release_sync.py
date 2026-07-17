@@ -11,6 +11,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = ROOT / "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md"
 TOOL = ROOT / "tools/public_release_append_only_sync.py"
+SOURCE_COMMIT = "a" * 40
 
 
 def _load_tool_module():
@@ -47,6 +48,16 @@ def _make_sanitized_tree(path: Path) -> Path:
     return path
 
 
+def _make_candidate_repo(path: Path, public_repo: Path) -> Path:
+    subprocess.check_call(["git", "clone", "-q", str(public_repo), str(path)])
+    _git(["config", "user.name", "Test User"], path)
+    _git(["config", "user.email", "test@example.invalid"], path)
+    _make_sanitized_tree(path)
+    _git(["add", "README.md", "release_artifacts/genesis_v05/manifest.json"], path)
+    _git(["commit", "-q", "-m", "candidate"], path)
+    return path
+
+
 def test_spec_contains_required_sections_and_policy_terms() -> None:
     text = SPEC.read_text(encoding="utf-8")
     required_sections = [
@@ -67,12 +78,16 @@ def test_spec_contains_required_sections_and_policy_terms() -> None:
     assert "backport_required" in text
     assert "needs_cdl_or_phase" in text
     assert "graph_native_exporter_status` remains `not_activated" in text
+    assert "1575m-Fix1" in text
+    assert "previous public HEAD must be an ancestor" in text
+    assert "denylist_scan_result" in text
+    assert "public_rc_exclude_scan_result" in text
 
 
 def test_tool_writes_deterministic_dry_run_receipts(tmp_path: Path) -> None:
     module = _load_tool_module()
     public_repo = _make_repo(tmp_path / "public")
-    sanitized_tree = _make_sanitized_tree(tmp_path / "sanitized")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
     receipt_a = tmp_path / "receipt_a.json"
     receipt_b = tmp_path / "receipt_b.json"
     argv = [
@@ -81,7 +96,7 @@ def test_tool_writes_deterministic_dry_run_receipts(tmp_path: Path) -> None:
         "--sanitized-tree",
         str(sanitized_tree),
         "--source-private-commit",
-        "abc123",
+        SOURCE_COMMIT,
         "--dry-run",
     ]
     assert module.main([*argv, "--json-out", str(receipt_a)]) == 0
@@ -89,8 +104,15 @@ def test_tool_writes_deterministic_dry_run_receipts(tmp_path: Path) -> None:
     assert receipt_a.read_bytes() == receipt_b.read_bytes()
     payload = json.loads(receipt_a.read_text(encoding="utf-8"))
     assert payload["schema_version"] == "ilc_public_release_append_only_sync_receipt.v0.1"
-    assert payload["source_private_commit"] == "abc123"
+    assert payload["source_private_commit"] == SOURCE_COMMIT
     assert payload["previous_public_head"] == _git(["rev-parse", "HEAD"], public_repo)
+    assert payload["append_only_check"]["candidate_public_head"] == _git(
+        ["rev-parse", "HEAD"], sanitized_tree
+    )
+    assert payload["append_only_check"]["previous_public_head_is_ancestor"] is True
+    assert payload["denylist_scan_result"] == "pass"
+    assert payload["public_rc_exclude_scan_result"] == "pass"
+    assert payload["public_remote_status"]["remote_fetch_result"] == "skipped_no_remote"
     assert payload["sanitized_tree_digest"]
     assert payload["sanitized_tree_file_count"] == 2
     assert payload["public_push_authorized"] is False
@@ -101,13 +123,13 @@ def test_tool_writes_deterministic_dry_run_receipts(tmp_path: Path) -> None:
 def test_tool_rejects_dirty_public_repo(tmp_path: Path) -> None:
     module = _load_tool_module()
     public_repo = _make_repo(tmp_path / "public")
-    sanitized_tree = _make_sanitized_tree(tmp_path / "sanitized")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
     (public_repo / "dirty.txt").write_text("dirty\n", encoding="utf-8")
     with pytest.raises(ValueError, match="public_repo_dirty"):
         module.build_receipt(
             public_repo=public_repo,
             sanitized_tree=sanitized_tree,
-            source_private_commit="abc123",
+            source_private_commit=SOURCE_COMMIT,
             dry_run=True,
         )
 
@@ -119,7 +141,7 @@ def test_tool_rejects_missing_sanitized_tree(tmp_path: Path) -> None:
         module.build_receipt(
             public_repo=public_repo,
             sanitized_tree=tmp_path / "missing",
-            source_private_commit="abc123",
+            source_private_commit=SOURCE_COMMIT,
             dry_run=True,
         )
 
@@ -127,13 +149,89 @@ def test_tool_rejects_missing_sanitized_tree(tmp_path: Path) -> None:
 def test_tool_requires_dry_run(tmp_path: Path) -> None:
     module = _load_tool_module()
     public_repo = _make_repo(tmp_path / "public")
-    sanitized_tree = _make_sanitized_tree(tmp_path / "sanitized")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
     with pytest.raises(ValueError, match="dry_run_required"):
         module.build_receipt(
             public_repo=public_repo,
             sanitized_tree=sanitized_tree,
-            source_private_commit="abc123",
+            source_private_commit=SOURCE_COMMIT,
             dry_run=False,
+        )
+
+
+def test_tool_rejects_non_ancestor_candidate(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    sanitized_tree = _make_repo(tmp_path / "sanitized")
+    _make_sanitized_tree(sanitized_tree)
+    _git(["add", "README.md", "release_artifacts/genesis_v05/manifest.json"], sanitized_tree)
+    _git(["commit", "-q", "-m", "unrelated candidate"], sanitized_tree)
+    with pytest.raises(ValueError, match="public_head_not_ancestor_of_candidate"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=sanitized_tree,
+            source_private_commit=SOURCE_COMMIT,
+            dry_run=True,
+        )
+
+
+def test_tool_rejects_public_rc_exclude_marker(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
+    (sanitized_tree / "private_runtime.py").write_text(
+        "# PUBLIC_RC_EXCLUDE: synthetic test marker\n",
+        encoding="utf-8",
+    )
+    _git(["add", "private_runtime.py"], sanitized_tree)
+    _git(["commit", "-q", "-m", "add excluded marker"], sanitized_tree)
+    with pytest.raises(ValueError, match="public_rc_exclude_marker_found_in_sanitized_tree"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=sanitized_tree,
+            source_private_commit=SOURCE_COMMIT,
+            dry_run=True,
+        )
+
+
+def test_tool_rejects_denylist_term(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
+    (sanitized_tree / "leak.txt").write_text("ilcops@proton.me\n", encoding="utf-8")
+    _git(["add", "leak.txt"], sanitized_tree)
+    _git(["commit", "-q", "-m", "add denied term"], sanitized_tree)
+    with pytest.raises(ValueError, match="denylist_term_found_in_sanitized_tree"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=sanitized_tree,
+            source_private_commit=SOURCE_COMMIT,
+            dry_run=True,
+        )
+
+
+def test_tool_rejects_source_private_commit_not_40_char_hex(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
+    with pytest.raises(ValueError, match="source_private_commit_must_be_40_char_hex"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=sanitized_tree,
+            source_private_commit="abc123",
+            dry_run=True,
+        )
+
+
+def test_tool_rejects_forbidden_sanitized_tree_root(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    with pytest.raises(ValueError, match="sanitized_tree_root_forbidden"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=Path("/"),
+            source_private_commit=SOURCE_COMMIT,
+            dry_run=True,
         )
 
 
