@@ -59282,6 +59282,261 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "graph_delta=planning_updated:docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Phase prompt defines the public-corpus cleanup lane for the 1575m-Fix1 append-only sync denylist blocker.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575n_g10_public_corpus_cleanup_for_append_only_sync.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575n_g10_public_corpus_cleanup_for_append_only_sync.md"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Public mirror generator excludes private-key fixture tests and denies private-key marker strings after filtering.",
+      "repo_path": "tools/scripts/generate_public_mirror.sh",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "CONSTRAINS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=release_tool_updated:tools/scripts/generate_public_mirror.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Focused tests cover 1575n public export exclusions, denylist marker hardening, prompt tokens, and forward-plan routing.",
+      "repo_path": "tests/test_phase_1575n_public_corpus_cleanup.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=test_added:tests/test_phase_1575n_public_corpus_cleanup.py"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Walkthrough records 1575n candidate path, receipt hash, pass result, and no-push non-claims.",
+      "repo_path": "docs/phases/phase_1575n_public_corpus_cleanup_for_append_only_sync_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_artifact_added:docs/phases/phase_1575n_public_corpus_cleanup_for_append_only_sync_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "STATUS entry records 1575n completion tokens and local append-only receipt pass.",
+      "repo_path": "docs/phases/STATUS.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Forward plan marks 1575n complete and routes next public-release work after passing no-push receipt.",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_171_phase_1575n_public_corpus_cleanup_for_append_only_sync",
+      "chronology_note": "2026-07-17 Phase 1575n — public-corpus cleanup for append-only public release sync.",
+      "manual_read_summary": "Planning index addendum records 1575n public-corpus cleanup and receipt pass.",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_corpus_denylist_cleanup_committed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_append_only_sync_receipt_passed_phase_1575n"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:no_public_push_authorized_phase_1575n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=planning_updated:docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {
