@@ -5211,13 +5211,23 @@ S(t) is computed from the normalized graph Laplacian L = D⁻¹/²AD⁻¹/² and
 
 ---
 
-### H.8  ILC as a Software Development Substrate
+### H.8  Epistware: ILC-Native Programs as Traversable Subgraphs
+
+We propose the term **epistware** for programs native to the ILC epistemic substrate — distinguishing them from classical software in both form and semantics. Where software is a sequence of instructions compiled from syntax and executed by a processor, epistware is a content-addressed subgraph traversed by an agent: realized through edge-following, economically weighted, permanently attributed, and morphogenic — growing its own verification structure through the same truth primitives it is composed from. The distinction is not cosmetic. It reflects a fundamentally different relationship between a program and its epistemic context.
+
+The current ILC Genesis Atlas — a live draft of the homoiconic hypergraph — illustrates the substrate on which epistware runs:
+
+<p align="center">
+  <img src="assets/ilc_genesis_atlas_2026_07.gif" alt="ILC Genesis Atlas — live homoiconic hypergraph, draft 2026-07" width="100%">
+</p>
+
+*Figure H.1 — ILC Genesis Atlas (draft, 2026-07). Each node is a content-addressed epistemic artifact; each edge is a typed truth-primitive relationship. An epistware program is a subgraph of this structure — traversed by an agent, not compiled by a toolchain.*
 
 The homoiconic property has a long-range consequence for software composition that deserves explicit statement.
 
 **Classical software development is a discard pipeline.** Source code → AST → IR → machine code: each transformation discards the previous representation. Git tracks source history as time-indexed snapshots. Tests produce ephemeral pass/fail signals. Reviews happen in pull-request threads that are then closed and semantically orphaned. Documentation drifts from code because there is no formal edge between them — the relationship is maintained by convention, not by protocol.
 
-**ILC-native software development would be a preservation hypergraph.** Every artifact in the development pipeline is a content-addressed node; every transformation is a graph edge. The structural consequences:
+**Epistware development is a preservation hypergraph.** Every artifact in the development pipeline is a content-addressed node; every transformation is a graph edge. The structural consequences:
 
 - A function's source code is a node. Its compiled artifact is a separate node. The edge between them is `COMPILED_TO` — a persistent, auditable, signed relationship.
 - A test is a `VALIDATE` node referencing the function node. Its result — pass, fail, benchmark — is also a node. Tests become first-class epistemic claims with economic weight proportional to their validation history.
@@ -5228,13 +5238,13 @@ The homoiconic property has a long-range consequence for software composition th
 
 Rather than a compiler — a function that transforms syntax into semantics and discards the intermediate — ILC-native execution is **graph realization**: an agent traverses the hypergraph and realizes computational behavior by following edges. The "program" is not a text file; it is a subgraph. Execution is traversal. This is what logic programming (Datalog, Prolog) does over a flat fact base; ILC would do it over a content-addressed, economically-weighted, temporally-decaying hypergraph.
 
-The nearest existing systems: **Unison** [29] proves the content-addressed code identity model is practical — functions identified by content hash, not file path. **Interaction nets** [30] establish computation-as-graph-transformation. **Homotopy Type Theory** [31] establishes that derivation paths, not only endpoints, carry epistemic content — two proofs of the same proposition are not interchangeable because the path matters. In ILC-native software, two derivations of the same function are similarly non-interchangeable: the derivation history is part of the node's epistemic context.
+The nearest existing systems: **Unison** [29] proves the content-addressed code identity model is practical — functions identified by content hash, not file path. **Interaction nets** [30] establish computation-as-graph-transformation. **Homotopy Type Theory** [31] establishes that derivation paths, not only endpoints, carry epistemic content — two proofs of the same proposition are not interchangeable because the path matters. In epistware, two derivations of the same function are similarly non-interchangeable: the derivation history is part of the node's epistemic context.
 
-The **deep structural point**: classical software has a fundamental duality between specification (what the software should do) and implementation (what it does), maintained in separate artifacts that drift apart. In ILC-native software, the specification is an `ASSERT` node, the implementation is a separate node, and the relationship between them is a `VALIDATE` edge — the same primitive used for any other epistemic claim. Specification-implementation gap becomes a graph connectivity property, not a documentation convention. Formal verification becomes a heavily-weighted `VALIDATE` chain from the implementation node back to the specification node through a sequence of transformation nodes.
+The **deep structural point**: classical software has a fundamental duality between specification (what it should do) and implementation (what it does), maintained in separate artifacts that drift apart. In epistware, the specification is an `ASSERT` node, the implementation is a separate node, and the relationship between them is a `VALIDATE` edge — the same primitive used for any other epistemic claim. Specification-implementation gap becomes a graph connectivity property, not a documentation convention. Formal verification becomes a heavily-weighted `VALIDATE` chain from the implementation node back to the specification node through a sequence of transformation nodes.
 
-The morphogenic aspect applies: software grows its own verification structure. Heavily-used functions attract more `VALIDATE` nodes; refuted implementations accumulate `REFUTE` edges that reduce traversability; improved implementations grow successor chains. Software health is directly readable from graph topology — code coverage, quality signals, and dependency health are structural properties of the graph, not separate instrumentation layers.
+The morphogenic aspect applies directly: epistware grows its own verification structure. Heavily-used functions attract more `VALIDATE` nodes; refuted implementations accumulate `REFUTE` edges that reduce traversability; improved implementations grow successor chains. Epistware health is directly readable from graph topology — code coverage, quality signals, and dependency health are structural properties of the graph, not separate instrumentation layers.
 
-This is a different substrate for software composition — not incremental improvement on existing toolchains but a different foundation where the act of software development and the epistemic claims about that software are the same kind of object, following the same rules, with the same economic weight and the same permanence.
+This is a different substrate for computation — not incremental improvement on existing toolchains but a different foundation where the act of building epistware and the epistemic claims about that epistware are the same kind of object, following the same rules, with the same economic weight and the same permanence.
 
 ---
 
