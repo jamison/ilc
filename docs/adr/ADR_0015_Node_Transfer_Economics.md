@@ -2,7 +2,7 @@
 
 **Status:** Proposed  
 **Date:** 2026-03-05  
-**Author:** Opus (strategic architectural reviewer), in collaboration with Genesis operator (project lead)  
+**Author:** Opus (strategic architectural reviewer), in collaboration with Genesis operator
 **Source:** Economic architecture conversation 2026-03-05  
 **Dependencies:** CDL-034 (three-envelope node schema), CDL-035 (validation lifecycle), CDL-V1 (temporal decay), CDL-V7 (Popperian gate), CDL-029 (allocation split)
 
