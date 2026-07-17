@@ -1,6 +1,6 @@
 # ILC Genesis Core Slice 0 Authority Package Spec — Phase 1575c-Fix3 v0.1
 
-Status: Core Slice 0 signed and verified; Public-RC Baseline Slice 1 pending operator signature
+Status: Core Slice 0 signed and verified; Public-RC Baseline Slice 1 signed and verified
 Date: 2026-07-16
 Phase: 1575c-Fix3
 
@@ -60,7 +60,10 @@ The Fix2 package was amended into Public-RC Baseline Slice 1 by adding the Core 
 | Signing payload path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signature_payload.bin` |
 | Signing payload SHA-256 | `1912afd8de4f7088cc04b624d7cb2b69d6705aa4d7e25fe6a8a56cf7ddb8f8d0` |
 | Signing request path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signing_request.json` |
-| Signature status | `blocked_pending_operator_signature` |
+| Signature status | `verified` |
+| Signature path | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.signature.hex` |
+| Signature verification record | `out/genesis_v05_atlas_graph_package_fix3/genesis_v05_public_rc_baseline_slice_1.verification.json` |
+| Signature SHA-256 | `08e4e971ae7ba6d8b9b56ef2660a736840442f107ed47f3936ee7b5582f43fb5` |
 
 Slice 1 received bounded projection-composability hardening before signing. The builder propagated Core Slice 0 metadata to overlapping nodes, mirrored edge `edge_type` into `type`, added projection-membership recipes to nodes and edges, and added projection rationales where absent. The final package records `57` shared Core nodes, `89` shared Core edges, zero shared-edge structural conflicts, and Core Slice 0 authority metadata precedence for shared rows. This is not a claim that Slice 1 has complete manual truth-axiom recipes.
 
@@ -68,13 +71,7 @@ Slice 1 received bounded projection-composability hardening before signing. The 
 
 Codex did not request, receive, echo, store, or process human-held seed material.
 
-The remaining operator signature step is Public-RC Baseline Slice 1. The signing request contains the exact command pattern for the human operator:
-
-```text
-ilc_consensus/target/debug/pq_sign --input-file <signature_payload.bin> > <signature.hex>
-```
-
-After signatures are produced, each signature must be verified with:
+Both detached signatures were produced by the human operator and verified with:
 
 ```text
 ilc_consensus/target/debug/pq_sign verify --input-file <signature_payload.bin> --signature-hex "$(tr -d '\n' < <signature.hex>)"
@@ -87,5 +84,3 @@ This phase does not activate public RC, production minting, live settlement, wal
 This phase does not sign raw LMDB bytes.
 
 This phase does not supersede the v0.5 public-RC signing envelope.
-
-This phase does not complete Slice 1 signature verification because the detached Slice 1 operator signature is not yet present.
