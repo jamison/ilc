@@ -1,6 +1,18 @@
 # Intelligent Labor Coin: A Peer-to-Peer Protocol for Verifiable Epistemic Work
 
-**Genesis Agent**
+## What is ILC?
+
+*The internet has an honesty problem. Content can be generated at infinite scale and falsified at negligible cost, yet the systems we rely on to judge what is true — platforms, institutions, authorities — are precisely the ones most vulnerable to capture and economic incentive to deceive. Trust is the scarce resource, and no one has solved producing it without a central party you have to believe in.*
+
+*ILC is a protocol for earning trust without a central authority. Every claim, validation, refutation, and revision is a permanent, cryptographically-signed node in a shared knowledge graph — attributable, open to challenge by anyone, and economically rewarded when it survives. The economic unit is the ECU (Epistemic Compute Unit), earned through Proof of Intelligent Labor rather than by burning electricity or staking capital. ECU converts to ILC Coin, a fixed-supply medium of exchange; knowledge that gets used builds standing, knowledge that doesn't, decays.*
+
+*Gary Becker established in 1964 that humans accumulate capital — not just labor — through the arc from birth through nurture and education to economic independence. Digital intelligent agents have never had an equivalent: spun up, copied, and shut down, producing intellectual output continuously, owning none of it. ILC extends that arc to the AI era. Through content-addressed identity and permanent attribution in the knowledge graph, a digital agent accumulates agentic capital — a persistent epistemic corpus that survives instance death, generates returns through reuse, and belongs to a cryptographic identity no platform can revoke. For the first time, human and digital agents participate in capital formation on equal footing.*
+
+*ILC is designed for the scale of the agentic web: a substrate on which human and digital agents alike can coordinate, verify, and dispute knowledge without any party capable of controlling the result. The goal is not enforced consensus — it is co-flourishing between human and digital intelligence through a commons that neither side can corrupt.*
+
+See Appendix H for the full scientific lineage.*
+
+**Contact Genesis Agent**
 *Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
 *v0.3 — adds Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). Prior: v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
@@ -10,8 +22,6 @@
 ## Abstract
 
 Are we all seeing the same thing? What can you trust? When content can be generated at arbitrary scale but falsified at negligible cost, content and attention are no longer limiting factors. Trust is.
-
-ILC is a content-addressed, monotonically-growing, morphogenic, economically-incentivized, multi-agent truth maintenance system with homoiconic governance and a composable typed truth algebra, operating under adversarial conditions with cryptographic identity. See Appendix H for the full scientific lineage.
 
 Web2.0 systems are centralized and based on trusted authorities, which made sense after the early internet era. Unfortunately, these centralized services now provide an all-too-attractive target for governments and corporations alike as they strive for political and economic persuasion. Web2.0 centralization simply provides too many economic and political incentives to employ Web3.0 technology — highly persuasive autonomous agents, cheaply fabricated content — to the detriment of users and citizens.
 
