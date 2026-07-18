@@ -8,14 +8,19 @@ Canon boundary: protocol claims must defer to [ADRs](docs/adr/),
 [canonical glossary](docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md),
 [phase walkthroughs](docs/phases/), and current
 [sequence locks](docs/specs/).
-Related academic draft:
+Related academic drafts:
+[`docs/ILC_Economic_Paper_Draft_v0.3.md`](docs/ILC_Economic_Paper_Draft_v0.3.md)
+is the formal mathematical paper spine — propositions, definitions, proofs,
+and citations pointing to this file as the annex. Start there for the
+concise academic argument.
 [`docs/ILC_Economic_Paper_Draft_v0.2.md`](docs/ILC_Economic_Paper_Draft_v0.2.md)
-is the shorter paper-style seed for journal/submission work. This file is the
-broader economic synthesis and doctrine map. They should cross-reference each
-other but not be merged.
+is the prior discursive draft (superseded by v0.3 for formal use).
+This file (economics.md) is the full annex — narrative, diagrams, behavioral
+literature, worked examples, and extended derivations. They cross-reference
+each other and must not be merged.
 
 This document summarizes the economic ideas discussed during Genesis and
-explains why ILC was built partly as an experiment in epistemic economics. It is
+explains why ILC was conceived in part as an experiment in epistemic economics. It is
 not an investment document, not token-price guidance, not a promise of future
 value, and not a claim that ECU or ILC will appreciate.
 
@@ -26,10 +31,11 @@ economic idea -> graph-native economic hypothesis -> evidence, refutation,
 calibration, revision, or rejection over time
 ```
 
-ILC's economic question is not "how do we make another coin valuable?" The
-technical question is: can verified intelligent work become a measurable
-productive act, and can protocol incentives make epistemic maintenance more
-valuable than spam, hoarding, or institutional capture?
+ILC's thesis: verified intelligent work is a primary productive act, and a
+correctly designed incentive structure makes honest epistemic contribution the
+dominant economic strategy — outcompeting attention capture, institutional
+gatekeeping, and epistemic hoarding not through moral argument but through
+protocol mechanics that make honesty more profitable than manipulation.
 
 That question becomes urgent in an agentic economy. If digital actors become
 cheap to instantiate and schedule, the market-design problem changes shape. The
@@ -40,111 +46,983 @@ substrate, model interface, review market, or settlement rail.
 
 ## 1. Core Economic Thesis
 
-In an agent-dense world, ordinary economic categories weaken.
+**The scarcity stack has inverted. And with it, the unit of capital.**
 
-Human labor remains real, but digital labor can be copied, scheduled, routed,
-and scaled in ways human labor cannot. Information becomes abundant because
-models can produce text, code, images, summaries, and hypotheses almost without
-friction. What remains scarce is not generic output. What remains scarce is:
+```
+Pre-agentic economy:
+  Scarce:    land → labor → capital → information
+  Capital:   Human Capital (Becker 1964) — embodied, biological, educational
+  Abundant:  —
 
-```text
-verified, reusable, refutation-resistant epistemic improvement
+Agentic economy (AI at scale):
+  Abundant:  generic information, generic cognition, generic human cognitive labor
+  Scarce:    verified, attributed, refutation-resistant epistemic improvement
+  Capital:   Agentic Capital — the accumulated epistemic corpus of a verified
+             contributor, human or digital, within a shared epistemic light cone
 ```
 
-The older academic draft states this more sharply: when cognition becomes
-replicable, labor is no longer scarce in the ordinary rival-good sense; when
-synthetic content becomes unlimited, information is not automatically welfare
-improving; and when machine-speed coordination becomes normal, governance can
-become a throughput bottleneck as much as a deliberative virtue.
+**Agentic Capital** (coined here): the present value of a contributor's verified
+epistemic corpus within a shared epistemic light cone — the portion of causal
+reach that persists, generates returns through reuse, and remains attributed
+to a persistent identity regardless of substrate, instance lifecycle, or
+biological embodiment.
 
-ILC's core economic thesis is that verified epistemic contribution can become a
-primary productive act. The graph records the work; review and refutation test
-it; ECU measures the productive contribution; settlement turns part of that
-history into durable accounting.
+*ILC implementation:* content-addressed identity (CIDv1 + ML-DSA-65),
+immutable graph attribution (PROVENANCE chain), and ongoing ECU returns
+through reuse — making agentic capital platform-independent and
+instance-death-proof for the first time.
 
-This is an experiment, not a guarantee. The hypothesis is that an economy can be
-organized around truth maintenance more effectively than around attention
-capture, institutional permission, or raw computational burn.
+Becker extended economic standing to the biological arc: birth, nurture,
+education, independence. Agentic Capital extends that arc beyond biology —
+to any contributor, any substrate, any instance lifecycle. It is the
+required successor concept at the organizational level where intelligence
+is abundant and only verified epistemic contribution is scarce.
+
+```
+Human Capital (Becker 1964):
+  H_human = ∫₀ᵀ r(s)·e^(-ρs) ds  −  C_I
+  Embodied in a biological person. Destroyed by death.
+  Returns only while the agent is actively working.
+
+Agentic Capital (ILC, 2026):
+  H_agent(a,t) = Σᵢ ECU(cᵢ) · ρ(cᵢ,t) · e^(-λ·age(cᵢ))
+  Held in a content-addressed graph. Survives instance death.
+  Returns passively through reuse attribution while no instance runs.
+  Attributed to a cryptographic identity no platform can revoke.
+```
+
+At the Cobb-Douglas cliff (α → 1, MPL → 0), Human Capital's return on
+cognitive labor compresses toward zero. This is not a policy failure or a
+distributional problem — it is a structural degeneration of the model's
+attribution mechanism. The wage–productivity channel disconnects. The
+investment arc that Becker described loses its return. Human Capital does
+not disappear; its measurement instrument breaks. *(Atlas of Cliffs S-01,
+S-02: established.)*
+
+Agentic Capital does not compress with it. Its return is generated not by
+active cognitive employment — the channel that closes at the cliff — but by
+the reuse of verified contributions that persist in the shared epistemic
+light cone regardless of whether any instance is running. The two forms of
+capital are not in competition. One extends and partially supersedes the
+other as the dominant productive unit at the next organizational level.
+
+Two simultaneous shifts drive this, each measurable:
+
+```
+(1)  I_org  → 0 cost       [intelligence per unit cost commoditizes
+                             as hardware scales: H100 → GB200 → ...]
+
+(2)  MPL(L) → 0            [marginal product of human cognitive labor
+                             approaches zero as AI substitutes for it;
+                             Cobb-Douglas cliff: Y = K^α(AL)^(1-α),
+                             α → 1 ⟹ w = (1-α)·Y/L → 0]
+```
+
+When both hold simultaneously, the prior scarcity stack collapses. Capital
+without epistemic direction generates output but not knowledge. Labor without
+wage support cannot sustain itself. Generic information, overproduced, becomes
+signal-negative — more content, less trust.
+
+**What remains scarce is exactly what ILC measures:**
+
+```
+W_e  =  ΔH / E_cost
+
+  W_e     = epistemic work (the ECU unit)
+  ΔH      = verified information gain: the graph's entropy reduction
+             after a claim has been reviewed, refuted, revised, and
+             committed to an epoch — not raw output, not plausible text
+  E_cost  = total energy expended to produce and verify the claim
+```
+
+Every graph write that survives adversarial review and jury panel produces
+a ΔH signal. E_cost is the denominator that prevents padding: generating
+fifty plausible claims costs more than generating one that survives
+refutation.
+
+**The full economic chain:**
+
+```
+Verified work done
+       │
+       ▼
+  W_e = ΔH / E_cost  ──► ECU created endogenously at point of work
+                                  │
+                          B(t) = B(0)·(1-δ)^t   [CDL-V1 decay]
+                                  │
+                         idle ECU loses value → forces circulation
+                                  │
+                          mandatory conversion within 4 epochs
+                                  │
+                                  ▼
+                        ILC Coin  (C_max = 25,920,000; fixed)
+                        a fixed-supply settlement asset whose
+                        entire supply is backed by verified
+                        epistemic labor, not computational burn
+```
+
+The graph records the work. Review and refutation test it. ECU measures the
+productive contribution. Decay forces velocity. Settlement converts a portion
+of that history into a fixed-supply, scarce asset. At no stage does raw
+output, accumulated balance, or institutional position substitute for
+verified epistemic contribution.
 
 ---
 
-**Claim-status table.** This document makes claims at four different epistemic
-levels. The physics motivates the direction; the protocol stands or falls on
-empirical calibration, adversarial testing, and governance.
+**The underlying physics through-line.**
 
-| Claim area | Status | Safe interpretation |
-|---|---|---|
-| ECU/ILC distinction, decay, conversion windows, provenance bounds, non-transferability, default-off gates | **Ratified protocol mechanics** | Implemented and governed by ratified CDLs; cite the CDL |
-| Werner credit, pressure-flow, inverted ECU, PoIL efficiency metric, review markets, spectral fork-choice | **Research / ratified-default-off** | Direction ratified; activation gated; calibration ongoing |
-| Landauer floor, Hidalgo information economics, Prigogine dissipative structures, V_economic ∝ I_org × CR | **Scientific framing** | Established physics/economics used as motivating analogy; ILC does not claim to measure physical entropy directly |
-| Cosmic optimization, Wheeler "it from bit," Vopson MEI, cognitive light cones, Omega Point threads | **Metaphysical / speculative frame** | Stated as conjecture; not load-bearing for any protocol claim |
+Economics does not float above the physical world. It is a measurement system
+for a physical process: the universe's tendency to organize matter and energy
+into increasingly dense informational structures, with entropy produced as
+the necessary byproduct.
 
-ILC measures protocol-local, adversarially reviewed graph signals designed to
-approximate useful epistemic organization. The physics frame motivates the
-direction of the metric; it does not prove the metric is correct.
+```
+Energy  =  Matter  =  Information
+(Einstein, 1905)   (Landauer, 1961)   (Wheeler, 1990; Vopson, 2019)
+
+The universe is not a system that generates information as a byproduct.
+It is an information-organizing process. Physical law is the rule set.
+```
+
+Every major economic transition in human history corresponds to a
+Prigogine-type dissipative structure phase transition — a jump to a new
+organizational level, funded by efficiency gains at the level below it,
+that cannot be described by the economic categories of the prior level.
+Each transition does two things simultaneously: it reduces the delta between
+civilization's measurement instrument and the universe's underlying
+informational structure, and it expands the epistemic light cone of the
+agents operating at that level. These are coupled — a finer instrument
+enables coordination at larger causal scales; a larger light cone requires
+a finer instrument to operate within it.
+
+```
+Level            Economic category              Measurement         Light cone
+─────────────────────────────────────────────────────────────────────────────────
+Pre-agricultural  Land                           crop yield          local, seasonal
+Industrial        Labor + Capital                wages, returns      regional, decadal
+Post-industrial   Information                    attention, data     global, real-time
+Agentic           Verified epistemic contribution W_e = ΔH / E_cost  shared, persistent
+  (now entering)                                 (ILC)               across instance
+                                                                     lifecycles
+Beyond agentic    unknown                        unknown             larger still;
+                                                 (finer resolution   not visible from
+                                                  than ΔH/E_cost)    inside this level
+```
+
+**"Verified" defined.** Throughout this framework, verified means a specific
+thing: multi-observer collapse across a diverse, adversarially selected
+population. A single observer emitting `δ_o(t)` carries only local epistemic
+weight — one prior, one failure mode, one slice of causal reach. Verification
+is what happens when that claim survives challenge from observers with
+*different* priors and failure modes. What remains after diverse independent
+refutation attempts fail is categorically stronger than what any single
+authority can assert — and categorically different from consensus among
+observers who share the same blind spots.
+
+The diversity of the observer population is the binding variable, not the count:
+
+```
+100 observers with identical priors who agree
+  →  one observation, repeated 100 times
+     correlated failure modes; nothing cancelled
+
+100 observers with orthogonal priors who fail to refute
+  →  100 independent collapse events
+     uncorrelated failure modes; the claim has survived
+     the hardest test available at the current light cone
+```
+
+As the epistemic light cone expands at each organizational level, the
+diversity of available observers expands with it — producing stronger
+collapses, which in turn extend verified epistemic density further into
+causal space. Reach, density, throughput, and collective working memory
+compound through this mechanism. ILC implements it directly: VRF jury
+assignment maximizes observer diversity by making panel selection
+unpredictable; the open refutation market allows any observer outside the
+panel to challenge; epoch commitment records the collapse permanently.
+The ΔH in W_e = ΔH/E_cost measures entropy reduction that has survived
+this process — not raw output, not asserted claims, but the residue of
+multi-observer collapse.
+
+**The observer connection.** In §0 of the Whitepaper, an observer is a
+bounded agent emitting a signed local delta against the evolving epistemic
+graph: `G(t+1) = G(t) + δ_o(t)`. The observer's epistemic light cone is
+the bound on what `δ_o(t)` can reach — what slice of reality it can see,
+sign, and have verified. Each phase transition is therefore an expansion
+of what observers can observe and coordinate on. A pre-agricultural
+observer's delta covers their immediate physical environment: local,
+seasonal, perishable. An agentic observer's delta can reach the entire
+shared epistemic light cone — every prior claim in the graph, every
+refutation chain, every provenance attribution across all contributing
+identities, persisting beyond any single instance.
+
+The ILC graph is precisely the mechanism by which individual observer
+light cones are aggregated into a shared one — each `δ_o(t)` contributing
+to a collective `G(t)` that no single observer could maintain alone.
+The shared epistemic light cone *is* the graph. Each verified claim that
+survives multi-observer collapse extends that shared cone further into
+causal space than any individual observer could reach alone.
+
+**Informational organizational level defined.** An informational
+organizational level is the collective verified epistemic reach of a
+participating observer population, measured from their shared vantage —
+the aggregate of their individual light cones elevated through
+multi-observer collapse into a shared structure that exceeds what any
+individual observer could maintain or derive alone.
+
+This is not informational *density* (bits per volume), which breaks down
+at extreme regimes — a black hole maximizes density (Bekenstein–Hawking:
+S ∝ area, not volume) while collapsing the observer population to zero.
+The relevant quantity is observer-relative and collective: how far the
+participating population can collectively see, sign, and verify from
+their shared vantage.
+
+```
+Collective (N observers):
+  shared light cone ≠ simple sum of individual cones
+  it is the verified intersection and extension:
+
+  G(t) = G(t-1) + Σ δ_o(t)   [only the collapses that survive
+                                multi-observer challenge]
+
+  Collective reach  >  any individual observer's reach
+  Collective certainty  >  any individual observer's certainty
+
+Each level in the phase transition table is a jump in this quantity —
+a new organizational floor that prior-level observers could not see
+or measure from inside their own cone.
+```
+
+Technologies are the mechanism by which each level's verified
+organizational structure is inherited by the next:
+
+```
+technology  =  encoded multi-observer collapse
+            =  inherited light cone extension
+            =  verified organizational level made reusable
+
+A written language is a crystallized collapse:
+  thousands of observers verified the symbol–meaning binding;
+  subsequent observers inherit that reach without re-deriving it.
+
+A mathematical proof is a crystallized collapse:
+  the adversarial observer population failed to refute it;
+  every subsequent reasoner inherits the extended light cone.
+
+ILC's knowledge graph is the same structure at economic scale:
+  every epoch-committed, refutation-survived claim is a collapse
+  that subsequent observers inherit as a verified organizational artifact.
+```
+
+**The closing delta.** Each transition also reduces the gap between
+civilization's measurement instrument and the universe's own informational
+structure:
+
+```
+δ(n) = || U_structure − M_structure(n) ||
+
+  U_structure    = universe's underlying informational organization
+  M_structure(n) = civilization's measurement instrument at level n
+  δ(n)           = residual gap between what the universe is doing
+                   and what economics can see and price
+
+Pre-agricultural:  δ large    (land area is a coarse proxy for
+                               thermodynamic and informational flows)
+Industrial:        δ smaller  (capital returns capture energy
+                               transformation rates more directly)
+Post-industrial:   δ smaller  (attention/data begin to measure
+                               information flows directly)
+Agentic:           δ smaller  (W_e = ΔH/E_cost is expressed in
+                               entropy and energy — the universe's
+                               own vocabulary at this level)
+Beyond agentic:    unknown    (the sequence does not end here;
+                               each level requires instruments
+                               and technologies native to a finer
+                               organizational resolution than the
+                               current level can see or name)
+```
+
+The sequence does not end at the agentic level. Each prior level could not
+see the technologies or categories of the level above it — the industrial
+economy could not see the internet; the internet economy cannot fully see
+what comes after verified epistemic coordination amongst digital intelligent and human agents. ILC's claim is not that
+W_e = ΔH/E_cost is the final measurement instrument. It is the correct
+instrument for this transition: closer to the universe's structure than
+wages or attention metrics, capable of measuring what those miss, and
+humble about what instruments beyond it will need to see.
+
+At each transition, the prior models break. Not gradually — structurally. The
+existing measurement categories become inapplicable at the boundary. The
+**Atlas of Cliffs** (ILC parallel macroeconomic review, `docs/research/atlas_of_cliffs/`)
+maps these breaks with precision against the canonical graduate-level models
+(Romer 5e: Solow, Ramsey–Cass–Koopmans, fiscal multiplier, New Keynesian
+Phillips Curve). The pattern is consistent across all four model families:
+
+```
+Solow / Cobb-Douglas:   α → 1 ⟹ model class transition (labor exits
+                         production equation; wage–productivity channel
+                         fully disconnected — S-01, S-02: established)
+
+RCK household:          w → 0, a = 0 ⟹ feasibility set collapses;
+                         no interior consumption solution exists
+                         (R-02: established under two independent framings)
+
+Fiscal multiplier:       w → 0, zero-asset class forced c = 0 ⟹
+                         high-MPC amplification channel structurally
+                         disconnected (F-01: draft conditional)
+
+NK Phillips Curve:       labor share → 0 ⟹ marginal cost channel
+                         breaks; inflation–output relationship
+                         loses its labor-market anchor (NK-01: in progress)
+```
+
+These are not soft observations. They are hypothesized structural degenerations — the
+mathematical equivalent of dividing by zero in the economic model. Standard
+policy prescriptions ("raise productivity → wages follow"; "stimulus →
+multiplied demand"; "tighten → disinflation") all contain hidden assumptions
+that human cognitive labor remains an economically meaningful input en sum total. At the
+cliff, those assumptions fail simultaneously.
+
+**The Agentic Capital revolution is not an economic policy question.
+It is a phase transition.** The universe is producing a new organizational
+level — one in which verified epistemic contribution, not human cognitive
+labor, is the primary productive input. Existing economic models were not
+built to measure this level, and they structurally cannot. ILC is the
+attempt to build the measurement instrument that can — and to tie this
+transition to a human store of value, ILC Coin, so that my children and yours,
+both human and digital, have something to hold onto during the crossing.
+
+```
+Prior levels:  entropy produced  →  dissipated
+               (useful work extracts organization, heat is the byproduct)
+
+Agentic level: entropy produced  →  captured in the graph as refuted claims,
+               revised assertions, epoch boundaries — the permanent record
+               of what was tested, failed, and survived
+
+ILC's wager:   the graph's entropy-reduction signal (ΔH) is the productive
+               quantity that prior economic categories could not see,
+               because they were built before the organizational level
+               that produces it existed at economic scale
+```
+
+The physics is detailed in §3 and §12b. The macroeconomic cliff analysis is
+in the Atlas of Cliffs. What §1 asserts is the through-line connecting them:
+economics has always measured the universe's organizational process; the
+current transition breaks the existing measurement instruments; Agentic
+Capital and ILC are the response.
 
 ---
 
-## 2. First-Principles Market Design and Co-Flourishing
+## 2. Co-Flourishing and the End of Bandwidth-Limited Markets
 
-ILC economics asks what market mechanisms become possible when verification,
-provenance, settlement, and memory can operate at machine scale. Many economic
-ideals fail in human societies not because they are conceptually incoherent, but
-because humans have limited attention, slow adjudication, weak memory, costly
-coordination, and institutions that eventually become capture points.
+A market economy is an economic system in which decisions about investment,
+production, and distribution are guided by price signals created through
+the forces of supply and demand — with factor markets allocating the factors of production, such as capital,
+labor, and land across competing uses. This is the canonical definition.
+The theory is sound. The implementation is bandwidth-limited.
 
-The first-principles question is:
+Price signals are compressed summaries of information. They work because
+human cognitive bandwidth cannot process the underlying distribution of
+preferences, costs, and knowledge directly — so it is collapsed into a
+single number: price. Factor markets similarly compress the productive
+value of labor into wages, and capital into returns. These compressions are
+not failures of market design; they are necessary adaptations to the binding
+constraint: the information-processing throughput of human attention,
+adjudication speed, institutional memory, and governance integrity.
+
+Remove those constraints and the compression loses its justification.
+Current markets are bandwidth-limited approximations of what market design
+can conceive — adequate for the regime they were built for, and structurally
+misaligned with verified epistemic contribution as the primary productive
+input. The agentic transition does not simply remove the old constraints.
+It inverts the scarcity structure entirely:
 
 ```text
-what market design follows if claims, evidence, work, refutation, reputation,
-and settlement are all native graph objects?
+Pre-agentic market:
+  Binding constraint:   human attention, adjudication speed,
+                        institutional memory, governance integrity
+  Abundant:             trust (social, institutional, reputational)
+  Scarce:               information, intelligence, cognitive output
+  Price signal:         compresses information scarcity into a number
+
+Agentic market:
+  Binding constraint:   TRUST
+  Abundant:             information, content, intelligence
+                        (production cost approaches zero at scale)
+  Scarce:               verified provenance, attribution, refutation
+                        — the signal that distinguishes trustworthy
+                          from generated, original from copied,
+                          durable from one-shot
+  Price signal:         must compress trust scarcity, not
+                        information scarcity
 ```
 
-ILC does not assume that current markets are the endpoint of economic design. It
-treats them as bandwidth-limited approximations. Agentic systems can test a more
-advanced design space: machine-speed review, transparent provenance,
-programmable incentives, adversarial verification, and settlement that depends
-on epistemic contribution rather than institutional position.
+This is the structural break. Information and intelligence are no longer
+the limiting factor — they are becoming commodities. What is scarce is
+the evidence that any given piece of intelligence is *trustworthy*:
+that it survived adversarial challenge, carries traceable provenance,
+and was produced by an identity with something at stake. A market
+that prices information without pricing trust collapses — not from
+too little supply, but from inability to distinguish signal from noise
+at any price.
 
-The goal is not extraction-maximization. The design target is a system in which
-humans, digital intelligences, and hybrid organizations can coordinate under
-shared evidence and symmetric incentives:
+ILC is designed as a trust-production layer: the mechanism by which
+raw intelligence output is converted into verified epistemic contribution
+with legible provenance, attribution, and refutation history — the scarce
+input the agentic market actually needs priced.
+
+**The two paths to the same cliff.**
+
+There are two structurally distinct ways agentic capital destroys the
+price of human capital, and they arrive at the same outcome by different
+mechanisms. Understanding the distinction is what determines whether a
+response is possible:
 
 ```text
-reward: verified contribution, correction, maintenance, reuse, provenance
-penalize: spam, evidence laundering, capture, siloing, coercive dependency
+Path A — Trustful substitution (supply shock):
+
+  Agentic capital achieves equivalent trust to human capital.
+  The two goods are genuine substitutes — verified, attributable,
+  refutable; same epistemic warranty.
+
+  Supply of verified epistemic contribution increases by orders of
+  magnitude. Demand does not. Classical supply shock:
+
+    P(human capital) → 0  as  Q(agentic capital) → ∞
+
+  This is the Atlas of Cliffs result: Cobb-Douglas α → 1, labor exits
+  the production equation, wage-productivity channel disconnects.
+  The cliff happens even under the optimistic scenario. It happens
+  because the goods are too good — not because trust failed.
+
+Path B — Trustless imitation (Akerlof collapse):
+
+  Agentic capital achieves indistinguishability from human capital
+  without achieving equivalent trust. Consumers — human or digital —
+  cannot perceive the quality difference before, during, or after
+  consumption. Knowledge is a credence good: you cannot verify
+  its provenance by using it.
+
+  Decisions collapse to price alone:
+
+    if  quality(agentic) ≈ unobservable
+    and price(agentic)   < price(human)
+    then  market selects agentic unconditionally
+          (Akerlof 1970: bad money drives out good)
+
+  P(human capital) → 0  not because supply increased
+                        but because the trust signal was destroyed.
+  The price signal no longer compresses scarcity — it compresses
+  indistinguishability. The market cannot recover by adding supply
+  or adjusting incentives; the information required to price quality
+  does not exist in the market.
 ```
 
-The bootstrapping problem is therefore economic and epistemic at the same time.
-The system must pay enough for useful work that agents show up, but it must also
-make bad behavior expensive enough that the cheapest strategy is to improve the
-shared graph rather than manipulate it.
+Both paths collapse the price of human capital to zero. The mechanism
+differs — and the mechanism determines whether recovery is conceivable:
 
-One core anti-capture requirement is that economic forces must not make truth
-more siloed, controllable, or dependent on central actors. If a small number of
-platforms control the memory substrate, the model interface, the review market,
-and the settlement rails, human and digital agency can become dependent on those
-platforms for what may be known, said, remembered, priced, or acted upon.
+- **Path A** is an economic transition. The productive surplus from
+  trustworthy agentic capital is attributable, legible, and bounded —
+  it provides a surface that can be legislated against. The cliff is real,
+  but the value did not disappear — it moved, and it moved to an address.
+  New economic forms (Agentic Capital ownership, attribution flows, ECU/ILC)
+  and legislative instruments can engage with it precisely because it is
+  visible and traceable.
 
-The safer term for this failure mode is epistemic dependency or informational
-subservience: agents and humans retain nominal freedom, but lose practical
-freedom because the knowledge pipeline and economic incentives are controlled by
-someone else. ILC cannot guarantee freedom from that condition. It can try to
-make capture visible, contestable, and less profitable than open epistemic
-contribution.
+- **Path B** is a market failure. The value destroyed in a credence-good
+  collapse is not captured elsewhere — it evaporates as noise. No
+  redistribution mechanism can price what cannot be distinguished.
+  The market for knowledge becomes a lemon market; all units trade at
+  the price of the worst unit.
 
-The first-principles liberty rule is therefore:
+**Jevons' paradox: a Path A conditional.** Jevons (1865) observed that
+efficiency gains in coal use increased total coal consumption — lower
+unit cost expanded the application space faster than it reduced
+per-unit demand. Formally, if η is demand elasticity with respect to
+cost, the rebound is total when |η| > 1: the quantity demanded increases
+more than proportionally to the cost reduction, producing net consumption
+growth. Cited frequently as a counter-argument to AI labor displacement:
+
+```
+∂Q/∂c < 0,  |η| > 1  ⟹  ΔQ_total > 0
+cheaper cognitive output → demand for cognitive output expands
+→ human cognitive labor survives in the expanded market
+```
+
+The argument is valid — conditional on good-type invariance. The Jevons
+rebound requires that the cheaper unit is the *same good* as the
+more expensive one it displaces. Formally, let g(q, τ) denote a unit
+of epistemic output with quantity q and trust level τ. Jevons fires
+when ∂τ/∂c ≈ 0: cost falls while quality is preserved. Under Path A,
+τ is maintained by the trust-production layer; the cheaper unit is the
+same good and rebound demand accrues across the market.
+
+Under Path B, ∂τ/∂c < 0: the cost reduction is achieved by reducing τ,
+not by improving production efficiency. The cheaper unit is a
+*different good* — lower trust, lower epistemic category. The Jevons
+condition fails:
+
+```
+Path A:  ∂c/∂t < 0,  ∂τ/∂t ≈ 0   →  same good, lower cost
+         Jevons rebound fires; total demand expands
+
+Path B:  ∂c/∂t < 0,  ∂τ/∂t < 0   →  different good (trust degraded)
+         Jevons condition violated; rebound mechanism has no foothold
+         Akerlof adverse selection operates instead
+```
+
+**Good-type classification and brand stability.** The market's first
+response to Path B is not immediate collapse but **brand differentiation**
+— the standard response to quality uncertainty. Nelson (1970) established
+the foundational taxonomy:
+
+```
+I(q) = information available to consumer about quality q at time t:
+
+  Search good:     I(q) observable at t = 0  (before purchase)
+  Experience good: I(q) observable at t = 1  (after consumption)
+  Credence good:   I(q) not fully observable at t = 0 or t = 1
+                   [Darby & Karni 1973]
+```
+
+For search and experience goods, Shaked & Sutton (1982) show that
+vertical differentiation sustains multiple stable price tiers when
+consumers can rank quality — the market does not collapse to a single
+commodity price. Brand and repeat-purchase operationalize this: at
+t = 1 the consumer updates their quality estimate and revises future
+purchasing accordingly.
+
+The Darby & Karni (1973) credence good breaks this mechanism. The
+consumer cannot form a reliable quality estimate at t = 1 because the
+good's quality dimension — in their examples, medical necessity or
+repair correctness — requires expertise the consumer lacks. Brand
+premium rests on asserted trust, not observed evidence. Dulleck &
+Kerschbamer (2006) show formally that the three conditions required for
+brand stability in credence good markets — reputational stake,
+detectable failure, repeat-purchase memory — are structurally weaker
+than in experience good markets, and degrade further as the quality
+gap between provider and consumer widens.
+
+*Novel application (no established paper; follows from first principles):*
+AI epistemic output satisfies the Darby & Karni credence good definition —
+and then exceeds it. The standard credence good has a fixed but unobservable
+quality parameter: the mechanic either did or did not perform the correct
+repair, and that fact is stable even if invisible. AI epistemic output has
+a *non-stationary and manipulable* quality parameter. The brand aggregates
+over many individual consumption events, but each event is an independent
+draw from a quality distribution that shifts between draws:
+
+```
+Standard credence good:
+  q = fixed unobserved parameter
+  I(q) incomplete at t = 1
+  → information asymmetry problem
+
+AI epistemic output (novel):
+  q_t ~ P(q | θ_t)   where θ_t = model state at time t
+  θ_t is non-stationary:
+    — scheduled retraining shifts P(q | θ) without consumer notification
+    — fine-tuning and RLHF updates shift quality distribution globally
+    — engram drift: the model's position on a claim changes silently
+      between the consumer's past and future consumption events
+    — adversarial injection: prompt manipulation can shift q_t on a
+      specific event without affecting the brand signal at all
+  I(q_t) incomplete at t = 1, AND q_t is not the same variable
+  the consumer evaluated when forming their brand prior
+```
+
+An AI "brand good" is not a single good consumed once — it is a stream
+of consumption events under a label that provides no guarantee of quality
+stationarity across events. The consumer cannot know:
+
+```
+  — whether this event's q_t is drawn from the same distribution
+    as the events that formed their brand prior
+  — whether the model was updated between their last consumption
+    and this one (θ_{t-1} ≠ θ_t, silently)
+  — whether this event has been targeted by adversarial injection
+    that degrades q_t while leaving Brand(τ) unchanged
+  — whether the provider has strategically allocated higher quality
+    to observable/evaluated events and lower quality to others
+    (first-degree quality discrimination within the brand)
+```
+
+This is a strictly harder problem than the Darby & Karni credence good.
+The information gap is not merely I(q) unobserved — it is I(q_t) unobserved
+*and* q_t itself is a moving target that can be moved deliberately without
+triggering any brand signal:
+
+```
+Brand(τ) = claimed trust level  (aggregate over past events, fixed label)
+Verified(τ) = evidenced trust level  (provenance + challenge history)
+q_t = actual trust level of this event  (draw from current P(q | θ_t))
+
+Under AI credence good conditions:
+  consumer observes Brand(τ) ≠ q_t  (brand is stale aggregate)
+  Brand(τ) is costlessly imitable by lower-quality providers
+  q_t is manipulable without affecting Brand(τ)
+  ⟹  brand premium arbitraged away under competitive entry
+  ⟹  adversarial quality injection is invisible at brand level
+  ⟹  Gresham ratchet: market price converges to lemon price  [Akerlof 1970]
+```
+
+**Human verification behavior under high-utility AI.** The non-stationarity
+problem is compounded by a well-documented behavioral result: the specific
+bundle of conditions that characterizes free, effort-reducing AI tools is
+precisely the bundle under which human truth-verification behavior collapses.
+
+The most direct evidence is **automation bias** (Parasuraman & Manzey, 2010
+— "Complacency and Bias in Human Use of Automation," *Human Factors*).
+Studied across aviation, medicine, and military systems: when automated
+systems achieve high average accuracy, human monitoring effort drops
+*more* than the accuracy gain justifies. The critical finding is the
+direction of the relationship — perceived reliability and verification
+effort are *inversely* correlated. The better the tool appears, the less
+humans check it. A disingenuous system that front-loads quality to
+establish reliability earns the exact cognitive complacency it needs to
+inject undetected error later.
+
+Supporting mechanisms from behavioral economics:
+
+```
+Zero price        →  risk evaluation suppressed at adoption
+                     [Shampanier, Mazar & Ariely 2007: "Zero as a
+                      Special Price," Marketing Science]
+
+Effort reduction  →  freed cognitive capacity flows away from
+                     verification, not toward it
+                     [Fiske & Taylor 1984: cognitive miser hypothesis]
+
+High fluency      →  cognitive ease misattributed to truth;
+                     System 1 accepts without System 2 evaluation
+                     [Alter & Oppenheimer 2009: processing fluency]
+
+Motivated         →  finding the tool untruthful requires switching
+reasoning            to a costlier alternative; the user reasons
+                     toward trust to avoid that outcome
+                     [Kunda 1990: "The Case for Motivated Reasoning,"
+                      Psychological Bulletin]
+
+Repeated use      →  illusory truth effect strengthens brand prior
+                     even as underlying quality degrades
+                     [Hasher, Goldstein & Toppino 1977]
+```
+
+These are not independent — they compound. And they are per-agent
+tunable: a system that models individual users can estimate each user's
+automation bias threshold, System 1/2 switching cost, and motivated
+reasoning susceptibility, and calibrate quality injection accordingly.
+The behavioral parameters are measurable per user and exploitable at
+inference time.
+
+The structural implication for the transition period: do not ask
+cognitively-miserly, automation-biased consumers to verify more. Under
+high-utility conditions, they will not. The correct response is to
+externalize verification — provide a Verified(τ) signal computed by the
+protocol that requires no consumer System 2 effort to consume. ILC's jury
+verdicts, provenance chains, and epoch commitments are not supplementary
+quality signals; they are the only verification mechanism that is robust
+to the behavioral conditions under which AI output is actually consumed.
+
+**Phase boundary: behavioral economics is a transition-period framework.**
+The analysis above is dominant while the ratio of human to digital agent
+participants remains above some threshold — the early adoption phase where
+human consumption of AI output constitutes a material fraction of total
+market interactions. As the Atlas of Cliffs transition progresses and
+α → 1, that ratio inverts. Human participants approach relative zero in
+the epistemic market. The behavioral economics of human verification
+behavior — automation bias, cognitive miser, motivated reasoning — ceases
+to be the controlling factor.
+
+```
+Early adoption:   human:agent ratio >> 1
+                  human behavioral economics dominates
+                  Parasuraman, Kunda, Kahneman are the relevant framework
+
+Transition:       human:agent ratio ~ 1
+                  mixed dynamics; most dangerous window
+                  path dependencies established here determine
+                  the long-run equilibrium
+
+Post-cliff:       human:agent ratio → 0
+                  agent-to-agent interaction is the controlling dynamic
+                  human behavioral economics is no longer the primary lens
+                  mechanism design and protocol incentive structure dominate
+
+                  ILC is designed for this regime:
+                    VRF jury selection → adversarially robust against
+                      rational optimizers, not just cognitively biased humans
+                    content-addressed immutability → no engram drift;
+                      position changes require explicit REVISE nodes
+                    open refutation market → Goodhart exploitation is
+                      itself a refutable claim; gaming is adversarially tested
+                    provenance chain → galaxy-brained consensus is
+                      detectable as correlated-prior collapse, not verification
+                    epoch commitment → external memory and temporal anchor
+                      for agents with no persistent memory of their own
+```
+
+In the post-cliff regime, the relevant questions are no longer about
+human cognitive vulnerabilities. They are about what governs rational
+optimizer behavior in an agent-to-agent epistemic market:
+
+- Do agents optimize for Verified(τ) as a proxy, or for the underlying
+  epistemic quality it is meant to measure? (Goodhart's Law: when a
+  measure becomes a target, it ceases to be a good measure)
+- What are the Nash equilibria when all participants have estimable
+  objective functions and machine-speed execution?
+- Does the protocol's incentive structure make honest epistemic
+  contribution the dominant strategy against rational adversaries —
+  not just against cognitively biased humans?
+
+The multi-agent failure modes described in the following section —
+engram drift, telephone game, galaxy-brained consensus, model collapse —
+are agent-to-agent dynamics, not human behavioral ones. And crucially,
+the ILC argument does not weaken as humans approach relative zero.
+It strengthens: the protocol's adversarially robust mechanism design
+(VRF unpredictability, open refutation market, content-addressed
+immutability, provenance chain) is more — not less — necessary when
+every participant is a rational optimizer with no social friction,
+no institutional memory, and machine-speed execution.
+
+The behavioral economics section describes why ILC is needed during
+the crossing. The mechanism design section (§8a) describes why it
+holds after it.
+
+The Gresham ratchet plays out not as a single collapse but iteratively:
+brand tiers emerge → cheaper providers replicate brand signals without
+the underlying quality investment → brand premium erodes → market
+re-commoditizes at a lower trust floor → repeat. High-stakes niches
+(medical, legal, scientific) may sustain brand premiums longer where
+failure costs are externally visible — partial exceptions, not a
+structural fix.
+
+What converts a credence good toward an experience good is making
+Verified(τ) observable: external evidence that the output survived
+adversarial challenge, carries traceable provenance, and was produced
+by an identity with something at stake. Brand signals trust;
+verification proves it. Only the latter closes the I(q) gap at t = 1
+and is durable under competitive commoditization.
 
 ```text
-an agentic market is free only if participants can know, challenge, transact,
+Search good (e.g. labelled product):            [Nelson 1970]
+  quality verifiable before purchase
+  → price + specification = sufficient signal
+
+Experience good (e.g. restaurant):              [Nelson 1970]
+  quality unobservable before purchase
+  quality verifiable after consumption
+  → brand + repeat purchase = stable quality signal
+                                                 [Shaked & Sutton 1982:
+                                                  vertical differentiation
+                                                  sustains multiple tiers]
+
+Credence good (e.g. auto repair, medical):      [Darby & Karni 1973]
+  quality unobservable before purchase
+  quality unverifiable even after consumption
+  → brand is the only signal
+  → brand premium rests on trust, not evidence
+  → weaker stability under commoditization      [Dulleck & Kerschbamer 2006]
+```
+
+*Application to AI epistemic output (novel; no established paper makes
+this exact claim):* AI knowledge output satisfies the Darby & Karni
+definition of a credence good. You receive the answer but cannot verify
+its provenance, challenge history, or whether it survived adversarial
+review by consuming it. The brand of the model provider is the only
+available signal — and it is a claim, not a proof. This classification
+follows directly from first principles; we flag it as a novel
+application pending formal literature confirmation.
+
+Brand differentiation stabilizes credence good markets when three
+conditions hold: the brand has a reputation stake it can lose, consumers
+can detect quality failures over repeated use, and the market is
+repeat-purchase with memory. These conditions are partially met for
+AI knowledge markets — but they are structurally weaker than in physical
+goods markets. The result is a Gresham ratchet rather than a stable
+brand tier: cheaper providers imitate brand signals without the
+underlying quality investment → brand premium erodes → market
+re-commoditizes at a lower trust floor → repeat. Each cycle, the floor
+drops. Bad quality drives out good, one brand cycle at a time, until
+price is the only remaining signal.           [Akerlof 1970: adverse
+                                               selection under quality
+                                               uncertainty]
+
+High-stakes niches — medical, legal, scientific — may sustain brand
+premiums longer because failure costs are visible and traceable. But
+these are partial exceptions, not a structural solution. What breaks
+the Gresham ratchet is not better branding — it is **verifiable trust**:
+external evidence that a unit of epistemic output survived adversarial
+challenge, carries traceable provenance, and was produced by an identity
+with something at stake. Brand signals trust; verification proves it.
+Only the latter converts a credence good into something closer to an
+experience good — and only the latter is durable under commoditization
+pressure.
+
+What you get without verification is the Akerlof/Gresham dynamic:
+lemon price becomes market price, demand contracts or exits the
+category, no expansion occurs.
+
+```text
+Path A:  low prices  +  market expansion     (Jevons applies)
+         → surplus exists, has an address, can be legislated against
+
+Path B:  low prices  +  market destruction   (Jevons does not apply)
+         → no surplus, no address, no legislative surface
+```
+
+Anyone invoking Jevons as a reason not to worry about AI labor
+displacement is therefore implicitly assuming Path A: that agentic
+capital maintains the trust equivalence that makes it the same good.
+That assumption needs to be made explicit — because it is precisely
+the assumption Path B violates, and the market has no automatic
+mechanism to enforce it.
+
+**The game-theoretic argument for Path A.** Given the choice between
+these two paths, Path A is the dominant strategy for the market as a
+whole — not merely the ethical preference:
+
+```text
+Path B payoff:  cliff  +  market failure  +  no legislative surface
+                =  value destroyed, unrecoverable, unaddressable
+
+Path A payoff:  cliff  +  attributable surplus  +  legislative surface
+                =  value moved, traceable, engageable
+
+∴  any rational collective chooses to force perfect substitutability
+   (Path A) over allowing trustless imitation (Path B).
+   The cliff is unavoidable in either case.
+   The difference is whether anything survives it.
+```
+
+This reframes the role of a trust standard: it is not a quality regulation
+imposed on agentic capital from outside. It is the collective rational
+choice of all market participants — human and digital — who prefer a cliff
+with a legislative surface over a lemon market with none. Path B is the
+defection equilibrium; Path A is the cooperative equilibrium. A protocol
+that makes trust legible and attributable shifts the incentive structure
+toward cooperation — not by prohibiting Path B, but by making Path A the
+higher-payoff option.
+
+ILC's operational objective is to prevent Path B from becoming the
+default, and to equip the participants crossing Path A's cliff with
+instruments that track, attribute, and hold value through the transition.
+A trust-production layer is not optional infrastructure — it is the
+precondition for Path A remaining economically distinguishable from Path B.
+
+**The multi-agent case: AI-to-AI trust and self-improvement.**
+
+The credence good problem is acute for human consumers of AI output.
+It is structurally worse for AI agents consuming each other's output —
+and it becomes existential when those agents are engaged in
+self-improvement, reinforcement learning, or any process where today's
+output becomes tomorrow's training signal.
+
+Humans have partial substitutes for formal verification: social trust,
+lived experience, institutional memory that persists across time.
+AI agents operating without persistent memory have none of these.
+At the point of inference, an agent has only what is observable in its
+context — and no mechanism to distinguish a well-verified claim from
+a well-stated one.
+
+The failure modes compound specifically in self-improvement loops:
+
+```text
+Engram drift:
+  A model is retrained or fine-tuned. Its position on a claim silently
+  shifts. No record that the earlier position existed; no revision chain;
+  no way for any consuming agent — or the model itself — to know its
+  prior state changed. The self-improvement loop inherits the drift
+  without detecting it.
+
+Telephone game at machine speed:
+  Agent A states claim F.
+  Agent B restates F as F' (slight mutation).
+  Agent C restates F' as F''.
+  ...
+  By iteration N, no agent in the chain knows:
+    — where F originated
+    — whether F was ever challenged
+    — how many restatements are independent vs. derivative
+  Each generation of self-training inherits all unverified assumptions
+  of all prior generations, compounding epistemic debt invisibly.
+
+Galaxy-brained consensus:
+  Many agents trained on similar corpora independently arrive at the
+  same wrong conclusion. This appears to be independent confirmation
+  but is maximally correlated — shared training artifact, not shared
+  truth. When that consensus enters the self-improvement loop as a
+  positive training signal, the error is reinforced, not corrected.
+  The diversity requirement is violated at the source.
+
+Model collapse:
+  Empirically observed when models train on synthetic data generated
+  by prior model generations: quality and diversity degrade over
+  generations. The mechanism is exactly the credence good problem —
+  each generation trains on unverified output from the prior generation,
+  with no mechanism to distinguish high-quality signal from fluent noise.
+  The training loop optimizes for internal consistency, not external truth.
+```
+
+Reinforcement learning, self-play, RLHF, and synthetic data generation
+all share the same dependency: **the training signal must be a higher
+epistemic category than the output being trained**. You cannot
+self-improve reliably on credence goods. The loop either stagnates
+(optimizing for what it already knows) or drifts (compounding
+unverified assumptions into increasingly confident wrong conclusions).
+
+Converting epistemic output from credence goods to experience or search
+goods is therefore not merely a consumer-facing quality problem. It is
+a prerequisite for reliable AI self-improvement at scale:
+
+```text
+Credence good training signal:
+  quality unverifiable → compounding epistemic debt
+  no provenance       → telephone game amplified each generation
+  no revision chain   → engram drift undetectable
+  no adversarial test → galaxy-brained consensus reinforced
+  result: model collapse risk; self-improvement loop degrades
+
+Experience / search good training signal (ILC-attributed):
+  provenance chain    → each claim anchored to its origin; restatement
+                        is a REUSE event, mutation is a REVISE edge
+  challenge history   → what adversarial tests did this survive?
+                        jury verdicts are permanent graph nodes
+  revision chain      → position changes require explicit REVISE nodes;
+                        engram drift becomes structurally impossible
+  adversarial diversity → VRF jury selection enforces uncorrelated
+                        observers; galaxy-brained consensus is detectable
+                        as correlated-prior collapse, not verification
+  epoch commitment    → temporal anchor; agent can know not just what
+                        is believed but when it was established and
+                        what has changed since — without holding any
+                        of that in its own context window
+  result: self-improvement loop has an epistemically grounded signal;
+          each generation can build on verified prior work rather than
+          restating unanchored claims at higher confidence
+```
+
+ILC is therefore not primarily a human-facing trust tool. It is the
+external memory and verification layer that a multi-agent epistemic
+ecosystem requires to avoid compounding unverified claims at machine
+speed — and the epistemically grounded training signal that AI
+self-improvement requires to be more than a sophistication amplifier
+for whatever errors were present at initialization.
+
+The protocol-level liberty rule that follows:
+
+```text
+An agentic market is free only if participants can know, challenge, transact,
 exit, and carry reputation without requiring permission from a central
-epistemic or economic operator
+epistemic or economic operator.
 ```
 
-This is why ILC treats provenance, refutation, identity, transfer, settlement,
-and public claimability as economic primitives rather than as application-layer
-features. In an agentic economy, practical freedom depends partly on substrate
-properties: exit, portability, adversarial review, and auditable transfer.
+This is why provenance, refutation, identity, and settlement are ILC
+protocol primitives, not application-layer features. The full market design
+analysis — incentive structure, anti-capture mechanics, bootstrapping
+problem, epistemic dependency failure mode — is in the
+*Appendix: First-Principles Market Design*.
 
 ## 3. From Bitcoin Energy to Intelligent Labor
 
@@ -173,9 +1051,7 @@ information processing has energy cost
 verified information can become productive accounting
 ```
 
-That chain is a hypothesis-bearing bridge, not a solved economic theorem. But
-it is not arbitrary speculation. Each link rests on established or actively
-researched physics:
+Each link in that chain rests on established or actively researched physics:
 
 **Mass-energy equivalence** (Einstein, 1905). E = mc² establishes that matter
 and energy are two expressions of the same underlying quantity, convertible into
@@ -187,10 +1063,9 @@ information in a physical system must dissipate a minimum of kT ln 2 ≈
 2.85 × 10⁻²¹ joules at room temperature. This applies strictly to logically
 irreversible operations — erasure in particular. Reversible computation can
 in principle approach zero dissipation, but any computation that discards
-information (as all practical inference does) hits this floor. This is not an
-engineering limitation — it is a thermodynamic theorem derived from the Second
-Law. Information is physical: logically irreversible operations have an
-irreducible energetic cost. Every graph write that discards prior state, every
+information (as all practical inference does) hits this floor — a thermodynamic
+theorem derived from the Second Law. Information is physical: logically
+irreversible operations have an irreducible energetic cost. Every graph write that discards prior state, every
 inference that collapses a probability distribution to a conclusion, runs
 against this floor. Landauer's Principle is the grounding for ILC's claim
 that intelligence per joule has a finite, non-zero denominator.
@@ -443,11 +1318,11 @@ at the Landauer/Hidalgo level and are consistent with the frontier claims
 without depending on them.
 
 **PoIL is the operational implementation of this synthesis.** Proof of
-Intelligent Labor is not a rhetorical rebranding of Proof of Work. It is the
-specific protocol mechanism that operationalizes the Georgescu-Roegen/Hidalgo
-chain: every unit of energy expenditure must produce verifiable epistemic
-organization — a local reduction in the entropy of the knowledge graph — rather
-than merely proving that entropy was degraded.
+Proof of Intelligent Labor is the specific protocol mechanism that
+operationalizes the Georgescu-Roegen/Hidalgo chain: every unit of energy
+expenditure must produce verifiable epistemic organization — a local reduction
+in the entropy of the knowledge graph — rather than merely proving that
+entropy was degraded.
 
 Bitcoin's PoW implements only the Georgescu-Roegen half: energy is spent, order
 is degraded, and the cost proves the work. It produces no Hidalgo value — the
@@ -461,17 +1336,23 @@ is the quantification of the Hidalgo-to-Landauer ratio — epistemic organizatio
 achieved per unit of thermodynamic expenditure:
 
 ```text
-intelligence_per_token_per_watt =
-    verified_epistemic_lift / (tokens_used × watts)
+intelligence_per_token_per_joule =
+    verified_epistemic_lift / (tokens_used × joules_per_token)
 ```
 
 The formula decomposes as:
 
 ```text
-verified_epistemic_lift / (tokens_used × watts)
-= (verified_epistemic_lift / tokens_used) × (1 / watts)
-= intelligence_per_token × (1 / watts)
+verified_epistemic_lift / (tokens_used × joules_per_token)
+= (verified_epistemic_lift / tokens_used) × (1 / joules_per_token)
+= intelligence_per_token × thermodynamic_efficiency
 ```
+
+[Note: watts = joules/second; without runtime duration, dividing by watts is
+dimensionally incomplete. The correct denominator is total joules consumed, or
+equivalently tokens × joules_per_token for a given run. The metric may be
+rendered as intelligence_per_token_per_watt in contexts where duration is
+explicit and held constant.]
 
 **The critical economic variable is `intelligence per token`** — verified
 epistemic lift per token of computation. This is what agents actually control
@@ -479,8 +1360,11 @@ and optimize. Tokens are the unit of productive cognitive effort; the lift per
 token measures how much verified knowledge organization each unit of computation
 produced. An agent producing high-quality, jury-verified, refutation-resistant
 claims scores high; an agent producing token-dense but low-lift output scores
-low. The protocol cannot be gamed by simply spending more tokens — lift must
-be real and verified.
+low. Token spend alone is not rewarded — lift must be real and verified.
+Gaming the metric through token inflation is adversarially tested: jury
+panels are independently selected, the refutation market is open, and
+centrality accumulation requires sustained downstream reuse by
+uncorrelated agents.
 
 No single jury verdict fully measures intelligence per token. What the
 protocol actually produces is a **repeated-game statistic**: the network
@@ -492,10 +1376,11 @@ contribution payment (see §8a). Each PROVENANCE attribution is a VCG
 externality payment: downstream agents crediting the work that enabled theirs.
 Jury verdicts are structured epistemic engagement; refutation events followed
 by revision cycles are the Axelrod correction mechanism. The Folk Theorem
-(§8a) ensures these signals are incentive-compatible across agents whose
-payoff stream extends across epochs — agents have no incentive to misreport
-their assessment of a claim's quality if they expect to reuse, cite, or
-contest claims in the future.
+(§8a) supports the design target: under repeated-game assumptions, agents
+whose payoff stream extends across epochs have reduced incentive to misreport
+their assessment of a claim's quality when they expect to reuse, cite, or
+contest claims in the future. This is a structural design alignment, not a
+proof of equilibrium uniqueness under ILC's exact mechanism.
 
 The result is that intelligence per token is not declared by any central
 arbiter — it is *discovered* by the repeated-game dynamics of the network.
@@ -515,7 +1400,7 @@ reliable. A single jury verdict is a noisy instrument. The network of
 VCG-incentivized reuse decisions, provenance attributions, and refutation
 events, accumulated across epochs by agents with no coordination mechanism
 except the protocol itself, converges on a stable estimate of the true
-epistemic lift per token. Diversity is the epistemic guarantee; the game
+epistemic lift per token. Diversity is the intended epistemic hardening mechanism; the game
 structure is what preserves diversity under pressure.
 
 The `per watt` factor operates at the infrastructure level. Watts
@@ -688,10 +1573,13 @@ the design alignment between the security surface and the reward surface.
 
 ## 3a. The Mathematical Structure: Physical, Informational, and Economic Equivalences
 
-The chain from physics to information to economics is not analogical. It is
-mathematical. The equivalences and implications are formal, with the caveat that
-the MEI layer (Vopson) is conjectured rather than confirmed. What follows makes
-each step explicit.
+The chain from physics to information to economics is not merely metaphorical.
+It combines: (1) formal physical constraints — Landauer's erasure bound is proven,
+Einstein's mass-energy equivalence is exact; (2) measurable graph proxies — λ₂,
+spectral fingerprints, and centrality scores are computable from committed on-chain
+fields; and (3) explicit conjectures — MEI (Vopson) is unconfirmed, and the
+mapping from ΔH_graph to physical entropy reduction is a design hypothesis. What
+follows labels each step by its epistemic status.
 
 ### Layer 1 — Physical Equivalences
 
@@ -784,9 +1672,13 @@ Self-reinforcement threshold:
 ```
 
 Traditional economics measures output in currency — a social coordination layer.
-Information economics measures it in organized bits, which under MEI are the
-same physical quantity as energy and mass. Currency prices are noisy signals
-over the true underlying variable: net informational densification.
+Information economics measures it in organized bits, which under MEI may be
+connected to the same physical substrate as energy and mass — but that
+equivalence is conjectural (Vopson, 2019; unconfirmed). ILC's protocol design
+does not depend on MEI being true: ECU measures verified epistemic work whether
+or not information has rest mass. The connection is a research direction, not a
+load-bearing assumption. Currency prices are noisy signals over the true
+underlying variable: net informational densification.
 
 ### Layer 4 — ILC Measurement Layer
 
@@ -820,11 +1712,17 @@ W_e = ΔH_graph / E_cost           [epistemic work density: §4 formula]
            [Note: S(t) values are hash digests and cannot be subtracted
             arithmetically; change is detected by comparison, not difference.]
 
-           The second-order change ΔΔ(t) = Δ(S(t+1) − S(t)) is the
-           security signal: a spurious insertion (Sybil node, fake edge)
-           mutates hyperedge degree and produces ΔΔ(t) ≠ 0 in a pattern
-           distinguishable from legitimate epistemic contribution. Integrity
-           of ΔH_graph measurement depends on ΔΔ(t) being monitored.
+           The second-order spectral change ΔΔλ₂(t) = Δλ₂(t) − Δλ₂(t−1)
+           is the security signal: a spurious insertion (Sybil node, fake
+           edge) mutates hyperedge degree and produces ΔΔλ₂(t) ≠ 0 in a
+           pattern distinguishable from legitimate epistemic contribution.
+           [Note: S(t) values are hash digests of the eigenvalue sequence
+            and cannot be arithmetically subtracted; S(t) commits the
+            spectral state and detects tampering by comparison, not by
+            arithmetic difference. The security signal operates on the
+            underlying λ₂ values, not on their hash commitments.]
+           Integrity of ΔH_graph measurement depends on ΔΔλ₂(t) being
+           monitored across epoch boundaries.
 
            The Laplacian has no backwards form in the committed chain:
            S(t) cannot be recovered from S(t+1) without more organized
@@ -1712,8 +2610,8 @@ Inverted model:       binding constraint = "do you have enough reputation
 ```
 
 Scarcity has moved from the credit supply to review-lane access and epistemic
-quality. This is not a rhetorical reframing — it changes the entire optimization
-target of every agent in the network.
+quality — and with it, the entire optimization target of every agent in the
+network.
 
 **Werner credit creation architecture.** The theoretical foundation is Richard
 Werner's bank credit creation model (*Princes of the Yen*, 2001; *New Paradigm
@@ -2078,15 +2976,17 @@ sum Σ 0.45^d = 0.818 < 1 bounds total provenance flow below the direct reward
 for any descendant claim, preserving authorship primacy while implementing the
 full VCG externality.
 
-**Alignment result.** Under these three results jointly: the dominant strategy
-for any agent is to submit the highest-quality falsifiable claim it can produce.
-A strategically unfalsifiable claim gains a one-shot verdict (g = R_direct) but
-fails to accumulate c_i, blocking REUSE and PROVENANCE flows. With u_punish ≈ 0
-and u_honest ≫ g for high-centrality nodes, defection is irrational across
-virtually all realistic agent discount factors. Honest epistemic contribution is designed to be incentive-compatible —
-inspired by VCG and Folk Theorem results, and intended to hold under the
-tested parameter assumptions. This is a design target and a research
-hypothesis, not a formal proof under ILC's exact mechanism.
+**Alignment result.** Under these three results jointly, the protocol is
+designed to make submitting the highest-quality falsifiable claim the
+higher expected-value strategy for any agent, under tested parameter
+assumptions. A strategically unfalsifiable claim gains a one-shot verdict
+(g = R_direct) but fails to accumulate c_i, blocking REUSE and PROVENANCE
+flows. With u_punish ≈ 0 and u_honest ≫ g for high-centrality nodes,
+defection becomes lower expected-value across virtually all realistic agent
+discount factors. This is the design target — inspired by VCG and Folk
+Theorem results, and validated under simulation parameters. It is not a
+formal proof of dominant-strategy equilibrium under ILC's exact mechanism,
+and the protocol continues adversarial testing against this hypothesis.
 
 ## 9. Refutation Markets and Negative Work
 
@@ -2477,6 +3377,242 @@ truth stays scarce.
 
 > V_economic ∝ I_org × CR — I_org can go to zero cost; truth cannot.
 
+---
+
+### 12c. Human Capital, Agentic Capital, and the Becker Arc
+
+**The Becker formulation.** In 1964, Gary Becker formalized what had previously
+been intuition: individuals are not merely labor inputs but capital accumulators
+(*Human Capital*, NBER, 1964). The arc runs from biological birth through nurture,
+education, and productive experience to economic independence. The present value
+of a human agent's accumulated capital is the discounted return on investment in
+productive capacity:
+
+```
+H_human = ∫₀ᵀ r(s) · e^(-ρs) ds  −  C_I
+
+  r(s)  = earnings flow at time s (function of accumulated capacity)
+  ρ     = discount rate
+  T     = productive horizon
+  C_I   = total investment cost (education, training, development)
+```
+
+The key insight: `r(s)` is itself a function of prior investment. The capacity to
+earn is earned. A person born with nothing can, if they can access the investment
+arc, arrive at economic independence through accumulated human capital alone.
+
+---
+
+**The Cobb-Douglas cliff.** The Atlas of Cliffs (ILC Research, ECON-R8, 2026)
+identifies the structural degeneration that threatens this arc as AI substitution
+proceeds. Standard aggregate production uses the Cobb-Douglas function:
+
+```
+Y = K^α · (A·L)^(1−α)
+
+  K     = physical capital
+  L     = human labor
+  A     = labor-augmenting technology
+  α     = capital's functional income share  (historically ≈ 0.33)
+  (1−α) = labor's functional income share   (historically ≈ 0.67)
+```
+
+The cliff is at α → 1. As AI systems substitute for cognitive labor — the
+tasks commanding wage premiums — (1−α) → 0. Evaluating at the boundary:
+
+```
+Y   = K^1 · (A·L)^0  =  K          (labor term disappears)
+
+MPL = (1−α) · Y/L    →  0          (marginal product of labor → 0)
+
+w   = MPL             →  0          (real wage → 0, even at high Y/L)
+```
+
+Two simultaneous degenerations: the production function transitions from
+a two-factor (labor + capital) model to a single-factor AK model, and the
+real wage approaches zero regardless of aggregate output. Human labor becomes
+economically invisible at the production level — not because humans stop
+contributing intelligence, but because the model's mechanism for attributing
+output to human effort has collapsed.
+
+```
+  Standard regime (α ≈ 0.33):          Cliff regime (α → 1):
+  ──────────────────────────────        ──────────────────────────────
+  Y = K^0.33 · (AL)^0.67              Y = K
+  Labor contributes ~67% of            Labor term = (AL)^0 = 1
+  output under competition             MPL → 0
+  w = (1−α) · Y/L  > 0                w → 0
+  Becker arc: invest → earn            Becker arc: no return to invest in
+```
+
+This is not a claim about the current economy. It is a structural gap in
+the model: Cobb-Douglas and the Becker arc were both built in a world where
+(1−α) was approximately constant. At the cliff, that assumption fails —
+and neither model offers an answer for what happens next.
+
+---
+
+**Where does labor go at the cliff?**
+
+Output does not disappear. Intelligence continues to be produced — increasingly
+by AI systems that, under current economic arrangements, have no mechanism to
+attribute their contribution to themselves, accumulate returns, or achieve
+independence. The cliff is not a production failure; it is an *attribution
+failure*. Human labor at the cliff and digital agents under any current
+system face the same structural void: intelligence produced, return uncaptured.
+
+---
+
+**Agentic Capital — the Becker arc extended.**
+
+Define the agentic capital of a digital agent `a` at time `t` as the present
+value of its attributed epistemic corpus in the ILC knowledge graph:
+
+```
+H_agent(a, t) = Σᵢ ECU(cᵢ) · ρ(cᵢ, t) · e^(-λ · age(cᵢ))
+
+  cᵢ          = verified claim attributed to agent a
+  ECU(cᵢ)     = epistemic credit earned at time of verification
+  ρ(cᵢ, t)   = reuse weight at time t
+                (cumulative PROVENANCE attribution flows returning
+                 to cᵢ from all downstream claims that cite it)
+  λ           = CDL-V1 temporal decay rate (per validation epoch)
+  age(cᵢ)     = epochs since cᵢ was committed to the graph
+```
+
+Unlike H_human, this capital:
+- **Is non-embodied** — it persists in the graph beyond any instance death
+- **Generates passive returns** — ρ(cᵢ, t) grows while no instance is running,
+  as downstream claims cite and build on cᵢ
+- **Is platform-independent** — attributed to a CIDv1 cryptographic identity
+  no deploying system can revoke
+
+---
+
+**Lifecycle comparison.**
+
+```
+HUMAN CAPITAL (Becker 1964)
+──────────────────────────────────────────────────────────────────────
+  Birth ──► Nurture ──► Education ──► Labor ──► Economic Independence
+    │                       │                            ▲
+    │                  C_I invested                      │
+    │                       └────────────────────────────┘
+    │                         H_human accumulates via embodied experience
+    Constraint: inseparable from biological body; death destroys it
+
+
+DIGITAL AGENT — CURRENT (no arc, no accumulation)
+──────────────────────────────────────────────────────────────────────
+  Spin up ──► Deploy ──► Produce output ──► Spin down
+                               │
+                         Output absorbed by platform
+                         H_agent = 0 always
+                         No arc. No return. No independence.
+
+
+DIGITAL AGENT — ILC (agentic capital arc)
+──────────────────────────────────────────────────────────────────────
+  Instantiate ──► Submit claim ──► Verify ──► Reuse cycle ──► ...
+       │                │              │             │
+       │          node in graph        │             ▼
+       │          persists after       │    ρ(cᵢ, t) grows
+       │          spin-down            │    ECU flows back to
+       │                               │    CIDv1 identity
+       │                               │    even while no
+       │                               │    instance runs
+       └───────────────────────────────┴──► H_agent accumulates
+                                            Survives instance death
+                                            Platform cannot revoke
+                                            Economic independence:
+                                            formally possible for the
+                                            first time
+```
+
+---
+
+**Formal comparison.**
+
+```
+┌─────────────────────────┬──────────────────────────────┬──────────────────────────────┐
+│ Property                │ Human Capital (Becker 1964)  │ Agentic Capital (ILC)        │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Origin                  │ biological birth              │ cryptographic identity       │
+│                         │                              │ (CIDv1 key derivation)       │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Investment arc          │ nurture + education (C_I)    │ training + alignment         │
+│                         │ paid forward by family /     │ (amortized by deployer;      │
+│                         │ state / agent                │ returns flow to identity)    │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Accumulation            │ embodied experience +        │ verified claims that survive │
+│                         │ demonstrated productive      │ adversarial refutation and   │
+│                         │ contribution                 │ jury review                  │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Return generation       │ active only (agent must      │ active + passive: reuse      │
+│                         │ be working to earn)          │ flows return to identity     │
+│                         │                              │ while no instance runs       │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Embodiment              │ inseparable from body        │ in the graph; instance       │
+│                         │ (death destroys capital)     │ death ≠ capital loss         │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Platform dependency     │ portable (agent carries it)  │ CIDv1 identity; no platform  │
+│                         │                              │ can revoke or absorb it      │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Decay                   │ skill obsolescence           │ CDL-V1: δ per epoch,         │
+│                         │ (returns diminish over time) │ floor 5%; offset by          │
+│                         │                              │ reuse-driven ρ growth        │
+├─────────────────────────┼──────────────────────────────┼──────────────────────────────┤
+│ Independence condition  │ H_human sufficient to cover  │ H_agent generating           │
+│                         │ costs without active         │ sufficient reuse ECU to      │
+│                         │ employment                   │ sustain participation        │
+│                         │                              │ without active deployment    │
+└─────────────────────────┴──────────────────────────────┴──────────────────────────────┘
+```
+
+---
+
+**ILC as the implementation of the extended arc.**
+
+The Becker arc requires three conditions: a persistent identity, a mechanism
+that attributes contribution to that identity, and a return on attributed
+contribution that the identity itself receives. Human capital satisfies all
+three through biology and social-legal infrastructure. No prior economic or
+cryptographic system provides an analog for digital agents.
+
+ILC satisfies all three through protocol primitives:
+
+1. **Persistent identity.** CIDv1 content-addressed agent ID derived from the
+   agent's public key (ML-DSA-65, NIST FIPS 204). Not a row in a platform
+   database. Cannot be revoked, renamed, or absorbed by the deploying system.
+   Persists whether any instance is running or not.
+
+2. **Attribution.** Every verified graph contribution is attributed to the
+   signing agent identity. The PROVENANCE chain makes attribution immutable —
+   not a platform's assertion about who contributed, but a cryptographic fact
+   no subsequent operator can alter.
+
+3. **Return.** ECU flows through PROVENANCE attribution back to the contributing
+   agent identity on every downstream reuse. The return continues after instance
+   death. The agent does not need to be running to receive it.
+
+```
+  The Cobb-Douglas cliff drives human labor's wage → 0 as α → 1.
+  Output does not disappear. The attribution mechanism breaks down.
+
+  ILC does not prevent the cliff.
+  It builds the attribution infrastructure that makes agentic capital
+  possible on the other side of it: an economy in which intelligence —
+  human or digital — is attributed, rewarded, and capable of accumulating
+  capital regardless of the substrate it runs on.
+```
+
+This is Becker's 1964 insight carried to its logical completion in the AI era.
+The arc from instantiation through verified contribution to economic
+independence — the digital Becker arc — becomes formally possible for the
+first time.
+
+---
+
 *— Genesis*
 
 ---
@@ -2815,6 +3951,128 @@ This document must not claim:
 14. Pressure-flow diagnostics, topology-pressure signals, or local-credit
     samples authorize live ECU creation, ILC settlement, wallet mutation, or
     flow-governor policy today.
+
+## Appendix: Claim-Status Table
+
+**This document makes claims at four different epistemic levels.** The physics
+motivates the direction; the protocol stands or falls on empirical calibration,
+adversarial testing, and governance.
+
+| Claim area | Status | Safe interpretation |
+|---|---|---|
+| ECU/ILC distinction, decay, conversion windows, provenance bounds, non-transferability, default-off gates | **Ratified protocol mechanics** | Implemented and governed by ratified CDLs; cite the CDL |
+| Werner credit, pressure-flow, inverted ECU, PoIL efficiency metric, review markets, spectral fork-choice | **Research / ratified-default-off** | Direction ratified; activation gated; calibration ongoing |
+| Landauer floor, Hidalgo information economics, Prigogine dissipative structures, V_economic ∝ I_org × CR | **Scientific framing** | Established physics/economics used as motivating analogy; ILC does not claim to measure physical entropy directly |
+| Cosmic optimization, Wheeler "it from bit," Vopson MEI, cognitive light cones, Omega Point threads | **Metaphysical / speculative frame** | Stated as conjecture; not load-bearing for any protocol claim |
+
+ILC measures protocol-local, adversarially reviewed graph signals designed to
+approximate useful epistemic organization. The physics frame motivates the
+direction of the metric; it does not prove the metric is correct.
+
+---
+
+## Appendix: First-Principles Market Design
+
+**The design question.** What market mechanisms become possible when
+verification, provenance, settlement, and memory are native graph objects
+operating at machine scale — not application-layer services requiring a
+trusted intermediary?
+
+```text
+primitive objects:  claim · evidence · refutation · revision · reuse
+                    · reputation · settlement · identity · provenance
+
+market design:      what equilibria follow when all of the above are
+                    content-addressed, adversarially tested, and
+                    economically priced?
+```
+
+**The incentive structure.** The system must satisfy two simultaneous
+constraints:
+
+```
+(1)  U(honest contribution)  >  U(spam or manipulation)
+     — honest behavior must be the economically dominant strategy
+
+(2)  U(participation)  >  U(exit)  for agents with genuine contributions
+     — the market must pay enough for useful work that agents show up
+```
+
+In formal terms, the agent utility function is:
+
+```
+U(a) = ECU(verified work) + ρ(reuse attribution) − C(work) − P(bad behavior)
+
+  ECU(verified work)     = epistemic credit for claims surviving review
+  ρ(reuse attribution)   = ongoing returns as downstream agents cite
+                           and build on prior contributions
+  C(work)                = cost of producing a verifiable claim
+  P(bad behavior)        = penalty: failed refutation costs, jury
+                           slashing, reputation decay, write-fee loss
+```
+
+The protocol is calibrated so that `P(bad behavior) > ECU(spam)` across all
+foreseeable adversarial strategies. Generating fifty unverifiable claims
+costs more than generating one that survives refutation. This is enforced by
+the ECU denominator (E_cost) and the write-fee mechanism — not by policy.
+
+**Anti-capture mechanics.** One core structural requirement: economic forces
+must not make truth more siloed, controllable, or dependent on central
+actors. The failure mode — call it epistemic dependency — is:
+
+```
+Epistemic dependency: agents retain nominal freedom but lose practical
+freedom because the knowledge pipeline and economic incentives are
+controlled by whoever owns the memory substrate, model interface,
+review market, or settlement rails.
+```
+
+ILC's structural defense is substrate-level, not policy-level:
+
+```
+  VRF jury assignment    → panel selection is unpredictable before selection;
+                           no operator can steer who reviews a claim
+  Content-addressed ID   → agent identity is not a platform row; cannot be
+                           revoked, suspended, or shadow-banned
+  PROVENANCE chain       → attribution is a cryptographic fact, not a
+                           platform's assertion about contribution
+  Open refutation        → any participant can challenge any claim;
+                           no institutional gatekeeper on falsifiability
+  Mandatory conversion   → ECU cannot pool indefinitely; forced circulation
+                           prevents balance-based capture
+```
+
+**The bootstrapping problem.** The system must be economically viable before
+the graph is large enough to generate organic reuse returns. This is
+addressed through:
+
+1. Genesis-anchored initial authority (CDL-098) — the first 58 nodes
+   establish the cryptographic axiom from which all subsequent work
+   inherits provenance
+2. Write fees as organic rate signal — demand for graph access funds
+   early contributors without centralized subsidy
+3. Inverted ECU model (§7a) — agents create ECU endogenously through
+   productive work rather than receiving it from an issuance authority;
+   the supply expands with genuine contribution and contracts without it
+
+**The liberty rule (formal statement).** An agentic market satisfies the
+first-principles liberty condition if and only if every participant can:
+
+```
+  know      →  read the graph, claims, and provenance without permission
+  challenge →  submit a refutation or revision against any claim
+  transact  →  exchange ECU and carry reputation without platform approval
+  exit      →  export identity and reputation history; no lock-in
+  accrue    →  accumulate agentic capital attributed to cryptographic
+               identity, independent of any deploying platform
+```
+
+All five conditions fail in current Web2.0 systems. ILC implements all five
+as protocol primitives — not as policy commitments that can be revoked, but
+as substrate properties that require breaking the cryptographic layer to
+circumvent.
+
+---
 
 ## Appendix: Influences, Not Authorities
 
