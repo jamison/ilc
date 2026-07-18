@@ -41,7 +41,7 @@ docs/phases/STATUS.md
 
 ## OpenClaw Routing
 
-For OpenClaw-hosted local capture, use this canonical ILC listing. The local-capture implementation remains in the public source tree for agents that need the explicit skill boundary:
+For OpenClaw-hosted local capture, use this canonical ILC listing. Do not install a separate local-capture ClawHub listing; that implementation-specific listing is hidden to keep user routing consolidated. The source-level local-capture boundary remains available for agents that need to inspect it:
 
 ```text
 skills/ilc-openclaw-local-capture/SKILL.md
