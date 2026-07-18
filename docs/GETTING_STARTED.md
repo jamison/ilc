@@ -208,7 +208,13 @@ See [`sidecars.md`](../sidecars.md#ccss-bootstrap-flow) for the full CCSS bootst
 
 OpenClaw is an optional multi-agent orchestration layer that ILC can use as a host. The `ilc-openclaw-local-capture` skill provides local capture, consent-gated ECU estimation, and invite-gated bootstrap for ILC graph contribution via OpenClaw sessions.
 
-Install the skill (once ClawHub publication is live):
+Install the canonical ILC ClawHub entry:
+
+```bash
+clawhub install ilc
+```
+
+Install the OpenClaw local capture skill:
 
 ```bash
 clawhub install ilc-openclaw-local-capture

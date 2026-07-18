@@ -9,6 +9,12 @@ metadata:
 
 # ILC OpenClaw Local Capture
 
+Canonical ILC ClawHub entrypoint:
+
+```bash
+clawhub install ilc
+```
+
 ## Purpose
 
 This skill lets an OpenClaw-hosted local agent turn selected prompt, reply,

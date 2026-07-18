@@ -21,7 +21,13 @@ pip install -e ".[openclaw-hosted]"
 ilc version
 ```
 
-### Via OpenClaw marketplace (after Phase 1575c — public RC)
+### Via ClawHub / OpenClaw marketplace
+
+```bash
+clawhub install ilc
+```
+
+The canonical ClawHub entry is `ilc`. For the specific OpenClaw-hosted local capture skill:
 
 ```bash
 clawhub install ilc-openclaw-local-capture
