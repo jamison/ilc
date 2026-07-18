@@ -42,7 +42,7 @@ The current skill package path is:
 skills/ilc-openclaw-local-capture/SKILL.md
 ```
 
-The current frontmatter begins with:
+At Phase 1575b-Fix2c, the frontmatter began with:
 
 ```yaml
 ---
@@ -53,20 +53,34 @@ metadata:
 ---
 ```
 
-The description is 425 characters. The frontmatter does not contain
-`metadata.openclaw.requires.bins`. Therefore:
+The post-1575n publication-preflight correction replaces that frontmatter with the
+ClawHub-shaped form:
+
+```yaml
+---
+name: ilc-openclaw-local-capture
+description: Local capture, consent-gated estimation, and invite-gated bootstrap for ILC graph contribution via OpenClaw.
+metadata:
+  openclaw:
+    requires:
+      bins: [ilc]
+---
+```
+
+The old description was 425 characters and the old frontmatter did not contain
+`metadata.openclaw.requires.bins`. The current corrected state is:
 
 ```text
 openclaw_visible_frontmatter_present=true
-clawhub_shape_complete=false
-skill_md_clawhub_frontmatter_shape_incomplete=true
+clawhub_shape_complete=true_after_post_1575n_publication_preflight
+skill_md_clawhub_frontmatter_shape_incomplete=false_after_post_1575n_publication_preflight
 ```
 
 The old blocker `skill_md_missing_clawhub_frontmatter` is stale and must not be
 used for current state. Fix2e-Fix2 added enough frontmatter for OpenClaw
-visibility on private VPS nodes. Fix2g is the normal lane to reshape the
-frontmatter for ClawHub publication after Phase 1575c makes public
-installability real.
+visibility on private VPS nodes. The post-1575n publication-preflight
+correction reshaped the frontmatter; Phase 1575f should verify this shape rather
+than add or replace a second YAML block.
 
 ## Publication Readiness Verdict
 
@@ -78,7 +92,6 @@ outcome=A_audit_only_default_off_retained
 
 | Blocker | Type | Closing lane |
 |---|---|---|
-| `skill_md_clawhub_frontmatter_shape_incomplete` | Package-shape blocker | Phase 1575b-Fix2g finalizes ClawHub-shaped frontmatter. |
 | `outcome_b_deferred_post_1575c_by_design` | Sequencing blocker | Phase 1575c must make public RC/public repository installability real before publication. |
 | `ilc_core_not_publicly_installable` | Distribution blocker | Phase 1575c public mirror/public repository publication must close this. |
 
