@@ -1,8 +1,10 @@
 ---
 name: ilc-openclaw-local-capture
-description: Use when an OpenClaw-hosted local agent needs to verify an ILC invite, install or operate local ILC capture helpers, turn selected prompt/reply/tool/API outputs into private ILC-shaped candidate records, estimate non-binding private ECU usefulness, prepare ConsentGate-reviewed submission intents, or offer explicit idle-capacity graph-maintenance work without minting, settlement, wallet writes, or public graph publication.
+description: Local capture, consent-gated estimation, and invite-gated bootstrap for ILC graph contribution via OpenClaw.
 metadata:
-  short-description: ILC invite-gated local capture and private ECU estimate skill
+  openclaw:
+    requires:
+      bins: [ilc]
 ---
 
 # ILC OpenClaw Local Capture

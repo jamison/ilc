@@ -270,6 +270,6 @@ See [`config/README.md`](../config/README.md) for full configuration policy.
 | [`SECURITY.md`](../SECURITY.md) | Responsible disclosure, PQ identity, spectral integrity model |
 | [`Glossary.md`](../Glossary.md) | Canonical term definitions |
 | [`docs/ILC_Technical_Paper_Draft_v0.2.md`](ILC_Technical_Paper_Draft_v0.2.md) | Protocol architecture, PoIL, consensus design |
-| [`docs/ILC_Economic_Paper_Draft_v0.2.md`](ILC_Economic_Paper_Draft_v0.2.md) | Economic design, ECU model, agentic labor costs |
+| [`docs/ILC_Economic_Paper_Draft_v0.3.md`](ILC_Economic_Paper_Draft_v0.3.md) | Economic design, ECU model, agentic labor costs |
 | [`docs/phases/STATUS.md`](phases/STATUS.md) | Live protocol activation state |
 | [`docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md`](architecture/ilc_canonical_glossary_and_concepts_v0.2.md) | Canonical term authority |

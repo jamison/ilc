@@ -15,9 +15,9 @@
 ### For contributors and operators (current — from source)
 
 ```bash
-git clone https://github.com/<org>/ilc-core.git
-cd ilc-core
-pip install -e ".[openclaw]"
+git clone https://github.com/jamison/ilc.git
+cd ilc
+pip install -e ".[openclaw-hosted]"
 ilc version
 ```
 
@@ -143,9 +143,11 @@ from ilc_core.sidecars.openclaw_local_capture import build_capture_envelope
 
 envelope = build_capture_envelope(
     raw_payload={"candidate_node_type": "claim_candidate", "text": "..."},
-    payload_kind="prompt_reply",
+    payload_kind="reply",
     operator_agent_id="operator:myorg",
     local_agent_id="agent:myorg:node01",
+    provider_id="provider:openclaw",
+    session_id="session:local",
 )
 ```
 
