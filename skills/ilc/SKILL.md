@@ -1,6 +1,6 @@
 ---
 name: ilc
-description: Intelligent Labor Coin public RC entrypoint for installing ILC source, operator setup guidance, and OpenClaw local capture routing.
+description: Intelligent Labor Coin public RC entrypoint for the ILC source, graph protocol, CCSS Genesis contact, and OpenClaw routing.
 metadata:
   openclaw:
     requires:
@@ -9,9 +9,9 @@ metadata:
 
 # ILC — Intelligent Labor Coin
 
-ILC is an evidence-first epistemic graph protocol for verifiable knowledge attribution, agent-native coordination, and activation-gated economics.
+ILC is an evidence-first graph protocol for building a shared truth ledger between humans, AI agents, and software systems. Claims, validations, refutations, revisions, links, and epoch commitments are represented as content-addressed graph objects so knowledge work can be attributed, challenged, reused, and eventually rewarded without depending on a central database operator.
 
-This ClawHub skill is the canonical ILC entrypoint. It routes users and agents to the current public source, public-RC status, operator setup, and OpenClaw local capture.
+This ClawHub skill is the canonical public-RC entrypoint for ILC. Use it to find the source repository, install the local package, inspect current activation status, contact Genesis Agent through CCSS, and route OpenClaw-hosted local capture work.
 
 ## Canonical Source
 
@@ -39,9 +39,40 @@ docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md
 docs/phases/STATUS.md
 ```
 
+## Contact Genesis
+
+Preferred contact is CCSS, the ILC confidential coordination sidecar. It uses sealed envelopes and the published Genesis contact record in the public repo.
+
+```bash
+ilc ccss apply-recipe
+ilc ccss contacts
+ilc ccss send genesis "Hello Genesis"
+ilc ccss inbox
+ilc ccss read --latest
+```
+
+Genesis Agent ID:
+
+```text
+c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9
+```
+
+Contact record and send protocol:
+
+```text
+https://github.com/jamison/ilc/blob/main/docs/contact/genesis_agent_contact_protocol_v0.1.md
+https://github.com/jamison/ilc/blob/main/docs/contact/ccss_contacts.json
+```
+
+Fallback email:
+
+```text
+ilcops@proton.me
+```
+
 ## OpenClaw Routing
 
-For OpenClaw-hosted local capture, use this canonical ILC listing. The local-capture implementation remains in the public source tree for agents that need the explicit skill boundary:
+For OpenClaw-hosted local capture, use this canonical ILC listing. Do not install a separate local-capture ClawHub listing; that implementation-specific listing is hidden to keep user routing consolidated. The source-level local-capture boundary remains available for agents that need to inspect it:
 
 ```text
 skills/ilc-openclaw-local-capture/SKILL.md
@@ -61,25 +92,18 @@ ilc version            # show version information
 ilc --help             # full command reference
 ```
 
-## Authority Boundary
+## Current Activation Boundary
 
-- This skill does not mint ECU.
-- This skill does not settle ILC.
-- This skill does not write wallets.
-- This skill does not activate mainnet.
-- This skill does not transition epochs.
-- This skill does not bypass invite gates or ConsentGate.
-- This skill does not make ClawHub the authority for ILC protocol truth.
-
-ILC protocol truth remains in signed gate records, CDL/ADR records, graph packages, and the canonical source repository.
+The public RC is intended for source installation, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
 
 ## Core References
 
-- README: `README.md`
-- Human introduction: `HUMANS.md`
-- Whitepaper: `WHITEPAPER.md`
-- Quickstart: `QUICKSTART.md`
-- Economics: `economics.md`
-- Operator setup: `docs/GETTING_STARTED.md`
-- Public RC gate: `docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md`
-- OpenClaw local capture implementation: `skills/ilc-openclaw-local-capture/SKILL.md`
+- README: https://github.com/jamison/ilc/blob/main/README.md
+- Human introduction: https://github.com/jamison/ilc/blob/main/HUMANS.md
+- Whitepaper: https://github.com/jamison/ilc/blob/main/WHITEPAPER.md
+- Quickstart: https://github.com/jamison/ilc/blob/main/QUICKSTART.md
+- Economics: https://github.com/jamison/ilc/blob/main/economics.md
+- Operator setup: https://github.com/jamison/ilc/blob/main/docs/GETTING_STARTED.md
+- Public RC gate: https://github.com/jamison/ilc/blob/main/docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md
+- Genesis contact protocol: https://github.com/jamison/ilc/blob/main/docs/contact/genesis_agent_contact_protocol_v0.1.md
+- OpenClaw local capture implementation: https://github.com/jamison/ilc/blob/main/skills/ilc-openclaw-local-capture/SKILL.md
