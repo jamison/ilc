@@ -61420,6 +61420,54 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md",
       "repo_path": "docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_post_1575f_clawhub_ilc_canonical_entry_refresh",
+      "chronology_note": "2026-07-18 Post-1575f — canonical ClawHub ILC entry refresh",
+      "manual_read_summary": "Canonical ClawHub umbrella SKILL.md for slug ilc; points to public source github.com/jamison/ilc, records public-RC status and non-claims, and routes OpenClaw users to ilc-openclaw-local-capture.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_ilc_canonical_entry_refreshed_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc/SKILL.md",
+      "repo_path": "skills/ilc/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_post_1575f_clawhub_ilc_canonical_entry_refresh",
+      "chronology_note": "2026-07-18 Post-1575f — canonical ClawHub ILC skill card source",
+      "manual_read_summary": "Public source skill-card.md for the canonical ilc ClawHub entry; the ClawHub skill publish CLI strips local skill-card.md from uploaded skill artifacts, so this remains public source orientation rather than a registry card artifact.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_ilc_canonical_entry_refreshed_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc/skill-card.md",
+      "repo_path": "skills/ilc/skill-card.md"
     }
   ],
   "phase": "1545p-Fix38",
