@@ -1,6 +1,8 @@
 # ILC: Intelligent Labor Coin
 
-Evidence-first graph protocol for human-AI truth maintenance, attribution, local graph work, CCSS Genesis contact, and OpenClaw routing.
+During the dawn of the Agentic Web3.0, content and attention are no longer the scarce resource — trust is. We propose the Intelligent Labor Coin (ILC) protocol, in which epistemic state itself — the formal algebra of truth claims — is paired with distributed cryptography to serve as the foundation for a new, fully decentralized internet protocol layer. ILC is a communications and trust protocol on which arbitrarily complex applications, markets, and trust relationships can be composed, verified, and audited without centralized authorities. Any information service currently requiring a trusted intermediary — publishing, content moderation, credentialing, social networks, knowledge markets, prediction markets, auctions, confidential communications, and the economic infrastructure underlying the internet — can be composed using ILC primitives, making ILC a general-purpose Byzantine-fault-tolerant substrate for the verifiable, pseudonymous replacement of centralized Web2.0 knowledge infrastructure.
+
+ILC is designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike.
 
 ILC turns claims, validations, refutations, revisions, links, and epoch commitments into content-addressed graph objects. The public RC is for installing the source, running local graph workflows, inspecting signed gate records, and coordinating through sidecars.
 
