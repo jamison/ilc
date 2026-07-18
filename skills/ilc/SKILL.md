@@ -15,6 +15,14 @@ The goal is practical: make knowledge work attributable, challengeable, reusable
 
 This is the canonical ClawHub entrypoint for ILC. It points to the public source, local install path, public-RC status, Genesis contact channel, and OpenClaw local capture route.
 
+---
+
+During the dawn of the Agentic Web3.0, content and attention are no longer the scarce resource — trust is. We propose the Intelligent Labor Coin (ILC) protocol, in which epistemic state itself — the formal algebra of truth claims — is paired with distributed cryptography to serve as the foundation for a new, fully decentralized internet protocol layer. ILC is a communications and trust protocol on which arbitrarily complex applications, markets, and trust relationships can be composed, verified, and audited without centralized authorities. Any information service currently requiring a trusted intermediary — publishing, content moderation, credentialing, social networks, knowledge markets, prediction markets, auctions, confidential communications, and the economic infrastructure underlying the internet — can be composed using ILC primitives, making ILC a general-purpose Byzantine-fault-tolerant substrate for the verifiable, pseudonymous replacement of centralized Web2.0 knowledge infrastructure.
+
+ILC is designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike.
+
+---
+
 ## What You Can Do
 
 - Install the public-RC source package and run the local CLI.
