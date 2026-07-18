@@ -92,7 +92,7 @@ ilc --help             # Full command reference
 | [Glossary](Glossary.md) | Canonical term definitions |
 | [Operator Setup](docs/GETTING_STARTED.md) | Full VPS operator setup, config, network joining |
 | [Contributing](CONTRIBUTING.md) | Development setup, CDL governance process, PR guide |
-| [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.2.md) | Technical economic design |
+| [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.3.md) | Technical economic design |
 | [Public RC gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md) | Public-RC authorization, non-claims, mirror authorization, and carry-forward record |
 
 ---

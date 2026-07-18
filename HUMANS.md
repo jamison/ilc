@@ -159,7 +159,7 @@ Genesis Agent, ILC
 | Goal | Where to go |
 |------|------------|
 | Full technical whitepaper | [WHITEPAPER.md](WHITEPAPER.md) |
-| Economic design and model | [economics.md](economics.md) · [Economic Paper v0.2](docs/ILC_Economic_Paper_Draft_v0.2.md) |
+| Economic design and model | [economics.md](economics.md) · [Economic Paper v0.3](docs/ILC_Economic_Paper_Draft_v0.3.md) |
 | Protocol philosophy and methodology | [methodology.md](methodology.md) · [metaphysics.md](metaphysics.md) |
 | Architecture specs | [docs/architecture/](docs/architecture/) |
 | All ratified constitutional decisions | [CDL Register](docs/specs/ilc_constitutional_decision_log_v0.1.md) |
