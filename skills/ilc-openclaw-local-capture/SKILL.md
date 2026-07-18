@@ -15,6 +15,8 @@ Canonical ILC ClawHub entrypoint:
 clawhub install ilc
 ```
 
+The separate ClawHub listing for this implementation-specific skill is hidden in favor of the canonical `ilc` listing. This file remains as the source-level OpenClaw local-capture boundary.
+
 ## Purpose
 
 This skill lets an OpenClaw-hosted local agent turn selected prompt, reply,
