@@ -61564,6 +61564,54 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_173_post_1575f_launch_announcement_finalization",
+      "chronology_note": "2026-07-18 Post-1575f — launch announcement finalization draft",
+      "manual_read_summary": "Ready-to-post launch announcement file generated from platform drafts with repository URL, interim GitHub paper URL, and Genesis Agent author field resolved. File remains PUBLIC_RC_EXCLUDE until arXiv URL is live and human authorizes public mirror inclusion.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:launch_announcement_final_draft_written_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/announcements/ilc_launch_announcement_final_v0.1.md",
+      "repo_path": "docs/announcements/ilc_launch_announcement_final_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_173_post_1575f_launch_announcement_finalization",
+      "chronology_note": "2026-07-18 Post-1575f — launch announcement finalization STATUS update",
+      "manual_read_summary": "STATUS entry records announcement placeholder resolution, arXiv conversion/author metadata gate, public mirror exclusion, and no-posting non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:launch_announcement_final_draft_written_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
