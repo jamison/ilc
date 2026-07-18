@@ -29,9 +29,7 @@ clawhub install ilc
 
 The canonical ClawHub entry is `ilc`. For the specific OpenClaw-hosted local capture skill:
 
-```bash
-clawhub install ilc-openclaw-local-capture
-```
+OpenClaw local capture is routed through the canonical `ilc` listing.
 
 ### One-liner install (after Phase 1575c — public install script)
 

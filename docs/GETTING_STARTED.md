@@ -214,11 +214,7 @@ Install the canonical ILC ClawHub entry:
 clawhub install ilc
 ```
 
-Install the OpenClaw local capture skill:
-
-```bash
-clawhub install ilc-openclaw-local-capture
-```
+OpenClaw local capture is routed through the canonical `ilc` listing.
 
 The skill adds the following vocabulary to OpenClaw sessions:
 
