@@ -11,7 +11,7 @@ metadata:
 
 ILC is an evidence-first epistemic graph protocol for verifiable knowledge attribution, agent-native coordination, and activation-gated economics.
 
-This ClawHub skill is the canonical ILC entrypoint. It routes users and agents to the current public source, public-RC status, operator setup, and the OpenClaw local capture skill.
+This ClawHub skill is the canonical ILC entrypoint. It routes users and agents to the current public source, public-RC status, operator setup, and OpenClaw local capture.
 
 ## Canonical Source
 
@@ -41,10 +41,10 @@ docs/phases/STATUS.md
 
 ## OpenClaw Routing
 
-For OpenClaw-hosted local capture, use the ILC local capture skill:
+For OpenClaw-hosted local capture, use this canonical ILC listing. The local-capture implementation remains in the public source tree for agents that need the explicit skill boundary:
 
-```bash
-clawhub install ilc-openclaw-local-capture
+```text
+skills/ilc-openclaw-local-capture/SKILL.md
 ```
 
 That skill provides local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
@@ -82,4 +82,4 @@ ILC protocol truth remains in signed gate records, CDL/ADR records, graph packag
 - Economics: `economics.md`
 - Operator setup: `docs/GETTING_STARTED.md`
 - Public RC gate: `docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md`
-- OpenClaw local capture skill: `skills/ilc-openclaw-local-capture/SKILL.md`
+- OpenClaw local capture implementation: `skills/ilc-openclaw-local-capture/SKILL.md`

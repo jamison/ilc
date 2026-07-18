@@ -14,11 +14,7 @@ ilc version
 
 ## OpenClaw Local Capture
 
-For OpenClaw-hosted local capture and invite-gated setup:
-
-```bash
-clawhub install ilc-openclaw-local-capture
-```
+OpenClaw local capture and invite-gated setup are routed through this canonical `ilc` listing. The implementation boundary is documented in the public source tree at `skills/ilc-openclaw-local-capture/SKILL.md`.
 
 ## Status Boundary
 

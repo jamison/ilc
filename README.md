@@ -62,7 +62,7 @@ ilc version
 clawhub install ilc
 ```
 
-The canonical ClawHub entry is `ilc`. For the specific OpenClaw-hosted local capture skill, install `ilc-openclaw-local-capture`.
+The canonical ClawHub entry is `ilc`; OpenClaw local capture is routed through that listing.
 
 ---
 
