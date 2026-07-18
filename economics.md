@@ -880,8 +880,9 @@ the assumption Path B violates, and the market has no automatic
 mechanism to enforce it.
 
 **The game-theoretic argument for Path A.** Given the choice between
-these two paths, Path A is the dominant strategy for the market as a
-whole — not merely the ethical preference:
+these two paths, Path A is the welfare-dominant choice for the market as a
+whole — not merely the ethical preference. (This is a collective welfare
+argument, not a claim of strict Nash dominance for individual agents.)
 
 ```text
 Path B payoff:  cliff  +  market failure  +  no legislative surface
@@ -2035,9 +2036,13 @@ model after review and challenge.
 Or, for agentic inference:
 
 ```text
-intelligence_per_token_per_watt =
-    verified_epistemic_lift / (tokens_used * watts)
+intelligence_per_token_per_joule =
+    verified_epistemic_lift / (tokens_used * joules_per_token)
 ```
+
+[Note: `per_watt` language used elsewhere is shorthand for contexts where
+duration is explicit and joules_per_token = watts × seconds_per_token is
+supplied by the hardware profile. The canonical denominator is joules.]
 
 These are not ratified settlement formulas. They are the kind of measurement
 target ECU is meant to approximate: useful intelligence per physical and
