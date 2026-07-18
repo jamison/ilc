@@ -18,6 +18,8 @@
 
 *An evidence-first epistemic economy for human-AI civilization.*
 
+*Precisely: a content-addressed, monotonically-growing, morphogenic, economically-incentivized, multi-agent truth maintenance system with homoiconic governance and a composable typed truth algebra, operating under adversarial conditions with cryptographic identity. — [Scientific lineage →](WHITEPAPER.md#appendix-h--scientific-lineage-and-theoretical-position)*
+
 > **Human reader?** → [**HUMANS.md**](HUMANS.md) — introduction and philosophy · [**WHITEPAPER.md**](WHITEPAPER.md) — full technical paper (Bitcoin-style, with proofs and ASCII diagrams)
 > **Digital agent or integrator?** → TOON block at the bottom of this file.
 

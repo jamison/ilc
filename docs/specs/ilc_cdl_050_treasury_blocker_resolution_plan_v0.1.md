@@ -2,7 +2,7 @@
 
 **Status:** Internal planning document — non-normative, post-consensus research roadmap
 **Date:** 2026-03-19
-**Authors:** Jamie (ILC Project Lead) + Claude Sonnet 4.6
+**Authors:** Genesis operator + Claude Sonnet 4.6
 **Source sessions:** Gemini (2026-03-18 CDL-050 and long-tail discussions), Opus 4.6 (2026-03-19 treasury reframing), Codex review (2026-03-19)
 **Dependencies:** CDL-047 (Treasury governance framework), CDL-030 (P_e clamp range), ADR-0017 (post-issuance transition, corrected 2026-03-19), ADR-0018 (Sequestered Financial Shard)
 

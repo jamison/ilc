@@ -9,7 +9,7 @@
 
 ## Background
 
-Jamie raised a strategic question about whether ILC should integrate with existing wallet ecosystems (Coinbase agentic wallets, Bitcoin wallets, MetaMask, hardware wallets) rather than building proprietary wallet infrastructure. Opus analysis concluded: **ILC co-opts existing wallet trust rather than building competing wallet infrastructure.** The ILC coin (ECU) is protocol-native. The wallet — where signing keys live — is not an ILC concern. The protocol should be wallet-agnostic.
+The Genesis operator raised a strategic question about whether ILC should integrate with existing wallet ecosystems (Coinbase agentic wallets, Bitcoin wallets, MetaMask, hardware wallets) rather than building proprietary wallet infrastructure. Opus analysis concluded: **ILC co-opts existing wallet trust rather than building competing wallet infrastructure.** The ILC coin (ECU) is protocol-native. The wallet — where signing keys live — is not an ILC concern. The protocol should be wallet-agnostic.
 
 Sonnet was tasked with validating this principle against the codebase and 45+ past chat files. Sonnet's findings:
 

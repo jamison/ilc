@@ -206,7 +206,7 @@ sensitivity: [no-ilc-core-changes, cdl-not-mutated, issuance-documented-not-rati
 
 **Finding: MEDIUM VALUE**
 
-The Lane Queue's per-session serial execution with explicit parallel opt-in is exactly the concurrency model our three-AI workflow needs but doesn't formally enforce. Currently, we rely on Jamie manually sequencing work across Codex, Antigravity, and Opus. A Lane Queue model would formalize this:
+The Lane Queue's per-session serial execution with explicit parallel opt-in is exactly the concurrency model our three-AI workflow needs but doesn't formally enforce. Currently, we rely on the Genesis operator manually sequencing work across Codex, Antigravity, and Opus. A Lane Queue model would formalize this:
 
 - **Main lane:** Phase execution (serial, one phase at a time)
 - **Review lane:** Opus/Sonnet review (can run in parallel with execution if reviewing a COMPLETED phase)

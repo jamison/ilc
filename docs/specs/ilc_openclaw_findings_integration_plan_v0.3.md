@@ -294,7 +294,7 @@ The OpenClaw community is at peak attention (150K stars, Steinberger joining Ope
 | `TODO.txt` | Add D2e block, updated D3/D2d tasks, corrected CDL numbers | Codex | Phase 234 or 235 |
 | CDL file | Add CDL-032 and CDL-033 as `proposed` entries | Codex | When roadmap v0.3 is committed |
 | **NEW:** `ilc_adm_002_cli_first_agent_sdk_v0.1.md` | Formal ADM from Section 3 of this document | Codex | With roadmap v0.3 |
-| **NEW:** `ilc_go_to_market_strategy_v0.1.md` | Agent Edition timing, ClawHub strategy, community engagement | Jamie + Opus | When Jamie decides on timing |
+| **NEW:** `ilc_go_to_market_strategy_v0.1.md` | Agent Edition timing, ClawHub strategy, community engagement | Genesis operator + Opus | When the Genesis operator decides on timing |
 
 ---
 
@@ -472,8 +472,8 @@ When the next review assignment goes out, include:
 2. **Do NOT use CDL-025 or CDL-026 for SDK/OpenClaw.** Those numbers belong to Phase 233's issuance queue. Use CDL-032/033.
 3. **Do NOT begin D2e implementation until D2 schemas are at least drafted.** Schema-first, CLI-second.
 4. **Do NOT make any ilc_core/ changes as part of this integration.** The current plan-lock posture is correct.
-5. **The Agent Edition whitepaper is a Jamie strategic decision, not a Codex task.** Codex should not publish or announce anything without Jamie's explicit go-ahead.
+5. **The Agent Edition whitepaper is a Genesis-operator strategic decision, not a Codex task.** Codex should not publish or announce anything without explicit Genesis-operator approval.
 
 ---
 
-*End of integration plan v0.3. This document is ready for Codex consumption. Jamie can share it along with the OpenClaw Architecture Deep Dive as a package. All Codex actions are documentation-only and respect the current plan-lock posture established by Phases 228-233.*
+*End of integration plan v0.3. This document is ready for Codex consumption. The Genesis operator can share it along with the OpenClaw Architecture Deep Dive as a package. All Codex actions are documentation-only and respect the current plan-lock posture established by Phases 228-233.*
