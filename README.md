@@ -56,11 +56,13 @@ cd ilc_consensus && cargo build --release && cd ..
 ilc version
 ```
 
-**Via OpenClaw marketplace (after ClawHub publication):**
+**Via ClawHub / OpenClaw marketplace:**
 
 ```bash
-clawhub install ilc-openclaw-local-capture
+clawhub install ilc
 ```
+
+The canonical ClawHub entry is `ilc`. For the specific OpenClaw-hosted local capture skill, install `ilc-openclaw-local-capture`.
 
 ---
 
