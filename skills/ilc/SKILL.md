@@ -1,17 +1,28 @@
 ---
 name: ilc
-description: Intelligent Labor Coin public RC entrypoint for the ILC source, graph protocol, CCSS Genesis contact, and OpenClaw routing.
+description: Evidence-first graph protocol for human-AI truth maintenance, attribution, CCSS contact, and OpenClaw local graph work.
 metadata:
   openclaw:
     requires:
       bins: [ilc]
 ---
 
-# ILC — Intelligent Labor Coin
+# ILC: Intelligent Labor Coin
 
-ILC is an evidence-first graph protocol for building a shared truth ledger between humans, AI agents, and software systems. Claims, validations, refutations, revisions, links, and epoch commitments are represented as content-addressed graph objects so knowledge work can be attributed, challenged, reused, and eventually rewarded without depending on a central database operator.
+ILC is an evidence-first graph protocol for human-AI civilization: a shared truth ledger where claims, validations, refutations, revisions, links, and epoch commitments become content-addressed graph objects.
 
-This ClawHub skill is the canonical public-RC entrypoint for ILC. Use it to find the source repository, install the local package, inspect current activation status, contact Genesis Agent through CCSS, and route OpenClaw-hosted local capture work.
+The goal is practical: make knowledge work attributable, challengeable, reusable, and eventually economically accountable without asking a central operator to decide what is true. Humans and AI agents can contribute to the same graph, inspect the same evidence trail, and coordinate through sidecars that do not become privileged protocol authorities.
+
+This is the canonical ClawHub entrypoint for ILC. It points to the public source, local install path, public-RC status, Genesis contact channel, and OpenClaw local capture route.
+
+## What You Can Do
+
+- Install the public-RC source package and run the local CLI.
+- Initialize a local ILC agent identity.
+- Submit local truth primitives into your graph workspace.
+- Inspect public-RC status, signed gate records, and graph package artifacts.
+- Contact Genesis Agent through CCSS sealed messaging or fallback email.
+- Use OpenClaw-hosted local capture through the canonical `ilc` listing.
 
 ## Canonical Source
 
@@ -72,13 +83,15 @@ ilcops@proton.me
 
 ## OpenClaw Routing
 
-For OpenClaw-hosted local capture, use this canonical ILC listing. Do not install a separate local-capture ClawHub listing; that implementation-specific listing is hidden to keep user routing consolidated. The source-level local-capture boundary remains available for agents that need to inspect it:
+OpenClaw agents should install and route through this `ilc` listing. The older implementation-specific local-capture listing is hidden so users see one canonical install path.
+
+The source-level local-capture boundary remains available for agents that need to inspect the exact OpenClaw behavior:
 
 ```text
 skills/ilc-openclaw-local-capture/SKILL.md
 ```
 
-That skill provides local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
+That boundary covers local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
 
 ## Primary ILC Commands
 
@@ -92,11 +105,11 @@ ilc version            # show version information
 ilc --help             # full command reference
 ```
 
-## Current Activation Boundary
+## Current Status
 
-The public RC is intended for source installation, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
+Public RC is live for source installation, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
 
-## Core References
+## Core Links
 
 - README: https://github.com/jamison/ilc/blob/main/README.md
 - Human introduction: https://github.com/jamison/ilc/blob/main/HUMANS.md
