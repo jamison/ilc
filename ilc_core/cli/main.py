@@ -1806,6 +1806,46 @@ def _build_parser() -> JsonArgumentParser:
                 action="store_true",
                 help="Require native record signature_status=signature_verified",
             )
+
+            p_atlas_materialize_signed_slice = atlas_subparsers.add_parser(
+                "materialize-signed-slice",
+                help="Materialize a verifier-passing signed slice from local blob sources only",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--native-record",
+                required=True,
+                help="Native __signed_slices__ record JSON path",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--portable-witness",
+                default="",
+                help="Optional portable AtlasSliceManifest witness JSON path",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--local-source-root",
+                required=True,
+                help="Local-only root directory for blob resolution",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--json-out",
+                default="",
+                help="Optional receipt path; must be under out/",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic receipts",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--allow-missing-blobs",
+                action="store_true",
+                help="Rehearsal mode: record missing blobs instead of accepting materialization",
+            )
+            p_atlas_materialize_signed_slice.add_argument(
+                "--require-baseline",
+                action="store_true",
+                help="Fail unless Core Slice 0 and Public-RC Baseline Slice 1 blobs verified",
+            )
             continue
 
         if command == "bootstrap":
