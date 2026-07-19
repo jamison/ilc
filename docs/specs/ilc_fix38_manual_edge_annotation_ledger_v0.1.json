@@ -59537,6 +59537,150 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "graph_delta=planning_updated:docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — local receipt prompt",
+      "manual_read_summary": "Phase prompt defines the local bootstrap receipt path for install proof, identity status, signed baseline verification, and no-mint/no-settlement non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_agent_bootstrap_receipts_local_receipt_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576_fix1_g10_public_agent_bootstrap_receipts.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576_fix1_g10_public_agent_bootstrap_receipts.md"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — receipt runtime",
+      "manual_read_summary": "Runtime builds canonical no-float bootstrap receipts, redacts identity secret material, verifies local signed baseline artifacts when present, and writes only caller-specified JSON.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:install_proof_agent_identity_status_baseline_verification_receipt_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/rc/public_agent_bootstrap_receipt.py",
+      "repo_path": "ilc_core/rc/public_agent_bootstrap_receipt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — CLI surface",
+      "manual_read_summary": "CLI exposes stateless `ilc bootstrap-receipt` without materialization, LMDB writes, wallet writes, settlement, minting, or graph mutation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_agent_bootstrap_receipts_local_receipt_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — spec",
+      "manual_read_summary": "Spec records receipt schema, identity privacy boundary, baseline verification behavior, activation boundary, and next intake step.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:bootstrap_receipt_graph_evidence_bridge_ready_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_public_agent_bootstrap_receipts_v0.1.md",
+      "repo_path": "docs/specs/ilc_phase_1576_public_agent_bootstrap_receipts_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — tests",
+      "manual_read_summary": "Focused tests cover deterministic receipt IDs, no floats, identity redaction, missing-artifact honesty, fail-closed required artifacts, CLI write path, and local signature verification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/rc/public_agent_bootstrap_receipt.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1576_public_agent_bootstrap_receipts.py",
+      "repo_path": "tests/test_phase_1576_public_agent_bootstrap_receipts.py"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — walkthrough and STATUS update",
+      "manual_read_summary": "Walkthrough and STATUS entry record the implementation, local receipt run, verified signed baselines, acceptance commands, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:bootstrap_receipt_no_mint_no_settlement_non_claims_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_public_agent_bootstrap_receipts_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/phase_1576_public_agent_bootstrap_receipts_walkthrough.md"
     }
   ],
   "boundary": {
@@ -61708,6 +61852,30 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_sequence_lock_public_agent_bootstrap_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/phase_1576_sequence_lock_public_agent_bootstrap_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_175_phase_1576_public_agent_bootstrap_receipts",
+      "chronology_note": "2026-07-19 Phase 1576-public-agent-bootstrap-receipts — planning index and comprehensive plan updates",
+      "manual_read_summary": "Planning docs record the completed bootstrap receipt path and route the next bridge phase to 1576-bootstrap-census-intake before broader agent bootstrap or slice materialization.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:bootstrap_receipt_graph_evidence_bridge_ready_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
     }
   ],
   "phase": "1545p-Fix38",
