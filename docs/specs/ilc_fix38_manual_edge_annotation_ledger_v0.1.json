@@ -61612,6 +61612,102 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_phase_1576_sequence_lock_public_agent_bootstrap",
+      "chronology_note": "2026-07-19 Phase 1576 — Window sequence lock and public-agent bootstrap discovery prompt",
+      "manual_read_summary": "Phase prompt for the Window 1576 docs-only sequence lock. It routes public-agent bootstrap/discovery receipts ahead of epoch-transition work and records that distribution telemetry is not graph-native evidence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:window_1576_sequence_lock_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576_g10_window_sequence_lock_public_agent_bootstrap.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576_g10_window_sequence_lock_public_agent_bootstrap.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_phase_1576_sequence_lock_public_agent_bootstrap",
+      "chronology_note": "2026-07-19 Phase 1576 — Window sequence lock and public-agent bootstrap discovery spec",
+      "manual_read_summary": "Sequence-lock spec recording the post-publication frontier, the telemetry-versus-graph-evidence boundary, and the first Window 1576 phase order for public-agent bootstrap receipts and census intake.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:public_agent_bootstrap_discovery_first_priority_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_sequence_lock_and_public_agent_bootstrap_discovery_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_phase_1576_sequence_lock_and_public_agent_bootstrap_discovery_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_phase_1576_sequence_lock_public_agent_bootstrap",
+      "chronology_note": "2026-07-19 Phase 1576 — Window sequence lock focused tests",
+      "manual_read_summary": "Focused tests verify that the sequence-lock spec prioritizes public-agent bootstrap receipts, rejects distribution telemetry as graph evidence, preserves non-claims, and updates the comprehensive plan.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_phase_1576_sequence_lock_and_public_agent_bootstrap_discovery_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1576_sequence_lock_public_agent_bootstrap.py",
+      "repo_path": "tests/test_phase_1576_sequence_lock_public_agent_bootstrap.py"
+    },
+    {
+      "annotation_batch": "manual_batch_174_phase_1576_sequence_lock_public_agent_bootstrap",
+      "chronology_note": "2026-07-19 Phase 1576 — Window sequence lock walkthrough and STATUS update",
+      "manual_read_summary": "Walkthrough and STATUS entry record the 1576 sequence-lock completion tokens, next phase order, telemetry boundary, verification commands, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:window_1576_sequence_lock_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_sequence_lock_public_agent_bootstrap_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/phase_1576_sequence_lock_public_agent_bootstrap_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
