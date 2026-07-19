@@ -49,6 +49,7 @@ OPERATIONAL_COMMANDS = (
     "atlas",
     "doctor",
     "bootstrap",
+    "bootstrap-receipt",
     "submit",
     "version",
 )
@@ -1789,6 +1790,59 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "bootstrap-receipt":
+            receipt_parser = subparsers.add_parser(
+                "bootstrap-receipt",
+                help="Write a local public-agent bootstrap receipt without graph or wallet writes",
+            )
+            receipt_parser.add_argument(
+                "--json-out",
+                required=True,
+                help="Path to write the local bootstrap receipt JSON",
+            )
+            receipt_parser.add_argument(
+                "--install-surface",
+                choices=("github", "clawhub", "openclaw", "private-dev-main", "local"),
+                default="local",
+                help="Local install surface being attested",
+            )
+            receipt_parser.add_argument(
+                "--repo-root",
+                default=".",
+                help="Local ILC repository root to inspect",
+            )
+            receipt_parser.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic tests",
+            )
+            receipt_parser.add_argument(
+                "--identity-state",
+                default="",
+                help="Optional D2e identity state path; defaults beside --graph-state",
+            )
+            receipt_parser.add_argument(
+                "--ccss-home",
+                default="",
+                help="Optional CCSS home directory; defaults to ~/.ilc/ccss",
+            )
+            receipt_parser.add_argument(
+                "--verifier-path",
+                default="ilc_consensus/target/debug/pq_sign",
+                help="ML-DSA verifier binary path, relative to --repo-root unless absolute",
+            )
+            receipt_parser.add_argument(
+                "--skip-signature-verify",
+                action="store_true",
+                help="Record artifact hashes without invoking the verifier",
+            )
+            receipt_parser.add_argument(
+                "--require-baseline-artifacts",
+                action="store_true",
+                help="Fail closed unless signed Slice 0 and Slice 1 artifacts verify locally",
+            )
+            continue
+
         if command == "balance":
             balance_parser = subparsers.add_parser(
                 "balance",
@@ -1957,6 +2011,7 @@ def _run_top_level_command(
         "agent",
         "atlas",
         "bootstrap",
+        "bootstrap-receipt",
         "bundle",
         "ccss",
         "doctor",
@@ -2043,6 +2098,30 @@ def _run_top_level_command(
                 overwrite=bool(args.overwrite),
             )
         except MaterializationError as exc:
+            raise ValueError(str(exc)) from exc
+        return _success_payload(command, data)
+    if command == "bootstrap-receipt":
+        from ilc_core.rc.public_agent_bootstrap_receipt import (
+            PublicAgentBootstrapReceiptError,
+            build_public_agent_bootstrap_receipt,
+            write_public_agent_bootstrap_receipt,
+        )
+
+        try:
+            data = build_public_agent_bootstrap_receipt(
+                repo_root=Path(args.repo_root),
+                install_surface=str(args.install_surface),
+                generated_at_utc=str(args.generated_at_utc) or None,
+                graph_state_path=graph_state_path,
+                identity_state_path=Path(args.identity_state) if args.identity_state else None,
+                ccss_home=Path(args.ccss_home) if args.ccss_home else None,
+                verifier_path=Path(args.verifier_path),
+                skip_signature_verify=bool(args.skip_signature_verify),
+                require_baseline_artifacts=bool(args.require_baseline_artifacts),
+            )
+            receipt_path = write_public_agent_bootstrap_receipt(Path(args.json_out), data)
+            data = {**data, "receipt_path": str(receipt_path)}
+        except PublicAgentBootstrapReceiptError as exc:
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "balance":
