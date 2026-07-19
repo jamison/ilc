@@ -122,6 +122,59 @@ def test_phase_1319_public_rc_exclude_prose_reference_is_not_marker(
     assert [record["path"] for record in manifest["included_files"]] == ["src/prose.md"]
 
 
+def test_phase_1319_required_included_paths_pass_when_marker_free(tmp_path: Path) -> None:
+    _write(tmp_path / "src/runtime.py", "VALUE = 1\n")
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src",),
+        excluded_roots=(),
+        required_included_paths=("src/runtime.py",),
+    )
+
+    assert manifest["result"] == "pass"
+    assert manifest["required_included_paths"] == {
+        "checked_count": 1,
+        "missing": [],
+        "present": [{"marker_status": "absent", "path": "src/runtime.py"}],
+        "result": "pass",
+    }
+
+
+def test_phase_1319_required_included_paths_fail_closed_when_excluded(tmp_path: Path) -> None:
+    _write(tmp_path / "src/runtime.py", "# PUBLIC_RC_EXCLUDE: synthetic\nVALUE = 1\n")
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src",),
+        excluded_roots=(),
+        required_included_paths=("src/runtime.py",),
+    )
+
+    assert manifest["result"] == "pass"
+    assert manifest["required_included_paths"] == {
+        "checked_count": 1,
+        "missing": [
+            {
+                "path": "src/runtime.py",
+                "reason": "public_rc_exclude_marker_default_excluded",
+            }
+        ],
+        "present": [],
+        "result": "fail_closed",
+    }
+
+
+def test_phase_1319_required_included_paths_reject_traversal(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="phase_1319_required_included_path_traversal_rejected"):
+        build_source_allowlist_export_rehearsal(
+            repo_root=tmp_path,
+            include_roots=("src",),
+            excluded_roots=(),
+            required_included_paths=("../secret.py",),
+        )
+
+
 def test_phase_1319_public_rc_exclude_late_comment_is_not_header_marker(
     tmp_path: Path,
 ) -> None:

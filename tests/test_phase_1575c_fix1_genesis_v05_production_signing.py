@@ -208,7 +208,7 @@ def test_full_behavioral_v05_non_claims_are_present() -> None:
     assert non_claims["no_epoch_transition"] is True
 
 
-def test_all_six_economic_not_activated_guards_remain_true() -> None:
+def test_two_guards_cleared_and_four_guards_retained_after_phase_1575g() -> None:
     guards = {
         "CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED": CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED,
         "EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED": EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED,
@@ -225,4 +225,10 @@ def test_all_six_economic_not_activated_guards_remain_true() -> None:
         "TREASURY_DISTRIBUTION_NOT_ACTIVATED",
         "VALIDATOR_ADMISSION_NOT_ACTIVATED",
     }
-    assert all(value is True for value in guards.values())
+    # Guards cleared by Phase 1575g.
+    assert guards["CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED"] is False
+    assert guards["PRODUCTION_EMISSION_NOT_ACTIVATED"] is False
+    assert guards["EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED"] is True
+    assert guards["PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED"] is True
+    assert guards["TREASURY_DISTRIBUTION_NOT_ACTIVATED"] is True
+    assert guards["VALIDATOR_ADMISSION_NOT_ACTIVATED"] is True

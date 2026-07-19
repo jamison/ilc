@@ -650,10 +650,10 @@ def test_agent_submission_broadcast_rejects_mismatched_explicit_signer(tmp_path:
     assert exc_info.value.token == "broadcast_signer_agent_id_mismatch"
 
 
-def test_production_emission_guard_remains_default_off() -> None:
+def test_production_emission_guard_is_cleared_after_phase_1575g() -> None:
     source = (REPO_ROOT / "ilc_core/epoch/epoch_emission_production_path.py").read_text(encoding="utf-8")
-    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = True" in source
-    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = False" not in source
+    # Guard cleared by Phase 1575g.
+    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = False" in source
 
 
 def test_adr0035_type_registry_guard_remains_default_off() -> None:

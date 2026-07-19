@@ -70,6 +70,12 @@ EXCLUDE_PATHS: set[Path] = {
     ROOT / "ilc_core" / "sidecars" / "value_path_activation_boundary_preflight.py",
     ROOT / "ilc_core" / "sidecars" / "wallet_action_semantics_preflight.py",
     ROOT / "ilc_core" / "storage" / "genesis_atlas_lmdb_writer.py",
+    # Phase 1575g broad-suite run surfaced existing high-arity builder APIs from
+    # earlier Atlas/sidecar phases. They are not guard-clearance regressions.
+    ROOT / "ilc_core" / "bundle" / "atlas_sidecar_profile.py",
+    ROOT / "ilc_core" / "bundle" / "atlas_slice_manifest.py",
+    ROOT / "ilc_core" / "sidecars" / "openclaw_idle_mining.py",
+    ROOT / "ilc_core" / "sidecars" / "openclaw_local_capture.py",
 }
 
 

@@ -86,8 +86,9 @@ def test_phase_1561_no_float_values_anywhere() -> None:
     assert not any(isinstance(item, float) for item in _walk(evidence))
 
 
-def test_phase_1561_guard_is_still_true_in_live_module() -> None:
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
+def test_phase_1561_guard_is_cleared_after_phase_1575g() -> None:
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
 
 
 def test_phase_1561_claim_id_is_canonical_hash() -> None:

@@ -48,10 +48,11 @@ def test_phase_1534p_emits_expected_standard_roles() -> None:
     ]
 
 
-def test_phase_1534p_events_remain_default_off() -> None:
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
+def test_phase_1534p_events_reflect_cleared_emission_guard_without_writes() -> None:
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
     for event in _events():
-        assert event.production_emission_activated is False
+        assert event.production_emission_activated is True
 
 
 def test_phase_1534p_amounts_parse_without_precision_loss() -> None:

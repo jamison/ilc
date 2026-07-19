@@ -86,13 +86,16 @@ def test_phase_1564_selftest_chain_guard_is_present() -> None:
     assert "ILC_PHASE_1564_GATE_SELFTEST" in _read(GATE)
 
 
-def test_no_activation_guards_cleared_in_runtime_source() -> None:
+def test_only_phase_1575g_single_lock_guards_cleared_in_runtime_source() -> None:
     cleared: list[str] = []
     for path in (ROOT / "ilc_core").rglob("*.py"):
         text = path.read_text(encoding="utf-8")
         if re.search(r"NOT_ACTIVATED\s*=\s*False", text):
             cleared.append(str(path.relative_to(ROOT)))
-    assert cleared == []
+    assert sorted(cleared) == [
+        "ilc_core/epoch/epoch_emission_production_path.py",
+        "ilc_core/ledger/conversion_candidate_runtime.py",
+    ]
 
 
 def test_six_economic_guards_still_true() -> None:
@@ -115,9 +118,11 @@ def test_six_economic_guards_still_true() -> None:
         VALIDATOR_ADMISSION_NOT_ACTIVATED,
     )
 
-    assert CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED is True
+    # Guard cleared by Phase 1575g.
+    assert CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED is False
     assert EJECTED_STAKE_DISTRIBUTION_PRODUCTION_NOT_ACTIVATED is True
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
     assert PRODUCTIVE_ECU_EXPANSION_NOT_ACTIVATED is True
     assert TREASURY_DISTRIBUTION_NOT_ACTIVATED is True
     assert VALIDATOR_ADMISSION_NOT_ACTIVATED is True

@@ -235,10 +235,10 @@ def test_scenario_manifest_includes_rehearsal_economics_references(tmp_path: Pat
     assert manifest["rehearsal_cdl048_four_epoch_quote_coverage_verified"] is True
 
 
-def test_fix2l_does_not_clear_production_emission_guard() -> None:
+def test_fix2l_source_reflects_phase_1575g_emission_guard_clearance() -> None:
     source = (ROOT / "ilc_core/epoch/epoch_emission_production_path.py").read_text(encoding="utf-8")
-    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = True" in source
-    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = False" not in source
+    # Guard cleared by Phase 1575g.
+    assert "PRODUCTION_EMISSION_NOT_ACTIVATED = False" in source
 
 
 def test_rehearsal_economics_module_does_not_use_simple_epoch_ledger() -> None:
