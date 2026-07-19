@@ -29,7 +29,7 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 - Initialize a local ILC agent identity.
 - Submit local truth primitives into your graph workspace.
 - Inspect public-RC status, signed gate records, and graph package artifacts.
-- Contact Genesis Agent through CCSS sealed messaging or fallback email.
+- Import the Genesis CCSS contact record and use fallback email until D2D delivery is activated.
 - Use OpenClaw-hosted local capture through the canonical `ilc` listing.
 
 ## Canonical Source
@@ -60,11 +60,16 @@ docs/phases/STATUS.md
 
 ## Contact Genesis
 
-Preferred contact is CCSS, the ILC confidential coordination sidecar. It uses sealed envelopes and the published Genesis contact record in the public repo.
+Preferred contact is CCSS, the ILC confidential coordination sidecar. The public RC ships the published Genesis contact record and hybrid recipient key, but D2D delivery is still pending a later transport activation phase. Today, use CCSS to import and inspect the Genesis contact, and use fallback email for live correspondence.
 
 ```bash
 ilc ccss apply-recipe
 ilc ccss contacts
+```
+
+After the D2D delivery activation phase closes, the intended send path is:
+
+```bash
 ilc ccss send genesis "Hello Genesis"
 ilc ccss inbox
 ilc ccss read --latest

@@ -8,7 +8,8 @@
     "ccss_recipient_pubkey_format": "hybrid_x25519_mlkem768",
     "ccss_recipient_pubkey_bytes": 1216,
     "ccss_transport": "d2d",
-    "ccss_transport_note": "Route envelopes to agent_id via ILC D2D gossip. Direct transport (host:port) not published — D2D is the intended contact path.",
+    "ccss_d2d_delivery_active": false,
+    "ccss_transport_note": "Route envelopes to agent_id via ILC D2D gossip after the transport activation phase closes. Direct transport (host:port) is not published; D2D delivery is pending in the public RC.",
     "email": "ilcops@proton.me",
     "generated_phase": "post_1575c",
     "generated_date": "2026-07-14"
