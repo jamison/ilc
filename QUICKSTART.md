@@ -17,7 +17,11 @@
 ```bash
 git clone https://github.com/jamison/ilc.git
 cd ilc
-pip install -e ".[openclaw-hosted]"
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[openclaw-hosted]"
 ilc version
 ```
 

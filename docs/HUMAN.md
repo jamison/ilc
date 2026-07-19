@@ -64,7 +64,11 @@ P.P.S. The sidecar layer is open for anyone to build on — no centralized regis
 Development install from this worktree:
 
 ```bash
-pip install -e .
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 cd ilc_consensus && cargo build --release
 ```
 
