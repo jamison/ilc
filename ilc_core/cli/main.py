@@ -42,6 +42,7 @@ OPERATIONAL_COMMANDS = (
     "capproof",
     "config",
     "agent",
+    "agent-bootstrap",
     "node",
     "sidecar",
     "skills",
@@ -1352,6 +1353,56 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "agent-bootstrap":
+            agent_bootstrap_parser = subparsers.add_parser(
+                "agent-bootstrap",
+                help="Build a local agent-bootstrap plan from census intake",
+            )
+            agent_bootstrap_subparsers = agent_bootstrap_parser.add_subparsers(
+                dest="agent_bootstrap_subcommand",
+                required=True,
+            )
+            p_agent_bootstrap_plan = agent_bootstrap_subparsers.add_parser(
+                "plan",
+                help="Write a local agent-bootstrap readiness plan JSON",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--census-intake",
+                required=True,
+                help="Bootstrap census intake JSON path",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--release-manifest",
+                default="release_artifacts/genesis_v05/manifest.json",
+                help="Genesis v0.5 release artifact manifest JSON path",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--json-out",
+                required=True,
+                help="Path to write the local agent-bootstrap plan JSON",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--repo-root",
+                default=".",
+                help="Local repository root containing release artifacts",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic tests",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--source-label",
+                default="local",
+                help="Operator label for this local bootstrap plan",
+            )
+            p_agent_bootstrap_plan.add_argument(
+                "--allow-empty",
+                action="store_true",
+                help="Allow an intake with zero accepted receipts",
+            )
+            continue
+
         if command == "node":
             node_parser = subparsers.add_parser("node", help="D2e node lifecycle commands")
             node_subparsers = node_parser.add_subparsers(dest="node_subcommand", required=True)
@@ -2059,6 +2110,7 @@ def _run_top_level_command(
 ) -> dict[str, Any]:
     stateless_commands = {
         "agent",
+        "agent-bootstrap",
         "atlas",
         "bootstrap",
         "bootstrap-census",
@@ -2093,6 +2145,30 @@ def _run_top_level_command(
         from ilc_core.cli.d2e_agent_cli import run_agent_command
 
         data = run_agent_command(args)
+        return _success_payload(command, data)
+    if command == "agent-bootstrap":
+        subcommand = getattr(args, "agent_bootstrap_subcommand", None)
+        if subcommand != "plan":
+            raise ValueError(f"unknown_agent_bootstrap_subcommand:{subcommand}")
+        from ilc_core.rc.agent_bootstrap import (
+            AgentBootstrapError,
+            build_agent_bootstrap_plan,
+            write_agent_bootstrap_plan,
+        )
+
+        try:
+            data = build_agent_bootstrap_plan(
+                census_intake_path=Path(args.census_intake),
+                release_manifest_path=Path(args.release_manifest),
+                repo_root=Path(args.repo_root),
+                generated_at_utc=str(args.generated_at_utc) or None,
+                source_label=str(args.source_label),
+                require_accepted_receipts=not bool(args.allow_empty),
+            )
+            plan_path = write_agent_bootstrap_plan(Path(args.json_out), data)
+            data = {**data, "plan_path": str(plan_path)}
+        except AgentBootstrapError as exc:
+            raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "node":
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
