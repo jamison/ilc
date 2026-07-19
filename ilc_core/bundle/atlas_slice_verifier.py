@@ -74,6 +74,7 @@ _FLOAT_TOKEN = "atlas_slice_verifier_float_not_allowed"
 _HEX_96 = frozenset("0123456789abcdef")
 _MAX_JSON_BYTES = 16 * 1024 * 1024
 _MAX_COMMITMENTS = 100_000
+_MAX_SIGNATURE_HEX_CHARS = 32_768
 _RECEIPT_PREFIX = "atlas_slice_verification_receipt:"
 _TOKENS = (
     ATLAS_SLICE_VERIFIER_TOKEN,
@@ -133,8 +134,10 @@ def verify_native_signed_slice_record(
     signature = record.get("signature")
     if require_signature_status and signature_status != "signature_verified":
         raise AtlasSliceVerifierError("atlas_slice_signature_status_not_verified")
-    if signature_status == "signature_verified" and signature is None:
-        raise AtlasSliceVerifierError("atlas_slice_signature_missing_for_verified_status")
+    if signature_status in {"signature_attached_unverified", "signature_verified"}:
+        _require_signature_hex(signature, signature_status)
+    if signature_status == "signature_verification_deferred" and signature is not None:
+        _require_signature_hex(signature, signature_status)
     if signature_status == "unsigned_schema_only" and signature is not None:
         raise AtlasSliceVerifierError("atlas_slice_unsigned_record_has_signature")
 
@@ -253,13 +256,23 @@ def verify_portable_manifest_witness(
     _require_str_sequence(witness.get("authority_proof_path"), "authority_proof_path")
     _require_str_sequence(witness.get("required_tests"), "required_tests")
     _require_str_sequence(witness.get("semantic_loss_annotations"), "semantic_loss_annotations")
-    _require_commitment_list(witness.get("node_commitments"), "node_commitments", "node_id")
-    _require_commitment_list(witness.get("edge_commitments"), "edge_commitments", "edge_id")
+    _require_commitment_list(
+        witness.get("node_commitments"),
+        "node_commitments",
+        id_fields=("node_id",),
+        digest_field="record_sha384",
+    )
+    _require_commitment_list(
+        witness.get("edge_commitments"),
+        "edge_commitments",
+        id_fields=("edge_id",),
+        digest_field="record_sha384",
+    )
     _require_commitment_list(
         witness.get("content_commitments"),
         "content_commitments",
-        "content_id",
-        alternate_id_fields=("content_cid", "table_key"),
+        id_fields=("content_id", "content_cid", "table_key"),
+        digest_field="sha384",
     )
 
     native_summary: dict[str, Any] | None = None
@@ -360,7 +373,10 @@ def load_json_object(path: str | Path) -> dict[str, Any]:
         raise AtlasSliceVerifierError(f"atlas_slice_verifier_json_invalid:{source}") from exc
     if not isinstance(payload, dict):
         raise AtlasSliceVerifierError(f"atlas_slice_verifier_json_not_object:{source}")
-    _reject_float(payload)
+    try:
+        _reject_float(payload)
+    except RecursionError as exc:
+        raise AtlasSliceVerifierError("atlas_slice_verifier_json_too_deep") from exc
     return payload
 
 
@@ -387,9 +403,9 @@ def write_slice_verification_receipt(path: str | Path, receipt: Mapping[str, Any
 def _require_commitment_list(
     values: Any,
     field: str,
-    primary_id_field: str,
     *,
-    alternate_id_fields: Sequence[str] = (),
+    id_fields: Sequence[str],
+    digest_field: str,
 ) -> None:
     if not isinstance(values, list):
         raise AtlasSliceVerifierError(f"atlas_slice_witness_commitments_invalid:{field}")
@@ -397,29 +413,21 @@ def _require_commitment_list(
         raise AtlasSliceVerifierError(f"atlas_slice_witness_commitments_too_many:{field}")
     normalized: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
-    id_fields = (primary_id_field, *alternate_id_fields)
     for raw in values:
         if not isinstance(raw, Mapping):
             raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_not_object:{field}")
         _reject_float(raw)
-        stable_id = ""
-        for candidate_id in id_fields:
-            value = raw.get(candidate_id)
-            if isinstance(value, str) and value:
-                stable_id = value
-                break
-        if not stable_id:
-            raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_id_missing:{field}")
+        present_id_fields = [candidate_id for candidate_id in id_fields if candidate_id in raw]
+        if len(present_id_fields) != 1:
+            raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_id_fields_invalid:{field}")
+        expected_fields = {present_id_fields[0], digest_field}
+        if set(raw) != expected_fields:
+            raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_fields_invalid:{field}")
+        stable_id = _required_str(raw, present_id_fields[0])
         if stable_id in seen_ids:
             raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_duplicate:{field}")
         seen_ids.add(stable_id)
-        digest_seen = False
-        for key, value in raw.items():
-            if key == "sha384" or (isinstance(key, str) and key.endswith("_sha384")):
-                _require_sha384_value(value, f"{field}:{key}")
-                digest_seen = True
-        if not digest_seen:
-            raise AtlasSliceVerifierError(f"atlas_slice_witness_commitment_sha384_missing:{field}")
+        _require_sha384_value(raw[digest_field], f"{field}:{digest_field}")
         normalized.append(dict(sorted(raw.items())))
     if list(values) != sorted(normalized, key=lambda row: canonical_schema_json(row)):
         raise AtlasSliceVerifierError(f"atlas_slice_witness_commitments_not_canonical:{field}")
@@ -482,6 +490,17 @@ def _required_str(payload: Mapping[str, Any], key: str) -> str:
 def _require_non_empty_str(value: Any, field: str) -> None:
     if not isinstance(value, str) or not value:
         raise AtlasSliceVerifierError(f"atlas_slice_required_string_invalid:{field}")
+
+
+def _require_signature_hex(value: Any, status: str) -> None:
+    if (
+        not isinstance(value, str)
+        or not value
+        or len(value) > _MAX_SIGNATURE_HEX_CHARS
+        or len(value) % 2 != 0
+        or any(char not in _HEX_96 for char in value)
+    ):
+        raise AtlasSliceVerifierError(f"atlas_slice_signature_hex_invalid:{status}")
 
 
 def _require_exact_field_set(payload: Mapping[str, Any], expected: set[str], error: str) -> None:

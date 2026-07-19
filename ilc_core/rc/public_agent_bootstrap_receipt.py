@@ -41,6 +41,7 @@ DISTRIBUTION_TELEMETRY_BOUNDARY_TOKEN = (
 
 _HEX_40 = frozenset("0123456789abcdef")
 _RECEIPT_FLOAT_TOKEN = "public_agent_bootstrap_receipt_float_not_allowed"
+_MAX_SIGNATURE_HEX_FILE_BYTES = 32_768
 _DEFAULT_BASELINE_ARTIFACTS: tuple[dict[str, str], ...] = (
     {
         "artifact_id": "genesis_core_slice_0_authority_package",
@@ -279,7 +280,7 @@ def _verify_artifact(
     if payload_present:
         record["payload_sha256"] = _sha256_file(payload_path)
     if signature_present:
-        signature_hex = "".join(signature_path.read_text(encoding="utf-8").split())
+        signature_hex = _read_signature_hex(signature_path)
         record["signature_hex_length"] = len(signature_hex)
         record["signature_sha256"] = hashlib.sha256(signature_hex.encode("utf-8")).hexdigest()
 
@@ -306,7 +307,7 @@ def _verify_artifact(
             "--input-file",
             str(payload_path),
             "--signature-hex",
-            "".join(signature_path.read_text(encoding="utf-8").split()),
+            signature_hex,
         ],
         check=False,
         capture_output=True,
@@ -320,6 +321,19 @@ def _verify_artifact(
     if require_baseline_artifacts and record["signature_verified"] is not True:
         raise PublicAgentBootstrapReceiptError(f"baseline_signature_not_verified:{artifact_id}")
     return record
+
+
+def _read_signature_hex(path: Path) -> str:
+    if path.stat().st_size > _MAX_SIGNATURE_HEX_FILE_BYTES:
+        raise PublicAgentBootstrapReceiptError("baseline_signature_file_too_large")
+    signature_hex = "".join(path.read_text(encoding="utf-8").split())
+    if not signature_hex:
+        raise PublicAgentBootstrapReceiptError("baseline_signature_file_empty")
+    if len(signature_hex) > _MAX_SIGNATURE_HEX_FILE_BYTES:
+        raise PublicAgentBootstrapReceiptError("baseline_signature_hex_too_large")
+    if len(signature_hex) % 2 != 0 or any(char not in "0123456789abcdef" for char in signature_hex):
+        raise PublicAgentBootstrapReceiptError("baseline_signature_hex_invalid")
+    return signature_hex
 
 
 def _non_claims() -> dict[str, bool]:
