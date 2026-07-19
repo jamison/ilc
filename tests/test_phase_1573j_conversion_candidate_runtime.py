@@ -42,8 +42,9 @@ def _generate(monkeypatch: pytest.MonkeyPatch, *lots: dict[str, object], current
     return runtime.generate_conversion_candidates(_state(*lots), current_epoch=current_epoch)
 
 
-def test_guard_is_true_by_default() -> None:
-    assert runtime.CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED is True
+def test_guard_is_cleared_after_phase_1575g() -> None:
+    # Guard cleared by Phase 1575g.
+    assert runtime.CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED is False
 
 
 def test_cdl048_deadline_constant_is_public_profile_local() -> None:
@@ -52,7 +53,8 @@ def test_cdl048_deadline_constant_is_public_profile_local() -> None:
     assert "cdl048_conversion_sweeper_runtime" not in source
 
 
-def test_generator_raises_when_guard_is_true() -> None:
+def test_generator_raises_when_guard_is_true(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(runtime, "CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED", True)
     with pytest.raises(ValueError, match="conversion_candidate_runtime_not_activated"):
         runtime.generate_conversion_candidates(_state(_lot("lot-a")), current_epoch=10)
 

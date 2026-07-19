@@ -76,7 +76,8 @@ def test_phase_1533p_rejects_float_before_root() -> None:
 def test_phase_1533p_root_metadata_and_guard_floor() -> None:
     root = compute_settlement_root(_result())
 
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
     assert root.issuance_epoch == 7
     assert root.root_algorithm == "sha256_over_canonical_json"
     assert len(root.root_hex) == 64

@@ -34,8 +34,9 @@ def _result() -> EpochEmissionProductionResult:
     )
 
 
-def test_phase_1532p_guard_is_true_and_authority_tokens_are_bound() -> None:
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
+def test_phase_1532p_guard_is_cleared_and_authority_tokens_are_bound() -> None:
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
     assert CDL_EMISSION_AUTHORITY_TOKENS == [
         "cdl_025_emission_schedule_runtime_phase_1345.v0.1",
         "cdl_026_cmax_cap_runtime_phase_1345.v0.1",
@@ -45,11 +46,11 @@ def test_phase_1532p_guard_is_true_and_authority_tokens_are_bound() -> None:
     ]
 
 
-def test_phase_1532p_returns_default_off_production_result() -> None:
+def test_phase_1532p_returns_production_result_without_writes() -> None:
     result = _result()
 
     assert isinstance(result, EpochEmissionProductionResult)
-    assert result.production_emission_activated is False
+    assert result.production_emission_activated is True
     assert result.guard_token == "PRODUCTION_EMISSION_NOT_ACTIVATED"
     assert result.gate_report.verdict == ISSUANCE_ECONOMICS_INTEGRATION_GATE_PASS
     assert result.emission_quote.issuance_epoch == 3

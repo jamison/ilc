@@ -48,11 +48,12 @@ def test_phase_1535p_emission_round_trip_replays_byte_identically() -> None:
         assert event.role == event2.role
         assert event.to_canonical_json() == event2.to_canonical_json()
 
-    assert PRODUCTION_EMISSION_NOT_ACTIVATED is True
-    assert result.production_emission_activated is False
-    assert result2.production_emission_activated is False
-    assert all(event.production_emission_activated is False for event in events)
-    assert all(event.production_emission_activated is False for event in events2)
+    # Guard cleared by Phase 1575g.
+    assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
+    assert result.production_emission_activated is True
+    assert result2.production_emission_activated is True
+    assert all(event.production_emission_activated is True for event in events)
+    assert all(event.production_emission_activated is True for event in events2)
     assert all(Decimal(event.amount_ilc_str).is_finite() for event in events)
     assert [event.role for event in events] == [
         "scheduled_emission_pool",
