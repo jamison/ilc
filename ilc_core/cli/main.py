@@ -1766,6 +1766,41 @@ def _build_parser() -> JsonArgumentParser:
                 help="Verify deterministic commitments without requiring a signature",
             )
             p_atlas_verify_slice.set_defaults(require_signature=True)
+
+            p_atlas_verify_signed_slice = atlas_subparsers.add_parser(
+                "verify-signed-slice",
+                help="Verify a native signed-slice record and optional portable witness",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--native-record",
+                required=True,
+                help="Native __signed_slices__ record JSON path",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--portable-witness",
+                default="",
+                help="Optional portable AtlasSliceManifest witness JSON path",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--json-out",
+                default="",
+                help="Optional local verification receipt JSON path",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic receipts",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--source-label",
+                default="local",
+                help="Operator label for this local verification receipt",
+            )
+            p_atlas_verify_signed_slice.add_argument(
+                "--require-signature-status",
+                action="store_true",
+                help="Require native record signature_status=signature_verified",
+            )
             continue
 
         if command == "bootstrap":
