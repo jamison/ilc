@@ -102,7 +102,11 @@ Installing or running a sidecar locally does not activate public serving, P2P, m
 ## Quick Start
 
 ```bash
-pip install -e .
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 cd ilc_consensus && cargo build --release
 ```
 

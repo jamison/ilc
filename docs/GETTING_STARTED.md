@@ -19,11 +19,15 @@ This guide bridges the root [`README.md`](../README.md) and the protocol spec/ar
 ```bash
 git clone https://github.com/jamison/ilc.git
 cd ilc
-pip install -e .
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 ilc version
 ```
 
-The `pip install -e .` path installs the `ilc` binary and all Python protocol modules in editable mode. Verify the install immediately with `ilc version`.
+The `python -m pip install -e .` path installs the `ilc` binary and all Python protocol modules in editable mode. Verify the install immediately with `ilc version`.
 
 ### Build the Rust consensus layer
 
