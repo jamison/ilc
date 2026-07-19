@@ -153,9 +153,14 @@ def merkle_root_from_rows(rows: Sequence[Mapping[str, Any]]) -> str:
     """Return deterministic SHA-384 root for sorted projection rows."""
 
     leaves = []
+    seen_row_keys: set[tuple[str, str]] = set()
     for row in rows:
         table = _required_str(row, "table")
         key = _required_str(row, "key")
+        row_key = (table, key)
+        if row_key in seen_row_keys:
+            raise AtlasSliceSchemaError("atlas_slice_row_key_duplicate")
+        seen_row_keys.add(row_key)
         value = row.get("value")
         if not isinstance(value, Mapping):
             raise AtlasSliceSchemaError("atlas_slice_row_value_not_mapping")
@@ -334,8 +339,36 @@ def _normalize_commitments(
         if not isinstance(value, Mapping):
             raise AtlasSliceSchemaError(f"atlas_slice_commitment_invalid:{field}")
         _reject_float(value)
+        _validate_commitment_shape(value, field)
         commitments.append(dict(sorted(value.items())))
     return sorted(commitments, key=lambda row: canonical_schema_json(row))
+
+
+def _validate_commitment_shape(value: Mapping[str, Any], field: str) -> None:
+    if field == "node_commitments":
+        expected = {"node_id", "record_sha384"}
+        digest_field = "record_sha384"
+    elif field == "edge_commitments":
+        expected = {"edge_id", "record_sha384"}
+        digest_field = "record_sha384"
+    elif field == "content_commitments":
+        present_id_fields = [
+            candidate for candidate in ("content_id", "content_cid", "table_key") if candidate in value
+        ]
+        if len(present_id_fields) != 1:
+            raise AtlasSliceSchemaError(f"atlas_slice_commitment_id_fields_invalid:{field}")
+        expected = {present_id_fields[0], "sha384"}
+        digest_field = "sha384"
+    else:
+        raise AtlasSliceSchemaError(f"atlas_slice_commitment_field_unknown:{field}")
+    if set(value) != expected:
+        raise AtlasSliceSchemaError(f"atlas_slice_commitment_fields_invalid:{field}")
+    for key, raw in value.items():
+        if key == digest_field:
+            if not _is_sha384(raw):
+                raise AtlasSliceSchemaError(f"atlas_slice_commitment_sha384_invalid:{field}:{key}")
+            continue
+        _require_non_empty_str(raw, f"{field}:{key}")
 
 
 def _normalize_included_tables(values: Sequence[str]) -> list[str]:
