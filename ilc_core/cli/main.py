@@ -1787,6 +1787,11 @@ def _build_parser() -> JsonArgumentParser:
                 help="Optional local verification receipt JSON path",
             )
             p_atlas_verify_signed_slice.add_argument(
+                "--json-out-root",
+                default="",
+                help="Optional allowed directory boundary for --json-out",
+            )
+            p_atlas_verify_signed_slice.add_argument(
                 "--generated-at-utc",
                 default="",
                 help="Optional RFC3339 UTC timestamp override for deterministic receipts",

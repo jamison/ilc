@@ -29,7 +29,6 @@ from ilc_core.bundle.atlas_slice_schema import (
     canonical_schema_json,
     sha384_canonical,
 )
-from ilc_core.private_json_guardrails import reject_float
 
 
 ATLAS_SLICE_VERIFIER_SCHEMA_VERSION = "atlas_slice_verifier_1576.v0.1"
@@ -73,6 +72,7 @@ ALLOWED_SIGNATURE_STATUSES = frozenset(
 _FLOAT_TOKEN = "atlas_slice_verifier_float_not_allowed"
 _HEX_96 = frozenset("0123456789abcdef")
 _MAX_JSON_BYTES = 16 * 1024 * 1024
+_MAX_JSON_DEPTH = 256
 _MAX_COMMITMENTS = 100_000
 _MAX_SIGNATURE_HEX_CHARS = 32_768
 _RECEIPT_PREFIX = "atlas_slice_verification_receipt:"
@@ -324,8 +324,10 @@ def build_slice_verification_receipt(
 ) -> dict[str, Any]:
     """Build a deterministic local verification receipt for supplied objects."""
 
+    generated_at_source = "caller_supplied"
     if generated_at_utc is None:
         generated_at_utc = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        generated_at_source = "wall_clock_utc"
     _validate_timestamp(generated_at_utc)
     _require_non_empty_str(source_label, "source_label")
     native_summary = verify_native_signed_slice_record(
@@ -341,6 +343,7 @@ def build_slice_verification_receipt(
         )
     body: dict[str, Any] = {
         "generated_at_utc": generated_at_utc,
+        "generated_at_source": generated_at_source,
         "native_record": native_summary,
         "non_claims": _non_claims(),
         "phase": ATLAS_SLICE_VERIFIER_PHASE,
@@ -373,18 +376,25 @@ def load_json_object(path: str | Path) -> dict[str, Any]:
         raise AtlasSliceVerifierError(f"atlas_slice_verifier_json_invalid:{source}") from exc
     if not isinstance(payload, dict):
         raise AtlasSliceVerifierError(f"atlas_slice_verifier_json_not_object:{source}")
-    try:
-        _reject_float(payload)
-    except RecursionError as exc:
-        raise AtlasSliceVerifierError("atlas_slice_verifier_json_too_deep") from exc
+    _reject_float(payload)
     return payload
 
 
-def write_slice_verification_receipt(path: str | Path, receipt: Mapping[str, Any]) -> Path:
+def write_slice_verification_receipt(
+    path: str | Path,
+    receipt: Mapping[str, Any],
+    *,
+    allowed_root: str | Path | None = None,
+) -> Path:
     """Atomically write a deterministic local verification receipt."""
 
     _reject_float(receipt)
     target = Path(path)
+    if allowed_root is not None:
+        root = Path(allowed_root).resolve()
+        target_resolved = target.resolve()
+        if target_resolved != root and root not in target_resolved.parents:
+            raise AtlasSliceVerifierError("atlas_slice_verifier_output_path_outside_allowed_root")
     target.parent.mkdir(parents=True, exist_ok=True)
     tmp = target.with_name(f".{target.name}.tmp.{os.getpid()}")
     payload = json.dumps(receipt, sort_keys=True, indent=2, allow_nan=False) + "\n"
@@ -510,9 +520,24 @@ def _require_exact_field_set(payload: Mapping[str, Any], expected: set[str], err
 
 def _reject_float(value: Any) -> None:
     try:
-        reject_float(value, _FLOAT_TOKEN)
-    except ValueError as exc:
-        raise AtlasSliceVerifierError(_FLOAT_TOKEN) from exc
+        _reject_float_bounded(value, depth=0)
+    except RecursionError as exc:
+        raise AtlasSliceVerifierError("atlas_slice_verifier_json_too_deep") from exc
+
+
+def _reject_float_bounded(value: Any, *, depth: int) -> None:
+    if depth > _MAX_JSON_DEPTH:
+        raise AtlasSliceVerifierError("atlas_slice_verifier_json_too_deep")
+    if isinstance(value, float):
+        raise AtlasSliceVerifierError(_FLOAT_TOKEN)
+    if isinstance(value, Mapping):
+        for key, nested in value.items():
+            _reject_float_bounded(key, depth=depth + 1)
+            _reject_float_bounded(nested, depth=depth + 1)
+        return
+    if isinstance(value, (list, tuple)):
+        for nested in value:
+            _reject_float_bounded(nested, depth=depth + 1)
 
 
 def _validate_timestamp(value: str) -> None:
