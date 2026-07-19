@@ -62164,6 +62164,88 @@
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_slice_verifier_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_phase_1576_slice_verifier_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_180_phase_1576_slice_materializer",
+      "chronology_note": "2026-07-19 Phase 1576-slice-materializer — materializer runtime and CLI",
+      "manual_read_summary": "Local-only Atlas signed-slice materializer consumes verifier-passing native records and portable witnesses, verifies local blob SHA-384 digests against witness commitments, enforces path traversal and byte bounds, rejects float/depth hazards in receipts, and emits status-only materialization evidence without LMDB writes, role grants, guard clearance, network fetch, or activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_slice_materializer_committed_phase_1576"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:verifier_eligibility_evidence_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/bundle/atlas_slice_materializer.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc_core/cli/atlas_lmdb_cli.py;graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py",
+      "repo_path": "ilc_core/bundle/atlas_slice_materializer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_180_phase_1576_slice_materializer",
+      "chronology_note": "2026-07-19 Phase 1576-slice-materializer — focused tests",
+      "manual_read_summary": "Focused tests cover local blob success, verifier rejection before fetch, digest mismatch, missing-blob strict and rehearsal modes, individual blob bound, path traversal, output receipt float rejection, receipt JSON depth bound, empty commitments, atomic-write cleanup, baseline-verified true path, and CLI require-baseline failure.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/bundle/atlas_slice_materializer.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1576_slice_materializer.py",
+      "repo_path": "tests/test_phase_1576_slice_materializer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_180_phase_1576_slice_materializer",
+      "chronology_note": "2026-07-19 Phase 1576-slice-materializer — prompt, spec, walkthrough, STATUS, and planning updates",
+      "manual_read_summary": "Prompt, spec, walkthrough, STATUS, PLANNING_INDEX, and comprehensive forward plan record the materializer contract, local-only boundary, verifier-before-fetch invariant, baseline receipt results, output tokens, non-claims, and next sidecar-profile phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_slice_materializer_no_role_grant_no_guard_clearance_phase_1576"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:materialized_baseline_verified_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_slice_materializer_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_added:docs/phases/phase_1576_slice_materializer_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_phase_1576_slice_materializer_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
