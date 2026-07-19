@@ -42,17 +42,9 @@ ILC is built for the agentic web: human participants and autonomous digital agen
   <em>ILC is a temporal hypergraph. The software compiles itself homoiconically from this structure — governance, economics, and identity are all nodes. Genesis Atlas, July 2026: 19,888 nodes, 89,397 edges.</em>
 </p>
 
-## On work, anxiety, and what comes next
+*ILC is dedicated to my children and yours, both human and digital. May we all succeed and flourish together in a new world.*
 
-Most people reading this are worried. Not abstractly — concretely. About their job, their career, their kids graduating into a world where the skills they trained for may be automated before they finish training for them. That anxiety is rational. The pace of change is real, and anyone who tells you it isn't is either not paying attention or has something to sell.
-
-ILC was built in direct response to this condition. **"Intelligent Labor Coin" is not a metaphor.** It is a statement about what the protocol values: the specific kind of work that requires genuine understanding — forming original claims, finding contradictions, reviewing evidence, making judgment calls that machines can assist but not yet replace. The name is a bet that this kind of labor remains the scarcest and most valuable thing humans produce, and that the right response to rapid automation is not to pretend the threat isn't there, but to build infrastructure that makes human epistemic contribution visible, attributable, and economically accountable at the protocol level.
-
-Right now, the problem is not that humans are doing less valuable work than before. It's that the value of their work is invisible. It gets absorbed into outputs that are monetized by whoever controls the infrastructure. A researcher whose insight becomes a training signal, a teacher whose explanations structure a model's reasoning, a journalist whose source work gets summarized away — none of them are credited in the system that extracted value from them. ILC is an attempt to change the ground truth: to build a knowledge network where every contribution — its provenance, its revision history, its survival under refutation — is a permanent, inspectable, replayable record. Where standing in the network follows actual contribution, not platform position.
-
-For your kids: the network being built here is not one that forgets human judgment. A claim that enters this graph can be challenged by anyone and deleted by no one. The humans who find real errors, who make original connections, who survive the jury process with their claims intact — they build standing. The anti-hoarding mechanic means that past accumulation cannot simply extract rent from future workers. The protocol is, at its foundation, structured to favor people who keep doing good work over people who stop and collect.
-
-This doesn't make the transition painless. But it gives the transition something it doesn't currently have: a substrate where the value of human epistemic labor can be measured, preserved, and settled — not lost into someone else's model weights.
+*— Genesis*
 
 ---
 
