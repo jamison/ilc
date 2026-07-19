@@ -61300,6 +61300,318 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:out/genesis_5pct_retained_rehearsal_1575c_fix3f/rehearsal_evidence.json",
       "repo_path": "out/genesis_5pct_retained_rehearsal_1575c_fix3f/rehearsal_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1575f_clawhub_skill_publication",
+      "chronology_note": "2026-07-18 Phase 1575f — ClawHub skill publication prompt",
+      "manual_read_summary": "Sensitive phase prompt authorizing live ClawHub publication of ilc-openclaw-local-capture after exact human GO, public source reachability, and Fix2c readiness tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:clawhub_skill_published_phase_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575f_g10_clawhub_skill_publication.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575f_g10_clawhub_skill_publication.md"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1575f_clawhub_skill_publication",
+      "chronology_note": "2026-07-18 Phase 1575f — OpenClaw local capture skill manifest",
+      "manual_read_summary": "ClawHub-shaped SKILL.md for the ILC OpenClaw local capture skill, including invite-gated setup, ConsentGate boundary, local-only estimate semantics, and non-claims for minting, settlement, wallet writes, public graph writes, and public-RC activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:skill_md_clawhub_frontmatter_reshaped_phase_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc-openclaw-local-capture/SKILL.md",
+      "repo_path": "skills/ilc-openclaw-local-capture/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1575f_clawhub_skill_publication",
+      "chronology_note": "2026-07-18 Phase 1575f — OpenClaw local capture public skill card",
+      "manual_read_summary": "Public-facing ClawHub skill card committed to private and public source for operator/user orientation; ClawHub CLI strips local skill-card.md from skill publish uploads, so registry verifier card availability remains a recorded ClawHub-generated-card caveat.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_listing_live_phase_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc-openclaw-local-capture/skill-card.md",
+      "repo_path": "skills/ilc-openclaw-local-capture/skill-card.md"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1575f_clawhub_skill_publication",
+      "chronology_note": "2026-07-18 Phase 1575f — ClawHub publication evidence",
+      "manual_read_summary": "Generated evidence for live ClawHub publication, listing URL, latest version 0.1.1, public source commit, append-only public sync receipt, clean moderation, and verifier-card caveat; evidence SHA-256 a3a09128738d95ef5e421fd11a924aff70f61e0916fc639570ccf7691c4b1707.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_skill_published_phase_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=generated_evidence_added:out/block6_openclaw_clawhub_publication_1575f/evidence_records.json",
+      "repo_path": "out/block6_openclaw_clawhub_publication_1575f/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1575f_clawhub_skill_publication",
+      "chronology_note": "2026-07-18 Phase 1575f — ClawHub publication walkthrough",
+      "manual_read_summary": "Walkthrough recording exact GO phrase, precondition tokens, ClawHub CLI version, authenticated handle, publish commands, public append-only sync, live listing URL, initial install/download counts, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_listing_live_phase_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_post_1575f_clawhub_ilc_canonical_entry_refresh",
+      "chronology_note": "2026-07-18 Post-1575f — canonical ClawHub ILC entry refresh",
+      "manual_read_summary": "Canonical ClawHub umbrella SKILL.md for slug ilc; points to public source github.com/jamison/ilc, records public-RC status and non-claims, and routes OpenClaw users to ilc-openclaw-local-capture.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_ilc_canonical_entry_refreshed_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc/SKILL.md",
+      "repo_path": "skills/ilc/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_post_1575f_clawhub_ilc_canonical_entry_refresh",
+      "chronology_note": "2026-07-18 Post-1575f — canonical ClawHub ILC skill card source",
+      "manual_read_summary": "Public source skill-card.md for the canonical ilc ClawHub entry; the ClawHub skill publish CLI strips local skill-card.md from uploaded skill artifacts, so this remains public source orientation rather than a registry card artifact.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_ilc_canonical_entry_refreshed_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:skills/ilc/skill-card.md",
+      "repo_path": "skills/ilc/skill-card.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_post_1575f_clawhub_single_ilc_listing_consolidation",
+      "chronology_note": "2026-07-18 Post-1575f — ClawHub single-listing consolidation under canonical ilc slug",
+      "manual_read_summary": "Canonical ilc ClawHub SKILL.md updated with a marketing-forward ILC intro, practical user actions, Genesis CCSS contact commands, lighter current-status wording, and direct GitHub links. ClawHub latest is ilc@0.3.0 with clean moderation; duplicate local-capture listing is hidden.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_single_ilc_listing_consolidated_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:skills/ilc/SKILL.md",
+      "repo_path": "skills/ilc/SKILL.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_post_1575f_clawhub_single_ilc_listing_consolidation",
+      "chronology_note": "2026-07-18 Post-1575f — ClawHub single-listing consolidation skill-card source",
+      "manual_read_summary": "Public source skill-card.md updated to match the canonical ilc listing: clearer ILC value proposition, practical user actions, Genesis CCSS contact path, source link, and bounded public-RC status.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_single_ilc_listing_consolidated_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:skills/ilc/skill-card.md",
+      "repo_path": "skills/ilc/skill-card.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_post_1575f_clawhub_single_ilc_listing_consolidation",
+      "chronology_note": "2026-07-18 Post-1575f — ClawHub single-listing consolidation walkthrough update",
+      "manual_read_summary": "Phase 1575f walkthrough updated to record the final canonical ilc@0.3.0 listing, hidden ilc-openclaw-local-capture duplicate, public append-only source commit, and registry verification state.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_single_ilc_listing_consolidated_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575f_clawhub_skill_publication_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_post_1575f_clawhub_single_ilc_listing_consolidation",
+      "chronology_note": "2026-07-18 Post-1575f — ClawHub single-listing consolidation STATUS update",
+      "manual_read_summary": "STATUS entry records final ClawHub consolidation tokens: canonical ilc listing retained, local-capture listing hidden, ilc@0.3.0 clean and latest, no activation claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:clawhub_single_ilc_listing_consolidated_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_173_post_1575f_launch_announcement_finalization",
+      "chronology_note": "2026-07-18 Post-1575f — launch announcement finalization draft",
+      "manual_read_summary": "Ready-to-post launch announcement file generated from platform drafts with repository URL, interim GitHub paper URL, and Genesis Agent author field resolved. File remains PUBLIC_RC_EXCLUDE until arXiv URL is live and human authorizes public mirror inclusion.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:launch_announcement_final_draft_written_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/announcements/ilc_launch_announcement_final_v0.1.md",
+      "repo_path": "docs/announcements/ilc_launch_announcement_final_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_173_post_1575f_launch_announcement_finalization",
+      "chronology_note": "2026-07-18 Post-1575f — launch announcement finalization STATUS update",
+      "manual_read_summary": "STATUS entry records announcement placeholder resolution, arXiv conversion/author metadata gate, public mirror exclusion, and no-posting non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:launch_announcement_final_draft_written_post_1575f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
