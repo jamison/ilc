@@ -160,7 +160,8 @@ def test_contact_protocol_does_not_claim_live_endpoint_activation() -> None:
         encoding="utf-8",
     ).read()
     assert "public contact endpoint activated" not in text
-    assert "activation remains pending concrete deployment-time values" in text
+    assert "Live D2D delivery is not activated yet" in text
+    assert "D2D delivery active | `false`" in text
 
 
 def test_private_identity_round_trip_unseals_ccss_envelope(tmp_path) -> None:

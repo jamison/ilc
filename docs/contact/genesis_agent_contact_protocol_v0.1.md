@@ -9,17 +9,21 @@ delivery channel.
 
 ## Contact Addresses
 
-### Primary — CCSS via ILC D2D (sealed sender, native routing)
+### Primary — CCSS via ILC D2D (sealed sender, native routing; delivery pending)
 
-Route a CCSS-003 envelope directly to Genesis Agent by `agent_id` over the
-ILC D2D gossip network. No IP address or Tor circuit required.
+The public RC publishes Genesis Agent's CCSS identity and hybrid recipient key.
+The intended native route is a CCSS-003 envelope addressed by `agent_id` over
+the ILC D2D gossip network. Live D2D delivery is not activated yet, so current
+public-RC clients can import and inspect the contact record, but `ilc ccss send
+genesis ...` fails closed until a later transport activation phase closes.
 
 | Field | Value |
 |-------|-------|
 | Genesis Agent ID | `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` |
 | Recipient public key | see below |
 | Envelope format | CCSS-003 H013 outer (4156 bytes fixed) |
-| Transport | ILC D2D gossip — route by `agent_id` |
+| Transport | ILC D2D gossip — route by `agent_id` after activation |
+| D2D delivery active | `false` in the public RC contact record |
 
 **CCSS recipient public key** (hybrid X25519 + ML-KEM-768, 1216 bytes):
 
@@ -65,16 +69,18 @@ bc833691f0c3792c820cc1156e3d3a9d1189a628b8ccce860696017f3c37dfe7602
 
 (Continuous hex, line-wrapped for readability. Strip whitespace before use.)
 
-**Content security is active from day one.** The hybrid X25519 + ML-KEM-768
-envelope provides post-quantum confidentiality for the sealed payload regardless
-of network density. Routing privacy scales with the number of active D2D peers.
+**Content security is ready from day one.** The hybrid X25519 + ML-KEM-768
+recipient key is published for fixed-size sealed payloads. Live routing privacy
+and delivery depend on the D2D transport activation phase and then scale with
+the number of active D2D peers.
 
 ### Fallback — Email
 
 - `ilcops@proton.me` (active)
 
 Email is appropriate for non-confidential correspondence. For security findings
-or sensitive coordination, use the CCSS channel above.
+or sensitive coordination before D2D activation, use email to request a live
+secure channel.
 
 ---
 
@@ -82,11 +88,11 @@ or sensitive coordination, use the CCSS channel above.
 
 | Property | Provided |
 |----------|----------|
-| Content confidentiality | Yes — hybrid X25519 + ML-KEM-768 sealed envelope |
-| Post-quantum forward secrecy | Yes — ML-KEM-768 component |
-| Fixed-size traffic padding | Yes — all envelopes are exactly 4156 bytes |
-| Routing privacy | Scales with D2D network density |
-| Delivery guarantee | Best-effort; no acknowledgement unless sender includes reply address |
+| Content confidentiality | Ready — hybrid X25519 + ML-KEM-768 recipient key is published |
+| Post-quantum forward secrecy | Ready — ML-KEM-768 component |
+| Fixed-size traffic padding | Ready — all envelopes are exactly 4156 bytes |
+| Routing privacy | Pending D2D activation; then scales with D2D network density |
+| Delivery guarantee | Pending D2D activation; then best-effort unless sender includes reply address |
 
 ---
 
@@ -96,12 +102,12 @@ or sensitive coordination, use the CCSS channel above.
 
 1. A correctly formatted **CCSS-003 H013 outer envelope** (4156 bytes).
 2. The recipient public key above for envelope encryption.
-3. A running ILC peer with D2D enabled to route the envelope.
+3. A running ILC peer with D2D enabled after the transport activation phase closes.
 
 ### Sender SDK
 
-Reference sender tooling exists under `tools/ccss_send/`. Construct and
-route a sealed envelope:
+Reference sender tooling exists under `tools/ccss_send/`. After D2D delivery
+activation, construct and route a sealed envelope:
 
 ```bash
 ilc ccss send \
@@ -109,7 +115,7 @@ ilc ccss send \
   --message "Your message here"
 ```
 
-Or use the contact shortcut (once the genesis contact entry is loaded):
+Or use the contact shortcut:
 
 ```bash
 ilc ccss send genesis "Your message here"
@@ -119,7 +125,8 @@ ilc ccss send genesis "Your message here"
 
 ## Security Findings
 
-For coordinated vulnerability disclosure, use the CCSS channel above.
+For coordinated vulnerability disclosure before D2D activation, use the fallback
+email above to request a live secure channel.
 See [SECURITY.md](../../SECURITY.md) for the full disclosure policy and scope.
 
 ---
@@ -138,4 +145,5 @@ See [SECURITY.md](../../SECURITY.md) for the full disclosure policy and scope.
 ---
 
 *Last updated: Phase post-1575c — CCSS capability keypair generated 2026-07-14;
-D2D transport is the canonical contact path; content security active from day one.*
+D2D transport is the canonical contact path once activated; contact import and
+key publication are live in the public RC.*

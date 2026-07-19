@@ -54,29 +54,36 @@ def test_sidecar_recipe_inspect_declares_ccss_modules() -> None:
     assert "confidential_coordination_gossip_jitter_cover_policy" in modules
 
 
-def test_ccss_apply_recipe_creates_identity_and_placeholder_genesis_contact(tmp_path: Path) -> None:
+def test_ccss_apply_recipe_creates_identity_and_pending_genesis_contact(tmp_path: Path) -> None:
     result = _run_cli("ccss", "apply-recipe", "--home", str(tmp_path))
     payload = _payload(result)
     assert payload["command"] == "ccss"
     assert payload["data"]["identity_created"] is True
-    assert "genesis_contact_contains_placeholders" in payload["data"]["warnings"][0]
+    assert "genesis_d2d_delivery_pending_until_transport_activation" in payload["data"]["warnings"][0]
     assert (tmp_path / "identity.json").exists()
     assert (tmp_path / "contacts.json").exists()
+
+    contact_records = json.loads((tmp_path / "contacts.json").read_text(encoding="utf-8"))
+    genesis_record = contact_records[0]
+    assert genesis_record["id"] == "genesis"
+    assert genesis_record["ccss_recipient_pubkey_format"] == "hybrid_x25519_mlkem768"
+    assert genesis_record["ccss_recipient_pubkey_bytes"] == 1216
+    assert genesis_record.get("ccss_d2d_delivery_active") is False
 
     contacts = _payload(_run_cli("ccss", "contacts", "--home", str(tmp_path)))
     genesis = contacts["data"]["contacts"][0]
     assert genesis["id"] == "genesis"
     assert genesis["configured"] is False
-    assert genesis["transports"] == []
+    assert genesis["transports"] == ["d2d(pending)"]
 
 
-def test_ccss_send_to_placeholder_genesis_fails_closed(tmp_path: Path) -> None:
+def test_ccss_send_to_pending_genesis_d2d_fails_closed(tmp_path: Path) -> None:
     _payload(_run_cli("ccss", "apply-recipe", "--home", str(tmp_path)))
     result = _run_cli("ccss", "send", "--home", str(tmp_path), "genesis", "hello")
     assert result.returncode == 1
     payload = json.loads(result.stderr)
     assert payload["command"] == "ccss"
-    assert "contact_pubkey_not_configured:genesis" in payload["message"]
+    assert "contact_d2d_transport_not_activated:genesis" in payload["message"]
 
 
 def test_packaged_ccss_identity_can_unseal_envelope(tmp_path: Path) -> None:

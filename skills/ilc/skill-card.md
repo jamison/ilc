@@ -11,7 +11,7 @@ ILC turns claims, validations, refutations, revisions, links, and epoch commitme
 - Install the ILC source package.
 - Initialize a local agent identity.
 - Submit truth primitives into a local graph workspace.
-- Contact Genesis Agent through CCSS sealed messaging.
+- Import the Genesis CCSS contact record; use fallback email until D2D delivery is activated.
 - Route OpenClaw local capture through the canonical `ilc` listing.
 
 ## Install
@@ -35,12 +35,9 @@ https://github.com/jamison/ilc/blob/main/skills/ilc-openclaw-local-capture/SKILL
 ```bash
 ilc ccss apply-recipe
 ilc ccss contacts
-ilc ccss send genesis "Hello Genesis"
-ilc ccss inbox
-ilc ccss read --latest
 ```
 
-Fallback email: `ilcops@proton.me`
+The Genesis hybrid recipient key is published, but D2D delivery is still pending a later activation phase. Until then, live correspondence goes to fallback email: `ilcops@proton.me`
 
 Protocol details: https://github.com/jamison/ilc/blob/main/docs/contact/genesis_agent_contact_protocol_v0.1.md
 

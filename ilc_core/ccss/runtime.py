@@ -56,6 +56,11 @@ _MAX_DIRECT_RECEIPT_BYTES = 8192
 _INBOX_CAP = 1024
 _PRIVATE_FILE_MODE = 0o600
 _DIR_MODE = 0o700
+_LEGACY_X25519_PUBLIC_KEY_BYTES = 32
+_HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES = 1216
+_NON_LIVE_SENTINELS: frozenset[str] = frozenset(
+    ("PLACEHOLDER", "NOT_CONFIGURED", "PENDING", "STUB")
+)
 
 # Whitelist of non-printable ASCII characters that are safe in message content.
 # Everything else below U+0020 is rejected (see _validate_message_content).
@@ -276,7 +281,35 @@ def _agent_id_from_public_key(public_key_hex: str) -> str:
 
 
 def _live(value: str) -> bool:
-    return bool(value) and "PLACEHOLDER" not in value.upper()
+    upper = value.upper()
+    return bool(value) and not any(sentinel in upper for sentinel in _NON_LIVE_SENTINELS)
+
+
+def _contact_pubkey_configured(contact: dict[str, Any]) -> bool:
+    pubkey = str(contact.get("ccss_recipient_pubkey", ""))
+    if not _live(pubkey):
+        return False
+    try:
+        raw = bytes.fromhex(pubkey)
+    except ValueError:
+        return False
+    return len(raw) in {
+        _LEGACY_X25519_PUBLIC_KEY_BYTES,
+        _HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES,
+    }
+
+
+def _contact_uses_hybrid_pubkey(contact: dict[str, Any]) -> bool:
+    pubkey = str(contact.get("ccss_recipient_pubkey", ""))
+    try:
+        return len(bytes.fromhex(pubkey)) == _HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES
+    except ValueError:
+        return False
+
+
+def _is_d2d_live(contact: dict[str, Any]) -> bool:
+    """Return true only after a later D2D delivery phase activates routing."""
+    return bool(contact.get("ccss_d2d_delivery_active") is True and _live(str(contact.get("agent_id", ""))))
 
 
 def build_public_contact(
@@ -450,12 +483,12 @@ def update_identity_reply_route(
     return {"ok": True, "updated": True}
 
 
-def _genesis_placeholder_contact() -> dict[str, Any]:
+def _published_genesis_contact() -> dict[str, Any]:
     # Canonical Genesis Agent identity published post-1575c.
     # ccss_recipient_pubkey is a 1216-byte hybrid X25519+ML-KEM-768 key.
-    # Transport endpoint (peer_endpoint / onion) is not yet configured;
-    # D2D routing by agent_id is the intended native path (post-RC alignment phase).
-    # ilc ccss send genesis will work once the transport alignment phase closes.
+    # Transport endpoint (peer_endpoint / onion) is not published. D2D routing
+    # by agent_id is the intended native path once a later transport phase wires
+    # delivery. Importing this contact does not activate D2D delivery.
     return {
         "agent_id": (
             "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9"
@@ -501,6 +534,13 @@ def _genesis_placeholder_contact() -> dict[str, Any]:
         ),
         "ccss_recipient_pubkey_format": "hybrid_x25519_mlkem768",
         "ccss_recipient_pubkey_bytes": 1216,
+        "ccss_transport": "d2d",
+        "ccss_d2d_delivery_active": False,
+        "ccss_transport_note": (
+            "Route envelopes to agent_id via ILC D2D gossip. Direct transport "
+            "is not published; D2D delivery remains pending until the transport "
+            "alignment phase closes."
+        ),
         "description": (
             "ILC founding authority. "
             "Canonical identity published post-1575c. "
@@ -509,6 +549,21 @@ def _genesis_placeholder_contact() -> dict[str, Any]:
         "id": "genesis",
         "name": "Genesis Agent",
     }
+
+
+def _load_published_genesis_contact() -> dict[str, Any]:
+    repo_contact_path = (
+        Path(__file__).resolve().parents[2] / "docs" / "contact" / "ccss_contacts.json"
+    )
+    raw = _read_json(repo_contact_path, missing_default=None)
+    if not isinstance(raw, list):
+        return _published_genesis_contact()
+    for item in raw:
+        if isinstance(item, dict) and item.get("id") == "genesis":
+            contact = dict(item)
+            if _contact_pubkey_configured(contact):
+                return contact
+    return _published_genesis_contact()
 
 
 def _load_contacts(path: Path) -> list[dict[str, Any]]:
@@ -542,14 +597,14 @@ def import_genesis_contact(*, home: str | Path | None = None, overwrite: bool = 
     if existing and not overwrite:
         return {"contact_id": "genesis", "contacts_path": str(path), "imported": False, "ok": True}
     contacts = [item for item in contacts if item.get("id") != "genesis"]
-    contacts.append(_genesis_placeholder_contact())
+    contacts.append(_load_published_genesis_contact())
     _write_contacts(path, sorted(contacts, key=lambda item: item.get("id", "")))
     return {
         "contact_id": "genesis",
         "contacts_path": str(path),
         "imported": True,
         "ok": True,
-        "warning": "genesis_contact_contains_placeholders_until_public_rc_values_are_published",
+        "warning": "genesis_d2d_delivery_pending_until_transport_activation",
     }
 
 
@@ -587,7 +642,7 @@ def add_contact(
 def list_contacts(*, home: str | Path | None = None) -> list[dict[str, Any]]:
     result = []
     for contact in _load_contacts(contacts_path(home)):
-        pubkey_ok = _live(str(contact.get("ccss_recipient_pubkey", "")))
+        pubkey_ok = _contact_pubkey_configured(contact)
         peer_endpoint = str(contact.get("ccss_peer_endpoint", ""))
         onion = str(contact.get("ccss_contact_onion", ""))
         agent_id = str(contact.get("agent_id", ""))
@@ -597,11 +652,12 @@ def list_contacts(*, home: str | Path | None = None) -> list[dict[str, Any]]:
         if _live(onion):
             transports.append("tor")
         if _live(agent_id):
-            transports.append("d2d(stub)")
+            transports.append("d2d" if _is_d2d_live(contact) else "d2d(pending)")
         result.append(
             {
                 "agent_id": agent_id,
-                "configured": pubkey_ok and bool(transports),
+                "configured": pubkey_ok
+                and (bool(_live(peer_endpoint) or _live(onion)) or _is_d2d_live(contact)),
                 "description": contact.get("description", ""),
                 "id": contact.get("id", ""),
                 "name": contact.get("name", ""),
@@ -938,9 +994,11 @@ def send_message(
     pubkey = str(contact.get("ccss_recipient_pubkey", ""))
     if not _live(pubkey):
         raise CCSSRuntimeError(f"contact_pubkey_not_configured:{contact_id}")
-    envelope = seal_message(message, pubkey)
     peer_endpoint = str(contact.get("ccss_peer_endpoint", ""))
     onion = str(contact.get("ccss_contact_onion", ""))
+    if _contact_uses_hybrid_pubkey(contact) and not _is_d2d_live(contact):
+        raise CCSSRuntimeError(f"contact_d2d_transport_not_activated:{contact_id}")
+    envelope = seal_message(message, pubkey)
     if _live(peer_endpoint):
         receipt = _direct_send(envelope, peer_endpoint)
         transport = "direct"
@@ -1113,8 +1171,8 @@ def apply_confidential_contact_recipe(
     genesis = import_genesis_contact(home=home, overwrite=False)
     steps = [
         "local_ccss_identity_ready",
-        "genesis_contact_placeholder_imported",
-        "ccss_direct_or_tor_transport_available_when_contact_values_are_configured",
+        "genesis_published_contact_imported",
+        "ccss_d2d_delivery_pending_until_transport_activation",
     ]
     if reply_route_updated:
         steps.append("local_ccss_reply_route_updated")
