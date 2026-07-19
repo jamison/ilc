@@ -62092,6 +62092,78 @@
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_slice_schema_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_phase_1576_slice_schema_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_179_phase_1576_slice_verifier",
+      "chronology_note": "2026-07-19 Phase 1576-slice-verifier — verifier runtime and CLI",
+      "manual_read_summary": "Read-only verifier validates untrusted native signed-slice records and portable manifest witnesses: exact field sets, schema/domain constants, SHA-384 digest replay, recursive signed-slice table exclusion, Genesis projection authority, native/witness linkage, bounded commitments, float rejection, and optional strict signature-status gating.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_slice_verifier_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/bundle/atlas_slice_verifier.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc_core/cli/atlas_lmdb_cli.py;graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py",
+      "repo_path": "ilc_core/bundle/atlas_slice_verifier.py"
+    },
+    {
+      "annotation_batch": "manual_batch_179_phase_1576_slice_verifier",
+      "chronology_note": "2026-07-19 Phase 1576-slice-verifier — focused tests",
+      "manual_read_summary": "Focused tests cover native record success, linked witness success, unknown fields, bad preimage hash, recursive signed-slice table inclusion, Genesis private projection rejection, native/witness mismatch after rehash, witness manifest hash mismatch, bad commitment digest, float rejection, strict signature-status failure, and CLI receipt output.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/bundle/atlas_slice_verifier.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1576_slice_verifier.py",
+      "repo_path": "tests/test_phase_1576_slice_verifier.py"
+    },
+    {
+      "annotation_batch": "manual_batch_179_phase_1576_slice_verifier",
+      "chronology_note": "2026-07-19 Phase 1576-slice-verifier — prompt, spec, walkthrough, STATUS, and planning updates",
+      "manual_read_summary": "Prompt, spec, walkthrough, STATUS, PLANNING_INDEX, and comprehensive forward plan record the verifier contract, audit findings, local verification receipt, negative-test coverage, output tokens, non-claims, and next materializer phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_slice_verifier_no_lmdb_no_materialization_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_slice_verifier_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_phase_1576_slice_verifier_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
