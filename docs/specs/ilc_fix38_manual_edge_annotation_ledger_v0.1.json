@@ -62246,6 +62246,88 @@
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_slice_materializer_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_added:docs/phases/phase_1576_slice_materializer_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_phase_1576_slice_materializer_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_181_phase_1576_sidecar_profile",
+      "chronology_note": "2026-07-19 Phase 1576-sidecar-profile — profile and recipe runtime and CLI",
+      "manual_read_summary": "Deterministic Atlas sidecar profile runtime validates slice-packaged sidecar recipes against exact fields, SHA-384 IDs, canonical sidecar registry IDs, canonical package profile refs, locked materializer digest fields, bounded query declarations, hard input bounds, dependency links, exact authority precedence, and non-claims. CLI validation emits a local read-only receipt without installing slices, writing LMDB, serving sidecars, fetching network blobs, granting roles, clearing guards, or activating runtime behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_sidecar_profile_schema_committed_phase_1576"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_sidecar_recipe_format_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/bundle/atlas_sidecar_profile.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc_core/cli/atlas_lmdb_cli.py;graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py",
+      "repo_path": "ilc_core/bundle/atlas_sidecar_profile.py"
+    },
+    {
+      "annotation_batch": "manual_batch_181_phase_1576_sidecar_profile",
+      "chronology_note": "2026-07-19 Phase 1576-sidecar-profile — focused tests",
+      "manual_read_summary": "Focused tests cover deterministic recipe/profile IDs, recipe and profile tampering, unknown bounded query, unknown privacy class, bad SHA-384 length, float rejection, missing dependency recipe ID, authority precedence mismatch, extra recipe field, unknown sidecar ID reference, excessive JSON depth, overlong string, and CLI success/failure behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/bundle/atlas_sidecar_profile.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1576_sidecar_profile.py",
+      "repo_path": "tests/test_phase_1576_sidecar_profile.py"
+    },
+    {
+      "annotation_batch": "manual_batch_181_phase_1576_sidecar_profile",
+      "chronology_note": "2026-07-19 Phase 1576-sidecar-profile — prompt, spec, walkthrough, STATUS, and planning updates",
+      "manual_read_summary": "Prompt, spec, walkthrough, STATUS, PLANNING_INDEX, and comprehensive forward plan record the sidecar profile/recipe contract, existing sidecar architecture compatibility, local rehearsal profile and receipt IDs, output tokens, non-claims, and next phase options.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_sidecar_profile_no_install_no_lmdb_phase_1576"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_sidecar_recipe_bounded_query_declarations_committed_phase_1576"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_sidecar_profile_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_added:docs/phases/phase_1576_sidecar_profile_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_phase_1576_sidecar_profile_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",

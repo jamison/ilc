@@ -1846,6 +1846,34 @@ def _build_parser() -> JsonArgumentParser:
                 action="store_true",
                 help="Fail unless Core Slice 0 and Public-RC Baseline Slice 1 blobs verified",
             )
+
+            p_atlas_sidecar_profile = atlas_subparsers.add_parser(
+                "sidecar-profile",
+                help="Validate Atlas sidecar profile descriptors",
+            )
+            atlas_sidecar_profile_subparsers = p_atlas_sidecar_profile.add_subparsers(
+                dest="sidecar_profile_subcommand",
+                required=True,
+            )
+            p_atlas_sidecar_profile_validate = atlas_sidecar_profile_subparsers.add_parser(
+                "validate",
+                help="Validate a sidecar profile JSON without installing it",
+            )
+            p_atlas_sidecar_profile_validate.add_argument(
+                "--profile",
+                required=True,
+                help="Atlas sidecar profile JSON path",
+            )
+            p_atlas_sidecar_profile_validate.add_argument(
+                "--json-out",
+                default="",
+                help="Optional validation receipt path; must be under out/",
+            )
+            p_atlas_sidecar_profile_validate.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic receipts",
+            )
             continue
 
         if command == "bootstrap":
