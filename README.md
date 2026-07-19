@@ -51,7 +51,11 @@ ILC is a content-addressed knowledge network where every claim, refutation, revi
 ```bash
 git clone https://github.com/jamison/ilc.git
 cd ilc
-pip install -e .
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e .
 cd ilc_consensus && cargo build --release && cd ..
 ilc version
 ```
@@ -104,7 +108,11 @@ ilc --help             # Full command reference
 See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the CDL governance process, and PR guidelines. Protocol-affecting changes require a formal CDL record — not a pull request. Bug fixes, tooling, tests, and sidecars follow a lighter review path.
 
 ```bash
-pip install -e ".[dev]"
+python3 --version   # must be Python 3.10+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
 pytest -q
 cd ilc_consensus && cargo test && cd ..
 ```
