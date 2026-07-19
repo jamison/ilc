@@ -49,6 +49,7 @@ OPERATIONAL_COMMANDS = (
     "atlas",
     "doctor",
     "bootstrap",
+    "bootstrap-census",
     "bootstrap-receipt",
     "submit",
     "version",
@@ -1843,6 +1844,55 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "bootstrap-census":
+            census_parser = subparsers.add_parser(
+                "bootstrap-census",
+                help="Validate and stage local public-agent bootstrap receipts",
+            )
+            census_subparsers = census_parser.add_subparsers(
+                dest="bootstrap_census_subcommand",
+                required=True,
+            )
+            p_census_intake = census_subparsers.add_parser(
+                "intake",
+                help="Build a deduplicated local bootstrap census intake JSON",
+            )
+            p_census_intake.add_argument(
+                "--receipt",
+                dest="receipt_paths",
+                action="append",
+                default=[],
+                help="Bootstrap receipt JSON file; may be repeated",
+            )
+            p_census_intake.add_argument(
+                "--receipt-dir",
+                dest="receipt_dirs",
+                action="append",
+                default=[],
+                help="Directory containing bootstrap receipt JSON files; may be repeated",
+            )
+            p_census_intake.add_argument(
+                "--json-out",
+                required=True,
+                help="Path to write the local census intake JSON",
+            )
+            p_census_intake.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic tests",
+            )
+            p_census_intake.add_argument(
+                "--source-label",
+                default="local",
+                help="Operator label for this local intake batch",
+            )
+            p_census_intake.add_argument(
+                "--allow-invalid",
+                action="store_true",
+                help="Record invalid receipts instead of failing closed",
+            )
+            continue
+
         if command == "balance":
             balance_parser = subparsers.add_parser(
                 "balance",
@@ -2011,6 +2061,7 @@ def _run_top_level_command(
         "agent",
         "atlas",
         "bootstrap",
+        "bootstrap-census",
         "bootstrap-receipt",
         "bundle",
         "ccss",
@@ -2122,6 +2173,29 @@ def _run_top_level_command(
             receipt_path = write_public_agent_bootstrap_receipt(Path(args.json_out), data)
             data = {**data, "receipt_path": str(receipt_path)}
         except PublicAgentBootstrapReceiptError as exc:
+            raise ValueError(str(exc)) from exc
+        return _success_payload(command, data)
+    if command == "bootstrap-census":
+        subcommand = getattr(args, "bootstrap_census_subcommand", None)
+        if subcommand != "intake":
+            raise ValueError(f"unknown_bootstrap_census_subcommand:{subcommand}")
+        from ilc_core.rc.bootstrap_census_intake import (
+            BootstrapCensusIntakeError,
+            build_bootstrap_census_intake,
+            write_bootstrap_census_intake,
+        )
+
+        try:
+            data = build_bootstrap_census_intake(
+                receipt_paths=[Path(value) for value in args.receipt_paths],
+                receipt_dirs=[Path(value) for value in args.receipt_dirs],
+                generated_at_utc=str(args.generated_at_utc) or None,
+                source_label=str(args.source_label),
+                fail_on_invalid=not bool(args.allow_invalid),
+            )
+            intake_path = write_bootstrap_census_intake(Path(args.json_out), data)
+            data = {**data, "intake_path": str(intake_path)}
+        except BootstrapCensusIntakeError as exc:
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "balance":
