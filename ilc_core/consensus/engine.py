@@ -1,9 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Callable, Dict, Optional, List, Protocol
-import math
 import logging
 
 from ..types import Node
@@ -13,6 +12,8 @@ from .clustering import SponsorGraph
 from .governance import Governance, BacklogMetrics
 
 logger = logging.getLogger(__name__)
+_DECIMAL_PRECISION = 50
+_RATIO_QUANTUM = Decimal("0.000000000001")
 
 
 class EdgeEventLike(Protocol):
@@ -53,16 +54,19 @@ def _engine_update_epoch_metrics(
 def _engine_compute_tax_rate(
     age: float,
     net_stake: Decimal
-) -> float:
+) -> Decimal:
     """Helper to compute maintenance tax rate based on age and reuse."""
     # Reuse count simulated by net_stake for now.
-    reuse_factor = max(1.0, float(net_stake))
+    age_decimal = _engine_coerce_decimal(str(age), "consensus_age_invalid")
+    reuse_factor = max(Decimal("1"), _engine_coerce_decimal(net_stake, "consensus_net_stake_invalid"))
 
-    base_tax = 0.01  # 1% per epoch (or per time unit)
+    base_tax = Decimal("0.01")  # 1% per epoch (or per time unit)
     # Decay tax as age and reuse increase.
-    product = max(1.0, age * reuse_factor)
-    tax_rate = base_tax / (1 + math.log(product))
-    return tax_rate
+    product = max(Decimal("1"), age_decimal * reuse_factor)
+    with localcontext() as ctx:
+        ctx.prec = _DECIMAL_PRECISION
+        tax_rate = base_tax / (Decimal("1") + product.ln())
+    return tax_rate.quantize(_RATIO_QUANTUM)
 
 def _engine_compute_bounty_amount(
     base_stake: Decimal,
@@ -72,11 +76,18 @@ def _engine_compute_bounty_amount(
     """Helper to compute refutation bounty with paradigm shift bonus."""
     # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
     # (as per earlier design discussions).
-    paradigm_bonus = Decimal(str(0.001 * math.pow(age, 1.4)))
+    age_decimal = _engine_coerce_decimal(str(age), "consensus_age_invalid")
+    if age_decimal == Decimal("0"):
+        paradigm_bonus = Decimal("0")
+    else:
+        with localcontext() as ctx:
+            ctx.prec = _DECIMAL_PRECISION
+            paradigm_bonus = Decimal("0.001") * (age_decimal.ln() * Decimal("1.4")).exp()
+        paradigm_bonus = paradigm_bonus.quantize(_RATIO_QUANTUM)
 
     total_bounty = base_stake + paradigm_bonus
     logger.info(
-        "consensus_bounty_computed node=%s age_seconds=%.1f bounty=%.4f paradigm_bonus=%.4f",
+        "consensus_bounty_computed node=%s age_seconds=%s bounty=%s paradigm_bonus=%s",
         node_id[:8],
         age,
         total_bounty,
@@ -101,7 +112,7 @@ def _engine_apply_slash(
     node_stakes[target_id] = new_balance
 
     logger.info(
-        "consensus_paradigm_shift_jackpot target=%s bounty=%.4f",
+        "consensus_paradigm_shift_jackpot target=%s bounty=%s",
         target_id[:8],
         bounty,
     )
@@ -315,7 +326,7 @@ class ConsensusEngine:
         )
         return max(1.0, reference_seconds - ts.timestamp())
 
-    def calculate_maintenance_tax(self, node: Node) -> float:
+    def calculate_maintenance_tax(self, node: Node) -> Decimal:
         """
         The Shield: Older, reused nodes pay less tax.
 
@@ -332,7 +343,7 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
     # Refutation bounties and contradictions
     # ------------------------------------------------------------------
-    def calculate_refutation_bounty(self, node: Node) -> float:
+    def calculate_refutation_bounty(self, node: Node) -> Decimal:
         """
         The Sword: Older nodes are worth more to destroy.
 
@@ -340,7 +351,7 @@ class ConsensusEngine:
 
         Returns
         -------
-        float
+        Decimal
             Total bounty amount in generic units (to be interpreted by the
             monetary layer as ILC denominated reward later).
         """
@@ -442,9 +453,9 @@ class ConsensusEngine:
 
 
 def _engine_coerce_decimal(value: object, token: str) -> Decimal:
-    if isinstance(value, bool):
+    if isinstance(value, bool) or isinstance(value, float):
         raise ValueError(token)
-    if not isinstance(value, (Decimal, int, float, str)):
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(token)
     try:
         amount = value if isinstance(value, Decimal) else Decimal(str(value))

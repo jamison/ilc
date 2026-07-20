@@ -28,7 +28,7 @@ _ONE = Decimal("1")
 _ROUNDING_QUANTUM = Decimal("0.000000000001")
 
 
-def _require_numeric(name: str, value: float) -> Decimal:
+def _require_numeric(name: str, value: object) -> Decimal:
     if isinstance(value, bool) or not isinstance(value, (int, float, Decimal, str)):
         raise DiversityFloorValidationError(
             "cdl_v3_diversity_floor_invalid_numeric",
@@ -49,7 +49,7 @@ def _require_numeric(name: str, value: float) -> Decimal:
     return number
 
 
-def _require_positive(name: str, value: float) -> Decimal:
+def _require_positive(name: str, value: object) -> Decimal:
     number = _require_numeric(name, value)
     if number <= _ZERO:
         raise DiversityFloorValidationError(
@@ -59,11 +59,11 @@ def _require_positive(name: str, value: float) -> Decimal:
     return number
 
 
-def _score(value: Decimal) -> float:
-    return float(value.quantize(_ROUNDING_QUANTUM))
+def _score(value: Decimal) -> Decimal:
+    return value.quantize(_ROUNDING_QUANTUM)
 
 
-def compute_max_cluster_share(*, largest_cluster_slots: float, total_panel_slots: float) -> float:
+def compute_max_cluster_share(*, largest_cluster_slots: object, total_panel_slots: object) -> Decimal:
     """Compute max cluster share in [0, 1] from panel slot counts."""
 
     largest = _require_numeric("largest_cluster_slots", largest_cluster_slots)
@@ -83,7 +83,7 @@ def compute_max_cluster_share(*, largest_cluster_slots: float, total_panel_slots
     return _score(largest / total)
 
 
-def meets_distinct_cluster_floor(*, distinct_clusters: float, distinct_cluster_floor: float) -> bool:
+def meets_distinct_cluster_floor(*, distinct_clusters: object, distinct_cluster_floor: object) -> bool:
     """Return whether the distinct-cluster floor is satisfied."""
 
     distinct = _require_numeric("distinct_clusters", distinct_clusters)
@@ -98,7 +98,7 @@ def meets_distinct_cluster_floor(*, distinct_clusters: float, distinct_cluster_f
     return distinct >= floor
 
 
-def meets_max_cluster_share_ceiling(*, max_cluster_share: float, max_cluster_share_ceiling: float) -> bool:
+def meets_max_cluster_share_ceiling(*, max_cluster_share: object, max_cluster_share_ceiling: object) -> bool:
     """Return whether the max-cluster-share ceiling is satisfied."""
 
     share = _require_numeric("max_cluster_share", max_cluster_share)
@@ -120,11 +120,11 @@ def meets_max_cluster_share_ceiling(*, max_cluster_share: float, max_cluster_sha
 
 def compute_diversity_floor_penalty(
     *,
-    distinct_clusters: float,
-    distinct_cluster_floor: float,
-    max_cluster_share: float,
-    max_cluster_share_ceiling: float,
-) -> float:
+    distinct_clusters: object,
+    distinct_cluster_floor: object,
+    max_cluster_share: object,
+    max_cluster_share_ceiling: object,
+) -> Decimal:
     """Compute bounded diversity-floor penalty score in [0, 1]."""
 
     distinct = _require_numeric("distinct_clusters", distinct_clusters)

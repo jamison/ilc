@@ -404,7 +404,7 @@ def test_phase_224_full_constitutional_pipeline_integration_smoke() -> None:
     }
     governor_report = evaluate_genesis_accrual_governor(genesis_signal)
 
-    assert 0.0 <= governor_report["taper_multiplier"] <= 1.0
+    assert Decimal("0") <= governor_report["taper_multiplier"] <= Decimal("1")
     assert governor_report["genesis_share_ratio"] < THETA_HARD
     assert governor_report["cap_blocked"] is False
 
@@ -415,7 +415,7 @@ def test_phase_224_full_constitutional_pipeline_integration_smoke() -> None:
         }
     )
     assert cap_report["cap_blocked"] is True
-    assert cap_report["taper_multiplier"] == 0.0
+    assert cap_report["taper_multiplier"] == Decimal("0E-12")
 
     conformance_report = evaluate_node_value_governance_conformance(
         accepted_events,

@@ -38,8 +38,8 @@ def test_phase_1573ab_share_ratio_uses_cmax_not_total_issued() -> None:
         }
     )
 
-    assert ratio == pytest.approx(648_000.0 / 25_920_000.0)
-    assert ratio != pytest.approx(648_000.0 / 5_000_000.0)
+    assert ratio == Decimal("0.025000000000")
+    assert ratio != Decimal("0.129600000000")
 
 
 def test_phase_1573ab_hard_cap_boundary_is_cmax_based() -> None:
@@ -56,12 +56,12 @@ def test_phase_1573ab_hard_cap_boundary_is_cmax_based() -> None:
         }
     )
 
-    assert below_cap["genesis_share_ratio"] == pytest.approx(0.025)
+    assert below_cap["genesis_share_ratio"] == Decimal("0.025000000000")
     assert below_cap["cap_blocked"] is False
-    assert below_cap["taper_multiplier"] > 0.0
-    assert at_cap["genesis_share_ratio"] == pytest.approx(THETA_HARD)
+    assert below_cap["taper_multiplier"] > Decimal("0")
+    assert at_cap["genesis_share_ratio"] == THETA_HARD
     assert at_cap["cap_blocked"] is True
-    assert at_cap["taper_multiplier"] == pytest.approx(0.0)
+    assert at_cap["taper_multiplier"] == Decimal("0E-12")
 
 
 def test_phase_1573ab_total_issuance_remains_validation_signal_not_denominator() -> None:
@@ -106,7 +106,7 @@ def test_phase_1573ab_trajectory_uses_cmax_ratio_monotonically() -> None:
     )
 
     assert [row["genesis_share_ratio"] for row in trajectory] == [
-        pytest.approx(0.0),
-        pytest.approx(10.0 / 25_920_000.0),
-        pytest.approx(20.0 / 25_920_000.0),
+        Decimal("0E-12"),
+        Decimal("3.85802E-7"),
+        Decimal("7.71605E-7"),
     ]

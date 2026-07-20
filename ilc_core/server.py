@@ -53,6 +53,9 @@ logger = logging.getLogger(__name__)
 
 MAX_GOSSIP_PAYLOAD_BYTES: int = 1_048_576
 MAX_APP_REQUEST_BODY_BYTES: int = 10_485_760
+GOSSIP_SIGNATURE_VERIFICATION_NOT_WIRED_TOKEN = (
+    "gossip_signature_verification_not_wired_phase_1575h_fix1"
+)
 
 _LOCAL_DEV_PEER_ADMIN_ENV = "ILC_LOCAL_DEV_PEER_ADMIN"
 _UNSAFE_PEER_HOST_TOKEN = "peer_admin_unsafe_host_rejected_phase_1573ak"
@@ -365,9 +368,9 @@ async def receive_gossip(request: Request):
 
     Endpoint for other nodes to push data to us.
 
-    Phase 1573ak named gaps: this path verifies canonical node identity and
-    rejects missing signatures, but it does not yet perform cryptographic gossip
-    signature verification or rate limiting.
+    Phase 1575h-Fix1 boundary: this legacy path validates shape and canonical
+    node identity, then fails closed because cryptographic gossip signature
+    verification is not wired here. The signed D2D lane is the verified path.
     """
     content_length = request.headers.get("content-length")
     if content_length is not None:
@@ -414,13 +417,10 @@ async def receive_gossip(request: Request):
         canonical_node_id = node.compute_canonical_id()
         if node_id != canonical_node_id:
             raise GossipValidationError("gossip_node_id_mismatch")
-
-        if node_id in state.graph.nodes:
-            return {"status": "ignored", "reason": "already_have"}
-
-        state.graph.add_node(node)
-        logger.info("gossip_receive_accepted node=%s node_id_mode=canonical", node_id)
-        return {"status": "accepted"}
+        # Phase 1575h-Fix1: this legacy FastAPI gossip endpoint has no
+        # mature verifier for Node.signature. The D2D gossip lane carries its
+        # own verification path; this route must fail closed until wired.
+        raise GossipValidationError(GOSSIP_SIGNATURE_VERIFICATION_NOT_WIRED_TOKEN)
     except GossipValidationError as exc:
         logger.warning("gossip_receive_rejected token=%s", exc.token)
         raise HTTPException(status_code=400, detail="Invalid Gossip")

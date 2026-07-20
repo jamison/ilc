@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import math
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 import pytest
 
@@ -19,29 +18,46 @@ from ilc_core.exceptions import GenesisAccrualGovernorError
 
 
 def test_phase_218_constants_are_locked_to_constitutional_targets() -> None:
-    assert THETA_HARD == pytest.approx(1.0 / 20.0, rel=0.0, abs=1e-15)
-    assert THETA_SOFT == pytest.approx(math.exp(-3.0), rel=0.0, abs=1e-15)
-    assert DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY["theta_hard"] == pytest.approx(THETA_HARD)
-    assert DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY["theta_soft"] == pytest.approx(THETA_SOFT)
+    with localcontext() as ctx:
+        ctx.prec = 50
+        theta_soft_expected = (-Decimal("3")).exp()
+    assert THETA_HARD == Decimal("0.05")
+    assert THETA_SOFT == theta_soft_expected
+    assert DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY["theta_hard"] == THETA_HARD
+    assert DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY["theta_soft"] == THETA_SOFT
 
 
 def test_phase_218_hard_cap_sets_taper_to_zero_at_and_above_cap() -> None:
     at_cap = compute_taper_multiplier(THETA_HARD)
-    above_cap = compute_taper_multiplier(THETA_HARD + 0.01)
-    assert at_cap == pytest.approx(0.0)
-    assert above_cap == pytest.approx(0.0)
+    above_cap = compute_taper_multiplier(THETA_HARD + Decimal("0.01"))
+    assert at_cap == Decimal("0E-12")
+    assert above_cap == Decimal("0E-12")
 
 
 def test_phase_218_below_cap_taper_is_bounded_and_positive() -> None:
-    ratios = [0.0, 0.01, 0.02, 0.04, THETA_HARD - 1e-6]
+    ratios = [
+        Decimal("0"),
+        Decimal("0.01"),
+        Decimal("0.02"),
+        Decimal("0.04"),
+        THETA_HARD - Decimal("0.000001"),
+    ]
     values = [compute_taper_multiplier(ratio) for ratio in ratios]
 
-    assert values[0] == pytest.approx(1.0)
-    assert all(0.0 < value <= 1.0 for value in values[1:])
+    assert values[0] == Decimal("1.000000000000")
+    assert all(Decimal("0") < value <= Decimal("1") for value in values[1:])
 
 
 def test_phase_218_taper_is_monotonic_non_increasing_by_ratio() -> None:
-    ratios = [0.0, 0.01, 0.02, 0.03, 0.04, THETA_SOFT, THETA_HARD - 1e-6]
+    ratios = [
+        Decimal("0"),
+        Decimal("0.01"),
+        Decimal("0.02"),
+        Decimal("0.03"),
+        Decimal("0.04"),
+        THETA_SOFT,
+        THETA_HARD - Decimal("0.000001"),
+    ]
     values = [compute_taper_multiplier(ratio) for ratio in ratios]
     assert all(values[idx] >= values[idx + 1] for idx in range(len(values) - 1))
 
@@ -53,7 +69,7 @@ def test_phase_218_zero_issuance_edge_behavior() -> None:
             "total_cumulative_issuance": Decimal("0"),
         }
     )
-    assert ratio == pytest.approx(0.0)
+    assert ratio == Decimal("0E-12")
 
     with pytest.raises(GenesisAccrualGovernorError) as exc_info:
         compute_genesis_share_ratio(
@@ -70,8 +86,8 @@ def test_phase_218_invalid_policy_and_input_values_fail_closed() -> None:
         validate_genesis_accrual_governor_policy(
             {
                 "theta_hard": THETA_HARD,
-                "theta_soft": 0.0498,
-                "taper_steepness": 40.0,
+                "theta_soft": Decimal("0.0498"),
+                "taper_steepness": Decimal("40"),
             }
         )
     assert str(exc_policy.value) == "genesis_accrual_governor_theta_soft_constant_mismatch"
@@ -115,11 +131,11 @@ def test_phase_218_trajectory_simulation_is_deterministic() -> None:
 
     assert first == second
     assert [row["step_index"] for row in first] == [0, 1, 2, 3, 4]
-    assert all(0.0 <= row["taper_multiplier"] <= 1.0 for row in first)
+    assert all(Decimal("0") <= row["taper_multiplier"] <= Decimal("1") for row in first)
 
 
 def test_phase_218_default_steepness_has_meaningful_taper_delta() -> None:
-    low_ratio = compute_taper_multiplier(0.01)
-    near_soft_ratio = compute_taper_multiplier(0.04)
+    low_ratio = compute_taper_multiplier(Decimal("0.01"))
+    near_soft_ratio = compute_taper_multiplier(Decimal("0.04"))
     assert low_ratio > near_soft_ratio
-    assert (low_ratio - near_soft_ratio) > 0.1
+    assert (low_ratio - near_soft_ratio) > Decimal("0.1")

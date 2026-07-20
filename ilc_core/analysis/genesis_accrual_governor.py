@@ -1,16 +1,19 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
-import math
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Iterable, Mapping, TypedDict
 
 from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.exceptions import GenesisAccrualGovernorError
 
 
-THETA_HARD = 1.0 / 20.0
-THETA_SOFT = math.exp(-3.0)
+_DECIMAL_PRECISION = 50
+_RATIO_QUANTUM = Decimal("0.000000000001")
+THETA_HARD = Decimal("1") / Decimal("20")
+with localcontext() as _ctx:
+    _ctx.prec = _DECIMAL_PRECISION
+    THETA_SOFT = (-Decimal("3")).exp()
 GENESIS_ACCRUAL_GOVERNOR_RUNTIME_VERSION = "genesis_accrual_governor_runtime_1575c_fix3c.v0.1"
 GENESIS_ACCRUAL_GOVERNOR_DECIMAL_MIGRATION_TOKEN = (
     "genesis_accrual_governor_decimal_migration_1575c_fix3c.v0.1"
@@ -20,9 +23,9 @@ _RATIO_TOLERANCE = 1e-12
 
 
 class GenesisAccrualGovernorPolicy(TypedDict):
-    theta_hard: float
-    theta_soft: float
-    taper_steepness: float
+    theta_hard: Decimal
+    theta_soft: Decimal
+    taper_steepness: Decimal
 
 
 class GenesisAccrualSignal(TypedDict):
@@ -31,8 +34,8 @@ class GenesisAccrualSignal(TypedDict):
 
 
 class GenesisAccrualGovernorReport(TypedDict):
-    genesis_share_ratio: float
-    taper_multiplier: float
+    genesis_share_ratio: Decimal
+    taper_multiplier: Decimal
     cap_blocked: bool
 
 
@@ -40,15 +43,15 @@ class GenesisAccrualTrajectoryRow(TypedDict):
     step_index: int
     genesis_cumulative_accrual: Decimal
     total_cumulative_issuance: Decimal
-    genesis_share_ratio: float
-    taper_multiplier: float
+    genesis_share_ratio: Decimal
+    taper_multiplier: Decimal
     cap_blocked: bool
 
 
 DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY: GenesisAccrualGovernorPolicy = {
     "theta_hard": THETA_HARD,
     "theta_soft": THETA_SOFT,
-    "taper_steepness": 40.0,
+    "taper_steepness": Decimal("40"),
 }
 
 
@@ -70,22 +73,27 @@ def _require_monetary_decimal(value: object, token: str) -> Decimal:
     return normalized
 
 
-def _require_ratio_parameter(value: object, token: str) -> float:
-    """Accept float or int for dimensionless ratio parameters, not money."""
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+def _require_ratio_parameter(value: object, token: str) -> Decimal:
+    """Accept exact dimensionless ratio parameters; reject float."""
+    if isinstance(value, bool) or isinstance(value, float):
         raise GenesisAccrualGovernorError(token)
-    normalized = float(value)
-    if not math.isfinite(normalized) or normalized < 0.0:
+    try:
+        normalized = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError):
+        raise GenesisAccrualGovernorError(token) from None
+    if not normalized.is_finite() or normalized < Decimal("0"):
         raise GenesisAccrualGovernorError(token)
     return normalized
 
 
-def _sigmoid(value: float) -> float:
-    if value >= 0.0:
-        exp_value = math.exp(-value)
-        return 1.0 / (1.0 + exp_value)
-    exp_value = math.exp(value)
-    return exp_value / (1.0 + exp_value)
+def _sigmoid(value: Decimal) -> Decimal:
+    with localcontext() as ctx:
+        ctx.prec = _DECIMAL_PRECISION
+        if value >= Decimal("0"):
+            exp_value = (-value).exp()
+            return Decimal("1") / (Decimal("1") + exp_value)
+        exp_value = value.exp()
+        return exp_value / (Decimal("1") + exp_value)
 
 
 def validate_genesis_accrual_governor_policy(
@@ -108,13 +116,13 @@ def validate_genesis_accrual_governor_policy(
         "genesis_accrual_governor_invalid_taper_steepness",
     )
 
-    if taper_steepness <= 0.0:
+    if taper_steepness <= Decimal("0"):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_taper_steepness")
-    if abs(theta_hard - THETA_HARD) > _RATIO_TOLERANCE:
+    if abs(theta_hard - THETA_HARD) > Decimal(str(_RATIO_TOLERANCE)):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_theta_hard_constant_mismatch")
-    if abs(theta_soft - THETA_SOFT) > _RATIO_TOLERANCE:
+    if abs(theta_soft - THETA_SOFT) > Decimal(str(_RATIO_TOLERANCE)):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_theta_soft_constant_mismatch")
-    if theta_soft > theta_hard + _RATIO_TOLERANCE:
+    if theta_soft > theta_hard + Decimal(str(_RATIO_TOLERANCE)):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_theta_ordering")
 
     return {
@@ -154,9 +162,9 @@ def validate_genesis_accrual_signal(
     }
 
 
-def compute_genesis_share_ratio(signal: Mapping[str, object]) -> float:
+def compute_genesis_share_ratio(signal: Mapping[str, object]) -> Decimal:
     resolved_signal = validate_genesis_accrual_signal(signal)
-    return float(_compute_genesis_share_ratio_decimal(resolved_signal))
+    return _compute_genesis_share_ratio_decimal(resolved_signal).quantize(_RATIO_QUANTUM)
 
 
 def _compute_genesis_share_ratio_decimal(signal: GenesisAccrualSignal) -> Decimal:
@@ -167,32 +175,39 @@ def _compute_genesis_share_ratio_decimal(signal: GenesisAccrualSignal) -> Decima
 
 
 def compute_taper_multiplier(
-    genesis_share_ratio: float,
+    genesis_share_ratio: Decimal | int | str,
     *,
     policy: Mapping[str, object] = DEFAULT_GENESIS_ACCRUAL_GOVERNOR_POLICY,
-) -> float:
-    if (
-        isinstance(genesis_share_ratio, bool)
-        or not isinstance(genesis_share_ratio, (int, float))
-        or not math.isfinite(float(genesis_share_ratio))
-        or float(genesis_share_ratio) < 0.0
-    ):
+) -> Decimal:
+    if isinstance(genesis_share_ratio, bool) or isinstance(genesis_share_ratio, float):
+        raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_genesis_share_ratio")
+    try:
+        normalized_ratio = (
+            genesis_share_ratio
+            if isinstance(genesis_share_ratio, Decimal)
+            else Decimal(str(genesis_share_ratio))
+        )
+    except (InvalidOperation, ValueError):
+        raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_genesis_share_ratio") from None
+    if not normalized_ratio.is_finite() or normalized_ratio < Decimal("0"):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_genesis_share_ratio")
 
     resolved_policy = validate_genesis_accrual_governor_policy(policy)
-    normalized_ratio = float(genesis_share_ratio)
 
     if normalized_ratio >= resolved_policy["theta_hard"]:
-        return 0.0
+        return Decimal("0")
 
-    numerator = _sigmoid(
-        resolved_policy["taper_steepness"] * (resolved_policy["theta_soft"] - normalized_ratio)
-    )
-    denominator = _sigmoid(resolved_policy["taper_steepness"] * resolved_policy["theta_soft"])
-    if denominator <= 0.0:
+    with localcontext() as ctx:
+        ctx.prec = _DECIMAL_PRECISION
+        numerator = _sigmoid(
+            resolved_policy["taper_steepness"] * (resolved_policy["theta_soft"] - normalized_ratio)
+        )
+        denominator = _sigmoid(resolved_policy["taper_steepness"] * resolved_policy["theta_soft"])
+    if denominator <= Decimal("0"):
         raise GenesisAccrualGovernorError("genesis_accrual_governor_invalid_sigmoid_denominator")
 
-    return float(max(0.0, min(1.0, numerator / denominator)))
+    bounded = max(Decimal("0"), min(Decimal("1"), numerator / denominator))
+    return bounded.quantize(_RATIO_QUANTUM)
 
 
 def evaluate_genesis_accrual_governor(
@@ -202,13 +217,12 @@ def evaluate_genesis_accrual_governor(
 ) -> GenesisAccrualGovernorReport:
     resolved_policy = validate_genesis_accrual_governor_policy(policy)
     resolved_signal = validate_genesis_accrual_signal(signal)
-    ratio_decimal = _compute_genesis_share_ratio_decimal(resolved_signal)
-    ratio = float(ratio_decimal)
-    taper_multiplier = compute_taper_multiplier(ratio, policy=resolved_policy)
-    cap_blocked = bool(ratio_decimal >= Decimal(str(resolved_policy["theta_hard"])))
+    ratio_decimal = _compute_genesis_share_ratio_decimal(resolved_signal).quantize(_RATIO_QUANTUM)
+    taper_multiplier = compute_taper_multiplier(ratio_decimal, policy=resolved_policy)
+    cap_blocked = bool(ratio_decimal >= resolved_policy["theta_hard"])
 
     return {
-        "genesis_share_ratio": ratio,
+        "genesis_share_ratio": ratio_decimal,
         "taper_multiplier": taper_multiplier,
         "cap_blocked": cap_blocked,
     }
@@ -224,7 +238,7 @@ def simulate_genesis_accrual_governor_trajectory(
     trajectory: list[GenesisAccrualTrajectoryRow] = []
     prev_accrual = Decimal("0")
     prev_issuance = Decimal("0")
-    prev_ratio = -1.0
+    prev_ratio = Decimal("-1")
 
     for step_index, raw_row in enumerate(cumulative_rows):
         resolved_signal = validate_genesis_accrual_signal(raw_row)
@@ -237,7 +251,7 @@ def simulate_genesis_accrual_governor_trajectory(
             raise GenesisAccrualGovernorError("genesis_accrual_governor_non_monotonic_issuance")
 
         ratio = compute_genesis_share_ratio(resolved_signal)
-        if ratio < prev_ratio - _RATIO_TOLERANCE:
+        if ratio < prev_ratio:
             raise GenesisAccrualGovernorError("genesis_accrual_governor_non_monotonic_ratio")
         governor_row = evaluate_genesis_accrual_governor(resolved_signal, policy=policy)
         trajectory.append(

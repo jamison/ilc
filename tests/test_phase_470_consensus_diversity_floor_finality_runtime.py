@@ -153,7 +153,7 @@ def test_diversity_aware_evaluation_uses_weight_not_slot_share_for_cluster_ceili
         {'distinct_cluster_floor': 3, 'max_cluster_share_ceiling': 0.50},
     )
     assert result['finality_status'] == 'insufficient_diversity'
-    assert result['max_cluster_share'] == 0.9
+    assert result['max_cluster_share'] == Decimal('0.900000000000')
 
 
 def test_missing_cluster_metadata_or_policy_raises_deterministic_tokens() -> None:

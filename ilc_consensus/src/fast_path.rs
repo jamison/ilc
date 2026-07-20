@@ -7,6 +7,7 @@ pub const SEC_004_TRANSFER_CERTIFICATE_EPOCH_BINDING_PHASE_1353: &str =
     "sec_004_transfer_certificate_epoch_binding_phase_1353";
 pub const VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_PHASE_1353: &str =
     "validator_set_rotation_wired_fast_path_phase_1353";
+pub const MAX_CERT_SIGS: usize = 1000;
 
 pub struct FastPathProtocol {
     /// Current validator set view, kept for existing epoch-settlement / harness compatibility.
@@ -113,6 +114,9 @@ impl FastPathProtocol {
         if cert.sigs.len() < required_votes {
             return Err(ILCConsensusError::InsufficientSignatures);
         }
+        if cert.sigs.len() > MAX_CERT_SIGS || cert.sigs.len() > vs.validators.len() {
+            return Err(ILCConsensusError::InvalidSignature);
+        }
 
         let mut seen_validators = HashSet::new();
 
@@ -182,6 +186,33 @@ mod tests {
         let dir = tempdir().unwrap();
         let env = Environment::new().set_max_dbs(1).open(dir.path()).unwrap();
         (Arc::new(env), dir)
+    }
+
+    fn signed_test_transfer(
+        sk_agent: &SecretKey,
+        from_agent: AgentID,
+        to_agent: AgentID,
+    ) -> ECUTransfer {
+        let mut transfer = ECUTransfer {
+            object_ref: ObjectRef {
+                agent: from_agent,
+                version: 0,
+            },
+            to: to_agent,
+            amount_micro_ecu: 100_000,
+            transfer_class: TransferClass::Contribution,
+            sender_sig: AgentSig(sk_agent.sign(b"dummy", &[], &[])),
+        };
+        let sender_msg = bincode::serialize(&(
+            &transfer.object_ref,
+            &transfer.to,
+            &transfer.amount_micro_ecu,
+            &transfer.transfer_class,
+        ))
+        .unwrap();
+        transfer.sender_sig =
+            AgentSig(sk_agent.sign(&sender_msg, crate::types::AGENT_TRANSFER_DST, &[]));
+        transfer
     }
 
     #[test]
@@ -313,6 +344,44 @@ mod tests {
             epoch: EpochSeq(1),
         };
         assert!(fast_path.execute_certificate(cert_valid).is_ok());
+    }
+
+    #[test]
+    fn test_certificate_signature_list_larger_than_validator_set_rejected() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(1),
+                attributions: vec![(agent1, 1_000_000)],
+            })
+            .unwrap();
+
+        let (sk1, vk1) = generate_keypair(1);
+        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
+
+        let transfer = signed_test_transfer(&sk_agent1, agent1, agent2);
+        let msg = bincode::serialize(&transfer).unwrap();
+        let dst = crate::validator::validator_dst("testnet");
+        let sig1 = ValidatorSig(sk1.sign(&msg, &dst, &[]));
+        let cert = TransferCertificate {
+            transfer,
+            sigs: vec![
+                (ValidatorID(1), sig1.clone()),
+                (ValidatorID(2), sig1.clone()),
+            ],
+            epoch: EpochSeq(1),
+        };
+
+        assert_eq!(
+            fast_path.execute_certificate(cert).unwrap_err(),
+            ILCConsensusError::InvalidSignature
+        );
     }
 
     #[test]
