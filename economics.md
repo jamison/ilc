@@ -181,6 +181,158 @@ institutionally arranged or contingently maintained.
 
 ---
 
+### 1b. ECU as Epoch-Series Incentive Signal: The Φ-Approach Hypothesis
+
+The I×D×A framework establishes what capital must structurally provide.
+The Φ/E decomposition (see formal paper §2.2a) identifies the two
+informational properties that determine productive value: Φ, the intrinsic
+epistemic integration of a knowledge structure (how interconnected and
+mutually constraining its internal elements are), and E, its extrinsic
+effectiveness (its capacity to transmit, transform, and amplify other
+structures). The question that follows is how the ILC protocol incentivizes
+the production and recognition of genuine Φ.
+
+The answer is not a measurement. It is a game.
+
+**ECU as point-in-time epoch proxy.**
+ECU(cᵢ, τ) is the epistemic credit awarded for contribution cᵢ at epoch τ
+— a point-in-time signal computed from jury validation in that epoch. At
+τ=0 it is an informed but limited proxy for Φ(cᵢ): adversarially validated,
+but operating on restricted evidence. It is not Φ. It is the first term of
+a series whose incentive structure moves toward Φ over time.
+
+**The series as incentive structure.**
+What creates the approach to Φ is not any single ECU calculation but the
+*series* {ECU(cᵢ, 1), ECU(cᵢ, 2), ECU(cᵢ, 3), ...} and the present
+discounted value this series generates:
+
+```
+PV(cᵢ, t) = Σ_{τ=t}^{∞}  ECU(cᵢ, τ) · δ^{τ−t}
+```
+
+Contributions with genuine Φ generate sustained ECU across many epochs:
+reuse attribution accumulates, validation holds, temporal decay is slow
+relative to the reuse rate. Their present value holds or compounds.
+Contributions with inflated Φ generate early ECU that reuse does not
+sustain; decay erodes their present value. Agents who can observe this
+structure are incentivized to produce genuine Φ — that is where sustained
+present value lives.
+
+The series does not measure Φ. It creates incentives that move agent
+behavior toward producing and recognizing genuine Φ. The approach to Φ is
+a consequence of agents rationally responding to the incentive landscape.
+The measurement is a byproduct of the incentive.
+
+**The Φ-Approach Hypothesis.** `draft_conditional`
+We theorize that the series of epoch ECU calculations, taken as an infinite
+repeated game with adversarial validation, temporal decay, and reuse
+attribution, drives network behavior asymptotically toward genuine
+epistemic integration Φ:
+
+```
+lim_{T→∞} PV(cᵢ, T)  →  f( Φ(cᵢ), E(cᵢ) )
+```
+
+The series approaches Φ. It does not compute it directly and may not reach
+it. This is a theoretical conjecture supported by five theoretical pillars,
+not yet a proven theorem:
+
+**I. Repeated game honest equilibrium (folk theorem).**
+In infinitely repeated games with reputation effects, honest equilibria are
+sustained by the threat of future penalty (Fudenberg and Maskin 1986).
+Inflating ECU at epoch τ generates future punishment as reuse fails to
+materialize and present value decays. Honest contribution becomes the
+dominant strategy over sufficient time horizon.
+
+**II. Bayesian posterior convergence.**
+Each validation event is a Bayesian update on the posterior distribution
+over Φ(cᵢ). After n independent validation events, posterior variance
+decreases as σ²/n. As the epoch series accumulates evidence, the aggregate
+ECU signal concentrates around true Φ.
+
+**III. Hayek's distributed price-signal argument (1945).**
+No central authority can compute the true productive allocation; the price
+signal emerges from distributed local exchanges and converges toward it.
+ECU is the epistemic price signal playing the same role — with one
+structural improvement: prices can be manipulated by market power; ECU
+faces adversarial validation that makes systematic inflation a dominated
+strategy over sufficient time horizon.
+
+**IV. Popperian falsification at network scale (1959).**
+Science converges toward better theories through conjecture and refutation,
+not verification. ILC implements this economically: refutation is a
+first-class protocol operation, adversarially incentivized. Contributions
+that survive refutation earn more sustained ECU than non-refutable ones.
+The epoch series encodes Popperian convergence with economic enforcement.
+
+**V. Morphogenetic self-organization (Turing 1952).**
+Simple local reaction-diffusion rules produce complex stable global
+structure without central coordination. The ILC validation/refutation/decay
+cycle is the epistemic analogue: local interactions produce a globally
+structured epistemic topology that no agent designed. The graph is
+morphogenetic — it self-organizes toward the true topology of the knowledge
+domain.
+
+**Convergence rate factors.**
+We theorize the rate of approach is governed by five factors:
+
+```
+rate ∝ f( n,  D(V),  A(V),  δ,  α )
+
+  n     = number of validators
+          More validators → lower variance per epoch (σ²/n)
+
+  D(V)  = diversity of validator epistemic light cones
+          The degree to which validators bring genuinely distinct
+          informational vantage points. Validators with near-identical
+          light cones make correlated errors; n loses its convergence
+          benefit entirely. CDL-V3's diversity floor is the convergence
+          rate mechanism, not a political one.
+
+  A(V)  = Σᵥ Φ(v) · E(v)
+          Aggregate epistemic agency of the validator set — their
+          capacity to recognize genuine Φ and move the graph at the
+          points they touch. You need complexity to assess complexity:
+          a validator with high Φ(v) can identify genuine integration
+          in a contribution; a validator with high E(v) moves the
+          graph more effectively when they act.
+
+  δ     = discount factor
+          Lower δ → agents weight future ECU more → longer effective
+          time horizon → stronger honest equilibrium → faster approach
+
+  α     = PROVENANCE_DECAY_ALPHA = 0.45 [CDL-085; ilc_core/types.py:82-83]
+          Governs how fast inflated-Φ contributions lose standing
+```
+
+D(V) and A(V) are distinct and neither substitutes for the other. D(V)
+determines whether errors are uncorrelated (diversity of vantage point).
+A(V) determines whether validators can recognize and move toward Φ (quality
+of agency). High A(V) with low D(V) converges to the wrong attractor.
+High D(V) with low A(V) converges slowly.
+
+**The self-accelerating property.**
+A(V) is dynamic. As the graph accumulates genuine-Φ contributions, ECU
+flows to high-Φ(v)·E(v) participants, who become higher-reputation
+validators, increasing A(V), accelerating convergence. The graph bootstraps
+toward Φ through its own improving validator quality. This feedback is
+bounded by the diversity floor: without D(V) enforcement, high-agency
+validators monopolize the process, collapsing independence and producing
+convergence to a local rather than global Φ attractor.
+
+**What remains open.**
+Formal proof of convergence is an open problem. The specific conditions on
+n, D(V), A(V), δ, and α sufficient to guarantee convergence — and the rate
+— are not yet derived. Whether the series limit equals Φ exactly or a
+bounded approximation, and the form of any residual gap, is unknown. The
+gap is theorized to be governed by residual validator correlation, strategic
+manipulation within bounded windows, and calibration error in α. These are
+empirical questions the ILC network will generate evidence on over time.
+
+*Formal treatment: [`docs/ILC_Economic_Paper_Draft_v0.3.md`](docs/ILC_Economic_Paper_Draft_v0.3.md) §2.2b.*
+
+---
+
 **Agentic Capital** (ILC uses this term in a specific protocol-native sense; see prior-art note below): the present value of a contributor's verified epistemic corpus within a shared epistemic light cone — the portion of causal reach that persists, generates returns through reuse, and remains attributed to a persistent identity regardless of substrate, instance lifecycle, or biological embodiment.
 
 *ILC implementation:* content-addressed identity (CIDv1 + ML-DSA-65),

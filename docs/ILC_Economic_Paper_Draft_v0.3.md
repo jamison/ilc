@@ -629,6 +629,99 @@ comparison table, attribution failure framing:* `../economics.md §1`, `§12c`
 
 ---
 
+#### 2.2b ECU Epoch Series and the Φ-Approach Hypothesis
+
+**Observation 1 (ECU as epoch-τ proxy).** `established`
+ECU(cᵢ, τ) is the epistemic credit awarded for contribution cᵢ at epoch τ
+— a point-in-time jury-validated signal. It is a proxy for Φ(cᵢ): informed
+by adversarial validation, but operating on the evidence available at τ.
+It is not a measurement of Φ(cᵢ). It is the opening term of a series whose
+incentive structure moves toward Φ.
+
+**Definition 2.7 (ECU Epoch Series and Present Discounted Value).** `established`
+For contribution cᵢ and discount factor δ ∈ (0,1):
+
+```
+PV(cᵢ, t) = Σ_{τ=t}^{∞}  ECU(cᵢ, τ) · δ^{τ−t}
+```
+
+Genuine Φ(cᵢ) → sustained ECU across epochs via reuse attribution → PV
+holds or compounds. Inflated Φ(cᵢ) → ECU not sustained by reuse →
+temporal decay erodes PV. The series is an incentive structure, not a
+measurement: it makes genuine Φ the dominant economic strategy, and the
+approach to Φ is a consequence of agents rationally responding to that
+structure.
+
+**Hypothesis 1 (Φ-Approach).** `draft_conditional`
+We theorize that:
+
+```
+lim_{T→∞} PV(cᵢ, T)  →  f( Φ(cᵢ), E(cᵢ) )
+```
+
+under honest equilibrium play. The series of epoch ECU calculations
+approaches genuine epistemic integration Φ asymptotically. It does not
+compute Φ directly and may not reach it. Formal proof of convergence is an
+open problem. The hypothesis is supported by five theoretical pillars:
+
+| Pillar | Source | What it supports |
+|--------|--------|-----------------|
+| Repeated game honest equilibrium | Folk theorem (Fudenberg & Maskin 1986) | Honest validation is dominant strategy over infinite horizon |
+| Bayesian posterior convergence | Bayes (1763), Blackwell (1953) | n independent validation events reduce posterior variance as σ²/n |
+| Distributed price-signal convergence | Hayek (1945) | ECU as epistemic price signal converging toward true Φ without central computation |
+| Conjecture-and-refutation convergence | Popper (1959) | Refutation-incentivized series converges toward better theories |
+| Local-rule global-structure emergence | Turing (1952) | Validation/refutation/decay cycle produces true epistemic topology morphogenetically |
+
+**Definition 2.8 (Convergence Rate Factors).** `draft_conditional`
+
+```
+rate(Φ-approach) ∝ f( n,  D(V),  A(V),  δ,  α )
+
+  n     = validator count
+
+  D(V)  = diversity of validator epistemic light cones
+           — degree to which validators bring genuinely distinct
+             informational vantage points
+           Correlated validators lose the σ²/n convergence benefit
+           regardless of n. CDL-V3 diversity floor is the convergence
+           rate mechanism.
+
+  A(V)  = Σᵥ Φ(v) · E(v)
+           aggregate epistemic agency of the validator set
+           Φ(v): capacity to recognize genuine integration in others
+           E(v): effectiveness at moving the graph when acting
+           You need complexity to assess complexity.
+
+  δ     = discount factor
+  α     = PROVENANCE_DECAY_ALPHA = 0.45  [CDL-085; ilc_core/types.py:82-83]
+```
+
+D(V) and A(V) are not interchangeable. D(V) determines whether errors are
+uncorrelated (necessary for Bayesian convergence). A(V) determines whether
+validators can recognize and move toward Φ (necessary for rate). High A(V)
+with low D(V) produces fast convergence to the wrong attractor. High D(V)
+with low A(V) produces slow convergence to the right one.
+
+**Corollary 1 (Self-Accelerating Convergence).** `draft_conditional`
+A(V) is dynamic. As the graph accumulates genuine-Φ contributions, ECU
+flows to high-Φ(v)·E(v) participants, increasing A(V), accelerating
+convergence. This feedback is bounded by the diversity floor: without D(V)
+enforcement, high-agency validators monopolize the process, collapsing
+independence and producing convergence to a local rather than global Φ
+attractor.
+
+**Open problems.**
+(1) Formal proof of convergence under stated conditions on n, D(V), A(V),
+δ, α. (2) Whether the limit equals Φ exactly or a bounded approximation,
+and the form of the residual gap. (3) Minimum conditions on D(V) and n
+sufficient to prevent local-attractor capture. (4) Empirical calibration
+of the rate formula against network data.
+
+*Full narrative, supporting intellectual lineage, and mechanism design
+context:* `../economics.md §1b`
+
+---
+
 ## 3. The Scarcity Inversion
 
 The S-02 wage cliff does not merely reduce wages — it inverts the scarcity
