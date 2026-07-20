@@ -14,6 +14,8 @@ use ilc_app::{
     GetEpochRecordRequest, GetEpochRecordResponse, GetEpochRequest, GetEpochResponse,
 };
 
+pub const MAX_EPOCH_CHAIN_BATCH: u64 = 128;
+
 /// The singular external interface allowed for the Python Epistemic layer.
 /// Inherently bans writes by omitting any mutation capabilities, strictly decoupling
 /// state generation (Python) from state settlement and execution (Rust Mysticti DAG).
@@ -119,9 +121,15 @@ impl IlcAppReadService for ApplicationInterface {
             req.to_epoch
         };
 
+        let effective_to = if from <= to {
+            to.min(from.saturating_add(MAX_EPOCH_CHAIN_BATCH - 1))
+        } else {
+            to
+        };
+
         let mut records = Vec::new();
         if from <= to {
-            for ep in from..=to {
+            for ep in from..=effective_to {
                 match self.epoch_store.get_checkpoint(ep) {
                     Ok(Some(stored)) => {
                         let mut state_root = [0u8; 36];
@@ -361,6 +369,44 @@ mod tests {
         let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
         assert!(resp.chain_complete);
         assert_eq!(resp.records.len(), 5);
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_chain_caps_batch_size() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store.clone());
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
+        let (vset, entries) = setup_validators();
+
+        for i in 1..=(MAX_EPOCH_CHAIN_BATCH + 2) {
+            let record = EpochSettlementRecord {
+                epoch: EpochSeq(i),
+                state_root: CIDv1Root::new([i as u8; 36]),
+            };
+            let (sigs, signers) = agg_sig_all(&record, &entries);
+            protocol
+                .process_epoch_checkpoint(
+                    EpochCheckpoint {
+                        record: record.clone(),
+                        sigs,
+                        signers,
+                    },
+                    &vset,
+                )
+                .unwrap();
+        }
+
+        let req = Request::new(GetEpochChainRequest {
+            from_epoch: 1,
+            to_epoch: MAX_EPOCH_CHAIN_BATCH + 2,
+            include_edges: false,
+        });
+        let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
+        assert!(!resp.chain_complete);
+        assert_eq!(resp.records.len(), MAX_EPOCH_CHAIN_BATCH as usize);
+        assert_eq!(resp.records.last().unwrap().epoch, MAX_EPOCH_CHAIN_BATCH);
     }
 
     #[cfg(feature = "testnet_fault_sim")]

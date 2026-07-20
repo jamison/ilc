@@ -28,7 +28,7 @@ def test_gossip_rejects_legacy_node_id() -> None:
     assert resp.json()["detail"] == "Invalid Gossip"
 
 
-def test_gossip_accepts_canonical_node_id() -> None:
+def test_gossip_rejects_canonical_node_id_without_wired_signature_verifier() -> None:
     app = create_app()
     client = TestClient(app)
 
@@ -36,8 +36,8 @@ def test_gossip_accepts_canonical_node_id() -> None:
     node.id = node.compute_canonical_id()
 
     resp = client.post("/gossip/receive", json=node.model_dump(mode="json"))
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "accepted"
+    assert resp.status_code == 400
+    assert resp.json()["detail"] == "Invalid Gossip"
 
 
 def test_gossip_rejects_mismatched_node_id() -> None:

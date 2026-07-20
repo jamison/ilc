@@ -59681,6 +59681,64 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_public_agent_bootstrap_receipts_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/phase_1576_public_agent_bootstrap_receipts_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_1575h_fix1_security_preflight",
+      "chronology_note": "2026-07-20 Phase 1575h-Fix1 - walkthrough and STATUS/planning update",
+      "manual_read_summary": "Walkthrough records the pre-1575h security preflight implementation, verification commands, tokens, H-06 design-deferred disposition, and non-claims. No epoch transition, production minting, settlement, wallet write, public P2P activation, public mirror push, or CDL action occurred.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:phase_1575h_fix1_security_preflight_committed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_epoch_0_to_1_transition_phase_1575h_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix1_security_preflight_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/phases/phase_1575h_fix1_security_preflight_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_1575h_fix1_security_preflight",
+      "chronology_note": "2026-07-20 Phase 1575h-Fix1 - focused regression tests",
+      "manual_read_summary": "Focused tests cover bounded untrusted decode paths, signature-vector caps, legacy gossip fail-closed behavior, Decimal-native Genesis governor/canonical governor reports, Decimal consensus-engine calculations, and Decimal diversity/finality diagnostics.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "review_status": "candidate",
+          "target": "invariant:pre_1575h_security_blockers_closed_without_epoch_transition"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:pre_1575h_security_blocker_surfaces"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_fix1_security_preflight.py -> validation/security",
+      "repo_path": "tests/test_phase_1575h_fix1_security_preflight.py"
     }
   ],
   "boundary": {
@@ -63006,6 +63064,92 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:ilc_core/graph/atlas_bounded_query_runtime.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc-graphics-sidecar/ilc_graph_viz/__main__.py;graph_delta=load_bearing_artifact_updated:ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py;graph_delta=load_bearing_artifact_updated:tests/test_phase_1576_fix11_graph_viz_api.py;graph_delta=load_bearing_artifact_updated:docs/specs/ilc_phase_1576_graph_viz_api_v0.1.md;graph_delta=support_only:docs/phases/phase_1576_fix11_graph_viz_api_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_1575h_fix1_security_preflight",
+      "chronology_note": "2026-07-20 Phase 1575h-Fix1 - Rust/Python security preflight blockers closed before sensitive epoch 0-to-1 transition",
+      "manual_read_summary": "Walkthrough attests that the phase closed pre-1575h security blockers without executing the epoch transition. Rust consensus surfaces now cap epoch-chain reads, fixed-size crypto byte decoding, bincode gossip envelope decode, checkpoint signer vectors, and fast-path certificate signature vectors. Python runtime surfaces now fail-close legacy gossip receive until signature verification is wired and use Decimal-native arithmetic in the Genesis governor, settlement canonical governor report, consensus-engine maintenance/bounty calculations, diversity-floor diagnostics, and finality diagnostics. H-06 validator-set snapshot semantics remain design-deferred.",
+      "repo_path": "docs/phases/phase_1575h_fix1_security_preflight_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1575h_fix1_security_preflight_committed"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:epoch_chain_batch_cap_committed_phase_1575h_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:fixed_crypto_bincode_decode_hardened_phase_1575h_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:legacy_gossip_receive_fail_closed_phase_1575h_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "spec:ilc_combined_audit_report_pre_1575h_v0.1"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_epoch_0_to_1_transition_phase_1575h_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix1_security_preflight_walkthrough.md;graph_delta=load_bearing_artifact_updated:ilc_consensus/src/app_interface.rs,ilc_consensus/src/types.rs,ilc_consensus/src/network.rs,ilc_consensus/src/epoch_settlement.rs,ilc_consensus/src/fast_path.rs,ilc_core/server.py,ilc_core/analysis/genesis_accrual_governor.py,ilc_core/epoch/epoch_emission_production_path.py,ilc_core/consensus/engine.py,ilc_core/consensus/finality_evaluator.py,ilc_core/consensus/diversity_floor_runtime.py;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_1575h_fix1_security_preflight",
+      "chronology_note": "2026-07-20 Phase 1575h-Fix1 - regression tests for pre-1575h Rust/Python security blockers",
+      "manual_read_summary": "Regression tests cover bounded epoch-chain reads, fixed-size crypto decoding, bounded bincode network envelope decoding, checkpoint signer-vector caps, fast-path certificate signature-vector caps, legacy gossip receive fail-closed semantics, Decimal-native Genesis governor/canonical report behavior, Decimal consensus-engine diagnostics, and Decimal diversity/finality diagnostics.",
+      "repo_path": "tests/test_phase_1575h_fix1_security_preflight.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:pre_1575h_security_blockers_closed_without_epoch_transition"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:phase_1575h_fix1_security_preflight_committed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:pre_1575h_security_blocker_surfaces"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_float_economic_runtime_path_phase_1575h_fix1"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:bounded_untrusted_decode_phase_1575h_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_fix1_security_preflight.py -> validation/security;graph_delta=load_bearing_artifact_updated:ilc_consensus/src/app_interface.rs,ilc_consensus/src/types.rs,ilc_consensus/src/network.rs,ilc_consensus/src/epoch_settlement.rs,ilc_consensus/src/fast_path.rs,ilc_core/server.py,ilc_core/analysis/genesis_accrual_governor.py,ilc_core/epoch/epoch_emission_production_path.py,ilc_core/consensus/engine.py,ilc_core/consensus/finality_evaluator.py,ilc_core/consensus/diversity_floor_runtime.py"
     }
   ],
   "phase": "1545p-Fix38",

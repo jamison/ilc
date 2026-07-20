@@ -33,10 +33,10 @@ def test_phase_199_graph_state_isolation_between_app_instances() -> None:
 
     payload = _build_gossip_payload("phase_199_graph_state_isolation")
     response = client_a.post("/gossip/receive", json=payload)
-    assert response.status_code == 200
-    assert response.json() == {"status": "accepted"}
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid Gossip"
 
-    assert payload["id"] in app_a.state.graph.nodes
+    assert payload["id"] not in app_a.state.graph.nodes
     assert payload["id"] not in app_b.state.graph.nodes
 
 

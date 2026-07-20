@@ -48,12 +48,12 @@ def test_api_lifecycle():
     print("Read Back: OK")
 
 
-def test_gossip_receive_accepts_valid_new_node():
+def test_gossip_receive_rejects_unverified_signed_node():
     payload = _build_gossip_node_payload("gossip_accept_payload", "placeholder")
     response = client.post("/gossip/receive", json=payload)
-    assert response.status_code == 200
-    assert response.json() == {"status": "accepted"}
-    assert payload["id"] in app.state.graph.nodes
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid Gossip"
+    assert payload["id"] not in app.state.graph.nodes
 
 
 def test_gossip_receive_rejects_id_mismatch():
@@ -64,13 +64,13 @@ def test_gossip_receive_rejects_id_mismatch():
     assert response.json()["detail"] == "Invalid Gossip"
 
 
-def test_gossip_receive_ignores_existing_node():
+def test_gossip_receive_repeated_unverified_node_still_rejects():
     payload = _build_gossip_node_payload("gossip_duplicate_payload", "placeholder")
     first = client.post("/gossip/receive", json=payload)
     second = client.post("/gossip/receive", json=payload)
-    assert first.status_code == 200
-    assert second.status_code == 200
-    assert second.json() == {"status": "ignored", "reason": "already_have"}
+    assert first.status_code == 400
+    assert second.status_code == 400
+    assert second.json()["detail"] == "Invalid Gossip"
 
 def test_get_protocol_schema():
     """Ensure /v1/protocol/schema returns the MVP protocol schema with core objects."""

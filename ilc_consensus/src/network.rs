@@ -2,6 +2,7 @@ use crate::epoch_settlement::StoredCheckpoint;
 use crate::types::{
     EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate, ValidatorID,
 };
+use bincode::Options;
 use quinn::{ClientConfig, Connection, Endpoint, RecvStream, SendStream, ServerConfig};
 use rustls::client::danger::ServerCertVerified;
 use rustls::pki_types::ServerName;
@@ -185,6 +186,7 @@ impl rustls::server::danger::ClientCertVerifier for PinnedCertVerifier {
 /// A slow or malicious peer that trickles bytes or fills the QUIC flow control
 /// window can hold async tasks indefinitely without these guards.
 pub const IO_TIMEOUT_MS: u64 = 1500;
+pub const MAX_GOSSIP_PAYLOAD_BYTES: usize = 10 * 1024 * 1024;
 
 impl PeerNetwork {
     pub fn new_server(
@@ -366,7 +368,7 @@ impl PeerNetwork {
             .map_err(|_| ILCConsensusError::Other("Read fail length".into()))?;
 
         let target_len = u32::from_be_bytes(len_buf) as usize;
-        if target_len > 10 * 1024 * 1024 {
+        if target_len > MAX_GOSSIP_PAYLOAD_BYTES {
             return Err(ILCConsensusError::Other(
                 "Payload excessive length bound".into(),
             ));
@@ -378,7 +380,11 @@ impl PeerNetwork {
             .map_err(|_| ILCConsensusError::Other("Receive: payload read timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Read fail payload".into()))?;
 
-        let envelope: GossipEnvelope = bincode::deserialize(&buf)
+        let envelope: GossipEnvelope = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
+            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64)
+            .deserialize(&buf)
             .map_err(|_| ILCConsensusError::Other("Corrupted CDL-061 Envelope parsed".into()))?;
 
         // SEC-006: Cryptographically bind application payload to mathematical TLS identity

@@ -9,6 +9,8 @@ use crate::types::{
 };
 use crate::validator::quorum_threshold;
 
+pub const MAX_SIGNERS_PER_CHECKPOINT: usize = 1000;
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct StoredCheckpoint {
     pub record: EpochSettlementRecord,
@@ -245,6 +247,11 @@ impl EpochSettlementProtocol {
 
         if checkpoint.signers.len() < threshold {
             return Err(ILCConsensusError::InsufficientSignatures);
+        }
+        if checkpoint.signers.len() > MAX_SIGNERS_PER_CHECKPOINT
+            || checkpoint.signers.len() > validator_set.validators.len()
+        {
+            return Err(ILCConsensusError::InvalidSignature);
         }
 
         // Duplicate signer check.
@@ -1017,5 +1024,31 @@ mod tests {
                 other
             ),
         }
+    }
+
+    #[test]
+    fn test_signer_list_larger_than_validator_set_rejected_before_resolution() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_n_validators(4);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let (sigs, mut signers) = agg_sig_for_subset(&record, &entries[0..3]);
+        signers.push(ValidatorID(99));
+        signers.push(ValidatorID(100));
+        let checkpoint = EpochCheckpoint {
+            record,
+            sigs,
+            signers,
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidSignature);
     }
 }

@@ -39,11 +39,14 @@ def _require_non_empty_str(value: Any, token: str, message: str) -> str:
     return value
 
 
-def _require_positive_number(value: Any, token: str, message: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+def _require_positive_number(value: Any, token: str, message: str) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (int, float, str, Decimal)):
         raise ConsensusFinalityEvaluatorError(token, message)
-    number = float(value)
-    if number <= 0.0:
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ConsensusFinalityEvaluatorError(token, message) from exc
+    if not number.is_finite() or number <= Decimal("0"):
         raise ConsensusFinalityEvaluatorError(token, message)
     return number
 
@@ -178,7 +181,7 @@ def _normalize_validator_clusters(raw: Any) -> dict[str, str]:
     return normalized
 
 
-def _normalize_diversity_policy(raw: Any) -> dict[str, float | int]:
+def _normalize_diversity_policy(raw: Any) -> dict[str, Decimal | int]:
     data = _require_mapping(
         raw,
         "consensus_diversity_finality_diversity_policy_invalid",
@@ -196,7 +199,7 @@ def _normalize_diversity_policy(raw: Any) -> dict[str, float | int]:
         "consensus_diversity_finality_diversity_policy_invalid",
         "max_cluster_share_ceiling must be > 0",
     )
-    if ceiling > 1.0:
+    if ceiling > Decimal("1"):
         raise ConsensusFinalityEvaluatorError(
             "consensus_diversity_finality_diversity_policy_invalid",
             "max_cluster_share_ceiling must be <= 1",
@@ -217,12 +220,8 @@ def _aggregate_weights(normalized_records: list[dict[str, Any]]) -> dict[str, De
     return {key: aggregate_weights[key] for key in sorted(aggregate_weights)}
 
 
-def _decimal_ratio_to_float(value: Decimal) -> float:
-    return float(value)
-
-
-def _aggregate_weights_for_output(aggregate_weights: dict[str, Decimal]) -> dict[str, float]:
-    return {key: _decimal_ratio_to_float(aggregate_weights[key]) for key in sorted(aggregate_weights)}
+def _aggregate_weights_for_output(aggregate_weights: dict[str, Decimal]) -> dict[str, Decimal]:
+    return {key: aggregate_weights[key] for key in sorted(aggregate_weights)}
 
 
 def evaluate_epoch_finality(
@@ -251,7 +250,7 @@ def evaluate_epoch_finality(
         "finality_status": finality_status,
         "canonical_block_hash": canonical_block_hash,
         "aggregate_weights": _aggregate_weights_for_output(aggregate_weights),
-        "threshold_fraction": _decimal_ratio_to_float(threshold_fraction),
+        "threshold_fraction": threshold_fraction,
         "fork_resolution_applied": False,
         "runtime_version": FINALITY_EVALUATOR_VERSION,
         "dependency": CDL_051_RATIFICATION_DEPENDENCY,
@@ -277,8 +276,8 @@ def evaluate_epoch_finality_with_diversity(
 
     canonical_block_hash: str | None = None
     distinct_clusters: int | None = None
-    max_cluster_share: float | None = None
-    diversity_penalty: float | None = None
+    max_cluster_share: Decimal | None = None
+    diversity_penalty: Decimal | None = None
     diversity_status = "not_evaluated"
 
     if len(qualifying_hashes) == 1:
@@ -301,8 +300,8 @@ def evaluate_epoch_finality_with_diversity(
         largest_cluster_weight = max(cluster_weights.values())
         total_candidate_weight = sum(cluster_weights.values(), Decimal("0"))
         max_cluster_share = compute_max_cluster_share(
-            largest_cluster_slots=float(largest_cluster_weight),
-            total_panel_slots=float(total_candidate_weight),
+            largest_cluster_slots=largest_cluster_weight,
+            total_panel_slots=total_candidate_weight,
         )
         diversity_penalty = compute_diversity_floor_penalty(
             distinct_clusters=distinct_clusters,
@@ -335,7 +334,7 @@ def evaluate_epoch_finality_with_diversity(
         "finality_status": finality_status,
         "canonical_block_hash": canonical_block_hash,
         "aggregate_weights": _aggregate_weights_for_output(aggregate_weights),
-        "threshold_fraction": _decimal_ratio_to_float(threshold_fraction),
+        "threshold_fraction": threshold_fraction,
         "diversity_status": diversity_status,
         "distinct_clusters": distinct_clusters,
         "max_cluster_share": max_cluster_share,

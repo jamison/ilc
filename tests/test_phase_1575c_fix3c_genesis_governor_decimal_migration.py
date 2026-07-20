@@ -51,7 +51,7 @@ def test_fix3c_decimal_monetary_input_accepted() -> None:
     )
 
     assert report["cap_blocked"] is False
-    assert report["genesis_share_ratio"] == pytest.approx(648000.0 / 25920000.0)
+    assert report["genesis_share_ratio"] == Decimal("0.025000000000")
 
 
 def test_fix3c_accrual_cannot_exceed_issuance_by_subquantum_amount() -> None:
@@ -86,4 +86,4 @@ def test_fix3c_int_monetary_input_accepted() -> None:
     )
 
     assert report["cap_blocked"] is False
-    assert report["genesis_share_ratio"] == pytest.approx(648000.0 / 25920000.0)
+    assert report["genesis_share_ratio"] == Decimal("0.025000000000")

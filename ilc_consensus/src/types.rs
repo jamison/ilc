@@ -1,6 +1,78 @@
 use blst::min_pk::{AggregateSignature, PublicKey, Signature};
+use serde::de::{Error as DeError, SeqAccess, Visitor};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::fmt;
+
+fn deserialize_fixed_bytes<'de, D, const N: usize>(
+    deserializer: D,
+    type_name: &'static str,
+) -> Result<[u8; N], D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    struct FixedBytesVisitor<const N: usize> {
+        type_name: &'static str,
+    }
+
+    impl<'de, const N: usize> Visitor<'de> for FixedBytesVisitor<N> {
+        type Value = [u8; N];
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            write!(
+                formatter,
+                "{} encoded as exactly {} bytes",
+                self.type_name, N
+            )
+        }
+
+        fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Self::Value, E>
+        where
+            E: DeError,
+        {
+            if bytes.len() != N {
+                return Err(E::custom(format!(
+                    "{} must be exactly {} bytes",
+                    self.type_name, N
+                )));
+            }
+            let mut out = [0u8; N];
+            out.copy_from_slice(bytes);
+            Ok(out)
+        }
+
+        fn visit_borrowed_bytes<E>(self, bytes: &'de [u8]) -> Result<Self::Value, E>
+        where
+            E: DeError,
+        {
+            self.visit_bytes(bytes)
+        }
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+        where
+            A: SeqAccess<'de>,
+        {
+            let mut out = [0u8; N];
+            for (idx, slot) in out.iter_mut().enumerate() {
+                *slot = seq.next_element()?.ok_or_else(|| {
+                    DeError::custom(format!(
+                        "{} ended before byte {} of {}",
+                        self.type_name, idx, N
+                    ))
+                })?;
+            }
+            if seq.next_element::<u8>()?.is_some() {
+                return Err(DeError::custom(format!(
+                    "{} exceeds fixed {} byte length",
+                    self.type_name, N
+                )));
+            }
+            Ok(out)
+        }
+    }
+
+    deserializer.deserialize_bytes(FixedBytesVisitor::<N> { type_name })
+}
 
 /// AgentID represents a unique ILC Agent inside the system.
 /// Derived securely via CDL-042 key mechanics.
@@ -21,13 +93,10 @@ impl<'de> serde::Deserialize<'de> for AgentID {
     where
         D: serde::Deserializer<'de>,
     {
-        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
-        if bytes.len() != 48 {
-            return Err(serde::de::Error::custom("AgentID must be exactly 48 bytes"));
-        }
-        let mut arr = [0u8; 48];
-        arr.copy_from_slice(&bytes);
-        Ok(AgentID(arr))
+        Ok(AgentID(deserialize_fixed_bytes::<D, 48>(
+            deserializer,
+            "AgentID",
+        )?))
     }
 }
 
@@ -53,7 +122,7 @@ impl<'de> serde::Deserialize<'de> for AgentSig {
     where
         D: serde::Deserializer<'de>,
     {
-        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let bytes = deserialize_fixed_bytes::<D, 96>(deserializer, "AgentSig")?;
         let sig = Signature::from_bytes(&bytes).map_err(|e| {
             serde::de::Error::custom(format!("blst agent signature parse fail: {:?}", e))
         })?;
@@ -152,7 +221,7 @@ impl<'de> serde::Deserialize<'de> for ValidatorSig {
     where
         D: serde::Deserializer<'de>,
     {
-        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let bytes = deserialize_fixed_bytes::<D, 96>(deserializer, "ValidatorSig")?;
         let sig = Signature::from_bytes(&bytes)
             .map_err(|e| serde::de::Error::custom(format!("blst signature parse fail: {:?}", e)))?;
         // SEC-FIX-01/SEC-AUDIT: G2 subgroup + infinity check.
@@ -222,7 +291,7 @@ impl<'de> serde::Deserialize<'de> for AggSig {
     where
         D: serde::Deserializer<'de>,
     {
-        let bytes: Vec<u8> = serde::Deserialize::deserialize(deserializer)?;
+        let bytes = deserialize_fixed_bytes::<D, 96>(deserializer, "AggSig")?;
         let sig = blst::min_pk::Signature::from_bytes(&bytes)
             .map_err(|e| serde::de::Error::custom(format!("Invalid blst signature: {:?}", e)))?;
         // SEC-FIX-01/SEC-AUDIT: G2 subgroup + infinity check — guards against
@@ -502,5 +571,48 @@ impl ValidatorSet {
             map.insert(id, key);
         }
         Ok(ValidatorSet { validators: map, f })
+    }
+}
+
+#[cfg(test)]
+mod fixed_deserialize_tests {
+    use super::*;
+    use bincode::Options;
+
+    #[test]
+    fn test_agent_id_deserialize_rejects_oversized_byte_vector_under_limit() {
+        let payload = bincode::serialize(&vec![7u8; 49]).unwrap();
+        let result: Result<AgentID, _> = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
+            .with_limit(128)
+            .deserialize(&payload);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_agent_id_deserialize_obeys_bincode_read_limit() {
+        let payload = bincode::serialize(&vec![7u8; 49]).unwrap();
+        let result: Result<AgentID, _> = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
+            .with_limit(16)
+            .deserialize(&payload);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_agent_id_deserialize_accepts_exact_fixed_bytes() {
+        let payload = bincode::serialize(&vec![7u8; 48]).unwrap();
+        let decoded: AgentID = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
+            .with_limit(128)
+            .deserialize(&payload)
+            .unwrap();
+
+        assert_eq!(decoded, AgentID([7u8; 48]));
     }
 }

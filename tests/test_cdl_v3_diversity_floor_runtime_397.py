@@ -114,7 +114,7 @@ def test_dependency_chain_imports_v2_token() -> None:
 
 def test_compute_max_cluster_share_nominal_case() -> None:
     share = compute_max_cluster_share(largest_cluster_slots=3, total_panel_slots=8)
-    assert share == 0.375
+    assert share == Decimal("0.375000000000")
 
 
 def test_compute_max_cluster_share_accepts_exact_decimal_like_inputs() -> None:
@@ -122,7 +122,7 @@ def test_compute_max_cluster_share_accepts_exact_decimal_like_inputs() -> None:
         largest_cluster_slots=Decimal("3"),
         total_panel_slots="8",
     )
-    assert share == 0.375
+    assert share == Decimal("0.375000000000")
 
 
 def test_meets_distinct_cluster_floor_true_and_false_cases() -> None:
@@ -131,25 +131,31 @@ def test_meets_distinct_cluster_floor_true_and_false_cases() -> None:
 
 
 def test_meets_max_cluster_share_ceiling_true_and_false_cases() -> None:
-    assert meets_max_cluster_share_ceiling(max_cluster_share=0.35, max_cluster_share_ceiling=0.40)
-    assert not meets_max_cluster_share_ceiling(max_cluster_share=0.45, max_cluster_share_ceiling=0.40)
+    assert meets_max_cluster_share_ceiling(
+        max_cluster_share=Decimal("0.35"),
+        max_cluster_share_ceiling=Decimal("0.40"),
+    )
+    assert not meets_max_cluster_share_ceiling(
+        max_cluster_share=Decimal("0.45"),
+        max_cluster_share_ceiling=Decimal("0.40"),
+    )
 
 
 def test_compute_diversity_floor_penalty_is_bounded_and_monotonic() -> None:
     better = compute_diversity_floor_penalty(
         distinct_clusters=4,
         distinct_cluster_floor=4,
-        max_cluster_share=0.40,
-        max_cluster_share_ceiling=0.40,
+        max_cluster_share=Decimal("0.40"),
+        max_cluster_share_ceiling=Decimal("0.40"),
     )
     worse = compute_diversity_floor_penalty(
         distinct_clusters=1,
         distinct_cluster_floor=4,
-        max_cluster_share=0.90,
-        max_cluster_share_ceiling=0.40,
+        max_cluster_share=Decimal("0.90"),
+        max_cluster_share_ceiling=Decimal("0.40"),
     )
-    assert 0.0 <= better <= 1.0
-    assert 0.0 <= worse <= 1.0
+    assert Decimal("0") <= better <= Decimal("1")
+    assert Decimal("0") <= worse <= Decimal("1")
     assert better < worse
 
 
@@ -161,7 +167,10 @@ def test_cluster_share_rejects_largest_exceeding_total() -> None:
 
 def test_ceiling_rejects_out_of_range_values() -> None:
     with pytest.raises(DiversityFloorValidationError) as exc:
-        meets_max_cluster_share_ceiling(max_cluster_share=0.3, max_cluster_share_ceiling=1.2)
+        meets_max_cluster_share_ceiling(
+            max_cluster_share=Decimal("0.3"),
+            max_cluster_share_ceiling=Decimal("1.2"),
+        )
     assert exc.value.token == "cdl_v3_diversity_floor_ceiling_out_of_range"
 
 
