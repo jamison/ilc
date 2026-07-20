@@ -1867,6 +1867,31 @@ def _build_parser() -> JsonArgumentParser:
                 help="Optional RFC3339 UTC timestamp override for deterministic receipts",
             )
 
+            p_atlas_local_registry_status = atlas_subparsers.add_parser(
+                "local-registry-status",
+                help="Read and summarize the local Atlas installed-slice registry",
+            )
+            p_atlas_local_registry_status.add_argument(
+                "--registry",
+                default="out/installed_slice_registry/local_registry.json",
+                help="Local Atlas registry JSON path",
+            )
+            p_atlas_local_registry_status.add_argument(
+                "--json-out",
+                default="out/atlas_local_registry_1576_fix9/registry_status_receipt.json",
+                help="Local registry status receipt path; must be under out/",
+            )
+            p_atlas_local_registry_status.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic receipts",
+            )
+            p_atlas_local_registry_status.add_argument(
+                "--check-availability",
+                action="store_true",
+                help="Verify local content file existence and SHA-384 in the status receipt only",
+            )
+
             p_atlas_sidecar_profile = atlas_subparsers.add_parser(
                 "sidecar-profile",
                 help="Validate Atlas sidecar profile descriptors",

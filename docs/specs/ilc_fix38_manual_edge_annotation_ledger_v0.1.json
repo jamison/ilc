@@ -62827,6 +62827,45 @@
         "GOVERNS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_window_1577_1584_gap_fill_candidate_phase_grouping_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_186_phase_1576_fix9_local_registry",
+      "chronology_note": "2026-07-20 Phase 1576-fix9 - Atlas local registry layer",
+      "manual_read_summary": "Implements deterministic local installed-slice registry state above the reconcile registry: exact nested reconcile records, local metadata, membership coverage, content availability, pending local overlay, read-only CLI status receipt, path guards, and local content size bounds. No LMDB write, network discovery, install, or role grant.",
+      "repo_path": "ilc_core/bundle/atlas_local_registry.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_local_registry_module_committed_phase_1576_fix9"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:atlas_local_registry_no_lmdb_no_network_no_role_phase_1576_fix9"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:ilc_phase_1576_local_registry_v0.1"
+        },
+        {
+          "edge_type": "EXTENDS",
+          "target": "runtime:atlas_slice_reconcile"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "EXTENDS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/bundle/atlas_local_registry.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc_core/cli/atlas_lmdb_cli.py;graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py;graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_local_registry_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=support_only:docs/phases/phase_1576_fix9_local_registry_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
