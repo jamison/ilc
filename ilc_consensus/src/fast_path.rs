@@ -182,6 +182,27 @@ mod tests {
         (sk, ValidatorKey(pk))
     }
 
+    fn generate_keypair_u32(seed: u32) -> (SecretKey, ValidatorKey) {
+        let mut ikm = [0u8; 32];
+        ikm[0..4].copy_from_slice(&seed.to_be_bytes());
+        let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
+        let pk = sk.sk_to_pk();
+        (sk, ValidatorKey(pk))
+    }
+
+    fn setup_n_validator_set(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+        let f = (n as usize).saturating_sub(1) / 3;
+        let mut entries = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=n {
+            let (sk, vk) = generate_keypair_u32(i);
+            let id = ValidatorID(i);
+            entries.push((id, sk));
+            validators.push((id, vk));
+        }
+        (ValidatorSet::new(validators, f).unwrap(), entries)
+    }
+
     fn setup_env() -> (Arc<lmdb_rkv::Environment>, tempfile::TempDir) {
         let dir = tempdir().unwrap();
         let env = Environment::new().set_max_dbs(1).open(dir.path()).unwrap();
@@ -375,6 +396,47 @@ mod tests {
                 (ValidatorID(1), sig1.clone()),
                 (ValidatorID(2), sig1.clone()),
             ],
+            epoch: EpochSeq(1),
+        };
+
+        assert_eq!(
+            fast_path.execute_certificate(cert).unwrap_err(),
+            ILCConsensusError::InvalidSignature
+        );
+    }
+
+    #[test]
+    fn test_certificate_signature_list_above_max_cap_rejected_before_duplicate_or_bls_loop() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(BalanceStore::new(env).unwrap());
+
+        let (sk_agent1, agent1) = generate_agent_keypair(11);
+        let (_, agent2) = generate_agent_keypair(22);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(1),
+                attributions: vec![(agent1, 1_000_000)],
+            })
+            .unwrap();
+
+        let validator_count = (MAX_CERT_SIGS + 1) as u32;
+        let (val_set, entries) = setup_n_validator_set(validator_count);
+        let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
+
+        let transfer = signed_test_transfer(&sk_agent1, agent1, agent2);
+        let msg = bincode::serialize(&transfer).unwrap();
+        let dst = crate::validator::validator_dst("testnet");
+        let oversized_sig = ValidatorSig(entries[0].1.sign(&msg, &dst, &[]));
+        let sigs: Vec<(ValidatorID, ValidatorSig)> = entries
+            .iter()
+            .map(|(id, _)| (*id, oversized_sig.clone()))
+            .collect();
+        assert_eq!(sigs.len(), MAX_CERT_SIGS + 1);
+
+        let cert = TransferCertificate {
+            transfer,
+            sigs,
             epoch: EpochSeq(1),
         };
 

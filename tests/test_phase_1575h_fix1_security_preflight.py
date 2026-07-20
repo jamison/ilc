@@ -107,9 +107,28 @@ def test_phase_1575h_fix1_consensus_engine_uses_decimal_exp_ln_not_math_float() 
     )
     assert isinstance(engine.calculate_maintenance_tax(node), Decimal)
     assert isinstance(engine.calculate_refutation_bounty(node), Decimal)
+    assert isinstance(engine.get_node_age(node), Decimal)
 
     with pytest.raises(ValueError, match="float_token"):
         engine_module._engine_coerce_decimal(1.0, "float_token")
+    with pytest.raises(ValueError, match="float_token_non_finite"):
+        engine_module._engine_coerce_decimal("NaN", "float_token")
+
+
+def test_phase_1575h_fix1a_consensus_engine_rejects_float_age_reference() -> None:
+    engine = ConsensusEngine(EpistemicGraph(), age_reference_clock=lambda: 1.0)
+    node = Node(
+        id="node-phase-1575h-fix1a",
+        type="claim",
+        content="decimal age reference check",
+        agent_id="agent:phase1575h:fix1a",
+        signature="sig",
+        timestamp=datetime.now(timezone.utc) - timedelta(seconds=60),
+        net_stake=Decimal("2"),
+    )
+
+    with pytest.raises(ValueError, match="consensus_age_reference_invalid"):
+        engine.get_node_age(node)
 
 
 def test_phase_1575h_fix1_finality_diversity_outputs_decimal_share() -> None:

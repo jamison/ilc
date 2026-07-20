@@ -384,12 +384,18 @@ mod tests {
         (Arc::new(env), dir)
     }
 
+    fn deterministic_ikm(seed: u32) -> [u8; 32] {
+        let mut ikm = [0u8; 32];
+        ikm[0..4].copy_from_slice(&seed.to_be_bytes());
+        ikm
+    }
+
     /// Returns a 2-validator set (f=0). IDs are ValidatorID(1) and ValidatorID(2).
     fn setup_validators() -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=2u32 {
-            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let sk = SecretKey::key_gen(&deterministic_ikm(i), &[]).unwrap();
             let pk = sk.sk_to_pk();
             let id = ValidatorID(i);
             entries.push((id, sk));
@@ -404,7 +410,7 @@ mod tests {
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=n {
-            let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
+            let sk = SecretKey::key_gen(&deterministic_ikm(i), &[]).unwrap();
             let pk = sk.sk_to_pk();
             let id = ValidatorID(i);
             entries.push((id, sk));
@@ -1044,6 +1050,38 @@ mod tests {
             record,
             sigs,
             signers,
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        assert_eq!(err, ILCConsensusError::InvalidSignature);
+    }
+
+    #[test]
+    fn test_signer_list_above_max_cap_rejected_before_duplicate_or_bls_resolution() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let validator_count = (MAX_SIGNERS_PER_CHECKPOINT + 1) as u32;
+        let (vset, entries) = setup_n_validators(validator_count);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+        };
+        let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..3]);
+        let oversized_signers: Vec<ValidatorID> = (1..=validator_count).map(ValidatorID).collect();
+        assert_eq!(oversized_signers.len(), MAX_SIGNERS_PER_CHECKPOINT + 1);
+        assert!(oversized_signers.len() <= vset.validators.len());
+        assert_eq!(
+            signers,
+            vec![ValidatorID(1), ValidatorID(2), ValidatorID(3)]
+        );
+        let checkpoint = EpochCheckpoint {
+            record,
+            sigs,
+            signers: oversized_signers,
         };
 
         let err = protocol
