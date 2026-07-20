@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation, localcontext
 from typing import Callable, Dict, Optional, List, Protocol
 import logging
@@ -14,6 +15,9 @@ from .governance import Governance, BacklogMetrics
 logger = logging.getLogger(__name__)
 _DECIMAL_PRECISION = 50
 _RATIO_QUANTUM = Decimal("0.000000000001")
+_SECONDS_PER_DAY = Decimal("86400")
+_MICROSECONDS_PER_SECOND = Decimal("1000000")
+_UNIX_EPOCH = datetime(1970, 1, 1, tzinfo=timezone.utc)
 
 
 class EdgeEventLike(Protocol):
@@ -52,12 +56,12 @@ def _engine_update_epoch_metrics(
     )
 
 def _engine_compute_tax_rate(
-    age: float,
+    age: Decimal,
     net_stake: Decimal
 ) -> Decimal:
     """Helper to compute maintenance tax rate based on age and reuse."""
     # Reuse count simulated by net_stake for now.
-    age_decimal = _engine_coerce_decimal(str(age), "consensus_age_invalid")
+    age_decimal = _engine_coerce_decimal(age, "consensus_age_invalid")
     reuse_factor = max(Decimal("1"), _engine_coerce_decimal(net_stake, "consensus_net_stake_invalid"))
 
     base_tax = Decimal("0.01")  # 1% per epoch (or per time unit)
@@ -70,13 +74,13 @@ def _engine_compute_tax_rate(
 
 def _engine_compute_bounty_amount(
     base_stake: Decimal,
-    age: float,
+    age: Decimal,
     node_id: str
 ) -> Decimal:
     """Helper to compute refutation bounty with paradigm shift bonus."""
     # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
     # (as per earlier design discussions).
-    age_decimal = _engine_coerce_decimal(str(age), "consensus_age_invalid")
+    age_decimal = _engine_coerce_decimal(age, "consensus_age_invalid")
     if age_decimal == Decimal("0"):
         paradigm_bonus = Decimal("0")
     else:
@@ -119,24 +123,41 @@ def _engine_apply_slash(
     # Post-MVP: bounty transfer moved to project deferred items file (Consensus section).
 
 
+def _engine_datetime_to_epoch_seconds(value: datetime) -> Decimal:
+    if value.tzinfo is None:
+        raise ValueError("node_timestamp_naive_not_allowed")
+    delta = value.astimezone(timezone.utc) - _UNIX_EPOCH
+    seconds = (
+        Decimal(delta.days) * _SECONDS_PER_DAY
+        + Decimal(delta.seconds)
+        + (Decimal(delta.microseconds) / _MICROSECONDS_PER_SECOND)
+    )
+    return seconds
+
+
 def _engine_resolve_age_reference_seconds(
     node: "Node",
     graph: "EpistemicGraph",
-    age_reference_clock: "Optional[Callable[[], float]]",
-) -> float:
+    age_reference_clock: "Optional[Callable[[], object]]",
+) -> Decimal:
     ts = node.timestamp
     if ts.tzinfo is None:
         raise ValueError("node_timestamp_naive_not_allowed")
+    node_seconds = _engine_datetime_to_epoch_seconds(ts)
     if age_reference_clock is not None:
-        return max(ts.timestamp(), float(age_reference_clock()))
+        reference_seconds = _engine_coerce_decimal(
+            age_reference_clock(),
+            "consensus_age_reference_invalid",
+        )
+        return max(node_seconds, reference_seconds)
     graph_timestamps = [
-        candidate.timestamp.timestamp()
+        _engine_datetime_to_epoch_seconds(candidate.timestamp)
         for candidate in graph.nodes.values()
         if candidate.timestamp.tzinfo is not None
     ]
     if not graph_timestamps:
-        return ts.timestamp()
-    return max(ts.timestamp(), max(graph_timestamps))
+        return node_seconds
+    return max(node_seconds, max(graph_timestamps))
 
 
 class ConsensusEngine:
@@ -164,7 +185,7 @@ class ConsensusEngine:
         graph: EpistemicGraph,
         governance_config: Optional[Dict] = None,
         *,
-        age_reference_clock: Optional[Callable[[], float]] = None,
+        age_reference_clock: Optional[Callable[[], object]] = None,
     ):
         self.graph = graph
 
@@ -309,7 +330,7 @@ class ConsensusEngine:
     # ------------------------------------------------------------------
     # Node age and maintenance tax
     # ------------------------------------------------------------------
-    def get_node_age(self, node: Node) -> float:
+    def get_node_age(self, node: Node) -> Decimal:
         """
         Return deterministic age in seconds for a node.
 
@@ -324,7 +345,8 @@ class ConsensusEngine:
         reference_seconds = _engine_resolve_age_reference_seconds(
             node, self.graph, self._age_reference_clock
         )
-        return max(1.0, reference_seconds - ts.timestamp())
+        node_seconds = _engine_datetime_to_epoch_seconds(ts)
+        return max(Decimal("1"), reference_seconds - node_seconds)
 
     def calculate_maintenance_tax(self, node: Node) -> Decimal:
         """

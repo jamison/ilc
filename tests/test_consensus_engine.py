@@ -60,7 +60,7 @@ def test_calculate_maintenance_tax_decreases_with_age():
 
 def test_get_node_age_uses_injected_reference_clock_deterministically():
     graph = EpistemicGraph()
-    reference_seconds = datetime(2026, 1, 1, tzinfo=timezone.utc).timestamp()
+    reference_seconds = Decimal("1767225600")
     engine = ConsensusEngine(graph, age_reference_clock=lambda: reference_seconds)
     node = Node(
         id="node-1",
@@ -68,11 +68,20 @@ def test_get_node_age_uses_injected_reference_clock_deterministically():
         content="test",
         agent_id="agent:test",
         signature="sig",
-        timestamp=datetime.fromtimestamp(reference_seconds - 25, tz=timezone.utc),
+        timestamp=datetime(2025, 12, 31, 23, 59, 35, tzinfo=timezone.utc),
         net_stake=Decimal("1.0"),
     )
 
-    assert engine.get_node_age(node) == 25.0
+    assert engine.get_node_age(node) == Decimal("25")
+
+
+def test_get_node_age_rejects_float_reference_clock():
+    graph = EpistemicGraph()
+    engine = ConsensusEngine(graph, age_reference_clock=lambda: 1.0)
+    node = _make_node("node_float_clock", age_seconds=100, net_stake=Decimal("1.0"))
+
+    with pytest.raises(ValueError, match="consensus_age_reference_invalid"):
+        engine.get_node_age(node)
 
 
 def test_get_node_age_rejects_naive_timestamp():
