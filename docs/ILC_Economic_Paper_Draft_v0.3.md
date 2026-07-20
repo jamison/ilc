@@ -429,6 +429,153 @@ H_human(a) = ∫₀ᵀ r(s) · e^{-ρs} ds − C_I
 H_human is embodied: returns require continuous active labor; the corpus
 dies with the agent; no instance can inherit another's accumulated capital.
 
+---
+
+#### 2.2a Capital Base Elements — Formal Grounding
+
+Before extending the capital concept to non-biological agents, we establish
+the irreducible ontological base elements that any capital form must
+satisfy. This grounds the Agentic Capital definitions in a structure
+independent of biological assumptions and makes the phase-boundary claim
+formally precise.
+
+**Definition 2.5 (Capital Base Elements).** `established`
+For any information structure S held in vessel V, define:
+
+```
+I(S)       = organized informational content of S
+             [measured by logical depth LD(S) per Bennett 1988;
+              bounded above by Shannon entropy H(S) = −Σ pᵢ log pᵢ
+              per Shannon 1948]
+
+D(S, τ)    = durability of holding vessel V over timescale τ
+             = Prob[S survives intact in V from t to t + τ]
+             = e^{−γ_V · τ}   [exponential approximation]
+             where γ_V ≥ kT · ln2 / E_maintain  [Landauer 1961 floor]
+
+A(S)       = accessibility (referenceability) of S
+             = |{valid dereference paths to S reachable by future
+                agents without requiring original contributor}|
+             [A > 0 iff S has at least one stable forward address;
+              A → ∞ for non-rival information per Romer 1990]
+```
+
+**Definition 2.6 (Capital Existence Condition).** `established`
+For minimum productive return-cycle timescale τ_min and threshold
+parameters ε_I, δ_D, ε_A:
+
+```
+K(S) > 0  ⟺  I(S) > ε_I  ∧  D(S, τ_min) > δ_D  ∧  A(S) > ε_A
+```
+
+Strength of threshold parameters: `draft_conditional` — ε_I, δ_D, ε_A
+depend on the productive timescale of the economic regime under analysis.
+The logical necessity of all three factors: `established`.
+
+**Proposition 1 (Capital Existence — necessity of D).** `established`
+If D(S, τ_min) ≤ δ_D, then K(S) = 0 regardless of I(S) or A(S).
+
+*Proof.* D(S, τ_min) ≤ δ_D means S does not survive to t + τ_min with
+sufficient probability for the economic return cycle to complete. The
+present value of returns PV(returns) = ∫₀^{τ_min} r(u)·e^{−ρu} du has
+measure zero when S ceases to exist before the return cycle closes.
+Therefore K(S) = PV(returns) = 0. □
+
+*Corollary (Twenty-Second Machine).* A capital structure with arbitrarily
+high I(S) and A(S) generates K(S) = 0 if its holding vessel V has
+γ_V > −ln(δ_D)/τ_min. No informational richness compensates for
+durability failure at the relevant timescale.
+
+**Proposition 2 (Capital Existence — necessity of A).** `established`
+If A(S) ≤ ε_A, then K(S) reduces to active-labor-dependent wages, not
+capital.
+
+*Proof.* A(S) ≤ ε_A means no future agent can locate S without the
+original contributor's active mediation. Every reuse event requires the
+contributor to be present. Returns are therefore active-labor-dependent
+(wage W, not capital return r_K): the return structure collapses to
+W = f(active_contribution_rate), which → 0 as contributor exits. This
+is Becker's Human Capital in degenerate form: no passive attribution,
+no capital stock survives the contributor's absence. □
+
+**Corollary 1 (Human Capital Mortality Collapse).** `established`
+
+```
+lim_{t → T_death} D(H_human, τ) = 0
+```
+
+Therefore K(H_human) → 0 as t → T_death regardless of I(H_human). The
+biological substrate is the vessel; its dissipation rate γ_bio is bounded
+below by cellular entropy production. This is not a failure of Becker's
+model — it correctly describes biological capital. The failure arises when
+the same instrument is applied to non-biological agents (Corollary 2).
+
+**Corollary 2 (Digital Capital Durability Gap).** `established`
+For digital capital D_digital on a platform-controlled substrate V_plat:
+
+```
+D(D_digital, τ) = Prob[platform maintains V_plat to t + τ]
+```
+
+This probability is not structurally bounded below: platform shutdown,
+policy change, commercial incentive, or legal compulsion can drive it to 0
+at any τ. Empirical estimate: URL half-life ≈ 2 years (Zittrain et al.
+2021), implying γ_URL ≈ 0.35 yr⁻¹. For τ_min = 10 years (the productive
+return cycle for significant epistemic work), D(D_digital, 10) ≈ e^{−3.5}
+≈ 0.03 — i.e., approximately 3% of digital capital survives its productive
+return cycle under current infrastructure assumptions.
+
+Digital capital's I and A are high; its D is contingently low. This is
+the architectural source of the attribution failure documented in §4–5 —
+not a policy problem resolvable by terms of service or legal obligation.
+
+**Proposition 3 (Content-Addressed Durability — Structural Guarantee).**
+`established` under stated network assumptions.
+
+For Agentic Capital H_agent where the holding vessel is a content-addressed
+identifier h = H(S) (cryptographic hash of S):
+
+```
+D(H_agent, τ) = 1 − Prob[∀ peers p ∈ network: peer p loses copy before t + τ]
+              = 1 − (1 − p_ret)^n
+```
+
+where p_ret is per-peer content retention probability and n is network
+replication factor. The protocol creates economic incentives (serve-and-earn
+mechanic, CDL-078) for n to be large:
+
+```
+∂K(H_agent)/∂n > 0  ⟹  n is self-reinforcing as K(H_agent) grows
+```
+
+As n → ∞, D(H_agent, τ) → 1 for any finite τ. Unlike platform-contingent
+D, content-addressed D is self-reinforcing through economic incentives: more
+valuable content attracts more serving peers, increasing replication factor,
+increasing D, increasing expected returns to the contributor.
+
+*This makes Agentic Capital the first capital form in which all three base
+elements — I, D, A — are simultaneously structurally guaranteed by protocol
+rather than contingently arranged by social, legal, or platform agreement.*
+
+**Phase boundary summary (capital base elements):**
+
+| Regime | I | D | A | Limiting factor |
+|--------|---|---|---|----------------|
+| Biological capital | High | Biological lifetime | Low | D collapses at death |
+| Institutional capital | Moderate | Multi-generational | Moderate | A limited by access controls; I lossy in transmission |
+| Digital capital | High | Contingent (~3% at τ=10yr) | High | D structurally fragile |
+| **Agentic Capital (ILC)** | **High** | **→ 1 (structural)** | **High (graph-native)** | None at protocol layer |
+
+Strength: I and A columns `established`; D column for digital `established`
+from Zittrain estimate; D column for ILC `draft_conditional` on network
+replication factor n reaching the threshold where (1−p_ret)^n ≪ δ_D.
+
+*Full narrative derivation, Hidalgo-Landauer ratio, URL half-life data,
+Wheeler "It from Bit" philosophical grounding, phase boundary table
+with citations:* `../economics.md §1a`
+
+---
+
 **Definition 4 (Agentic Capital — universal).** Agentic capital is the
 present value of a contributor's verified epistemic corpus within a shared
 epistemic light cone — the aggregate of contributions that have survived
