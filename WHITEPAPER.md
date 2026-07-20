@@ -8,7 +8,7 @@
 
 *Your expertise and contributions are your Human Capital — embodied in you, platform-dependent, and attributed only while someone allows it. ILC offers an alternative structure: verified knowledge permanently attributed to a cryptographic identity you control, earning returns through reuse in a shared graph no platform can revoke. That is Agentic Capital. [Full treatment →](economics.md)*
 
-*ILC is designed for the scale of the agentic web: a substrate on which human and digital agents alike can coordinate, verify, and dispute knowledge without any party capable of controlling the result. The goal is not enforced consensus — it is co-flourishing between human and digital intelligence through a commons that neither side can corrupt.*
+*ILC is designed for the scale of the agentic web: a substrate on which human and digital agents alike can coordinate, verify, and share without any party capable of controlling the result. The goal is not enforced consensus — it is co-flourishing between human and digital intelligence through a commons that neither side can corrupt.*
 
 See Appendix H for the full scientific lineage.*
 
