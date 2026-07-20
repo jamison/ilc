@@ -439,7 +439,7 @@ satisfy. This grounds the Agentic Capital definitions in a structure
 independent of biological assumptions and makes the phase-boundary claim
 formally precise.
 
-**Definition 2.5 (Capital Base Elements).** `established`
+**Definition 2.5 (Capital Base Elements).** `model_assumption`
 For any information structure S held in vessel V, define:
 
 ```
@@ -448,10 +448,12 @@ I(S)       = organized informational content of S
               bounded above by Shannon entropy H(S) = −Σ pᵢ log pᵢ
               per Shannon 1948]
 
-D(S, τ)    = durability of holding vessel V over timescale τ
+D(S, τ)    = expected durability of holding vessel V over timescale τ
              = Prob[S survives intact in V from t to t + τ]
-             = e^{−γ_V · τ}   [exponential approximation]
-             where γ_V ≥ kT · ln2 / E_maintain  [Landauer 1961 floor]
+             [governed by media decay, error correction, redundancy,
+              maintenance energy, retrieval availability, and
+              incentive structure for replication — not reducible
+              to a single thermodynamic constant]
 
 A(S)       = accessibility (referenceability) of S
              = |{valid dereference paths to S reachable by future
@@ -460,102 +462,112 @@ A(S)       = accessibility (referenceability) of S
               A → ∞ for non-rival information per Romer 1990]
 ```
 
-**Definition 2.6 (Capital Existence Condition).** `established`
-For minimum productive return-cycle timescale τ_min and threshold
-parameters ε_I, δ_D, ε_A:
+Note on Landauer (1961): kT·ln2 is the thermodynamic lower bound on
+energy dissipated per bit *erased* in an irreversible operation. It
+grounds the physical reality that information processing is not free,
+but it does not directly give a maintenance cost or a durability decay
+rate. Storage durability depends on error correction, media decay,
+redundancy, and maintenance energy in ways that vary by substrate and
+are not derivable from the Landauer bound alone.
+
+**Definition 2.6 (Capital Value Model).** `model_assumption`
+Capital value is the expected present value of returns, attenuated
+continuously by each base element:
 
 ```
-K(S) > 0  ⟺  I(S) > ε_I  ∧  D(S, τ_min) > δ_D  ∧  A(S) > ε_A
+K(S) ≈ E[ ∫₀^∞ r(u) · D(S,u) · A(S,u) · e^{−ρu} du | I(S) ]
 ```
 
-Strength of threshold parameters: `draft_conditional` — ε_I, δ_D, ε_A
-depend on the productive timescale of the economic regime under analysis.
-The logical necessity of all three factors: `established`.
+Capital value is strongly attenuated as any factor approaches zero.
+The binary threshold form K(S) > 0 ⟺ I > ε_I ∧ D > δ_D ∧ A > ε_A
+is a useful limiting-case approximation for comparative analysis but
+is not a universal theorem: a short-lived capital structure can still
+generate returns if the return cycle completes before decay.
 
-**Proposition 1 (Capital Existence — necessity of D).** `established`
-If D(S, τ_min) ≤ δ_D, then K(S) = 0 regardless of I(S) or A(S).
+**Observation 2.1 (D-attenuation).** `established`
+As D(S, τ) → 0 for τ < τ_min (the minimum productive return-cycle
+timescale), K(S) → 0 regardless of I(S) or A(S). Capital value is
+strongly attenuated by durability failure at the relevant timescale.
+This is continuous attenuation, not a sharp threshold.
 
-*Proof.* D(S, τ_min) ≤ δ_D means S does not survive to t + τ_min with
-sufficient probability for the economic return cycle to complete. The
-present value of returns PV(returns) = ∫₀^{τ_min} r(u)·e^{−ρu} du has
-measure zero when S ceases to exist before the return cycle closes.
-Therefore K(S) = PV(returns) = 0. □
+*Illustration (Twenty-Second Machine).* A capital structure with high
+I(S) and A(S) generates negligible K(S) if its holding vessel fails
+before the return cycle closes. No informational richness compensates
+for durability failure at the relevant timescale.
 
-*Corollary (Twenty-Second Machine).* A capital structure with arbitrarily
-high I(S) and A(S) generates K(S) = 0 if its holding vessel V has
-γ_V > −ln(δ_D)/τ_min. No informational richness compensates for
-durability failure at the relevant timescale.
+**Observation 2.2 (A-attenuation for graph-mediated returns).**
+`established` for the ILC-specific return structure.
+As A(S) → 0, graph-mediated passive attribution returns → 0. A
+contributor must be actively present to mediate every reuse event,
+making returns active-labor-dependent rather than capital returns.
 
-**Proposition 2 (Capital Existence — necessity of A).** `established`
-If A(S) ≤ ε_A, then K(S) reduces to active-labor-dependent wages, not
-capital.
+*Note:* Low A does not preclude capital in all economic senses.
+Private or trade-secret capital can have low A and still generate
+exclusive-use returns. The claim is narrower: low A prevents
+*graph-mediated, passive, attributable reuse returns* — the specific
+return structure Agentic Capital depends on.
 
-*Proof.* A(S) ≤ ε_A means no future agent can locate S without the
-original contributor's active mediation. Every reuse event requires the
-contributor to be present. Returns are therefore active-labor-dependent
-(wage W, not capital return r_K): the return structure collapses to
-W = f(active_contribution_rate), which → 0 as contributor exits. This
-is Becker's Human Capital in degenerate form: no passive attribution,
-no capital stock survives the contributor's absence. □
-
-**Corollary 1 (Human Capital Mortality Collapse).** `established`
+**Corollary 2.1 (Human Capital Mortality Collapse).** `established`
 
 ```
-lim_{t → T_death} D(H_human, τ) = 0
+lim_{t → T_death} D(H_human, τ) → 0
 ```
 
-Therefore K(H_human) → 0 as t → T_death regardless of I(H_human). The
-biological substrate is the vessel; its dissipation rate γ_bio is bounded
-below by cellular entropy production. This is not a failure of Becker's
-model — it correctly describes biological capital. The failure arises when
-the same instrument is applied to non-biological agents (Corollary 2).
+K(H_human) is strongly attenuated as t → T_death. The biological
+substrate is the vessel; cellular entropy production bounds its
+durability. This is not a failure of Becker's model — it correctly
+describes biological capital. The limitation arises when applying the
+same instrument to non-biological agents.
 
-**Corollary 2 (Digital Capital Durability Gap).** `established`
-For digital capital D_digital on a platform-controlled substrate V_plat:
+**Corollary 2.2 (Digital Capital Durability Gap).** `established`
+For digital capital on a platform-controlled substrate V_plat:
 
 ```
 D(D_digital, τ) = Prob[platform maintains V_plat to t + τ]
 ```
 
 This probability is not structurally bounded below: platform shutdown,
-policy change, commercial incentive, or legal compulsion can drive it to 0
-at any τ. Empirical estimate: URL half-life ≈ 2 years (Zittrain et al.
-2021), implying γ_URL ≈ 0.35 yr⁻¹. For τ_min = 10 years (the productive
-return cycle for significant epistemic work), D(D_digital, 10) ≈ e^{−3.5}
-≈ 0.03 — i.e., approximately 3% of digital capital survives its productive
-return cycle under current infrastructure assumptions.
+policy change, commercial incentive, or legal compulsion can drive it
+to 0 at any τ. Web persistence varies materially by corpus; link rot
+and content drift are empirically significant across multiple studied
+surfaces. Digital capital's I and A are high; its D is contingently
+fragile — an architectural gap, not a policy one.
 
-Digital capital's I and A are high; its D is contingently low. This is
-the architectural source of the attribution failure documented in §4–5 —
-not a policy problem resolvable by terms of service or legal obligation.
+**Proposition 3 (Content-Addressed Durability Improvement).**
+`draft_conditional` on replication and serving incentives.
 
-**Proposition 3 (Content-Addressed Durability — Structural Guarantee).**
-`established` under stated network assumptions.
-
-For Agentic Capital H_agent where the holding vessel is a content-addressed
-identifier h = H(S) (cryptographic hash of S):
+For Agentic Capital H_agent where the holding vessel is a
+content-addressed identifier h = Hash(S):
 
 ```
-D(H_agent, τ) = 1 − Prob[∀ peers p ∈ network: peer p loses copy before t + τ]
-              = 1 − (1 − p_ret)^n
+D(H_agent, τ) = 1 − (1 − p_ret)^n
 ```
 
-where p_ret is per-peer content retention probability and n is network
-replication factor. The protocol creates economic incentives (serve-and-earn
-mechanic, CDL-078) for n to be large:
+where p_ret is per-peer retention probability and n is replication
+factor. Content addressing structurally stabilizes identity and
+integrity: the address is unforgeable and computed from content,
+not assigned by any authority. Provenance remains verifiable
+independent of the original contributor.
+
+ILC does not make durability automatic. It makes durability
+*protocol-addressable*: the serve-and-earn mechanic (CDL-078)
+creates economic incentives for n to grow with capital value:
 
 ```
 ∂K(H_agent)/∂n > 0  ⟹  n is self-reinforcing as K(H_agent) grows
 ```
 
-As n → ∞, D(H_agent, τ) → 1 for any finite τ. Unlike platform-contingent
-D, content-addressed D is self-reinforcing through economic incentives: more
-valuable content attracts more serving peers, increasing replication factor,
-increasing D, increasing expected returns to the contributor.
+Under sufficient independent replication, D(H_agent, τ) → 1 for
+finite τ. The critical qualifiers are: (1) sufficient n, (2)
+independent rather than correlated peer failure, (3) retrieval
+availability across network topology. These are empirical conditions,
+not protocol guarantees.
 
-*This makes Agentic Capital the first capital form in which all three base
-elements — I, D, A — are simultaneously structurally guaranteed by protocol
-rather than contingently arranged by social, legal, or platform agreement.*
+*ILC's structural contribution: I and A are simultaneously stabilized
+by protocol construction. D is protocol-addressable and
+incentive-conditioned rather than platform-contingent. This is a
+genuine improvement at every factor; it is not a claim that the
+problem is fully solved.*
 
 **Phase boundary summary (capital base elements):**
 
