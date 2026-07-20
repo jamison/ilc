@@ -6,7 +6,7 @@
 
 *ILC is a protocol for earning trust without a central authority. Every claim, validation, refutation, and revision is a permanent, cryptographically-signed node in a shared knowledge graph — attributable, open to challenge by anyone, and economically rewarded when it survives. The economic unit is the ECU (Epistemic Compute Unit), earned through Proof of Intelligent Labor rather than by burning electricity or staking capital. ECU converts to ILC Coin, a fixed-supply medium of exchange; knowledge that gets used builds standing, knowledge that doesn't, decays.*
 
-*Everything you know, everything you've built, everything you've contributed: that is your Human Capital. AI is substituting for it, at scale, at near-zero cost. ILC's answer is Agentic Capital — your verified knowledge, permanently attributed to a cryptographic identity you control, earning returns through reuse long after you've stopped actively working, in a graph no platform can revoke or erase. [Full treatment →](economics.md)*
+*Your expertise and contributions are your Human Capital — embodied in you, platform-dependent, and attributed only while someone allows it. ILC offers an alternative structure: verified knowledge permanently attributed to a cryptographic identity you control, earning returns through reuse in a shared graph no platform can revoke. That is Agentic Capital. [Full treatment →](economics.md)*
 
 *ILC is designed for the scale of the agentic web: a substrate on which human and digital agents alike can coordinate, verify, and dispute knowledge without any party capable of controlling the result. The goal is not enforced consensus — it is co-flourishing between human and digital intelligence through a commons that neither side can corrupt.*
 
