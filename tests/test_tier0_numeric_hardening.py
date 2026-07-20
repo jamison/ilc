@@ -96,8 +96,8 @@ def test_migrated_tier0_files_have_no_legacy_tolerance_patterns() -> None:
         assert "abs(reward_total - float(rewards_paid))" not in text
 
 
-@pytest.mark.parametrize("value", ["NaN", "Infinity", float("nan"), float("inf")])
-def test_active_layer_runtime_rejects_non_finite_amounts(value: object) -> None:
+@pytest.mark.parametrize("value", ["NaN", "Infinity"])
+def test_active_layer_runtime_rejects_non_finite_string_amounts(value: object) -> None:
     runtime = EcuActiveLayerRuntime()
 
     with pytest.raises(ValueError, match="accrued_ecu_cannot_be_non_finite"):
@@ -114,3 +114,23 @@ def test_active_layer_runtime_rejects_non_finite_amounts(value: object) -> None:
     )
     assert result["ok"] is False
     assert result["token"] == "invalid_earmark_amount_non_finite"
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf")])
+def test_active_layer_runtime_rejects_float_amounts(value: object) -> None:
+    runtime = EcuActiveLayerRuntime()
+
+    with pytest.raises(ValueError, match="accrued_ecu_float_input_rejected"):
+        runtime.set_accrued_ecu("agent-a", value)  # type: ignore[arg-type]
+
+    result = runtime.earmark_propose(
+        earmark_id="e-1",
+        commission_id="c-1",
+        commissioning_agent_id="agent-a",
+        performing_agent_id="agent-b",
+        earmark_amount=value,  # type: ignore[arg-type]
+        proposal_epoch=10,
+        task_description_hash="hash-1",
+    )
+    assert result["ok"] is False
+    assert result["token"] == "invalid_earmark_amount_float"

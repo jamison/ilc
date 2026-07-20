@@ -22,8 +22,8 @@ def test_load_governance_config():
     assert "hardware" in cfg
     
     # Check specific values from MVP config
-    assert cfg["ecu"]["base_costs"]["claim.submit"] == 0.05
-    assert cfg["hardware"]["genesis_median_potential"] == 0.1
+    assert cfg["ecu"]["base_costs"]["claim.submit"] == "0.05"
+    assert cfg["hardware"]["genesis_median_potential"] == "0.1"
 
 def test_governance_init_with_config():
     """
@@ -56,11 +56,11 @@ def test_consensus_engine_custom_config():
     custom_cfg = {
         "ecu": {
             "base_costs": {
-                "claim.submit": 0.99
+                "claim.submit": "0.99"
             }
         },
         "hardware": {
-            "genesis_median_potential": 0.5
+            "genesis_median_potential": "0.5"
         }
     }
     

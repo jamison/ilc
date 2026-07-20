@@ -217,12 +217,13 @@ def evaluate_genesis_accrual_governor(
 ) -> GenesisAccrualGovernorReport:
     resolved_policy = validate_genesis_accrual_governor_policy(policy)
     resolved_signal = validate_genesis_accrual_signal(signal)
-    ratio_decimal = _compute_genesis_share_ratio_decimal(resolved_signal).quantize(_RATIO_QUANTUM)
-    taper_multiplier = compute_taper_multiplier(ratio_decimal, policy=resolved_policy)
-    cap_blocked = bool(ratio_decimal >= resolved_policy["theta_hard"])
+    raw_ratio_decimal = _compute_genesis_share_ratio_decimal(resolved_signal)
+    report_ratio_decimal = raw_ratio_decimal.quantize(_RATIO_QUANTUM)
+    taper_multiplier = compute_taper_multiplier(raw_ratio_decimal, policy=resolved_policy)
+    cap_blocked = bool(raw_ratio_decimal >= resolved_policy["theta_hard"])
 
     return {
-        "genesis_share_ratio": ratio_decimal,
+        "genesis_share_ratio": report_ratio_decimal,
         "taper_multiplier": taper_multiplier,
         "cap_blocked": cap_blocked,
     }

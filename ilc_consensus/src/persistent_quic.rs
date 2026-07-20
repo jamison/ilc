@@ -398,11 +398,9 @@ impl PersistentQuicSessionManager {
                         last_successful_send: Instant::now(),
                         stale: false,
                     };
-                    self.sessions
-                        .lock()
-                        .await
-                        .insert(validator_id.0, session.clone());
-                    return Ok(session);
+                    return self
+                        .insert_session_after_capacity_recheck(validator_id, session)
+                        .await;
                 }
                 Err(e) => {
                     last_error = Some(e);
@@ -421,11 +419,9 @@ impl PersistentQuicSessionManager {
                         last_successful_send: Instant::now(),
                         stale: false,
                     };
-                    self.sessions
-                        .lock()
-                        .await
-                        .insert(validator_id.0, session.clone());
-                    return Ok(session);
+                    return self
+                        .insert_session_after_capacity_recheck(validator_id, session)
+                        .await;
                 }
                 Err(e) => {
                     last_error = Some(e);
@@ -439,6 +435,28 @@ impl PersistentQuicSessionManager {
                 validator_id.0
             ))
         }))
+    }
+
+    async fn insert_session_after_capacity_recheck(
+        &self,
+        validator_id: ValidatorID,
+        session: PersistentQuicSession,
+    ) -> Result<PersistentQuicSession, ILCConsensusError> {
+        let mut sessions = self.sessions.lock().await;
+        sessions.retain(|_, existing| {
+            !existing.stale
+                && existing.connection.close_reason().is_none()
+                && existing.last_successful_send.elapsed()
+                    < Duration::from_millis(self.config.stale_timeout_ms)
+        });
+        if !sessions.contains_key(&validator_id.0) && sessions.len() >= self.config.max_sessions {
+            return Err(ILCConsensusError::Other(format!(
+                "persistent_quic_pool_at_capacity_phase_1575h_fix2_second_lock: max_sessions={}",
+                self.config.max_sessions
+            )));
+        }
+        sessions.insert(validator_id.0, session.clone());
+        Ok(session)
     }
 
     pub async fn transmit_persistent(

@@ -120,7 +120,7 @@ class EpochAttributionBatch:
     only; callers remain responsible for applying returned transfers at most once.
     """
     epoch: int
-    events: List[Any] = dc_field(default_factory=list)
+    events: list[Any] | tuple[Any, ...] = dc_field(default_factory=list)
     sealed: bool = dc_field(default=False, init=False)
 
     def add_event(self, event: Any) -> None:
@@ -131,6 +131,7 @@ class EpochAttributionBatch:
 
     def seal(self) -> None:
         """Seal the batch at epoch close. No further events may be added."""
+        self.events = tuple(self.events)
         self.sealed = True
 
     def settle(
@@ -157,6 +158,8 @@ class EpochAttributionBatch:
             mutate balances; callers are responsible for applying the returned
             payouts at most once.
         """
+        if not self.sealed:
+            raise ValueError("epoch_attribution_batch_must_be_sealed_before_settlement")
         from ilc_core.economics.epoch_attribution_settle_runtime import settle_attribution_batch
         return settle_attribution_batch(self, stake_map, emitted_tokens, epoch_node_mint_count)
 

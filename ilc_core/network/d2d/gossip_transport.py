@@ -24,6 +24,7 @@ CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
 GOSSIP_URL_PREFIX = "/ilc/gossip/"
 HOP_COUNT_SINGLE = 1
 MAX_GOSSIP_TYPE_BYTES = 128
+MAX_GOSSIP_BODY_BYTES = 10 * 1024 * 1024
 REQUIRED_HEADERS = frozenset({
     "ILC-Gossip-Type",
     "ILC-Channel",
@@ -222,3 +223,14 @@ def validate_gossip_headers(headers: dict[str, str]) -> bool:
     _validated_epoch_header(headers["ILC-Epoch"])
 
     return True
+
+
+def validate_gossip_body_size(body: bytes | bytearray | memoryview) -> int:
+    """Validate an already-buffered gossip body against the transport cap."""
+
+    if not isinstance(body, (bytes, bytearray, memoryview)):
+        raise ValueError("gossip_body_must_be_bytes")
+    size = len(body)
+    if size > MAX_GOSSIP_BODY_BYTES:
+        raise ValueError("gossip_body_too_large")
+    return size

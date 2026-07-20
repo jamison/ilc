@@ -41,7 +41,7 @@ use tokio::sync::Mutex;
 
 use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
-use crate::fast_path::FastPathProtocol;
+use crate::fast_path::{FastPathProtocol, MAX_CERT_SIGS};
 use crate::network::{GossipEnvelope, GossipMessage, PeerNetwork};
 use crate::persistent_quic::PersistentQuicSessionManager;
 use crate::types::{ECUTransfer, ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID};
@@ -81,6 +81,10 @@ fn fmt_object_ref(object_ref: &ObjectRef) -> String {
 }
 
 const MAX_TESTNET_RELAY_HOPS: usize = 4;
+const OUTBOUND_POOL_EVICT_INTERVAL_SECS: u64 = 60;
+const MAX_CERTS_PER_RESPONSE: usize = 64;
+const MAX_MISSING_VERSIONS: usize = 1024;
+const MAX_SIGS_PER_INFLIGHT: usize = MAX_CERT_SIGS;
 
 fn verify_transfer_sender_sig(transfer: &ECUTransfer) -> Result<(), ILCConsensusError> {
     let sender_msg = bincode::serialize(&(
@@ -257,26 +261,19 @@ impl NodeRunner {
                     .unwrap_or(5);
                 loop {
                     tokio::time::sleep(tokio::time::Duration::from_secs(interval_secs)).await;
-                    // Compute latest_contiguous_epoch: the highest N where all of
-                    // 1..=N are committed. Send as a cursor (O(1) wire size) rather
-                    // than the full known-epoch list (SEC-008 fix).
-                    let epochs = match node.epoch_store.list_committed_epochs() {
+                    // Read latest_contiguous_epoch from the singleton sentinel.
+                    // commit_epoch_record/process_epoch_checkpoint enforce contiguous
+                    // epoch progression, so the sentinel is the O(1) sync cursor.
+                    let cursor = match latest_epoch_sync_cursor(&node.epoch_store) {
                         Ok(v) => v,
                         Err(e) => {
                             eprintln!(
-                                "[m015_epoch_sync] validator_id={} list_committed_epochs error: {}",
+                                "[m015_epoch_sync] validator_id={} get_current_epoch error: {}",
                                 node.validator_id.0, e
                             );
                             continue;
                         }
                     };
-                    let cursor = epochs
-                        .iter()
-                        .enumerate()
-                        .take_while(|(i, &e)| e == (*i + 1) as u64)
-                        .map(|(_, &e)| e)
-                        .last()
-                        .unwrap_or(0);
                     let msg = GossipMessage::MissingEpochSync {
                         latest_contiguous_epoch: cursor,
                     };
@@ -291,6 +288,28 @@ impl NodeRunner {
                                 node.validator_id.0, peer_id.0, e
                             );
                         }
+                    }
+                }
+            });
+        }
+
+        // 1575h-Fix2: periodically evict dead outbound QUIC connections.
+        // The pool is a connection cache only; live protocol authority remains
+        // in signed messages and LMDB stores.
+        {
+            let node = Arc::clone(&self);
+            tokio::spawn(async move {
+                loop {
+                    tokio::time::sleep(tokio::time::Duration::from_secs(
+                        OUTBOUND_POOL_EVICT_INTERVAL_SECS,
+                    ))
+                    .await;
+                    let evicted = node.evict_dead_outbound_connections().await;
+                    if evicted > 0 {
+                        eprintln!(
+                            "[m010_node] validator_id={} outbound_pool sweep: evicted {} dead connections",
+                            node.validator_id.0, evicted
+                        );
                     }
                 }
             });
@@ -665,6 +684,12 @@ impl NodeRunner {
                 if !entry.certified {
                     // Deduplicate: only accept one sig per validator.
                     if !entry.sigs.iter().any(|(id, _)| *id == from) {
+                        if entry.sigs.len() >= MAX_SIGS_PER_INFLIGHT {
+                            return Err(ILCConsensusError::Other(format!(
+                                "in_flight_signature_cap_exceeded_phase_1575h_fix2: max_sigs={}",
+                                MAX_SIGS_PER_INFLIGHT
+                            )));
+                        }
                         entry.sigs.push((from, sig));
                         eprintln!(
                             "[m010_node] validator_id={} ack from peer={} for obj_ref={} sigs={}/{}",
@@ -769,9 +794,15 @@ impl NodeRunner {
     async fn handle_missing_cert_sync(
         &self,
         _agent: crate::types::AgentID,
-        _missing_versions: Vec<u64>,
+        missing_versions: Vec<u64>,
         _from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
+        if missing_versions.len() > MAX_MISSING_VERSIONS {
+            return Err(ILCConsensusError::Other(format!(
+                "missing_cert_sync_missing_versions_cap_exceeded_phase_1575h_fix2: max_versions={}",
+                MAX_MISSING_VERSIONS
+            )));
+        }
         // M-010: scaffold only. Full sync response is M-011 workload.
         eprintln!(
             "[m010_node] validator_id={} MissingCertSync received — sync response deferred to M-011",
@@ -787,7 +818,6 @@ impl NodeRunner {
         // SEC-FIX-04: cap certificate count to prevent CPU DoS.
         // Each cert triggers BLS quorum verification + LMDB write; a malicious peer
         // filling a near-10 MB payload could cause unbounded per-message work.
-        const MAX_CERTS_PER_RESPONSE: usize = 64;
         if certs.len() > MAX_CERTS_PER_RESPONSE {
             eprintln!(
                 "[m010_node] validator_id={} MissingCertResponse: {} certs exceeds cap of {}; dropping",
@@ -1000,6 +1030,13 @@ impl NodeRunner {
         Ok(conn)
     }
 
+    async fn evict_dead_outbound_connections(&self) -> usize {
+        let mut pool = self.outbound_pool.lock().await;
+        let before = pool.len();
+        pool.retain(|_, conn| conn.close_reason().is_none());
+        before.saturating_sub(pool.len())
+    }
+
     async fn send_envelope_to_addr(
         &self,
         addr: SocketAddr,
@@ -1019,12 +1056,21 @@ impl NodeRunner {
     }
 }
 
+fn latest_epoch_sync_cursor(
+    epoch_store: &crate::epoch_settlement::EpochStore,
+) -> Result<u64, ILCConsensusError> {
+    epoch_store.get_current_epoch()
+}
+
 fn apply_missing_epoch_record(
     epoch_store: &crate::epoch_settlement::EpochStore,
     stored: crate::epoch_settlement::StoredCheckpoint,
     protocol: &crate::epoch_settlement::EpochSettlementProtocol,
     validator_set: &crate::types::ValidatorSet,
 ) -> Result<(), ILCConsensusError> {
+    #[cfg(not(feature = "testnet_fault_sim"))]
+    let _ = epoch_store;
+
     // testnet_fault_sim: epoch records injected by the testnet client via
     // EpochSettlementTx are committed through commit_epoch_record(), which stores
     // agg_sig_bytes=[] (no BLS signature generated at submission time). Fall back
@@ -1221,12 +1267,66 @@ mod tests {
             .collect();
 
         // Guard condition mirrors the production code: > 64 → reject.
-        const MAX_CERTS_PER_RESPONSE: usize = 64;
         assert_eq!(certs.len(), 65);
+        assert_eq!(MAX_CERTS_PER_RESPONSE, 64);
         assert!(
             certs.len() > MAX_CERTS_PER_RESPONSE,
             "65 certs must exceed the cap of 64"
         );
+    }
+
+    #[test]
+    fn test_latest_epoch_sync_cursor_uses_current_epoch_sentinel() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (validator_set, keys) = setup_validators();
+        let signers = vec![crate::types::ValidatorID(1), crate::types::ValidatorID(2)];
+
+        assert_eq!(latest_epoch_sync_cursor(&store).unwrap(), 0);
+        for epoch in 1u64..=3 {
+            let record = EpochSettlementRecord {
+                epoch: EpochSeq(epoch),
+                state_root: CIDv1Root::new([epoch as u8; 36]),
+            };
+            let checkpoint = crate::types::EpochCheckpoint {
+                sigs: generate_valid_agg_sig(&record, &keys),
+                record,
+                signers: signers.clone(),
+            };
+            protocol
+                .process_epoch_checkpoint(checkpoint, &validator_set)
+                .unwrap();
+        }
+
+        assert_eq!(latest_epoch_sync_cursor(&store).unwrap(), 3);
+    }
+
+    #[test]
+    fn test_missing_cert_sync_request_and_inflight_signature_caps_are_locked() {
+        assert_eq!(MAX_MISSING_VERSIONS, 1024);
+        assert_eq!(MAX_SIGS_PER_INFLIGHT, crate::fast_path::MAX_CERT_SIGS);
+
+        let missing_versions: Vec<u64> = (0..=MAX_MISSING_VERSIONS as u64).collect();
+        assert!(missing_versions.len() > MAX_MISSING_VERSIONS);
+
+        let mut table: HashMap<ObjectRef, InFlight> = HashMap::new();
+        let object_ref = ObjectRef {
+            agent: AgentID([9; 48]),
+            version: 1,
+        };
+        table.insert(
+            object_ref,
+            InFlight {
+                transfer: dummy_transfer(),
+                sigs: Vec::with_capacity(MAX_SIGS_PER_INFLIGHT),
+                certified: false,
+                inserted_at: tokio::time::Instant::now(),
+            },
+        );
+        let entry = table.get(&object_ref).unwrap();
+        assert_eq!(entry.sigs.len(), 0);
+        assert!(entry.sigs.len() < MAX_SIGS_PER_INFLIGHT);
     }
 
     // SEC-FIX-04: zombie in_flight TTL sweep — non-certified entries must be evictable.

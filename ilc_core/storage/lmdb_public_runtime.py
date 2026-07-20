@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,7 @@ from ilc_core.ledger.exact_numeric import normalize_json_scalars
 LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
 _ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
+_ENV_CACHE_LOCK = threading.Lock()
 
 
 def _encode_key(value: str) -> bytes:
@@ -39,20 +41,21 @@ class _LmdbRuntimeBase:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self._root_key = str(self.root.resolve())
-        cached = _ENV_CACHE.get(self._root_key)
-        if cached is None:
-            self.env = lmdb.open(
-                self._root_key,
-                create=True,
-                subdir=True,
-                max_dbs=max(1, len(db_names)),
-                map_size=map_size,
-                lock=True,
-            )
-            _ENV_CACHE[self._root_key] = (self.env, 1)
-        else:
-            self.env, refcount = cached
-            _ENV_CACHE[self._root_key] = (self.env, refcount + 1)
+        with _ENV_CACHE_LOCK:
+            cached = _ENV_CACHE.get(self._root_key)
+            if cached is None:
+                self.env = lmdb.open(
+                    self._root_key,
+                    create=True,
+                    subdir=True,
+                    max_dbs=max(1, len(db_names)),
+                    map_size=map_size,
+                    lock=True,
+                )
+                _ENV_CACHE[self._root_key] = (self.env, 1)
+            else:
+                self.env, refcount = cached
+                _ENV_CACHE[self._root_key] = (self.env, refcount + 1)
         self._dbs = {name: self.env.open_db(name) for name in db_names}
         self._closed = False
 
@@ -77,19 +80,20 @@ class _LmdbRuntimeBase:
             txn.delete(_encode_key(key))
 
     def close(self) -> None:
-        if self._closed:
-            return
-        cached = _ENV_CACHE.get(self._root_key)
-        if cached is None:
-            self.env.close()
-        else:
-            env, refcount = cached
-            if refcount <= 1:
-                env.close()
-                _ENV_CACHE.pop(self._root_key, None)
+        with _ENV_CACHE_LOCK:
+            if self._closed:
+                return
+            cached = _ENV_CACHE.get(self._root_key)
+            if cached is None:
+                self.env.close()
             else:
-                _ENV_CACHE[self._root_key] = (env, refcount - 1)
-        self._closed = True
+                env, refcount = cached
+                if refcount <= 1:
+                    env.close()
+                    _ENV_CACHE.pop(self._root_key, None)
+                else:
+                    _ENV_CACHE[self._root_key] = (env, refcount - 1)
+            self._closed = True
 
 
 class LmdbGraphStore(_LmdbRuntimeBase):
@@ -208,14 +212,15 @@ class LmdbPublicReceiptStore(_LmdbRuntimeBase):
         )
 
     def _append_index_id(self, *, db_name: bytes, key: str, receipt_id: str) -> None:
-        existing = self._get_json(db_name, key)
-        if isinstance(existing, list):
-            receipt_ids = [item for item in existing if isinstance(item, str)]
-        else:
-            receipt_ids = []
-        if receipt_id not in receipt_ids:
-            receipt_ids.append(receipt_id)
-            self._put_json(db_name, key, sorted(receipt_ids))
+        with self.env.begin(write=True, db=self._dbs[db_name]) as txn:
+            existing = _decode_json(txn.get(_encode_key(key)))
+            if isinstance(existing, list):
+                receipt_ids = [item for item in existing if isinstance(item, str)]
+            else:
+                receipt_ids = []
+            if receipt_id not in receipt_ids:
+                receipt_ids.append(receipt_id)
+                txn.put(_encode_key(key), _encode_json(sorted(receipt_ids)))
 
     def _resolve_index_rows(self, *, db_name: bytes, key: str) -> list[dict[str, Any]]:
         receipt_ids = self._get_json(db_name, key)

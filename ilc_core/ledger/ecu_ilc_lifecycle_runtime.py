@@ -73,8 +73,10 @@ class EcuIlcLifecycleRuntime:
         *,
         agent_id: str,
         epoch_id: str,
-        reward_delta_ilc: int | float | str | Decimal,
+        reward_delta_ilc: int | str | Decimal,
     ) -> dict[str, Any]:
+        if not isinstance(agent_id, str) or not agent_id.strip():
+            raise EcuIlcLifecycleRuntimeError("agent_id_required", "agent_id must be a non-empty string")
         if not isinstance(epoch_id, str) or not epoch_id.strip():
             raise EcuIlcLifecycleRuntimeError("epoch_id_required", "epoch_id must be a non-empty string")
 
@@ -192,9 +194,25 @@ class EcuIlcLifecycleRuntime:
 
 
 def _stable_digest(payload: Any) -> str:
+    _reject_decimal_tree(payload)
     return hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
     ).hexdigest()
+
+
+def _reject_decimal_tree(value: Any) -> None:
+    if isinstance(value, Decimal):
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_stable_digest_decimal_unencoded",
+            "stable digest payloads must encode Decimal values as canonical strings",
+        )
+    if isinstance(value, dict):
+        for item in value.values():
+            _reject_decimal_tree(item)
+        return
+    if isinstance(value, list):
+        for item in value:
+            _reject_decimal_tree(item)
 
 
 def _wallet_decimal_string(value: object) -> str:

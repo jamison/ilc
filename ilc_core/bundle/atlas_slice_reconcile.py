@@ -543,6 +543,7 @@ def _write_json_atomic(
     text = json.dumps(payload, sort_keys=True, indent=2, allow_nan=False) + "\n"
     try:
         with tmp.open("w", encoding="utf-8") as handle:
+            os.chmod(tmp, 0o600)
             handle.write(text)
             handle.flush()
             os.fsync(handle.fileno())

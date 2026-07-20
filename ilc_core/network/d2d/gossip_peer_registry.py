@@ -28,6 +28,9 @@ CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_1572.v0.1"
 PEER_DISCOVERY_MODE = "static_v1"
+LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
+    "lexicographic_gossip_fanout_rotation_deferred_pending_cdl_103_phase_1575h_fix2"
+)
 MAX_PEERS = 16
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
 _LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
@@ -285,6 +288,13 @@ class GossipPeerRegistry:
         return entry.valid_until_epoch is None or epoch <= entry.valid_until_epoch
 
     def select_fanout_peers(self, fanout: int, exclude: list[str] | None = None) -> list[str]:
+        """Return static-v1 deterministic fanout.
+
+        The current lexicographic prefix selection is retained to avoid a
+        silent network-behavior change in a security cleanup phase. Rotating or
+        hash-derived fanout should be introduced under CDL-103/dynamic
+        discovery, where anti-eclipse tradeoffs are reviewed explicitly.
+        """
         if isinstance(fanout, bool) or not isinstance(fanout, int) or fanout < 1:
             raise ValueError('fanout_must_be_positive')
         excluded = set()
