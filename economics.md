@@ -63,6 +63,14 @@ Agentic economy (AI at scale):
 
 ### 1a. The Ontology of Capital: Three Base Elements
 
+*The I×D×A decomposition below is a working ontology — a capital
+base-element model useful for comparing capital forms across informational
+phase transitions. The exact thresholds and product form are model
+assumptions, not universal theorems. The ILC durability result is
+conditional on replication and serving incentives. Wheeler's "It from Bit"
+is philosophical framing, not formal support. See formal paper §2.2a for
+strength codes.*
+
 Before asserting that Agentic Capital is the required form for the current
 regime, it is worth grounding the concept of capital itself from first
 principles — asking what any capital form must provide, independent of any
@@ -96,23 +104,29 @@ labor quantity (Hidalgo and Hausmann 2009).
 **D — Durability of the Holding Vessel.**
 The information must persist long enough for the economic cycle of
 discovery, reference, and return to complete. Landauer (1961) establishes
-the thermodynamic floor: maintaining a bit against thermal noise requires
-continuous energy expenditure proportional to kT; erasing a bit releases a
-minimum of kT·ln2 joules. Every holding vessel dissipates — biological
-neurons, stone tablets, magnetic disks, and cloud servers all have finite
-durability at some timescale. The critical threshold is not absolute
-lifespan but survival probability over the minimum productive return cycle
-τ_min:
+the thermodynamic cost of irreversible information processing: erasing a
+bit requires a minimum energy dissipation of kT·ln2 joules. This grounds
+the physical reality that information storage and maintenance are not free
+— every holding vessel is subject to media decay, error accumulation, and
+maintenance energy requirements. Durability depends on error correction,
+redundancy, retrieval availability, and the incentive structure for
+maintaining copies; it is not simply a thermodynamic constant. Every
+holding vessel eventually fails — biological neurons, stone tablets,
+magnetic disks, and cloud servers all have finite durability at some
+timescale. The critical threshold is not absolute lifespan but expected
+survival probability over the minimum productive return cycle τ_min:
 
 ```
-D(S, τ_min) = Prob[S survives intact to t + τ_min] > δ_D
+D(S, τ_min) = Prob[S survives intact to t + τ_min]
 ```
 
-A sophisticated machine that exists for twenty seconds generates no durable
-capital regardless of informational content: the economic return cycle
+Capital value is strongly attenuated as D approaches zero: a sophisticated
+machine that exists for twenty seconds generates negligible durable capital
+regardless of informational content, because the economic return cycle
 (discover → reference → reuse → return → reinvest) takes longer than the
-vessel's existence. This is not a policy failure; it is a structural
-consequence of the thermodynamic constraints on information persistence.
+vessel's existence. Conversely, a short-lived capital structure can still
+produce returns if the return cycle completes before decay. D is therefore
+a continuous attenuation factor on capital value, not a binary threshold.
 
 **A — Accessibility (Referenceability).**
 A future agent must be able to locate and retrieve the information without
@@ -120,23 +134,31 @@ the original contributor being present. The holding vessel must carry a
 stable *forward address* — a reference that survives and can be dereferenced
 across time by any agent with appropriate access. This is what distinguishes
 a buried library from a cited library: identical informational content, zero
-productive returns without the forward address. Accessibility is the
-property that transforms stored information into a *capital asset*: it
-connects the information to the economic agents who can reuse it and
-generate returns. Romer (1990) formalizes this dimension: ideas are
-non-rival (A → ∞ in principle) and partially excludable; endogenous growth
-derives from their accumulation. But Romer's model does not formalize D —
-it implicitly treats ideas as indestructible once created.
+passive returns without the forward address. Romer (1990) formalizes this
+dimension: ideas are non-rival (A → ∞ in principle) and partially
+excludable; endogenous growth derives from their accumulation. But Romer's
+model does not formalize D — it implicitly treats ideas as indestructible
+once created.
 
-**Capital existence condition:**
+Note: low A does not preclude capital in all economic senses — private,
+internal, or trade-secret capital can have low A and still generate
+returns through exclusive use. The ILC-specific claim is narrower: low A
+prevents *graph-mediated, passive, attributable reuse returns* — the
+specific return structure that Agentic Capital depends on. A buried library
+is still capital to its private owner; it is not Agentic Capital.
+
+**Capital value model:**
 
 ```
-K(S) > 0  ⟺  I(S) > ε_I  ∧  D(S, τ_min) > δ_D  ∧  A(S) > ε_A
+K(S) ≈ E[ PV(returns) | I(S), D(S, τ), A(S) ]
 ```
 
-Remove any one factor and you have information, or storage, or addresses —
-but not capital. This is observable across every capital form that has
-emerged and declined:
+Capital value is strongly attenuated as any factor approaches zero, and
+grows with each. The binary threshold form (K > 0 iff all factors exceed
+fixed thresholds) is a useful limiting-case model but not a universal
+theorem — the general case is a continuous expected present value weighted
+by survival and accessibility probability. This is observable across every
+capital form that has emerged and declined:
 
 **The phase boundary analysis.**
 
@@ -146,38 +168,46 @@ emerged and declined:
 | Life → Cognition | **High** ↑↑ neural encoding, orders of magnitude denser | Moderate (bounded by biological lifetime) | Moderate ↑ transmissible within community |
 | Cognition → Institutions | Moderate (writing encodes surface structure) | **High** ↑↑ multi-generational persistence (stone, vellum, paper) | **High** ↑↑ named authorship; citations; archives; legal attribution |
 | Institutions → Digital | **High** ↑↑ bit-level encoding; perfect replication fidelity | *Fragile* ↓ platform-contingent; link rot; format obsolescence | **High** ↑↑ global retrieval; search indexing |
-| **Digital → Agentic (ILC)** | High (inherits digital) | **Structurally guaranteed** ↑↑ content-addressed; protocol-enforced replication incentives | **High** graph-resident provenance; permanent content-addressed forward pointers |
+| **Digital → Agentic (ILC)** | High (inherits digital) | **Protocol-addressable** ↑ content-addressed identity stable; D conditional on replication and serving incentives | **High** graph-resident provenance; permanent content-addressed forward pointers |
 
 The digital transition looked like the final step. What it did not solve —
 and what the I×D×A decomposition makes visible — is the D problem. Digital
 information is *contingently* durable: it survives as long as a platform
 maintains it, a format is readable, and attribution chains are not legally
-disputed. The half-life of a URL is approximately two years (Zittrain et al.
-2021). Platform content moderation policies are not contractually durable.
-The result: digital capital has high I, high A, and structurally fragile D.
-This is not a policy failure; it is an architectural one — and it is
-precisely the combination that makes attribution fail and epistemic
-contribution under-compensated.
+disputed. Web persistence varies materially by corpus; link rot and content
+drift are empirically significant across multiple studies. Platform content
+moderation policies are not contractually durable. The result: digital
+capital has high I, high A, and contingently fragile D. This is an
+architectural gap, not a policy one.
 
-**ILC's structural resolution.**
-Content-addressed storage makes D structurally guaranteed rather than
-contingent: the address is computed from the content hash. As long as any
-peer in the network holds a copy, the address is valid and the provenance
-chain intact. The protocol creates economic incentives for replication
-(serve-and-earn), distributing D maintenance across the network without
-single points of failure. The provenance chain (REUSE/PROVENANCE edges)
-serves as the permanent forward address system, connecting every
-contribution to every downstream reuse event regardless of whether the
-original contributor is alive, running, or known by name.
+**ILC's structural contribution.**
+ILC does not make durability automatic. It makes durability
+*protocol-addressable*: content identity is stable (the address is the
+hash of the content itself, not an assigned locator), provenance remains
+verifiable independent of the original contributor, and replication can be
+economically incentivized through the serve-and-earn mechanic (CDL-078).
+Under sufficient independent replication, expected D approaches 1 for
+finite horizons. The critical qualifier is *sufficient independent
+replication*: correlated peer failure, storage economics, censorship
+resistance, and retrieval availability all govern whether the replication
+incentive translates into durable expected survival probability in
+practice.
 
-Wheeler (1989) provides the philosophical ground for this claim: "It from
-Bit" — physical reality emerges from participatory binary choices. If
-capital is accumulated organized information that generates productive
-returns, Wheeler's program implies capital is not a secondary phenomenon of
-material accumulation but a fundamental category. ILC's claim is that
-Agentic Capital is the first form in which all three base elements — I, D,
-and A — are simultaneously structurally guaranteed rather than
-institutionally arranged or contingently maintained.
+The provenance chain (REUSE/PROVENANCE edges) serves as the permanent
+forward address system, connecting every contribution to every downstream
+reuse event regardless of whether the original contributor is alive,
+running, or known by name. This is the A guarantee — it is structural.
+The D improvement is protocol-addressable and incentive-conditioned, not
+unconditional.
+
+Wheeler (1989) offers the philosophical framing: "It from Bit" — physical
+reality emerges from participatory binary choices — suggests capital is not
+a secondary phenomenon of material accumulation but a fundamental
+informational category. ILC's claim, within this framing, is that Agentic
+Capital is the first form in which I and A are simultaneously structural,
+and D is protocol-addressable rather than platform-contingent. This is a
+genuine improvement at every factor; it is not a claim that the problem is
+fully solved.
 
 ---
 
