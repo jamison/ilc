@@ -243,9 +243,9 @@ class Governance:
 
 
 def _to_decimal(value: object, token: str) -> Decimal:
-    if isinstance(value, bool):
+    if isinstance(value, bool) or isinstance(value, float):
         raise ValueError(token)
-    if not isinstance(value, (Decimal, int, float, str)):
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(token)
     try:
         amount = value if isinstance(value, Decimal) else Decimal(str(value))

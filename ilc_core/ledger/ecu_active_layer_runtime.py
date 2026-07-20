@@ -60,10 +60,12 @@ class EcuActiveLayerRuntime:
         self._accrued_ecu: dict[str, Decimal] = {}
         self._earmarks: dict[str, EarmarkRecord] = {}
 
-    def set_accrued_ecu(self, agent_id: str, amount: int | float | str | Decimal) -> None:
+    def set_accrued_ecu(self, agent_id: str, amount: int | str | Decimal) -> None:
         try:
             normalized_amount = _to_decimal(amount)
         except ValueError as exc:
+            if str(exc) == "float_amount_not_allowed":
+                raise ValueError("accrued_ecu_float_input_rejected") from exc
             if str(exc) == "non_finite_amount":
                 raise ValueError("accrued_ecu_cannot_be_non_finite") from exc
             raise
@@ -86,7 +88,7 @@ class EcuActiveLayerRuntime:
         commission_id: str,
         commissioning_agent_id: str,
         performing_agent_id: str,
-        earmark_amount: int | float | str | Decimal,
+        earmark_amount: int | str | Decimal,
         proposal_epoch: int,
         task_description_hash: str,
     ) -> dict[str, object]:
@@ -95,6 +97,11 @@ class EcuActiveLayerRuntime:
         try:
             earmark_amount_decimal = _to_decimal(earmark_amount)
         except ValueError as exc:
+            if str(exc) == "float_amount_not_allowed":
+                return self._failure(
+                    "invalid_earmark_amount_float",
+                    earmark_amount=repr(earmark_amount),
+                )
             if str(exc) == "non_finite_amount":
                 return self._failure(
                     "invalid_earmark_amount_non_finite",
@@ -339,7 +346,7 @@ def _str_to_decimal(value: str) -> Decimal:
         raise ValueError("invalid_decimal_string") from exc
 
 
-def _to_decimal(value: int | float | str | Decimal) -> Decimal:
+def _to_decimal(value: int | str | Decimal) -> Decimal:
     if isinstance(value, bool):
         raise ValueError("boolean_not_valid_amount")
     if isinstance(value, Decimal):
@@ -347,7 +354,7 @@ def _to_decimal(value: int | float | str | Decimal) -> Decimal:
     elif isinstance(value, int):
         number = Decimal(value)
     elif isinstance(value, float):
-        number = Decimal(str(value))
+        raise ValueError("float_amount_not_allowed")
     elif isinstance(value, str):
         number = _str_to_decimal(value)
     else:

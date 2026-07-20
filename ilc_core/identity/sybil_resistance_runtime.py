@@ -68,6 +68,12 @@ def _require_validation_epoch(epoch_type: str) -> None:
 
 
 def _score(value: Decimal) -> float:
+    """Return a bounded float risk signal, not a consensus or settlement weight.
+
+    The CDL-V2 runtime predates Decimal-only settlement surfaces. Callers use
+    these scores as advisory anti-sybil heuristics; they are not consumed by
+    epoch settlement roots or validator quorum weights in current code.
+    """
     return float(value.quantize(_ROUNDING_QUANTUM))
 
 

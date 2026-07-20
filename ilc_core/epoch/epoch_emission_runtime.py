@@ -22,6 +22,9 @@ C_MAX_ILC = Decimal("25920000")
 HALVING_INTERVAL_ISSUANCE_EPOCHS = 48
 ISSUANCE_EPOCH_DURATION = "1_month"
 VALIDATION_EPOCH_SECONDS = 60
+# The finite 480-epoch geometric horizon intentionally truncates the infinite
+# halving tail by roughly 0.1%; this is the ratified simulation/default-off
+# quote horizon, not a claim that the infinite series is exactly exhausted.
 ISSUANCE_SCHEDULE_HORIZON_EPOCHS = 480
 ILC_QUANTUM = Decimal("0.000000001")
 DECIMAL_PRECISION = 80

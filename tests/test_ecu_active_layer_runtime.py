@@ -7,13 +7,13 @@ from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 
 def test_oversubscription_blocked() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 5.0)
+    runtime.set_accrued_ecu("agent-a", "5.0")
     result = runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=6.0,
+        earmark_amount="6.0",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )
@@ -23,13 +23,13 @@ def test_oversubscription_blocked() -> None:
 
 def test_delivered_earmark_remains_reserved_until_debited() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=3.0,
+        earmark_amount="3.0",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )
@@ -46,13 +46,13 @@ def test_delivered_earmark_remains_reserved_until_debited() -> None:
 
 def test_debit_occurs_only_at_commit_boundary() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=4.0,
+        earmark_amount="4.0",
         proposal_epoch=20,
         task_description_hash="hash-1",
     )
@@ -73,13 +73,13 @@ def test_debit_occurs_only_at_commit_boundary() -> None:
 
 def test_expiry_releases_reserves() -> None:
     runtime = EcuActiveLayerRuntime(fixed_expiry_validation_epochs=5)
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=4.0,
+        earmark_amount="4.0",
         proposal_epoch=30,
         task_description_hash="hash-1",
     )
@@ -91,14 +91,14 @@ def test_expiry_releases_reserves() -> None:
 
 def test_active_earmark_cap_enforced() -> None:
     runtime = EcuActiveLayerRuntime(active_earmark_cap_per_agent=2)
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     for earmark_id in ("e-1", "e-2"):
         result = runtime.earmark_propose(
             earmark_id=earmark_id,
             commission_id=f"c-{earmark_id}",
             commissioning_agent_id="agent-a",
             performing_agent_id=f"agent-{earmark_id}",
-            earmark_amount=1.0,
+            earmark_amount="1.0",
             proposal_epoch=10,
             task_description_hash=f"hash-{earmark_id}",
         )
@@ -108,7 +108,7 @@ def test_active_earmark_cap_enforced() -> None:
         commission_id="c-3",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-c",
-        earmark_amount=1.0,
+        earmark_amount="1.0",
         proposal_epoch=10,
         task_description_hash="hash-3",
     )
@@ -118,13 +118,13 @@ def test_active_earmark_cap_enforced() -> None:
 
 def test_only_named_performing_agent_can_accept_or_deliver() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     proposed = runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=2.0,
+        earmark_amount="2.0",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )
@@ -168,13 +168,13 @@ def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
     # consistent with process_epoch_boundary. expiry_epoch = proposal_epoch + 5 = 15.
     # The last valid acceptance/delivery epoch is 14; epoch 15 is the expiry epoch itself.
     runtime = EcuActiveLayerRuntime(fixed_expiry_validation_epochs=5)
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     proposed = runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=2.0,
+        earmark_amount="2.0",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )
@@ -229,24 +229,24 @@ def test_accept_and_deliver_reject_epochs_past_expiry() -> None:
 
 def test_set_accrued_ecu_rejects_drop_below_reserved_balance() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     proposed = runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=3.0,
+        earmark_amount="3.0",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )
     assert proposed["ok"] is True
 
     with pytest.raises(ValueError, match="accrued_ecu_cannot_drop_below_reserved_earmarks"):
-        runtime.set_accrued_ecu("agent-a", 2.0)
+        runtime.set_accrued_ecu("agent-a", "2.0")
 
 
-@pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf"), float("-inf")])
-def test_non_finite_amounts_are_rejected(value: object) -> None:
+@pytest.mark.parametrize("value", ["NaN", "Infinity", "-Infinity"])
+def test_non_finite_string_amounts_are_rejected(value: object) -> None:
     runtime = EcuActiveLayerRuntime()
 
     with pytest.raises(ValueError, match="accrued_ecu_cannot_be_non_finite"):
@@ -265,10 +265,30 @@ def test_non_finite_amounts_are_rejected(value: object) -> None:
     assert result["token"] == "invalid_earmark_amount_non_finite"
 
 
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_float_amounts_are_rejected_before_non_finite_classification(value: object) -> None:
+    runtime = EcuActiveLayerRuntime()
+
+    with pytest.raises(ValueError, match="accrued_ecu_float_input_rejected"):
+        runtime.set_accrued_ecu("agent-a", value)  # type: ignore[arg-type]
+
+    result = runtime.earmark_propose(
+        earmark_id="e-1",
+        commission_id="c-1",
+        commissioning_agent_id="agent-a",
+        performing_agent_id="agent-b",
+        earmark_amount=value,  # type: ignore[arg-type]
+        proposal_epoch=10,
+        task_description_hash="hash-1",
+    )
+    assert result["ok"] is False
+    assert result["token"] == "invalid_earmark_amount_float"
+
+
 def test_multiple_delivered_earmarks_debit_in_same_epoch_boundary() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
-    for earmark_id, amount, performer in (("e-1", 2.0, "agent-b"), ("e-2", 3.0, "agent-c")):
+    runtime.set_accrued_ecu("agent-a", "10.0")
+    for earmark_id, amount, performer in (("e-1", "2.0", "agent-b"), ("e-2", "3.0", "agent-c")):
         proposed = runtime.earmark_propose(
             earmark_id=earmark_id,
             commission_id=f"c-{earmark_id}",
@@ -301,13 +321,13 @@ def test_multiple_delivered_earmarks_debit_in_same_epoch_boundary() -> None:
 
 def test_earmark_history_returns_records_for_both_agents() -> None:
     runtime = EcuActiveLayerRuntime()
-    runtime.set_accrued_ecu("agent-a", 10.0)
+    runtime.set_accrued_ecu("agent-a", "10.0")
     proposed = runtime.earmark_propose(
         earmark_id="e-1",
         commission_id="c-1",
         commissioning_agent_id="agent-a",
         performing_agent_id="agent-b",
-        earmark_amount=2.5,
+        earmark_amount="2.5",
         proposal_epoch=10,
         task_description_hash="hash-1",
     )

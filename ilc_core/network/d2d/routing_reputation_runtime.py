@@ -14,8 +14,11 @@ Design:
     - record_serve_event() is best-effort — never raises, never blocks.
     - No LMDB write. No per-hop ECU transfer. No negative delta.
 
-Epoch definition: int(time.time() // 60) — 1-minute validation epoch
-(CDL-071 Tier 2, Phase 851).
+Epoch definition: caller-supplied validation epoch integer. Earlier planning
+described a wall-clock minute bucket as a caller convention; this module no
+longer imports or reads wall-clock time. It buffers serve-count reputation
+signals only and does not write settlement state, ECU balances, ILC balances,
+or validator weights.
 """
 
 from __future__ import annotations
@@ -35,6 +38,9 @@ ROUTING_REPUTATION_RUNTIME_VERSION = "routing_reputation_runtime_908.v0.1"
 CDL_078_DEPENDENCY = "cdl_078_relay_incentive_constitutional_lock.v0.1"
 CDL_060_DEPENDENCY = "cdl_060_ratified_541.v0.1"
 CDL_077_DEPENDENCY = "cdl_077_want_have_want_block_fetch.v0.1"
+ROUTING_REPUTATION_NO_SETTLEMENT_TOKEN = (
+    "routing_reputation_wall_clock_not_settlement_input_phase_1575h_fix2"
+)
 
 SERVE_CENTRALITY_DELTA: float = 0.01
 SERVE_CENTRALITY_MAX_PER_EPOCH: float = 0.10
@@ -98,7 +104,7 @@ def record_serve_event(node_id: str, epoch: int, state: dict) -> None:
 
     Args:
         node_id: CIDv1 of the node that was served.
-        epoch:   Current validation epoch (int(time.time() // 60)).
+        epoch:   Caller-supplied validation epoch.
         state:   Mutable reputation state dict (new_reputation_state()).
     """
     try:

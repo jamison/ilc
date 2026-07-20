@@ -93,7 +93,6 @@ def test_phi_bound_strips_ecu_at_threshold() -> None:
         Decimal("0.0900"),
         Decimal("0.0900"),
         Decimal("0.0900"),
-        Decimal("0"),
     ]
     assert "edge_mint_phi_bound_exceeded" in emitted_tokens
 
@@ -105,7 +104,8 @@ def test_phi_bound_strips_ecu_above_threshold() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert [amount for _, amount in payouts][3:] == [Decimal("0"), Decimal("0"), Decimal("0")]
+    assert len(payouts) == 3
+    assert all(amount == Decimal("0.0900") for _, amount in payouts)
 
 
 def test_phi_bound_does_not_affect_reuse_events() -> None:
@@ -157,7 +157,8 @@ def test_batch_settle_method_forwards_epoch_node_mint_count() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert payouts[-1] == ("creator_4", Decimal("0"))
+    assert ("creator_4", Decimal("0")) not in payouts
+    assert [creator_id for creator_id, _ in payouts] == ["creator_1", "creator_2", "creator_3"]
     assert "edge_mint_phi_bound_exceeded" in emitted_tokens
 
 

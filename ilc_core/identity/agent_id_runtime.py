@@ -4,7 +4,7 @@
 CDL-042 (ratified Phase 407): key-derived agent_id via SHA-256.
 CDL-069 (open Phase 838): identity_seed-derived agent_id via SHA-384 (Tier 3).
 
-CDL-069 amends CDL-042.  From Genesis forward the canonical derivation is:
+CDL-069 amends CDL-042.  The canonical Genesis-forward derivation remains:
 
     agent_id = sha384("ilc-agent-id-v1:" || identity_seed)   [96 hex chars]
 
@@ -32,12 +32,14 @@ NODE_SCHEMA_DEPENDENCY = CDL_038_DEPENDENCY
 # CDL-042 legacy domain (BLS key bytes input).  Deprecated from Genesis forward.
 _AGENT_ID_DOMAIN_V1: bytes = b"ilc-agent-id-v1:"
 
-# CDL-069 §2a: SHA-384 uniform for all Tier 3 (permanent) data.
-# Domain separator is stable — changing it invalidates all agent_ids.
-# V2 intentionally aliases the CDL-042 byte prefix; v1/v2 separation is by
-# hash algorithm, input material, output length, and legacy "agent-" prefix,
-# not by domain bytes. Do not change without a migration phase.
-_AGENT_ID_DOMAIN_V2: bytes = _AGENT_ID_DOMAIN_V1
+# CDL-069 §2a: SHA-384 uniform for all Tier 3 (permanent) data. The v2
+# function name denotes the identity_seed/SHA-384 path, not a new domain string.
+# Changing this domain would mutate existing Genesis-forward agent_ids and
+# requires a dedicated CDL/migration phase rather than a security cleanup patch.
+_AGENT_ID_DOMAIN_V2: bytes = b"ilc-agent-id-v1:"
+AGENT_ID_V2_DISTINCT_DOMAIN_MIGRATION_DEFERRED_TOKEN = (
+    "agent_id_v2_distinct_domain_migration_deferred_pending_identity_cdl"
+)
 
 _IDENTITY_SEED_LENGTH: int = 32  # bytes
 _AGENT_ID_LENGTH_V2: int = 96    # hex chars (SHA-384 = 48 bytes)

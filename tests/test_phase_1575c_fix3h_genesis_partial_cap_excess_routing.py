@@ -108,7 +108,7 @@ def test_fix3h_production_path_caps_final_epoch_genesis_credit() -> None:
 def test_fix3h_one_quantum_below_cap_receives_only_one_quantum() -> None:
     result = compute_epoch_emission_production_path(
         3,
-        Decimal("20000000"),
+        Decimal("25920000"),
         Decimal("1000"),
         genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC - ILC_QUANTUM,
     )

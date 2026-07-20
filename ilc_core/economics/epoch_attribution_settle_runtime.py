@@ -89,6 +89,8 @@ def _stake_proportional_payouts(
         else:
             share = _quantize_payout(total_amount * (stake / total_stake))
             running_total += share
+        if share == _ZERO:
+            continue
         payouts.append((agent_id, share))
     return payouts
 
@@ -191,8 +193,10 @@ def _normalize_distribution_member_stakes(members: object) -> dict[str, Decimal]
         raise ValueError("ejected_stake_remaining_members_must_be_dict")
     normalized: dict[str, Decimal] = {}
     for member_id, stake in members.items():
-        if not isinstance(member_id, str) or member_id == "":
-            raise ValueError("ejected_stake_member_id_must_be_non_empty_string")
+        _validate_member_id(
+            member_id,
+            "ejected_stake_member_id_must_be_non_empty_string",
+        )
         normalized[member_id] = _require_decimal_amount(
             stake,
             "ejected_stake_member_stake",
@@ -226,7 +230,9 @@ def require_h_con_02_quorum_guard(
         raise ValueError("participating_voters_must_not_exceed_total_members")
     if voters < HCON02_QUORUM_MINIMUM_VOTERS:
         raise ValueError("h_con_02_quorum_guard_minimum_voters_not_met_phase_1350")
-    if Decimal(voters) / Decimal(total_members) < HCON02_QUORUM_FLOOR:
+    if HCON02_QUORUM_FLOOR != Decimal("0.50"):
+        raise ValueError("h_con_02_quorum_floor_requires_integer_guard_update")
+    if voters * 2 < total_members:
         raise ValueError("h_con_02_quorum_guard_floor_not_met_phase_1350")
     if (
         approvals * HCON02_VOTE_THRESHOLD_DENOMINATOR
@@ -308,6 +314,12 @@ def _require_non_empty_string(value: object, error_token: str) -> str:
     return value
 
 
+def _validate_member_id(value: object, error_token: str) -> str:
+    if not isinstance(value, str) or value == "":
+        raise ValueError(error_token)
+    return value
+
+
 def _validate_provenance_chain(chain: object) -> tuple[tuple[str, str], ...]:
     """Validate caller-supplied PROVENANCE payload before payout arithmetic."""
     if chain is None:
@@ -347,6 +359,7 @@ def _normalize_member_stakes(members: object) -> dict[str, Decimal]:
     for member_id, stake in members.items():
         if not isinstance(member_id, str):
             raise ValueError("stake_map_member_id_must_be_string")
+        _validate_member_id(member_id, "stake_map_member_id_must_be_non_empty_string")
         if not isinstance(stake, Decimal):
             raise ValueError("stake_map_member_stake_must_be_decimal")
         if not stake.is_finite() or stake < _ZERO:
@@ -395,7 +408,8 @@ def evaluate_ejected_stake_vote(
         raise ValueError("participating_voters_must_not_exceed_total_members")
     quorum_met = (
         participating_voters >= HCON02_QUORUM_MINIMUM_VOTERS
-        and Decimal(participating_voters) / Decimal(total_members) >= HCON02_QUORUM_FLOOR
+        and HCON02_QUORUM_FLOOR == Decimal("0.50")
+        and participating_voters * 2 >= total_members
     )
     if not quorum_met:
         return (False, [])
@@ -460,6 +474,8 @@ def settle_attribution_batch(
     Raises:
         ValueError: If a REFUTATION event lacks an explicit refuting_agent_id.
     """
+    if not getattr(batch, "sealed", False):
+        raise ValueError("epoch_attribution_batch_must_be_sealed_before_settlement")
     if type(epoch_node_mint_count) is not int or epoch_node_mint_count < 0:
         raise ValueError("epoch_node_mint_count_must_be_non_negative")
 
@@ -540,11 +556,12 @@ def settle_attribution_batch(
                     continue  # Q7: nearest hop wins; skip duplicate creators.
                 visited_creators.add(creator_id)
                 if phi_bound_exceeded:
-                    payouts.append((creator_id, _ZERO))
                     continue
                 # Q2: geometric decay — alpha^(hop+1), where hop_index 0 = hop 1.
                 decay = PROVENANCE_DECAY_ALPHA ** (hop_index + 1)
                 payout = _quantize_payout(REUSE_ATTRIBUTION_RATE * decay)
+                if payout == _ZERO:
+                    continue
                 payouts.append((creator_id, payout))
             provenance_events_processed += 1
 

@@ -63202,6 +63202,49 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_fix1_security_preflight.py -> validation/security;graph_delta=load_bearing_artifact_updated:ilc_consensus/src/app_interface.rs,ilc_consensus/src/types.rs,ilc_consensus/src/network.rs,ilc_consensus/src/epoch_settlement.rs,ilc_consensus/src/fast_path.rs,ilc_core/server.py,ilc_core/analysis/genesis_accrual_governor.py,ilc_core/epoch/epoch_emission_production_path.py,ilc_core/consensus/engine.py,ilc_core/consensus/finality_evaluator.py,ilc_core/consensus/diversity_floor_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_192_phase_1575h_fix2_remaining_security_findings",
+      "chronology_note": "2026-07-20 Phase 1575h-Fix2 - remaining Python/Rust pre-1575h security findings closure",
+      "manual_read_summary": "Walkthrough records the remaining audit-finding closures, safe deferrals, verification, output tokens, and non-claims. The phase did not execute epoch 0-to-1, minting, settlement, wallet writes, public P2P activation, public mirror push, identity-domain migration, dynamic fanout changes, or CDL action.",
+      "repo_path": "docs/phases/phase_1575h_fix2_remaining_security_findings_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:phase_1575h_fix2_remaining_security_findings_closed"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:pre_1575h_remaining_security_findings_closed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:pre_1575h_remaining_security_surfaces"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:epoch_0_to_1_not_executed_phase_1575h_fix2"
+        },
+        {
+          "edge_type": "DEFERS",
+          "target": "cdl:CDL-103_dynamic_gossip_fanout"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "REGRESSES",
+        "TESTS",
+        "NEGATIVE_ASSERTS",
+        "DEFERS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix2_remaining_security_findings_walkthrough.md;graph_delta=support_tests_added:tests/test_phase_1575h_fix2_python_security_cleanup.py;graph_delta=load_bearing_artifact_updated:ilc_core/economics/epoch_attribution_settle_runtime.py,ilc_core/ledger/ecu_active_layer_runtime.py,ilc_core/ledger/ecu_ilc_lifecycle_runtime.py,ilc_core/storage/lmdb_public_runtime.py,ilc_core/network/d2d/gossip_transport.py,ilc_core/network/d2d/gossip_peer_registry.py,ilc_core/identity/agent_id_runtime.py,ilc_consensus/src/node.rs,ilc_consensus/src/persistent_quic.rs;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
