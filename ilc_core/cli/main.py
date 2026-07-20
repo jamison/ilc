@@ -1847,6 +1847,26 @@ def _build_parser() -> JsonArgumentParser:
                 help="Fail unless Core Slice 0 and Public-RC Baseline Slice 1 blobs verified",
             )
 
+            p_atlas_reconcile_status = atlas_subparsers.add_parser(
+                "reconcile-status",
+                help="Read and summarize the local installed-slice registry",
+            )
+            p_atlas_reconcile_status.add_argument(
+                "--registry",
+                default="out/installed_slice_registry/registry.json",
+                help="Installed AtlasSliceManifest registry JSON path",
+            )
+            p_atlas_reconcile_status.add_argument(
+                "--json-out",
+                default="",
+                help="Optional reconcile status receipt path; must be under out/",
+            )
+            p_atlas_reconcile_status.add_argument(
+                "--generated-at-utc",
+                default="",
+                help="Optional RFC3339 UTC timestamp override for deterministic receipts",
+            )
+
             p_atlas_sidecar_profile = atlas_subparsers.add_parser(
                 "sidecar-profile",
                 help="Validate Atlas sidecar profile descriptors",
