@@ -62866,6 +62866,40 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/bundle/atlas_local_registry.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc_core/cli/atlas_lmdb_cli.py;graph_delta=load_bearing_artifact_updated:ilc_core/cli/main.py;graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_local_registry_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=support_only:docs/phases/phase_1576_fix9_local_registry_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_187_phase_1576_fix10_peer_discovery_readiness",
+      "chronology_note": "2026-07-20 Phase 1576-fix10 - peer discovery readiness spec for CDL-103",
+      "manual_read_summary": "Spec-only phase defining candidate PeerAdvertisement schema, safe local-registry-derived advertisement summaries, bootstrap trust assumptions, anti-eclipse mitigation property targets, and open questions for future CDL-103. Does not open CDL-103, implement runtime discovery, modify gossip_peer_registry.py, or activate P2P.",
+      "repo_path": "docs/specs/ilc_peer_discovery_readiness_spec_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "adr:0025_peer_discovery"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:079_peer_discovery_curated_model"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:gap_discov_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "GOVERNS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_peer_discovery_readiness_spec_v0.1.md;graph_delta=support_only:docs/phases/phase_1576_fix10_peer_discovery_readiness_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
