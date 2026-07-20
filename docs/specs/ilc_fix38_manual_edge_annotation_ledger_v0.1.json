@@ -62943,6 +62943,69 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/graph/atlas_bounded_query_runtime.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc-graphics-sidecar/ilc_graph_viz/__main__.py;graph_delta=load_bearing_artifact_added:ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py;graph_delta=load_bearing_artifact_added:docs/specs/ilc_phase_1576_graph_viz_api_v0.1.md -> genesis:genesis_root_v0.4;graph_delta=support_only:docs/phases/phase_1576_fix11_graph_viz_api_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_1576_fix11_graph_viz_api_fix1",
+      "chronology_note": "2026-07-20 Phase 1576-graph-viz-api-Fix1 - bounded query hardening after deterministic code audit",
+      "manual_read_summary": "Hardens the local Graph Viz bounded query path with read-only/no-create LMDB opening, required candidate named databases, node/edge scan-work caps, authority frontier caps, storage-key-derived no-ID edge identities, exact query receipt validation, bounded startup registry loading, and safe inline JSON escaping. No Graph Viz query LMDB write, public endpoint, role grant, guard clearance, wallet write, minting, settlement, or epoch transition.",
+      "repo_path": "ilc_core/graph/atlas_bounded_query_runtime.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_readonly_lmdb_open_hardened_phase_1576_fix11_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_scan_work_caps_committed_phase_1576_fix11_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_inline_json_escape_committed_phase_1576_fix11_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_receipt_validator_committed_phase_1576_fix11_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_registry_bounded_loader_committed_phase_1576_fix11_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:ilc_phase_1576_graph_viz_api_v0.1"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "test:test_phase_1576_fix11_graph_viz_api"
+        },
+        {
+          "edge_type": "EXTENDS",
+          "target": "runtime:atlas_bounded_query_runtime"
+        },
+        {
+          "edge_type": "EXTENDS",
+          "target": "runtime:atlas_local_registry"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REGRESSES",
+        "EXTENDS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:ilc_core/graph/atlas_bounded_query_runtime.py -> genesis:genesis_root_v0.4;graph_delta=load_bearing_artifact_updated:ilc-graphics-sidecar/ilc_graph_viz/__main__.py;graph_delta=load_bearing_artifact_updated:ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py;graph_delta=load_bearing_artifact_updated:tests/test_phase_1576_fix11_graph_viz_api.py;graph_delta=load_bearing_artifact_updated:docs/specs/ilc_phase_1576_graph_viz_api_v0.1.md;graph_delta=support_only:docs/phases/phase_1576_fix11_graph_viz_api_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md"
     }
   ],
   "phase": "1545p-Fix38",
