@@ -74,6 +74,7 @@ MAX_CONTENT_AVAILABILITY_ENTRIES = 10_000
 MAX_PENDING_OVERLAY_ENTRIES = 500
 MAX_OVERLAY_FIELDS = 32
 MAX_LOCAL_CONTENT_BYTES = 128 * 1024 * 1024
+MAX_TOTAL_CONTENT_CHECK_BYTES = 1024 * 1024 * 1024
 
 _HEX_96 = frozenset("0123456789abcdef")
 _INSTALLED_SLICE_RECORD_FIELDS = frozenset({"install_record", "local_metadata"})
@@ -137,6 +138,16 @@ _RECEIPT_FIELDS = frozenset(
         "schema_version",
         "tokens",
         "verdict",
+    }
+)
+_RECEIPT_COUNT_FIELDS = frozenset(
+    {
+        "available_content",
+        "content_availability",
+        "installed_slices",
+        "membership_coverage",
+        "pending_local_overlay",
+        "unavailable_content",
     }
 )
 _RECEIPT_PREFIX = "atlas_local_registry_receipt:"
@@ -274,12 +285,21 @@ def validate_content_availability_record(record: Mapping[str, Any]) -> dict[str,
     verification_status = _required_str(normalized, "verification_status")
     if verification_status not in ALLOWED_CONTENT_VERIFICATION_STATUS:
         raise AtlasLocalRegistryError("atlas_local_registry_content_verification_status_invalid")
+    available = normalized["available"]
     verified_at = normalized.get("verified_at_utc")
     if verified_at != "never":
         _validate_timestamp(verified_at)
+    if verification_status == "verified":
+        if available is not True or verified_at == "never":
+            raise AtlasLocalRegistryError("atlas_local_registry_content_state_inconsistent")
+    elif verification_status == "not_checked":
+        if available is not False or verified_at != "never":
+            raise AtlasLocalRegistryError("atlas_local_registry_content_state_inconsistent")
+    elif available is not False or verified_at == "never":
+        raise AtlasLocalRegistryError("atlas_local_registry_content_state_inconsistent")
     _require_sha384(normalized.get("sha384"), "atlas_local_registry_content_sha384_invalid")
     return {
-        "available": normalized["available"],
+        "available": available,
         "content_id": _required_str(normalized, "content_id"),
         "local_content_root": root,
         "local_path": local_path,
@@ -472,6 +492,40 @@ def check_content_availability(
     }
 
 
+def check_content_availability_records(
+    records: Sequence[Mapping[str, Any]],
+    *,
+    generated_at_utc: str | None = None,
+) -> list[dict[str, Any]]:
+    """Verify content rows while enforcing a total local-read byte budget."""
+
+    if isinstance(records, (str, bytes)) or not isinstance(records, Sequence):
+        raise AtlasLocalRegistryError("atlas_local_registry_content_availability_invalid")
+    if len(records) > MAX_CONTENT_AVAILABILITY_ENTRIES:
+        raise AtlasLocalRegistryError("atlas_local_registry_content_availability_too_many")
+    checked_records = []
+    total_bytes = 0
+    for record in records:
+        checked = validate_content_availability_record(record)
+        if checked["local_path"]:
+            path = _resolve_within_root(
+                root=checked["local_content_root"],
+                local_path=checked["local_path"],
+                token_prefix="atlas_local_registry_content_path",
+            )
+            if path.exists() and path.is_file():
+                size_bytes = path.stat().st_size
+                if size_bytes > MAX_LOCAL_CONTENT_BYTES:
+                    raise AtlasLocalRegistryError("atlas_local_registry_content_file_too_large")
+                total_bytes += size_bytes
+                if total_bytes > MAX_TOTAL_CONTENT_CHECK_BYTES:
+                    raise AtlasLocalRegistryError("atlas_local_registry_content_check_bytes_exceeded")
+        checked_records.append(
+            check_content_availability(record, generated_at_utc=generated_at_utc)
+        )
+    return checked_records
+
+
 def build_local_registry_status_receipt(
     registry: Mapping[str, Any],
     *,
@@ -517,6 +571,7 @@ def validate_local_registry_status_receipt(receipt: Mapping[str, Any]) -> dict[s
         _RECEIPT_FIELDS,
         "atlas_local_registry_receipt_fields_invalid",
     )
+    _validate_receipt_semantics(normalized)
     body = {
         key: normalized[key]
         for key in sorted(_RECEIPT_FIELDS - {"receipt_body_sha384", "receipt_id"})
@@ -640,7 +695,12 @@ def _counts(
 
 
 def _normalize_non_claims(value: Any) -> dict[str, bool]:
-    claims = dict(LOCAL_REGISTRY_NON_CLAIMS if value is None else value)
+    if value is None:
+        claims = dict(LOCAL_REGISTRY_NON_CLAIMS)
+    elif isinstance(value, Mapping):
+        claims = dict(value)
+    else:
+        raise AtlasLocalRegistryError("atlas_local_registry_non_claims_invalid")
     _require_exact_fields(
         claims,
         frozenset(LOCAL_REGISTRY_NON_CLAIMS),
@@ -700,7 +760,39 @@ def _normalize_sha384s(value: Any, label: str, *, max_count: int) -> list[str]:
     for item in value:
         _require_sha384(item, f"atlas_local_registry_{label}_sha384_invalid")
         normalized.append(item)
+    if len(set(normalized)) != len(normalized):
+        raise AtlasLocalRegistryError(f"atlas_local_registry_{label}_duplicate")
     return sorted(dict.fromkeys(normalized))
+
+
+def _validate_receipt_semantics(receipt: Mapping[str, Any]) -> None:
+    if receipt.get("schema_version") != ATLAS_LOCAL_REGISTRY_RECEIPT_SCHEMA_VERSION:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_schema_version_invalid")
+    if receipt.get("phase") != ATLAS_LOCAL_REGISTRY_PHASE:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_phase_invalid")
+    if receipt.get("read_only") is not True:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_read_only_invalid")
+    if receipt.get("verdict") != "pass":
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_verdict_invalid")
+    if type(receipt.get("check_availability")) is not bool:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_check_availability_invalid")
+    if receipt.get("tokens") != list(ATLAS_LOCAL_REGISTRY_OUTPUT_TOKENS):
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_tokens_invalid")
+    _normalize_non_claims(receipt.get("non_claims"))
+    _validate_timestamp(receipt.get("generated_at_utc"))
+    if receipt.get("generated_at_source") not in {"caller_supplied", "wall_clock_utc"}:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_generated_at_source_invalid")
+    _require_sha384(receipt.get("local_registry_sha384"), "atlas_local_registry_receipt_registry_sha384_invalid")
+    counts = receipt.get("counts")
+    if not isinstance(counts, Mapping):
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_counts_invalid")
+    _require_exact_fields(counts, _RECEIPT_COUNT_FIELDS, "atlas_local_registry_receipt_counts_fields_invalid")
+    for key in sorted(_RECEIPT_COUNT_FIELDS):
+        value = counts[key]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise AtlasLocalRegistryError("atlas_local_registry_receipt_count_invalid")
+    if counts["content_availability"] != counts["available_content"] + counts["unavailable_content"]:
+        raise AtlasLocalRegistryError("atlas_local_registry_receipt_counts_mismatch")
 
 
 def _validate_timestamp(value: Any) -> None:
@@ -821,6 +913,7 @@ __all__ = [
     "MAX_CONTENT_AVAILABILITY_ENTRIES",
     "MAX_LOCAL_CONTENT_BYTES",
     "MAX_PENDING_OVERLAY_ENTRIES",
+    "MAX_TOTAL_CONTENT_CHECK_BYTES",
     "AtlasLocalRegistryError",
     "build_content_availability_record",
     "build_installed_slice_record",
@@ -829,6 +922,7 @@ __all__ = [
     "build_membership_coverage_entry",
     "build_pending_overlay_record",
     "check_content_availability",
+    "check_content_availability_records",
     "load_local_registry",
     "validate_content_availability_record",
     "validate_installed_slice_record",

@@ -154,6 +154,7 @@ _RECEIPT_FIELDS = frozenset(
         "verdict",
     }
 )
+_RECEIPT_COUNT_FIELDS = frozenset({"records", *ALLOWED_RECONCILE_STATES})
 _RECEIPT_PREFIX = "atlas_slice_reconcile_receipt:"
 
 
@@ -326,6 +327,7 @@ def validate_reconcile_receipt(receipt: Mapping[str, Any]) -> dict[str, Any]:
     _reject_unsafe_json_tree(receipt)
     normalized = dict(receipt)
     _require_exact_fields(normalized, _RECEIPT_FIELDS, "atlas_slice_reconcile_receipt_fields_invalid")
+    _validate_receipt_semantics(normalized)
     body = {key: normalized[key] for key in sorted(_RECEIPT_FIELDS - {"receipt_body_sha384", "receipt_id"})}
     expected_sha384 = _sha384_canonical(body)
     if normalized.get("receipt_body_sha384") != expected_sha384:
@@ -430,7 +432,12 @@ def _validate_digest_field_names(record: Mapping[str, Any]) -> None:
 
 
 def _normalize_non_claims(value: Any) -> dict[str, bool]:
-    claims = dict(RECONCILE_NON_CLAIMS if value is None else value)
+    if value is None:
+        claims = dict(RECONCILE_NON_CLAIMS)
+    elif isinstance(value, Mapping):
+        claims = dict(value)
+    else:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_non_claims_invalid")
     _require_exact_fields(claims, frozenset(RECONCILE_NON_CLAIMS), "atlas_slice_reconcile_non_claims_fields_invalid")
     if any(claims[key] is not True for key in RECONCILE_NON_CLAIMS):
         raise AtlasSliceReconcileError("atlas_slice_reconcile_non_claims_not_true")
@@ -456,7 +463,40 @@ def _normalize_str_sequence(value: Any, label: str, *, max_count: int) -> list[s
     normalized = []
     for item in value:
         normalized.append(_required_str_value(item, f"{label}_item"))
+    if len(set(normalized)) != len(normalized):
+        raise AtlasSliceReconcileError(f"atlas_slice_reconcile_{label}_duplicate")
     return sorted(dict.fromkeys(normalized))
+
+
+def _validate_receipt_semantics(receipt: Mapping[str, Any]) -> None:
+    if receipt.get("schema_version") != ATLAS_SLICE_RECONCILE_RECEIPT_SCHEMA_VERSION:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_schema_version_invalid")
+    if receipt.get("phase") != ATLAS_SLICE_RECONCILE_PHASE:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_phase_invalid")
+    if receipt.get("read_only") is not True:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_read_only_invalid")
+    if receipt.get("verdict") != "pass":
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_verdict_invalid")
+    if receipt.get("tokens") != list(RECONCILE_OUTPUT_TOKENS):
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_tokens_invalid")
+    _normalize_non_claims(receipt.get("non_claims"))
+    _validate_timestamp(receipt.get("generated_at_utc"))
+    if receipt.get("generated_at_source") not in {"caller_supplied", "wall_clock_utc"}:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_generated_at_source_invalid")
+    _require_sha384(receipt.get("registry_sha384"), "atlas_slice_reconcile_receipt_registry_sha384_invalid")
+    counts = receipt.get("counts")
+    if not isinstance(counts, Mapping):
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_counts_invalid")
+    _require_exact_fields(counts, _RECEIPT_COUNT_FIELDS, "atlas_slice_reconcile_receipt_counts_fields_invalid")
+    total_states = 0
+    for key in sorted(_RECEIPT_COUNT_FIELDS):
+        value = counts[key]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_count_invalid")
+        if key != "records":
+            total_states += value
+    if counts["records"] != total_states:
+        raise AtlasSliceReconcileError("atlas_slice_reconcile_receipt_counts_mismatch")
 
 
 def _normalize_chunk_entries(entries: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
