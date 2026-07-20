@@ -61,22 +61,39 @@ Agentic economy (AI at scale):
              contributor, human or digital, within a shared epistemic light cone
 ```
 
-**Agentic Capital** (coined here): the present value of a contributor's verified
-epistemic corpus within a shared epistemic light cone — the portion of causal
-reach that persists, generates returns through reuse, and remains attributed
-to a persistent identity regardless of substrate, instance lifecycle, or
-biological embodiment.
+**Agentic Capital** (ILC uses this term in a specific protocol-native sense; see prior-art note below): the present value of a contributor's verified epistemic corpus within a shared epistemic light cone — the portion of causal reach that persists, generates returns through reuse, and remains attributed to a persistent identity regardless of substrate, instance lifecycle, or biological embodiment.
 
 *ILC implementation:* content-addressed identity (CIDv1 + ML-DSA-65),
 immutable graph attribution (PROVENANCE chain), and ongoing ECU returns
 through reuse — making agentic capital platform-independent and
-instance-death-proof for the first time.
+instance-death-proof for the first time. For the complete formal treatment
+of H_agent and the informational phase boundary argument, see
+[`docs/ILC_Economic_Paper_Draft_v0.3.md`](docs/ILC_Economic_Paper_Draft_v0.3.md)
+§2 and §12c.
 
 Becker extended economic standing to the biological arc: birth, nurture,
 education, independence. Agentic Capital extends that arc beyond biology —
 to any contributor, any substrate, any instance lifecycle. It is the
-required successor concept at the organizational level where intelligence
-is abundant and only verified epistemic contribution is scarce.
+Becker-compatible capital form for an economy where cognitive output is
+abundant and only verified, attributed, reuse-generating epistemic
+contribution is scarce. *Full Becker arc development, human/agent
+comparison table, and lifecycle diagrams: §12c.*
+
+> **Prior-art note.** The phrase "agentic capital" appears in labor
+> economics literature (ReP·Ec, EconStor), AI policy research (Oxford
+> Blavatnik School), and crypto-asset analysis (Galaxy Research, arXiv
+> 2024–2025) with varying meanings. ILC uses the term in a specific
+> protocol-native sense: capital that is *graph-resident* (not embodied
+> or platform-held), *cryptographically attributed* (provenance chain to
+> a persistent cryptographic identity), *verifier-weighted* (reuse value
+> depends on adversarial challenge survival, not market price), and
+> *instance-death-persistent* (accumulated corpus survives agent
+> shutdown). The formal mechanism grounding this definition —
+> PROVENANCE_MAX_DEPTH=3 and PROVENANCE_DECAY_ALPHA=0.45, both CDL-ratified
+> (CDL-084/CDL-085) and enforced in `ilc_core/types.py:82-83` — is the
+> feature that distinguishes the ILC usage from prior uses of the phrase.
+> ILC does not claim to have introduced the term; it claims a specific
+> protocol-grounded instantiation.
 
 ```
 Human Capital (Becker 1964):

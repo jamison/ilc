@@ -46,9 +46,12 @@ completely. The scarcity structure inverts: cognitive output approaches free;
 verified trust in cognitive output becomes the binding scarce input. Markets
 built to price the former cannot price the latter.
 
-We introduce Agentic Capital H_agent as the successor to Becker's Human
-Capital H_human, and W_e = ΔH/E_cost — expressed in entropy and energy —
-as the measurement instrument built for the new level. We show ILC's
+We introduce Agentic Capital H_agent as the Becker-compatible capital form
+for non-biological agents — extending rather than replacing Becker's
+framework to the regime where cognitive output is abundant and only
+verified, attributed, graph-resident epistemic contribution is scarce.
+We also introduce W_e = ΔH/E_cost — expressed in entropy and energy — as
+the measurement instrument calibrated for this new level. We show ILC's
 mechanism design is the trust-production layer that makes Path A (trustful
 substitution) the higher-payoff equilibrium over Path B (trustless
 imitation), robust to the post-cliff regime where behavioral economics exits
@@ -432,6 +435,15 @@ epistemic light cone — the aggregate of contributions that have survived
 multi-observer adversarial challenge, carry traceable provenance, and
 generate returns through reuse and attribution across instance lifecycles.
 
+> *Prior-art note.* The phrase "agentic capital" appears in labor
+> economics literature, AI policy research, and crypto-asset analysis with
+> varying meanings. This paper uses it in a specific protocol-native sense
+> (see Definition 5): graph-resident, cryptographically attributed,
+> verifier-weighted, and instance-death-persistent. The formal mechanism
+> grounding this definition — CDL-ratified provenance depth and decay
+> constants enforced in protocol software — distinguishes it from prior
+> uses. No priority claim on the phrase is made.
+
 **Definition 5 (Agentic Capital — ILC implementation).** For agent a:
 
 ```
@@ -439,10 +451,22 @@ H_agent(a, t) = Σᵢ ECU(cᵢ) · ρ(cᵢ, t) · e^{-λ · age(cᵢ)}
 
   cᵢ           = claim i submitted by agent a
   ECU(cᵢ)      = epistemic credit awarded at verification
-  ρ(cᵢ, t)     = reuse/citation weight at time t
-                 = passive attribution flow from downstream claims
-  e^{-λ·age}   = temporal decay (Werner anti-hoarding mechanic;
-                  CDL-084, λ from α=0.45 recommended)
+  ρ(cᵢ, t)     = reuse-attribution functional at time t (protocol-grounded;
+                   see expansion below)
+  e^{-λ·age}   = temporal decay; λ = −ln(PROVENANCE_DECAY_ALPHA)
+                  where PROVENANCE_DECAY_ALPHA = 0.45
+                  [CDL-085; ilc_core/types.py:82-83]
+
+ρ(cᵢ, t) =
+  Σ_{j: cᵢ ∈ provenance(cⱼ), depth(cᵢ,cⱼ) ≤ PROVENANCE_MAX_DEPTH}
+    ECU(cⱼ) · PROVENANCE_DECAY_ALPHA^{depth(cᵢ,cⱼ)} · e^{-λ·age(cⱼ)}
+
+  PROVENANCE_MAX_DEPTH   = 3     [CDL-084, activated Phase 1114]
+  PROVENANCE_DECAY_ALPHA = 0.45  [CDL-085; ilc_core/types.py:82-83]
+
+ρ is not a free parameter. Both constants are CDL-ratified and
+protocol-enforced. H_agent is a concrete, auditable formula; the
+reuse-attribution weight is computable from the live graph state.
 ```
 
 H_agent survives instance death. It is content-addressed, not stored in
