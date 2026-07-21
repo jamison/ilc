@@ -7,11 +7,14 @@ from pathlib import Path
 import pytest
 
 from tools.phase_1575h_live_quorum_preflight import (
+    PHASE1360_VALIDATORS,
     atomic_write_json,
     bool_constant_from_file,
     build_evidence,
     quorum_threshold,
     status_token_checks,
+    udp_listener_probe,
+    validator_endpoint_checks,
 )
 
 
@@ -70,3 +73,65 @@ def test_build_evidence_no_ssh_records_non_activation_boundary() -> None:
     assert evidence["activation_boundary"]["executed_epoch_0_to_1_transition"] is False
     assert evidence["vps_check"]["skipped"] is True
     assert isinstance(evidence["ready_for_1575h"], bool)
+
+
+def test_udp_listener_probe_uses_remote_ss_udp_local_address_column(monkeypatch: pytest.MonkeyPatch) -> None:
+    commands: list[str] = []
+
+    def fake_ssh_command(alias: str, command: str, *, timeout_seconds: int) -> dict[str, object]:
+        commands.append(command)
+        return {
+            "argv": ["ssh", alias, command],
+            "returncode": 0,
+            "stdout": "UNCONN 0 0 100.112.32.42:50155 0.0.0.0:*",
+            "stderr": "",
+            "timed_out": False,
+        }
+
+    monkeypatch.setattr(
+        "tools.phase_1575h_live_quorum_preflight.ssh_command",
+        fake_ssh_command,
+    )
+
+    result = udp_listener_probe(PHASE1360_VALIDATORS[0])
+
+    assert result["open"] is True
+    assert result["transport"] == "udp"
+    assert result["probe_method"] == "remote_ss_udp_listener"
+    assert "$4 ~ /:50155$/" in commands[0]
+    assert "$5 ~" not in commands[0]
+
+
+def test_validator_endpoint_checks_counts_udp_quorum(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_ssh_command(alias: str, command: str, *, timeout_seconds: int) -> dict[str, object]:
+        return {
+            "argv": ["ssh", alias, command],
+            "returncode": 0,
+            "stdout": "UNCONN 0 0 100.112.32.42:50155 0.0.0.0:*",
+            "stderr": "",
+            "timed_out": False,
+        }
+
+    monkeypatch.setattr(
+        "tools.phase_1575h_live_quorum_preflight.ssh_command",
+        fake_ssh_command,
+    )
+
+    result = validator_endpoint_checks()
+
+    assert result["open_quic_count"] == 4
+    assert result["quorum_threshold"] == 3
+    assert result["quorum_reachable"] is True
+    assert all(record["quic"]["transport"] == "udp" for record in result["validators"])
+
+
+def test_phase1575h_readiness_launcher_has_no_db_wipe_or_epoch_send() -> None:
+    text = Path("tools/testbed/phase1575h_live_validator_quorum_readiness.sh").read_text(
+        encoding="utf-8"
+    )
+
+    assert "rm -rf" not in text
+    assert "send-epoch" not in text
+    assert "epoch_checkpoint" not in text
+    assert "mkdir -p '$db_path'" in text
+    assert "validator_%s_1575h_readiness.pid" in text
