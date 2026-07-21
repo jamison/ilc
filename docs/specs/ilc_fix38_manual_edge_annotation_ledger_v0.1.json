@@ -59791,6 +59791,135 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix1a_security_preflight_low_findings_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/phases/phase_1575h_fix1a_security_preflight_low_findings_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1575k_1575h_soak_reset_1575l_prompt_drafts",
+      "chronology_note": "2026-07-21 phase 1575k \u2014 treasury distribution guard clearance or activation certificate prompt",
+      "manual_read_summary": "Phase prompt for SENSITIVE treasury guard clearance decision: consumes 1575i + 1575j evidence, dispositions three double-lock guards (treasury, validator admission, bounty), requires destination binding and settlement-root verification if any guard cleared.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575k_g10_treasury_guard_clearance.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-047"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-054"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:treasury_guard_clearance_disposition_committed_phase_1575k"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575k_g10_treasury_guard_clearance.md"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1575k_1575h_soak_reset_1575l_prompt_drafts",
+      "chronology_note": "2026-07-21 phase 1575h-soak \u2014 private economic soak 20+ live epochs prompt",
+      "manual_read_summary": "Phase prompt for SENSITIVE private economic soak: 20+ accelerated epochs on live 4-validator network with nonzero settlement roots, CDL-084 PROVENANCE attribution, quorum confirmation, and balance snapshots.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_private_economic_soak.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-084"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-078"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:private_economic_soak_20_epochs_complete_phase_1575h_soak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_private_economic_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1575k_1575h_soak_reset_1575l_prompt_drafts",
+      "chronology_note": "2026-07-21 phase 1575h-reset \u2014 soft-RC archive and epoch-0 reset prompt",
+      "manual_read_summary": "Phase prompt for SENSITIVE soft-RC archive and epoch-0 reinit: stops validators, SHA-256-hashes and archives all 4 validator DBs, emits archive receipt, runs start-clean, confirms all validators at epoch 0 for public RC launch.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_soft_rc_archive_epoch0_reset.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_rc_epoch0_namespace_initialized_phase_1575h_reset"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_soft_rc_archive_epoch0_reset.md"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1575k_1575h_soak_reset_1575l_prompt_drafts",
+      "chronology_note": "2026-07-21 phase 1575l \u2014 ejected stake redistribution readiness prompt",
+      "manual_read_summary": "Phase prompt for NON-SENSITIVE ejected stake readiness: dry-run rehearsal of ejection scenario, Decimal conservation check, fail-closed behavior verification, canonical ejection event and readiness certificate; guard not cleared.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575l_g10_ejected_stake_redistribution_readiness.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-043"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "adr:ADR-0015"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ejected_stake_readiness_rehearsal_committed_phase_1575l"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:ejected_stake_guard_not_cleared_phase_1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575l_g10_ejected_stake_redistribution_readiness.md"
     }
   ],
   "boundary": {
