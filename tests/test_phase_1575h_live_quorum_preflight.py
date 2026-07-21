@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,8 @@ from tools.phase_1575h_live_quorum_preflight import (
     atomic_write_json,
     bool_constant_from_file,
     build_evidence,
+    run_command,
+    MAX_COMMAND_OUTPUT_BYTES,
     quorum_threshold,
     status_token_checks,
     udp_listener_probe,
@@ -73,6 +76,23 @@ def test_build_evidence_no_ssh_records_non_activation_boundary() -> None:
     assert evidence["activation_boundary"]["executed_epoch_0_to_1_transition"] is False
     assert evidence["vps_check"]["skipped"] is True
     assert isinstance(evidence["ready_for_1575h"], bool)
+
+
+def test_run_command_output_is_bounded() -> None:
+    result = run_command(
+        [
+            sys.executable,
+            "-c",
+            "import sys; sys.stdout.write('x' * 70000); sys.stderr.write('y' * 70000)",
+        ],
+        timeout_seconds=5,
+    )
+
+    assert result["returncode"] == 0
+    assert len(result["stdout"]) == MAX_COMMAND_OUTPUT_BYTES
+    assert len(result["stderr"]) == MAX_COMMAND_OUTPUT_BYTES
+    assert result["stdout_truncated"] is True
+    assert result["stderr_truncated"] is True
 
 
 def test_udp_listener_probe_uses_remote_ss_udp_local_address_column(monkeypatch: pytest.MonkeyPatch) -> None:

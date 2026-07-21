@@ -22,6 +22,8 @@ ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION = False  # guard cleared Phase 1520p - A
 PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1 = "public_consensus_slices_0_1_plus_epoch_public_deltas_v1"
 PUBLIC_CONSENSUS_GRAPH_SNAPSHOT_SCHEMA_V1 = "public_consensus_graph_snapshot_v1"
 VALIDATOR_SET_MANIFEST_SCHEMA_V1 = "validator_set_manifest_v1"
+MAX_EPOCH_PUBLIC_DELTAS = 4096
+MAX_VALIDATOR_SET_MEMBERS = 1024
 
 
 def _reject_float(value: object, token: str) -> None:
@@ -216,6 +218,13 @@ def build_public_consensus_graph_snapshot_manifest(
     epoch_public_deltas: Sequence[str] = (),
 ) -> dict[str, object]:
     _require_epoch_number(epoch_number)
+    if not isinstance(epoch_public_deltas, Sequence) or isinstance(
+        epoch_public_deltas,
+        (str, bytes, bytearray),
+    ):
+        raise ValueError("layer2_epoch_snapshot_v2_epoch_public_deltas_must_be_sequence")
+    if len(epoch_public_deltas) > MAX_EPOCH_PUBLIC_DELTAS:
+        raise ValueError("layer2_epoch_snapshot_v2_epoch_public_deltas_exceeds_cap")
     normalized_deltas = tuple(
         sorted(
             _require_sha384(
@@ -259,6 +268,8 @@ def graph_state_digest_from_manifest(manifest: Mapping[str, object]) -> str:
     deltas = manifest.get("epoch_public_deltas")
     if not isinstance(deltas, list):
         raise ValueError("layer2_epoch_snapshot_v2_epoch_public_deltas_invalid")
+    if len(deltas) > MAX_EPOCH_PUBLIC_DELTAS:
+        raise ValueError("layer2_epoch_snapshot_v2_epoch_public_deltas_exceeds_cap")
     for digest in deltas:
         _require_sha384(digest, "layer2_epoch_snapshot_v2_invalid_epoch_public_delta_sha384")
     if manifest.get("epoch_public_delta_count") != len(deltas):
@@ -278,6 +289,8 @@ def build_validator_set_manifest(
     )
     if not isinstance(validators, Sequence) or isinstance(validators, (str, bytes, bytearray)):
         raise ValueError("layer2_epoch_snapshot_v2_validator_set_must_be_sequence")
+    if len(validators) > MAX_VALIDATOR_SET_MEMBERS:
+        raise ValueError("layer2_epoch_snapshot_v2_validator_set_exceeds_cap")
     normalized_records = []
     seen_ids: set[int] = set()
     for record in validators:
@@ -600,6 +613,8 @@ __all__ = [
     "ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION",
     "Layer2EpochSnapshot",
     "Layer2EpochSnapshotV2",
+    "MAX_EPOCH_PUBLIC_DELTAS",
+    "MAX_VALIDATOR_SET_MEMBERS",
     "PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1",
     "PUBLIC_CONSENSUS_GRAPH_SNAPSHOT_SCHEMA_V1",
     "VALIDATOR_SET_MANIFEST_SCHEMA_V1",

@@ -91,7 +91,9 @@ def _require_non_negative_int(name: str, value: Any) -> int:
 
 
 def _require_non_negative_decimal(name: str, value: Any) -> Decimal:
-    if isinstance(value, bool) or not isinstance(value, (Decimal, int, str, float)):
+    if isinstance(value, bool) or isinstance(value, float):
+        raise ValueError(f"{name}_must_be_non_negative_decimal")
+    if not isinstance(value, (Decimal, int, str)):
         raise ValueError(f"{name}_must_be_non_negative_decimal")
     try:
         number = value if isinstance(value, Decimal) else Decimal(str(value))

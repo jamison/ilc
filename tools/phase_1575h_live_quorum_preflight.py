@@ -25,6 +25,7 @@ from typing import Any
 
 PHASE = "1575h-readiness"
 SCHEMA_VERSION = "ilc.phase1575h.live_quorum_preflight.v1"
+MAX_COMMAND_OUTPUT_BYTES = 65536
 
 REQUIRED_STATUS_TOKENS = (
     "public_rc_live_phase_1575c",
@@ -122,31 +123,40 @@ def atomic_write_json(path: Path, data: dict[str, Any]) -> None:
         raise
 
 
+def _read_bounded_output(handle: Any) -> tuple[str, bool]:
+    handle.seek(0)
+    data = handle.read(MAX_COMMAND_OUTPUT_BYTES + 1)
+    truncated = len(data) > MAX_COMMAND_OUTPUT_BYTES
+    return data[:MAX_COMMAND_OUTPUT_BYTES].decode("utf-8", errors="replace").strip(), truncated
+
+
 def run_command(argv: list[str], *, timeout_seconds: int) -> dict[str, Any]:
-    try:
-        completed = subprocess.run(
+    with tempfile.TemporaryFile() as stdout_file, tempfile.TemporaryFile() as stderr_file:
+        process = subprocess.Popen(
             argv,
-            check=False,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=timeout_seconds,
+            stdout=stdout_file,
+            stderr=stderr_file,
+            text=False,
         )
-        return {
-            "argv": argv,
-            "returncode": completed.returncode,
-            "stdout": completed.stdout.strip(),
-            "stderr": completed.stderr.strip(),
-            "timed_out": False,
-        }
-    except subprocess.TimeoutExpired as exc:
-        return {
-            "argv": argv,
-            "returncode": None,
-            "stdout": (exc.stdout or "").strip() if isinstance(exc.stdout, str) else "",
-            "stderr": (exc.stderr or "").strip() if isinstance(exc.stderr, str) else "",
-            "timed_out": True,
-        }
+        timed_out = False
+        try:
+            returncode = process.wait(timeout=timeout_seconds)
+        except subprocess.TimeoutExpired:
+            timed_out = True
+            process.kill()
+            returncode = process.wait()
+        stdout, stdout_truncated = _read_bounded_output(stdout_file)
+        stderr, stderr_truncated = _read_bounded_output(stderr_file)
+    return {
+        "argv": argv,
+        "max_output_bytes_per_stream": MAX_COMMAND_OUTPUT_BYTES,
+        "returncode": None if timed_out else returncode,
+        "stderr": stderr,
+        "stderr_truncated": stderr_truncated,
+        "stdout": stdout,
+        "stdout_truncated": stdout_truncated,
+        "timed_out": timed_out,
+    }
 
 
 def ssh_command(alias: str, command: str, *, timeout_seconds: int) -> dict[str, Any]:

@@ -11,6 +11,8 @@ from ilc_core.bundle.epoch_state_root import (
     validate_state_root_cidv1_hex,
 )
 from ilc_core.bundle.layer2_epoch_snapshot import (
+    MAX_EPOCH_PUBLIC_DELTAS,
+    MAX_VALIDATOR_SET_MEMBERS,
     PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1,
     build_public_consensus_graph_snapshot_manifest,
     build_validator_set_manifest,
@@ -121,12 +123,45 @@ def test_graph_digest_rejects_wrong_scope_manifest() -> None:
         graph_state_digest_from_manifest(manifest)
 
 
+def test_graph_manifest_rejects_epoch_public_delta_count_above_cap() -> None:
+    with pytest.raises(ValueError, match="epoch_public_deltas_exceeds_cap"):
+        build_public_consensus_graph_snapshot_manifest(
+            epoch_number=1,
+            slice_0_sha384=SHA384_1,
+            slice_1_sha384=SHA384_2,
+            epoch_public_deltas=[SHA384_3] * (MAX_EPOCH_PUBLIC_DELTAS + 1),
+        )
+
+
+def test_graph_digest_rejects_manifest_delta_count_above_cap() -> None:
+    manifest = _graph_manifest()
+    manifest["epoch_public_delta_count"] = MAX_EPOCH_PUBLIC_DELTAS + 1
+    manifest["epoch_public_deltas"] = [SHA384_3] * (MAX_EPOCH_PUBLIC_DELTAS + 1)
+
+    with pytest.raises(ValueError, match="epoch_public_deltas_exceeds_cap"):
+        graph_state_digest_from_manifest(manifest)
+
+
 def test_validator_root_rejects_noncanonical_manifest_order() -> None:
     manifest = _validator_manifest()
     manifest["validators"] = list(reversed(manifest["validators"]))  # type: ignore[index]
 
     with pytest.raises(ValueError, match="validator_manifest_not_canonical"):
         validator_set_root_from_manifest(manifest)
+
+
+def test_validator_manifest_rejects_validator_count_above_cap() -> None:
+    validators = [
+        {
+            "validator_id": validator_id,
+            "validator_agent_cidv1": node_id_from_obj({"validator": validator_id}),
+            "bls_public_key_sha256": SHA256_A,
+        }
+        for validator_id in range(1, MAX_VALIDATOR_SET_MEMBERS + 2)
+    ]
+
+    with pytest.raises(ValueError, match="validator_set_exceeds_cap"):
+        build_validator_set_manifest(validators=validators, quorum_threshold=1)
 
 
 def test_layer2_v2_to_state_root_cidv1_hex_returns_raw_36_byte_hex() -> None:
