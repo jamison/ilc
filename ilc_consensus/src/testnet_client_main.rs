@@ -77,6 +77,7 @@ struct Args {
     relay_route: Vec<ValidatorID>,
     // epoch_settlement params
     start_epoch: Option<u64>,
+    state_root_hex: Option<String>,
     count: u64,
     // full_transfer params
     listen_addr: Option<SocketAddr>,
@@ -102,6 +103,7 @@ fn parse_args() -> Result<Args, String> {
     let mut relay_count: usize = 0;
     let mut relay_route: Vec<ValidatorID> = Vec::new();
     let mut start_epoch: Option<u64> = None;
+    let mut state_root_hex: Option<String> = None;
     let mut count: u64 = 1;
     let mut listen_addr: Option<SocketAddr> = None;
     let mut validators: Vec<(u32, SocketAddr)> = Vec::new();
@@ -211,6 +213,14 @@ fn parse_args() -> Result<Args, String> {
                         .map_err(|e| format!("--epoch: {}", e))?,
                 );
             }
+            "--state-root" => {
+                i += 1;
+                state_root_hex = Some(
+                    raw.get(i)
+                        .ok_or("--state-root requires a 72-char dag-cbor CIDv1Root hex string")?
+                        .clone(),
+                );
+            }
             "--count" => {
                 i += 1;
                 count = raw
@@ -264,6 +274,7 @@ fn parse_args() -> Result<Args, String> {
             "--help" | "-h" => {
                 eprintln!("Usage:");
                 eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement|epoch_checkpoint>");
+                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --quorum-keys <csv> ...");
                 eprintln!("  testnet_client --msg broadcast --sender-key <file> --to <hex> --amount <u64> --version <u64> [--batch-window-ms <N>] [--relay-count <N> --relay-route <id,id,..> --validators <id@addr,id@addr,..>]");
                 eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --epoch <N> --cert <pem> --key <pem>");
                 std::process::exit(0);
@@ -288,6 +299,7 @@ fn parse_args() -> Result<Args, String> {
         relay_count,
         relay_route,
         start_epoch,
+        state_root_hex,
         count,
         listen_addr,
         validators,
@@ -498,11 +510,18 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             let start_epoch = args
                 .start_epoch
                 .ok_or("--epoch is required for --msg epoch_settlement")?;
+            if args.count != 1 {
+                return Err("--count must be 1 for --msg epoch_settlement with --state-root".into());
+            }
+            let state_root = cidv1_root_from_required_arg(
+                args.state_root_hex.as_deref(),
+                "--state-root is required for --msg epoch_settlement",
+            )?;
             for i in 0..args.count {
                 let epoch = start_epoch + i;
                 let tx = EpochSettlementTx {
                     epoch: EpochSeq(epoch),
-                    state_root: CIDv1Root::new([0u8; 36]), // testnet placeholder
+                    state_root,
                 };
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
@@ -529,6 +548,13 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             let start_epoch = args
                 .start_epoch
                 .ok_or("--epoch is required for --msg epoch_checkpoint")?;
+            if args.count != 1 {
+                return Err("--count must be 1 for --msg epoch_checkpoint with --state-root".into());
+            }
+            let state_root = cidv1_root_from_required_arg(
+                args.state_root_hex.as_deref(),
+                "--state-root is required for --msg epoch_checkpoint",
+            )?;
             let mut bls_keys = Vec::new();
             if args.quorum_keys.is_empty() {
                 return Err("--quorum-keys is required for epoch_checkpoint".into());
@@ -557,7 +583,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let epoch = start_epoch + i;
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
-                    state_root: CIDv1Root::new([0u8; 36]),
+                    state_root,
                 };
 
                 let msg_bytes = bincode::serialize(&record).unwrap();
@@ -910,6 +936,30 @@ fn load_bls_secret_key(path: &PathBuf) -> Result<blst::min_pk::SecretKey, String
         .map_err(|e| format!("cannot read sender key '{}': {}", path.display(), e))?;
     let bytes = hex_decode_exact(hex.trim(), 32)?;
     blst::min_pk::SecretKey::from_bytes(&bytes).map_err(|_| "invalid BLS secret key bytes".into())
+}
+
+fn cidv1_root_from_required_arg(
+    value: Option<&str>,
+    missing_message: &'static str,
+) -> Result<CIDv1Root, String> {
+    let root_hex = value.ok_or(missing_message)?;
+    let bytes = hex_decode_exact_lowercase(root_hex, 36)?;
+    if bytes.iter().all(|byte| *byte == 0) {
+        return Err("--state-root must not be all zeros".into());
+    }
+    if !bytes.starts_with(&[0x01, 0x71, 0x12, 0x20]) {
+        return Err("--state-root must be CIDv1 dag-cbor sha2-256 bytes".into());
+    }
+    let mut fixed = [0u8; 36];
+    fixed.copy_from_slice(&bytes);
+    Ok(CIDv1Root::new(fixed))
+}
+
+fn hex_decode_exact_lowercase(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {
+    if hex.chars().any(|c| !matches!(c, '0'..='9' | 'a'..='f')) {
+        return Err("expected lowercase hex".into());
+    }
+    hex_decode_exact(hex, expected_len)
 }
 
 fn hex_decode_exact(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {

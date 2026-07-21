@@ -135,3 +135,8 @@ def test_phase1575h_readiness_launcher_has_no_db_wipe_or_epoch_send() -> None:
     assert "epoch_checkpoint" not in text
     assert "mkdir -p '$db_path'" in text
     assert "validator_%s_1575h_readiness.pid" in text
+    assert "start-clean --confirm-wipe" in text
+    assert "phase1575h_start_clean_refused_without_confirm_wipe" in text
+    assert "sha256sum" in text
+    assert "db.tar.sha256" in text
+    assert "db_moved" in text

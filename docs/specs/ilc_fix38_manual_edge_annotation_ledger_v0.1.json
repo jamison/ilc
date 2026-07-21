@@ -63565,6 +63565,93 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575i_treasury_readiness_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/treasury_readiness_1575i/treasury_no_wallet_write_readiness_certificate.json"
+    },
+    {
+      "annotation_batch": "manual_batch_196_phase_1575h_fix3_epoch_state_checkpoint_bridge",
+      "chronology_note": "2026-07-21 Phase 1575h-Fix3 - Layer2EpochSnapshotV2 and epoch state root bridge",
+      "manual_read_summary": "Adds the V2 Layer 2 snapshot schema, public-consensus graph snapshot manifest helper, validator-set manifest helper, and raw dag-cbor CIDv1Root bridge used by Rust checkpoint submissions.",
+      "repo_path": "ilc_core/bundle/layer2_epoch_snapshot.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "phase:economic_checkpoint_bridge_committed_phase_1575h_fix3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "BUILDS",
+          "target": "ilc_core/bundle/epoch_state_root.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "BUILDS"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_updated:ilc_core/bundle/layer2_epoch_snapshot.py -> ilc_core/bundle/epoch_state_root.py"
+    },
+    {
+      "annotation_batch": "manual_batch_196_phase_1575h_fix3_epoch_state_checkpoint_bridge",
+      "chronology_note": "2026-07-21 Phase 1575h-Fix3 - checkpoint sender and soak setup tools",
+      "manual_read_summary": "Adds dry-run-first nonzero checkpoint-send wrapper, deterministic economic soak setup, retained validator clean-start archive path, and updates legacy phase1360 sender to pass a nonzero dag-cbor CIDv1Root.",
+      "repo_path": "tools/testbed/phase1575h_economic_checkpoint_send.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "phase:economic_checkpoint_bridge_committed_phase_1575h_fix3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1575h_fix3_checkpoint_bridge.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/testbed/phase1575h_economic_checkpoint_send.py;graph_delta=support_only:tools/testbed/phase1575h_economic_soak_setup.py;graph_delta=support_only:tools/testbed/phase1575h_live_validator_quorum_readiness.sh;graph_delta=support_only:tools/testbed/phase1360_multiop_control.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_196_phase_1575h_fix3_epoch_state_checkpoint_bridge",
+      "chronology_note": "2026-07-21 Phase 1575h-Fix3 - tests and walkthrough",
+      "manual_read_summary": "Focused tests verify V2 determinism, graph/validator manifest roots, 72-hex dag-cbor CIDv1Root bridge, Rust source state-root requirement, dry-run checkpoint wrapper, deterministic soak setup, and clean-start archive markers. Walkthrough records scope, verification, and non-claims.",
+      "repo_path": "tests/test_phase_1575h_fix3_epoch_state_root.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/bundle/epoch_state_root.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "docs/phases/phase_1575h_fix3_epoch_state_checkpoint_bridge_walkthrough.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_fix3_epoch_state_root.py -> ilc_core/bundle/epoch_state_root.py;graph_delta=support_tests_added:tests/test_phase_1575h_fix3_checkpoint_bridge.py -> tools/testbed/phase1575h_economic_checkpoint_send.py;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=phase_walkthrough_added:docs/phases/phase_1575h_fix3_epoch_state_checkpoint_bridge_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
