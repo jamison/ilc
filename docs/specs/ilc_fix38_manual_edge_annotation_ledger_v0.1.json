@@ -63903,6 +63903,64 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575j_validator_reward_rehearsal_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/validator_reward_rehearsal_1575j/validator_reward_rehearsal_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1577_passive_ecu_wiring",
+      "chronology_note": "2026-07-21 Phase 1577 - passive ECU wiring focused tests",
+      "manual_read_summary": "Tests verify CDL-060 Decimal centrality accumulation, non-finite ingress rejection, absence of float values in centrality buffers, passive ECU guard retention, monkeypatched-active settlement wiring, dependency tokens, and settlement runtime version token.",
+      "repo_path": "tests/test_phase_1577_passive_ecu_wiring.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/network/d2d/centrality_delta_gossip_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "ilc_core/economics/epoch_attribution_settle_runtime.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1577_passive_ecu_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_198_phase_1577_passive_ecu_wiring",
+      "chronology_note": "2026-07-21 Phase 1577 - walkthrough and status attestation",
+      "manual_read_summary": "Walkthrough records purpose, delivery summary, Decimal migration, default-off passive ECU wiring, guard-clearance carry-forward, verification commands, and non-claims.",
+      "repo_path": "docs/phases/phase_1577_passive_ecu_wiring_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:passive_ecu_wiring_committed_phase_GAP_CDL060"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:passive_ecu_guard_retained_phase_1577"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1577_passive_ecu_wiring_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",

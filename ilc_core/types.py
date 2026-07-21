@@ -139,6 +139,8 @@ class EpochAttributionBatch:
         stake_map: dict[str, dict[str, "Decimal"]],
         emitted_tokens: Optional[list[str]] = None,
         epoch_node_mint_count: int = 0,
+        passive_ecu_centrality_state: Optional[dict[str, Any]] = None,
+        passive_ecu_quality_scores: Optional[dict[str, "Decimal"]] = None,
     ) -> list[tuple[str, "Decimal"]]:
         """Process all events and return ECU attribution payout quotes.
 
@@ -153,6 +155,10 @@ class EpochAttributionBatch:
             emitted_tokens: Optional mutable list for protocol event tokens.
             epoch_node_mint_count: Count of node-mint events in the epoch. Forwarded
                 to the attribution runtime for CDL-085 φ-bound enforcement.
+            passive_ecu_centrality_state: Optional CDL-060 centrality state. Ignored
+                while the passive ECU guard remains default-off.
+            passive_ecu_quality_scores: Optional node_id -> q_i map for future
+                passive ECU activation review.
         Returns:
             List of (agent_id, ecu_amount) Decimal payouts. This method does not
             mutate balances; callers are responsible for applying the returned
@@ -161,7 +167,14 @@ class EpochAttributionBatch:
         if not self.sealed:
             raise ValueError("epoch_attribution_batch_must_be_sealed_before_settlement")
         from ilc_core.economics.epoch_attribution_settle_runtime import settle_attribution_batch
-        return settle_attribution_batch(self, stake_map, emitted_tokens, epoch_node_mint_count)
+        return settle_attribution_batch(
+            self,
+            stake_map,
+            emitted_tokens,
+            epoch_node_mint_count,
+            passive_ecu_centrality_state,
+            passive_ecu_quality_scores,
+        )
 
 
 # THE KERNEL TAXONOMY

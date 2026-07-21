@@ -11,7 +11,7 @@ from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
 
 PASSIVE_ECU_ATTRIBUTION_RUNTIME_VERSION = "passive_ecu_attribution_runtime_550.v0.1"
 CDL_060_DEPENDENCY = "cdl_060_ratified_541.v0.1"
-CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
+CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"
 # M1 audit fix (Phase 946): all ECU rate constants converted to Decimal.
 # Decimal * float raises TypeError — all four must be Decimal together.
 PASSIVE_ATTRIBUTION_RATE = Decimal("0.20")

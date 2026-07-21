@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.network.d2d import centrality_delta_gossip_runtime as runtime
@@ -74,16 +75,16 @@ def _valid_message() -> dict[str, object]:
 
 
 def test_module_imports_and_exposes_required_constants() -> None:
-    assert runtime.CDL_060_GOSSIP_RUNTIME_VERSION == 'cdl_060_gossip_runtime_548.v0.1'
+    assert runtime.CDL_060_GOSSIP_RUNTIME_VERSION == 'centrality_delta_gossip_runtime_GAP_CDL060.v0.2'
     assert runtime.CDL_060_DEPENDENCY == 'cdl_060_ratified_541.v0.1'
     assert runtime.D2D_GOSSIP_DEPENDENCY == 'd2d_gossip_382.v0.1'
     assert runtime.CDL_052_DEPENDENCY == 'cdl_052_ratified_466.v0.1'
     assert runtime.MAX_FANOUT == 3
-    assert runtime.U_FLOOR == 0.05
+    assert runtime.U_FLOOR == Decimal("0.05")
 
 
 def test_exact_constant_values_are_locked() -> None:
-    assert runtime.CDL_060_GOSSIP_RUNTIME_VERSION == 'cdl_060_gossip_runtime_548.v0.1'
+    assert runtime.CDL_060_GOSSIP_RUNTIME_VERSION == 'centrality_delta_gossip_runtime_GAP_CDL060.v0.2'
     assert runtime.CDL_060_DEPENDENCY == 'cdl_060_ratified_541.v0.1'
     assert runtime.D2D_GOSSIP_DEPENDENCY == 'd2d_gossip_382.v0.1'
     assert runtime.CDL_052_DEPENDENCY == 'cdl_052_ratified_466.v0.1'
@@ -134,18 +135,18 @@ def test_accumulate_centrality_delta_suppresses_delta_below_u_floor() -> None:
     state: dict[str, object] = {}
     updated = runtime.accumulate_centrality_delta('node-alpha', 0.01, 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert updated['node-alpha'] == 0.0
+        assert updated['node-alpha'] == Decimal("0E-12")
     else:
-        assert updated['_pending'][1]['node-alpha'] == 0.0
+        assert updated['_pending'][1]['node-alpha'] == Decimal("0E-12")
 
 
 def test_accumulate_centrality_delta_accumulates_valid_delta_per_selected_model() -> None:
     state: dict[str, object] = {}
     updated = runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert updated['node-alpha'] == 0.2
+        assert updated['node-alpha'] == Decimal("0.200000000000")
     else:
-        assert updated['_pending'][1]['node-alpha'] == 0.2
+        assert updated['_pending'][1]['node-alpha'] == Decimal("0.200000000000")
         assert 'node-alpha' not in updated
 
 
@@ -164,12 +165,12 @@ def test_commit_epoch_buffer_behaves_per_selected_model_and_logs_zeroed_epoch() 
     updated = runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
         committed = runtime.commit_epoch_buffer(1, updated)
-        assert committed['node-alpha'] == 0.2
+        assert committed['node-alpha'] == Decimal("0.200000000000")
         assert '_pending' not in committed
         return
 
     committed = runtime.commit_epoch_buffer(1, updated)
-    assert committed['node-alpha'] == 0.2
+    assert committed['node-alpha'] == Decimal("0.200000000000")
     assert 1 not in committed.get('_pending', {})
 
     committed['_zeroed_epochs'] = {2}
