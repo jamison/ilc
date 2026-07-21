@@ -59920,6 +59920,64 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575l_g10_ejected_stake_redistribution_readiness.md"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_pypi_remediation",
+      "chronology_note": "2026-07-21 phase 1575o \u2014 emergency PyPI remediation prompt",
+      "manual_read_summary": "Phase prompt directing Codex to resolve all PUBLIC_RC_EXCLUDE dispositions in ilc_core/, define a public package allowlist, fix broken entrypoints, build a clean ilc-core 0.2.0 wheel/sdist with full-content hardened artifact scans, and produce a build receipt for human-gated 1575o-release upload.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575o_g10_pypi_emergency_remediation.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_phase_1448a_prepublication_review_checklist_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1575o_pypi_emergency_remediation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_pypi_remediation",
+      "chronology_note": "2026-07-21 phase 1575o-Fix1 \u2014 PyPI package profile prompt",
+      "manual_read_summary": "Phase prompt directing Codex to disposition all 29 docstring-form PUBLIC_RC_EXCLUDE modules in ilc_core/, define an explicit public package allowlist, remove broken entrypoints, build a clean 0.2.0 wheel with full-content artifact scan, and produce a build receipt for human-gated 1575o-release upload.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575o_fix1_g10_pypi_package_profile.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_phase_1448a_prepublication_review_checklist_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1575o_fix1_pypi_package_profile"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
