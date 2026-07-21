@@ -174,6 +174,23 @@ def tcp_probe(host: str, port: int, *, timeout_seconds: float = 3.0) -> dict[str
         return {"host": host, "port": port, "open": False, "error": type(exc).__name__}
 
 
+def udp_listener_probe(endpoint: ValidatorEndpoint) -> dict[str, Any]:
+    """Check the remote QUIC UDP listener from the host that owns the socket."""
+    command = (
+        "ss -lunp 2>/dev/null | "
+        f"awk '$4 ~ /:{endpoint.quic_port}$/ {{ print; found=1 }} END {{ exit found ? 0 : 1 }}'"
+    )
+    result = ssh_command(endpoint.host_label, command, timeout_seconds=12)
+    return {
+        "host": endpoint.host,
+        "port": endpoint.quic_port,
+        "transport": "udp",
+        "probe_method": "remote_ss_udp_listener",
+        "open": result["returncode"] == 0 and not result["timed_out"],
+        "command": result,
+    }
+
+
 def bool_constant_from_file(path: Path, name: str) -> bool | None:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     for node in tree.body:
@@ -240,7 +257,7 @@ def quorum_threshold(n: int) -> int:
 def validator_endpoint_checks() -> dict[str, Any]:
     records = []
     for endpoint in PHASE1360_VALIDATORS:
-        quic = tcp_probe(endpoint.host, endpoint.quic_port)
+        quic = udp_listener_probe(endpoint)
         grpc = tcp_probe(endpoint.host, endpoint.grpc_port) if endpoint.grpc_port else None
         records.append(
             {

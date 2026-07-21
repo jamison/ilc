@@ -63361,6 +63361,88 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_live_quorum_readiness_preflight_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/block6_1575h_live_quorum_preflight/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_194_phase_1575h_live_validator_quorum_readiness",
+      "chronology_note": "2026-07-21 Phase 1575h-live-validator-quorum-readiness - prompt and retained validator startup wrapper",
+      "manual_read_summary": "Prompt and readiness wrapper define a retained private validator quorum startup path that preserves DB directories, omits epoch checkpoint sends, and remains outside sensitive epoch-transition authority.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_live_validator_quorum_readiness.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:phase_1575h_live_validator_quorum_readiness_committed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:epoch_0_to_1_not_executed_phase_1575h_live_validator_quorum_readiness"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_live_validator_quorum_readiness.md;graph_delta=support_only:tools/testbed/phase1575h_live_validator_quorum_readiness.sh -> phase-1575h-private-validator-readiness"
+    },
+    {
+      "annotation_batch": "manual_batch_194_phase_1575h_live_validator_quorum_readiness",
+      "chronology_note": "2026-07-21 Phase 1575h-live-validator-quorum-readiness - UDP quorum preflight correction",
+      "manual_read_summary": "Corrected the canonical 1575h readiness preflight to check QUIC as remote UDP listener readiness instead of TCP-connect readiness; tests lock the transport semantics and launcher non-activation constraints.",
+      "repo_path": "tools/phase_1575h_live_quorum_preflight.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tests/test_phase_1575h_live_quorum_preflight.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/phase_1575h_live_quorum_preflight.py -> phase-1575h-readiness;graph_delta=support_tests_added:tests/test_phase_1575h_live_quorum_preflight.py -> tools/phase_1575h_live_quorum_preflight.py"
+    },
+    {
+      "annotation_batch": "manual_batch_194_phase_1575h_live_validator_quorum_readiness",
+      "chronology_note": "2026-07-21 Phase 1575h-live-validator-quorum-readiness - walkthrough and readiness evidence",
+      "manual_read_summary": "Walkthrough records the live validator quorum result, UDP listener evidence, readiness evidence hashes, verification commands, non-claims, and carry-forward boundary before sensitive 1575h execution.",
+      "repo_path": "docs/phases/phase_1575h_live_validator_quorum_readiness_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:phase_1575h_live_validator_quorum_ready_true"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:epoch_0_to_1_not_executed_phase_1575h_live_validator_quorum_readiness"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_live_validator_quorum_readiness_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/block6_1575h_live_validator_quorum_readiness/evidence_records.json"
     }
   ],
   "phase": "1545p-Fix38",
