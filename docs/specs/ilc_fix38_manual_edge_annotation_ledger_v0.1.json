@@ -63443,6 +63443,128 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_live_validator_quorum_readiness_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/block6_1575h_live_validator_quorum_readiness/evidence_records.json"
+    },
+    {
+      "annotation_batch": "manual_batch_195_phase_1575i_treasury_readiness",
+      "chronology_note": "2026-07-21 Phase 1575i - treasury role reconciliation and readiness spec",
+      "manual_read_summary": "Spec records the treasury role boundary, ratified CDL-047/CDL-054 authorities, source pools, governance controls, destination requirements, Genesis 5% non-overlap, 1575k carry-forward, and readiness-only non-claims.",
+      "repo_path": "docs/specs/ilc_treasury_role_reconciliation_and_readiness_1575i_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-047"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-054"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "review_status": "candidate",
+          "target": "nonclaim:treasury_routes_to_genesis_agent1_by_default"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:1575k_treasury_distribution_guard_clearance_or_activation_certificate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS",
+        "REQUIRES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_treasury_role_reconciliation_and_readiness_1575i_v0.1.md -> cdl:CDL-047;graph_delta=load_bearing_artifact_added:docs/specs/ilc_treasury_role_reconciliation_and_readiness_1575i_v0.1.md -> cdl:CDL-054"
+    },
+    {
+      "annotation_batch": "manual_batch_195_phase_1575i_treasury_readiness",
+      "chronology_note": "2026-07-21 Phase 1575i - deterministic no-wallet-write certificate builder",
+      "manual_read_summary": "Tool builds and verifies the canonical Phase 1575i treasury readiness certificate with exact Decimal strings, retained guard state, Genesis non-overlap, destination requirements, source pools, and no activation claims.",
+      "repo_path": "tools/phase_1575i_treasury_readiness.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tests/test_phase_1575i_treasury_readiness.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "BUILDS",
+          "target": "out/treasury_readiness_1575i/treasury_no_wallet_write_readiness_certificate.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "BUILDS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/phase_1575i_treasury_readiness.py -> out/treasury_readiness_1575i/treasury_no_wallet_write_readiness_certificate.json"
+    },
+    {
+      "annotation_batch": "manual_batch_195_phase_1575i_treasury_readiness",
+      "chronology_note": "2026-07-21 Phase 1575i - focused treasury readiness tests",
+      "manual_read_summary": "Tests verify certificate schema, ratified authority references, default-off guard state, Genesis non-overlap, no live treasury wallet address, false non-claims, canonical JSON, and deterministic certificate digest.",
+      "repo_path": "tests/test_phase_1575i_treasury_readiness.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tools/phase_1575i_treasury_readiness.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575i_treasury_readiness.py -> tools/phase_1575i_treasury_readiness.py"
+    },
+    {
+      "annotation_batch": "manual_batch_195_phase_1575i_treasury_readiness",
+      "chronology_note": "2026-07-21 Phase 1575i - readiness walkthrough and certificate evidence",
+      "manual_read_summary": "Walkthrough records source files read, treasury versus Genesis boundary, guard state, certificate hashes, verification commands, 1575k carry-forward, and non-claims.",
+      "repo_path": "docs/phases/phase_1575i_treasury_readiness_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:treasury_no_wallet_write_readiness_certificate_phase_1575i"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:treasury_guard_not_cleared_phase_1575i"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575i_treasury_readiness_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/treasury_readiness_1575i/treasury_no_wallet_write_readiness_certificate.json"
     }
   ],
   "phase": "1545p-Fix38",
