@@ -63245,6 +63245,122 @@
         "DEFERS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix2_remaining_security_findings_walkthrough.md;graph_delta=support_tests_added:tests/test_phase_1575h_fix2_python_security_cleanup.py;graph_delta=load_bearing_artifact_updated:ilc_core/economics/epoch_attribution_settle_runtime.py,ilc_core/ledger/ecu_active_layer_runtime.py,ilc_core/ledger/ecu_ilc_lifecycle_runtime.py,ilc_core/storage/lmdb_public_runtime.py,ilc_core/network/d2d/gossip_transport.py,ilc_core/network/d2d/gossip_peer_registry.py,ilc_core/identity/agent_id_runtime.py,ilc_consensus/src/node.rs,ilc_consensus/src/persistent_quic.rs;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_updated:docs/PLANNING_INDEX.md;graph_delta=planning_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_phase_1575h_live_quorum_readiness_preflight",
+      "chronology_note": "2026-07-21 Phase 1575h-readiness - read-only live quorum readiness prompt",
+      "manual_read_summary": "Prompt defines the non-sensitive read-only readiness gate before the sensitive 1575h epoch 0-to-1 transition, requiring repo guard checks, VPS probes, validator quorum probes, non-activation constraints, and a valid not-ready outcome.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_live_quorum_readiness_preflight.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_epoch_0_to_1_live_transition.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:epoch_0_to_1_not_executed_phase_1575h_readiness"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_live_quorum_readiness_preflight.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_phase_1575h_live_quorum_readiness_preflight",
+      "chronology_note": "2026-07-21 Phase 1575h-readiness - read-only live quorum preflight tool",
+      "manual_read_summary": "Tool statically checks required phase tokens and runtime guards, reads private rehearsal evidence, probes VPS and validator endpoints, writes atomic evidence, and never starts validators, wipes DBs, sends checkpoints, or executes epoch transition.",
+      "repo_path": "tools/phase_1575h_live_quorum_preflight.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_g10_live_quorum_readiness_preflight.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:phase_1575h_live_quorum_preflight_ready_false"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/phase_1575h_live_quorum_preflight.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_phase_1575h_live_quorum_readiness_preflight",
+      "chronology_note": "2026-07-21 Phase 1575h-readiness - focused preflight tests",
+      "manual_read_summary": "Tests cover BFT quorum threshold math, literal guard parsing, missing status-token detection, private atomic evidence writes, and the no-SSH non-activation evidence path.",
+      "repo_path": "tests/test_phase_1575h_live_quorum_preflight.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "review_status": "candidate",
+          "target": "invariant:phase_1575h_readiness_preflight_is_read_only"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575h_live_quorum_preflight.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_live_quorum_preflight.py -> tools/phase_1575h_live_quorum_preflight.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_phase_1575h_live_quorum_readiness_preflight",
+      "chronology_note": "2026-07-21 Phase 1575h-readiness - walkthrough and status evidence",
+      "manual_read_summary": "Walkthrough records the read-only preflight result, exact not-ready quorum blocker, verification commands, evidence hash, non-claims, and carry-forward recommendation before sensitive 1575h execution.",
+      "repo_path": "docs/phases/phase_1575h_live_quorum_readiness_preflight_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:phase_1575h_live_quorum_preflight_committed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:epoch_0_to_1_not_executed_phase_1575h_readiness"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_live_quorum_readiness_preflight_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/block6_1575h_live_quorum_preflight/evidence_records.json"
     }
   ],
   "phase": "1545p-Fix38",
