@@ -65,7 +65,7 @@ def _expected_accumulation_model() -> str:
 def _valid_message() -> dict[str, object]:
     return {
         'cid': 'bafycentralitydelta',
-        'score_delta': 0.2,
+        'score_delta': Decimal("0.2"),
         'epoch': 1,
         'signature': 'sig-alpha',
         'hop_count': 1,
@@ -133,7 +133,7 @@ def test_validate_centrality_delta_message_rejects_empty_channel() -> None:
 
 def test_accumulate_centrality_delta_suppresses_delta_below_u_floor() -> None:
     state: dict[str, object] = {}
-    updated = runtime.accumulate_centrality_delta('node-alpha', 0.01, 1, state)
+    updated = runtime.accumulate_centrality_delta('node-alpha', Decimal("0.01"), 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
         assert updated['node-alpha'] == Decimal("0E-12")
     else:
@@ -142,7 +142,7 @@ def test_accumulate_centrality_delta_suppresses_delta_below_u_floor() -> None:
 
 def test_accumulate_centrality_delta_accumulates_valid_delta_per_selected_model() -> None:
     state: dict[str, object] = {}
-    updated = runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
+    updated = runtime.accumulate_centrality_delta('node-alpha', Decimal("0.20"), 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
         assert updated['node-alpha'] == Decimal("0.200000000000")
     else:
@@ -152,8 +152,8 @@ def test_accumulate_centrality_delta_accumulates_valid_delta_per_selected_model(
 
 def test_accumulate_centrality_delta_caps_total_at_one() -> None:
     state: dict[str, object] = {}
-    runtime.accumulate_centrality_delta('node-cap', 0.60, 1, state)
-    updated = runtime.accumulate_centrality_delta('node-cap', 0.60, 1, state)
+    runtime.accumulate_centrality_delta('node-cap', Decimal("0.60"), 1, state)
+    updated = runtime.accumulate_centrality_delta('node-cap', Decimal("0.60"), 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
         assert updated['node-cap'] == runtime.CENTRALITY_SCORE_CAP
     else:
@@ -162,7 +162,7 @@ def test_accumulate_centrality_delta_caps_total_at_one() -> None:
 
 def test_commit_epoch_buffer_behaves_per_selected_model_and_logs_zeroed_epoch() -> None:
     state: dict[str, object] = {}
-    updated = runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
+    updated = runtime.accumulate_centrality_delta('node-alpha', Decimal("0.20"), 1, state)
     if runtime.ACCUMULATION_MODEL == 'write_through':
         committed = runtime.commit_epoch_buffer(1, updated)
         assert committed['node-alpha'] == Decimal("0.200000000000")

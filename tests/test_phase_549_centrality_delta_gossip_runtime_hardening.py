@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.network.d2d import centrality_delta_gossip_runtime as runtime
@@ -55,7 +56,7 @@ def _resolve_phase_549_commit_ref() -> str:
 def _valid_message() -> dict[str, object]:
     return {
         'cid': 'bafycentralitydelta',
-        'score_delta': 0.20,
+        'score_delta': Decimal("0.20"),
         'epoch': 1,
         'signature': 'sig-alpha',
         'hop_count': 1,
@@ -101,40 +102,40 @@ def test_whitespace_only_channel_is_rejected_with_correct_token() -> None:
 def test_u_floor_boundary_is_inclusive() -> None:
     low_state: dict[str, object] = {}
     boundary_state: dict[str, object] = {}
-    runtime.accumulate_centrality_delta('node-low', 0.04, 1, low_state)
+    runtime.accumulate_centrality_delta('node-low', Decimal("0.04"), 1, low_state)
     runtime.accumulate_centrality_delta('node-boundary', runtime.U_FLOOR, 1, boundary_state)
 
     if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert low_state['node-low'] == 0.0
+        assert low_state['node-low'] == Decimal("0E-12")
         assert boundary_state['node-boundary'] == runtime.U_FLOOR
     else:
-        assert low_state['_pending'][1]['node-low'] == 0.0
+        assert low_state['_pending'][1]['node-low'] == Decimal("0E-12")
         assert boundary_state['_pending'][1]['node-boundary'] == runtime.U_FLOOR
 
 
 def test_epoch_rollover_behaves_per_selected_accumulation_model() -> None:
     state: dict[str, object] = {}
-    runtime.accumulate_centrality_delta('node-alpha', 0.20, 1, state)
+    runtime.accumulate_centrality_delta('node-alpha', Decimal("0.20"), 1, state)
     committed = runtime.commit_epoch_buffer(1, state)
 
     if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert committed['node-alpha'] == 0.2
+        assert committed['node-alpha'] == Decimal("0.200000000000")
         assert '_pending' not in committed
         return
 
-    assert committed['node-alpha'] == 0.2
+    assert committed['node-alpha'] == Decimal("0.200000000000")
     assert 1 not in committed.get('_pending', {})
-    runtime.accumulate_centrality_delta('node-alpha', 0.10, 2, committed)
-    assert committed['_pending'][2]['node-alpha'] == 0.1
+    runtime.accumulate_centrality_delta('node-alpha', Decimal("0.10"), 2, committed)
+    assert committed['_pending'][2]['node-alpha'] == Decimal("0.100000000000")
     runtime.commit_epoch_buffer(2, committed)
-    assert committed['node-alpha'] == 0.3
+    assert committed['node-alpha'] == Decimal("0.300000000000")
     assert 2 not in committed.get('_pending', {})
 
 
 def test_epoch_rollover_caps_committed_centrality_at_one() -> None:
     state: dict[str, object] = {}
-    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)
-    runtime.accumulate_centrality_delta('node-cap', 0.75, 1, state)  # second call tests cap behavior
+    runtime.accumulate_centrality_delta('node-cap', Decimal("0.75"), 1, state)
+    runtime.accumulate_centrality_delta('node-cap', Decimal("0.75"), 1, state)  # second call tests cap behavior
     committed = runtime.commit_epoch_buffer(1, state)
 
     if runtime.ACCUMULATION_MODEL == 'write_through':

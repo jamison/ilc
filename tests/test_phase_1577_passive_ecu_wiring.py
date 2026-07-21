@@ -38,7 +38,7 @@ def _assert_no_float_values(value: object) -> None:
 def test_centrality_delta_gossip_decimal_accumulation() -> None:
     state: dict[str, object] = {}
 
-    centrality_runtime.accumulate_centrality_delta("node-alpha", 0.2, 1, state)
+    centrality_runtime.accumulate_centrality_delta("node-alpha", Decimal("0.2"), 1, state)
 
     assert state["_pending"][1]["node-alpha"] == Decimal("0.200000000000")
     assert isinstance(state["_pending"][1]["node-alpha"], Decimal)
@@ -63,7 +63,7 @@ def test_centrality_delta_gossip_ingress_non_finite_rejected(bad_delta: object) 
 def test_centrality_delta_gossip_no_float_in_buffer() -> None:
     state: dict[str, object] = {}
 
-    centrality_runtime.accumulate_centrality_delta("node-alpha", 0.2, 1, state)
+    centrality_runtime.accumulate_centrality_delta("node-alpha", Decimal("0.2"), 1, state)
     centrality_runtime.accumulate_centrality_delta("node-beta", "0.3", 1, state)
 
     _assert_no_float_values(state)
@@ -84,6 +84,23 @@ def test_centrality_delta_gossip_cap_respected() -> None:
     centrality_runtime.accumulate_centrality_delta("node-cap", "0.75", 1, state)
 
     assert state["_pending"][1]["node-cap"] == centrality_runtime.CENTRALITY_SCORE_CAP
+
+
+def test_centrality_delta_gossip_rejects_finite_float_ingress() -> None:
+    with pytest.raises(ValueError, match="score_delta_must_be_non_negative_decimal"):
+        centrality_runtime.validate_centrality_delta_message(
+            {
+                "cid": "bafycentralitydelta",
+                "score_delta": 0.2,
+                "epoch": 1,
+                "signature": "sig-alpha",
+                "hop_count": 1,
+                "fanout": 3,
+                "channel": "cid:9f7a8c42bb11ddee99aa22cc33ff44aa",
+            }
+        )
+    with pytest.raises(ValueError, match="delta_must_be_non_negative_decimal"):
+        centrality_runtime.accumulate_centrality_delta("node-alpha", 0.2, 1, {})
 
 
 def test_centrality_score_zero_for_unknown_node() -> None:

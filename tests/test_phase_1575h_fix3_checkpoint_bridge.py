@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -104,6 +105,23 @@ def test_checkpoint_send_execute_verifies_committed_record(monkeypatch: pytest.M
     assert evidence["record_check"]["passed"] is True
 
 
+def test_checkpoint_send_command_output_is_bounded() -> None:
+    result = checkpoint_send.run_command(
+        [
+            sys.executable,
+            "-c",
+            "import sys; sys.stdout.write('x' * 70000); sys.stderr.write('y' * 70000)",
+        ],
+        timeout_seconds=5,
+    )
+
+    assert result["returncode"] == 0
+    assert len(result["stdout"]) == checkpoint_send.MAX_COMMAND_OUTPUT_BYTES
+    assert len(result["stderr"]) == checkpoint_send.MAX_COMMAND_OUTPUT_BYTES
+    assert result["stdout_truncated"] is True
+    assert result["stderr_truncated"] is True
+
+
 def test_soak_setup_records_are_deterministic_across_two_runs() -> None:
     args = soak_setup.parse_args(["--epoch-count", "2"])
     first = soak_setup.build_evidence(args)
@@ -138,8 +156,11 @@ def test_rust_testnet_client_requires_state_root_and_rejects_zero_source_contrac
     assert "CIDv1Root::new([0u8; 36])" not in text
 
 
-def test_legacy_phase1360_passes_nonzero_state_root_to_client() -> None:
+def test_legacy_phase1360_requires_explicit_non_synthetic_state_root() -> None:
     text = Path("tools/testbed/phase1360_multiop_control.sh").read_text(encoding="utf-8")
 
+    assert 'PHASE1360_TESTNET_STATE_ROOT_CIDV1_HEX:-' in text
+    assert "phase1360_state_root_required" in text
+    assert "phase1360_legacy_synthetic_state_root_rejected" in text
+    assert "^01711220[0-9a-f]{64}$" in text
     assert "--state-root \"$testnet_state_root_cidv1_hex\"" in text
-    assert len(VALID_ROOT) == 72
