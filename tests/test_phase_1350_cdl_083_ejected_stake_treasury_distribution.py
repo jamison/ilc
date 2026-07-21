@@ -54,7 +54,7 @@ def _read(path: Path) -> str:
 
 def test_phase_1350_constants_bind_cdl_083_and_default_off_state() -> None:
     assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == (
-        "epoch_attribution_settle_runtime_1210.v0.7"
+        "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
     )
     assert CDL_083_DEPENDENCY == "cdl_083_h_con_02_ratified_1105.v0.1"
     assert CDL_083_EJECTED_STAKE_TREASURY_DISTRIBUTION_TOKEN == (

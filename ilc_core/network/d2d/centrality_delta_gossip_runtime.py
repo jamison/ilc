@@ -14,7 +14,7 @@ silently discarding the epoch.
 
 from __future__ import annotations
 
-import math
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Any
 
 from ilc_core.epistemic.reuse_centrality_runtime import CDL_052_DEPENDENCY as _CDL_052_CHECK
@@ -23,14 +23,15 @@ from .gossip import D2D_GOSSIP_DEPENDENCY as _D2D_GOSSIP_CHECK
 from .gossip import validate_gossip_channel
 
 
-CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v0.1"
+CDL_060_GOSSIP_RUNTIME_VERSION = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"
 CDL_060_DEPENDENCY = "cdl_060_ratified_541.v0.1"
 D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"
 CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
 ACCUMULATION_MODEL = "epoch_boundary_atomic"
 MAX_FANOUT = 3
-U_FLOOR = 0.05
-CENTRALITY_SCORE_CAP = 1.0
+U_FLOOR = Decimal("0.05")
+CENTRALITY_SCORE_CAP = Decimal("1.000000000000")
+CENTRALITY_QUANTUM = Decimal("0.000000000001")
 EPOCH_BUFFER_ZEROED_EVENT = "epoch_buffer_zeroed"
 EPOCH_BUFFER_ZEROED_REASON = "crash_recovery_graceful_zero"
 
@@ -89,23 +90,29 @@ def _require_non_negative_int(name: str, value: Any) -> int:
     return value
 
 
-def _require_non_negative_float(name: str, value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise ValueError(f"{name}_must_be_non_negative_float")
-    number = float(value)
-    if not math.isfinite(number) or number < 0.0:
-        raise ValueError(f"{name}_must_be_non_negative_float")
+def _require_non_negative_decimal(name: str, value: Any) -> Decimal:
+    if isinstance(value, bool) or not isinstance(value, (Decimal, int, str, float)):
+        raise ValueError(f"{name}_must_be_non_negative_decimal")
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise ValueError(f"{name}_must_be_non_negative_decimal") from exc
+    if not number.is_finite() or number < Decimal("0"):
+        raise ValueError(f"{name}_must_be_non_negative_decimal")
     return number
 
 
-def _normalized_delta(delta: float) -> float:
+def _normalized_delta(delta: Decimal) -> Decimal:
     if delta < U_FLOOR:
-        return 0.0
-    return round(delta, 12)
+        return Decimal("0")
+    return delta.quantize(CENTRALITY_QUANTUM)
 
 
-def _bounded_centrality_total(current: float, delta: float) -> float:
-    return round(min(CENTRALITY_SCORE_CAP, current + delta), 12)
+def _bounded_centrality_total(current: Decimal, delta: Decimal) -> Decimal:
+    with localcontext() as ctx:
+        ctx.prec = 50
+        total = min(CENTRALITY_SCORE_CAP, current + delta)
+    return total.quantize(CENTRALITY_QUANTUM)
 
 
 def _validate_channel(value: Any) -> str:
@@ -124,7 +131,7 @@ def _state_event_log(state: dict[str, Any]) -> list[dict[str, Any]]:
     return event_log
 
 
-def _state_pending_map(state: dict[str, Any]) -> dict[int, dict[str, float]]:
+def _state_pending_map(state: dict[str, Any]) -> dict[int, dict[str, Decimal]]:
     pending = state.setdefault("_pending", {})
     if not isinstance(pending, dict):
         raise ValueError("state_pending_must_be_dict")
@@ -155,7 +162,7 @@ def validate_centrality_delta_message(msg: dict) -> bool:
 
     msg_map = _require_mapping("msg", msg)
     _require_non_empty_string("cid", msg_map.get("cid"))
-    _require_non_negative_float("score_delta", msg_map.get("score_delta"))
+    _require_non_negative_decimal("score_delta", msg_map.get("score_delta"))
     _require_non_negative_int("epoch", msg_map.get("epoch"))
     _require_non_empty_string("signature", msg_map.get("signature"))
 
@@ -172,18 +179,18 @@ def validate_centrality_delta_message(msg: dict) -> bool:
     return True
 
 
-def accumulate_centrality_delta(node_id: str, delta: float, epoch: int, state: dict) -> dict:
-    """Accumulate a centrality delta using the selected v1 accumulation model."""
+def accumulate_centrality_delta(node_id: str, delta: object, epoch: int, state: dict) -> dict:
+    """Accumulate a centrality delta using Decimal arithmetic after ingress."""
 
     normalized_node = _require_non_empty_string("node_id", node_id)
-    normalized_delta = _normalized_delta(_require_non_negative_float("delta", delta))
+    normalized_delta = _normalized_delta(_require_non_negative_decimal("delta", delta))
     normalized_epoch = _require_non_negative_int("epoch", epoch)
     state_map = _require_mapping("state", state)
 
     if ACCUMULATION_MODEL == "write_through":
-        current = _require_non_negative_float(
+        current = _require_non_negative_decimal(
             "state_value",
-            state_map.get(normalized_node, 0.0),
+            state_map.get(normalized_node, Decimal("0")),
         )
         state_map[normalized_node] = _bounded_centrality_total(current, normalized_delta)
         return state_map
@@ -192,10 +199,10 @@ def accumulate_centrality_delta(node_id: str, delta: float, epoch: int, state: d
     epoch_buffer = pending.setdefault(normalized_epoch, {})
     if not isinstance(epoch_buffer, dict):
         raise ValueError("state_pending_epoch_buffer_must_be_dict")
-    current = _require_non_negative_float(
+    current = _require_non_negative_decimal(
         "state_pending_value",
-        epoch_buffer.get(normalized_node, 0.0),
-    )
+            epoch_buffer.get(normalized_node, Decimal("0")),
+        )
     epoch_buffer[normalized_node] = _bounded_centrality_total(current, normalized_delta)
     return state_map
 
@@ -232,10 +239,10 @@ def commit_epoch_buffer(epoch: int, state: dict) -> dict:
 
     for node_id, delta in epoch_buffer.items():
         normalized_node = _require_non_empty_string("node_id", node_id)
-        normalized_delta = _require_non_negative_float("delta", delta)
-        current = _require_non_negative_float(
+        normalized_delta = _require_non_negative_decimal("delta", delta)
+        current = _require_non_negative_decimal(
             "state_value",
-            state_map.get(normalized_node, 0.0),
+            state_map.get(normalized_node, Decimal("0")),
         )
         state_map[normalized_node] = _bounded_centrality_total(current, normalized_delta)
 

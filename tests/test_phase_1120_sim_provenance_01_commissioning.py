@@ -130,7 +130,7 @@ def test_g5_settle_runtime_version_is_phase_1126_v0_4() -> None:
     # at commissioning time. Runtime was upgraded to v0.7 in Phase 1210.
     assert (
         EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
-        == "epoch_attribution_settle_runtime_1210.v0.7"
+        == "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
     )
 
 

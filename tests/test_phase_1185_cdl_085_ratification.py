@@ -42,7 +42,7 @@ def test_runtime_version_updated() -> None:
     import ilc_core.economics.epoch_attribution_settle_runtime as rt
 
     assert rt.EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == (
-        "epoch_attribution_settle_runtime_1210.v0.7"
+        "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
     )
 
 
@@ -80,7 +80,8 @@ def test_phi_bound_runtime_suppresses_excess_provenance_ecu() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert payouts[-1] == ("creator_4", Decimal("0"))
+    assert ("creator_4", Decimal("0")) not in payouts
+    assert payouts[-1] == ("creator_3", Decimal("0.090000000"))
     assert "edge_mint_phi_bound_exceeded" in emitted_tokens
 
 

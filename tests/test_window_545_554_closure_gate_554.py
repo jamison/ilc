@@ -230,7 +230,7 @@ def test_cdl_060_gossip_runtime_is_implemented() -> None:
     override = os.environ.get('ILC_PHASE_554_CDL_GOSSIP_RUNTIME_PATH')
     target = Path(override) if override else GOSSIP_RUNTIME_PATH
     text = target.read_text(encoding='utf-8')
-    assert 'CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v0.1"' in text
+    assert 'CDL_060_GOSSIP_RUNTIME_VERSION = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"' in text
 
 
 def test_passive_ecu_attribution_runtime_is_implemented() -> None:

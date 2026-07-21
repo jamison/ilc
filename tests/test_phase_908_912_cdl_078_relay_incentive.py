@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -78,21 +79,21 @@ def test_cdl_078_dependency_in_fetch_runtime():
 
 
 def test_serve_centrality_delta_value():
-    assert isinstance(SERVE_CENTRALITY_DELTA, float)
-    assert 0.0 < SERVE_CENTRALITY_DELTA <= 0.10
+    assert isinstance(SERVE_CENTRALITY_DELTA, Decimal)
+    assert Decimal("0") < SERVE_CENTRALITY_DELTA <= Decimal("0.10")
 
 
 def test_serve_centrality_max_per_epoch_value():
-    assert isinstance(SERVE_CENTRALITY_MAX_PER_EPOCH, float)
+    assert isinstance(SERVE_CENTRALITY_MAX_PER_EPOCH, Decimal)
     assert SERVE_CENTRALITY_MAX_PER_EPOCH >= SERVE_CENTRALITY_DELTA
 
 
 def test_serve_centrality_delta_is_0_01():
-    assert SERVE_CENTRALITY_DELTA == 0.01
+    assert SERVE_CENTRALITY_DELTA == Decimal("0.01")
 
 
 def test_serve_centrality_max_per_epoch_is_0_10():
-    assert SERVE_CENTRALITY_MAX_PER_EPOCH == 0.10
+    assert SERVE_CENTRALITY_MAX_PER_EPOCH == Decimal("0.10")
 
 
 # ---------------------------------------------------------------------------
@@ -153,7 +154,7 @@ def test_flush_single_serve_produces_correct_delta():
 
     mock_acc.assert_called_once_with("bafytest001", SERVE_CENTRALITY_DELTA, 100, centrality_state)
     assert receipt["nodes_flushed"] == 1
-    assert abs(receipt["total_delta_emitted"] - SERVE_CENTRALITY_DELTA) < 1e-9
+    assert receipt["total_delta_emitted"] == "0.010000"
 
 
 def test_flush_cap_enforced():

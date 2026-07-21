@@ -92,7 +92,7 @@ def test_all_constants_have_exact_expected_values() -> None:
     assert gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION == 'gossip_transport_runtime_1572.v0.1'
     assert gossip_transport.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert gossip_transport.CDL_039_DEPENDENCY == 'cdl_039_ratified_379.v0.1'
-    assert gossip_transport.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == 'cdl_060_gossip_runtime_548.v0.1'
+    assert gossip_transport.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == 'centrality_delta_gossip_runtime_GAP_CDL060.v0.2'
     assert gossip_transport.HOP_COUNT_SINGLE == 1
     assert gossip_transport.GOSSIP_URL_PREFIX == '/ilc/gossip/'
 

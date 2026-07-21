@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from typing import TYPE_CHECKING, Any, Optional
 
+from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
+from ilc_core.network.d2d.centrality_delta_gossip_runtime import CENTRALITY_QUANTUM
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
     EdgeType,
@@ -29,8 +31,10 @@ from ilc_core.types import (
 if TYPE_CHECKING:
     from ilc_core.types import EpochAttributionBatch
 
-EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_1210.v0.7"
+EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION = "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
 CDL_081_DEPENDENCY = "cdl_081_hyperedge_ecu_attribution_ratified_943.v0.1"
+CDL_052_PASSIVE_ECU_DEPENDENCY = "cdl_052_reuse_centrality_attribution_ratified"
+CDL_060_CENTRALITY_DELTA_DEPENDENCY = "cdl_060_centrality_delta_gossip_ratified"
 CDL_HCON_02_DEPENDENCY = "h_con_02_cdl_required_before_ejected_stake_treasury_executes"
 CDL_083_DEPENDENCY = "cdl_083_h_con_02_ratified_1105.v0.1"
 CDL_084_DEPENDENCY = "cdl_084_provenance_chain_attribution_ratified_1113.v0.1"
@@ -49,6 +53,10 @@ PRODUCTION_EJECTED_STAKE_DISTRIBUTION_ACTIVATION_TOKEN = (
     "phase_1366_soft_rc_eligible_true_value_path_activation_required"
 )
 MAX_PROVENANCE_CHAIN_INPUT_LENGTH = 64
+PASSIVE_ECU_WIRING_NOT_ACTIVATED = True
+PASSIVE_ECU_WIRING_GUARD_TOKEN = "passive_ecu_wiring_not_activated_phase_GAP_CDL060"
+PASSIVE_ECU_EPOCH_CENTRALITY_CAP = Decimal("0.100000000000")
+PASSIVE_ECU_DEFAULT_QUALITY_SCORE = Decimal("0.5")
 
 HCON02_QUORUM_FLOOR = Decimal("0.50")       # Q1: >=50% of remaining members must vote
 HCON02_QUORUM_MINIMUM_VOTERS = 2            # Q1: hard minimum regardless of group size
@@ -186,6 +194,92 @@ def _require_decimal_amount(
     if amount.adjusted() > MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT:
         raise ValueError(INVALID_AMOUNT_MAGNITUDE_TOKEN)
     return amount
+
+
+def _coerce_passive_ecu_decimal(value: object, field_name: str) -> Decimal:
+    amount = _require_decimal_amount(value, field_name)
+    return amount.quantize(CENTRALITY_QUANTUM)
+
+
+def _get_epoch_buffer(
+    centrality_state: dict[str, Any],
+    epoch: int,
+) -> Optional[dict[str, Any]]:
+    pending = centrality_state.get("_pending")
+    if not isinstance(pending, dict):
+        return None
+    buffer = pending.get(epoch)
+    if buffer is None:
+        buffer = pending.get(str(epoch))
+    if buffer is None:
+        return None
+    if not isinstance(buffer, dict):
+        raise ValueError("passive_ecu_centrality_epoch_buffer_must_be_dict")
+    return buffer
+
+
+def _get_centrality_score(
+    node_id: str,
+    epoch: int,
+    centrality_state: Optional[dict[str, Any]] = None,
+) -> Decimal:
+    """Return the bounded per-node, per-epoch centrality score for passive ECU."""
+    normalized_node = _require_non_empty_string(
+        node_id,
+        "passive_ecu_node_id_must_be_non_empty_string",
+    )
+    normalized_epoch = _require_non_negative_int(
+        epoch,
+        "passive_ecu_epoch_must_be_non_negative_integer",
+    )
+    if centrality_state is None:
+        return _ZERO
+    if not isinstance(centrality_state, dict):
+        raise ValueError("passive_ecu_centrality_state_must_be_dict")
+
+    epoch_buffer = _get_epoch_buffer(centrality_state, normalized_epoch)
+    raw_score = None
+    if epoch_buffer is not None:
+        raw_score = epoch_buffer.get(normalized_node)
+    if raw_score is None:
+        raw_score = centrality_state.get(normalized_node, _ZERO)
+
+    score = _coerce_passive_ecu_decimal(raw_score, "passive_ecu_centrality_score")
+    return min(score, PASSIVE_ECU_EPOCH_CENTRALITY_CAP)
+
+
+def _get_quality_score(
+    node_id: str,
+    passive_ecu_quality_scores: Optional[dict[str, Decimal]],
+) -> Decimal:
+    if passive_ecu_quality_scores is None:
+        return PASSIVE_ECU_DEFAULT_QUALITY_SCORE
+    if not isinstance(passive_ecu_quality_scores, dict):
+        raise ValueError("passive_ecu_quality_scores_must_be_dict")
+    raw_score = passive_ecu_quality_scores.get(node_id, PASSIVE_ECU_DEFAULT_QUALITY_SCORE)
+    return _coerce_passive_ecu_decimal(raw_score, "passive_ecu_quality_score")
+
+
+def _compute_passive_ecu_for_event(
+    attr_event: "AttributionEvent",
+    centrality_state: Optional[dict[str, Any]],
+    quality_scores: Optional[dict[str, Decimal]],
+) -> Decimal:
+    if PASSIVE_ECU_WIRING_NOT_ACTIVATED:
+        return _ZERO
+    if attr_event.star_node_id is None:
+        return _ZERO
+    centrality_score = _get_centrality_score(
+        attr_event.star_node_id,
+        attr_event.epoch,
+        centrality_state,
+    )
+    quality_score = _get_quality_score(attr_event.star_node_id, quality_scores)
+    return compute_passive_ecu(
+        base_reward=REUSE_ATTRIBUTION_RATE,
+        centrality_score=centrality_score,
+        q_i=quality_score,
+    )
 
 
 def _normalize_distribution_member_stakes(members: object) -> dict[str, Decimal]:
@@ -452,6 +546,8 @@ def settle_attribution_batch(
     stake_map: dict[str, dict[str, Decimal]],
     emitted_tokens: Optional[list[str]] = None,
     epoch_node_mint_count: int = 0,
+    passive_ecu_centrality_state: Optional[dict[str, Any]] = None,
+    passive_ecu_quality_scores: Optional[dict[str, Decimal]] = None,
 ) -> list[tuple[str, Decimal]]:
     """Process a batch of attribution events and return ECU payout quotes.
 
@@ -466,6 +562,10 @@ def settle_attribution_batch(
             (e.g. cdl_081_zero_member_commons_transition) are appended here.
         epoch_node_mint_count: Count of node-mint events in the epoch. Used by
             CDL-085 φ-bound enforcement for PROVENANCE payout suppression.
+        passive_ecu_centrality_state: Optional CDL-060 centrality state. Ignored
+            while PASSIVE_ECU_WIRING_NOT_ACTIVATED remains True.
+        passive_ecu_quality_scores: Optional node_id -> q_i Decimal map. Missing
+            nodes use the neutral quality score while the passive lane is active.
 
     Returns:
         List of (agent_id, ecu_amount) Decimal payout quotes. May contain multiple
@@ -497,6 +597,13 @@ def settle_attribution_batch(
                 continue
             visited_set.add(attr_event.target_creator_id)
             payouts.append((attr_event.target_creator_id, REUSE_ATTRIBUTION_RATE))
+            passive_ecu = _compute_passive_ecu_for_event(
+                attr_event,
+                passive_ecu_centrality_state,
+                passive_ecu_quality_scores,
+            )
+            if passive_ecu != _ZERO:
+                payouts.append((attr_event.target_creator_id, passive_ecu))
 
         elif attr_event.edge_type == EdgeType.CO_AUTHORSHIP:
             # §4.2 CO_AUTHORSHIP proportional split among star node members.

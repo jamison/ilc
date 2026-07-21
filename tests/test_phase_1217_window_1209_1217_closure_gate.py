@@ -49,7 +49,7 @@ def test_cat1_sequence_lock_exists_and_token_present():
 
 def test_cat2_settle_runtime_version_contains_1210_v0_7():
     assert settle_rt.EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == (
-        "epoch_attribution_settle_runtime_1210.v0.7"
+        "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
     )
 
 

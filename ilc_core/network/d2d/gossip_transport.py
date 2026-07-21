@@ -20,7 +20,7 @@ from ilc_core.network.d2d.gossip import validate_gossip_channel
 GOSSIP_TRANSPORT_RUNTIME_VERSION = "gossip_transport_runtime_1572.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
-CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "cdl_060_gossip_runtime_548.v0.1"
+CDL_060_GOSSIP_RUNTIME_DEPENDENCY = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"
 GOSSIP_URL_PREFIX = "/ilc/gossip/"
 HOP_COUNT_SINGLE = 1
 MAX_GOSSIP_TYPE_BYTES = 128

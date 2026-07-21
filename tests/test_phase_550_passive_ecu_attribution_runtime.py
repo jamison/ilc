@@ -86,7 +86,7 @@ def test_module_imports_without_error() -> None:
 def test_all_constants_have_exact_expected_values() -> None:
     assert runtime.PASSIVE_ECU_ATTRIBUTION_RUNTIME_VERSION == "passive_ecu_attribution_runtime_550.v0.1"
     assert runtime.CDL_060_DEPENDENCY == "cdl_060_ratified_541.v0.1"
-    assert runtime.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == "cdl_060_gossip_runtime_548.v0.1"
+    assert runtime.CDL_060_GOSSIP_RUNTIME_DEPENDENCY == "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"
     assert runtime.PASSIVE_ATTRIBUTION_RATE == Decimal("0.20")
     assert runtime.DECAY_FLOOR == Decimal("0.05")
     assert runtime.ATTRIBUTION_CAP == Decimal("0.15")

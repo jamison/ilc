@@ -23,6 +23,7 @@ or validator weights.
 
 from __future__ import annotations
 
+from decimal import Decimal
 import threading
 from typing import Any
 
@@ -42,11 +43,11 @@ ROUTING_REPUTATION_NO_SETTLEMENT_TOKEN = (
     "routing_reputation_wall_clock_not_settlement_input_phase_1575h_fix2"
 )
 
-SERVE_CENTRALITY_DELTA: float = 0.01
-SERVE_CENTRALITY_MAX_PER_EPOCH: float = 0.10
+SERVE_CENTRALITY_DELTA = Decimal("0.01")
+SERVE_CENTRALITY_MAX_PER_EPOCH = Decimal("0.10")
 
 # Dep-chain guards
-if _CDL_060_CHECK != "cdl_060_gossip_runtime_548.v0.1":
+if _CDL_060_CHECK != "centrality_delta_gossip_runtime_GAP_CDL060.v0.2":
     raise RuntimeError("routing_reputation_runtime_cdl_060_dep_mismatch")
 if _CDL_077_CHECK != "truth_primitive_fetch_runtime_901.v0.1":
     raise RuntimeError("routing_reputation_runtime_cdl_077_dep_mismatch")
@@ -137,7 +138,7 @@ def flush_epoch_serve_events(
     Appends a flush receipt to flush_log.
 
     Returns:
-        {"epoch": int, "nodes_flushed": int, "total_delta_emitted": float}
+        {"epoch": int, "nodes_flushed": int, "total_delta_emitted": str}
     """
     if not isinstance(epoch, int) or epoch < 0:
         raise ValueError("flush_epoch_invalid_epoch")
@@ -151,7 +152,7 @@ def flush_epoch_serve_events(
         epoch_buf = buf.pop(epoch, {})
 
     nodes_flushed = 0
-    total_delta = 0.0
+    total_delta = Decimal("0")
 
     for node_id, count in epoch_buf.items():
         if not isinstance(node_id, str) or not node_id.strip():
@@ -166,7 +167,7 @@ def flush_epoch_serve_events(
     receipt = {
         "epoch": epoch,
         "nodes_flushed": nodes_flushed,
-        "total_delta_emitted": round(total_delta, 6),
+        "total_delta_emitted": format(total_delta.quantize(Decimal("0.000001")), "f"),
     }
     with _state_lock:
         _flush_log(state).append(receipt)
