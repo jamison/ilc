@@ -63652,6 +63652,128 @@
         "ATTESTATION"
       ],
       "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575h_fix3_epoch_state_root.py -> ilc_core/bundle/epoch_state_root.py;graph_delta=support_tests_added:tests/test_phase_1575h_fix3_checkpoint_bridge.py -> tools/testbed/phase1575h_economic_checkpoint_send.py;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=phase_walkthrough_added:docs/phases/phase_1575h_fix3_epoch_state_checkpoint_bridge_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_197_phase_1575j_validator_reward_rehearsal",
+      "chronology_note": "2026-07-21 Phase 1575j - validator reward rehearsal spec",
+      "manual_read_summary": "Spec records the retained validator reward rehearsal scope, 1575i certificate dependency, CDL-054 through CDL-047 runtime path, deterministic private validator destination registry, canonical settlement roots, 1575k carry-forward, and non-claims.",
+      "repo_path": "docs/specs/ilc_validator_reward_distribution_rehearsal_1575j_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-047"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-054"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "review_status": "candidate",
+          "target": "phase:treasury_no_wallet_write_readiness_certificate_phase_1575i"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:1575k_treasury_distribution_guard_clearance_or_activation_certificate"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "REQUIRES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_validator_reward_distribution_rehearsal_1575j_v0.1.md -> cdl:CDL-054;graph_delta=load_bearing_artifact_added:docs/specs/ilc_validator_reward_distribution_rehearsal_1575j_v0.1.md -> cdl:CDL-047"
+    },
+    {
+      "annotation_batch": "manual_batch_197_phase_1575j_validator_reward_rehearsal",
+      "chronology_note": "2026-07-21 Phase 1575j - deterministic validator reward evidence builder",
+      "manual_read_summary": "Tool verifies the 1575i treasury readiness certificate, builds three deterministic reward rehearsal epochs through the actual Phase 1540p runtime path, binds private validator destination records, verifies Decimal conservation, and writes canonical retained evidence atomically.",
+      "repo_path": "tools/phase_1575j_validator_reward_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tests/test_phase_1575j_validator_reward_rehearsal.py"
+        },
+        {
+          "edge_type": "BUILDS",
+          "review_status": "candidate",
+          "target": "out/validator_reward_rehearsal_1575j/validator_reward_rehearsal_evidence.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "BUILDS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/phase_1575j_validator_reward_rehearsal.py -> out/validator_reward_rehearsal_1575j/validator_reward_rehearsal_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_197_phase_1575j_validator_reward_rehearsal",
+      "chronology_note": "2026-07-21 Phase 1575j - focused validator reward rehearsal tests",
+      "manual_read_summary": "Tests verify schema, 1575i dependency digest, guard retention, private destination registry digest, actual 0.02 reward formula, exact destination conservation, canonical root shape, deterministic evidence, and rejection of guard-clearance, wallet-address, digest, and non-claim drift.",
+      "repo_path": "tests/test_phase_1575j_validator_reward_rehearsal.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tools/phase_1575j_validator_reward_rehearsal.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_tests_added:tests/test_phase_1575j_validator_reward_rehearsal.py -> tools/phase_1575j_validator_reward_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_197_phase_1575j_validator_reward_rehearsal",
+      "chronology_note": "2026-07-21 Phase 1575j - walkthrough and retained evidence",
+      "manual_read_summary": "Walkthrough records source reads, 1575i dependency hashes, rehearsal inputs, validator destination binding digest, settlement roots, evidence hashes, guard state, verification commands, 1575k carry-forward, and non-claims.",
+      "repo_path": "docs/phases/phase_1575j_validator_reward_rehearsal_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:validator_reward_turn_on_ready_certificate_phase_1575j"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:treasury_guard_not_cleared_phase_1575j"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575j_validator_reward_rehearsal_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_added:out/validator_reward_rehearsal_1575j/validator_reward_rehearsal_evidence.json"
     }
   ],
   "phase": "1545p-Fix38",
