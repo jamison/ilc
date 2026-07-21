@@ -131,9 +131,7 @@ fn parse_args(args: &[String]) -> Command {
 
 fn sign_command(input_file: &PathBuf, pubkey_record: &PathBuf) -> Result<(), String> {
     let expected_pk_hex = read_mldsa_pk_hex(pubkey_record)?;
-    eprintln!(
-        "Enter Plate 2 ML-DSA-65 seed as 24 BIP-39 words or 64-char hex, then press Ctrl-D:"
-    );
+    eprintln!("Enter Plate 2 ML-DSA-65 seed as 24 BIP-39 words or 64-char hex, then press Ctrl-D:");
     let seed = read_seed_from_stdin()?;
     let (pk, sk) = ml_dsa_65::KG::try_keygen_with_rng(&mut SeedRng::new(&seed))
         .map_err(|err| format!("ML-DSA-65 key derivation failed: {err}"))?;
@@ -195,9 +193,7 @@ fn parse_seed(input: &str) -> Result<[u8; 32], String> {
             .map_err(|_| "mnemonic_entropy_must_be_32_bytes".to_string());
     }
     if input.chars().any(|ch| ch.is_ascii_alphabetic()) {
-        return Err(format!(
-            "mnemonic_word_count_must_be_24_got_{word_count}"
-        ));
+        return Err(format!("mnemonic_word_count_must_be_24_got_{word_count}"));
     }
     let bytes = hex_decode(input)?;
     bytes

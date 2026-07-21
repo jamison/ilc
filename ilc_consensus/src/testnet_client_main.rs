@@ -511,7 +511,9 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 .start_epoch
                 .ok_or("--epoch is required for --msg epoch_settlement")?;
             if args.count != 1 {
-                return Err("--count must be 1 for --msg epoch_settlement with --state-root".into());
+                return Err(
+                    "--count must be 1 for --msg epoch_settlement with --state-root".into(),
+                );
             }
             let state_root = cidv1_root_from_required_arg(
                 args.state_root_hex.as_deref(),
@@ -549,7 +551,9 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 .start_epoch
                 .ok_or("--epoch is required for --msg epoch_checkpoint")?;
             if args.count != 1 {
-                return Err("--count must be 1 for --msg epoch_checkpoint with --state-root".into());
+                return Err(
+                    "--count must be 1 for --msg epoch_checkpoint with --state-root".into(),
+                );
             }
             let state_root = cidv1_root_from_required_arg(
                 args.state_root_hex.as_deref(),
