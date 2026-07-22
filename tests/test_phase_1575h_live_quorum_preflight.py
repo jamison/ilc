@@ -160,3 +160,5 @@ def test_phase1575h_readiness_launcher_has_no_db_wipe_or_epoch_send() -> None:
     assert "sha256sum" in text
     assert "db.tar.sha256" in text
     assert "db_moved" in text
+    assert "phase1575h_fix4_" in text
+    assert 'archive_root="\\$REMOTE_DIR' not in text

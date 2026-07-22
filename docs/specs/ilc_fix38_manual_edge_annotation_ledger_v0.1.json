@@ -65835,6 +65835,45 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_phase_1575h_fix4_epoch0_reset_complete",
+      "chronology_note": "2026-07-22 - phase 1575h-Fix4 Part B reset completed after exact sensitive human GO",
+      "manual_read_summary": "The private Phase 1360 validator testbed was archived and reset to epoch 0 after the exact reset GO phrase. Pre-reset TLS gRPC readback confirmed all four validators at epoch 1, DB archives were written on the VPS hosts, and post-reset TLS gRPC readback confirmed all four validators at epoch 0. No checkpoint send, minting, settlement, wallet write, public mirror push, or public-RC activation occurred.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:testbed_epoch_0_reset_complete_phase_1575h_soak_fix1"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:testbed_grpc_tls_all_four_validators_confirmed_phase_1575h_soak_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out:block6_economic_soak_1575h/post_reset_tls_probe_fix4.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_checkpoint_send_phase_1575h_fix4_reset"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/pre_reset_archive/epoch1_all_zero_state_record.json;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/post_reset_tls_probe_fix4.json",
+      "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
