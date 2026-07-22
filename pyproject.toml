@@ -151,7 +151,44 @@ markers = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["ilc_core*"]
+include = [
+    "ilc_core",
+    "ilc_core.analysis",
+    "ilc_core.bundle",
+    "ilc_core.ccss",
+    "ilc_core.cli",
+    "ilc_core.consensus",
+    "ilc_core.crypto",
+    "ilc_core.distribution",
+    "ilc_core.economics",
+    "ilc_core.encoding",
+    "ilc_core.epistemic",
+    "ilc_core.epoch",
+    "ilc_core.eve",
+    "ilc_core.genesis",
+    "ilc_core.graph",
+    "ilc_core.identity",
+    "ilc_core.ledger",
+    "ilc_core.mining",
+    "ilc_core.network",
+    "ilc_core.network.d2d",
+    "ilc_core.network.star_map",
+    "ilc_core.node",
+    "ilc_core.privacy",
+    "ilc_core.protocol",
+    "ilc_core.rc",
+    "ilc_core.reputation",
+    "ilc_core.schema",
+    "ilc_core.security",
+    "ilc_core.sidecars",
+    "ilc_core.sim",
+    "ilc_core.sim.sim_fetch_01",
+    "ilc_core.star_map",
+    "ilc_core.storage",
+    "ilc_core.testing",
+    "ilc_core.validator",
+    "ilc_core.work",
+]
 
 [tool.setuptools.package-data]
 "ilc_core.mcp.schemas" = ["*.json"]
@@ -173,7 +210,6 @@ fix82_public_protocol_graph_additions = [
 
 [project.scripts]
 ilc = "ilc_core.cli.main:main"
-ilc-mcp = "ilc_core.cli.mcp_cli:main"
 ilc-canon-verify = "ilc_core.cli.canon_cli:main"
 ilc-canon-summary = "ilc_core.cli.canon_consumer:main"
 ilc-canon-export = "ilc_core.cli.canon_export:main"
