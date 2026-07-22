@@ -1,7 +1,4 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""PUBLIC_RC_EXCLUDE: adr_0009_layer3_private_implementation
-PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 Layer 3 descriptor/verifier. Does not open live network transport or publish protocol bundles.
-"""
 
 from __future__ import annotations
 
