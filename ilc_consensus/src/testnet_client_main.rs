@@ -629,6 +629,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                         .transmit(send, envelope.clone())
                         .await
                         .map_err(|e| format!("transmit epoch {}: {}", epoch, e))?;
+                    tokio::time::sleep(tokio::time::Duration::from_millis(250)).await;
                 }
                 eprintln!(
                     "[testnet_client] sent EpochCheckpointMsg epoch={} to {} targets",

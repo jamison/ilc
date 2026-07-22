@@ -32,8 +32,10 @@ where
         {
             if bytes.len() != N {
                 return Err(E::custom(format!(
-                    "{} must be exactly {} bytes",
-                    self.type_name, N
+                    "{} must be exactly {} bytes, got {} bytes",
+                    self.type_name,
+                    N,
+                    bytes.len()
                 )));
             }
             let mut out = [0u8; N];
@@ -281,7 +283,7 @@ impl serde::Serialize for AggSig {
     where
         S: serde::Serializer,
     {
-        let bytes = self.0.to_signature().serialize().to_vec();
+        let bytes = self.0.to_signature().to_bytes().to_vec();
         serializer.serialize_bytes(&bytes)
     }
 }

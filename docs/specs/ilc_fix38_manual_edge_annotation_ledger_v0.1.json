@@ -60595,6 +60595,100 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/testbed_grpc_tls_probe_fix4.json",
       "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_216_phase_1575h_private_economic_soak",
+      "repo_path": "tools/testbed/phase1575h_economic_soak_run.py",
+      "chronology_note": "2026-07-22 - Phase 1575h-soak private economic soak runner and Rust wire fix",
+      "manual_read_summary": "The soak runner orchestrates deterministic synthetic PROVENANCE balance snapshots, economic settlement root computation, Layer2EpochSnapshotV2 state-root derivation, live checkpoint sends, historical committed-prefix verification, and final certificate generation. Rust AggSig serialization was fixed to compressed 96-byte BLS form and covered by an EpochCheckpointMsg bincode round-trip test.",
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:private_economic_soak_20_epochs_complete_phase_1575h_soak"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:epoch_state_root_nonzero_live_quorum_confirmed_phase_1575h_soak"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_consensus/src/network.rs"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_consensus/src/types.rs"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_wallet_write_phase_1575h_soak"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_mirror_push_phase_1575h_soak"
+        }
+      ],
+      "recommended_graph_action": "graph_delta=runtime_support:tools/testbed/phase1575h_economic_soak_run.py;graph_delta=rust_wire_fix:ilc_consensus/src/types.rs;graph_delta=rust_diagnostic:ilc_consensus/src/network.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_216_phase_1575h_private_economic_soak",
+      "repo_path": "docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md",
+      "chronology_note": "2026-07-22 - Phase 1575h-soak completion walkthrough, status, and retained private evidence",
+      "manual_read_summary": "Walkthrough records the sensitive GO phrase, preconditions, scope exclusions, live 20-epoch private soak outcome, final roots, evidence hashes, verification commands, completion tokens, and non-claims. Evidence remains under out/block6_economic_soak_1575h and records 20 epoch evidence files plus 19 live send receipts.",
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:private_economic_soak_20_epochs_complete_phase_1575h_soak"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:private_soak_public_mirror_stale_phase_1575h_soak"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out:block6_economic_soak_1575h/soak_completion_certificate.json"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "out:block6_economic_soak_1575h/soak_run_summary.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_rc_activation_phase_1575h_soak"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_post_soak_reset_phase_1575h_soak"
+        }
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=walkthrough_added:docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/"
     }
   ],
   "boundary": {
@@ -65874,6 +65968,40 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/pre_reset_archive/epoch1_all_zero_state_record.json;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/post_reset_tls_probe_fix4.json",
       "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_gap_validator_ident_01_validator_operational_surface_cdl_opening",
+      "chronology_note": "2026-07-22 \u2014 GAP-VALIDATOR-IDENT-01: validator gRPC endpoint cert graph binding \u2014 CDL opening spec and phase prompt",
+      "manual_read_summary": "Phase prompt for GAP-VALIDATOR-IDENT-01, which closes Gap G-H by specifying the validator_grpc_endpoint_assertion node kind, BLS-signed canonical payload, bridge verification flow, rotation governance, and CDL opening for validator operational surface registration in the Atlas graph.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:gap_validator_ident_01_validator_operational_surface_cdl_opening"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:cdl_017_validator_governance_framework"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:gap_validator_ident_01_validator_operational_surface_cdl_opening"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md"
     }
   ],
   "phase": "1545p-Fix38",
