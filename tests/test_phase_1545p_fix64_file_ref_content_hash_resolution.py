@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 import tools.graph_viz_export as graph_viz_export
@@ -85,8 +86,6 @@ def test_fix64_all_tier1_file_refs_are_content_addressed_and_linked() -> None:
 
 
 def test_fix64_full_file_ref_coverage_and_lmdb_clean() -> None:
-    import json
-
     report = json.loads(REPORT.read_text(encoding="utf-8"))
     writer = AtlasLmdbSafeWriter(LMDB_ROOT)
     try:
@@ -121,8 +120,6 @@ def test_fix64_full_file_ref_coverage_and_lmdb_clean() -> None:
 
 
 def test_fix64_report_and_queue_use_live_counts() -> None:
-    import json
-
     queue = json.loads(QUEUE.read_text(encoding="utf-8"))
     report = json.loads(REPORT.read_text(encoding="utf-8"))
     assert queue["schema_version"] == "fix64_file_ref_resolution_queue.v0.1"

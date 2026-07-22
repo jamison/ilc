@@ -11,6 +11,7 @@ from ilc_core.bundle.epoch_state_root import (
     validate_state_root_cidv1_hex,
 )
 from ilc_core.bundle.layer2_epoch_snapshot import (
+    Layer2EpochSnapshotV2Params,
     MAX_EPOCH_PUBLIC_DELTAS,
     MAX_VALIDATOR_SET_MEMBERS,
     PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1,
@@ -61,15 +62,17 @@ def _graph_manifest() -> dict[str, object]:
 
 def _snapshot():
     return generate_layer2_epoch_snapshot_v2(
-        epoch_number=1,
-        previous_snapshot_sha256="",
-        layer0_sha256=SHA256_A,
-        graph_state_digest=graph_state_digest_from_manifest(_graph_manifest()),
-        agent_state_digest="sha256:" + SHA256_B,
-        active_contract_digest="sha256:" + SHA256_C,
-        economic_settlement_root_sha256=SHA256_B,
-        previous_epoch_state_root_cidv1_hex="",
-        validator_set_root_sha256=validator_set_root_from_manifest(_validator_manifest()),
+        Layer2EpochSnapshotV2Params(
+            epoch_number=1,
+            previous_snapshot_sha256="",
+            layer0_sha256=SHA256_A,
+            graph_state_digest=graph_state_digest_from_manifest(_graph_manifest()),
+            agent_state_digest="sha256:" + SHA256_B,
+            active_contract_digest="sha256:" + SHA256_C,
+            economic_settlement_root_sha256=SHA256_B,
+            previous_epoch_state_root_cidv1_hex="",
+            validator_set_root_sha256=validator_set_root_from_manifest(_validator_manifest()),
+        )
     )
 
 
@@ -192,15 +195,17 @@ def test_state_root_validation_rejects_non_dag_cbor_codec_prefix() -> None:
 def test_epoch_two_requires_previous_state_root_cidv1_hex() -> None:
     with pytest.raises(ValueError, match="missing_previous_state_root"):
         generate_layer2_epoch_snapshot_v2(
-            epoch_number=2,
-            previous_snapshot_sha256=SHA256_A,
-            layer0_sha256=SHA256_A,
-            graph_state_digest=graph_state_digest_from_manifest(_graph_manifest()),
-            agent_state_digest="sha256:" + SHA256_B,
-            active_contract_digest="sha256:" + SHA256_C,
-            economic_settlement_root_sha256=SHA256_B,
-            previous_epoch_state_root_cidv1_hex="",
-            validator_set_root_sha256=validator_set_root_from_manifest(_validator_manifest()),
+            Layer2EpochSnapshotV2Params(
+                epoch_number=2,
+                previous_snapshot_sha256=SHA256_A,
+                layer0_sha256=SHA256_A,
+                graph_state_digest=graph_state_digest_from_manifest(_graph_manifest()),
+                agent_state_digest="sha256:" + SHA256_B,
+                active_contract_digest="sha256:" + SHA256_C,
+                economic_settlement_root_sha256=SHA256_B,
+                previous_epoch_state_root_cidv1_hex="",
+                validator_set_root_sha256=validator_set_root_from_manifest(_validator_manifest()),
+            )
         )
 
 

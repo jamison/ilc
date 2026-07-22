@@ -34,8 +34,8 @@ def _atomic_write_text(path: Path, body: str) -> None:
     except Exception:
         try:
             tmp_path.unlink()
-        except FileNotFoundError:
-            pass
+        except FileNotFoundError as exc:
+            del exc
         raise
 
 

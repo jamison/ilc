@@ -84,6 +84,14 @@ ilc --help             # Full command reference
 
 📖 **[Full quickstart →](QUICKSTART.md)** · **[Operator setup →](docs/GETTING_STARTED.md)**
 
+Legacy local smoke commands still supported:
+
+```bash
+python3 tools/genesis_boot.py  # prints Genesis hash from config/genesis.json
+python3 run_node.py
+python3 tools/demo_walkthrough.py
+```
+
 ---
 
 ## Documentation
@@ -100,6 +108,8 @@ ilc --help             # Full command reference
 | [Contributing](CONTRIBUTING.md) | Development setup, CDL governance process, PR guide |
 | [Economic Paper](docs/ILC_Economic_Paper_Draft_v0.3.md) | Technical economic design |
 | [Public RC gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md) | Public-RC authorization, non-claims, mirror authorization, and carry-forward record |
+
+Operator files: `docs/GETTING_STARTED.md` and `config/README.md`.
 
 ---
 

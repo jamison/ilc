@@ -80,8 +80,8 @@ def test_centrality_delta_gossip_normalization_decimal() -> None:
 def test_centrality_delta_gossip_cap_respected() -> None:
     state: dict[str, object] = {}
 
-    centrality_runtime.accumulate_centrality_delta("node-cap", "0.75", 1, state)
-    centrality_runtime.accumulate_centrality_delta("node-cap", "0.75", 1, state)
+    for _ in range(2):
+        centrality_runtime.accumulate_centrality_delta("node-cap", "0.75", 1, state)
 
     assert state["_pending"][1]["node-cap"] == centrality_runtime.CENTRALITY_SCORE_CAP
 

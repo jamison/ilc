@@ -1,4 +1,4 @@
-# Getting Started with ILC
+# ILC Getting Started
 
 > **Epoch 0 — Public RC.** Production mainnet, ECU minting, and ILC settlement are not yet active. See [`docs/phases/STATUS.md`](phases/STATUS.md) for current activation state. This guide covers operator setup from public RC onward.
 
@@ -46,6 +46,8 @@ Binaries are placed in `ilc_consensus/target/release/`. The main binary is `ilc_
 ```bash
 ilc version          # confirms Python layer
 ilc doctor           # full local health check — JSON output
+ilc-canon-cluster-a-replay-proof ci-gate --profile release-v0.1 --pretty
+bash tools/check_cluster_a_replay_proof_release_gate.sh
 ```
 
 `ilc doctor` reports: Python version, `ilc_core` importability, local identity state, balance state, CCSS identity, and any missing components. Expected output on a fresh install with no identity yet:
@@ -104,7 +106,7 @@ Expected output includes `lineage_id`, `status: "active"`, and `key_ref`. The `a
 
 ---
 
-## 3. First Local Operations
+## 3) First local run (quick path)
 
 ### Boot genesis (verify local config)
 
@@ -127,6 +129,7 @@ Starts the local ILC node API on `http://127.0.0.1:8000/`. Endpoints:
 | `GET /` | Node health and summary |
 | `GET /v1/protocol/schema` | Protocol schema |
 | `POST /v1/protocol/claim` | Submit a claim |
+| `POST /v1/protocol/task_outcome` | Submit a task outcome record |
 | `POST /v1/protocol/refute` | Submit a refutation |
 | `GET /node/{node_id}` | Fetch a graph node by ID |
 | `GET /docs` | OpenAPI interactive docs |
