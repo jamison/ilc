@@ -60921,6 +60921,159 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_209_phase_1576c_ccss_threshold_envelope_design",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Spec defines Graph-Diffused Threshold Envelope design: m=3/n=7 target, corrected delivery probability table, share unlinkability hard rules, route-depth padding boundary, recipient scan cost bound, and relation to the Phase 1573r profile.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:threshold_envelope_scheme_defined_phase_1576c"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:share_unlinkability_requirement_defined_phase_1576c"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:route_depth_padding_defined_phase_1576c"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:recipient_scan_cost_bound_defined_phase_1576c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_pre_rc_cover_batch_profile_v1_candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_privacy_chart_manifest_design_complete_phase_1576b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_gpo_resistance_phase_1576c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_graph_diffused_threshold_envelope_design_1576c_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_graph_diffused_threshold_envelope_design_1576c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_209_phase_1576c_ccss_threshold_envelope_design",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records source checks, corrected core math table, bandwidth multiplier, guessing advantage, share unlinkability table, relay cheap-check boundary, verification gates, non-claims, and 1576c completion tokens.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_pre_rc_cover_batch_profile_v1_candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_privacy_chart_manifest_design_complete_phase_1576b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576c_ccss_threshold_envelope_design_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576c_ccss_threshold_envelope_design_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_209_phase_1576c_ccss_threshold_envelope_design",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Phase status updated with 1576c completion summary, evidence, verification, non-claims, and tokens.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_209_phase_1576c_ccss_threshold_envelope_design",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Forward plan marks 1576c complete and narrows pending CCSS privacy lane to 1576d-1576f.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "manual_edge_annotations": [
