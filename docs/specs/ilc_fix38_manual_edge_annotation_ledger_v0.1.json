@@ -65587,6 +65587,84 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575k_treasury_guard_clearance_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/phase_1575k_treasury_guard_clearance_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_212_phase_1576f_ccss_hypernova_feasibility",
+      "chronology_note": "2026-07-22 Phase 1576f - CCSS HyperNova/Folding feasibility memo",
+      "manual_read_summary": "Research memo evaluates HyperNova-style folding as a future proof-compression layer for CCSS compliance evidence. It records the hash/Merkle first-runtime path, defers folding to Window 1577+, and states that folding proves compliance rather than unlinkability.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:ccss_pre_rc_cover_batch_profile_v1_candidate"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:hypernova_ccss_feasibility_memo_complete_phase_1576f"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_proof_compression_path_documented_phase_1576f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_proof_runtime_phase_1576f"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_gpo_resistance_claim_phase_1576f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_hypernova_folding_feasibility_memo_1576f_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_hypernova_folding_feasibility_memo_1576f_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_212_phase_1576f_ccss_hypernova_feasibility",
+      "chronology_note": "2026-07-22 Phase 1576f - walkthrough and status attestation",
+      "manual_read_summary": "Walkthrough records source checks, feasibility verdict, recommended staged path, literature comparison, verification commands, completion tokens, and non-claims for the CCSS HyperNova/Folding feasibility phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:hypernova_ccss_feasibility_memo_complete_phase_1576f"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_proof_compression_path_documented_phase_1576f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_runtime_activation_phase_1576f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
