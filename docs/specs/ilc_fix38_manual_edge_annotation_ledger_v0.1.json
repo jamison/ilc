@@ -60570,12 +60570,12 @@
     {
       "annotation_batch": "manual_batch_214_phase_1575h_fix4_testbed_grpc_tls_epoch0_reset",
       "chronology_note": "2026-07-22 \u2014 phase 1575h-Fix4 local hardening and blocked live deployment boundary",
-      "manual_read_summary": "Walkthrough records local hardening, fresh TLS material, node-2 Linux binary build hashes, node-3 SSH blocker, and non-claims for the blocked-before-live-deployment 1575h-Fix4 attempt.",
+      "manual_read_summary": "Walkthrough records prompt hardening, fresh TLS material, node-2 Linux binary build hashes, atomic live deployment to all three VPS hosts, retained validator restarts, all-four TLS gRPC probe success at epoch 1, ready_for_1575h=true preflight, and the reset non-claim boundary.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "ATTESTATION",
           "review_status": "candidate",
-          "target": "phase:1575h_fix4_blocked_after_local_hardening"
+          "target": "phase:testbed_grpc_tls_all_four_validators_confirmed_phase_1575h_soak_fix1"
         }
       ],
       "proposed_semantic_edges": [
@@ -60585,7 +60585,7 @@
         },
         {
           "edge_type": "NEGATIVE_ASSERTS",
-          "target": "nonclaim:no_all_four_tls_grpc_confirmation_phase_1575h_fix4"
+          "target": "nonclaim:no_epoch0_reset_phase_1575h_fix4_part_a"
         }
       ],
       "proposed_trace_roles": [
@@ -60593,7 +60593,7 @@
         "ATTESTATION",
         "NEGATIVE_ASSERTS"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/testbed_grpc_tls_probe_fix4.json",
       "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
     }
   ],
