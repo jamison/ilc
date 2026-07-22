@@ -1,5 +1,6 @@
 import sys
 import os
+from decimal import Decimal
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
@@ -16,7 +17,7 @@ def test_eve_awakening():
     
     # 2. Boot the Agent (EVE)
     eve = EveAgent("agent:eve:01", graph, consensus)
-    eve.wallet_balance = 100.0
+    eve.wallet_balance = Decimal("100")
     print(f"Agent {eve.id} is online.")
     
     # 3. Run Hardware Benchmark (Proof of Potential)
@@ -27,7 +28,7 @@ def test_eve_awakening():
     # 4. Perform Labor (Mine a Thought)
     # EVE derives "1 < 2" from the Math Axiom
     parent = "axiom:math:01"
-    thought = eve.mine_thought("1 < 2", parent, stake=1.0)
+    thought = eve.mine_thought("1 < 2", parent, stake=Decimal("1"))
     
     # 5. Verification
     assert thought is not None

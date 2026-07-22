@@ -162,6 +162,8 @@ class EjectedStakeTreasuryDistributionQuote:
 
 
 def _decimal_to_string(value: Decimal) -> str:
+    if not isinstance(value, Decimal) or not value.is_finite():
+        raise ValueError("canonical_decimal_must_be_finite_decimal")
     return format(value.normalize(), "f")
 
 
@@ -403,9 +405,9 @@ def require_production_ejected_stake_distribution_activation(
 
 
 def _require_non_empty_string(value: object, error_token: str) -> str:
-    if not isinstance(value, str) or value == "":
+    if not isinstance(value, str) or not value.strip():
         raise ValueError(error_token)
-    return value
+    return value.strip()
 
 
 def _validate_member_id(value: object, error_token: str) -> str:
@@ -593,17 +595,21 @@ def settle_attribution_batch(
         if attr_event.edge_type == EdgeType.REUSE:
             # §4.1 REUSE attribution — creator of target node receives REUSE_ATTRIBUTION_RATE.
             # visited_set deduplication: same creator cannot receive twice per event.
-            if attr_event.target_creator_id in visited_set:
+            recipient_id = _require_non_empty_string(
+                attr_event.target_creator_id,
+                "target_creator_id_must_be_non_empty_string",
+            )
+            if recipient_id in visited_set:
                 continue
-            visited_set.add(attr_event.target_creator_id)
-            payouts.append((attr_event.target_creator_id, REUSE_ATTRIBUTION_RATE))
+            visited_set.add(recipient_id)
+            payouts.append((recipient_id, REUSE_ATTRIBUTION_RATE))
             passive_ecu = _compute_passive_ecu_for_event(
                 attr_event,
                 passive_ecu_centrality_state,
                 passive_ecu_quality_scores,
             )
             if passive_ecu != _ZERO:
-                payouts.append((attr_event.target_creator_id, passive_ecu))
+                payouts.append((recipient_id, passive_ecu))
 
         elif attr_event.edge_type == EdgeType.CO_AUTHORSHIP:
             # §4.2 CO_AUTHORSHIP proportional split among star node members.
@@ -632,6 +638,10 @@ def settle_attribution_batch(
             recipient_id = attr_event.refuting_agent_id
             if recipient_id is None:
                 raise ValueError("refutation_event_missing_refuting_agent_id")
+            recipient_id = _require_non_empty_string(
+                recipient_id,
+                "refuting_agent_id_must_be_non_empty_string",
+            )
             if recipient_id in visited_set:
                 continue
             visited_set.add(recipient_id)

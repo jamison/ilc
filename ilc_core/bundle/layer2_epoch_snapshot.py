@@ -146,6 +146,22 @@ class Layer2EpochSnapshotV2:
     public_rc_exclude: bool = True
 
 
+@dataclass(frozen=True)
+class Layer2EpochSnapshotV2Params:
+    epoch_number: int
+    previous_snapshot_sha256: str
+    layer0_sha256: str
+    graph_state_digest: str
+    agent_state_digest: str
+    active_contract_digest: str
+    economic_settlement_root_sha256: str
+    previous_epoch_state_root_cidv1_hex: str
+    validator_set_root_sha256: str
+    graph_state_scope: str = PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1
+    layer0_cidv1: str = ""
+    layer1_cidv1: str = ""
+
+
 def _build_layer2_envelope(
     *,
     epoch_number: int,
@@ -171,37 +187,23 @@ def _build_layer2_envelope(
     }
 
 
-def _build_layer2_v2_envelope(
-    *,
-    epoch_number: int,
-    previous_snapshot_sha256: str,
-    layer0_sha256: str,
-    layer0_cidv1: str,
-    layer1_cidv1: str,
-    graph_state_digest: str,
-    agent_state_digest: str,
-    active_contract_digest: str,
-    economic_settlement_root_sha256: str,
-    previous_epoch_state_root_cidv1_hex: str,
-    validator_set_root_sha256: str,
-    graph_state_scope: str,
-) -> dict[str, object]:
+def _build_layer2_v2_envelope(params: Layer2EpochSnapshotV2Params) -> dict[str, object]:
     envelope = _build_layer2_envelope(
-        epoch_number=epoch_number,
-        previous_snapshot_sha256=previous_snapshot_sha256,
-        layer0_sha256=layer0_sha256,
-        layer0_cidv1=layer0_cidv1,
-        layer1_cidv1=layer1_cidv1,
-        graph_state_digest=graph_state_digest,
-        agent_state_digest=agent_state_digest,
-        active_contract_digest=active_contract_digest,
+        epoch_number=params.epoch_number,
+        previous_snapshot_sha256=params.previous_snapshot_sha256,
+        layer0_sha256=params.layer0_sha256,
+        layer0_cidv1=params.layer0_cidv1,
+        layer1_cidv1=params.layer1_cidv1,
+        graph_state_digest=params.graph_state_digest,
+        agent_state_digest=params.agent_state_digest,
+        active_contract_digest=params.active_contract_digest,
     )
     envelope.update(
         {
-            "economic_settlement_root_sha256": economic_settlement_root_sha256,
-            "graph_state_scope": graph_state_scope,
-            "previous_epoch_state_root_cidv1_hex": previous_epoch_state_root_cidv1_hex,
-            "validator_set_root_sha256": validator_set_root_sha256,
+            "economic_settlement_root_sha256": params.economic_settlement_root_sha256,
+            "graph_state_scope": params.graph_state_scope,
+            "previous_epoch_state_root_cidv1_hex": params.previous_epoch_state_root_cidv1_hex,
+            "validator_set_root_sha256": params.validator_set_root_sha256,
         }
     )
     return envelope
@@ -430,84 +432,62 @@ def generate_layer2_epoch_snapshot(
 
 
 def generate_layer2_epoch_snapshot_v2(
+    params: Layer2EpochSnapshotV2Params,
     *,
-    epoch_number: int,
-    previous_snapshot_sha256: str,
-    layer0_sha256: str,
-    graph_state_digest: str,
-    agent_state_digest: str,
-    active_contract_digest: str,
-    economic_settlement_root_sha256: str,
-    previous_epoch_state_root_cidv1_hex: str,
-    validator_set_root_sha256: str,
-    graph_state_scope: str = PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1,
-    layer0_cidv1: str = "",
-    layer1_cidv1: str = "",
     signing_private_key: ed25519.Ed25519PrivateKey | None = None,
     cose_kid: bytes | None = None,
 ) -> Layer2EpochSnapshotV2:
-    _require_epoch_number(epoch_number)
+    if not isinstance(params, Layer2EpochSnapshotV2Params):
+        raise ValueError("layer2_epoch_snapshot_v2_params_required")
+    _require_epoch_number(params.epoch_number)
     _require_sha256(
-        layer0_sha256,
+        params.layer0_sha256,
         "layer2_epoch_snapshot_missing_layer0_sha256",
         "layer2_epoch_snapshot_invalid_layer0_sha256",
     )
     _require_digest(
-        graph_state_digest,
+        params.graph_state_digest,
         "layer2_epoch_snapshot_missing_graph_state_digest",
         "layer2_epoch_snapshot_invalid_graph_state_digest",
     )
     _require_digest(
-        agent_state_digest,
+        params.agent_state_digest,
         "layer2_epoch_snapshot_missing_agent_state_digest",
         "layer2_epoch_snapshot_invalid_agent_state_digest",
     )
     _require_digest(
-        active_contract_digest,
+        params.active_contract_digest,
         "layer2_epoch_snapshot_missing_active_contract_digest",
         "layer2_epoch_snapshot_invalid_active_contract_digest",
     )
     _require_sha256(
-        economic_settlement_root_sha256,
+        params.economic_settlement_root_sha256,
         "layer2_epoch_snapshot_v2_missing_economic_settlement_root_sha256",
         "layer2_epoch_snapshot_v2_invalid_economic_settlement_root_sha256",
     )
     _require_sha256(
-        validator_set_root_sha256,
+        params.validator_set_root_sha256,
         "layer2_epoch_snapshot_v2_missing_validator_set_root_sha256",
         "layer2_epoch_snapshot_v2_invalid_validator_set_root_sha256",
     )
-    if graph_state_scope != PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1:
+    if params.graph_state_scope != PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1:
         raise ValueError("layer2_epoch_snapshot_v2_invalid_graph_state_scope")
     _require_state_root_cidv1_hex_for_epoch(
-        epoch_number=epoch_number,
-        previous_epoch_state_root_cidv1_hex=previous_epoch_state_root_cidv1_hex,
+        epoch_number=params.epoch_number,
+        previous_epoch_state_root_cidv1_hex=params.previous_epoch_state_root_cidv1_hex,
     )
-    _require_cidv1_if_provided(layer0_cidv1, "layer2_epoch_snapshot_invalid_layer0_cidv1")
-    _require_cidv1_if_provided(layer1_cidv1, "layer2_epoch_snapshot_invalid_layer1_cidv1")
-    if epoch_number > 1 and previous_snapshot_sha256 == "":
+    _require_cidv1_if_provided(params.layer0_cidv1, "layer2_epoch_snapshot_invalid_layer0_cidv1")
+    _require_cidv1_if_provided(params.layer1_cidv1, "layer2_epoch_snapshot_invalid_layer1_cidv1")
+    if params.epoch_number > 1 and params.previous_snapshot_sha256 == "":
         raise ValueError("layer2_epoch_snapshot_missing_previous_sha256")
-    if previous_snapshot_sha256 != "":
+    if params.previous_snapshot_sha256 != "":
         _require_sha256(
-            previous_snapshot_sha256,
+            params.previous_snapshot_sha256,
             "layer2_epoch_snapshot_missing_previous_sha256",
             "layer2_epoch_snapshot_invalid_previous_sha256",
         )
 
-    envelope = _build_layer2_v2_envelope(
-        epoch_number=epoch_number,
-        previous_snapshot_sha256=previous_snapshot_sha256,
-        layer0_sha256=layer0_sha256,
-        layer0_cidv1=layer0_cidv1,
-        layer1_cidv1=layer1_cidv1,
-        graph_state_digest=graph_state_digest,
-        agent_state_digest=agent_state_digest,
-        active_contract_digest=active_contract_digest,
-        economic_settlement_root_sha256=economic_settlement_root_sha256,
-        previous_epoch_state_root_cidv1_hex=previous_epoch_state_root_cidv1_hex,
-        validator_set_root_sha256=validator_set_root_sha256,
-        graph_state_scope=graph_state_scope,
-    )
+    envelope = _build_layer2_v2_envelope(params)
     canonical_json = _canonical_json(envelope)
     dag_cbor = encode_dag_cbor(envelope)
     cidv1 = node_id_from_bytes(dag_cbor)
@@ -517,18 +497,18 @@ def generate_layer2_epoch_snapshot_v2(
         else b""
     )
     return Layer2EpochSnapshotV2(
-        epoch_number=epoch_number,
-        previous_snapshot_sha256=previous_snapshot_sha256,
-        layer0_protocol_bundle_sha256=layer0_sha256,
-        layer0_protocol_bundle_cidv1=layer0_cidv1,
-        layer1_genesis_bundle_cidv1=layer1_cidv1,
-        graph_state_digest=graph_state_digest,
-        agent_state_digest=agent_state_digest,
-        active_contract_digest=active_contract_digest,
-        economic_settlement_root_sha256=economic_settlement_root_sha256,
-        previous_epoch_state_root_cidv1_hex=previous_epoch_state_root_cidv1_hex,
-        validator_set_root_sha256=validator_set_root_sha256,
-        graph_state_scope=graph_state_scope,
+        epoch_number=params.epoch_number,
+        previous_snapshot_sha256=params.previous_snapshot_sha256,
+        layer0_protocol_bundle_sha256=params.layer0_sha256,
+        layer0_protocol_bundle_cidv1=params.layer0_cidv1,
+        layer1_genesis_bundle_cidv1=params.layer1_cidv1,
+        graph_state_digest=params.graph_state_digest,
+        agent_state_digest=params.agent_state_digest,
+        active_contract_digest=params.active_contract_digest,
+        economic_settlement_root_sha256=params.economic_settlement_root_sha256,
+        previous_epoch_state_root_cidv1_hex=params.previous_epoch_state_root_cidv1_hex,
+        validator_set_root_sha256=params.validator_set_root_sha256,
+        graph_state_scope=params.graph_state_scope,
         canonical_json=canonical_json,
         dag_cbor=dag_cbor,
         cidv1=cidv1,
@@ -568,18 +548,20 @@ def verify_layer2_epoch_snapshot_v2(
     public_key: ed25519.Ed25519PublicKey | None = None,
 ) -> bool:
     rebuilt = generate_layer2_epoch_snapshot_v2(
-        epoch_number=snapshot.epoch_number,
-        previous_snapshot_sha256=snapshot.previous_snapshot_sha256,
-        layer0_sha256=snapshot.layer0_protocol_bundle_sha256,
-        layer0_cidv1=snapshot.layer0_protocol_bundle_cidv1,
-        layer1_cidv1=snapshot.layer1_genesis_bundle_cidv1,
-        graph_state_digest=snapshot.graph_state_digest,
-        agent_state_digest=snapshot.agent_state_digest,
-        active_contract_digest=snapshot.active_contract_digest,
-        economic_settlement_root_sha256=snapshot.economic_settlement_root_sha256,
-        previous_epoch_state_root_cidv1_hex=snapshot.previous_epoch_state_root_cidv1_hex,
-        validator_set_root_sha256=snapshot.validator_set_root_sha256,
-        graph_state_scope=snapshot.graph_state_scope,
+        Layer2EpochSnapshotV2Params(
+            epoch_number=snapshot.epoch_number,
+            previous_snapshot_sha256=snapshot.previous_snapshot_sha256,
+            layer0_sha256=snapshot.layer0_protocol_bundle_sha256,
+            layer0_cidv1=snapshot.layer0_protocol_bundle_cidv1,
+            layer1_cidv1=snapshot.layer1_genesis_bundle_cidv1,
+            graph_state_digest=snapshot.graph_state_digest,
+            agent_state_digest=snapshot.agent_state_digest,
+            active_contract_digest=snapshot.active_contract_digest,
+            economic_settlement_root_sha256=snapshot.economic_settlement_root_sha256,
+            previous_epoch_state_root_cidv1_hex=snapshot.previous_epoch_state_root_cidv1_hex,
+            validator_set_root_sha256=snapshot.validator_set_root_sha256,
+            graph_state_scope=snapshot.graph_state_scope,
+        )
     )
     return (
         rebuilt.canonical_json == snapshot.canonical_json
@@ -610,6 +592,7 @@ __all__ = [
     "ADR_0009_LAYER2_NOT_PUBLIC_DISTRIBUTION",
     "Layer2EpochSnapshot",
     "Layer2EpochSnapshotV2",
+    "Layer2EpochSnapshotV2Params",
     "MAX_EPOCH_PUBLIC_DELTAS",
     "MAX_VALIDATOR_SET_MEMBERS",
     "PUBLIC_CONSENSUS_GRAPH_STATE_SCOPE_V1",

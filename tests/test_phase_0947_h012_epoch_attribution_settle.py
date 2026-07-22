@@ -19,6 +19,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     CDL_081_DEPENDENCY,
     CDL_HCON_02_DEPENDENCY,
     EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
+    _decimal_to_string,
     settle_attribution_batch,
 )
 from ilc_core.types import (
@@ -56,6 +57,15 @@ def test_g1_reuse_payout_type_is_decimal():
     assert isinstance(amount, Decimal), f"Expected Decimal, got {type(amount)}"
 
 
+def test_g1_reuse_rejects_whitespace_only_creator_id():
+    batch = EpochAttributionBatch(epoch=1)
+    batch.add_event(AttributionEvent(EdgeType.REUSE, "   ", None, 1))
+    batch.seal()
+
+    with pytest.raises(ValueError, match="target_creator_id"):
+        batch.settle({})
+
+
 def test_g1_reuse_payout_matches_reuse_attribution_rate():
     """§4.1 REUSE: payout equals REUSE_ATTRIBUTION_RATE constant exactly."""
     batch = EpochAttributionBatch(epoch=1)
@@ -63,6 +73,11 @@ def test_g1_reuse_payout_matches_reuse_attribution_rate():
     batch.seal()
     payouts = batch.settle({})
     assert payouts[0][1] == REUSE_ATTRIBUTION_RATE
+
+
+def test_canonical_decimal_to_string_rejects_non_finite_decimal():
+    with pytest.raises(ValueError, match="canonical_decimal_must_be_finite_decimal"):
+        _decimal_to_string(Decimal("NaN"))
 
 
 def test_g1_reuse_returns_creator_id():
