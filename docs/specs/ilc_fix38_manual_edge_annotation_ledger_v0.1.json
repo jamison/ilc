@@ -64131,6 +64131,69 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1577_passive_ecu_wiring_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_200_phase_1575o_release_pypi_yank_upload",
+      "chronology_note": "2026-07-22 Phase 1575o-release - PyPI live remediation receipt",
+      "manual_read_summary": "Release receipt records the human PyPI web UI yank of ilc-core 0.1.0, Codex twine upload of clean ilc-core 0.2.0 wheel and sdist, PyPI hash verification, pip index verification, and non-claims.",
+      "repo_path": "out/pypi_remediation_1575o/release_receipt.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_ilc_core_010_yanked_phase_1575o"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_ilc_core_020_clean_wheel_uploaded_phase_1575o"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_guard_clearance_phase_1575o_release"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_added:out/pypi_remediation_1575o/release_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_200_phase_1575o_release_pypi_yank_upload",
+      "chronology_note": "2026-07-22 Phase 1575o-release - walkthrough and status attestation",
+      "manual_read_summary": "Walkthrough records gate phrase, artifact hashes, PyPI yanked state, upload command, version-specific endpoint verification, pip index verification, release receipt, tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1575o_release_pypi_yank_upload_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_ilc_core_020_clean_wheel_uploaded_phase_1575o"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_epoch_transition_phase_1575o_release"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575o_release_pypi_yank_upload_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
