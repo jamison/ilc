@@ -330,7 +330,9 @@ impl PeerNetwork {
         mut send: SendStream,
         env: GossipEnvelope,
     ) -> Result<(), ILCConsensusError> {
-        let bytes = bincode::serialize(&env)
+        let bytes = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .serialize(&env)
             .map_err(|_| ILCConsensusError::Other("Envelope map error".into()))?;
 
         let timeout = tokio::time::Duration::from_millis(IO_TIMEOUT_MS);
@@ -380,12 +382,18 @@ impl PeerNetwork {
             .map_err(|_| ILCConsensusError::Other("Receive: payload read timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Read fail payload".into()))?;
 
-        let envelope: GossipEnvelope = bincode::DefaultOptions::new()
+        let fixed_options = bincode::DefaultOptions::new()
             .with_fixint_encoding()
             .allow_trailing_bytes()
-            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64)
-            .deserialize(&buf)
-            .map_err(|_| ILCConsensusError::Other("Corrupted CDL-061 Envelope parsed".into()))?;
+            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64);
+        let envelope: GossipEnvelope = fixed_options.deserialize(&buf).or_else(|fixed_err| {
+            bincode::deserialize(&buf).map_err(|legacy_err| {
+                ILCConsensusError::Other(format!(
+                    "Corrupted CDL-061 Envelope parsed: fixed_bincode={}; legacy_bincode={}",
+                    fixed_err, legacy_err
+                ))
+            })
+        })?;
 
         // SEC-006: Cryptographically bind application payload to mathematical TLS identity
         if envelope.peer_id.0 != authenticated_id {
@@ -403,7 +411,10 @@ impl PeerNetwork {
 mod tests {
     use super::*;
     use crate::types::AgentSig;
-    use crate::types::{AgentID, ECUTransfer, ObjectRef};
+    use crate::types::{
+        AgentID, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
+        ObjectRef, ILC_EPOCH_SIG_DST,
+    };
     use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
     use tokio::time::Duration;
 
@@ -423,6 +434,50 @@ mod tests {
 
     fn mock_socket() -> SocketAddr {
         SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 0))
+    }
+
+    #[test]
+    fn test_epoch_checkpoint_envelope_bincode_round_trip() {
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([7u8; 36]),
+        };
+        let msg_bytes = bincode::serialize(&record).unwrap();
+        let sk_1 = blst::min_pk::SecretKey::key_gen(&[1u8; 32], &[]).unwrap();
+        let sk_2 = blst::min_pk::SecretKey::key_gen(&[2u8; 32], &[]).unwrap();
+        let sig_1 = sk_1.sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]);
+        let sig_2 = sk_2.sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]);
+        let sig_refs = vec![&sig_1, &sig_2];
+        let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
+        let envelope = GossipEnvelope {
+            frame_type: 0x00,
+            peer_id: ValidatorID(2),
+            payload: GossipMessage::EpochCheckpointMsg(EpochCheckpoint {
+                record,
+                sigs: AggSig(agg),
+                signers: vec![ValidatorID(1), ValidatorID(2)],
+            }),
+        };
+
+        let bytes = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .serialize(&envelope)
+            .unwrap();
+        let decoded: GossipEnvelope = bincode::DefaultOptions::new()
+            .with_fixint_encoding()
+            .allow_trailing_bytes()
+            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64)
+            .deserialize(&bytes)
+            .unwrap();
+
+        assert_eq!(decoded.peer_id, ValidatorID(2));
+        match decoded.payload {
+            GossipMessage::EpochCheckpointMsg(checkpoint) => {
+                assert_eq!(checkpoint.record.epoch, EpochSeq(1));
+                assert_eq!(checkpoint.signers, vec![ValidatorID(1), ValidatorID(2)]);
+            }
+            other => panic!("unexpected payload: {:?}", other),
+        }
     }
 
     #[tokio::test]
