@@ -60277,6 +60277,108 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:out/lmdb_catchup_1576_fix13/validate_receipt.json",
       "repo_path": "out/lmdb_catchup_1576_fix13/validate_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Phase 1575l deterministic readiness evidence builder for the default-off ejected-stake distribution path",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/phase_1575l_ejected_stake_readiness.py",
+      "repo_path": "tools/phase_1575l_ejected_stake_readiness.py"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Focused Phase 1575l tests for guard state, Decimal conservation, fail-closed quorum, canonical determinism, and no-Genesis routing",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575l_ejected_stake_readiness.py",
+      "repo_path": "tests/test_phase_1575l_ejected_stake_readiness.py"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Phase 1575l walkthrough recording source findings, rehearsal inputs, evidence hashes, verification, and non-claims",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575l_ejected_stake_redistribution_readiness_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575l_ejected_stake_redistribution_readiness_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Canonical Phase 1575l ejected-stake rehearsal event record",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/ejected_stake_readiness_1575l/ejection_rehearsal_event.json",
+      "repo_path": "out/ejected_stake_readiness_1575l/ejection_rehearsal_event.json"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Phase 1575l no-wallet-write ejected-stake readiness certificate",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/ejected_stake_readiness_1575l/ejected_stake_readiness_certificate.json",
+      "repo_path": "out/ejected_stake_readiness_1575l/ejected_stake_readiness_certificate.json"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1575l_ejected_stake_readiness",
+      "chronology_note": "2026-07-22 - phase 1575l: ejected stake redistribution readiness rehearsal",
+      "manual_read_summary": "Phase 1575l evidence-builder receipt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575l"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/ejected_stake_readiness_1575l/tool_receipt.json",
+      "repo_path": "out/ejected_stake_readiness_1575l/tool_receipt.json"
     }
   ],
   "boundary": {
