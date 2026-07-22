@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-only
 """
-SIM 2+3: CCSS Spectral Equivalence-Class Cover Sets v0.1
+SIM 2+3: CCSS Spectral Equivalence-Class Cover Sets v0.2
 Phase: research / forward-planning (Window 1576+ lane)
 Seed: 1574
 
@@ -59,6 +59,7 @@ from typing import Any
 
 import networkx as nx
 import numpy as np
+from scipy.sparse.linalg import eigsh
 
 # ---------------------------------------------------------------------------
 # Constants (match CCSS-SPECTRAL-01 spec)
@@ -69,7 +70,10 @@ K_BATCH: int = 128
 K_COMPONENTS: int = 8      # max eigenvalues retained (spec: up to 32; 8 for local subgraph)
 QUANT_SCALE: int = 1000
 TARGET_P_SUCCESS: float = 0.01
-OUTPUT_PATH: Path = Path("out/sim_ccss_spectral_cover_sets_results.json")
+OUTPUT_PATH: Path = Path("out/sim_ccss_spectral_cover_v0.2_adversary_taxonomy_results.json")
+ADVERSARY_RELAY_LABELABLE: str = "relay_level_intersection_relay_labelable_cover"
+ADVERSARY_SENDER_GENERATED: str = "relay_level_intersection_sender_generated_cover"
+_GRAPH_CONTEXT_CACHE: dict[tuple[int, float, int], dict[str, Any]] = {}
 
 # ---------------------------------------------------------------------------
 # Fingerprint computation
@@ -104,7 +108,7 @@ def local_fingerprint(
             if len(nbrs) >= 64:
                 break
 
-    sub = G.subgraph(nbrs)
+    sub = G.subgraph(nbrs).copy()
     n = sub.number_of_nodes()
     if n < 2:
         cont = np.zeros(k)
@@ -147,6 +151,20 @@ def build_equivalence_classes(
     for node, fp in quant.items():
         classes[fp].append(node)
     return dict(classes)
+
+
+def compute_normalized_fiedler(G: nx.Graph) -> float:
+    """Return λ₂ for the normalized Laplacian; the valid range is [0, 2]."""
+    n = len(G)
+    laplacian = nx.normalized_laplacian_matrix(G).astype(np.float64)
+    if n <= 500:
+        vals = np.linalg.eigvalsh(laplacian.toarray())
+        lam2 = float(sorted(vals)[1])
+    else:
+        vals = eigsh(laplacian, k=2, which="SM", return_eigenvectors=False, tol=1e-6)
+        lam2 = float(sorted(vals)[1])
+    assert 0.0 <= lam2 <= 2.0 + 1e-9, f"impossible normalized lambda2={lam2}"
+    return lam2
 
 
 def build_cover_set(
@@ -208,23 +226,18 @@ def run_trial(
     adj: dict[int, set[int]],
     adj_list: dict[int, list[int]],
     all_nodes: list[int],
-    quant: dict[int, tuple[int, ...]],
-    cont: dict[int, np.ndarray],
-    eq_classes: dict[tuple[int, ...], list[int]],
+    cover_sets: dict[int, frozenset[int]],
     T: int,
     L_walk: int,
-    k_batch: int,
     rng: random.Random,
-) -> tuple[bool, int]:
+) -> tuple[bool, int, int]:
     """
-    Returns (adversary_success, cover_set_size).
+    Returns (adversary_success, cover_set_size, final_candidate_set_size).
     """
     sender = rng.choice(all_nodes)
 
     # Build stable cover set ONCE — same every epoch
-    stable_cover = build_cover_set(
-        sender, quant, cont, eq_classes, all_nodes, k_batch
-    )
+    stable_cover = cover_sets[sender]
 
     # Candidates start as full node set
     candidates = set(all_nodes)
@@ -250,21 +263,94 @@ def run_trial(
             break
 
     success = len(candidates) <= 1
-    return success, len(stable_cover)
+    return success, len(stable_cover), len(candidates)
 
 
-def run_config(
-    N: int,
-    p: float,
+def run_trial_relay_labelable_cover(
+    adj: dict[int, set[int]],
+    adj_list: dict[int, list[int]],
+    all_nodes: list[int],
     T: int,
     L_walk: int,
-    hop: int,
+    rng: random.Random,
+) -> tuple[bool, int]:
+    """
+    Malicious-relay model: relay can label and discard cover bundles.
+    Stable cover therefore provides no protection; only structural plausible
+    senders remain in each epoch before intersection.
+    """
+    sender = rng.choice(all_nodes)
+    candidates = set(all_nodes)
+    for _ in range(T):
+        path = random_walk(adj_list, sender, L_walk, rng)
+        structural: set[int] = set()
+        for relay in path[1:]:
+            structural.update(adj[relay])
+        structural.add(sender)
+        candidates &= structural
+        if len(candidates) <= 1:
+            break
+    return len(candidates) <= 1, len(candidates)
+
+
+def run_cohort_linkability_trial(
+    adj: dict[int, set[int]],
+    adj_list: dict[int, list[int]],
+    cover_sets: dict[int, frozenset[int]],
+    all_nodes: list[int],
+    T: int,
+    L_walk: int,
+    k_batch: int,
+    rng: random.Random,
+) -> bool:
+    """
+    Sender-generated-cover cohort test: can the adversary reduce repeated
+    participation to a cohort smaller than one quarter of the anonymity floor?
+    """
+    cohort_threshold = k_batch // 4
+    sender = rng.choice(all_nodes)
+    stable = cover_sets[sender]
+    candidates = set(all_nodes)
+    for _ in range(T):
+        path = random_walk(adj_list, sender, L_walk, rng)
+        structural: set[int] = set()
+        for relay in path[1:]:
+            structural.update(adj[relay])
+        structural.add(sender)
+        candidates &= structural | stable
+        if len(candidates) <= cohort_threshold:
+            break
+    return len(candidates) <= cohort_threshold
+
+
+def _candidate_metrics(
+    candidate_sizes: list[int],
     n_trials: int,
+) -> dict[str, Any]:
+    return {
+        "guessing_advantage": round(
+            sum(1.0 / max(s, 1) for s in candidate_sizes) / n_trials, 5
+        ),
+        "median_candidate_size": float(np.median(candidate_sizes)),
+        "p_candidates_below_k": round(
+            sum(1 for s in candidate_sizes if s < K_BATCH) / n_trials, 4
+        ),
+    }
+
+
+def _get_graph_context(
+    N: int,
+    p: float,
+    hop: int,
     seed: int,
 ) -> dict[str, Any]:
-    rng = random.Random(seed)
+    """Build or return the deterministic graph/fingerprint context."""
+    key = (N, p, hop)
+    cached = _GRAPH_CONTEXT_CACHE.get(key)
+    if cached is not None:
+        return cached
 
-    # Build graph
+    rng = random.Random(seed)
     G = nx.erdos_renyi_graph(N, p, seed=seed)
     while not nx.is_connected(G):
         comps = sorted(nx.connected_components(G), key=len, reverse=True)
@@ -276,71 +362,143 @@ def run_config(
     adj = {n: set(G.neighbors(n)) for n in all_nodes}
     adj_list = {n: list(G.neighbors(n)) for n in all_nodes}
     avg_deg = sum(len(v) for v in adj.values()) / N
+    lambda2 = compute_normalized_fiedler(G)
 
-    # Compute λ₂
-    if N <= 500:
-        L_mat = nx.normalized_laplacian_matrix(G).toarray().astype(np.float64)
-        vals = np.linalg.eigvalsh(L_mat)
-        lambda2 = float(sorted(vals)[1])
-    else:
-        try:
-            lambda2 = float(nx.algebraic_connectivity(G, method="lanczos", seed=SEED))
-        except Exception:
-            L_mat = nx.normalized_laplacian_matrix(G).toarray().astype(np.float64)
-            vals = np.linalg.eigvalsh(L_mat)
-            lambda2 = float(sorted(vals)[1])
-
-    # Precompute spectral fingerprints
     quant, cont_vecs = precompute_fingerprints(G, hop=hop)
     eq_classes = build_equivalence_classes(quant)
+    cover_sets = {
+        node: build_cover_set(node, quant, cont_vecs, eq_classes, all_nodes, K_BATCH)
+        for node in all_nodes
+    }
 
-    # Equivalence class size stats
     class_sizes = [len(v) for v in eq_classes.values()]
-    avg_class = sum(class_sizes) / len(class_sizes)
-    frac_covered = sum(
-        1 for node in all_nodes
-        if len(eq_classes.get(quant[node], [])) >= K_BATCH
-    ) / N
-    median_class = float(np.median(class_sizes))
-    max_class = max(class_sizes)
-    n_unique = sum(1 for s in class_sizes if s == 1)
+    context: dict[str, Any] = {
+        "all_nodes": all_nodes,
+        "adj": adj,
+        "adj_list": adj_list,
+        "quant": quant,
+        "cont_vecs": cont_vecs,
+        "eq_classes": eq_classes,
+        "cover_sets": cover_sets,
+        "lambda2": lambda2,
+        "avg_deg": avg_deg,
+        "avg_eq_class_size": sum(class_sizes) / len(class_sizes),
+        "median_eq_class_size": float(np.median(class_sizes)),
+        "max_eq_class_size": max(class_sizes),
+        "n_unique_fingerprints": sum(1 for s in class_sizes if s == 1),
+        "n_eq_classes": len(eq_classes),
+        "frac_nodes_covered_by_class_gte_kbatch": (
+            sum(
+                1 for node in all_nodes
+                if len(eq_classes.get(quant[node], [])) >= K_BATCH
+            ) / N
+        ),
+        "graph_seed": seed,
+    }
+    _GRAPH_CONTEXT_CACHE[key] = context
+    return context
 
-    # Run trials
-    successes = 0
-    cover_sizes: list[int] = []
-    for i in range(n_trials):
-        ok, csz = run_trial(
-            adj, adj_list, all_nodes,
-            quant, cont_vecs, eq_classes,
-            T, L_walk, K_BATCH, rng,
+
+def _graph_seed_for_context(N: int, p: float, hop: int) -> int:
+    """Stable per-context seed; never use Python hash randomization."""
+    return SEED + N * 101 + int(round(p * 1_000_000)) * 17 + hop * 1009
+
+
+def run_config(
+    N: int,
+    p: float,
+    T: int,
+    L_walk: int,
+    hop: int,
+    n_trials: int,
+    seed: int,
+) -> list[dict[str, Any]]:
+    rng = random.Random(seed)
+    context = _get_graph_context(N, p, hop, _graph_seed_for_context(N, p, hop))
+    all_nodes = context["all_nodes"]
+    adj = context["adj"]
+    adj_list = context["adj_list"]
+    cover_sets = context["cover_sets"]
+
+    # Run relay-labelable-cover trials (Model A)
+    labelable_successes = 0
+    labelable_candidate_sizes: list[int] = []
+    for _ in range(n_trials):
+        ok, candidate_size = run_trial_relay_labelable_cover(
+            adj, adj_list, all_nodes, T, L_walk, rng
         )
         if ok:
-            successes += 1
-        cover_sizes.append(csz)
+            labelable_successes += 1
+        labelable_candidate_sizes.append(candidate_size)
 
-    p_success = successes / n_trials
+    # Run sender-generated-cover trials (Model B)
+    sender_generated_successes = 0
+    cover_sizes: list[int] = []
+    sender_generated_candidate_sizes: list[int] = []
+    cohort_linkable_count = 0
+    for _ in range(n_trials):
+        ok, csz, candidate_size = run_trial(
+            adj, adj_list, all_nodes,
+            cover_sets,
+            T, L_walk, rng,
+        )
+        if ok:
+            sender_generated_successes += 1
+        cover_sizes.append(csz)
+        sender_generated_candidate_sizes.append(candidate_size)
+        if run_cohort_linkability_trial(
+            adj, adj_list, cover_sets,
+            all_nodes, T, L_walk, K_BATCH, rng,
+        ):
+            cohort_linkable_count += 1
+
+    labelable_p_success = labelable_successes / n_trials
+    sender_generated_p_success = sender_generated_successes / n_trials
     avg_cover = sum(cover_sizes) / n_trials
 
-    return {
+    shared = {
         "N": N,
         "p": round(p, 5),
         "hop": hop,
         "T": T,
         "L_walk": L_walk,
-        "lambda2": round(lambda2, 4),
-        "avg_deg": round(avg_deg, 2),
-        "avg_eq_class_size": round(avg_class, 2),
-        "median_eq_class_size": round(median_class, 1),
-        "max_eq_class_size": max_class,
-        "n_unique_fingerprints": n_unique,
-        "n_eq_classes": len(eq_classes),
-        "frac_nodes_covered_by_class_gte_kbatch": round(frac_covered, 4),
-        "avg_cover_set_size": round(avg_cover, 1),
-        "p_success": round(p_success, 4),
+        "lambda2": round(context["lambda2"], 4),
+        "avg_deg": round(context["avg_deg"], 2),
+        "avg_eq_class_size": round(context["avg_eq_class_size"], 2),
+        "median_eq_class_size": round(context["median_eq_class_size"], 1),
+        "max_eq_class_size": context["max_eq_class_size"],
+        "n_unique_fingerprints": context["n_unique_fingerprints"],
+        "n_eq_classes": context["n_eq_classes"],
+        "frac_nodes_covered_by_class_gte_kbatch": round(
+            context["frac_nodes_covered_by_class_gte_kbatch"], 4
+        ),
+        "graph_seed": context["graph_seed"],
         "n_trials": n_trials,
-        "successes": successes,
-        "target_met": bool(p_success <= TARGET_P_SUCCESS),
     }
+    labelable = {
+        **shared,
+        "adversary_class": ADVERSARY_RELAY_LABELABLE,
+        "avg_cover_set_size": 0.0,
+        "p_success": round(labelable_p_success, 4),
+        "successes": labelable_successes,
+        "target_met": bool(labelable_p_success <= TARGET_P_SUCCESS),
+        "p_cohort_linkable": round(
+            sum(1 for s in labelable_candidate_sizes if s <= K_BATCH // 4) / n_trials,
+            4,
+        ),
+        **_candidate_metrics(labelable_candidate_sizes, n_trials),
+    }
+    sender_generated = {
+        **shared,
+        "adversary_class": ADVERSARY_SENDER_GENERATED,
+        "avg_cover_set_size": round(avg_cover, 1),
+        "p_success": round(sender_generated_p_success, 4),
+        "successes": sender_generated_successes,
+        "target_met": bool(sender_generated_p_success <= TARGET_P_SUCCESS),
+        "p_cohort_linkable": round(cohort_linkable_count / n_trials, 4),
+        **_candidate_metrics(sender_generated_candidate_sizes, n_trials),
+    }
+    return [labelable, sender_generated]
 
 
 # ---------------------------------------------------------------------------
@@ -379,22 +537,30 @@ def main() -> None:
     total = len(CONFIGS)
     results: list[dict[str, Any]] = []
 
-    print("CCSS Spectral Cover Set SIM v0.1 (Sim 2 + Sim 3)")
+    print("CCSS Spectral Cover Set SIM v0.2 adversary taxonomy")
     print(f"Seed={SEED}  k_batch={K_BATCH}  target P(success)≤{TARGET_P_SUCCESS}")
     print(f"Configurations: {total}\n")
 
     for i, (N, p, T, L, hop) in enumerate(CONFIGS):
         n_trials = TRIALS_BY_N[N]
-        r = run_config(N, p, T, L, hop, n_trials, SEED + i * 13)
-        results.append(r)
-        mark = "✓" if r["target_met"] else "✗"
+        config_results = run_config(N, p, T, L, hop, n_trials, SEED + i * 13)
+        results.extend(config_results)
+        labelable = next(
+            r for r in config_results if r["adversary_class"] == ADVERSARY_RELAY_LABELABLE
+        )
+        sender_generated = next(
+            r for r in config_results if r["adversary_class"] == ADVERSARY_SENDER_GENERATED
+        )
+        mark = "✓" if sender_generated["target_met"] else "✗"
         print(
             f"[{i+1:3d}/{total}] N={N:4d} p={p:.4f} hop={hop} T={T:3d} L={L}"
-            f"  λ₂={r['lambda2']:.4f}"
-            f"  cls_med={r['median_eq_class_size']:6.1f}"
-            f"  cls_max={r['max_eq_class_size']:5d}"
-            f"  cov%={r['frac_nodes_covered_by_class_gte_kbatch']:.2f}"
-            f"  P(succ)={r['p_success']:.3f}  {mark}"
+            f"  λ₂={sender_generated['lambda2']:.4f}"
+            f"  cls_med={sender_generated['median_eq_class_size']:6.1f}"
+            f"  cls_max={sender_generated['max_eq_class_size']:5d}"
+            f"  cov%={sender_generated['frac_nodes_covered_by_class_gte_kbatch']:.2f}"
+            f"  P(labelable)={labelable['p_success']:.3f}"
+            f"  P(sender-gen)={sender_generated['p_success']:.3f}  {mark}",
+            flush=True,
         )
 
     elapsed = round(time.time() - t0, 1)
@@ -413,7 +579,8 @@ def main() -> None:
                     sub = sorted(
                         [r for r in results
                          if r["N"] == N and r["T"] == T
-                         and r["L_walk"] == L and r["hop"] == hop],
+                         and r["L_walk"] == L and r["hop"] == hop
+                         and r["adversary_class"] == ADVERSARY_SENDER_GENERATED],
                         key=lambda r: r["lambda2"],
                     )
                     if not sub:
@@ -439,17 +606,33 @@ def main() -> None:
     print("  EQUIVALENCE CLASS SIZES  (hop=1, T=20, L=3)")
     print(f"{'='*80}")
     print(f"  {'N':>5}  {'p':>7}  {'λ₂':>7}  {'deg':>5}  {'med_cls':>8}  "
-          f"{'max_cls':>8}  {'n_uniq':>7}  {'cov%':>6}  {'P(suc)':>7}  pass")
-    print("  " + "-"*75)
+          f"{'max_cls':>8}  {'n_uniq':>7}  {'cov%':>6}  {'P(A)':>7}  "
+          f"{'P(B)':>7}  {'guess_B':>8}  pass")
+    print("  " + "-"*92)
     for r in results:
-        if r["hop"] == 1 and r["T"] == 20 and r["L_walk"] == 3:
+        if (
+            r["hop"] == 1
+            and r["T"] == 20
+            and r["L_walk"] == 3
+            and r["adversary_class"] == ADVERSARY_SENDER_GENERATED
+        ):
+            labelable = next(
+                x for x in results
+                if x["N"] == r["N"]
+                and x["p"] == r["p"]
+                and x["hop"] == r["hop"]
+                and x["T"] == r["T"]
+                and x["L_walk"] == r["L_walk"]
+                and x["adversary_class"] == ADVERSARY_RELAY_LABELABLE
+            )
             mark = "✓" if r["target_met"] else "✗"
             print(
                 f"  {r['N']:>5}  {r['p']:>7.4f}  {r['lambda2']:>7.4f}  "
                 f"{r['avg_deg']:>5.1f}  {r['median_eq_class_size']:>8.1f}  "
                 f"{r['max_eq_class_size']:>8d}  {r['n_unique_fingerprints']:>7d}  "
                 f"{r['frac_nodes_covered_by_class_gte_kbatch']:>6.2f}  "
-                f"{r['p_success']:>7.4f}  {mark}"
+                f"{labelable['p_success']:>7.4f}  {r['p_success']:>7.4f}  "
+                f"{r['guessing_advantage']:>8.5f}  {mark}"
             )
 
     # -----------------------------------------------------------------------
@@ -464,10 +647,17 @@ def main() -> None:
           f"{'1h P(s)':>8}  {'2h P(s)':>8}")
     print("  " + "-"*85)
     for N in [500, 1000]:
-        ps = sorted({r["p"] for r in results if r["N"] == N and r["hop"] == 1 and r["T"] == 20 and r["L_walk"] == 3})
+        ps = sorted({
+            r["p"] for r in results
+            if r["N"] == N
+            and r["hop"] == 1
+            and r["T"] == 20
+            and r["L_walk"] == 3
+            and r["adversary_class"] == ADVERSARY_SENDER_GENERATED
+        })
         for p in ps:
-            r1 = next((r for r in results if r["N"] == N and r["p"] == p and r["hop"] == 1 and r["T"] == 20 and r["L_walk"] == 3), None)
-            r2 = next((r for r in results if r["N"] == N and r["p"] == p and r["hop"] == 2 and r["T"] == 20 and r["L_walk"] == 3), None)
+            r1 = next((r for r in results if r["N"] == N and r["p"] == p and r["hop"] == 1 and r["T"] == 20 and r["L_walk"] == 3 and r["adversary_class"] == ADVERSARY_SENDER_GENERATED), None)
+            r2 = next((r for r in results if r["N"] == N and r["p"] == p and r["hop"] == 2 and r["T"] == 20 and r["L_walk"] == 3 and r["adversary_class"] == ADVERSARY_SENDER_GENERATED), None)
             if r1 and r2:
                 print(
                     f"  {N:>5}  {p:>7.4f}  {r1['lambda2']:>7.4f}"
@@ -480,7 +670,8 @@ def main() -> None:
                 )
 
     output: dict[str, Any] = {
-        "sim_id": "sim_ccss_spectral_cover_sets_v0.1",
+        "sim_id": "sim_ccss_spectral_cover_v0.2_adversary_taxonomy",
+        "supersedes": "out/sim_ccss_spectral_cover_sets_results.json",
         "seed": SEED,
         "k_batch": K_BATCH,
         "k_components": K_COMPONENTS,
@@ -490,13 +681,22 @@ def main() -> None:
             "Stable spectral-equivalence-class cover sets. "
             "candidates = stable_cover ∪ ∩_t structural_t. "
             "Adversary confined to cover set size. "
-            "Relay-level adversary only."
+            "Model A relay-labelable cover strips cover from the plausible set. "
+            "Model B sender-generated cover assumes relay cannot label cover."
         ),
+        "adversary_taxonomy": [
+            "external_batch_observer",
+            "relay_level_intersection",
+            "honest_relay",
+            "malicious_relay",
+            "source_edge_gpo",
+            "multi_epoch_gpo",
+        ],
         "elapsed_seconds": elapsed,
         "results": results,
     }
     OUTPUT_PATH.parent.mkdir(exist_ok=True)
-    OUTPUT_PATH.write_text(json.dumps(output, indent=2))
+    OUTPUT_PATH.write_text(json.dumps(output, indent=2, sort_keys=True, allow_nan=False))
     print(f"\nElapsed: {elapsed}s")
     print(f"Results written to: {OUTPUT_PATH}")
 

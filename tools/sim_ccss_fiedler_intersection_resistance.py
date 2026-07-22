@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-only
 """
-SIM: CCSS Spectral Fiedler Intersection Resistance v0.1
+SIM: CCSS Spectral Fiedler Intersection Resistance v0.2
 Phase: research / forward-planning (Window 1576+ lane)
 Seed: 1574
 
@@ -54,6 +54,7 @@ from typing import Any
 
 import networkx as nx
 import numpy as np
+from scipy.sparse.linalg import eigsh
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -62,7 +63,7 @@ import numpy as np
 SEED: int = 1574
 K_BATCH: int = 128          # from ccss_pre_rc_cover_batch_profile_v1_candidate
 TARGET_P_SUCCESS: float = 0.01
-OUTPUT_PATH: Path = Path("out/sim_ccss_fiedler_intersection_resistance_results.json")
+OUTPUT_PATH: Path = Path("out/sim_ccss_fiedler_v0.2_normalized_results.json")
 
 # ---------------------------------------------------------------------------
 # Graph utilities
@@ -84,19 +85,19 @@ def make_connected_er_graph(N: int, p: float, seed: int) -> nx.Graph:
 def compute_fiedler(G: nx.Graph) -> float:
     """
     Second-smallest eigenvalue of the normalized Laplacian (Fiedler value λ₂).
-    Uses ARPACK Lanczos for large sparse graphs; dense eigvalsh for small.
+    The normalized Laplacian has spectrum in [0, 2]; use the same operator
+    for every graph size so small-N and large-N rows are comparable.
     """
     N = len(G)
+    L = nx.normalized_laplacian_matrix(G).astype(np.float64)
     if N <= 500:
-        L = nx.normalized_laplacian_matrix(G).toarray().astype(np.float64)
-        vals = np.linalg.eigvalsh(L)
-        return float(sorted(vals)[1])
-    try:
-        return float(nx.algebraic_connectivity(G, method="lanczos", seed=SEED))
-    except Exception:
-        L = nx.normalized_laplacian_matrix(G).toarray().astype(np.float64)
-        vals = np.linalg.eigvalsh(L)
-        return float(sorted(vals)[1])
+        vals = np.linalg.eigvalsh(L.toarray())
+        lam2 = float(sorted(vals)[1])
+    else:
+        vals = eigsh(L, k=2, which="SM", return_eigenvectors=False, tol=1e-6)
+        lam2 = float(sorted(vals)[1])
+    assert 0.0 <= lam2 <= 2.0 + 1e-9, f"impossible normalized lambda2={lam2}"
+    return lam2
 
 
 # ---------------------------------------------------------------------------
@@ -237,7 +238,7 @@ def main() -> None:
     total = len(sweep)
     results: list[dict[str, Any]] = []
 
-    print(f"CCSS Fiedler Intersection Resistance SIM v0.1")
+    print("CCSS Fiedler Intersection Resistance SIM v0.2 normalized")
     print(f"Seed={SEED}  k_batch={K_BATCH}  target P(success)≤{TARGET_P_SUCCESS}")
     print(f"Configurations: {total}\n")
 
@@ -278,7 +279,8 @@ def main() -> None:
 
     elapsed = round(time.time() - t0, 1)
     output: dict[str, Any] = {
-        "sim_id": "sim_ccss_fiedler_intersection_resistance_v0.1",
+        "sim_id": "sim_ccss_fiedler_v0.2_normalized",
+        "supersedes": "out/sim_ccss_fiedler_intersection_resistance_results.json",
         "seed": SEED,
         "k_batch": K_BATCH,
         "target_p_success": TARGET_P_SUCCESS,
@@ -292,7 +294,7 @@ def main() -> None:
         "summary": summary,
     }
     OUTPUT_PATH.parent.mkdir(exist_ok=True)
-    OUTPUT_PATH.write_text(json.dumps(output, indent=2))
+    OUTPUT_PATH.write_text(json.dumps(output, indent=2, sort_keys=True, allow_nan=False))
 
     # -----------------------------------------------------------------------
     # Print summary table

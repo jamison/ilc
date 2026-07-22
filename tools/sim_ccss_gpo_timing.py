@@ -63,6 +63,37 @@ Non-claims
 """
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+# GPO Resistance Path (L6) - NOT IMPLEMENTED, documented for forward planning
+# ---------------------------------------------------------------------------
+#
+# Sim 4 (this file) shows that L2 sub-epoch jitter alone cannot defeat a
+# multi-epoch GPO. At T >= 5 epochs, temporal intersection collapses the
+# ambiguity set to ~1 at any realistic timing precision (eps < 1s).
+#
+# The only mechanism that defeats multi-epoch GPO temporal intersection is
+# relay-side shuffle-and-batch release (mix-net style):
+#
+#   1. Relay collects all inbound bundles for the full batch_window (120s).
+#   2. Relay shuffles the collected set uniformly at random.
+#   3. Relay releases the shuffled batch at the epoch boundary.
+#   4. GPO sees batch release events, not per-sender injection timestamps.
+#   5. Temporal intersection no longer has per-sender injection times to anchor.
+#
+# Required properties for L6 to provide GPO resistance:
+#   - Relay must not know which bundles are real vs. cover (cover provenance)
+#   - Batch release must be at fixed epoch boundary (not adaptive)
+#   - Cover continuity: cover emission continues during sender absence epochs
+#   - Minimum batch size >= k_batch before release (hold if insufficient)
+#
+# L6 is a Window 1576+ design and implementation target.
+# It requires: cover provenance spec, relay shuffle protocol, constant-rate
+# cover emission protocol, and a dedicated GPO-resistance SIM that models
+# the shuffle against a timing adversary.
+#
+# CCSS_L6_MIX_SHUFFLE_NOT_ACTIVATED = True  (future guard token)
+# ---------------------------------------------------------------------------
+
 import json
 import random
 import time

@@ -60511,6 +60511,278 @@
     ]
   },
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
+  "manual_annotations": [
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Corrected Fiedler SIM to compute normalized Laplacian lambda2 for every graph size and emit v0.2 normalized results.",
+      "node_kind": "tool_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/sim_ccss_fiedler_intersection_resistance.py",
+      "repo_path": "tools/sim_ccss_fiedler_intersection_resistance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Added relay-labelable vs sender-generated cover adversary taxonomy, candidate metrics, cohort-linkability metrics, deterministic graph-context caching, and normalized lambda2.",
+      "node_kind": "tool_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/sim_ccss_spectral_cover_sets.py",
+      "repo_path": "tools/sim_ccss_spectral_cover_sets.py"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Documented the future L6 mix/shuffle GPO-resistance path with CCSS_L6_MIX_SHUFFLE_NOT_ACTIVATED retained as a planning token.",
+      "node_kind": "tool_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/sim_ccss_gpo_timing.py",
+      "repo_path": "tools/sim_ccss_gpo_timing.py"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Generated corrected Fiedler v0.2 output with all lambda2 values in the normalized [0, 2] range.",
+      "node_kind": "simulation_output",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/sim_ccss_fiedler_v0.2_normalized_results.json",
+      "repo_path": "out/sim_ccss_fiedler_v0.2_normalized_results.json"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Generated adversary-taxonomy cover-set output with both relay-labelable and sender-generated cover models.",
+      "node_kind": "simulation_output",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/sim_ccss_spectral_cover_v0.2_adversary_taxonomy_results.json",
+      "repo_path": "out/sim_ccss_spectral_cover_v0.2_adversary_taxonomy_results.json"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Marked historical v0.1 Fiedler output as superseded because large-N lambda2 values were unnormalized.",
+      "node_kind": "simulation_output",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/sim_ccss_fiedler_intersection_resistance_results.json",
+      "repo_path": "out/sim_ccss_fiedler_intersection_resistance_results.json"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Walkthrough records gates G1-G7, corrected Fiedler thresholds, cover-provenance comparison, non-claims, and completion token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/phase_1576a_ccss_privacy_sim_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576a_ccss_privacy_sim_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Phase status updated with 1576a completion summary, evidence, verification, non-claims, and token.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1576a_ccss_sim_hardening",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Forward plan marks 1576a complete and narrows pending CCSS privacy lane to 1576b-1576f.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_privacy_sim_hardening_complete_phase_1576a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    }
+  ],
   "manual_edge_annotations": [
     {
       "annotation_batch": "manual_batch_140_phase_1575b_fix1_public_bootstrap_serving_readiness",
