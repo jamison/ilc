@@ -61209,6 +61209,155 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_211_phase_1576e_ccss_trapdoor_contact_gate_design",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Spec defines multi-trapdoor and ContactGate integration design: OR trapdoor, threshold trapdoor future-DKG boundary, role-separated trapdoor, private fit-tag format, Genesis ingress anti-spam, and ContactGate local-only extension plan.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:or_trapdoor_scheme_defined_phase_1576e"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:threshold_trapdoor_scheme_defined_phase_1576e"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:private_fit_tag_format_defined_phase_1576e"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:contact_gate_integration_defined_phase_1576e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_pre_rc_cover_batch_profile_v1_candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_runtime_activation_phase_1576e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_multi_trapdoor_and_contact_gate_integration_1576e_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_multi_trapdoor_and_contact_gate_integration_1576e_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_211_phase_1576e_ccss_trapdoor_contact_gate_design",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records source checks, trapdoor comparison, fit-tag fields, Genesis anti-spam modes, ContactGate integration table, GPO boundary statement, verification gates, non-claims, and 1576e completion tokens.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:gpo_resistance_not_claimed_phase_1576e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576e_ccss_trapdoor_contact_gate_design_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576e_ccss_trapdoor_contact_gate_design_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_211_phase_1576e_ccss_trapdoor_contact_gate_design",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Phase status updated with 1576e completion summary, evidence, verification, non-claims, and tokens.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_211_phase_1576e_ccss_trapdoor_contact_gate_design",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Forward plan marks 1576e complete and narrows pending CCSS privacy lane to 1576f.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_trapdoor_contact_gate_design_complete_phase_1576e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "manual_edge_annotations": [
