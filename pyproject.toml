@@ -176,6 +176,7 @@ include = [
     "ilc_core.node",
     "ilc_core.privacy",
     "ilc_core.protocol",
+    "ilc_core.protocol.schemas",
     "ilc_core.rc",
     "ilc_core.reputation",
     "ilc_core.schema",
