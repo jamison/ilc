@@ -1,5 +1,8 @@
 prune Z_Past_Chats
+prune docs
 prune docs/archive
+prune out
 prune tests
+prune tools
 exclude *.rtf
 global-exclude .DS_Store
