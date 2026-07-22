@@ -18,6 +18,7 @@ import struct
 import tempfile
 import time
 import unicodedata
+import importlib
 from pathlib import Path
 from typing import Any
 
@@ -59,7 +60,7 @@ _DIR_MODE = 0o700
 _LEGACY_X25519_PUBLIC_KEY_BYTES = 32
 _HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES = 1216
 _NON_LIVE_SENTINELS: frozenset[str] = frozenset(
-    ("PLACEHOLDER", "NOT_CONFIGURED", "PENDING", "STUB")
+    ("PLACEHOLDER", "NOT_CONFIGURED", "PENDING")
 )
 
 # Whitelist of non-printable ASCII characters that are safe in message content.
@@ -307,9 +308,52 @@ def _contact_uses_hybrid_pubkey(contact: dict[str, Any]) -> bool:
         return False
 
 
+def _decode_contact_pubkey_hex(value: str, *, field: str) -> bytes:
+    try:
+        raw = bytes.fromhex(value)
+    except ValueError as exc:
+        raise CCSSRuntimeError(f"{field}_invalid_hex") from exc
+    if len(raw) not in {
+        _LEGACY_X25519_PUBLIC_KEY_BYTES,
+        _HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES,
+    }:
+        raise CCSSRuntimeError(f"{field}_invalid_length")
+    return raw
+
+
 def _is_d2d_live(contact: dict[str, Any]) -> bool:
-    """Return true only after a later D2D delivery phase activates routing."""
-    return bool(contact.get("ccss_d2d_delivery_active") is True and _live(str(contact.get("agent_id", ""))))
+    """Return true only when an optional D2D send adapter is actually present."""
+
+    if contact.get("ccss_d2d_delivery_active") is not True:
+        return False
+    if not _live(str(contact.get("agent_id", ""))):
+        return False
+    try:
+        d2d_interface = importlib.import_module("ilc_core.network.d2d.interface")
+    except ImportError:
+        return False
+    return callable(getattr(d2d_interface, "d2d_send_to_agent", None))
+
+
+def _d2d_enqueue(
+    *,
+    envelope: bytes,
+    agent_id: str,
+    contact_id: str,
+) -> dict[str, Any]:
+    if not _live(agent_id):
+        return {"ok": False, "reason": "d2d_agent_id_not_configured"}
+    try:
+        d2d_interface = importlib.import_module("ilc_core.network.d2d.interface")
+    except ImportError:
+        return {"ok": False, "reason": "d2d_stub_not_implemented"}
+    adapter = getattr(d2d_interface, "d2d_send_to_agent", None)
+    if not callable(adapter):
+        return {"ok": False, "reason": "d2d_stub_not_implemented"}
+    result = adapter(agent_id=agent_id, envelope=envelope, contact_id=contact_id)
+    if not isinstance(result, dict):
+        return {"ok": False, "reason": "d2d_adapter_result_not_object"}
+    return result
 
 
 def build_public_contact(
@@ -994,19 +1038,37 @@ def send_message(
     pubkey = str(contact.get("ccss_recipient_pubkey", ""))
     if not _live(pubkey):
         raise CCSSRuntimeError(f"contact_pubkey_not_configured:{contact_id}")
+    raw_key = _decode_contact_pubkey_hex(pubkey, field="recipient_pubkey")
     peer_endpoint = str(contact.get("ccss_peer_endpoint", ""))
     onion = str(contact.get("ccss_contact_onion", ""))
-    if _contact_uses_hybrid_pubkey(contact) and not _is_d2d_live(contact):
-        raise CCSSRuntimeError(f"contact_d2d_transport_not_activated:{contact_id}")
-    envelope = seal_message(message, pubkey)
-    if _live(peer_endpoint):
-        receipt = _direct_send(envelope, peer_endpoint)
-        transport = "direct"
-    elif _live(onion):
-        receipt = _tor_send(envelope, onion)
-        transport = "tor"
+    if len(raw_key) == _HYBRID_X25519_MLKEM768_PUBLIC_KEY_BYTES:
+        from ilc_core.ccss.contact_envelope import seal_contact_envelope
+
+        _validate_message_content(message)
+        message_bytes = message.encode("utf-8")
+        if len(message_bytes) > _MAX_MESSAGE_BYTES:
+            raise CCSSRuntimeError(
+                f"message_too_long:{len(message_bytes)}:{_MAX_MESSAGE_BYTES}"
+            )
+        envelope = seal_contact_envelope(message_bytes, raw_key)
+        receipt = _d2d_enqueue(
+            envelope=envelope,
+            agent_id=str(contact.get("agent_id", "")),
+            contact_id=contact_id,
+        )
+        if receipt.get("ok") is not True:
+            raise CCSSRuntimeError(f"d2d_transport_not_reachable:{contact_id}")
+        transport = "d2d"
     else:
-        raise CCSSRuntimeError(f"contact_endpoint_not_configured:{contact_id}")
+        envelope = seal_message(message, pubkey)
+        if _live(peer_endpoint):
+            receipt = _direct_send(envelope, peer_endpoint)
+            transport = "direct"
+        elif _live(onion):
+            receipt = _tor_send(envelope, onion)
+            transport = "tor"
+        else:
+            raise CCSSRuntimeError(f"contact_endpoint_not_configured:{contact_id}")
     receipt_token = str(receipt.get("receipt_token", hashlib.sha256(envelope).hexdigest()))
     record = {
         "contact_id": contact_id,

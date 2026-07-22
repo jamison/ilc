@@ -60379,6 +60379,125 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:out/ejected_stake_readiness_1575l/tool_receipt.json",
       "repo_path": "out/ejected_stake_readiness_1575l/tool_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "CCSS hybrid fixed-size contact envelope runtime",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/ccss/contact_envelope.py",
+      "repo_path": "ilc_core/ccss/contact_envelope.py"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "CCSS runtime hybrid Genesis send dispatch and D2D fail-closed boundary",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:ilc_core/ccss/runtime.py",
+      "repo_path": "ilc_core/ccss/runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "Phase 1576g hybrid Genesis send and contact-envelope tests",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_ccss_send_hybrid_key.py",
+      "repo_path": "tests/test_ccss_send_hybrid_key.py"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "Phase 1576g public UX fail-closed assertion update",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_sidecar_ccss_cli_public_ux.py",
+      "repo_path": "tests/test_sidecar_ccss_cli_public_ux.py"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "Phase 1576g walkthrough and verification evidence",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576g_ccss_d2d_hybrid_key_send_alignment_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576g_ccss_d2d_hybrid_key_send_alignment_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "Phase 1576g status tokens appended",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1576g_ccss_d2d_hybrid_key_send_alignment",
+      "chronology_note": "2026-07-22 - phase 1576g: CCSS D2D hybrid-key send alignment",
+      "manual_read_summary": "Forward plan marks Phase 1576g complete",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "boundary": {
