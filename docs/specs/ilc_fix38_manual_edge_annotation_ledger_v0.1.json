@@ -59978,6 +59978,118 @@
         "IMPLEMENTS"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_fix1_pypi_package_profile",
+      "chronology_note": "2026-07-22 Phase 1575o-Fix1 - PyPI package profile source hardening",
+      "manual_read_summary": "pyproject now uses an explicit public package allowlist, includes protocol schema package data needed by public canon CLI scripts, and removes the broken ilc-mcp entrypoint from the public package profile.",
+      "repo_path": "pyproject.toml",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "phase:pypi_020_public_package_allowlist_locked_phase_1575o_fix1"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "review_status": "candidate",
+          "target": "nonclaim:ilc_mcp_entrypoint_removed_phase_1575o_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=public_protocol_profile_update:pyproject.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_fix1_pypi_package_profile",
+      "chronology_note": "2026-07-22 Phase 1575o-Fix1 - PyPI sdist pruning",
+      "manual_read_summary": "MANIFEST.in prunes docs, tools, tests, out, and old chat material from the PyPI sdist profile while preserving package source and package data.",
+      "repo_path": "MANIFEST.in",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "phase:pypi_020_full_artifact_scan_passed_phase_1575o_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "graph_delta=public_package_manifest_update:MANIFEST.in"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_fix1_pypi_package_profile",
+      "chronology_note": "2026-07-22 Phase 1575o-Fix1 - build receipt evidence",
+      "manual_read_summary": "Build receipt records source commit, filtered public HEAD, artifact hashes, full artifact scan result, clean-install entrypoint checks, removed entrypoint, package allowlist, and non-claims.",
+      "repo_path": "out/pypi_remediation_1575o/build_receipt.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_020_clean_artifact_receipt_committed_phase_1575o_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_phase_1575o_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_added:out/pypi_remediation_1575o/build_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_199_phase_1575o_fix1_pypi_package_profile",
+      "chronology_note": "2026-07-22 Phase 1575o-Fix1 - walkthrough and STATUS attestation",
+      "manual_read_summary": "Walkthrough and STATUS record the PyPI package profile hardening, artifact hashes, full scans, clean-install checks, and no-upload/non-activation boundary.",
+      "repo_path": "docs/phases/phase_1575o_fix1_pypi_package_profile_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_020_clean_artifact_receipt_committed_phase_1575o_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_phase_1575o_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575o_fix1_pypi_package_profile_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
     }
   ],
   "boundary": {
