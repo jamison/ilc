@@ -65665,6 +65665,45 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
       "repo_path": "docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_213_phase_1573as_1573at_recovery_planning_correction",
+      "chronology_note": "2026-07-22 Genesis recovery lane rediscovery - forward plan corrected",
+      "manual_read_summary": "Direct-read audit confirmed Phase 1573as and Phase 1573at were already completed on 2026-07-10 with STATUS tokens, specs, walkthroughs, tests, and ledger entries. The forward plan was corrected from prompted/not-executed to complete for 1573as and 1573at; 1573au remains SENSITIVE and only applies if actual root succession is needed.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:genesis_recovery_transaction_boundary_spec_committed_phase_1573as"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:genesis_recovery_two_factor_plate1_plate3_selected_phase_1573as"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:genesis_recovery_fake_key_vectors_committed_phase_1573at"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_recovery_execution_phase_1573as_1573at_planning_correction"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=planning_status_corrected:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
