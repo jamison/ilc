@@ -33,6 +33,7 @@ class _StubAdapter:
 
 def _checkpoint_args(**overrides: object) -> argparse.Namespace:
     values: dict[str, object] = {
+        "ca_cert": None,
         "cert": Path("cert.pem"),
         "client_binary": Path("testnet_client"),
         "execute": False,
@@ -83,8 +84,35 @@ def test_checkpoint_send_dry_run_does_not_execute(monkeypatch: pytest.MonkeyPatc
     evidence = checkpoint_send.build_evidence(_checkpoint_args())
 
     assert evidence["activation_boundary"]["sent_epoch_checkpoint"] is False
+    assert evidence["grpc_tls"]["ca_cert_supplied"] is False
     assert evidence["send_result"] is None
     assert evidence["record_check"] is None
+
+
+def test_checkpoint_send_wires_ca_cert_into_bridge_config(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    ca_cert = tmp_path / "ca.cert.pem"
+    ca_cert.write_bytes(b"-----BEGIN CERTIFICATE-----\nphase1575h\n-----END CERTIFICATE-----\n")
+    configs: list[object] = []
+
+    def fake_adapter(config: object) -> _StubAdapter:
+        configs.append(config)
+        return _StubAdapter(current_epoch=0)
+
+    monkeypatch.setattr(checkpoint_send, "ILCConsensusGrpcReadAdapter", fake_adapter)
+
+    evidence = checkpoint_send.build_evidence(_checkpoint_args(ca_cert=ca_cert))
+
+    assert evidence["grpc_tls"]["ca_cert_supplied"] is True
+    assert evidence["grpc_tls"]["ca_cert_path"] == str(ca_cert)
+    assert configs[0].tls_root_certificates == ca_cert.read_bytes()
+
+
+def test_checkpoint_send_rejects_missing_ca_cert() -> None:
+    with pytest.raises(FileNotFoundError, match="testbed_ca_cert_not_found"):
+        checkpoint_send.load_testbed_ca_cert(Path("does-not-exist.cert.pem"))
 
 
 def test_checkpoint_send_execute_verifies_committed_record(monkeypatch: pytest.MonkeyPatch) -> None:

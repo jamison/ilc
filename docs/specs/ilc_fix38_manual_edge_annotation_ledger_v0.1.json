@@ -60537,6 +60537,64 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_status_corrected:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_214_phase_1575h_fix4_testbed_grpc_tls_epoch0_reset",
+      "chronology_note": "2026-07-22 \u2014 phase 1575h-Fix4 local hardening and blocked live deployment boundary",
+      "manual_read_summary": "Read-only TLS gRPC probe for the private Phase 1575h testbed. It verifies all configured validators through ILCConsensusGrpcReadAdapter with explicit CA roots and records canonical non-activation evidence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "tests/test_phase_1575h_fix4_grpc_tls_probe.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_checkpoint_send_phase_1575h_fix4_probe"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/testbed/phase1575h_testbed_grpc_tls_probe.py",
+      "repo_path": "tools/testbed/phase1575h_testbed_grpc_tls_probe.py"
+    },
+    {
+      "annotation_batch": "manual_batch_214_phase_1575h_fix4_testbed_grpc_tls_epoch0_reset",
+      "chronology_note": "2026-07-22 \u2014 phase 1575h-Fix4 local hardening and blocked live deployment boundary",
+      "manual_read_summary": "Walkthrough records local hardening, fresh TLS material, node-2 Linux binary build hashes, node-3 SSH blocker, and non-claims for the blocked-before-live-deployment 1575h-Fix4 attempt.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:1575h_fix4_blocked_after_local_hardening"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_all_four_tls_grpc_confirmation_phase_1575h_fix4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
     }
   ],
   "boundary": {
@@ -65743,6 +65801,40 @@
       ],
       "recommended_graph_action": "graph_delta=planning_status_corrected:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_214_phase_1575h_fix4_testbed_grpc_tls_epoch0_reset",
+      "chronology_note": "2026-07-22 \u2014 phase 1575h-Fix4: wire TLS gRPC for all 4 testbed validators and stage epoch-0 reset boundary before economic soak",
+      "manual_read_summary": "Phase prompt for 1575h-Fix4, hardened from the 1575h-soak-Fix1 draft. It closes private economic soak readback blockers by staging TLS gRPC for all four testbed validators and preserves the exact separate human GO phrase for any epoch-0 DB reset.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:1575h_soak_fix1_testbed_grpc_tls_epoch0_reset"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "nonclaim:no_live_checkpoint_sent_phase_1575h_soak_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575h_soak_fix1_testbed_grpc_tls_epoch0_reset"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CARRIES_FORWARD",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md"
     }
   ],
   "phase": "1545p-Fix38",

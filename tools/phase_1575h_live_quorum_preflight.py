@@ -90,8 +90,8 @@ class ValidatorEndpoint:
 PHASE1360_VALIDATORS = (
     ValidatorEndpoint(1, "ilc-node-2", "100.112.32.42", 50155, 50165),
     ValidatorEndpoint(2, "ilc-node-2", "100.112.32.42", 50152, 50162),
-    ValidatorEndpoint(3, "ilc-node-3", "100.91.33.46", 50153, None),
-    ValidatorEndpoint(4, "ilc-node-6", "100.72.17.38", 50154, None),
+    ValidatorEndpoint(3, "ilc-node-3", "100.91.33.46", 50153, 50163),
+    ValidatorEndpoint(4, "ilc-node-6", "100.72.17.38", 50154, 50164),
 )
 
 SERVING_RECEIVERS = (
