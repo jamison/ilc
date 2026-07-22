@@ -60129,6 +60129,69 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576_fix13_g10_lmdb_phase_artifact_registration_catchup.md"
+    },
+    {
+      "annotation_batch": "manual_batch_203_phase_1576_fix12_graph_viz_public_completion",
+      "chronology_note": "2026-07-22 Phase 1576-Fix12 - public RC graph-viz sidecar readiness receipt",
+      "manual_read_summary": "Readiness receipt for the staged ilc-sidecar-graphviz 0.1.0 public RC package; records removed PUBLIC_RC_EXCLUDE markers, removed Genesis-only UI/root/private default paths, clean-install checks, and no public push.",
+      "repo_path": "out/graph_viz_public_1576/readiness_receipt.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_public_sidecar_repo_ready_phase_1576_graph_viz_public"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_public_clean_install_test_pass_phase_1576_graph_viz_public"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_public_github_push_phase_1576_fix12"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/graph_viz_public_1576/readiness_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_203_phase_1576_fix12_graph_viz_public_completion",
+      "chronology_note": "2026-07-22 Phase 1576-Fix12 - public RC graph-viz sidecar walkthrough",
+      "manual_read_summary": "Walkthrough records prerequisite tokens, source reads, staging transformations, clean-install results, receipt hash, public mirror carry-forward, LMDB non-write boundary, non-claims, and output tokens.",
+      "repo_path": "docs/phases/phase_1576_graph_viz_public_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:graph_viz_public_sidecar_repo_ready_phase_1576_graph_viz_public"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_write_phase_1576_fix12"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_graph_viz_public_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
     }
   ],
   "boundary": {
