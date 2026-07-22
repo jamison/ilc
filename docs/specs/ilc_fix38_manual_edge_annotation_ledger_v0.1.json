@@ -61074,6 +61074,141 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_210_phase_1576d_ccss_threshold_diffusion_sim",
+      "graph_delta": "support_only",
+      "manual_read_summary": "SIM script sweeps threshold-envelope delivery, relay-output guessing advantage, share-linking success, scan cost, bandwidth multiplier, and productive-cover useful-work ratio across 1152 deterministic configurations.",
+      "node_kind": "tool_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:ccss_pre_rc_cover_batch_profile_v1_candidate"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "phase:threshold_diffusion_sim_results_phase_1576d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:ccss_threshold_envelope_design_complete_phase_1576c"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_runtime_activation_phase_1576d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/sim_ccss_threshold_diffusion.py",
+      "repo_path": "tools/sim_ccss_threshold_diffusion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_210_phase_1576d_ccss_threshold_diffusion_sim",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records source checks, 1152-row SIM output, delivery table, bandwidth table, guessing-advantage table, target share-linking table, GPO limitation, verification gates, non-claims, and completion tokens.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:threshold_diffusion_sim_results_phase_1576d"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:gpo_defeat_not_claimed_phase_1576d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576d_ccss_threshold_diffusion_sim_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576d_ccss_threshold_diffusion_sim_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_210_phase_1576d_ccss_threshold_diffusion_sim",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Phase status updated with 1576d SIM completion summary, key target finding, verification, non-claims, and tokens.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_210_phase_1576d_ccss_threshold_diffusion_sim",
+      "graph_delta": "status_updated",
+      "manual_read_summary": "Forward plan marks 1576d complete and narrows pending CCSS privacy lane to 1576e-1576f.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ccss_threshold_diffusion_sim_complete_phase_1576d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "manual_edge_annotations": [
