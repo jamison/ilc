@@ -83,7 +83,7 @@ def test_ccss_send_to_pending_genesis_d2d_fails_closed(tmp_path: Path) -> None:
     assert result.returncode == 1
     payload = json.loads(result.stderr)
     assert payload["command"] == "ccss"
-    assert "contact_d2d_transport_not_activated:genesis" in payload["message"]
+    assert "d2d_transport_not_reachable:genesis" in payload["message"]
 
 
 def test_packaged_ccss_identity_can_unseal_envelope(tmp_path: Path) -> None:
