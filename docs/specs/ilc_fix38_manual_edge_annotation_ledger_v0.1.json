@@ -64194,6 +64194,69 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575o_release_pypi_yank_upload_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_200_phase_1575o_release_pypi_yank_upload",
+      "chronology_note": "2026-07-22 Phase 1575o-release follow-up - PyPI meta-package remediation receipt",
+      "manual_read_summary": "Receipt records audit of ilc-protocol and genesis-protocol 0.1.0 meta-packages, clean 0.1.1 uploads requiring ilc-core>=0.2.0, attempted plain ilc registration, PyPI name-policy rejection, verification, and non-claims.",
+      "repo_path": "out/pypi_remediation_1575o/meta_package_followup_receipt.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_ilc_protocol_011_meta_package_uploaded_phase_1575o"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_genesis_protocol_011_meta_package_uploaded_phase_1575o"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:pypi_ilc_plain_name_registration_blocked_by_pypi_policy_phase_1575o"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:plain_ilc_package_not_registered_phase_1575o"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_added:out/pypi_remediation_1575o/meta_package_followup_receipt.json;graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_200_phase_1575o_release_pypi_yank_upload",
+      "chronology_note": "2026-07-22 Phase 1575o-release follow-up - PyPI meta-package source snapshots",
+      "manual_read_summary": "Source snapshots for the ilc-protocol, genesis-protocol, and attempted ilc meta-packages used to build follow-up PyPI artifacts. These sources are package metadata only and do not duplicate runtime code.",
+      "repo_path": "out/pypi_remediation_1575o/meta_sources/",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "review_status": "candidate",
+          "target": "out/pypi_remediation_1575o/meta_package_followup_receipt.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:out/pypi_remediation_1575o/meta_sources/"
     }
   ],
   "phase": "1545p-Fix38",
