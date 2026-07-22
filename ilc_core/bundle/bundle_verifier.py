@@ -1,7 +1,4 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""PUBLIC_RC_EXCLUDE: adr_0009_bundle_verifier_private_until_phase_1520
-PUBLIC_RC_EXCLUDE_REASON: Private ADR-0009 independent verifier. Public distribution guard clearance is reserved for Phase 1520p.
-"""
 
 from __future__ import annotations
 
