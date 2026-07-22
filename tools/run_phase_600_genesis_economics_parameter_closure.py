@@ -32,7 +32,7 @@ REQUIRED_PHASE_599_TOKENS = (
     'genesis_5pct_tranche_is_target_plus_cap_not_cap_only',
 )
 C_MAX = 25_920_000.0
-GENESIS_TARGET = C_MAX * THETA_HARD
+GENESIS_TARGET = C_MAX * float(THETA_HARD)
 HORIZON_EPOCHS = 480
 HALVING_H = 48
 SUBSIDY_FACTORS = (0.20, 0.30, 0.40)
