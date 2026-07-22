@@ -60498,6 +60498,45 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_214_phase_1576_support_cdl_sigma_01_content_review",
+      "chronology_note": "2026-07-22 Phase 1576 support - CDL-SIGMA-01 content review",
+      "manual_read_summary": "Support walkthrough records direct-read confirmation that CDL-SIGMA-01 states structural failure rather than calibration failure, names CCSS-SPECTRAL-01 as successor, treats sigma as no longer a wire-level DP parameter, and records formal DP calibration as a separate ratified-proof target. No CDL amendment was required.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "review_status": "candidate",
+          "target": "cdl:CDL-SIGMA-01"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:cdl_sigma_01_content_review_confirmed_phase_1576_support"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_cdl_amendment_phase_1576_support_cdl_sigma"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_runtime_activation_phase_1576_support_cdl_sigma"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=planning_status_corrected:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md"
     }
   ],
   "boundary": {
