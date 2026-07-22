@@ -60090,6 +60090,28 @@
         "NEGATIVE_ASSERTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575o_fix1_pypi_package_profile_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_200_phase_1576_fix12_graph_viz_public",
+      "chronology_note": "2026-07-22 phase 1576-Fix12 \u2014 public RC graph-viz sidecar repo readiness prompt",
+      "manual_read_summary": "Phase prompt directing Codex to produce the ilc-sidecar-graphviz 0.1.0 public RC package from the dev sidecar: strip PUBLIC_RC_EXCLUDE from bounded_query.py, remove Genesis-only node colors/filters/root-pin/UI strings, remove private Atlas filenames, rename package, run clean-install test, and write a readiness receipt without pushing to GitHub.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576_fix12_g10_graph_viz_public_sidecar.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576_fix12_graph_viz_public_sidecar"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
