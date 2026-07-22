@@ -64279,6 +64279,79 @@
         "SUPPORTS"
       ],
       "recommended_graph_action": "graph_delta=support_only:out/pypi_remediation_1575o/meta_sources/"
+    },
+    {
+      "annotation_batch": "manual_batch_201_phase_1575k_treasury_guard_clearance",
+      "chronology_note": "2026-07-22 Phase 1575k - treasury guard disposition certificate",
+      "manual_read_summary": "Activation certificate records per-guard disposition for treasury distribution, validator admission, and productive ECU expansion. All three guards are retained default-off with named blockers; no source guard constant is changed.",
+      "repo_path": "out/block6_treasury_activation_1575k/activation_certificate_1575k.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:treasury_guard_clearance_disposition_committed_phase_1575k"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:treasury_activation_certificate_committed_phase_1575k"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_guard_clearance_phase_1575k"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=evidence_added:out/block6_treasury_activation_1575k/activation_certificate_1575k.json"
+    },
+    {
+      "annotation_batch": "manual_batch_201_phase_1575k_treasury_guard_clearance",
+      "chronology_note": "2026-07-22 Phase 1575k - walkthrough and status attestation",
+      "manual_read_summary": "Walkthrough records prerequisite tokens, double-lock guard lines and exception tokens, 1575i and 1575j evidence hashes, per-guard named blockers, certificate hash, verification commands, public mirror carry-forward, and non-claims.",
+      "repo_path": "docs/phases/phase_1575k_treasury_guard_clearance_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:treasury_guard_retained_with_named_blocker_phase_1575k"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:validator_admission_guard_retained_with_named_blocker_phase_1575k"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:productive_ecu_expansion_guard_retained_with_named_blocker_phase_1575k"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_live_settlement_phase_1575k"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575k_treasury_guard_clearance_walkthrough.md;graph_delta=status_updated:docs/phases/STATUS.md"
     }
   ],
   "phase": "1545p-Fix38",
