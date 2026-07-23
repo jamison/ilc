@@ -12,7 +12,7 @@ from ilc_core.epoch.genesis_tranche_reconciliation_runtime import (
     FIXED_GENESIS_TRANCHE_FRACTION,
     FIXED_GENESIS_TRANCHE_ILC,
     GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN,
-    GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN,
+    GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN,
     GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN,
     build_genesis_tranche_reconciliation_from_rehearsal_record,
     build_genesis_tranche_reconciliation_quote,
@@ -73,7 +73,7 @@ def test_fix2q_rehearsal_record_separates_burn_overhead_and_fixed_tranche() -> N
     assert GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN in tokens
     assert CDL029_OVERHEAD_NOT_FULL_TRANCHE_TOKEN in tokens
     assert CDL048_TRANCHE_TREATMENT_ABSENT_TOKEN in tokens
-    assert GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN in tokens
+    assert GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN in tokens
     assert GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN in tokens
 
 

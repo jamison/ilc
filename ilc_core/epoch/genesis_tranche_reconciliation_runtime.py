@@ -41,8 +41,13 @@ CDL029_OVERHEAD_NOT_FULL_TRANCHE_TOKEN = (
 CDL048_TRANCHE_TREATMENT_ABSENT_TOKEN = (
     "cdl048_conversion_quote_genesis_tranche_treatment_absent_phase_1568_fix2q"
 )
+# SUPERSEDED by GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN (Phase 1575p).
+# Retained for historical cross-reference only. Not in __all__. Not in required_tokens.
 GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN = (
     "genesis_tranche_realization_controller_deferred_phase_1568_fix2q"
+)
+GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN = (
+    "genesis_tranche_realization_closed_flat_5pct_until_hard_cap_phase_1575p.v0.1"
 )
 GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN = (
     "genesis_tranche_reconciliation_quote_read_model_only_phase_1568_fix2q"
@@ -270,7 +275,7 @@ def build_genesis_tranche_reconciliation_quote(
         GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN,
         CDL029_OVERHEAD_NOT_FULL_TRANCHE_TOKEN,
         GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN,
-        GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN,
+        GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN,
     ]
     if treatment == "absent":
         tokens.append(CDL048_TRANCHE_TREATMENT_ABSENT_TOKEN)
@@ -408,7 +413,7 @@ def verify_genesis_tranche_reconciliation_record(record: dict[str, Any]) -> dict
         FIX2Q_SURFACES_RECONCILED_TOKEN,
         GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN,
         CDL029_OVERHEAD_NOT_FULL_TRANCHE_TOKEN,
-        GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN,
+        GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN,
         GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN,
     }
     if not required_tokens.issubset(set(tokens)):
@@ -451,7 +456,7 @@ __all__ = [
     "FIXED_GENESIS_TRANCHE_ILC",
     "GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN",
     "GENESIS_DESTINATION_BINDING_TOKEN",
-    "GENESIS_TRANCHE_REALIZATION_CONTROLLER_DEFERRED_TOKEN",
+    "GENESIS_TRANCHE_REALIZATION_MECHANISM_CLOSED_TOKEN",
     "GENESIS_TRANCHE_RECONCILIATION_QUOTE_ONLY_TOKEN",
     "GENESIS_TRANCHE_RECONCILIATION_RUNTIME_VERSION",
     "GenesisTrancheReconciliationQuote",
