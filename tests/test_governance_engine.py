@@ -73,7 +73,7 @@ def test_get_task_fee_ecu_combines_hardware_and_congestion():
     """
     # Fix base cost for predictability
     config = {
-        "ecu": {"base_costs": {"claim.submit": 0.05}},
+        "ecu": {"base_costs": {"claim.submit": "0.05"}},
         "backlog_hotspot_pricing": {"enabled": True}
     }
     gov = Governance(config=config)
