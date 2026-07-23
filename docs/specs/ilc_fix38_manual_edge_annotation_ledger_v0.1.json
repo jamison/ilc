@@ -62066,6 +62066,148 @@
       ],
       "recommended_graph_action": "graph_delta=planning_status_corrected:gap_deploy_01_complete",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_220_phase_1575q_cdl048_production_conversion_spec",
+      "chronology_note": "2026-07-23 - phase 1575q: CDL-048 production conversion and Genesis Option C accounting specification",
+      "manual_read_summary": "Sensitive spec-only phase prompt hardened to current validator schema; no runtime guard clearance, wallet write, minting, settlement write, public mirror action, or public-RC authority.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:1575q"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575q"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575q_g10_cdl048_production_conversion_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_220_phase_1575q_cdl048_production_conversion_spec",
+      "chronology_note": "2026-07-23 - phase 1575q: CDL-048 production conversion and Genesis Option C accounting specification",
+      "manual_read_summary": "Specifies CDL-048 production conversion boundaries, Genesis Option C settlement-root/off-chain accounting, guard-clearance criteria, and 1575r/1575s/1575t test gates.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "review_status": "candidate",
+          "target": "cdl:CDL-048"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:cdl048_production_conversion_spec_committed_phase_1575q"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "cdl:CDL-048"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:genesis_ilc_wallet_option_c_decided_phase_1575q"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER",
+        "SPECIFIES"
+      ],
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:docs/specs/ilc_cdl048_production_conversion_and_genesis_minting_spec_1575q_v0.1.md -> cdl:CDL-048",
+      "repo_path": "docs/specs/ilc_cdl048_production_conversion_and_genesis_minting_spec_1575q_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_220_phase_1575q_cdl048_production_conversion_spec",
+      "chronology_note": "2026-07-23 - phase 1575q: CDL-048 production conversion and Genesis Option C accounting specification",
+      "manual_read_summary": "Focused tests verify the spec against live CDL-048 receipt guard defaults, Genesis guard defaults, Option C non-claims, prompt schema hardening, and PUBLIC_RC_EXCLUDE preservation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl048_production_conversion_and_genesis_minting_spec_1575q_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl048_production_conversion_and_genesis_minting_spec_1575q_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:test_file",
+      "repo_path": "tests/test_phase_1575q_cdl048_production_conversion_spec.py"
+    },
+    {
+      "annotation_batch": "manual_batch_220_phase_1575q_cdl048_production_conversion_spec",
+      "chronology_note": "2026-07-23 - phase 1575q: CDL-048 production conversion and Genesis Option C accounting specification",
+      "manual_read_summary": "Forward plan records 1575q complete, updates economic hard-stop count, and rewrites 1575s/1575t Genesis language to Option C accounting rather than live wallet credit.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:1575q"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:1575q"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=planning_status_corrected:1575q_complete_option_c",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "boundary": {
