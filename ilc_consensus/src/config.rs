@@ -37,7 +37,6 @@ struct RawGenesisValidator {
 #[derive(Debug, Deserialize)]
 struct RawGenesis {
     network_id: String, // returned alongside ValidatorSet so main.rs avoids double-read
-    #[allow(dead_code)]
     is_testnet: bool,
     #[allow(dead_code)]
     real_ecu: bool,
@@ -144,10 +143,10 @@ pub struct NodeConfig {
 // Load functions
 // ---------------------------------------------------------------------------
 
-/// Load genesis.json → (ValidatorSet, network_id).
-/// Returns the network_id alongside ValidatorSet so callers don't need to re-read the file.
+/// Load genesis.json → (ValidatorSet, network_id, is_testnet).
+/// Returns the network_id and is_testnet flag alongside ValidatorSet so callers don't need to re-read the file.
 /// Translates hex-encoded validator_key and agent_id into runtime types.
-pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCConsensusError> {
+pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String, bool), ILCConsensusError> {
     let raw = fs::read_to_string(genesis_path)
         .map_err(|e| ILCConsensusError::Other(format!("Cannot read genesis: {}", e)))?;
     let genesis: RawGenesis = serde_json::from_str(&raw)
@@ -180,7 +179,7 @@ pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCCo
     }
 
     let validator_set = ValidatorSet::new(validators, genesis.f)?;
-    Ok((validator_set, genesis.network_id))
+    Ok((validator_set, genesis.network_id, genesis.is_testnet))
 }
 
 /// Load validator config JSON and resolve all deployment paths into runtime types.
@@ -507,7 +506,7 @@ mod tests {
         // load_genesis will return an error on the BLS deserialization step — that's expected.
         let result = load_genesis(genesis_path);
         match result {
-            Ok((_validator_set, _network_id)) => {} // real keys: pass
+            Ok((_validator_set, _network_id, _is_testnet)) => {} // real keys: pass
             Err(ILCConsensusError::Other(ref msg)) => {
                 // Acceptable error: BLS point rejection on placeholder keys
                 assert!(

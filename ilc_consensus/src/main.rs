@@ -163,7 +163,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 1. Load genesis → (ValidatorSet, network_id) in one read.
     // -----------------------------------------------------------------------
-    let (validator_set, genesis_network_id) = load_genesis(&genesis_path)?;
+    let (validator_set, genesis_network_id, is_testnet) = load_genesis(&genesis_path)?;
 
     // -----------------------------------------------------------------------
     // 2. Load node config — enforces network_id == genesis_network_id
@@ -317,6 +317,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         balance_store,
         epoch_store,
         peer_addrs,
+        is_testnet,
     );
     if let Some(manager) = persistent_sessions {
         runner = runner.with_persistent_sessions(manager);

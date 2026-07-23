@@ -474,7 +474,7 @@ mod tests {
             .open(lmdb_path.as_path())?;
         let env = Arc::new(env);
         let store = Arc::new(EpochStore::new(Arc::clone(&env))?);
-        let protocol = EpochSettlementProtocol::new(Arc::clone(&store));
+        let protocol = EpochSettlementProtocol::new(Arc::clone(&store), true);
 
         let keys = vec![
             SecretKey::key_gen(&[1u8; 32], &[])
@@ -498,6 +498,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                not_before_unix_ms: 0,
             };
             let checkpoint = EpochCheckpoint {
                 record: record.clone(),
