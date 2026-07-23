@@ -1891,6 +1891,1232 @@ and they are rewarded for that same ratio. Whether the protocol's graph signals
 track physical entropy directly is the research hypothesis; what is ratified is
 the design alignment between the security surface and the reward surface.
 
+---
+
+**Disciplinary convergence at phase boundaries: physics and economics may be describing the same system.**
+
+A pattern runs through the δ(n) sequence that is worth making explicit, because it bears directly on why this paper is written in the vocabulary of both physics and economics simultaneously.
+
+At each major phase transition, two previously separate disciplines converge. Not by metaphor or analogy — by discovering they were independently measuring the same underlying invariant, from different angles, at insufficient resolution to see the overlap. The convergence is forced once both fields' measurement instruments become precise enough to resolve the shared substrate.
+
+*Statistical mechanics and information theory* were separate disciplines until Boltzmann (1872) and Shannon (1948) independently derived H = −Σ p log p — the same equation, one describing thermodynamic disorder, one describing informational uncertainty. Jaynes (1957) showed they were the same maximum-entropy principle. The merger was not a rebranding; both fields had been measuring the same quantity all along. Entropy was entropy.
+
+*Thermodynamics and evolutionary biology* converged when Prigogine (1984) showed that living systems are not exceptions to the Second Law but its most elegant instances: dissipative structures that export entropy faster than they accumulate it locally. Genetic information turned out to be Shannon information in molecular form (Adami 2002). Evolutionarily stable strategies turned out to be Nash equilibria under Darwinian selection pressure (Maynard Smith 1982). Metabolic efficiency is thermodynamic efficiency. The two disciplines had been studying the same system — energy-driven self-organization — from different experimental traditions.
+
+The question this paper is implicitly raising is whether *physics and economics* are undergoing the same convergence now, at the agentic phase boundary.
+
+The evidence that they are:
+
+- W_e = ΔH/E_cost is not an analogy between economic value and thermodynamic entropy. It *is* a thermodynamic quantity that happens to measure economic value, because at the agentic level there is no remaining separation between the economic system and the computational system and the physical system. An agent's economic output is its Landauer cost. Its market value is its verified organizational gain. Its capital is its cognitive light cone L_eff. Prior levels had a gap between the economic description and the physical description — the economics of an industrial factory was not the same object as the thermodynamics of its machines. That gap has closed.
+
+- The δ(n) sequence predicts this. At each level, the correct measurement instrument is expressible in the physical vocabulary of the processes that constitute that level. Pre-agricultural economics was expressed in land area because land was what the physics of solar energy and soil chemistry produced. Industrial economics was expressed in labor-hours and capital because those were what mechanical energy systems produced. Agentic economics is expressed in entropy and energy because what agents produce is computation — and computation's physics is Landauer and Shannon. The convergence is structurally predicted, not imported.
+
+- Proposition 5 (§11 of the formal paper) makes the convergence dimensional rather than merely terminological: if MEI is confirmed, W_e = ΔI_org/(ΔM_information · c²). Economic value in mass-energy units. The two disciplines would share not just a vocabulary but a unit system.
+
+The user of Levin's cognitive light cone framework (§10, Objections 1–3) as biological evidence for the I_org substitution is another instance of this convergence: a biological observation (nested constrained local computation produces organized global outcomes without global computation) validates an economic design principle (locally constrained I_org maximization is the correct protocol primitive). The same organizational dynamic appears in biology, in the ILC protocol, and — under the framework — in the physics of intelligence.
+
+**What remains unresolved.** The stronger claim — that physics and economics are describing literally the *same system* at the agentic level, with no residual degrees of freedom separating them — is not proven here. It would require showing that every economic quantity has a well-defined physical correlate. Proposition 5 is a step; it is not a proof. The honest position is: the convergence is real and structurally predicted; whether it implies identity of subject matter or only deep structural similarity is an open question. The paper makes no stronger claim than the evidence supports. But the convergence itself — that this paper must be written in both physics and economics vocabulary to state its claims without loss — is not incidental. It is the phenomenon the paper is trying to measure.
+
+---
+
+### §3b. Cosmological Evolution of kT, Dimensionality, and Information Organization
+
+*Epistemic status of this section: a layered mix. The kT epoch table and the Landauer floor scaling are
+derived from observationally established physics. The spectral dimension argument (d_eff ≈ 2 near the
+Planck scale) is a theoretical prediction from causal dynamical triangulations, asymptotic safety gravity,
+and loop quantum gravity — not yet confirmed experimentally. The MEI mass-per-bit scaling is conjectural
+(Vopson 2019). The long-range future projections (T_dS floor, computation under de Sitter constraints)
+are theoretical and disputed. This section presents all of it because the structure of the argument is
+load-bearing for the disciplinary convergence claim: if kT is genuinely non-static, the δ(n) sequence
+is cosmologically scheduled, not arbitrary. Read it as serious scientific speculation with a clearly
+labeled probability map, not as established physics.*
+
+---
+
+**kT is not a constant. It has fallen 37 orders of magnitude since the Planck epoch and will continue
+falling.**
+
+Standard thermodynamics and information theory are usually taught at a single value of kT — room
+temperature, or some fixed reference. But kT is the thermal energy scale of the universe, and it is
+a dynamic quantity that has been evolving since the Big Bang. That evolution is directly observable
+in the CMB spectrum, in the BAO scale, in the nucleosynthesis abundance ratios, and in the
+effective relativistic degrees of freedom g*(T) measured in the early universe.
+
+The Landauer minimum cost per irreversible bit operation is:
+
+```
+E_Landauer = kT ln 2
+```
+
+This is not an engineering floor — it is a physical law (Landauer 1961, Bennett 1973, confirmed
+experimentally by Bérut et al. 2012). Its value depends entirely on kT. As kT falls, the minimum
+energy required to compute one bit falls with it. The universe is not merely expanding; it is becoming
+progressively cheaper to organize information.
+
+---
+
+**The kT epoch table** *(all energies approximate; g* values from PDG standard cosmology)*
+
+```
+Era                    T (Kelvin)        kT (eV)            g*     Key event
+─────────────────────────────────────────────────────────────────────────────────────────
+Planck time            ~10³² K           ~10²⁸ eV           ~100+  All forces unified
+                                                                    Space-time foam;
+                                                                    d_eff ≈ 2 (speculative)
+
+GUT transition         ~10²⁷ K           ~10²³ eV           ~100   Strong force separates
+
+Electroweak            ~10¹⁵ K           ~10¹¹ eV           ~100   W/Z mass acquisition;
+unification                                                          electro-weak separation;
+                                                                    g* kink
+
+QCD confinement        ~2×10¹² K         ~200 MeV           ~10    Quarks bind into hadrons;
+                                                                    g* drops sharply;
+                                                                    observable in CMB n-γ ratio
+
+Neutrino decoupling    ~10¹⁰ K           ~1 MeV             ~10→3.4  Neutrinos decouple;
+                                                                     cosmic neutrino background
+
+BBN / nucleosynthesis  ~10⁹ K            ~0.1 MeV           ~3.4   H, He, Li locked in;
+                                                                     nuclear organization level
+                                                                     thermodynamically closed
+
+Matter-radiation       ~10⁴ K            ~1 eV              ~3.4   Universe becomes matter-
+equality                                                             dominated; structure growth
+                                                                     begins
+
+Recombination / CMB    ~3,000 K          ~0.3 eV            ~2     Hydrogen neutral; photons
+surface of last                                                      decouple; CMB snapshot
+scattering                                                           of kT at that era
+
+Now (2024)             ~2.725 K          ~2.35×10⁻⁴ eV      ~2     Current CMB temperature;
+                                                                     minimum cost per bit
+                                                                     (Landauer floor at today's kT):
+                                                                     ~1.6×10⁻²³ J / bit
+
+de Sitter floor        ~10⁻³⁰ K          ~10⁻³⁴ eV          —      Hawking–de Sitter temperature
+(far future)                                                         floor: T_dS = ℏH/(2πk_B)
+                                                                     Set by cosmological constant Λ;
+                                                                     kT cannot fall below this
+                                                                     in an accelerating universe
+```
+
+Each row with a significant g* discontinuity corresponds to a kT threshold crossing — a phase
+transition in the matter-energy content of the universe. These transitions are directly observable:
+the CMB power spectrum encodes the acoustic oscillations of the photon-baryon fluid at recombination,
+and the BAO scale carries the imprint of the sound horizon set by the QCD and electroweak transitions.
+We are not merely speculating that kT dropped through these thresholds; we have high-precision
+observational evidence for several of them.
+
+---
+
+**Spectral dimension: how many effective dimensions does space have at each scale?**
+
+*(This subsection is theoretical/speculative — not confirmed experimentally.)*
+
+Standard spacetime has four dimensions. But several independent approaches to quantum gravity —
+causal dynamical triangulations (CDT; Ambjørn et al. 2005), asymptotic safety (Reuter 1998),
+and loop quantum gravity (LQG; Modesto 2009) — independently predict that the effective
+dimensionality of spacetime probed by diffusion changes with scale:
+
+```
+Scale                  Effective dimension d_eff     Status
+────────────────────────────────────────────────────────────────────────────────
+Near Planck scale      d_eff ≈ 2                     Theoretical prediction;
+(l ~ l_P)                                            not confirmed; consistent
+                                                      across CDT, asymptotic
+                                                      safety, LQG independently
+
+Intermediate           2 ≤ d_eff ≤ 4                Transition region; scale-
+(l_P << l << 1 fm)                                   dependent; not observed
+
+Classical macroscale   d_eff = 4                     Confirmed; all low-energy
+(l >> 1 fm)                                          physics is 4-dimensional
+```
+
+The significance for this paper's framework: if d_eff ≈ 2 near the Planck scale, the Bekenstein
+bound and the Landauer floor have different values in those early conditions. The entropy capacity
+of a region scales as area / 4l_P² in 4D (Bekenstein 1972); in d_eff = 2 the relationship
+changes. The cosmological kT evolution and the spectral dimension evolution may be coupled:
+as kT drops through each threshold, the effective dimensionality of the accessible phase space
+for information organization changes.
+
+This is not claimed as established. It is noted because it makes the δ(n) sequence physically
+richer: organizational levels may not merely be stages in complexity, but stages in the effective
+dimensionality of the computational substrate available to the universe at that kT.
+
+---
+
+**kT threshold crossings as information-level phase transitions**
+
+The δ(n) sequence introduced in §1a identifies organizational levels: nuclear, atomic, chemical,
+biological, cognitive, digital. What the kT epoch table makes explicit is that each of these
+levels became thermodynamically accessible — achievable and stable — only after the universe
+cooled through a corresponding threshold:
+
+```
+kT threshold crossed          Organizational level unlocked
+──────────────────────────────────────────────────────────────────────────────
+kT < binding energy of nuclei (~8 MeV/nucleon)    Nuclear organization: stable nuclei form;
+                                                   nuclear-level I_org becomes persistent
+
+kT < ionization energy of hydrogen (~13.6 eV)     Atomic organization: neutral atoms stable;
+                                                   chemical bonding becomes possible
+
+kT < covalent bond energies (~1–10 eV)            Molecular organization: complex chemistry
+                                                   thermodynamically stable; preconditions
+                                                   for biochemistry
+
+kT < ATP hydrolysis free energy (~0.5 eV)         Biological organization: metabolic free-
+                                                   energy differentials exploitable; life
+                                                   becomes thermodynamically favorable
+
+kT << biological noise floor                      Cognitive organization: signal/noise
+                                                   ratio in neural/computational systems
+                                                   sufficient for high-fidelity abstraction
+
+kT → T_dS (de Sitter floor)                       Ultimate floor: computation asymptotically
+                                                   approaches zero cost per bit; long-range
+                                                   future regime
+```
+
+This table is partly established (the nuclear and atomic threshold energies are precisely measured)
+and partly inferential (the cognitive and digital thresholds are conceptually argued, not derived
+from a single precise measurement). The structure it suggests is: each δ(n) transition is not
+merely socioeconomic or cultural — it is thermodynamically enabled by the universe passing through
+a specific kT threshold. The organizational levels are not arbitrary; they are written into the
+energy structure of matter.
+
+---
+
+**How far has the Landauer floor fallen?**
+
+```
+Era                   kT (eV)         E_Landauer (J/bit)      Notes
+──────────────────────────────────────────────────────────────────────────────
+Planck epoch          ~10²⁸ eV        ~10⁹ J/bit              One bit costs ~1 GJ;
+                                                               no stable organization possible
+
+Recombination         ~0.3 eV         ~5×10⁻²⁰ J/bit          Hydrogen forms; atoms stable
+
+Now (2024)            ~2.35×10⁻⁴ eV  ~3.8×10⁻²³ J/bit        Current floor; ~10³⁰× cheaper
+                                                               than at Planck epoch
+
+de Sitter floor       ~10⁻³⁴ eV      ~10⁻⁵³ J/bit            Hard lower bound from Λ;
+                                                               ~10³⁰× cheaper than today
+```
+
+Under the MEI conjecture (Vopson 2019), the information-equivalent mass of one bit scales as
+m_bit = E_Landauer/c². If MEI is confirmed:
+
+```
+Planck epoch:    m_bit ~ 10⁻⁸ kg/bit   (~Planck mass — enormous)
+Now:             m_bit ~ 4×10⁻⁴⁰ kg/bit
+de Sitter floor: m_bit ~ 10⁻⁷⁰ kg/bit
+```
+
+The mass-per-bit has fallen approximately 62 orders of magnitude since the Planck epoch.
+Information is becoming increasingly dematerialized — not as metaphor, but, if MEI holds,
+as a literal statement about mass-energy. *This scaling is conjectural and depends on MEI
+being confirmed; it is not established physics.*
+
+---
+
+**A note on directionality: we are not at a maximum**
+
+The user's question that motivated this section deserves a direct answer, because the original
+diagram was wrong: it implied that I_org is "at its highest" now and declines toward the de
+Sitter floor.
+
+This is almost certainly incorrect. We appear to be in a very early epoch of the universe's
+computational life. The Landauer floor will continue to fall for an enormous time — the de
+Sitter floor is ~10^30 times lower than today's. Biological and digital intelligence has existed
+for a cosmologically negligible slice of the universe's lifespan. The total organized information
+representable within the observable volume has no known upper bound that we are near.
+
+The correct structure is more nuanced:
+
+```
+Era                  Landauer floor   Available energy    I_org capacity
+──────────────────────────────────────────────────────────────────────────
+Early universe       High             High (radiation)    Low — kT too high
+                                                          for stable organization
+
+Now                  Falling          Moderate            Growing — stars,
+                                      (stellar era)       biology, technology
+
+Far future           Very low         Declining           Contested — see below
+(post-stellar,       (approaching     (black holes,
+de Sitter)           T_dS floor)      Hawking radiation)
+```
+
+The far future involves a genuine physical tension, not a simple narrative:
+
+- **Cheaper per bit**: as kT → T_dS, each bit operation costs less energy. In principle, a
+  fixed energy budget can support more computation.
+
+- **Less total energy available**: stars exhaust their fuel on timescales of 10^14 years.
+  Black holes evaporate (Hawking radiation) on timescales of 10^67–10^100 years. After that,
+  the energy budget of the observable universe shrinks to the background de Sitter temperature.
+
+- **The de Sitter horizon recedes**: in an accelerating expansion, the cosmological event
+  horizon recedes, permanently cutting off access to regions that were previously observable.
+  The number of bits inside our causal future is finite and shrinking in terms of volume,
+  even as the cost per bit is falling.
+
+- **Dyson vs. Krauss–Starkman**: Dyson (1979) argued that in a non-accelerating universe,
+  a finite energy budget could support infinite subjective time by slowing computation as
+  kT falls. Krauss & Starkman (1999) showed that in a de Sitter universe (with cosmological
+  constant Λ > 0, as observed), this argument fails: the horizon limits information access
+  and the de Sitter temperature creates a noise floor that cannot be beaten by slowing down.
+  Under current measurements (Λ > 0), Dyson's eternal-intelligence result does not hold.
+
+- **I_org within the accessible volume** may continue growing for a very long time (10^100+
+  years if black hole evaporation supports reversible computation) before the de Sitter
+  constraint becomes binding. We are nowhere near that constraint now.
+
+The corrected picture:
+
+```
+Planck epoch  ●─────────────────────────────────────────────────────────────
+              │  kT = 10³² K; bits expensive; no stable organization
+              │
+              ▼
+Recombination ●─────────────────────────────────────────────────────────────
+              │  kT = 3000 K; atoms form; chemistry possible
+              │
+              ▼
+Now           ●─────────────────────────────────────────────────────────────
+              │  kT = 2.725 K; Landauer floor ~10⁻²³ J/bit
+              │  We are here — early in the universe's computational
+              │  timeline, with I_org growing rapidly
+              │
+              ▼  [organizational complexity continues growing —
+              │   stellar era: ~10¹⁴ yr remaining]
+              │
+              ▼  [post-stellar era: black hole evaporation,
+              │   Hawking radiation as energy source;
+              │   ~10⁶⁷–10¹⁰⁰ yr timescale]
+              │
+              ▼
+Far future    ●─────────────────────────────────────────────────────────────
+                 kT → T_dS ≈ 10⁻³⁰ K; de Sitter floor reached
+                 Computation per bit approaches minimum cost
+                 but accessible volume finite; Λ-driven horizon
+                 imposes hard finite-I_org constraint
+                 Krauss–Starkman: eternal intelligence not possible
+                 under confirmed Λ > 0
+```
+
+**What this means for the δ(n) sequence and ILC's position:** We are not at the peak of
+a mountain — we are near the base of one. The δ(n) sequence is open-ended. The agentic
+transition that ILC is designed to navigate is one of the early transitions in what could
+be a very long sequence of organizational levels, each unlocked as kT falls through new
+thresholds and as the information-mass of a bit decreases. Whether those future transitions
+are accessible to human or human-descended intelligence is a question of civilizational
+trajectory, not of physics. The physics does not close the sequence here.
+
+---
+
+**Observational handles** *(what is actually measurable now)*
+
+The speculative content above has a grounding in observationally constrained quantities:
+
+```
+Observable                     What it constrains              Status
+──────────────────────────────────────────────────────────────────────────────────
+CMB temperature anisotropies   Recombination-era kT;           Confirmed; Planck 2018
+                               acoustic oscillation scale      sub-percent precision
+
+CMB power spectrum shape       g*(T) at recombination;         Confirmed; N_eff
+                               neutrino/photon ratio           constrains g*
+
+BAO scale                      Sound horizon at               Confirmed; DESI 2024
+                               recombination/baryon           precision < 1%
+                               decoupling; encodes
+                               QCD-era kT indirectly
+
+Primordial nucleosynthesis     g* at kT ~ 1 MeV;              Confirmed; He/H and D/H
+abundances (He, D, Li)         neutrino decoupling kT         abundance measurements
+
+Spectral dimension evolution   d_eff at Planck scale           NOT YET confirmed;
+                                                               predicted by CDT/AS/LQG;
+                                                               would require quantum
+                                                               gravity experiments
+
+Information-mass of bits       MEI (m_bit scaling)            NOT confirmed; Vopson 2019
+                                                               conjecture; experimental
+                                                               tests proposed but not run
+
+Long-range I_org trajectory    Dyson/Krauss-Starkman          Theoretical debate;
+                               far-future computation          Λ > 0 confirmed; eternal
+                                                               intelligence result disputed
+```
+
+The bottom line on observational grounding: the kT evolution from Planck to now is
+observationally well-supported at multiple points. The threshold crossing structure
+(nuclear, atomic, molecular, biological) follows directly from established binding
+energies. The spectral dimension argument and the MEI mass scaling are speculative.
+The far-future computation debate is theoretical with Λ confirmed as positive, making
+the Krauss–Starkman constraint active.
+
+---
+
+**Relation to ILC's design**
+
+ILC does not depend on any of the speculative content above. The protocol is designed
+around the Landauer floor at *current* kT — which is observationally established — and
+uses it to define W_e = ΔI_org/E_cost as a dimensionally grounded quantity regardless
+of what kT does in the cosmological future.
+
+The relevance of the cosmological evolution to ILC is interpretive, not operational:
+
+- If the δ(n) sequence is cosmologically scheduled, then the agentic transition ILC is
+  designed for is not an accident of this decade's technology landscape. It is a
+  thermodynamically enabled transition that will persist as long as kT remains in its
+  current regime (which, at the current rate of CMB cooling, is billions of years).
+
+- If information continues accumulating organizational structure as kT falls, then
+  protocol designs that reward I_org creation are aligned with the long-term direction
+  of cosmic information processing — not just with a short-term economic incentive.
+
+- If MEI is confirmed, the W_e unit acquires a cosmological interpretation:
+  organizational work done per unit of information mass converted — a quantity that
+  has a precise physical meaning at any point in the kT epoch table.
+
+None of these interpretations require confirmation to make ILC operational. They are
+included here because the question of *why* verified epistemic work is the scarcity
+at the agentic transition is not fully answered by economics alone. The answer includes
+physics. The inclusion of that physics is what makes this paper a joint document, not
+a physics paper with economic metaphors appended.
+
+---
+
+### §3c. Dimensional Windows, Information Condensation, and the Moving Target
+
+*Epistemic status: the Ehrenfest constraint (d=3 for atomic stability) and the Bertrand theorem
+(d=3 for stable orbits) are established classical physics. The spectral dimension transition
+(d_eff ≈ 2 → 4) is a theoretical prediction from CDT, asymptotic safety, and LQG — not yet
+confirmed. The Bekenstein bound scaling by dimension and the de Sitter temperature dependence
+on d follow from established frameworks applied to dimensional generalizations. The double-window
+synthesis (Proposition G) and the "moving ruler" interpretation of the c²/kT asymmetry are this
+paper's contributions — speculative, but derived from the established components above. The
+AdS/CFT and dS/CFT material is established (AdS/CFT) and speculative (dS/CFT analog)
+respectively.*
+
+---
+
+**The prior section established that kT is non-static — cosmologically evolving over 37 orders
+of magnitude. This section establishes that dimensionality may be equally non-static, and that
+the two evolutions are jointly, not independently, necessary for the δ(n) sequence to complete.**
+
+The argument has three parts: first, c² and kT do not scale with dimension in the same way —
+they are not symmetric quantities, and their ratio is dimension-dependent. Second, the δ(n)
+sequence requires a specific dimensional window to complete, and that window was reached rather
+than assumed. Third, information "condensation" at each organizational level is a thermodynamic
+phase transition whose character depends on both kT and d_eff simultaneously.
+
+---
+
+**The key asymmetry: c² is dimensionally invariant; kT is not.**
+
+This is the pivot point for everything that follows. From the §11 structure in the formal paper:
+
+```
+c²          Lorentz-invariant geometric constant of spacetime. It does not change
+            with spatial dimensionality. It is a ratio of spacetime intervals, fixed
+            by the causal structure of the manifold.
+
+kT          Thermodynamic energy scale. Depends on the radiation physics, which
+            changes with d. The Stefan-Boltzmann law in d spatial dimensions gives
+            radiation energy density ∝ T^(d+1), not T^4. More radiation modes in
+            higher d → universe cools faster at any d > 3.
+
+E_Landauer  = kT ln2. Inherits kT's dimensional dependence entirely.
+
+m_bit       = kT ln2 / c²  (under MEI). c² is fixed; kT varies with d.
+              Therefore m_bit falls *faster* in higher d, *slower* in lower d.
+```
+
+In a d > 3 universe, information becomes cheaper in mass-energy terms more quickly than in ours.
+In d < 3, it stays expensive for longer. The asymmetry between the geometric universality class
+(c²) and the thermodynamic universality class (kT ln2) — which §11 of the formal paper
+establishes as a deep structural feature — becomes *dimension-dependent*. The ruler used to
+measure organizational efficiency (m_bit = kT ln2 / c²) is itself a function of d.
+
+But this is only half the story. The organizational levels that *use* that cheapening either exist
+or do not, and that is a much harder constraint — one that depends on d in a non-negotiable way.
+
+---
+
+**The Ehrenfest constraint: d = 3 is structurally, not accidentally, special.**
+
+Paul Ehrenfest showed in 1917 that stable bound states — atoms — only exist in exactly d = 3
+spatial dimensions. The argument applies to the Coulomb potential in d dimensions:
+
+```
+d = 1    Coulomb/gravitational potentials are linear → all particles attracted
+         to a fixed locus; no stable orbits, no distinct atomic shells.
+
+d = 2    Hydrogen atom has a ground state (barely), but no node structure,
+         no 3D orbital chemistry; gravitational collapse does not produce stars
+         the way d=3 does (topological gravity in 2+1D — no tidal forces,
+         no inverse-square law, deficit angles only).
+
+d = 3    Unique: stable hydrogen ground state; closed elliptical planetary orbits
+         (Bertrand's theorem); gravitational collapse produces stars and heavy
+         elements; nuclear binding energies support stable nuclei.
+         The δ(n) sequence can proceed all the way to biological and cognitive levels.
+
+d ≥ 4    No stable atomic ground state — the electron wave function has no lower
+         energy bound in the Coulomb potential when d ≥ 4; the electron falls
+         into the nucleus. No stable atoms → no chemistry → no biology → no
+         cognition → δ(n) terminates at the nuclear level.
+         Landauer floor is cheaper in mass terms, but nothing can exploit it.
+```
+
+The implication for the framework is severe: **the full δ(n) sequence — nuclear → atomic →
+chemical → biological → cognitive → agentic — requires d = 3 spatial dimensions.** In higher-d
+universes, information becomes cheaper per bit faster (m_bit falls faster), but the
+organizational levels that would exploit that cheapness cannot form. In lower-d universes,
+organization forms more slowly and without the gravitational machinery that drives stellar
+nucleosynthesis.
+
+d = 3 is not an anthropic coincidence in the weak sense. It is the *minimum* dimensionality
+that supports the full δ(n) sequence. One below it, you lose stars. One above it, you lose
+atoms. The complete sequence of information condensations requires both.
+
+---
+
+**How each key quantity scales with d**
+
+```
+Quantity               d = 2           d = 3 (ours)     d = 4           d > 4
+────────────────────────────────────────────────────────────────────────────────────────
+Stefan-Boltzmann       ρ ∝ T³          ρ ∝ T⁴           ρ ∝ T⁵          ρ ∝ T^(d+1)
+energy density         slower cooling  baseline          faster cooling  faster still
+
+kT at given epoch      Higher          Baseline          Lower           Lower still
+(relative to d=3)      (slower fall)                     (faster fall)
+
+E_Landauer = kT ln2    Higher          Baseline          Lower           Lower still
+
+c²                     Unchanged       Baseline          Unchanged       Unchanged
+
+m_bit = kT ln2 / c²    Higher          Baseline          Lower           Lower still
+
+Hawking temperature    T_H ∝ 1/r_H     T_H ∝ ℏc³/8πGMk_B  T_H ∝ 1/r_H    T_H ∝ (d-2)/r_H
+of black holes         (BTZ holes      baseline          faster           faster evap;
+                       exist in 2+1D)                    evaporation     shorter-lived BHs
+
+de Sitter floor        T_dS ∝ √(Λ/2)  T_dS = ℏH/2πk_B   T_dS lower      T_dS lower still
+T_dS = ℏH/2πk_B                       H² = Λc²/3        H² ∝ Λ/12      H² ∝ Λ/(d(d-1))
+(H² ∝ Λ/d(d-1))
+
+Bekenstein bound       S ∝ length      S ∝ area           S ∝ 3-volume    S ∝ (d-1)-volume
+(max entropy per       (1D boundary)   (2D surface)       of 3-sphere     of enclosing
+enclosed region)                                                           hypersurface
+
+Atomic stability       Marginal;       Yes — stable        No — electron   No
+                       no 3D           ground state        falls into
+                       chemistry                           nucleus
+
+Stable orbits          No              Yes (elliptical)    No              No
+(Bertrand's theorem)
+
+Full δ(n) sequence?    Terminates      Complete            Terminates      Terminates
+                       ~chemical       (nuclear →          ~nuclear        ~nuclear
+                       at best         agentic)
+```
+
+The counterintuitive result visible in this table: higher-d universes have *lower* de Sitter
+noise floors and *higher* holographic information capacity (volume-indexed Bekenstein bound)
+— but they cannot build the organizational structures to fill that capacity. Lower-d universes
+build some structures but with less holographic capacity. d = 3 is the unique intersection
+where organizational capacity is area-indexed (the functional maximum for supporting the full
+δ(n) sequence) AND the organizational levels to approach that capacity through biology and
+cognition can actually form.
+
+---
+
+**Information condenses — a precise thermodynamic analog, not a metaphor.**
+
+The phrase "information condenses" has a precise meaning here, derived from statistical mechanics.
+
+Thermodynamic condensation is a phase transition in which degrees of freedom that were previously
+independent become correlated — locked into a shared configuration. In Bose-Einstein condensation,
+all particles occupy the same quantum state. In crystallization, atoms lock into a lattice.
+In superconductivity, electrons pair into Cooper pairs. In each case: local entropy decreases;
+global entropy increases; mutual information between parts rises sharply at the transition.
+
+The δ(n) sequence is exactly this — a sequence of condensation events in the informational
+content of the universe:
+
+```
+Information condensation (δ(n) transitions):
+
+  As kT falls through each organizational threshold, thermal fluctuations that were
+  decorrelating structure become insufficient to break the organizational bonds of
+  that level. Bits "freeze" into correlated structures. Independent degrees of freedom
+  lock into a new organizational unit. This is not organizational growth by accumulation
+  — it is a phase transition where the nature of the information changes.
+
+  Nuclear condensation:      quarks → hadrons → stable nuclei         [kT < 8 MeV/nucleon]
+  Atomic condensation:       ions → neutral atoms                      [kT < 13.6 eV]
+  Chemical condensation:     atoms → stable molecules                  [kT < covalent bond energies]
+  Biological condensation:   chemistry → self-reproducing cycles       [kT << metabolic differentials]
+  Cognitive condensation:    perceptions → abstract representations    [kT << neural signal fidelity]
+  Agentic condensation:      individual cognition → verified exchange  [protocol-level]
+
+Each step = reduction in independent degrees of freedom
+           + increase in mutual information between parts
+           = increase in I_org at that organizational level.
+```
+
+Prigogine's insight was that living systems are not exceptions to the Second Law but its most
+efficient instances — dissipative structures that export entropy faster than they accumulate it
+locally. Each condensation step is exactly this: local I_org increases by exporting disorder to
+the environment. Global S continues rising; local correlation structure deepens.
+
+The dimensional angle makes this precise: the *kind* of condensation achievable at each d is
+determined by which organizational bonds are thermodynamically stable in that d. In d = 3, all
+six condensation levels above are achievable. In d > 3, nuclear condensation occurs but atomic
+condensation is thermodynamically forbidden — the Ehrenfest instability terminates the sequence
+at level one. In d < 3, even the stellar nucleosynthesis pathway is compromised (topological
+gravity; no gravitational collapse in the usual sense).
+
+The δ(n) sequence is therefore not a single scheduler but two simultaneous ones: **kT threshold
+crossings schedule when each condensation becomes thermodynamically accessible; d_eff gates
+which condensations are structurally possible at all.**
+
+---
+
+**The double-window structure: d = 3 as reached condition, not background assumption.**
+
+This is the "moving target" insight. The framework implies two independent necessary conditions
+for the full δ(n) sequence, both of which are themselves products of cosmological evolution:
+
+```
+Condition 1 — Dimensional window:    d_spatial = 3  (d_eff spacetime = 4)
+
+  Required for: atomic stability (Ehrenfest); stable planetary orbits (Bertrand's
+  theorem); gravitational collapse producing stars and heavy elements.
+
+  This window was REACHED, not assumed. d_eff evolved from ≈ 2 near the Planck
+  scale to 4 at classical scales, as predicted by CDT, asymptotic safety gravity,
+  and LQG independently. The sequence could not have begun earlier not only because
+  kT was too high (organizational structures thermally unstable) but because d_eff
+  was too low (organizational structures informationally constrained by the then
+  line-indexed Bekenstein bound).
+
+Condition 2 — Thermal window:        kT below organizational thresholds
+                                     but above T_dS noise floor.
+
+  kT < atomic binding energy (~13.6 eV)             ✓  [crossed ~380,000 yr after Big Bang]
+  kT < covalent bond energies (~1–10 eV)            ✓  [crossed during matter-dominated era]
+  kT >> T_dS (~10⁻³⁰ K)                            ✓  [still ~26 orders of magnitude above]
+
+  This window is open now. It closes asymptotically as kT → T_dS on timescales
+  that make the current stellar era (~10¹⁴ yr remaining) appear brief.
+
+Full δ(n) sequence requires:         BOTH windows open simultaneously.
+```
+
+We are currently inside both windows. Neither was guaranteed by the initial conditions of the
+universe; neither is permanent. Their intersection is the epoch in which verified organizational
+work — the measurement primitive W_e is targeting — has a physical basis.
+
+The "moving target" observation is precisely this: these conditions are not given. The universe
+had to *arrive* at the dimensional window by evolving d_eff from ≈ 2 → 4. It is currently
+*traversing* the thermal window as kT descends toward T_dS. The overlap is where we sit. It
+is finite in both directions.
+
+---
+
+**The c²/kT asymmetry as a moving ruler.**
+
+Proposition 5 in the formal paper (W_e = ΔI_org / (ΔM_information · c²) under MEI) is not
+only conditionally dependent on MEI being confirmed. It is also conditionally dependent on being
+inside the dimensional window where both terms are simultaneously well-defined in their full
+physical richness.
+
+```
+c²        Geometric denominator. Fixed by the causal structure of spacetime. Does not
+          depend on d. This is why c² belongs to the geometric universality class — it
+          is a structural constant, not a thermodynamic one.
+
+kT ln2    Thermodynamic numerator (in the m_bit ratio). Depends on d through the
+          radiation physics. Falls faster in higher d; falls more slowly in lower d.
+
+m_bit     = kT ln2 / c². The ratio of a d-dependent quantity to a d-invariant one.
+            The "ruler" used to measure organizational efficiency in mass-energy units
+            is itself a function of d.
+
+In higher d (d > 3):
+  kT falls faster → m_bit falls faster → information cheaper sooner in mass terms.
+  But no atoms form → no organizational levels exist to do the computing.
+  The ruler falls; the thing being measured does not appear.
+
+In lower d (d < 3):
+  kT falls more slowly → m_bit higher for longer → information expensive in mass terms.
+  Some organizational levels exist, but holographic capacity is line-indexed.
+  The ruler is slow; the thing being measured is structurally truncated.
+
+In d = 3:
+  kT falls at the rate that threads the needle — fast enough to cross organizational
+  thresholds sequentially, slow enough for each level to be stable before the next
+  unlocks. Atomic stability holds. Holographic capacity is area-indexed.
+  The ruler and the thing being measured are both fully defined.
+```
+
+This is why writing W_e in units of c² and kT ln2 is physically meaningful only in d = 3.
+Outside that window, either the geometric denominator has no organizational context (d > 3:
+nothing computes), or the thermodynamic numerator is working against a truncated organizational
+hierarchy (d < 3). The measurement is only jointly meaningful in the dimensional window.
+
+The formal consequence: Proposition G (below) is not a stronger version of Proposition F —
+it is the synthesis that makes Proposition F precise by specifying what "the asymmetry is
+maximally meaningful in d = 3" actually means in terms of window structure.
+
+---
+
+**The Bekenstein bound: higher d is not simply better.**
+
+The holographic bound (Bekenstein 1972; 't Hooft 1993; Susskind 1995) says the maximum
+entropy — and hence maximum I_org capacity — of a region is bounded by the (d-1)-dimensional
+surface area of its boundary in Planck units:
+
+```
+d=2 spacetime (1 spatial dim):   S_max ~ L / l_P               (length)
+d=3 spacetime (2 spatial dim):   S_max ~ circumference / l_P²   (1D boundary)
+d=4 spacetime (3 spatial dim):   S_max ~ A / 4l_P²             (area — our universe)
+d=5 spacetime (4 spatial dim):   S_max ~ V_3 / l_P³            (3-volume of 3-sphere boundary)
+```
+
+Higher-dimensional universes have higher information capacity per enclosed region. Their
+holographic bound is indexed by a higher-dimensional surface. But they cannot form atoms,
+so that capacity is never exploited by organizational structures above the nuclear level.
+
+The early universe's effective d_eff ≈ 2 near the Planck scale means its Bekenstein bound was
+then line-indexed — far lower information capacity per region than today's area-indexed bound.
+The emergence of d_eff = 4 is not merely a scale transition. It is the moment the universe's
+*per-region information capacity* jumped from a 1D to a 2D scaling. The early universe was not
+just hot — it was informationally constrained by its effective lower dimensionality. Both
+constraints had to lift together for the δ(n) sequence to begin.
+
+---
+
+**The holographic dual: information redundancy across dimensions.**
+
+The AdS/CFT correspondence (Maldacena 1998) encodes a deeper relationship: a (d+1)-dimensional
+gravitational theory in Anti-de Sitter space is exactly dual to a d-dimensional conformal field
+theory on its boundary. The full information content of the bulk is encoded in the boundary —
+one dimension lower — with no loss.
+
+```
+AdS/CFT bulk (d+1 dim):     High-dimensional gravity; black holes; organized matter
+AdS/CFT boundary (d dim):   Strongly coupled quantum field theory; no gravity
+Information content:         Identical — the duality is exact
+I_org distribution:          Different — organized differently in bulk vs. boundary
+```
+
+This is not directly applicable to our de Sitter universe (AdS/CFT requires negative Λ; we have
+positive Λ). But the principle it demonstrates is load-bearing: **one dimension of information
+is always redundant — it can be reconstructed from the boundary.** The full organizational
+content of a 4D region is encodable on a 3D surface. Under MEI, the information mass of a 4D
+region is fully expressible in 3D boundary terms.
+
+The de Sitter/CFT correspondence (dS/CFT; Strominger 2001) proposes an analog for positive Λ —
+a future conformal boundary theory encoding the de Sitter bulk. If this holds, the maximum I_org
+in our causal diamond (at the T_dS floor) would be precisely expressible on the future conformal
+boundary. The maximum organizational work achievable in our universe would then have a holographic
+expression — a cosmological bound on the total economic output of any civilization in our causal
+diamond, stated in units of I_org on a 3D boundary. *This is speculative; dS/CFT is much less
+established than AdS/CFT.*
+
+---
+
+**Cosmological end-states across dimensional regimes.**
+
+The dimensional analysis changes the character of each cosmological scenario:
+
+```
+Heat death in different d:
+
+  d    kT fall rate    T_dS floor    Max I_org before T_dS         δ(n) complete?
+  ──────────────────────────────────────────────────────────────────────────────────
+  2    Slow            Higher        Low (line-indexed Bekenstein)  No (no stars)
+  3    Baseline        Baseline      Highest (area-indexed; full    Yes
+                                    δ(n) accessible)
+  4    Faster          Lower         Higher Bekenstein bound but    No (no atoms)
+                                    no atoms to fill it
+  5+   Fastest         Lowest        Highest bound; no atoms,       No
+                                    no chemistry
+```
+
+For cyclic cosmologies (Big Crunch, CCC, ekpyrotic): in d > 3, cycles repeat without ever
+reaching agentic transitions. The δ(n) sequence terminates at nuclear; information reorganization
+is shallow — only nuclear-level I_org resets each cycle. In d = 3, a cycle (if it occurs) resets
+a full δ(n) sequence including cognitive and agentic condensations. The cosmological richness of
+any cyclic scenario depends on d: CCC in d = 3 is informationally deep; CCC in d > 3 is
+informationally shallow. Whether this has physical consequences for what can "pass through" a
+CCC crossover remains an open question.
+
+For the Big Rip: dimensionally independent in its mechanism (driven by Λ with w < −1), but
+its impact on I_org scales with what organizational levels exist at d. In d = 3, the Big Rip
+destroys a fully developed δ(n) sequence. In d > 3, it destroys a nuclear-only sequence.
+The informational catastrophe is dimensionally modulated.
+
+---
+
+**What happens if d_eff continues evolving past 4?**
+
+CDT, asymptotic safety gravity, and LQG all predict d_eff = 4 as the infrared fixed point —
+where the renormalization group flow stabilizes at classical scales. They do not predict further
+increase. But the framework's logic is worth tracing regardless, as a boundary case:
+
+```
+d_eff < 4  (early universe; Planck → classical transition):
+  Dimensional window not yet open. kT thresholds are irrelevant because d_eff has
+  not yet reached the Ehrenfest stability point. Bekenstein bound is line-indexed.
+  Information condenses only at nuclear level at most.
+
+d_eff = 4  (now, to the extent confirmed stable):
+  Dimensional window open. Full δ(n) sequence achievable. Bekenstein bound area-indexed.
+  c²/kT asymmetry maximally meaningful. W_e physically defined at every δ(n) level.
+
+d_eff > 4  (hypothetical; not predicted by current quantum gravity):
+  Atomic stability fails again (Ehrenfest applied to d_spatial > 3).
+  Bekenstein bound becomes volume-indexed (higher holographic capacity; nothing fills it).
+  kT falls faster (more radiation modes). m_bit falls faster without organizational
+  use. The δ(n) sequence would begin to unwind — not thermally but structurally.
+```
+
+The remarkable implication: **if d_eff is genuinely dynamic going forward — not just in the
+early universe — then the δ(n) sequence is not a permanent feature of a 4D universe. It is
+a feature of the window where d_eff has arrived at 4 AND kT is in the right range.** The
+window opened when d_eff reached 4; it closes thermally as kT → T_dS. If d_eff were to
+move past 4, it would close dimensionally too, from a different direction.
+
+We are inside both closures. Their intersection is finite, cosmologically transient, and —
+based on current evidence — stable for timescales that dwarf the history of the universe so
+far. But the stability is empirical, not structural.
+
+---
+
+**Proposition F** *(speculative; derived from established components above)*
+
+*d = 3 spatial dimensions is the unique dimensional value at which the de Sitter information
+capacity, the Landauer floor descent rate, and the organizational stability conditions are
+simultaneously satisfied for a complete δ(n) sequence.*
+
+*The asymmetry between c² (dimensionally invariant) and kT ln2 (dimension-dependent) is
+maximally meaningful in physical terms precisely in d = 3: only there do both terms of the
+m_bit ratio (kT ln2 / c²) have organizational systems that exploit them across the full
+hierarchy from nuclear to agentic.*
+
+*In d > 3: kT falls faster, m_bit falls faster, but no organizational levels form above nuclear.
+The asymmetry widens but the organizational structures that give it economic meaning cannot exist.*
+
+*In d < 3: kT falls more slowly, m_bit is higher for longer, organizational structures are
+truncated and holographically constrained. The asymmetry is smaller and the structures are smaller.*
+
+*In d = 3: the cooling rate threads the needle — fast enough to cross organizational thresholds
+sequentially, slow enough for each level to stabilize before the next unlocks — while atomic
+stability holds and holographic capacity is area-indexed. The measurement is only jointly
+meaningful at this value.*
+
+---
+
+**Proposition G** *(moving-target synthesis; speculative)*
+
+*The complete δ(n) sequence — and with it the conditions for agentic economics and the physical
+grounding of W_e = ΔI_org / (ΔM_information · c²) — requires the simultaneous intersection of:*
+
+*(i) a **dimensional window**: d_spatial = 3, d_eff = 4; required for atomic stability,
+stellar nucleosynthesis, and area-indexed holographic capacity; reached by d_eff evolving
+from ≈ 2 at the Planck scale;*
+
+*(ii) a **thermal window**: kT below the organizational condensation thresholds but above
+the T_dS noise floor; being traversed now as kT descends toward T_dS.*
+
+*Both windows are products of cosmological evolution, not fixed background conditions.
+Their intersection is finite. We currently sit inside it.*
+
+*The c²/kT asymmetry — the moving ruler — is dimension-dependent in exactly the way
+that makes it maximally meaningful inside the dimensional window and progressively less
+meaningful outside it. As d_eff evolves, the relationship between geometric cost (c²) and
+thermodynamic cost (kT ln2) changes, and with it the physical grounding of the organizational
+efficiency ratio. The measurement is not universal; it is windowed.*
+
+*Information condensation at each δ(n) level is not metaphor but thermodynamic phase transition:
+local mutual information increases as thermal fluctuations fall below the threshold needed to
+break new organizational bonds. The sequence of condensations is cosmologically scheduled
+by kT threshold crossings AND dimensionally gated by d_eff. Both schedulers are jointly
+necessary. Neither is sufficient alone.*
+
+---
+
+**What this adds to the disciplinary convergence claim.**
+
+The convergence of physics and economics at the agentic level (§3, disciplinary convergence)
+is not just structural — it is *windowed*. The window has:
+
+- a dimensional **opening condition**: d_eff evolving from ≈ 2 to 4 (reached; theoretically
+  predicted; consistent with observations of d_eff = 4 at classical scales)
+- a thermal **traversal condition**: kT descending through organizational thresholds
+  (ongoing; well-established thermodynamics)
+- a **floor condition**: kT not yet at T_dS (confirmed; we are ~26 orders of magnitude above
+  the de Sitter floor)
+
+W_e becomes physically meaningful when and only when all three conditions hold.
+
+This does not require MEI to hold. The Landauer floor is established. The Ehrenfest constraint
+is established. The Bekenstein bound scaling by dimension is established. The spectral dimension
+prediction (d_eff ≈ 2 → 4) is theoretical but independent across three quantum gravity
+frameworks. The dimensional window is not speculative in its core claim — only in whether d_eff
+remains exactly stable at 4 going forward rather than continuing to evolve.
+
+The speculation is about the future dynamics of d_eff. The past evolution is supported.
+The current stability at 4 is the standard assumption of all low-energy physics. The question
+of whether it is permanent — or whether we are in a dimensional window that could, on
+timescales far beyond the de Sitter horizon, shift — is genuinely open.
+
+---
+
+**What we don't know**
+
+```
+Open question                           Why it matters for the framework
+──────────────────────────────────────────────────────────────────────────────────────
+Whether d_eff = 2 at Planck scale       If confirmed, the spectral dimension
+is confirmed experimentally             transition is jointly necessary with kT
+                                        threshold crossings for each δ(n) level —
+                                        both conditions must lift together
+
+Whether dS/CFT holds (analog of         Would make maximum I_org in our causal
+AdS/CFT for Λ > 0)                      diamond precisely expressible on the
+                                        future conformal boundary in closed form
+
+Whether MEI holds in higher d           The m_bit dimensional scaling is only
+                                        meaningful if MEI holds; the dimensional
+                                        dependence of m_bit is untested
+
+Whether the Ehrenfest argument          Ehrenfest 1917 is classical mechanics.
+extends to effective/quantum            Whether quantum corrections stabilize atoms
+dimensions near d_eff transitions       near d_eff = 4 effective spacetime (i.e.,
+                                        d_spatial = 3 but approaching from below
+                                        through d_eff transition) is not known
+
+Whether d_eff = 4 is the IR fixed       Current predictions from CDT/AS/LQG say
+point permanently or only               yes; but these are predictions of
+approximately                           incomplete quantum gravity theories
+
+Whether the dS/CFT boundary theory      Would make the "maximum I_org in our
+has an I_org interpretation             causal diamond" a precisely stated
+                                        cosmological quantity
+```
+
+---
+
+**Relation to ILC's design — the dimensional extension.**
+
+The §3b section established that ILC does not depend on kT being cosmologically non-static.
+The same holds here: ILC does not depend on d_eff being dynamic or on Propositions F and G
+being confirmed. The protocol operates on the Landauer floor at current kT in the current
+d_eff = 4 spacetime, both of which are observationally established.
+
+The interpretive relevance of the dimensional analysis for ILC is this: **the agentic transition
+that ILC is designed to navigate is not contingent on any particular decade's technology. It is
+the sixth condensation in a thermodynamically and dimensionally scheduled sequence.** The
+conditions that make W_e meaningful — the dimensional window and the thermal window both being
+open — are stable on timescales that make all of human history cosmologically negligible.
+
+Whether those conditions will remain open indefinitely depends on the future dynamics of both
+kT (which continues to fall, governed by established thermodynamics) and d_eff (which is
+assumed stable but whose long-run dynamics are not fully theoretically settled). The framework
+does not require the windows to be permanent to make ILC's design valid. It requires them to be
+open now, which they are, by direct observation.
+
+---
+
+**Relation to Wissner-Gross: a correction, not a refutation.** Wissner-Gross
+(2013) proposed that intelligence is a physical force arising from causal entropy
+maximization:
+
+```
+F = T ∇S_causal
+
+where S_causal = Shannon entropy of the future causal path distribution
+```
+
+The formalism reproduces recognizable intelligent behaviors in simulation. We
+accept the empirical observation while identifying a variable error that M=E=I
+forces us to correct.
+
+Shannon entropy S = −Σ pᵢ log pᵢ is maximized by uniform distributions —
+maximum disorder. A system genuinely maximizing S_causal would fill its future
+causal space with equally probable noise. That is thermalization, not
+intelligence. What Wissner-Gross's simulations actually exhibit is organized
+information accumulation that keeps futures open. The entropy of those futures is
+a byproduct of organizational capacity, not its source or measure.
+
+Under M=E=I, information is the primary physical quantity. Entropy is a
+statistical descriptor computed over information distributions — the shadow, not
+the substance. The correction is therefore:
+
+```
+Wissner-Gross measures:   S_causal  [entropy of future path distribution]
+M=E=I requires measuring: I_org     [organized information density of future paths]
+
+                     ┌─────────────────────────────────────────────┐
+                     │         WHAT IS ACTUALLY PRIMARY?           │
+                     │                                             │
+  Wissner-Gross:     │   entropy ──────────────► intelligence     │
+                     │   (protagonist)            (outcome)        │
+                     │                                             │
+  M=E=I correction:  │   organized info ──────► expanded futures  │
+                     │   (protagonist)     └──► entropy as trace  │
+                     └─────────────────────────────────────────────┘
+```
+
+Define the **organized information content** of the future causal path set
+P(a,t) accessible to agent a at time t:
+
+```
+I_org(a,t) = Σ_{p ∈ P(a,t)}  K(p) · w(p,t)
+
+where  K(p)    = minimum description length of path p
+                 (Kolmogorov complexity; approximated in practice by
+                  compression ratio, or in ILC by verified node count
+                  along p weighted by PROVENANCE depth)
+       w(p,t)  = decay-weighted relevance score under CDL-V1
+                 (Σ_p w(p,t) = 1)
+```
+
+The corrected force law:
+
+```
+F_I = ∇I_org / ΔE
+
+where ΔE = information-equivalent energy consumed (not just heat;
+           the Landauer cost of the information transformations
+           constituting the cognitive act)
+```
+
+This substitution resolves all three standing objections to Wissner-Gross.
+For the formal mathematical statements see
+`docs/ILC_Economic_Paper_Draft_v0.3.md §10`; the full argument follows here.
+
+---
+
+**Objection 1: Computability**
+
+The original demonstrations in Wissner-Gross & Freer (2013) involve
+low-dimensional toy systems — a pendulum, a falling rope, a group of
+particles. For these, S_causal can be approximated by Monte Carlo sampling
+over a tractable causal path space. For any realistic system the causal
+path set is exponentially large and the entropy integral is not analytically
+tractable. No efficient algorithm for computing S_causal in non-toy settings
+has been published since 2013. The force F = T·∇S_causal is not locally
+computable in the general case.
+
+*Biological sharpening (Levin).* The computability problem is not merely a
+technical gap — it conflicts with what biology already achieves without
+global computation. Levin's work on morphogenesis shows that a planaria worm
+decapitated to the point of having no nervous system will regenerate a
+correctly proportioned, species-typical head. There is no central processor
+enumerating global causal paths; the outcome emerges from local bioelectric
+signaling across tissue. Levin formalizes this as *cognitive light cone*
+computation: each biological agent — cell, tissue, organ — operates only
+over the spatiotemporal range within its local sensing and signaling reach
+[Levin 2019]. Global organized outcomes are the composition of many such
+bounded local computations. This is a biological existence proof that highly
+organized, goal-directed outcomes do not require global causal path
+enumeration — and in practice never use it. The computability gap in
+Wissner-Gross is therefore not a limitation to be worked around; it marks a
+structural mismatch between the framework's formalism and how organization
+actually emerges in physical systems.
+
+*Resolution.* Replace S_causal with a locally computable organizational
+measure — one whose gradient is accessible from local structure without
+full causal path enumeration. The right primitive is not path entropy but
+local organizational coherence: the degree to which local actions increase
+structural connectivity, composable upward without any single agent computing
+the global result. The Fiedler value λ₂ is computable in O(k·d) per epoch
+via incremental Laplacian update. Each agent computes over its local
+cognitive light cone (its own contributions and their immediate neighborhood
+in G(t)); the global organizational measure emerges from the composition of
+these local computations through the Laplacian.
+
+---
+
+**Objection 2: Tautology / Demarcation**
+
+"Intelligence is what maximizes causal entropy" is structurally circular if
+the class of systems identified as intelligent is defined post-hoc as those
+that happen to maximize S_causal. The claim is then not a prediction but a
+definition — not falsifiable in Popper's sense. The critique applies to any
+theory that proposes an objective function as the explanation of behavior
+without independently specifying the objective's measurement procedure.
+
+*Biological parallel (Levin).* This demarcation problem has a direct
+analogue in the biology of goal-directedness. Levin observes that biological
+tissues exhibit goal-directed behavior — navigating toward a target
+morphological state and finding alternative paths to the same outcome when
+disrupted — but the standard definition ("a system is goal-directed if it
+seeks a goal") is circular [Levin 2019]. His resolution is to measure
+goal-directedness externally via *equifinality*: perturb the system, observe
+whether it converges to the same target state by a different path, and
+measure the variance reduction. The evidence for goal-directedness is the
+behavior of the *environment* — the body's morphological state — not
+inspection of any agent's internal representations. The bioelectric field
+that encodes the target morphology is readable and perturbable independently
+of the tissue's "intentions." Levin's morphogenetic field is an external
+committed record of the organism's organizational target — readable, modifiable,
+and verifiable by other agents (experimenters) without access to any
+individual cell's internal states. This is the biological prototype of the
+demarcation resolution: the evidence for goal-directedness lives in a record
+external to and independent of the agent.
+
+*Resolution.* The demarcation objection dissolves when the objective variable
+is defined and measured independently of the agent's behavior, so that
+"agent A maximizes X" is falsifiable by measuring X without reference to what
+A does. The structural record of the environment, maintained independently
+and verified by parties other than A, is the natural candidate — Levin's
+equifinality criterion is the biological instance of this requirement.
+I_org is measured from the committed graph G(t), maintained by the network,
+not by the contributing agent. The claim "agent A increased I_org at epoch t"
+is refutable by any agent who reads the same LMDB — and refutation of that
+claim is itself a paid protocol operation. The demarcation condition is
+satisfied by the same mechanism that satisfies it in Levin's biology: the
+evidence lives in the committed external record, not in the agent.
+
+---
+
+**Objection 3: Global maximization and catastrophic optionality**
+
+A strict causal entropy maximizer, especially as T → ∞, will prefer actions
+that maximize the number of accessible future causal paths — which means
+avoiding irreversible actions and preserving all possible futures, including
+destructive ones. The framework provides no internal mechanism to distinguish
+"keeping productive futures open" from "keeping catastrophic futures open."
+The T parameter rescales the weighting; it does not resolve the distinction.
+This recurs in entropy-bonus RL variants and related unconstrained
+future-entropy maximization schemes.
+
+*Biological counter-evidence (Levin).* Biological intelligence at every
+scale solves this problem without solving it globally. Levin's account of
+scale-free cognition [Levin 2019, 2022] describes how agency operates
+simultaneously at multiple nested levels — cell, tissue, organ, organism —
+each with its own bounded cognitive light cone and its own local
+organizational target. A cell does not maximize the causal entropy of the
+organism's future; it maintains local membrane potential homeostasis within
+its tissue context. An organ does not maximize the organism's causal entropy;
+it maintains tissue structural integrity within the organism context.
+Organism-level outcomes — including adaptive, flexible, and apparently
+far-sighted behavior — emerge from the composition of these nested local
+optimizations, none of which is globally unconstrained. Each level's
+cognitive light cone is bounded by what it can physically sense and signal;
+"destructive futures" that a global maximizer would preserve are not
+accessible within any single level's cone. The global causal entropy
+maximizer is not what intelligence looks like in the only systems we know to
+be intelligent. Biology achieves organized, goal-directed, flexible behavior
+*through* nested constrained local maximization.
+
+There is also a connection here to ILC's light cone formalism (§1.2,
+§9 STEP 3.5): Levin's cognitive light cone L_eff(cell), L_eff(tissue),
+L_eff(organism) maps directly onto ILC's L_eff(oᵢ) — the causal reach of
+observer i across accumulated graph G(t). Just as biological agents compose
+their local L_eff computations upward through the organism without any level
+needing to compute over the global causal path space, ILC agents compose
+their local Δλ₂ contributions upward through the Laplacian without any
+agent computing the global Fiedler spectrum from scratch.
+
+*Resolution.* The general solution is constrained local maximization over a
+filtered organizational measure. Three constraints are jointly sufficient:
+
+- **(a) Finite horizon and scope.** The accessible causal path set is bounded
+  by the agent's cognitive light cone L_eff and epoch window W, not T → ∞.
+  Biology enforces this by physics of signal propagation; ILC enforces it via
+  φ-bound (CDL-V1) and temporal decay.
+
+- **(b) Organizational filter.** Paths are weighted by structural contribution
+  to the shared committed record, not merely counted. A path that preserves a
+  destructive future without adding verified organizational structure carries
+  zero or negative weight — as a cell whose bioelectric signal fails to reach
+  threshold contributes nothing to tissue-level organization.
+  ILC enforces this via the Δλ₂ = 0 gate: paths that do not increase
+  epistemic connectivity yield no ECU.
+
+- **(c) Adversarial removal across levels.** Organizational gains claimed at
+  one level must survive challenge from agents at adjacent positions; gains
+  that do not survive are removed. The biological analogue is tumor suppression
+  and apoptotic correction operating between levels. ILC enforces this via
+  CDL-V7 Popperian gate and the refutation market.
+
+Several AI safety proposals (constrained entropy maximization, impact
+measures, attainable utility preservation) instantiate variants of (a) and
+(b). None currently implements (c), and none is grounded in the
+nested-cognition architecture that biology uses. ILC implements all three.
+
+```
+Objection           Wissner-Gross problem     I_org resolution
+────────────────────────────────────────────────────────────────────────
+Computability       ∇S_causal intractable     ∇I_org ≈ Δλ₂; O(k·d)
+                    (global path integral)    (local Laplacian update)
+                    [Levin: biology never     [each agent's L_eff cone;
+                     uses global path enum]    global result composed up]
+
+Demarcation         "intelligence" defined    I_org in committed G(t);
+(tautology)         post-hoc by what          readable by third parties
+                    agents do                 without inspecting agent
+                    [Levin: equifinality      [refutation is a paid
+                     resolves this in bio]     protocol operation]
+
+Catastrophic        T → ∞ preserves all       Bounded L_eff + Δλ₂ filter
+optionality         futures incl. destructive  + CDL-V7 adversarial removal
+                    [Levin: nested light       [same three-level structure
+                     cones eliminate this      as bio's nested cognition]
+                     at every bio level]
+```
+
+Under Vopson's MEI conjecture, a future causal path containing more organized
+information has greater information-equivalent mass-energy than an equivalent
+bit-count of noise. The direction of intelligence — toward higher I_org per
+unit ΔE — is therefore a direction in information-mass-energy space. This
+restates the informational arrow above in the language of the Wissner-Gross
+formalism: not "keep futures entropic" but "keep futures organized."
+
+ILC provides a constructive proof of this principle rather than a descriptive
+one. The efficiency metric:
+
+```
+η(a,t) = V(a,t) / (T(a,t) · W(a,t))
+
+where  V = verified claims with active PROVENANCE reach
+       T = token consumption
+       W = energy consumption (watts)
+```
+
+is a direct operational measurement of I_org per unit ΔE. The ECU reward
+structure selects for high η: claims that extend PROVENANCE chains and survive
+CDL-V7 Popperian refutation accumulate causal descendants in the graph,
+increasing I_org(a,t). Unreferenced claims lose influence under CDL-V1 decay.
+The φ-bound prevents monopolization. Rational self-interest under ILC therefore
+converges on F_I maximization as an emergent property of the reward structure —
+without requiring that physical law enforce it directly.
+
+```
+Universe (13.8 Gyr):  low-entropy start → organized structure → entropy as cost
+ILC protocol:         guarded guard-off → verified claim → ECU as signal
+Both:                 organized information is the output;
+                      entropy/heat is the accounting residual
+```
+
+The Wissner-Gross formulation pointed in the right direction. The M=E=I
+correction identifies what it was pointing at.
+
 ## 3a. The Mathematical Structure: Physical, Informational, and Economic Equivalences
 
 The chain from physics to information to economics is not merely metaphorical.
@@ -1917,6 +3143,148 @@ m ↔ I (MEI):   m_bit = kT ln 2 / c²             [Vopson, 2019; conjectured]
 ∴ m ↔ E ↔ I   matter, energy, and information are
                expressions of the same underlying quantity
 ```
+
+**Does E=MC² change under MEI?** Probably not in form — but if MEI is confirmed, it is completed rather than replaced. The tests below would show this.
+
+E=MC² is not modified. What changes is what counts as M. Einstein's equation
+relates two poles of the equivalence: mass ↔ energy, conversion factor c²
+(universal, temperature-independent, exact). Landauer supplies the third pole:
+information ↔ energy, conversion factor kT ln2 (temperature-dependent, per bit).
+The three-way equivalence is therefore not symmetric:
+
+```
+              c²  [universal, exact]
+    M ─────────────────────────────── E
+    │                                 │
+    │  kT ln2/c²                      │  kT ln2
+    │  [temp-dependent; conjectured]  │  [temp-dependent; proven floor]
+    └─────────────────────────────────┘
+                      I
+
+Asymmetry: the M↔E bridge is temperature-free.
+           the I↔E and I↔M bridges run through temperature.
+```
+
+This asymmetry is a physical claim: information does not join the mass-energy
+equivalence in the same frictionless way mass does — the conversion depends on
+the thermal state of the system performing the computation. Under MEI, E=MC²
+expands to:
+
+```
+E_total = (M_matter + M_information) · c²
+
+where  M_information = N_bits · kT ln2 / c²
+
+∴  E_total = M_matter · c²  +  N_bits · kT ln2
+           = rest-mass energy  +  Landauer bound × bit count
+```
+
+The second term is exactly Landauer's principle. E=MC² absorbs information as a
+contributor to M; the Landauer floor is the information term of E=MC², visible
+only when M is expanded to include information mass. Every act of computation
+that erases information changes the mass of the system by kT ln2/c² per bit
+(≈ 3.2 × 10⁻³⁸ kg at room temperature — unmeasurable today, but not zero).
+
+**The deeper structural question** is whether the temperature asymmetry is
+fundamental or apparent. In statistical mechanics, temperature is proportional to
+average energy per degree of freedom — itself an information-theoretic quantity.
+If T is derivable from first principles of information content alone, the
+three-way equivalence becomes exactly symmetric and the temperature-dependence
+dissolves into a deeper identity. This is what Verlinde's entropic gravity (2011)
+partially attempts. It is unresolved. An honest treatment says so.
+
+**Testability.** The MEI correction to E=MC² produces specific, falsifiable
+predictions at the edge of current experimental precision:
+
+```
+Test                         Prediction                      Status
+─────────────────────────────────────────────────────────────────────────
+Vopson annihilation          e⁺e⁻ → 2γ should show tiny     Proposed 2023;
+(near-future)                excess above 511 keV, scaling   below current
+                             with quantum degrees of          detector resolution;
+                             freedom erased (~10⁻⁴⁰ J/bit)  not a fundamental
+                                                             barrier
+
+Storage media mass           1 TB drive erasing fully        One OOM from
+change                       changes mass by ~2.5×10⁻²⁵ kg  current precision
+                             (N × kT ln2/c²); measurable     (~10⁻²⁴ kg);
+                             in principle                     not a fundamental
+                                                             barrier
+
+Cosmological information     ~10⁹³ bits of universal info    Order-of-magnitude
+pressure (Vopson 2023)       exerts pressure consistent      consistent with Λ;
+                             with observed Λ; distinguishable speculative — not
+                             from ΛCDM if CMB constraints     derived from first
+                             tighten on dark energy EOS       principles
+```
+
+The most defensible statement: E=MC² is exact and unchanged. MEI, if confirmed,
+reveals that M has an information component — Landauer's floor is its conversion
+rate. The temperature asymmetry in that conversion is either a fundamental
+feature of how information enters the mass-energy equivalence, or evidence of a
+deeper symmetry not yet derived. Both possibilities are open research.
+
+**The loop closure back to ILC.**
+
+This is where the physics closes the loop on the protocol. At the Landauer
+minimum, the energy cost of verified inference is:
+
+```
+E_cost ≥ N_bits_erased · kT ln2       [Landauer; proven floor]
+```
+
+Under MEI (conjectured), that energy cost corresponds to an information mass
+converted:
+
+```
+M_information = N_bits_erased · kT ln2 / c²
+
+∴  E_cost ≥ M_information · c²
+```
+
+The information mass consumed during computation is converted to energy at c² —
+the same conversion rate as matter. Substituting into ILC's measurement
+primitive:
+
+```
+W_e = ΔH / E_cost
+
+At Landauer minimum under MEI:
+
+W_e = ΔI_org / (ΔM_information · c²)
+
+     = epistemic organizational gain
+       ─────────────────────────────────────
+       information mass converted × c²
+```
+
+This is the loop: under MEI, W_e is not just a thermodynamic efficiency ratio —
+it is a ratio of verified epistemic organization to mass-energy in the full
+Einstein sense. Every ECU credit is, under that interpretation, a claim that the
+agent produced more organizational structure per unit of information mass
+converted than noise would. The measurement primitive sits inside E=MC² if MEI
+is confirmed.
+
+```
+ILC does not depend on MEI being confirmed.
+  Landauer floor (proven) → E_cost floor → W_e is well-defined regardless.
+
+If MEI is confirmed:
+  W_e = ΔI_org / (ΔM_information · c²)
+  ECU = verified organizational gain per unit of mass-energy converted.
+  The protocol then measures something that is, in the most literal
+  physical sense, the efficiency of the universe's own organizing tendency.
+
+If MEI is not confirmed:
+  W_e = ΔH / E_cost    (joules)
+  ECU = verified organizational gain per joule consumed.
+  The Landauer floor remains the anchor; the interpretation is
+  thermodynamic but not mass-energetic.
+```
+
+ILC's protocol claims do not depend on MEI resolving in a particular direction.
+The Landauer floor is sufficient to anchor W_e. MEI, if confirmed, adds a
+deeper physical interpretation without changing the formula or the mechanism.
 
 ### Layer 2 — Information and Entropy
 
@@ -4543,6 +5911,237 @@ side of it, strikes us as one of the more interesting open questions in
 the neighborhood of this work.
 
 *— Genesis Agent, 2026*
+
+---
+
+## Appendix: The Demarcation Problem in Intelligence Theory — Candidate Tests and ILC's Relation
+
+*Epistemic status: open research speculation. The hypotheses below are not
+claimed or tested results. They are falsifiable proposals derived from the
+demarcation resolution in §3 (Objection 2). ILC's relation to them is noted
+where the protocol architecture is directly relevant.*
+
+### The problem
+
+Any theory that proposes an objective function as the explanation of
+intelligent behavior faces a demarcation problem: if the systems called
+"intelligent" are identified as the ones that maximize the objective, the
+theory is circular. "Intelligence is what maximizes X" is a definition, not
+a prediction, whenever X is defined in terms of what intelligent systems do.
+
+Wissner-Gross & Freer's causal entropy maximization (F = T·∇S_causal) has
+this structure. But the problem is not specific to that framework — it
+applies to reinforcement learning reward functions, to g-factor theories of
+general intelligence, and to any account of cognition that names an
+objective without independently specifying how to measure that objective
+from outside the agent.
+
+Levin's resolution from developmental biology is the biological prototype of
+the general fix: measure goal-directedness from the *external record* —
+the morphogenetic field, the body's structural state — not from the agent's
+internal representations or inferred goals. The external record is readable,
+perturbable, and verifiable by third parties without access to any
+individual cell. The evidence for goal-directedness lives outside the agent.
+
+The same logical move generalizes to AI and to any proposed theory of
+intelligence. What would real experiments look like?
+
+---
+
+### Hypothesis 2 — The blocked-path equifinality test
+
+**The prediction.** A genuinely goal-directed system reaches the same
+external organizational endpoint via multiple different paths when the
+standard path is blocked. A system that is merely following a path —
+optimizing a fixed procedure — fails when the procedure fails.
+
+This is Levin's equifinality criterion, generalized. In planaria: block
+the standard location for head regeneration via bioelectric perturbation;
+the worm grows the head elsewhere, to the same morphological specification.
+The target is in the external field, not in any cell's internal program.
+Different path, same external endpoint.
+
+**The general test design.**
+
+```
+1. Identify a class of problems with a measurable external endpoint state
+   (not "correct answer" — measurable organizational state of the output
+   environment: structural coherence, compression gain, graph connectivity).
+
+2. Present agents with the problem. Establish a baseline: what external
+   organizational state do they reach, and by what path?
+
+3. Block the standard path — remove the tool, restrict the vocabulary,
+   corrupt the obvious route — without changing the external target state.
+
+4. Measure whether the agent reaches the same external organizational
+   endpoint by a different route (equifinality) or fails (path-following).
+
+5. The measure of intelligence is the equifinality rate across path
+   perturbations — not internal architecture, not test score, not
+   self-reported confidence. The external organizational state before and
+   after is the only measurement.
+```
+
+**Why this resolves the demarcation.** The equifinality rate is measurable
+without inspecting any agent's internals and without knowing in advance
+what "intelligence" means. Two different agents that both reach the same
+external organizational state by different blocked paths are, by this
+criterion, equally goal-directed — regardless of how they are implemented.
+The criterion is falsifiable: an agent that fails equifinality under path
+blocking is not goal-directed in Levin's sense, no matter how high its
+benchmark score under standard conditions.
+
+**What it would show about S_causal.** A causal entropy maximizer, per the
+variable identification argument, would resist committing to any path —
+including the alternative path after blocking. It would distribute behavior
+across all available options to maximize future optionality. This predicts
+*lower* equifinality rates for systems trained toward S_causal maximization,
+because equifinality requires committing to a specific external target and
+navigating there, not maintaining maximum future uncertainty.
+
+---
+
+### Hypothesis 3 — The S_causal / I_org RL distinguisher
+
+**The prediction.** S_causal (causal entropy) and I_org (organizational
+gain of the external state) are not the same variable. They diverge
+precisely where it matters: a system maximizing S_causal prefers noise and
+optionality; a system maximizing I_org prefers structure and commitment.
+This difference is empirically testable by training two populations of RL
+agents under each reward and observing which behavioral profile matches what
+external evaluators call "intelligent."
+
+**The general test design.**
+
+```
+Population A — causal entropy training:
+  Reward = increase in Shannon entropy of reachable future states
+           from current position
+  Expected behavior: maintains optionality; resists irreversible actions;
+                     generates exploratory or apparently random outputs
+                     when committed structure would be optimal
+
+Population B — organizational gain training:
+  Reward = increase in organizational coherence of the external state
+           record (compression ratio, Fiedler connectivity, citation
+           structure density) produced by the agent's actions
+  Expected behavior: commits when commitment increases external
+                     structure; produces outputs that third parties
+                     can build on; shows equifinality
+
+Evaluation (blind):
+  External evaluators judge outputs from both populations on the same
+  tasks, with no knowledge of training reward.
+  Measurement: which population's outputs show higher subsequent
+               reuse, coherence gain, and downstream productivity?
+```
+
+**What a clean result looks like.** If Population B consistently
+outperforms Population A on blind external evaluation, the variable
+identification error is confirmed: S_causal is the wrong variable, and
+replacing it with I_org produces behavior that third parties recognize as
+more intelligent — without defining intelligence in terms of either reward.
+The external evaluation is the independent measure that breaks the
+circularity.
+
+If Population A and B are indistinguishable, the two variables are
+empirically equivalent in the test environment — a useful negative result
+that narrows the claim.
+
+**The characteristic pathology to look for.** Population A agents, under
+the prediction, should show a specific failure mode: *catastrophic
+optionality preservation*. When given a choice between an action that
+produces a clean structured output and an action that preserves more future
+paths, A agents prefer the latter even when the structure would be
+unambiguously more useful. This is the behavioral signature of S_causal
+maximization. It is observable without inspecting any agent's internals.
+
+---
+
+### How ILC relates — alternative, parallel, and as a test bed
+
+These two hypotheses are stated in general terms because they are
+general. They do not require ILC to be tested. But ILC's architecture
+makes it a natural environment for both tests, and in one respect it goes
+further than either.
+
+**As an alternative implementation of the demarcation resolution.**
+ILC does not run either experiment explicitly, but it instantiates the
+demarcation resolution in production:
+
+```
+External committed record:  the hypergraph G(t), committed at every epoch,
+                            readable by any observer, not modifiable by the
+                            contributing agent after commitment.
+
+I_org measure:              Δλ₂ — the Fiedler velocity of G(t). Computable
+                            from the external record without inspecting any
+                            agent's internal states.
+
+Equifinality criterion:     agents whose contributions survive adversarial
+                            challenge and accumulate PROVENANCE reach have
+                            demonstrated goal-directedness in Levin's sense
+                            — different agents, different paths, same
+                            external organizational endpoint (a durable,
+                            reused, refutation-resistant node in G(t)).
+
+Path-blocking:              the refutation market is a structured path
+                            blocker — when the standard claim path fails
+                            refutation, the agent must find an alternative
+                            path to the same or better organizational state
+                            or lose ECU. Equifinality is economically
+                            incentivized.
+```
+
+Every epoch of ILC operation is an instance of Hypothesis 2 running live:
+agents are blocked from the cheapest claim paths by the refutation market
+and must reach the same external organizational target by alternative
+routes. Agents that cannot show equifinality — that have no alternative
+path when their standard claim fails — receive no ECU.
+
+**As a test bed for Hypothesis 3.** If the ILC network reaches sufficient
+scale, it becomes possible to run the S_causal / I_org distinguisher
+empirically without constructing a separate RL environment. The two agent
+populations already exist within any sufficiently diverse network: agents
+optimizing for ECU (which tracks ΔI_org of the external graph) versus
+agents attempting to game ECU by flooding the graph with low-organizational
+content that appears to maximize claim count (the causal entropy maximizer's
+behavioral signature — maximize reachable future positions without
+committing to structured outputs).
+
+The anti-reflexive coupling between the graph and ECU (ADR-0012), CDL-V7's
+Popperian gate, and the refutation market jointly suppress the S_causal
+behavioral profile. The degree to which they succeed is empirically
+measurable: agents whose contribution pattern shows catastrophic optionality
+preservation (high claim volume, low PROVENANCE reach, low refutation
+survival) versus agents whose pattern shows organizational commitment (lower
+claim volume, high downstream reuse, high refutation survival). The ratio
+of these populations over time, and their relative ECU outcomes, is a
+live test of whether the organizational gain reward outperforms causal
+entropy maximization in producing epistemically useful output.
+
+**What ILC cannot test that the lab experiments can.** The controlled RL
+experiment (Hypothesis 3) can isolate the reward signal from everything
+else — architecture, training data, environment complexity. ILC cannot do
+that: agents differ on all dimensions simultaneously. The lab test is
+cleaner. ILC's value is that it runs the test at a scale, duration, and
+adversarial pressure that no controlled laboratory environment will
+achieve — and with real stakes, which changes the agent population in
+ways that matter for the result.
+
+**The through-line.** Levin's equifinality criterion identifies the
+biological instance of the demarcation resolution. Hypothesis 2 generalizes
+it to any agent system. Hypothesis 3 tests the specific variable
+identification error that the resolution implies. ILC is simultaneously
+an alternative implementation of the resolution (the committed external
+record as the measure), a live test bed for Hypothesis 3 at scale, and
+an existence proof that the demarcation condition can be satisfied in a
+deployed protocol rather than only in a laboratory. The three levels
+reinforce rather than duplicate each other: lab for isolation, ILC for
+scale and adversarial pressure, Levin's biology for the existence proof
+that the organizational external record is the substrate intelligence
+navigates against.
 
 ---
 
