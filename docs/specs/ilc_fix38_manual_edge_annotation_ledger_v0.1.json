@@ -61718,6 +61718,354 @@
       ],
       "recommended_graph_action": "graph_delta=planning_status_corrected:gap_decay_bridge_01_complete",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Validator-compatible prompt wrapper for GAP-DEPLOY-01 operator deployment packaging.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577e_g10_gap_deploy_operator_packaging.md"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Combined local operator image definition for Python ilc_core plus selected Rust ilc_consensus binaries; no private keys or generated outputs copied.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:Dockerfile",
+      "repo_path": "Dockerfile"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Docker build-context hygiene excluding local secrets, ignored runtime state, generated outputs, and Rust/Python build artifacts.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "review_status": "candidate",
+          "target": "nonclaim:no_keys_in_docker_context_phase_1577e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_keys_in_docker_context_phase_1577e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:.dockerignore",
+      "repo_path": ".dockerignore"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Three-service internal Docker Compose local topology using static bootstrap environment and no host port exposure.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docker-compose.yml",
+      "repo_path": "docker-compose.yml"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Operator guide covering key provisioning boundary, static peer setup, first-run checklist, monitoring, startup logs, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/OPERATOR_GUIDE.md",
+      "repo_path": "docs/OPERATOR_GUIDE.md"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Monitoring dashboard import note for local operator Grafana/Prometheus metadata.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:monitoring/dashboards/README.md",
+      "repo_path": "monitoring/dashboards/README.md"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Grafana-compatible local ILC node dashboard metadata for static/dynamic peer counts, settlement latency, ECU event rate, and decay-event counters.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:monitoring/dashboards/ilc_node_dashboard.json",
+      "repo_path": "monitoring/dashboards/ilc_node_dashboard.json"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Packaging hygiene tests for Dockerfile, dockerignore, compose topology, operator guide, dashboard JSON, and STATUS tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "Dockerfile"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "docker-compose.yml"
+        },
+        {
+          "edge_type": "TESTS",
+          "review_status": "candidate",
+          "target": "docs/OPERATOR_GUIDE.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "Dockerfile"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docker-compose.yml"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/OPERATOR_GUIDE.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:test_file",
+      "repo_path": "tests/test_gap_deploy_01_deployment_packaging.py"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Phase walkthrough recording discovery, artifacts, verification, non-claims, and Docker-capable-host carry-forward.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01_complete_phase_1577e"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gap_deploy_01_complete_phase_1577e"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:phase_walkthrough",
+      "repo_path": "docs/phases/phase_1577e_gap_deploy_operator_packaging_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_219_phase_1577e_gap_deploy_operator_packaging",
+      "chronology_note": "2026-07-23 - phase 1577e / GAP-DEPLOY-01: local operator deployment packaging",
+      "manual_read_summary": "Forward plan updated to mark GAP-DEPLOY-01 complete with Docker runtime validation carry-forward.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "review_status": "candidate",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "review_status": "candidate",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:gap_deploy_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=planning_status_corrected:gap_deploy_01_complete",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "boundary": {
