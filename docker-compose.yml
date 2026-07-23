@@ -1,0 +1,65 @@
+services:
+  ilc-bootstrap-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ilc-local-operator:dev
+    container_name: ilc-bootstrap-1
+    environment:
+      ILC_NODE_MODE: bootstrap
+      ILC_DATA_DIR: /var/lib/ilc
+      ILC_BOOTSTRAP_SEED_PEER: ""
+      ILC_BOOTSTRAP_BUNDLE_CID: ""
+    volumes:
+      - ilc-bootstrap-1-data:/var/lib/ilc
+    networks:
+      - ilc-local
+    restart: unless-stopped
+
+  ilc-observer-2:
+    image: ilc-local-operator:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ilc-observer-2
+    environment:
+      ILC_NODE_MODE: observer
+      ILC_DATA_DIR: /var/lib/ilc
+      ILC_BOOTSTRAP_SEED_PEER: ilc-bootstrap-1
+      ILC_BOOTSTRAP_BUNDLE_CID: local-testnet-bootstrap
+    volumes:
+      - ilc-observer-2-data:/var/lib/ilc
+    depends_on:
+      - ilc-bootstrap-1
+    networks:
+      - ilc-local
+    restart: unless-stopped
+
+  ilc-observer-3:
+    image: ilc-local-operator:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ilc-observer-3
+    environment:
+      ILC_NODE_MODE: observer
+      ILC_DATA_DIR: /var/lib/ilc
+      ILC_BOOTSTRAP_SEED_PEER: ilc-bootstrap-1
+      ILC_BOOTSTRAP_BUNDLE_CID: local-testnet-bootstrap
+    volumes:
+      - ilc-observer-3-data:/var/lib/ilc
+    depends_on:
+      - ilc-bootstrap-1
+    networks:
+      - ilc-local
+    restart: unless-stopped
+
+networks:
+  ilc-local:
+    driver: bridge
+    internal: true
+
+volumes:
+  ilc-bootstrap-1-data:
+  ilc-observer-2-data:
+  ilc-observer-3-data:
