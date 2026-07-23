@@ -60598,15 +60598,8 @@
     },
     {
       "annotation_batch": "manual_batch_216_phase_1575h_private_economic_soak",
-      "repo_path": "tools/testbed/phase1575h_economic_soak_run.py",
       "chronology_note": "2026-07-22 - Phase 1575h-soak private economic soak runner and Rust wire fix",
       "manual_read_summary": "The soak runner orchestrates deterministic synthetic PROVENANCE balance snapshots, economic settlement root computation, Layer2EpochSnapshotV2 state-root derivation, live checkpoint sends, historical committed-prefix verification, and final certificate generation. Rust AggSig serialization was fixed to compressed 96-byte BLS form and covered by an EpochCheckpointMsg bincode round-trip test.",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "TESTS",
-        "EVIDENCES",
-        "NEGATIVE_ASSERTS"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "ATTESTATION",
@@ -60641,19 +60634,19 @@
           "target": "nonclaim:no_public_mirror_push_phase_1575h_soak"
         }
       ],
-      "recommended_graph_action": "graph_delta=runtime_support:tools/testbed/phase1575h_economic_soak_run.py;graph_delta=rust_wire_fix:ilc_consensus/src/types.rs;graph_delta=rust_diagnostic:ilc_consensus/src/network.rs"
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=runtime_support:tools/testbed/phase1575h_economic_soak_run.py;graph_delta=rust_wire_fix:ilc_consensus/src/types.rs;graph_delta=rust_diagnostic:ilc_consensus/src/network.rs",
+      "repo_path": "tools/testbed/phase1575h_economic_soak_run.py"
     },
     {
       "annotation_batch": "manual_batch_216_phase_1575h_private_economic_soak",
-      "repo_path": "docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md",
       "chronology_note": "2026-07-22 - Phase 1575h-soak completion walkthrough, status, and retained private evidence",
       "manual_read_summary": "Walkthrough records the sensitive GO phrase, preconditions, scope exclusions, live 20-epoch private soak outcome, final roots, evidence hashes, verification commands, completion tokens, and non-claims. Evidence remains under out/block6_economic_soak_1575h and records 20 epoch evidence files plus 19 live send receipts.",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "EVIDENCES",
-        "ATTESTATION",
-        "NEGATIVE_ASSERTS"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "ATTESTATION",
@@ -60688,7 +60681,840 @@
           "target": "nonclaim:no_post_soak_reset_phase_1575h_soak"
         }
       ],
-      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=walkthrough_added:docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/"
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=status_updated:docs/phases/STATUS.md;graph_delta=walkthrough_added:docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md;graph_delta=evidence_local_ignored:out/block6_economic_soak_1575h/",
+      "repo_path": "docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the 1575h-Fix4 split testbed TLS gRPC readiness and human-gated epoch-0 reset sequence.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575h_fix4_g10_testbed_grpc_tls_and_epoch0_reset.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the completed 1575p Genesis tranche realization-controller closure.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575p_g10_genesis_tranche_controller_closure.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575p_g10_genesis_tranche_controller_closure.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE 1575q CDL-048 production conversion instrument specification, including Genesis wallet and sweeper guard questions; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575q_g10_cdl048_production_conversion_spec.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575q_g10_cdl048_production_conversion_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE 1575r CDL-048 production conversion rehearsal; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575r_g10_cdl048_production_conversion_rehearsal.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_g10_cdl048_production_conversion_rehearsal.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE 1575s Genesis ILC minting authorization gate; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575s_g10_genesis_ilc_minting_authorization.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575s_g10_genesis_ilc_minting_authorization.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE 1575t end-to-end production economic soak; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575t_g10_end_to_end_production_economic_soak.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_g10_end_to_end_production_economic_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the NON-SENSITIVE GAP-DEPLOY-01 operator deployment packaging lane.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_deploy_01_g10_operator_deployment_packaging.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_deploy_01_g10_operator_deployment_packaging.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE GAP-DISCOV-01 dynamic peer discovery spec and CDL-103 opening; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_discov_01_g10_dynamic_peer_discovery_spec_and_cdl_open.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_discov_01_g10_dynamic_peer_discovery_spec_and_cdl_open.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the NON-SENSITIVE GAP-DISCOV-02 dynamic peer discovery runtime implementation plan.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_discov_02_g10_dynamic_peer_discovery_runtime_implementation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_discov_02_g10_dynamic_peer_discovery_runtime_implementation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the SENSITIVE validator operational surface registration CDL opening; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the NON-SENSITIVE Werner credit pressure-signal runtime lane.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_werner_01_g10_werner_credit_pressure_signal_runtime.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_werner_01_g10_werner_credit_pressure_signal_runtime.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the NON-SENSITIVE 1576 homoiconic window sequence-lock and contract reconciliation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576_seq_lock_g10_homoiconic_window_open.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576_seq_lock_g10_homoiconic_window_open.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for the NON-SENSITIVE homoiconic test-file Atlas smoke audit.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577_test_smoke_g10_homoiconic_test_graph_coverage_audit.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577_test_smoke_g10_homoiconic_test_graph_coverage_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for type-registry content-layer and governance edge-type definition-node instances.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577a_g10_type_registry_edge_type_definition_nodes.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577a_g10_type_registry_edge_type_definition_nodes.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for type-registry protocol invariant annotation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577b_g10_type_registry_protocol_invariant_annotation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577b_g10_type_registry_protocol_invariant_annotation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for SENSITIVE type-registry runtime activation; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577c_g10_type_registry_runtime_activation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577c_g10_type_registry_runtime_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for collecting pytest functions into homoiconic function-node candidates.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1578_pytest_nodes_g10_homoiconic_function_node_candidates.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1578_pytest_nodes_g10_homoiconic_function_node_candidates.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for local registry-mode pytest sidecar scaffolding.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1579_test_sidecar_g10_homoiconic_registry_mode_sidecar.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1579_test_sidecar_g10_homoiconic_registry_mode_sidecar.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for canonical test evidence envelope rehearsal.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1580_test_envelope_g10_homoiconic_test_evidence_envelope.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1580_test_envelope_g10_homoiconic_test_evidence_envelope.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for local graph-hydrated workspace mode.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1581_workspace_g10_homoiconic_graph_hydrated_workspace.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1581_workspace_g10_homoiconic_graph_hydrated_workspace.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for graph-derived test frontier reporting.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1582_frontier_g10_homoiconic_test_frontier_report.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1582_frontier_g10_homoiconic_test_frontier_report.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for SENSITIVE multi-agent rehearsal profile planning; not executed by this catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1583_multi_agent_g10_homoiconic_multi_agent_rehearsal.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1583_multi_agent_g10_homoiconic_multi_agent_rehearsal.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for homoiconic window coherence and handoff.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1584_coherence_g10_homoiconic_window_coherence_handoff.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1584_coherence_g10_homoiconic_window_coherence_handoff.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase prompt for this NON-SENSITIVE LMDB phase-artifact registration catchup.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576_fix15_g10_lmdb_phase_artifact_registration_catchup.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576_fix15_g10_lmdb_phase_artifact_registration_catchup.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1575h-Fix4 Testbed gRPC/TLS and Epoch-0 Reset Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575h_fix4_testbed_grpc_tls_epoch0_reset_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1575h-Soak \u2014 Private Economic Soak Blocked Pre-Execution\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_soak_private_economic_soak_blocked_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575h_soak_private_economic_soak_blocked_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1575h-Soak Walkthrough: Private Economic Soak\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575h_soak_private_economic_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1575p Genesis Tranche Realization Controller Closure Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1575p_genesis_tranche_controller_closure_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575p_genesis_tranche_controller_closure_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576 Support Walkthrough \u2014 CDL-SIGMA-01 Content Review\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576_support_cdl_sigma_01_content_review_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576a CCSS Privacy SIM Hardening Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576a_ccss_privacy_sim_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576a_ccss_privacy_sim_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576b CCSS PrivacyChartManifest Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576b_ccss_privacy_chart_manifest_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576b_ccss_privacy_chart_manifest_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576c CCSS Threshold Envelope Design Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576c_ccss_threshold_envelope_design_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576c_ccss_threshold_envelope_design_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576d CCSS Threshold Diffusion SIM Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576d_ccss_threshold_diffusion_sim_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576d_ccss_threshold_diffusion_sim_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576e CCSS Trapdoor ContactGate Design Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576e_ccss_trapdoor_contact_gate_design_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576e_ccss_trapdoor_contact_gate_design_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576f CCSS HyperNova Feasibility Walkthrough\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576f_ccss_hypernova_feasibility_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Phase walkthrough artifact titled \"Phase 1576g Walkthrough: CCSS D2D Hybrid-Key Send Alignment\" recording completed or blocked phase evidence and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/phases/phase_1576g_ccss_d2d_hybrid_key_send_alignment_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576g_ccss_d2d_hybrid_key_send_alignment_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "CCSS design/spec artifact titled \"ILC CCSS Graph-Diffused Threshold Envelope Design 1576c v0.1\" registered with CCSS-SPECTRAL-01 authority-reference context.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_graph_diffused_threshold_envelope_design_1576c_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_graph_diffused_threshold_envelope_design_1576c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "CCSS design/spec artifact titled \"ILC CCSS HyperNova/Folding Feasibility Memo 1576f v0.1\" registered with CCSS-SPECTRAL-01 authority-reference context.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_hypernova_folding_feasibility_memo_1576f_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_hypernova_folding_feasibility_memo_1576f_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "CCSS design/spec artifact titled \"ILC CCSS Multi-Trapdoor and ContactGate Integration 1576e v0.1\" registered with CCSS-SPECTRAL-01 authority-reference context.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_multi_trapdoor_and_contact_gate_integration_1576e_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_multi_trapdoor_and_contact_gate_integration_1576e_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "CCSS design/spec artifact titled \"ILC CCSS PrivacyChartManifest and Productive Cover Design 1576b v0.1\" registered with CCSS-SPECTRAL-01 authority-reference context.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "spec:ilc_ccss_spectral_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/specs/ilc_ccss_privacy_chart_manifest_and_productive_cover_design_1576b_v0.1.md",
+      "repo_path": "docs/specs/ilc_ccss_privacy_chart_manifest_and_productive_cover_design_1576b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Test artifact `tests/test_ccss_send_hybrid_key.py` covering the phase/runtime behavior indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_ccss_send_hybrid_key.py",
+      "repo_path": "tests/test_ccss_send_hybrid_key.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Test artifact `tests/test_phase_1575h_fix4_grpc_tls_probe.py` covering the phase/runtime behavior indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575h_fix4_grpc_tls_probe.py",
+      "repo_path": "tests/test_phase_1575h_fix4_grpc_tls_probe.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Test artifact `tests/test_phase_1575p_genesis_tranche_controller_closure.py` covering the phase/runtime behavior indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tests/test_phase_1575p_genesis_tranche_controller_closure.py",
+      "repo_path": "tests/test_phase_1575p_genesis_tranche_controller_closure.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Tool artifact `tools/sim_ccss_threshold_diffusion.py` supporting the phase/testbed workflow indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/sim_ccss_threshold_diffusion.py",
+      "repo_path": "tools/sim_ccss_threshold_diffusion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Tool artifact `tools/testbed/phase1575h_economic_soak_run.py` supporting the phase/testbed workflow indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/testbed/phase1575h_economic_soak_run.py",
+      "repo_path": "tools/testbed/phase1575h_economic_soak_run.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_phase_1576_fix15_lmdb_catchup",
+      "chronology_note": "2026-07-23 - phase 1576-Fix15: LMDB catchup for 2026-07-22/23 phase artifacts",
+      "manual_read_summary": "Tool artifact `tools/testbed/phase1575h_testbed_grpc_tls_probe.py` supporting the phase/testbed workflow indicated by its module name.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1576_fix15_lmdb_catchup"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools/testbed/phase1575h_testbed_grpc_tls_probe.py",
+      "repo_path": "tools/testbed/phase1575h_testbed_grpc_tls_probe.py"
     }
   ],
   "boundary": {
