@@ -174,6 +174,8 @@ pub struct NodeRunner {
     pub outbound_pool: Arc<Mutex<HashMap<SocketAddr, Connection>>>,
     /// ADR-0039 projection-backed persistent session manager for production activation path.
     pub persistent_sessions: Option<Arc<PersistentQuicSessionManager>>,
+    /// Whether this node is running in testnet mode (bypasses timing enforcement).
+    pub is_testnet: bool,
     #[cfg(feature = "testnet_fault_sim")]
     pub censor_validator: Option<u32>,
     #[cfg(feature = "testnet_fault_sim")]
@@ -195,6 +197,7 @@ impl NodeRunner {
         balance_store: Arc<BalanceStore>,
         epoch_store: Arc<EpochStore>,
         peer_addrs: Vec<(ValidatorID, SocketAddr)>,
+        is_testnet: bool,
     ) -> Self {
         Self {
             validator_id,
@@ -209,6 +212,7 @@ impl NodeRunner {
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             outbound_pool: Arc::new(Mutex::new(HashMap::new())),
             persistent_sessions: None,
+            is_testnet,
             #[cfg(feature = "testnet_fault_sim")]
             censor_validator: std::env::var("CENSOR_VALIDATOR")
                 .ok()
@@ -770,6 +774,7 @@ impl NodeRunner {
         let record = crate::types::EpochSettlementRecord {
             epoch: tx.epoch,
             state_root: tx.state_root,
+            not_before_unix_ms: 0,
         };
         // Treat duplicate epoch records as idempotent (mirrors ConflictingTransfer handling).
         match self.epoch_store.commit_epoch_record(record) {
@@ -866,7 +871,7 @@ impl NodeRunner {
     ) -> Result<(), ILCConsensusError> {
         let vs_guard = self.fast_path.validator_set.read().unwrap();
         let protocol =
-            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone(), self.is_testnet);
         let epoch = checkpoint.record.epoch.0;
 
         match protocol.process_epoch_checkpoint(checkpoint, &*vs_guard) {
@@ -896,7 +901,7 @@ impl NodeRunner {
         records: Vec<crate::epoch_settlement::StoredCheckpoint>,
     ) -> Result<(), ILCConsensusError> {
         let protocol =
-            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone());
+            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone(), self.is_testnet);
         let vs_guard = self.fast_path.validator_set.read().unwrap();
 
         for stored in records {
@@ -1279,7 +1284,7 @@ mod tests {
     fn test_latest_epoch_sync_cursor_uses_current_epoch_sentinel() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone());
+        let protocol = EpochSettlementProtocol::new(store.clone(), true);
         let (validator_set, keys) = setup_validators();
         let signers = vec![crate::types::ValidatorID(1), crate::types::ValidatorID(2)];
 
@@ -1288,6 +1293,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                not_before_unix_ms: 0,
             };
             let checkpoint = crate::types::EpochCheckpoint {
                 sigs: generate_valid_agg_sig(&record, &keys),
@@ -1407,16 +1413,18 @@ mod tests {
     fn test_apply_missing_epoch_record_malformed_non_empty_sig_rejected() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone());
+        let protocol = EpochSettlementProtocol::new(store.clone(), true);
         let (vset, keys) = setup_validators();
 
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            not_before_unix_ms: 0,
         };
         let wrong_record = EpochSettlementRecord {
             epoch: EpochSeq(99),
             state_root: CIDv1Root::new([99u8; 36]),
+            not_before_unix_ms: 0,
         };
         let wrong_sig_bytes = generate_valid_agg_sig(&wrong_record, &keys)
             .0
@@ -1441,13 +1449,14 @@ mod tests {
     fn test_apply_missing_epoch_record_empty_sig_rejected_without_testnet_feature() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone());
+        let protocol = EpochSettlementProtocol::new(store.clone(), true);
         let (vset, _keys) = setup_validators();
 
         let stored = StoredCheckpoint {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                not_before_unix_ms: 0,
             },
             agg_sig_bytes: vec![],
             signers: vec![],
@@ -1463,13 +1472,14 @@ mod tests {
     fn test_apply_missing_epoch_record_empty_sig_falls_back_in_testnet_build() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone());
+        let protocol = EpochSettlementProtocol::new(store.clone(), true);
         let (vset, _keys) = setup_validators();
 
         let stored = StoredCheckpoint {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                not_before_unix_ms: 0,
             },
             agg_sig_bytes: vec![],
             signers: vec![],
@@ -1492,13 +1502,14 @@ mod tests {
     fn test_apply_missing_epoch_records_multi_record_with_idempotency() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone());
+        let protocol = EpochSettlementProtocol::new(store.clone(), true);
         let (vset, _keys) = setup_validators();
 
         // Pre-commit epoch 1 via testnet path (empty sig).
         let record_e1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            not_before_unix_ms: 0,
         };
         store.commit_epoch_record(record_e1.clone()).unwrap();
         assert!(
@@ -1518,6 +1529,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(2),
                 state_root: CIDv1Root::new([2u8; 36]),
+                not_before_unix_ms: 0,
             },
             agg_sig_bytes: vec![],
             signers: vec![],

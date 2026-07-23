@@ -441,6 +441,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([7u8; 36]),
+            not_before_unix_ms: 0,
         };
         let msg_bytes = bincode::serialize(&record).unwrap();
         let sk_1 = blst::min_pk::SecretKey::key_gen(&[1u8; 32], &[]).unwrap();

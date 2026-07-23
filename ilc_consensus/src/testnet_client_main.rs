@@ -588,6 +588,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
                     state_root,
+                    not_before_unix_ms: 0,
                 };
 
                 let msg_bytes = bincode::serialize(&record).unwrap();

@@ -21,6 +21,9 @@ pub fn quorum_threshold(n: usize) -> usize {
     2 * (n.saturating_sub(1) / 3) + 1
 }
 
+/// Minimum stake required for validator admission (1,000 ECU = 1,000,000,000 micro-ECU).
+pub const MIN_STAKE_MICRO_ECU: u64 = 1_000_000_000;
+
 impl ValidatorSet {
     fn rebuild_with(
         validators: Vec<(ValidatorID, ValidatorKey)>,
@@ -75,7 +78,14 @@ impl ValidatorSet {
         &mut self,
         id: ValidatorID,
         key: ValidatorKey,
+        stake_micro_ecu: u64,
     ) -> Result<(), ILCConsensusError> {
+        if stake_micro_ecu < MIN_STAKE_MICRO_ECU {
+            return Err(ILCConsensusError::Other(format!(
+                "insufficient stake: {} micro-ECU provided, minimum is {}",
+                stake_micro_ecu, MIN_STAKE_MICRO_ECU
+            )));
+        }
         if self.validators.contains_key(&id) {
             return Err(ILCConsensusError::Other(format!(
                 "validator {} already present",
@@ -314,7 +324,7 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        set.admit_validator(ValidatorID(4), key).unwrap();
+        set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU).unwrap();
 
         assert_eq!(set.validators.len(), 4);
         assert_eq!(set.f, 1);
@@ -326,7 +336,7 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        let err = set.admit_validator(ValidatorID(1), key).unwrap_err();
+        let err = set.admit_validator(ValidatorID(1), key, MIN_STAKE_MICRO_ECU).unwrap_err();
         assert_eq!(
             err,
             ILCConsensusError::Other("validator 1 already present".to_string())
@@ -339,11 +349,23 @@ mod tests {
         let duplicate_key = set.validators.values().next().unwrap().clone();
 
         let err = set
-            .admit_validator(ValidatorID(4), duplicate_key)
+            .admit_validator(ValidatorID(4), duplicate_key, MIN_STAKE_MICRO_ECU)
             .unwrap_err();
         assert_eq!(
             err,
             ILCConsensusError::Other("validator key already present".to_string())
+        );
+    }
+
+    #[test]
+    fn test_admit_validator_rejects_insufficient_stake() {
+        let mut set = make_validator_set(3);
+        let (_, key) = generate_validator_key().unwrap();
+
+        let err = set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU - 1).unwrap_err();
+        assert!(
+            format!("{:?}", err).contains("insufficient stake"),
+            "stake below minimum must be rejected, got: {:?}", err
         );
     }
 

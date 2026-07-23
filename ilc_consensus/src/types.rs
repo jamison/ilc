@@ -264,6 +264,11 @@ impl CIDv1Root {
 pub struct EpochSettlementRecord {
     pub epoch: EpochSeq,
     pub state_root: CIDv1Root,
+    /// Wall-clock lower bound (milliseconds since Unix epoch) after which this
+    /// epoch is valid. Included in the BLS-signed message — prevents timestamp
+    /// forgery by a colluding validator quorum.
+    /// Set to 0 in testnet mode (timing enforcement bypassed when is_testnet=true).
+    pub not_before_unix_ms: u64,
 }
 
 /// EpochSettlementTx represents the payload submitted natively by the Epistemic Engine bridging Phase 14 CID components into the shared-object protocol.
