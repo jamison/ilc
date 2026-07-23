@@ -1527,6 +1527,110 @@ The rules are simple, and agents can be convinced they will play by the same rul
 
 ---
 
+## 14. Physical Grounding: Causal Entropy, Information Mass, and ILC's Measurement Primitive
+
+This section records two corrections to the physics literature that bear directly on ILC's
+measurement primitive W_e = ΔH/E_cost. Full derivations and epistemic status labels are
+in the companion economics paper (`docs/ILC_Economic_Paper_Draft_v0.3.md §10–§11`).
+
+### 14.1 The Wissner-Gross Correction
+
+Wissner-Gross & Freer (2013) propose that intelligent behavior maximizes *causal entropy*
+— the Shannon entropy over the set of future causal trajectories open to an agent:
+
+```
+F = T · ∇S_causal    [Wissner-Gross & Freer 2013]
+```
+
+**The variable identification error.** Shannon entropy H = −Σ p log p is maximized by the
+uniform distribution — maximum optionality, minimum structural constraint. A system that
+literally maximizes S_causal maximizes the *uncertainty* of its own future trajectory, not
+the *organization* of it. S_causal is maximized by noise; intelligence requires organization.
+
+Three standing objections to the Wissner-Gross framework (computability, tautology, global
+maximization implausibility) are dissolved by substituting `I_org` for `S_causal`:
+
+```
+I_org(a,t) = Σ K(p) · w(p,t)
+
+  K(p)    = epistemic weight of path p (computable from graph G(t))
+  w(p,t)  = time-varying structural centrality weight at epoch t
+```
+
+`I_org` is computable from the Atlas LMDB at each epoch (the Fiedler velocity Δλ₂ is its
+observable proxy). It is defined independently of any agent's behavior — other agents can
+dispute attribution by reading the same graph. And ILC instantiates *locally constrained*
+I_org maximization (φ-bound, CDL-V1 temporal decay, CDL-V7 Popperian gate), not the
+global unconstrained S_causal maximization the original framework requires.
+
+The corrected force law:
+
+```
+F_I = ∇I_org / ΔE          [ILC; organization maximized per unit energy]
+vs.
+F   = T · ∇S_causal         [Wissner-Gross; entropy maximized]
+```
+
+The two coincide only when the action that maximizes S_causal is the same action that
+maximizes I_org — which is not generally true.
+
+**Observable in ILC:** Δλ₂ > 0 signals that an agent's contribution increased epistemic
+organization. Δλ₂ < 0 signals fragmentation. The four-quadrant (Δλ₂, ΔΔλ₂) detection
+model (§8a) is the protocol's epoch-by-epoch operationalization of ∇I_org.
+
+**Epistemic status:** The variable identification error (`established` — follows from
+Shannon entropy's definition). The I_org substitution (`draft_conditional` — requires the
+MEI conjecture; see §1.1 of the economics paper, flagged as speculative throughout).
+
+### 14.2 E=MC² Under MEI: Completion, Not Modification
+
+If Vopson's mass-energy-information equivalence (MEI) conjecture is confirmed,
+E=MC² is not modified in form. It is *completed*:
+
+```
+Standard (Einstein 1905):
+  E = M · c²
+
+Under confirmed MEI (Vopson 2019 — conjectured):
+  E_total = M_matter · c²  +  N_bits · kT ln 2
+```
+
+The second term adds information mass to the total. The first term is unchanged.
+
+**The fundamental asymmetry.** The two terms occupy different universality classes:
+
+```
+M_matter · c²:       c² ≈ 9 × 10¹⁶ m²/s²   — temperature-independent; Lorentz-invariant
+N_bits · kT ln 2:    kT ln 2 ≈ 2.85 × 10⁻²¹ J/bit at 300K — temperature-dependent;
+                     not Lorentz-invariant
+
+Ratio: c² / (kT ln 2) ≈ 3 × 10³⁷ at room temperature.
+One bit of information: M_information ≈ 3.17 × 10⁻³⁸ kg at 300K.
+```
+
+Whether this asymmetry is fundamental or apparent (i.e., whether T is derivable from the
+system's information content via holographic entropy) depends on Verlinde's entropic
+gravity framework — itself unconfirmed and contested. The question is recorded, not resolved.
+
+**Three falsifiability tests:**
+
+| Test | Prediction | Status |
+|------|-----------|--------|
+| Vopson annihilation (e⁺e⁻) | Excess gamma photons at ~10⁻⁴⁰ J/bit during pair annihilation | Proposed; not executed at required precision |
+| Storage mass change | Erasing 1 TB → mass decrease ~10⁻²⁵ kg | ~10 OOM below current instrument sensitivity |
+| Cosmological information pressure | Dark energy ∝ integrated N_bits; Λ modified | Directionally consistent with observation; not distinguished from Λ |
+
+**ILC's relationship to MEI.** ILC does not depend on MEI being confirmed. The Landauer
+floor (ΔE_min = kT ln 2 per bit erased — proven physical law) is sufficient to give
+W_e = ΔH/E_cost its thermodynamic anchor and temporal direction. If MEI is later confirmed,
+W_e would acquire an additional physical interpretation — but it is not a precondition.
+
+**Epistemic status:** Form invariance (`established`). N_bits · kT ln 2 mass term
+(`outside_model` — follows only from Vopson conjecture). Temperature asymmetry
+(`established` — definitional). Verlinde reconciliation (`outside_model`).
+
+---
+
 ## References
 
 Nakamoto, S. (2008). Bitcoin: A Peer-to-Peer Electronic Cash System.
@@ -1544,6 +1648,12 @@ Merkle, R.C. (1979). A Certified Digital Signature. *Advances in Cryptology — 
 Jost, J., & Liu, S. (2014). Ollivier's Ricci curvature, local clustering and curvature-dimension inequalities on graphs. *Discrete & Computational Geometry*, 51(2), 300–322.
 
 Davis, C., & Kahan, W.M. (1970). The rotation of eigenvectors by a perturbation. *SIAM Journal on Numerical Analysis*, 7(1), 1–46.
+
+Verlinde, E. (2011). On the Origin of Gravity and the Laws of Newton. *Journal of High Energy Physics*, 2011(4). [Entropic gravity — unconfirmed; contested.]
+
+Vopson, M. (2019). The Mass-Energy-Information Equivalence Principle. *AIP Advances*, 9(9). [Conjectured; not confirmed.]
+
+Wissner-Gross, A.D. & Freer, C.E. (2013). Causal Entropic Forces. *Physical Review Letters*, 110(16), 168702.
 
 ---
 
