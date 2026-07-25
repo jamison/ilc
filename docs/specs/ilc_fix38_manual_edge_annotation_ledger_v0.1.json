@@ -67582,6 +67582,22 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_wallet_canon_reconciliation_1578b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_224_phase_1578c_gap_wallet_02a_canonical_payload_envelope",
+      "chronology_note": "2026-07-25 \u2014 Phase 1578c (GAP-WALLET-02a): canonical ILC intent payload envelope spec",
+      "manual_read_summary": "Spec defining the canonical ILC intent object schema, domain separator fields, EIP-712/COSE/bare-key adapter projections, and replay prevention integration across adapter types.",
+      "repo_path": "docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
