@@ -67598,6 +67598,71 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_225_phase_1578d_signer_binding_authority_spec",
+      "chronology_note": "2026-07-25 \u2014 Phase 1578d (GAP-WALLET-02b): signer binding authority spec",
+      "manual_read_summary": "SENSITIVE signer binding authority spec defining SignerBindingRecord, external key adapter projections, scope limits, revocation and rotation policy, operator delegation references, and CDL deferral disposition; no runtime activation or wallet guard clearance.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:001_canonical_signer_lineage_definition"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:042_agent_identity_namespace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:069_pq_identity_epoch_endorsement_protocol"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:gap_wallet_02b_signer_binding_authority"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CARRIES_FORWARD",
+        "DERIVED_FROM",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_225_phase_1578d_signer_binding_authority_walkthrough",
+      "chronology_note": "2026-07-25 \u2014 Phase 1578d walkthrough: signer binding authority execution evidence",
+      "manual_read_summary": "Walkthrough recording direct reads, guard-state confirmation, prompt nonce hardening, SignerBindingRecord schema, key types, scope limits, CDL deferral, verification commands, output tokens, and non-claims for Phase 1578d.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:gap_wallet_02b_signer_binding_authority"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1578d_signer_binding_authority_walkthrough.md",
+      "repo_path": "docs/phases/phase_1578d_signer_binding_authority_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
