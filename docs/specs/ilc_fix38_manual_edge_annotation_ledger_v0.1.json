@@ -67521,6 +67521,35 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__gap_validator_ident_01_g10_validator_operational_surface_cdl_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_221_phase_wallet_lane_forward_plan",
+      "chronology_note": "2026-07-24 \u2014 GAP-WALLET planning session: wallet lane forward plan recording all human-approved wallet architecture decisions for pre-RC and post-RC phases",
+      "manual_read_summary": "Ratified planning document for the ILC wallet lane recording six canonical architecture decisions (ILC-native first, operator delegation, visibility-only RC default, Option C2, replay prevention, canonical signing envelope) and the full GAP-WALLET-00 through GAP-WALLET-09 phase specification.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:048_ecu_to_ilc_conversion"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "adr:0028_wallet_agnostic_signing"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
+      "repo_path": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
