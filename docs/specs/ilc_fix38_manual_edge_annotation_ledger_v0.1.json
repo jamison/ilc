@@ -67747,6 +67747,95 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1581_gap_value_ecu_00_ecu_ilc_semantic_boundary_walkthrough.md",
       "repo_path": "docs/phases/phase_1581_gap_value_ecu_00_ecu_ilc_semantic_boundary_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_227_phase_1578e_operator_delegation_preflight_spec",
+      "chronology_note": "2026-07-26 - Phase 1578e (GAP-WALLET-02c): operator delegation runtime preflight spec",
+      "manual_read_summary": "Preflight spec recording the on-graph operator delegation service-account design target, current absence of OperatorDelegationRecord runtime, activation blockers, and future CDL gap.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-042",
+          "review_status": "candidate_cdl_042_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-069",
+          "review_status": "candidate_cdl_069_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-101",
+          "review_status": "candidate_cdl_101_trace"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0026",
+          "review_status": "candidate_adr_0026_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "phase:GAP-WALLET-02c"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:SignatureSchemeRegistry_or_OperatorDelegationRecord_activation_CDL"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SPECIFIES",
+        "DERIVED_FROM",
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_operator_delegation_runtime_preflight_1578e_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_227_phase_1578e_operator_delegation_preflight_walkthrough",
+      "chronology_note": "2026-07-26 - Phase 1578e walkthrough: operator delegation runtime preflight execution evidence",
+      "manual_read_summary": "Walkthrough recording direct reads, MemPalace and repo search evidence, source correction from eight to ten mandatory delegation properties, preconditions, blockers, CDL gap assessment, verification, tokens, and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:operator_delegation_preflight_committed_phase_1578e"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:SignatureSchemeRegistry_or_OperatorDelegationRecord_activation_CDL"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1578e_operator_delegation_preflight_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
