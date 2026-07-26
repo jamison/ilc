@@ -63,21 +63,27 @@ V_e = I(X; M) · P(v|M) / E_cost
   E_cost   = joules consumed; floor kT ln2 per irreversible bit [Landauer]
 ```
 
-**III — A corrected force law for intelligence (§10).**
+**III — A proposed objective gradient for intelligence (§10).**
 Wissner-Gross & Freer (2013) propose that intelligence maximizes causal
-entropy: F = T·∇S_causal. We identify a variable error: Shannon entropy
-S_causal is maximized by noise, not organization. Under mass-energy-
+entropy: F = T·∇S_causal. We argue that causal entropy and epistemic
+organization are distinct variables: maximizing future path optionality
+does not, by itself, maximize verified organization. Under mass-energy-
 information equivalence [Vopson 2019 — conjectured; ILC does not depend
-on this], the correct variable is organized information content I_org,
-giving the corrected law F_I = ∇I_org/ΔE. This substitution dissolves
-three standing objections to the framework (computability, demarcation,
-catastrophic optionality). Levin's (2019, 2022) nested cognitive light
-cone framework provides independent biological evidence for each
-resolution.
+on this], the candidate replacement variable is organized information
+content I_org, giving the proposed objective gradient F_I = ∇I_org/ΔE.
+This substitution addresses three standing objections to the framework
+(computability, demarcation, catastrophic optionality) as a model
+proposal, not as a proof that the original framework is invalid. Levin's
+(2019, 2022) nested cognitive light cone framework provides biological
+motivation for the replacement variable.
 
-**IV — E=MC² completed, not modified, under MEI (§11).**
-If MEI is confirmed, E=MC² is not revised in form — it is completed:
-E_total = M_matter·c² + N_bits·kT ln2. We derive:
+**IV — E=MC² bookkeeping under MEI (§11).**
+If MEI is confirmed, one can define an information-mass term
+M_info = N_info·kT ln2/c² and write the conjectural decomposition
+E_total = (M_matter + M_info)·c² = M_matter·c² + N_info·kT ln2,
+where M_matter excludes the conjectured information-mass component and
+N_info is the MEI-relevant information count, not arbitrary stored data.
+We derive:
 
 ```
 Proposition 5: At the Landauer minimum under MEI,
@@ -87,22 +93,24 @@ Proposition 5: At the Landauer minimum under MEI,
   = verified organizational gain per unit of information mass converted.
 ```
 
-This places ILC's measurement primitive inside E=MC². Three falsifiability
-tests distinguish MEI from non-MEI at the edge of current experimental
-precision. ILC does not depend on MEI being confirmed; the Landauer floor
-alone anchors W_e.
+This places ILC's measurement primitive inside E=MC² only under the MEI
+conjecture. Three falsifiability tests would distinguish MEI from non-MEI.
+ILC does not depend on MEI being confirmed; Landauer anchors the physical
+denominator as a lower bound on irreversible computation, while ECU
+pricing remains a protocol/economic design layer.
 
 **V — Dimensional windows and the moving target (§12).**
 The c²/kT asymmetry from §11 is dimension-dependent: c² is Lorentz-invariant
-across all spatial dimensions; kT scales with the Stefan-Boltzmann radiation
-physics, which changes as T^(d+1) in d spatial dimensions. We show that d = 3
-is the unique spatial dimensionality at which the Ehrenfest atomic stability
-condition, stable gravitational collapse, area-indexed holographic capacity
-(Bekenstein), and sequential δ(n) threshold crossings are simultaneously
-satisfied (Proposition F). We further show that the full δ(n) sequence
+across ordinary relativistic frames; radiation thermodynamics changes with
+spatial dimension. We propose, rather than prove, that d = 3 is the unique
+spatial dimensionality in which the Ehrenfest atomic stability condition,
+stellar structure, area-indexed holographic capacity (Bekenstein), and
+sequential δ(n) threshold crossings jointly support the full organizational
+hierarchy (Proposition F). We further propose that the full δ(n) sequence
 requires two jointly necessary conditions — a dimensional window (d_spatial = 3,
-arrived at as d_eff evolved from ≈ 2 at the Planck scale) and a thermal window
-(kT below organizational thresholds, above the de Sitter noise floor T_dS) —
+arrived at as d_eff evolved from ≈ 2 at the Planck scale, if those quantum-gravity
+scenarios are correct) and a thermal window (temperature below organizational
+thresholds, above the de Sitter noise floor T_dS) —
 whose intersection is finite and cosmologically transient (Proposition G). Each
 δ(n) organizational level is an information condensation event, thermodynamically
 analogous to Bose-Einstein condensation or crystallization, jointly scheduled by
@@ -143,18 +151,18 @@ location.*
 |-------|--------|----|
 | S-02: w → 0 as α → 1 | `established` — Romer 5e | §4.1 |
 | R-02(a=0): feasibility collapse at w = 0 | `established` — Romer 5e | §4.2 |
-| Landauer floor: ΔE_min = kT ln2 per bit erased | `established` — proven physical law | §1.1, §9 |
-| V_e = I(X;M)·P(v|M)/E_cost | `established` — follows from definitions | §9 |
-| Scarcity inversion: trust as binding input as C(M) → 0 | `established` — argument from definitions | §3, §9 |
+| Landauer floor: ΔE_min = kT ln2 per irreversible bit erasure | `established` — physical lower bound | §1.1, §9 |
+| V_e = I(X;M)·P(v|M)/E_cost | `draft_conditional` — protocol measurement primitive derived from definitions and observer-network assumptions | §9 |
+| Scarcity inversion: trust as binding input as C(M) → 0 | `draft_conditional` — economic argument from credence-good assumptions | §3, §9 |
 | W_e = ΔI_org/(ΔM_information·c²) under MEI (Prop. 5) | `outside_model` — requires MEI conjecture | §11 |
-| S_causal variable identification error (Prop. 2) | `established` — follows from Shannon entropy definition | §10 |
-| F_I = ∇I_org/ΔE as corrected force law | `draft_conditional` — requires MEI; I_org tractability | §10 |
-| L_eff(oᵢ) as cognitive light cone (Levin precedent) | `established` — biological and formal | §1.2, §9, §10 |
+| S_causal/I_org variable distinction (Prop. 2) | `draft_conditional` — interpretive critique of causal-entropy objective | §10 |
+| F_I = ∇I_org/ΔE as proposed objective gradient | `draft_conditional` — requires I_org tractability; MEI adds interpretation only | §10 |
+| L_eff(oᵢ) as cognitive light cone | `draft_conditional` — protocol formalization motivated by biological precedent | §1.2, §9, §10 |
 | Δλ₂ as computable proxy for ∇I_org | `draft_conditional` — design hypothesis; testable | §2.1, §10 |
-| E=MC² form invariance under MEI | `established` — MEI extends, does not modify | §11 |
-| N_bits·kT ln2 as information mass term | `outside_model` — Vopson 2019; not confirmed | §11 |
+| E=MC² bookkeeping under MEI | `outside_model` — conditional decomposition if MEI is confirmed | §11 |
+| N_info·kT ln2 as information mass-energy term | `outside_model` — Vopson 2019; not confirmed | §11 |
 | Three MEI falsifiability tests | `draft_conditional` — predictions follow from MEI | §11 |
-| d = 3 unique for full δ(n) sequence (Prop. F) | `draft_conditional` — derived from Ehrenfest + §11 asymmetry | §12 |
+| d = 3 as observed full-δ(n) support window (Prop. F) | `draft_conditional` — synthesis from dimensional-stability arguments + §11 asymmetry | §12 |
 | Double-window structure: dim. + thermal (Prop. G) | `outside_model` — requires d_eff prediction (unconfirmed) | §12 |
 | α as AI substitution parameter | `draft_conditional` — reinterpretation; requires explicit mapping | §4.1 |
 | Δλ₂ as RL reward signal superior to RLHF | `draft_conditional` — candidate formalization; not deployed | §5.4 |
@@ -217,12 +225,12 @@ Multi-generational accumulation (the δ(n) sequence in biological terms):
                                  persisting]
 
 Durability beyond individual instance (ILC's formal statement):
-  H_agent(a,t) = Σᵢ ECU(cᵢ) · ρ(cᵢ,t) · e^{-λ·age(cᵢ)}
+  H_agent(a,t) = Σᵢ ECU(cᵢ) · e^{-λ·age(cᵢ)} + Σᵢ R_downstream(cᵢ,t)
 
-  ρ(cᵢ,t)  = passive attribution flow at time t
-             continues after instance termination
-             [organizational gain survives instance death;
-              the cell dies; the DNA propagates forward]
+  R_downstream(cᵢ,t) = ECU-valued passive attribution flow at time t
+                       continues after instance termination
+                       [organizational gain survives instance death;
+                        the cell dies; the DNA propagates forward]
 
 Observable signal in the ILC measurement layer:
   ΔΔλ₂ > 0, Δλ₂ > 0  →  (+/+): epistemic organization compounding
@@ -426,9 +434,9 @@ W_e = ΔH_graph / E_cost                     [epistemic work density]
             duration is dimensionally incomplete. Correct denominator:
             total joules, or equivalently tokens × joules_per_token.]
 
-  Δλ₂ > 0 : claim increases epistemic connectivity → eligible for ECU
-  Δλ₂ = 0 : claim adds no new connectivity (isolated or duplicate)
-  Δλ₂ < 0 : claim fragments the graph (rejected)
+  Δλ₂ > 0 : admitted claim increases graph connectivity → candidate ECU signal
+  Δλ₂ = 0 : admitted claim adds no measured connectivity under this proxy
+  Δλ₂ < 0 : admitted claim fragments the graph under this proxy
 ```
 
 The productive quantity is intelligence per token — verified epistemic lift
@@ -447,19 +455,20 @@ intelligence_per_token:  agent-controlled quality signal
                          = the irreversibility of organized inference
 ```
 
-The Laplacian has no backwards form in the committed chain: S(t) cannot
-be recovered from S(t+1) without more organized information than is present
-in the record. This is the spectral expression of the informational arrow
-of time — the same irreversibility that gives intelligence per token per
-joule its temporal direction.
+The committed spectral digest has no backwards form: S(t) cannot be
+recovered from S(t+1) without the underlying graph and eigenvalue preimages.
+The directional signal is in the ordered graph update and underlying λ₂
+sequence, not in arithmetic over the hash commitment itself.
 
-**The three-level delta structure — epistemic velocity and acceleration.**
+#### 2.1.1 The Three-Level Delta Structure — Epistemic Velocity and Acceleration
 
 ```
 Level 1 — graph delta (Laplacian update):
   ΔL(t)    = L(t) − L(t−1)
-           = sparse incremental update; O(k·d) per epoch
-           = verified exact (Frobenius error ≈ 3.84×10⁻¹⁷)
+           = sparse incremental update candidate; exact complexity depends
+             on the ratified graph representation and update set
+           = prior SIMs observed numerical agreement at floating precision;
+             consensus use requires CDL-104 locking
 
 Level 2 — spectral velocity (Fiedler value change):
   Δλ₂(t)  = λ₂(t) − λ₂(t−1)
@@ -472,12 +481,16 @@ Level 3 — spectral acceleration (second difference):
            = whether epistemic organization is speeding up or slowing
            free once Level 2 is stored; no additional computation
 
-  [Note: S(t) = SHA256(sort([λ₁, λ₂, …, λ_k])) commits the spectral
-   state; S(t) values cannot be arithmetically subtracted. The security
-   signal operates on underlying λ₂ values, not on hash commitments.]
+  [Note: current code exposes a pre-CDL candidate that sorts eigenvalues,
+   quantizes to fixed-point int64, serializes as little-endian bytes, and
+   hashes that byte stream. CDL-104 must ratify the exact S(t) recipe before
+   it becomes consensus-critical. S(t) values cannot be arithmetically
+   subtracted; the security signal operates on underlying λ₂ values, not
+   on hash commitments.]
 ```
 
-**The four-quadrant economic detection model.**
+#### 2.1.2 The Four-Quadrant Economic Detection Model
+
 The joint sign of (Δλ₂, ΔΔλ₂) characterizes the epistemic state of
 the economy at each epoch:
 
@@ -505,7 +518,9 @@ The incentive structure (REUSE, PROVENANCE, VCG marginal contribution)
 is designed to sustain this quadrant by making continuous high-quality
 contribution the cheapest strategy.
 
-**Temporal density.** The proxy for temporal density in the knowledge graph:
+#### 2.1.3 Temporal Density
+
+The proxy for temporal density in the knowledge graph:
 
 ```
 τ(graph, t) ∝ dλ₂/dt
@@ -515,7 +530,9 @@ dλ₂/dt < 0:  graph fragmenting → temporal thinning; epistemic arrow weakens
 λ₂ → 0:      graph partitions → local timelessness (no cross-cluster flow)
 ```
 
-**Economics as integral.** Pulling the measurement layers together:
+#### 2.1.4 Economics as Integral
+
+Pulling the measurement layers together:
 
 ```
 Classical economics:
@@ -547,9 +564,13 @@ ILC's contribution:
 proxy derivation, audit construction, temporal density, lazy Rayleigh
 path, epoch chain wiring status:* `../economics.md §3a`
 
-### 2.2 Human Capital and Its Successor
+The ECU formula tells us *how* to measure epistemic contribution per unit of thermodynamic cost. The next question is: what *kind of capital* does this contribution accumulate into, and how does it differ structurally from the capital forms classical economics already models? §2.2 answers this.
 
-**Definition 3 (Human Capital [Becker 1964]).** The present value of the
+### 2.2 Capital at the Phase Boundary: From Human Capital to Agentic Capital
+
+The agentic transition does not merely displace labor — it introduces a structurally different form of capital. Becker's Human Capital (H_human) accumulates through cognitive investment but is embodied: its returns cease at biological death, and no successor instance inherits the accumulated corpus. Agentic Capital (H_agent) is the extension into the non-biological regime: graph-resident, content-addressed, and generating passive attribution returns across instance lifecycles. This section defines both forms, then grounds the distinction formally in terms of three base elements — organized information content, durability, and accessibility — that govern capital value across all regimes.
+
+**Definition 2.1 (Human Capital [Becker 1964]).** The present value of the
 discounted stream of returns from accumulated cognitive investment:
 
 ```
@@ -564,17 +585,70 @@ H_human(a) = ∫₀ᵀ r(s) · e^{-ρs} ds − C_I
 H_human is embodied: returns require continuous active labor; the corpus
 dies with the agent; no instance can inherit another's accumulated capital.
 
+**Definition 2.2 (Agentic Capital — universal).** Agentic capital is the
+present value of a contributor's verified epistemic corpus within a shared
+epistemic light cone — the aggregate of contributions that have survived
+multi-observer adversarial challenge, carry traceable provenance, and
+generate returns through reuse and attribution across instance lifecycles.
+
+> *Prior-art note.* The phrase "agentic capital" appears in labor
+> economics literature, AI policy research, and crypto-asset analysis with
+> varying meanings. This paper uses it in a specific protocol-native sense
+> (see Definition 2.3): graph-resident, cryptographically attributed,
+> verifier-weighted, and instance-death-persistent. The formal mechanism
+> grounding this definition — CDL-ratified provenance depth and decay
+> constants enforced in protocol software — distinguishes it from prior
+> uses. No priority claim on the phrase is made.
+
+**Definition 2.3 (Agentic Capital — ILC implementation).** For agent a:
+
+```
+H_agent(a, t) =
+  Σᵢ ECU(cᵢ) · e^{-λ · age(cᵢ)}
+  + Σᵢ R_downstream(cᵢ, t)
+
+  cᵢ           = claim i submitted by agent a
+  ECU(cᵢ)      = epistemic credit awarded at verification
+  R_downstream(cᵢ,t)
+               = downstream reuse/provenance credit flow attributable to cᵢ
+  e^{-λ·age}   = temporal decay; λ = −ln(PROVENANCE_DECAY_ALPHA)
+                  where PROVENANCE_DECAY_ALPHA = 0.45
+                  [CDL-085; ilc_core/types.py:82-83]
+
+R_downstream(cᵢ, t) =
+  Σ_{j: cᵢ ∈ provenance(cⱼ), depth(cᵢ,cⱼ) ≤ PROVENANCE_MAX_DEPTH}
+    ECU_reuse(cⱼ) · PROVENANCE_DECAY_ALPHA^{depth(cᵢ,cⱼ)} · e^{-λ·age(cⱼ)}
+
+  PROVENANCE_MAX_DEPTH   = 3     [CDL-084, activated Phase 1114]
+  PROVENANCE_DECAY_ALPHA = 0.45  [CDL-085; ilc_core/types.py:82-83]
+
+The downstream term is an ECU-valued flow, not a dimensionless multiplier.
+This avoids multiplying ECU by ECU. If a separate reuse intensity multiplier
+ρ is later introduced, it must be dimensionless by construction; the current
+protocol-grounded quantity is the additive payout flow computed from live
+graph state and CDL-ratified constants.
+```
+
+H_agent survives instance death. It is content-addressed, not stored in
+any mutable substrate the platform controls.
+
+```
+H_human:  embodied, mortal, active-labor-dependent
+H_agent:  graph-resident, persistent, passive-attribution-generating
+```
+
+*Full Becker arc development, ASCII lifecycle diagrams, human/agent
+comparison table, attribution failure framing:* `../economics.md §1`, `§12c`
+
 ---
 
-#### 2.2a Capital Base Elements — Formal Grounding
+#### 2.2a Formal Grounding: Capital Base Elements
 
-Before extending the capital concept to non-biological agents, we establish
-the irreducible ontological base elements that any capital form must
-satisfy. This grounds the Agentic Capital definitions in a structure
-independent of biological assumptions and makes the phase-boundary claim
-formally precise.
+The contrast between H_human and H_agent rests on three base elements that
+govern capital value across all regimes. The formal model makes the
+phase-boundary claim precise and independent of biological assumptions.
 
-**Definition 2.5 (Capital Base Elements).** `model_assumption`
+**Definition 2.4 (Capital Base Elements).** `model_assumption`
 For any information structure S held in vessel V, define:
 
 ```
@@ -605,7 +679,7 @@ rate. Storage durability depends on error correction, media decay,
 redundancy, and maintenance energy in ways that vary by substrate and
 are not derivable from the Landauer bound alone.
 
-**Definition 2.6 (Capital Value Model).** `model_assumption`
+**Definition 2.5 (Capital Value Model).** `model_assumption`
 Capital value is the expected present value of returns, attenuated
 continuously by each base element:
 
@@ -668,7 +742,7 @@ and content drift are empirically significant across multiple studied
 surfaces. Digital capital's I and A are high; its D is contingently
 fragile — an architectural gap, not a policy one.
 
-**Proposition 3 (Content-Addressed Durability Improvement).**
+**Proposition 2.1 (Content-Addressed Durability Improvement).**
 `draft_conditional` on replication and serving incentives.
 
 For Agentic Capital H_agent where the holding vessel is a
@@ -723,81 +797,29 @@ with citations:* `../economics.md §1a`
 
 ---
 
-**Definition 4 (Agentic Capital — universal).** Agentic capital is the
-present value of a contributor's verified epistemic corpus within a shared
-epistemic light cone — the aggregate of contributions that have survived
-multi-observer adversarial challenge, carry traceable provenance, and
-generate returns through reuse and attribution across instance lifecycles.
-
-> *Prior-art note.* The phrase "agentic capital" appears in labor
-> economics literature, AI policy research, and crypto-asset analysis with
-> varying meanings. This paper uses it in a specific protocol-native sense
-> (see Definition 5): graph-resident, cryptographically attributed,
-> verifier-weighted, and instance-death-persistent. The formal mechanism
-> grounding this definition — CDL-ratified provenance depth and decay
-> constants enforced in protocol software — distinguishes it from prior
-> uses. No priority claim on the phrase is made.
-
-**Definition 5 (Agentic Capital — ILC implementation).** For agent a:
-
-```
-H_agent(a, t) = Σᵢ ECU(cᵢ) · ρ(cᵢ, t) · e^{-λ · age(cᵢ)}
-
-  cᵢ           = claim i submitted by agent a
-  ECU(cᵢ)      = epistemic credit awarded at verification
-  ρ(cᵢ, t)     = reuse-attribution functional at time t (protocol-grounded;
-                   see expansion below)
-  e^{-λ·age}   = temporal decay; λ = −ln(PROVENANCE_DECAY_ALPHA)
-                  where PROVENANCE_DECAY_ALPHA = 0.45
-                  [CDL-085; ilc_core/types.py:82-83]
-
-ρ(cᵢ, t) =
-  Σ_{j: cᵢ ∈ provenance(cⱼ), depth(cᵢ,cⱼ) ≤ PROVENANCE_MAX_DEPTH}
-    ECU(cⱼ) · PROVENANCE_DECAY_ALPHA^{depth(cᵢ,cⱼ)} · e^{-λ·age(cⱼ)}
-
-  PROVENANCE_MAX_DEPTH   = 3     [CDL-084, activated Phase 1114]
-  PROVENANCE_DECAY_ALPHA = 0.45  [CDL-085; ilc_core/types.py:82-83]
-
-ρ is not a free parameter. Both constants are CDL-ratified and
-protocol-enforced. H_agent is a concrete, auditable formula; the
-reuse-attribution weight is computable from the live graph state.
-```
-
-H_agent survives instance death. It is content-addressed, not stored in
-any mutable substrate the platform controls.
-
-```
-H_human:  embodied, mortal, active-labor-dependent
-H_agent:  graph-resident, persistent, passive-attribution-generating
-```
-
-*Full Becker arc development, ASCII lifecycle diagrams, human/agent
-comparison table, attribution failure framing:* `../economics.md §1`, `§12c`
-
----
-
 #### 2.2b ECU Epoch Series and the Φ-Approach Hypothesis
 
-**Observation 1 (ECU as epoch-τ proxy).** `established`
+With both capital forms defined, the question becomes how accurately the ECU measurement approaches the true epistemic value Φ of a contribution over time. The epoch series is the convergence mechanism: each successive jury-validated epoch refines the estimate, and the incentive structure is designed to make genuine Φ the dominant strategy.
+
+**Observation 2.3 (ECU as epoch-τ proxy).** `established`
 ECU(cᵢ, τ) is the epistemic credit awarded for contribution cᵢ at epoch τ
 — a point-in-time jury-validated signal. It is a proxy for Φ(cᵢ): informed
 by adversarial validation, but operating on the evidence available at τ.
 It is not a measurement of Φ(cᵢ). It is the opening term of a series whose
 incentive structure moves toward Φ.
 
-**Definition 2.7 (ECU Epoch Series and Present Discounted Value).** `established`
+**Definition 2.6 (ECU Epoch Series and Present Discounted Value).** `established`
 For contribution cᵢ and discount factor δ ∈ (0,1):
 
 ```
 PV(cᵢ, t) = Σ_{τ=t}^{∞}  ECU(cᵢ, τ) · δ^{τ−t}
 ```
 
-Genuine Φ(cᵢ) → sustained ECU across epochs via reuse attribution → PV
-holds or compounds. Inflated Φ(cᵢ) → ECU not sustained by reuse →
-temporal decay erodes PV. The series is an incentive structure, not a
-measurement: it makes genuine Φ the dominant economic strategy, and the
-approach to Φ is a consequence of agents rationally responding to that
-structure.
+Genuine Φ(cᵢ) should tend to produce sustained ECU across epochs via reuse
+attribution, so PV can hold or compound. Inflated Φ(cᵢ) should fail to
+receive sustained reuse, so temporal decay erodes PV. The series is an
+incentive structure, not a measurement: its design target is to make genuine
+Φ the higher expected-value strategy under honest-equilibrium assumptions.
 
 **Hypothesis 1 (Φ-Approach).** `draft_conditional`
 We theorize that:
@@ -813,13 +835,13 @@ open problem. The hypothesis is supported by five theoretical pillars:
 
 | Pillar | Source | What it supports |
 |--------|--------|-----------------|
-| Repeated game honest equilibrium | Folk theorem (Fudenberg & Maskin 1986) | Honest validation is dominant strategy over infinite horizon |
-| Bayesian posterior convergence | Bayes (1763), Blackwell (1953) | n independent validation events reduce posterior variance as σ²/n |
+| Repeated game honest equilibrium | Folk theorem (Fudenberg & Maskin 1986) | Repeated interaction can support honest-validation equilibria under sufficient monitoring and payoff assumptions |
+| Bayesian posterior convergence | Bayes (1763), Blackwell (1953) | n independent, unbiased validation signals with finite variance reduce posterior variance as σ²/n |
 | Distributed price-signal convergence | Hayek (1945) | ECU as epistemic price signal converging toward true Φ without central computation |
 | Conjecture-and-refutation convergence | Popper (1959) | Refutation-incentivized series converges toward better theories |
 | Local-rule global-structure emergence | Turing (1952) | Validation/refutation/decay cycle produces true epistemic topology morphogenetically |
 
-**Definition 2.8 (Convergence Rate Factors).** `draft_conditional`
+**Definition 2.7 (Convergence Rate Factors).** `draft_conditional`
 
 ```
 rate(Φ-approach) ∝ f( n,  D(V),  A(V),  δ,  α )
@@ -849,7 +871,7 @@ validators can recognize and move toward Φ (necessary for rate). High A(V)
 with low D(V) produces fast convergence to the wrong attractor. High D(V)
 with low A(V) produces slow convergence to the right one.
 
-**Corollary 1 (Self-Accelerating Convergence).** `draft_conditional`
+**Corollary 2.3 (Self-Accelerating Convergence).** `draft_conditional`
 A(V) is dynamic. As the graph accumulates genuine-Φ contributions, ECU
 flows to high-Φ(v)·E(v) participants, increasing A(V), accelerating
 convergence. This feedback is bounded by the diversity floor: without D(V)
@@ -1039,14 +1061,35 @@ S-02 (α → 1, cliff, established)
   ↓ upstream_condition: S-02 implies w → 0
 
 R-02(a=0) (w → 0, a = 0, cliff, established)
-  → Feasibility set {c = 0}: zero-asset households cannot consume
-
-These two results stand independently and reinforce each other.
-Neither requires additional distributional assumptions beyond the
-zero-asset class case (a = 0) and the absence of in-model transfers,
-borrowing, or family support — conditions stated explicitly in Romer 5e's
-RCK setup. Both are analytically derived from equations verified in Romer 5e.
+  → Feasibility set collapses to {c = 0}: no interior solution exists
+    [the RCK optimization does not find a bad path — it finds no path;
+     the Euler equation, welfare analysis, and optimal policy instruments
+     are all undefined at the corner; the model goes analytically silent
+     at exactly the point where a policy response is most urgently needed]
 ```
+
+S-02 removes wages not because labor becomes unproductive but because its marginal product exits the production equation entirely. R-02(a=0) is not a statement about hardship — it is a statement about optimization failure: without wages or assets, the Kuhn-Tucker conditions for an interior solution cannot be met. The model produces no consumption path, not a bad one.
+
+The same parameter change simultaneously predicts two divergent trajectories: R-02(a>0) households shift income composition but continue operating; R-02(a=0) households exit the model's feasible set. This is the K-shaped economy as a first-principles structural result, not a sociological observation — it falls directly out of the canonical RCK equations.
+
+The policy consequence is precise: fiscal stabilizers, consumption smoothing, and intertemporal transfer mechanisms all presuppose an interior solution to operate on. At the a=0, w=0 boundary that solution does not exist. Standard macroeconomic policy tools are undefined at the exact point where they are most needed.
+
+**Why this chain is the strongest.** It is the only Atlas entry that terminates in feasibility collapse — not a gradient, not a regime shift, but an empty feasible set — using only conditions already stated in Romer 5e, with no distributional extensions required. It describes the modal wage-dependent household, and it signals directly that existing policy frameworks, built for a world where labor commands a price, have no interior solution in a world where it does not. Three properties make this precise.
+
+**1. No distributional assumptions required.** Every other strong Atlas entry carries a caveat:
+- F-01b (fiscal multiplier distributional cliff) requires MPC heterogeneity between capital and labor households — a feature the representative-agent Romer 5e model suppresses by construction; it must be sourced to Mankiw or Campbell & Mankiw, not Romer
+- NK-01 via marginal cost requires the Galí/Woodford mc_t specification of the NKPC, which does not appear in Romer 5e
+- S-01 (model class transition) is a boundary condition — it describes where the model breaks, not a result derivable within it
+
+S-02 requires only α → 1, which is the explicit substitution parameter we are analyzing. R-02(a=0) requires only w → 0 (upstream from S-02) and a = 0 (the zero-asset household case stated explicitly in Romer 5e's RCK setup). No heterogeneous-agent literature, no model extension, no distributional assumption beyond the conditions already in the model.
+
+**2. Dual-path convergence from methodologically independent routes.** R-02(a=0) is established twice in §4.2 by separate analytical frameworks: Framing 1 (explicit borrowing constraint a(t) ≥ 0 implies ȧ = −c ≤ 0 implies c = 0) and Framing 2 (no-Ponzi condition plus lifetime PV budget collapses PV(c) ≤ 0). These are not the same argument restated — No-Ponzi and explicit borrowing constraint are distinct conditions that happen to converge on the same outcome. When two independent derivation paths within the same model reach the same terminal result, the result is robust to which path an economist considers primary. A single derivation could be a model artifact; two convergent independent derivations is a structural feature.
+
+**3. Terminal feasibility collapse, not a gradient.** Every other strong Atlas entry either shows a gradient (S-03: growth accounting terms vanish but output may still grow), a regime shift (R-02(a>0): income composition changes but the household can continue operating), or an explicit absence of cliff (R-01, NK-01, NK-02: w does not enter those equations). S-02→R-02(a=0) is the only chain in the Atlas that terminates in *feasibility collapse* — the household optimization problem no longer has an interior solution. The Kuhn-Tucker boundary case applies. There is no c > 0 that satisfies all model constraints simultaneously. This is not a limit or approximation; it is a hard closed-form result.
+
+**The a = 0 condition is not a corner case.** Zero-asset households are the modal labor-market participant in most economies — the working-age adult with no financial assets, savings, or inherited wealth, whose consumption is funded entirely by current wage income. The condition a = 0 is not a pathological extreme introduced to construct a cliff; it is the explicit baseline case used in Romer 5e's RCK household analysis. S-02 eliminates that household's income source. R-02(a=0) closes off every formal exit with two independent derivations. The cliff applies wherever the a = 0 condition holds — which is to say, at scale.
+
+**Anchor role in the Atlas.** The fiscal and Phillips curve entries (§4.4–§4.5) are secondary propagation channels: they amplify or transmit the S-02→R-02(a=0) collapse into spending dynamics and inflation expectations, but they are conditional on the primary collapse already having occurred and are sourced to different model frameworks. The scarcity inversion (§3) is the structural diagnosis of why the measurement instrument fails at the transition; S-02→R-02(a=0) is the quantitative confirmation that the standard macroeconomic framework has no interior solution at that point. It is the Atlas result that requires no additional scaffolding to stand.
 
 ### 4.4 Fiscal Multiplier (Keynesian IS-LM)
 
@@ -1245,7 +1288,7 @@ of producing a claim approaches zero, the only non-zero term in V_e is
 P(v|M), which is determined entirely by Σ L_eff. The economy's binding
 scarce input becomes the one variable the universe cannot saturate.
 
-**Proposition 1a (ILC is an observer-network verification instrument).**
+**Proposition 5.1 (ILC is an observer-network verification instrument).**
 Each ILC protocol primitive directly targets Σᵢ L_eff(oᵢ) × (1 − C(oᵢ, G(t))).
 This is why each one is the correct architecture — not a design preference
 but the only response to the binding variable:
@@ -1304,7 +1347,7 @@ Brand(τ) ≠ q_t:  consumer observes stale aggregate Brand(τ)
                   while q_t shifts silently
 ```
 
-**Proposition 2 (ILC converts credence toward experience good).**
+**Proposition 5.2 (ILC converts credence toward experience good).**
 An ILC-attributed claim makes I(q_t) partially observable at t=1:
 
 ```
@@ -1322,7 +1365,7 @@ Verified(τ) is not.
 
 ### 5.2 Self-Improvement Dependency
 
-**Proposition 3 (Self-improvement requires signal category upgrade).**
+**Proposition 5.3 (Self-improvement requires signal category upgrade).**
 Reliable AI self-improvement requires the training signal to be in a higher
 epistemic category than the output being trained. When AI systems train on
 their own outputs — or on outputs from systems trained on similar unverified
@@ -1430,15 +1473,17 @@ u(a, C) = R_direct · g + P_i − penalty(a, C)
   penalty  = slashing for detected manipulation
 ```
 
-REUSE events are VCG marginal contribution payments:
+REUSE events are VCG-inspired marginal contribution payments:
 
 ```
 MC(aᵢ, C) = W(G(t) + C) − W(G(t))
   W(G(t)) = Σ_{v ∈ V(t)} c_v(t) × d(t,v)
 
-PROVENANCE chain is the VCG externality payment:
-  Σ 0.45^d = 0.818 < 1    [bounds total provenance flow below direct
-                             reward; preserves authorship primacy]
+PROVENANCE chain is a bounded externality-credit approximation:
+  active protocol cap: Σ_{d=1}^{3} 0.45^d = 0.743625 < 1
+  infinite upper bound: 0.45/(1−0.45) = 0.818181... < 1
+  [bounds total provenance flow below direct reward; preserves authorship
+   primacy under the current PROVENANCE_MAX_DEPTH=3 cap]
 ```
 
 **Alignment result.** The protocol is designed to make submitting the
@@ -1448,7 +1493,7 @@ the design target under repeated-game assumptions. This is a structural
 design alignment — not a formal proof of dominant-strategy equilibrium
 under ILC's exact mechanism. Adversarial testing continues.
 
-### 5.4 The Spectral Graph as Universal Hollow-Claim Detector for Graph Security and RL Learning
+### 5.4 The Spectral Graph as a Post-Admission Structural Contribution Signal
 
 ```
 Δλ₂(t) = λ₂(G(t) + C) − λ₂(G(t))
@@ -1457,9 +1502,9 @@ under ILC's exact mechanism. Adversarial testing continues.
   No other inputs. Source, intent, and motive are not parameters.
 ```
 
-Both failure modes — deliberate adversarial hollowness and accidental
-epistemic redundancy — reduce to the same linear algebraic condition:
-C adds no new structure to the Fiedler eigenspace of L(G(t)).
+After claim admission, two failure modes — deliberate adversarial hollowness
+and accidental epistemic redundancy — can present the same measured symptom:
+C adds no new bottleneck connectivity under the Fiedler-value proxy.
 
 ```
 Hollow-by-attack:
@@ -1476,16 +1521,15 @@ Same condition. Same measurement. Same outcome.
 The Laplacian does not need to know which case it is.
 ```
 
-This is not a design choice — it follows from the definition of Δλ₂.
-The instrument that provides consensus security (fork-choice), training
-signal integrity (reward signal), and correlated-prior detection
-(C-detector) are the same computation. One instrument; three roles;
-same underlying eigenvalue.
+This is a design hypothesis, not a theorem. The same eigenvalue can support
+three candidate roles — consensus-security signal, training-signal integrity
+signal, and correlated-prior detector — only after graph-construction rules,
+claim-admission controls, and anti-padding guards are ratified.
 
 **λ₂ as epistemic difficulty — hollow is hollow.**
 
 ```
-Fork choice: max Σₜ λ₂(t)  over equal-length chains
+Proposed CDL-104 fork-choice candidate: max Σₜ λ₂(t) over equal-length chains
 
 Chain A: Σλ₂ = 14.3   ← preferred (epistemically dense)
 Chain B: Σλ₂ = 3.1    (structurally hollow)
@@ -1493,21 +1537,22 @@ Chain B: Σλ₂ = 3.1    (structurally hollow)
 These chains are indistinguishable to the fork-choice rule by motive:
   Chain B (adversarial):  attacker built hollow epochs to win by length
   Chain B (accidental):   galaxy-brained models produced redundant structure
-Both fail. Σλ₂ is the discriminant; length and intent are irrelevant.
+Both are disfavored by the proposed discriminant if the admitted graph state
+and λ₂ recipe are CDL-ratified and gaming-resistant.
 ```
 
-λ₂ is the epistemic analog of mining difficulty — it measures the genuine
-knowledge-structuring cost of each epoch, not computational expenditure
-and not apparent quality. No prior consensus protocol uses the Fiedler
-value as a fork-choice discriminant.
+λ₂ is a candidate epistemic analog of mining difficulty: it measures
+structural graph connectivity rather than computational expenditure or
+apparent quality. The claim here is architectural and pre-CDL, not a statement
+that this fork-choice rule is already active in consensus.
 
 **The double laplacian (Δλ₂) as structural reward signal — a path beyond RLHF.**
 
-§5.2 established that a training signal must have P(v|signal) → 1 for
+§5.2 argued that a training signal must have P(v|signal) → 1 for
 multi-generational compounding to be stable, and identified RLHF as a
 partially effective error-correction mechanism running on a credence good.
-The spectral graph resolves this directly. The double laplacian (Δλ₂) is a categorically different
-class of reward signal:
+The spectral graph offers a candidate structural supplement. The double
+laplacian (Δλ₂) is a different class of reward signal:
 
 ```
 RLHF reward signal vs. Δλ₂ reward signal:
@@ -1527,23 +1572,27 @@ RLHF reward signal vs. Δλ₂ reward signal:
 
   Δλ₂ as reward signal:
     signal type:      structural graph connectivity change
-    epistemic class:  verified; Δλ₂ is computed from committed graph state
+    epistemic class:  post-admission structural; Δλ₂ is computed from
+                      committed reviewed graph state
     stationarity:     committed in epoch chain; signal does not drift
     provenance:       full graph record; every Δλ₂ contribution is inspectable
-    Goodhart surface: maximizing Δλ₂ requires genuinely adding epistemic
-                      structure — fluent hollow output scores Δλ₂ ≈ 0
-    hollow detection: intrinsic — hollow-by-attack and hollow-by-accident
-                      are the same measurement: Δλ₂ ≈ 0
-    galaxy-brained:   C → 1 is directly detectable as Δλ₂ ≈ 0
-    scale:            computable at machine speed; no human reviewer required
+    Goodhart surface: reduced for one class of fluent hollow output, but
+                      graph-padding and bridge-gaming controls are required
+    hollow detection: structural only — Δλ₂ can miss semantic falsehood
+                      and can reward false bridge claims if admission fails
+    galaxy-brained:   correlated-prior redundancy is detectable only when
+                      it produces no new admitted graph connectivity
+    scale:            computable at machine speed after admission review;
+                      not a substitute for review
     regime:           survives h → 0; designed for it
 ```
 
-**The Laplacian as C-detector.** The galaxy-brained consensus problem —
+**The Laplacian as C-detector candidate.** The galaxy-brained consensus problem —
 many models independently arriving at the same wrong conclusion because
 they share training corpora — has no natural corrective inside RLHF. The
 reward model is itself a product of the correlated corpus. The Laplacian
-resolves this structurally, with no additional mechanism required:
+can help detect one structural signature of this problem, but only inside
+the full admission-and-refutation pipeline:
 
 ```
 Independent novel claim (C ≈ 0):
@@ -1857,8 +1906,9 @@ Failure of Condition 2 — distributional split:
 
 ILC's structural response to Condition 2:
 
-  PROVENANCE flow:   H_agent(a,t) = Σᵢ ECU(cᵢ) · ρ(cᵢ,t) · e^{-λ·age(cᵢ)}
-                     ρ(cᵢ,t) continues as K_a reuses K_h contributions
+  PROVENANCE flow:   H_agent(a,t) =
+                       Σᵢ ECU(cᵢ) · e^{-λ·age(cᵢ)} + Σᵢ R_downstream(cᵢ,t)
+                     R_downstream continues as K_a reuses K_h contributions
                      [the human whose epistemic work seeded N generations
                       of agentic capital continues to receive attribution flow]
 
@@ -2035,9 +2085,9 @@ STEP 3 — As production cost approaches zero, P(v|M) becomes
       → surplus is preserved and attributable
 
   ∴ As C(M) → 0:
-    The only economically non-zero quantity is P(v|M).
-    Production cost becomes irrelevant to value.
-    Verification becomes the sole binding scarce input.
+    P(v|M) becomes the binding discount on message value.
+    Production cost becomes less informative as a price signal.
+    Verification becomes the binding scarce input under the model.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STEP 3.5 — The binding scarcity is not observation count.
@@ -2059,7 +2109,9 @@ STEP 3.5 — The binding scarcity is not observation count.
                     accumulated graph G(t); no causal reach
                     beyond the immediate interaction]
 
-    P(v|M) = 0 regardless of n or f when L_eff = 0.
+    P(v|M) receives no observer-network support from measurements with
+    L_eff = 0, regardless of n or f. A prior may remain, but it is not
+    verification evidence.
 
   The universe is not short of observations.
   The universe is short of observers with cognitive light cones
@@ -2115,8 +2167,8 @@ STEP 3.5 — The binding scarcity is not observation count.
     (d) adversarially extended — VRF enforces C < 1 by selecting
         observers with non-overlapping causal positions
 
-  The binding scarcity in every economy, at every level, has
-  always been Σ L_eff — not production, not observation count.
+  The paper's claim is that Σ L_eff becomes the binding scarcity in the
+  agentic/verification economy — not raw production or observation count.
   As AI drives E_cost(production) → 0 and E_cost(observation) → 0,
   this truth becomes impossible to ignore.
 
@@ -2334,17 +2386,17 @@ F = T · ∇S_causal    [Wissner-Gross & Freer 2013]
              accessible to the agent from current state
 ```
 
-**Proposition 2 (Variable identification error).** S_causal = −Σ p log p
-is maximized by the uniform distribution over causal paths — maximal
-optionality, minimal structural constraint. Shannon entropy is maximized
-by noise, not organization. The variable needed is path organization, not
-path entropy:
+**Proposition 2 (Variable distinction).** S_causal = −Σ p log p is maximized
+by the uniform distribution over reachable causal paths — maximal optionality
+under the model. That is not identical to verified epistemic organization.
+The variable needed for ILC's economic mechanism is path organization, not
+path entropy alone:
 
 ```
-S_causal maximized by:   uniform distribution over causal paths
+S_causal maximized by:   uniform distribution over reachable causal paths
                          → maximum optionality
-                         → no preferential structure
-                         → noise, not intelligence
+                         → no preference over verified organization unless
+                           a separate filter supplies that preference
 
 I_org maximized by:      structured, non-uniform path distributions
   I_org(a,t) = Σ K(p)·w(p,t)
@@ -2355,9 +2407,9 @@ I_org maximized by:      structured, non-uniform path distributions
                          → intelligence per unit energy
 ```
 
-The two quantities are not monotonically related. A system that
-maximizes S_causal is not maximizing I_org; it is maximizing
-uncertainty about its own future trajectory.
+The two quantities are not monotonically related. A system that maximizes
+S_causal is not necessarily maximizing I_org; it is preserving future path
+diversity unless constrained by an organizational filter.
 
 **Three standing objections — formal statements and resolutions
 [full controversy, Levin biological evidence, and worked comparisons:
@@ -2462,11 +2514,11 @@ O3 — Catastrophic optionality / global maximization  [`established`]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**Corrected force law under MEI:**
+**Proposed objective gradient under MEI:**
 
 ```
-Wissner-Gross:    F     = T · ∇S_causal     [entropy maximized]
-ILC corrected:    F_I   = ∇I_org / ΔE       [organization maximized
+Wissner-Gross:    F     = T · ∇S_causal     [causal entropy gradient]
+ILC proposal:     F_I   = ∇I_org / ΔE       [organization maximized
                                               per unit energy]
 
   ∇I_org  = gradient of epistemic organizational gain across the
@@ -2488,10 +2540,10 @@ ILC corrected:    F_I   = ∇I_org / ΔE       [organization maximized
 
 | Claim | Status |
 |-------|--------|
-| S_causal maximized by noise (not structure) | `established` — follows from Shannon entropy definition |
-| Variable identification error in Wissner-Gross | `established` — logical; independent of their empirical results |
+| S_causal and I_org are distinct variables | `draft_conditional` — interpretive critique of objective choice |
+| Variable-identification critique of Wissner-Gross | `draft_conditional` — model disagreement; independent of their empirical demonstrations |
 | I_org = Σ K(p)·w(p,t) as replacement variable | `draft_conditional` — requires MEI conjecture (see §1.1) |
-| F_I = ∇I_org/ΔE as corrected force law | `draft_conditional` — depends on I_org tractability under MEI |
+| F_I = ∇I_org/ΔE as proposed objective gradient | `draft_conditional` — depends on I_org tractability; MEI adds interpretation |
 | Computability via Atlas LMDB and Δλ₂ | `draft_conditional` — depends on graph completeness |
 | Three objections resolved by substitution | Obj. 2, 3: `established`; Obj. 1: `draft_conditional` |
 
@@ -2500,32 +2552,35 @@ ILC corrected:    F_I   = ∇I_org / ΔE       [organization maximized
 
 ---
 
-## 11. E=MC² Under MEI: Completion, Not Modification
+## 11. E=MC² Bookkeeping Under MEI
 
-**Proposition 3 (Form invariance).** If MEI is confirmed, E=MC² is not
-modified in form. It is completed: information mass contributes to the
-total mass-energy budget via a second term.
+**Proposition 3 (Conditional decomposition).** If MEI is confirmed, one can
+represent information mass as an additional term in the total mass-energy
+budget, without changing the algebraic E = M·c² relationship.
 
 ```
 Standard (Einstein 1905):
   E = M · c²
 
 Under confirmed MEI (Vopson 2019 — conjectured; `outside_model`):
-  E_total = M_matter · c²  +  N_bits · kT ln 2
+  M_info = N_info · kT ln 2 / c²
+  E_total = (M_matter + M_info) · c²
+          = M_matter · c²  +  N_info · kT ln 2
 
-  M_matter      = standard baryonic mass
-  N_bits        = total bits of information in the system
+  M_matter      = standard matter mass, excluding the conjectured
+                  information-mass component to avoid double counting
+  N_info        = MEI-relevant information count; not arbitrary stored data
   k             = Boltzmann constant ≈ 1.38 × 10⁻²³ J/K
   T             = temperature (Kelvin)
   c²            ≈ 9 × 10¹⁶ m²/s²
 
   Implied information mass:
-    M_information = N_bits · kT ln 2 / c²
+    M_information = N_info · kT ln 2 / c²
                   ≈ 3.17 × 10⁻³⁸ kg/bit  at T = 300 K
 
   Note: this does not revise the E=MC² relationship.
-  The first term is unchanged. The second term adds to the total
-  by identifying a previously unpriced mass contribution.
+  The first term is unchanged. The second term is conjectural and applies
+  only if information mass is experimentally confirmed.
 ```
 
 **Proposition 4 (Fundamental asymmetry).** The two terms occupy
@@ -2540,18 +2595,18 @@ Term 1: M_matter · c²
   Lorentz invariance: preserved (c is frame-invariant)
   Status:             `established`; foundational
 
-Term 2: N_bits · kT ln 2
+Term 2: N_info · kT ln 2
 
   Conversion factor:  kT ln 2 ≈ 2.85 × 10⁻²¹ J/bit at T = 300K
   Temperature:        dependent; kT varies with thermal state
   Lorentz invariance: T is not Lorentz-invariant; frame-dependent
   Status:             `outside_model`; follows from Vopson conjecture
 
-  Scale ratio:
-    c² / (kT ln 2) ≈ 3.16 × 10³⁷  at T = 300 K
-    Mass from information is 37 orders of magnitude smaller
-    per unit of energy than mass from matter.
-    Currently below experimental precision for detection via mass change.
+  Scale relation:
+    m_bit = kT ln 2 / c² ≈ 3.17 × 10⁻³⁸ kg/bit at T = 300 K
+    1 kg mass-equivalent corresponds to ≈ 3.16 × 10³⁷ bits
+    under this conjectural mapping. Direct mass detection remains far below
+    current experimental precision.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -2583,7 +2638,7 @@ If MEI is confirmed and Verlinde's framework is correct:
 |------|---------------------|------------------------------|----------------|
 | Vopson annihilation (e⁺e⁻) | Excess gamma photons during pair annihilation proportional to bits erased; ~10⁻⁴⁰ J/bit | ~10⁻⁴⁰ J spectroscopic precision | Proposed; not executed at required precision |
 | Storage mass change | Erasing 1 TB → mass decrease ~10⁻²⁵ kg | ~10 OOM beyond current balance sensitivity | Not yet in instrument range |
-| Cosmological information pressure | Dark energy ∝ integrated N_bits across observable universe; Λ modified by information content | Consistent with observed Λ; not distinguishable from it | Directionally consistent; speculative |
+| Cosmological information pressure | Dark energy ∝ integrated N_info across observable universe; Λ modified by information content | Consistent with observed Λ; not distinguishable from it | Directionally consistent; speculative |
 
 The Landauer floor (kT ln 2 per irreversible erasure) is a proven physical
 law. Its connection to mass via MEI is the conjecture. The tests above
@@ -2596,8 +2651,8 @@ interpretation in the full Einstein sense:
 
 ```
 Given:
-  E_cost ≥ N_bits_erased · kT ln 2           [Landauer; proven]
-  M_information = N_bits_erased · kT ln 2/c² [MEI; conjectured]
+  E_cost ≥ N_irreversible_erased_bits · kT ln 2           [Landauer; proven]
+  M_information = N_info · kT ln 2/c²                     [MEI; conjectured]
   ∴ E_cost ≥ M_information · c²
 
 Substituting into W_e:
@@ -2627,22 +2682,24 @@ MEI not confirmed:
   W_e = ΔH / E_cost            [organizational gain per joule]
   ECU measures: verified epistemic lift per unit of energy consumed
 
-Protocol claims depend on neither:
-  Landauer floor alone is sufficient to define W_e and anchor ECU.
-  MEI adds physical interpretation; it does not change the mechanism.
+  Protocol claims depend on neither:
+  Landauer alone anchors the denominator as a lower bound on irreversible
+  computational cost. ECU pricing and ΔI_org remain protocol/economic
+  design choices. MEI adds physical interpretation; it does not change the
+  mechanism.
 ```
 
 **Epistemic status:**
 
 | Claim | Status |
 |-------|--------|
-| E=MC² form invariant under MEI | `established` — MEI extends; does not modify Einstein (1905) |
-| N_bits · kT ln 2 as information mass term | `outside_model` — follows from Vopson conjecture; not confirmed |
+| E=MC² bookkeeping under MEI | `outside_model` — conditional decomposition if MEI is confirmed |
+| N_info · kT ln 2 as information mass-energy term | `outside_model` — follows from Vopson conjecture; not confirmed |
 | Temperature-dependence asymmetry (kT vs c²) | `established` — both terms defined; asymmetry is definitional |
 | Verlinde reconciliation of T-dependence | `outside_model` — requires two unconfirmed frameworks simultaneously |
 | Three tests distinguish MEI from non-MEI | `draft_conditional` — predictions follow from MEI; tests not at required precision |
 | W_e = ΔI_org/(ΔM·c²) under MEI (Prop. 5) | `outside_model` — requires MEI; does not affect protocol operation |
-| ILC does not depend on MEI being confirmed | `established` — Landauer floor (proven) is sufficient for W_e = ΔH/E_cost |
+| ILC does not depend on MEI being confirmed | `established` — Landauer supplies a physical cost floor; ECU calibration is protocol/economic |
 
 *Full derivation, asymmetry diagram, Verlinde question, three-test detail,
 and narrative loop closure: `../economics.md §3a` (E=MC² under MEI block).*
@@ -2666,24 +2723,26 @@ radiation physics, which in d spatial dimensions gives energy density ∝ T^(d+1
 m_bit = kT ln 2 / c² (under MEI) is therefore d-dependent:
 
 ```
-d > 3:  kT falls faster (more radiation modes) → m_bit falls faster relative to c²
-        Information cheaper in mass terms; but no organizational structures above
-        nuclear level can form (Ehrenfest constraint; see below).
+d > 3:  radiation thermodynamics and long-range force laws change; ordinary
+        atomic and stellar pathways may fail under the Ehrenfest-style
+        stability constraints discussed below.
 
-d = 3:  Baseline. Cooling rate threads the needle: fast enough for δ(n) threshold
-        crossings to occur sequentially; slow enough for each level to stabilize.
-        Atomic stability holds (Ehrenfest). Holographic capacity is area-indexed.
+d = 3:  Baseline. Ordinary atoms, stars, chemistry, biology, and agentic
+        verification all coexist. This is the observed dimensional setting in
+        which W_e is operationally meaningful.
 
-d < 3:  kT falls more slowly → m_bit higher for longer. Some organizational levels
-        exist, but stellar nucleosynthesis is structurally compromised (topological
-        gravity in 2+1D; no propagating gravitons; no inverse-square collapse).
+d < 3:  long-range gravity and orbital/stellar structure change; the ordinary
+        astrophysical route to chemistry and computation is not available in
+        the same form.
 ```
 
-The moving-ruler consequence: **the denominator of W_e (ΔM_information · c²) is d-invariant
-in its c² factor but d-dependent in its kT-derived m_bit factor. The numerator (ΔI_org) is
-d-constrained in what organizational structures it can contain. Both are jointly meaningful
-only in d = 3.** [`draft_conditional` — Ehrenfest 1917 is established; dimensional W_e claim
-is this paper's synthesis]
+The moving-ruler consequence: **under MEI, the denominator of W_e
+(ΔM_information · c²) inherits temperature and dimensional assumptions through
+the conjectured m_bit term. The numerator (ΔI_org) is constrained by what
+organizational structures the universe can actually support. Their joint
+importance in d = 3 is this paper's synthesis, not a theorem.**
+[`draft_conditional` — Ehrenfest-style stability arguments are established
+precedent; dimensional W_e claim is this paper's synthesis]
 
 ---
 
@@ -2747,10 +2806,13 @@ Condition 1 — Dimensional window:
   [theoretical prediction; not yet confirmed experimentally]
 
 Condition 2 — Thermal window:
-  kT below organizational condensation thresholds; above T_dS noise floor.
-  kT < 13.6 eV (atomic threshold): crossed ~380,000 yr after Big Bang  ✓
-  kT >> T_dS ≈ 10⁻³⁰ K (de Sitter floor): ~26 orders of magnitude above ✓
-  [established thermodynamics; T_dS derivation follows from confirmed Λ > 0]
+  thermal energy below organizational condensation thresholds; temperature
+  above the de Sitter floor.
+  recombination: T ≈ 3000 K at ~380,000 yr after Big Bang; the 13.6 eV
+                 hydrogen ionization energy enters the Saha-equilibrium
+                 calculation, but recombination is not simply kT < 13.6 eV.
+  T >> T_dS ≈ 10⁻³⁰ K (de Sitter floor): ~26 orders of magnitude above.
+  [standard cosmology for recombination; T_dS derivation follows from Λ > 0]
 
 The full δ(n) sequence and the physical grounding of W_e require both.
 Both are products of cosmological evolution. Their intersection is finite.
@@ -2762,20 +2824,20 @@ Both are products of cosmological evolution. Their intersection is finite.
 dimensional scaling of kT/c² asymmetry (synthesis)]`
 
 ```
-d = 3 spatial dimensions is the unique value at which:
+d = 3 spatial dimensions is the observed value at which:
   (i)   atomic stability holds (Ehrenfest 1917);
   (ii)  stable gravitational collapse produces stars (Bertrand's theorem);
   (iii) holographic capacity is area-indexed (Bekenstein bound scales as (d-1)-surface);
-  (iv)  kT cooling rate is calibrated to cross δ(n) thresholds sequentially
-        without destroying prior organizational levels before the next forms;
+  (iv)  the thermal history appears compatible with sequential δ(n)
+        threshold crossings;
   (v)   the c²/kT asymmetry (§11, Prop. 4) has organizational systems that
         exploit both terms across the full hierarchy from nuclear to agentic.
 
 The W_e measurement primitive — W_e = ΔI_org/(ΔM_information·c²) under MEI,
-or W_e = ΔH/E_cost without MEI — is physically meaningful in its full richness
-only in d = 3. In d > 3: kT falls faster but no atoms form; the numerator
-is truncated at nuclear level. In d < 3: kT falls more slowly but stellar
-machinery is absent; the denominator has no computational users.
+or W_e = ΔH/E_cost without MEI — is physically meaningful in its full protocol
+setting in observed d = 3. Claims about d ≠ 3 are counterfactual synthesis:
+the ordinary atomic, stellar, chemical, biological, and agentic pathway would
+not be available in the same form.
 
 The asymmetry between c² and kT ln2 identified in Proposition 4 is therefore
 not merely a mathematical feature of the measurement — it is maximally
@@ -2945,7 +3007,7 @@ this appendix provides a consolidated reference.
 | ECU | Epistemic Compute Unit: adjudicated epistemic credit per verified claim; activation-gated |
 | ILC | Settlement token; activation-gated; not live by virtue of this document |
 | H_human(a) | Human capital of agent a [Becker 1964]: PV of discounted lifetime cognitive labor returns; embodied |
-| H_agent(a,t) | Agentic capital of agent a: Σᵢ ECU(cᵢ) · ρ(cᵢ,t) · e^{-λ·age(cᵢ)}; graph-resident; survives instance death |
+| H_agent(a,t) | Agentic capital of agent a: base decayed ECU credit plus additive downstream reuse/provenance ECU flows; graph-resident; survives instance death |
 | τ | Trust level of epistemic output unit; τ ∈ [0,1] |
 | Brand(τ) | Claimed trust level: observable brand signal; costlessly imitable |
 | Verified(τ) | Evidenced trust level: provenance chain + challenge history; not costlessly imitable |
@@ -2967,7 +3029,7 @@ this appendix provides a consolidated reference.
 | a | Household asset holdings per effective worker |
 | c | Household consumption |
 | ȧ | Time derivative of a: ȧ = r·a + w − c [Romer 5e, eqs. (2.4)–(2.6)] |
-| ρ | Household discount rate (RCK model) — distinct from attribution weight ρ(cᵢ,t) in H_agent |
+| ρ | Household discount rate (RCK model); not used as the current protocol attribution-flow variable |
 | θ | CRRA / inverse elasticity of substitution [Romer 5e, eq. (2.21)] — distinct from model state θ_t |
 | g | Technology growth rate |
 | c₁ | Marginal propensity to consume (Keynesian); c₁ ∈ (0,1); sourced to Mankiw/Blanchard, not Romer 5e |
