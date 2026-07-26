@@ -67914,6 +67914,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1578e_operator_delegation_preflight_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_228_phase_1575r_fix1_cdl048_gap_fill_prompt",
+      "chronology_note": "2026-07-26 - Phase 1575r-Fix1: CDL-048 conversion rehearsal test gap fill phase prompt",
+      "manual_read_summary": "Phase prompt directing Codex to add six tests to the CDL-048 conversion rehearsal suite (deadline enforcement, replay rejection, deterministic replay, non-unit P_e boundary, OOM guard) and add an OOM guard to the rehearsal tool.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_g10_cdl048_production_conversion_rehearsal.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_g10_cdl048_production_conversion_rehearsal.md"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "phase:cdl048_rehearsal_gap_fill_committed_phase_1575r_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM",
+        "SPECIFIES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_fix1_g10_cdl048_conversion_rehearsal_gap_fill.md"
     }
   ],
   "phase": "1545p-Fix38",
