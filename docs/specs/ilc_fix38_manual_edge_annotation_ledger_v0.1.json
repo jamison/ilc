@@ -62208,6 +62208,84 @@
       ],
       "recommended_graph_action": "graph_delta=planning_status_corrected:1575q_complete_option_c",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_228_phase_1575r_cdl048_production_conversion_rehearsal_tool",
+      "chronology_note": "2026-07-26 - Phase 1575r: CDL-048 production conversion rehearsal tool",
+      "manual_read_summary": "Tool generating deterministic attribution-derived ECU lots from Phase 1560 agent identities, exercising the CDL-048 activated wire-quote path, deriving non-activated rehearsal receipts, proving conservation, and writing evidence atomically.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:cdl048_production_conversion_rehearsal_committed_phase_1575r"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_wire_quote_activation_rehearsed_phase_1575r"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tools/cdl048_production_conversion_rehearsal_1575r.py",
+      "repo_path": "tools/cdl048_production_conversion_rehearsal_1575r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_228_phase_1575r_cdl048_production_conversion_rehearsal_tests",
+      "chronology_note": "2026-07-26 - Phase 1575r tests: CDL-048 production conversion rehearsal",
+      "manual_read_summary": "Focused tests for non-synthetic agent IDs, Decimal-only ECU lots, activated wire-quote token, receipt authorization boundary, double-entry conservation, non-claim flags, evidence hashing, and PUBLIC_RC_EXCLUDE retention.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/cdl048_production_conversion_rehearsal_1575r.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_double_entry_conservation_proven_rehearsal_phase_1575r"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575r_cdl048_production_conversion_rehearsal.py",
+      "repo_path": "tests/test_phase_1575r_cdl048_production_conversion_rehearsal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_228_phase_1575r_cdl048_production_conversion_rehearsal_walkthrough",
+      "chronology_note": "2026-07-26 - Phase 1575r walkthrough: corrected CDL-048 wire-quote rehearsal evidence",
+      "manual_read_summary": "Walkthrough recording the prompt/source conflict, corrected wire-quote boundary, command outputs, evidence hashes, output tokens, non-claims, and 1575s carry-forward gate evidence.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_production_conversion_rehearsal_committed_phase_1575r"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575s"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575r_cdl048_production_conversion_rehearsal_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575r_cdl048_production_conversion_rehearsal_walkthrough.md"
     }
   ],
   "boundary": {
@@ -67755,23 +67833,23 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-042",
-          "review_status": "candidate_cdl_042_trace"
+          "review_status": "candidate_cdl_042_trace",
+          "target": "cdl:CDL-042"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-069",
-          "review_status": "candidate_cdl_069_trace"
+          "review_status": "candidate_cdl_069_trace",
+          "target": "cdl:CDL-069"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-101",
-          "review_status": "candidate_cdl_101_trace"
+          "review_status": "candidate_cdl_101_trace",
+          "target": "cdl:CDL-101"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "adr:ADR-0026",
-          "review_status": "candidate_adr_0026_trace"
+          "review_status": "candidate_adr_0026_trace",
+          "target": "adr:ADR-0026"
         }
       ],
       "proposed_semantic_edges": [
