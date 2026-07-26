@@ -67555,7 +67555,6 @@
       "annotation_batch": "manual_batch_222_phase_1578a_gap_wallet_00_enrollment_spec",
       "chronology_note": "2026-07-25 \u2014 Phase 1578a (GAP-WALLET-00): agent identity enrollment spec",
       "manual_read_summary": "Ratified enrollment path matrix for autonomous agents, human users with external wallets, and operator-managed fleets; enrollment record field definitions; nonce initialization rule.",
-      "repo_path": "docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md",
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -67565,13 +67564,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md"
+      "recommended_graph_action": "support_only:docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md",
+      "repo_path": "docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_223_phase_1578b_gap_wallet_01_canon_reconciliation",
       "chronology_note": "2026-07-25 \u2014 Phase 1578b (GAP-WALLET-01): wallet canon reconciliation",
       "manual_read_summary": "Reconciliation report confirming no conflict between existing ratified CDL/ADR canon and the six canonical wallet architecture decisions; CDL/ADR inventory and open tensions table.",
-      "repo_path": "docs/specs/ilc_wallet_canon_reconciliation_1578b_v0.1.md",
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -67581,13 +67580,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/specs/ilc_wallet_canon_reconciliation_1578b_v0.1.md"
+      "recommended_graph_action": "support_only:docs/specs/ilc_wallet_canon_reconciliation_1578b_v0.1.md",
+      "repo_path": "docs/specs/ilc_wallet_canon_reconciliation_1578b_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_224_phase_1578c_gap_wallet_02a_canonical_payload_envelope",
       "chronology_note": "2026-07-25 \u2014 Phase 1578c (GAP-WALLET-02a): canonical ILC intent payload envelope spec",
       "manual_read_summary": "Spec defining the canonical ILC intent object schema, domain separator fields, EIP-712/COSE/bare-key adapter projections, and replay prevention integration across adapter types.",
-      "repo_path": "docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md",
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -67597,7 +67596,8 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md"
+      "recommended_graph_action": "support_only:docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md",
+      "repo_path": "docs/specs/ilc_canonical_intent_payload_envelope_spec_1578c_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_225_phase_1578d_signer_binding_authority_spec",
@@ -67663,6 +67663,90 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1578d_signer_binding_authority_walkthrough.md",
       "repo_path": "docs/phases/phase_1578d_signer_binding_authority_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_226_phase_1581_ecu_ilc_semantic_boundary_spec",
+      "chronology_note": "2026-07-26 - Phase 1581 (GAP-VALUE-ECU-00): ECU/ILC semantic boundary spec",
+      "manual_read_summary": "Ratifiable spec classifying ECU/ILC value surfaces, confirming generalized ECU transfer and Werner heat-to-ECU minting remain constitutionally closed, and recording passive ECU public-RC guard disposition as a pre-mirror sensitive carry-forward.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-052"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-053"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-063"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-066"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "phase:GAP-VALUE-ECU-00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:generalized_ecu_transfer_closed_confirmed_phase_1581"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:werner_heat_to_ecu_rejected_confirmed_phase_1581"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:GAP-CDL060-GUARD-CLEARANCE"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SPECIFIES",
+        "NEGATIVE_ASSERTS",
+        "CARRIES_FORWARD",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_ecu_ilc_semantic_boundary_spec_GAP_VALUE_ECU_00_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_ecu_ilc_semantic_boundary_spec_GAP_VALUE_ECU_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_226_phase_1581_ecu_ilc_semantic_boundary_walkthrough",
+      "chronology_note": "2026-07-26 - Phase 1581 walkthrough: ECU/ILC semantic boundary execution evidence",
+      "manual_read_summary": "Walkthrough recording direct reads, guard constants, passive ECU source correction, output tokens, verification, and non-claims for Phase 1581.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_ilc_semantic_boundary_spec_committed_phase_1581"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:GAP-CDL060-GUARD-CLEARANCE"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1581_gap_value_ecu_00_ecu_ilc_semantic_boundary_walkthrough.md",
+      "repo_path": "docs/phases/phase_1581_gap_value_ecu_00_ecu_ilc_semantic_boundary_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
