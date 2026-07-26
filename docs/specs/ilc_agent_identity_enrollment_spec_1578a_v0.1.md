@@ -60,18 +60,22 @@ Third-party wallets must read nonce state from ILC account state once the query 
 
 ## 6. Operator Delegation Design Target
 
-Operator-level delegation is accepted as a design target from the wallet lane forward plan. The required future object is an on-graph `OperatorDelegationRecord` with:
+Operator-level delegation is accepted as a design target from the wallet lane forward plan. The authoritative source for all ten required properties is `docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md §0.2`. The required future object is an on-graph `OperatorDelegationRecord` with all ten mandatory properties:
 
-| Property | Required behavior |
-|----------|-------------------|
-| On-graph audit trail | Commit `operator_agent_id -> controlled_agent_id` as graph-native evidence |
-| Scope limits | Enumerate permitted action classes; default deny |
-| Revocation | Provide graph-native revoke or supersede record |
-| Epoch binding | Include activation epoch and optional expiry epoch |
-| Nonce separation | Controlled agents keep independent per-agent nonces |
-| No balance pooling | Operator authority does not merge balances |
-| Key rotation trace | Operator and controlled-agent rotations remain auditable |
-| Privacy | Public surfaces expose opaque delegation refs, not raw external wallet keys |
+| Property | Required behavior | Source |
+|----------|-------------------|--------|
+| On-graph record | `OperatorDelegationRecord` graph node/edge: `operator_agent_id → controlled_agent_id` | forward plan §0.2 |
+| Scope limits | Delegation must specify allowed action classes; no blanket root authority by default | forward plan §0.2 |
+| Revocation | Graph-native revoke/supersede path required | forward plan §0.2 |
+| Epoch binding | Activation epoch + optional expiry epoch | forward plan §0.2 |
+| Nonce separation | Each controlled agent keeps its own per-`agent_id` nonce; no shared operator nonce | forward plan §0.2 |
+| Auditability | Every operator-authorized action must reference the delegation record hash/root | forward plan §0.2 |
+| No balance pooling | Operator authority does not collapse agent balances unless a separate treasury mechanism is ratified | forward plan §0.2 |
+| Least privilege | Default deny; operator acts only within explicit capabilities | forward plan §0.2 |
+| Key rotation | Operator and agent key rotations traceable through signer-lineage or successor records | forward plan §0.2 |
+| Privacy | Public surfaces expose minimum delegation refs; opaque IDs preferred over raw external wallet keys | forward plan §0.2 |
+
+**Source correction note (2026-07-26):** An earlier draft of this section listed eight properties, collapsing "On-graph record" and "Auditability" into a single row and omitting "Least privilege". The wallet lane forward plan §0.2 is the definitive authority and specifies ten mandatory properties. This section has been corrected to match. Any downstream spec or phase prompt that references this section must use the ten-property table above, not the earlier eight-property version.
 
 This phase records the design target only. It does not activate live operator delegation.
 
