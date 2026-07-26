@@ -54,6 +54,7 @@ REHEARSAL_RECEIPT_SCHEMA_VERSION = "ilc.phase1575r.cdl048_rehearsal_receipt.v1"
 ISSUE_EPOCH = 49
 CONVERSION_EPOCH = 53
 PROPOSED_P_E = Decimal("1.00")
+MAX_LOTS_PER_REHEARSAL = 1_000
 OUTPUT_TOKENS = (
     "cdl048_production_conversion_rehearsal_committed_phase_1575r",
     "cdl048_double_entry_conservation_proven_rehearsal_phase_1575r",
@@ -385,6 +386,12 @@ def _prefixed_sha(prefix: str, payload: Any) -> str:
 
 
 def _register_lots(lot_records: list[dict[str, Any]]):
+    if len(lot_records) > MAX_LOTS_PER_REHEARSAL:
+        raise ValueError(
+            "cdl048_rehearsal_lot_count_exceeded: "
+            f"{len(lot_records)} lots > "
+            f"MAX_LOTS_PER_REHEARSAL={MAX_LOTS_PER_REHEARSAL}"
+        )
     state = empty_conversion_sweeper_state()
     for lot in lot_records:
         state = register_ecu_lot(
@@ -399,7 +406,10 @@ def _register_lots(lot_records: list[dict[str, Any]]):
     return state
 
 
-def build_rehearsal_evidence() -> dict[str, Any]:
+def build_rehearsal_evidence(
+    *,
+    proposed_p_e: Decimal | int | str = PROPOSED_P_E,
+) -> dict[str, Any]:
     lot_dataset = build_ecu_lot_records()
     state = _register_lots(lot_dataset["lots"])
     state_root_before = conversion_sweeper_state_root(state)
@@ -434,7 +444,7 @@ def build_rehearsal_evidence() -> dict[str, Any]:
             settled_runtime_epoch=CONVERSION_EPOCH,
             wallet_state_root=wallet_state_root,
             settled_runtime_root=settled_runtime_root,
-            proposed_p_e=PROPOSED_P_E,
+            proposed_p_e=proposed_p_e,
             activation_requested=True,
         )
         quote_payload = conversion_dry_run_wire_quote_payload(quote)
@@ -479,8 +489,21 @@ def build_rehearsal_evidence() -> dict[str, Any]:
         (Decimal(receipt["amount_ilc_equivalent"]) for receipt in receipts),
         Decimal("0"),
     )
-    if total_ecu != total_ilc:
+    total_debit_value_ilc = sum(
+        (Decimal(quote["debit_value_ilc"]) for quote in quote_payloads),
+        Decimal("0"),
+    )
+    conservation_delta_ilc = sum(
+        (Decimal(quote["conservation_delta_ilc"]) for quote in quote_payloads),
+        Decimal("0"),
+    )
+    if total_debit_value_ilc != total_ilc or conservation_delta_ilc != Decimal("0"):
         raise ValueError("phase1575r_double_entry_conservation_failed")
+    if not quote_payloads:
+        raise ValueError("phase1575r_quote_payloads_empty")
+    effective_p_e = quote_payloads[0]["effective_p_e"]
+    if any(quote["effective_p_e"] != effective_p_e for quote in quote_payloads):
+        raise ValueError("phase1575r_conversion_rate_not_single_epoch_value")
 
     payload: dict[str, Any] = {
         "activation_boundary": {
@@ -490,9 +513,11 @@ def build_rehearsal_evidence() -> dict[str, Any]:
             "source_runtime_version": CDL048_ACTIVATION_RUNTIME_VERSION,
         },
         "double_entry_conservation": {
-            "canonical_conversion_rate_p_e": decimal_to_canonical_string(PROPOSED_P_E),
-            "conservation_delta_ilc": decimal_to_canonical_string(total_ecu - total_ilc),
-            "proven": total_ecu == total_ilc,
+            "canonical_conversion_rate_p_e": effective_p_e,
+            "conservation_delta_ilc": decimal_to_canonical_string(conservation_delta_ilc),
+            "proven": total_debit_value_ilc == total_ilc
+            and conservation_delta_ilc == Decimal("0"),
+            "total_debit_value_ilc": decimal_to_canonical_string(total_debit_value_ilc),
             "total_ecu_in": decimal_to_canonical_string(total_ecu),
             "total_ilc_equivalent_out": decimal_to_canonical_string(total_ilc),
         },
@@ -545,7 +570,11 @@ def verify_rehearsal_evidence(evidence: dict[str, Any]) -> None:
     conservation = evidence.get("double_entry_conservation")
     if not isinstance(conservation, dict) or conservation.get("proven") is not True:
         raise ValueError("phase1575r_conservation_not_proven")
-    if Decimal(conservation["total_ecu_in"]) != Decimal(conservation["total_ilc_equivalent_out"]):
+    if Decimal(conservation["total_debit_value_ilc"]) != Decimal(
+        conservation["total_ilc_equivalent_out"]
+    ):
+        raise ValueError("phase1575r_double_entry_conservation_failed")
+    if Decimal(conservation["conservation_delta_ilc"]) != Decimal("0"):
         raise ValueError("phase1575r_double_entry_conservation_failed")
     for field, value in evidence.get("non_claims", {}).items():
         if value is not False:

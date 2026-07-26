@@ -62213,6 +62213,14 @@
       "annotation_batch": "manual_batch_228_phase_1575r_cdl048_production_conversion_rehearsal_tool",
       "chronology_note": "2026-07-26 - Phase 1575r: CDL-048 production conversion rehearsal tool",
       "manual_read_summary": "Tool generating deterministic attribution-derived ECU lots from Phase 1560 agent identities, exercising the CDL-048 activated wire-quote path, deriving non-activated rehearsal receipts, proving conservation, and writing evidence atomically.",
+      "phase_1575r_fix1_tokens": [
+        "cdl048_rehearsal_gap_fill_committed_phase_1575r_fix1",
+        "cdl048_deadline_enforcement_tested_phase_1575r_fix1",
+        "cdl048_replay_rejection_tested_phase_1575r_fix1",
+        "cdl048_deterministic_replay_verified_phase_1575r_fix1",
+        "cdl048_clamp_boundary_tested_phase_1575r_fix1"
+      ],
+      "phase_1575r_fix1_update_note": "2026-07-26 - Phase 1575r-Fix1 update: added MAX_LOTS_PER_REHEARSAL guard before lot registration, added proposed_p_e wrapper parameter, and corrected aggregate conservation to ILC-value debit/credit equality.",
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -62239,6 +62247,14 @@
       "annotation_batch": "manual_batch_228_phase_1575r_cdl048_production_conversion_rehearsal_tests",
       "chronology_note": "2026-07-26 - Phase 1575r tests: CDL-048 production conversion rehearsal",
       "manual_read_summary": "Focused tests for non-synthetic agent IDs, Decimal-only ECU lots, activated wire-quote token, receipt authorization boundary, double-entry conservation, non-claim flags, evidence hashing, and PUBLIC_RC_EXCLUDE retention.",
+      "phase_1575r_fix1_tokens": [
+        "cdl048_rehearsal_gap_fill_committed_phase_1575r_fix1",
+        "cdl048_deadline_enforcement_tested_phase_1575r_fix1",
+        "cdl048_replay_rejection_tested_phase_1575r_fix1",
+        "cdl048_deterministic_replay_verified_phase_1575r_fix1",
+        "cdl048_clamp_boundary_tested_phase_1575r_fix1"
+      ],
+      "phase_1575r_fix1_update_note": "2026-07-26 - Phase 1575r-Fix1 update: extended existing 1575r suite to 20 tests covering deadline boundary, expired deadline, duplicate lot replay, deterministic evidence, non-unit P_e boundaries, and OOM guard.",
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -67919,6 +67935,14 @@
       "annotation_batch": "manual_batch_228_phase_1575r_fix1_cdl048_gap_fill_prompt",
       "chronology_note": "2026-07-26 - Phase 1575r-Fix1: CDL-048 conversion rehearsal test gap fill phase prompt",
       "manual_read_summary": "Phase prompt directing Codex to add six tests to the CDL-048 conversion rehearsal suite (deadline enforcement, replay rejection, deterministic replay, non-unit P_e boundary, OOM guard) and add an OOM guard to the rehearsal tool.",
+      "phase_1575r_fix1_execution_status": "complete",
+      "phase_1575r_fix1_tokens": [
+        "cdl048_rehearsal_gap_fill_committed_phase_1575r_fix1",
+        "cdl048_deadline_enforcement_tested_phase_1575r_fix1",
+        "cdl048_replay_rejection_tested_phase_1575r_fix1",
+        "cdl048_deterministic_replay_verified_phase_1575r_fix1",
+        "cdl048_clamp_boundary_tested_phase_1575r_fix1"
+      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -67948,6 +67972,51 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_fix1_g10_cdl048_conversion_rehearsal_gap_fill.md"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575r_fix1_cdl048_gap_fill_walkthrough",
+      "chronology_note": "2026-07-26 - Phase 1575r-Fix1: CDL-048 conversion rehearsal gap fill walkthrough",
+      "manual_read_summary": "Walkthrough documenting six added 1575r gap tests, the rehearsal OOM guard, corrected ILC-value conservation semantics, refreshed private evidence hashes, verification command outputs, tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_fix1_g10_cdl048_conversion_rehearsal_gap_fill.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_rehearsal_gap_fill_committed_phase_1575r_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_deadline_enforcement_tested_phase_1575r_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_replay_rejection_tested_phase_1575r_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_deterministic_replay_verified_phase_1575r_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl048_clamp_boundary_tested_phase_1575r_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575r_fix1_cdl048_conversion_rehearsal_gap_fill_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575r_fix1_cdl048_conversion_rehearsal_gap_fill_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
