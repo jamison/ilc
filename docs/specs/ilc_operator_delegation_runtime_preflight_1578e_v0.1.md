@@ -23,7 +23,7 @@ This phase does not open a CDL, ratify a new authority, activate a runtime verif
 | `docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md:221-225` | GAP-WALLET-02c formalizes the operator-delegation design as preflight scope. |
 | `docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md:28-32` | Operator-managed fleets enroll each controlled agent as its own `agent_id`; the future delegation edge is `operator_agent_id -> controlled_agent_id`. |
 | `docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md:53-59` | New `agent_id` action nonce starts at `0`; nonce is not keyed by external wallet, adapter, operator, or signer-binding record. |
-| `docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md:61-76` | The enrollment spec records an eight-row compressed operator-delegation design target and states live operator delegation is not activated. |
+| `docs/specs/ilc_agent_identity_enrollment_spec_1578a_v0.1.md:61-76` | The enrollment spec records the operator-delegation design target (all ten mandatory properties, corrected 2026-07-26 from an earlier eight-row draft) and states live operator delegation is not activated. |
 | `docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md:14-25` | External signers are delegated adapters; secp256k1/EIP-712 remains sidecar evidence for public RC; binding authority does not imply value-action authority. |
 | `docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md:27-50` | `SignerBindingRecord` has a conditional `operator_delegation_ref` and per-`agent_id` nonce separation. |
 | `docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md:89-103` | Future `OperatorDelegationRecord` fields are named; operator authority does not pool balances, merge nonces, or bypass admission/replay rules. |
@@ -42,7 +42,7 @@ This phase does not open a CDL, ratify a new authority, activate a runtime verif
 
 ## 3. Design Target Restatement
 
-The authoritative source is the wallet lane forward plan. It records ten mandatory design properties for `OperatorDelegationRecord`; the Phase 1578a enrollment spec compresses these into eight rows and omits explicit rows for auditability and least privilege. This preflight preserves the ten-property source to avoid losing security-critical constraints.
+The authoritative source is the wallet lane forward plan (`docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md §0.2`), which records ten mandatory design properties for `OperatorDelegationRecord`. The Phase 1578a enrollment spec was corrected on 2026-07-26 to include all ten properties; prior to that correction it listed eight rows and omitted explicit entries for auditability and least privilege. All downstream phases must use the ten-property table below.
 
 | Property | Required preflight interpretation |
 |----------|-----------------------------------|
