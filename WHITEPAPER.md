@@ -978,12 +978,21 @@ ILC substitution:
                                               d(t) → floor via CDL-V1 decay]
   g         = R_direct                       [verdict without downstream flow]
 
-  δ*  =  (R_direct − u_honest) / R_direct
-       =  1 − (r·c_i·m_i + Σ 0.45^d)
-       ≈  1 − (0.20·c_i·m_i + 0.838)        [at max depth-3 PROVENANCE sum]
+  continuation surplus:
+    u_honest − g
+      = R_direct × r·c_i·m_i
+        + Σ_{d=1}^{3} R_direct × 0.45^d
+
+  active PROVENANCE cap:
+    Σ_{d=1}^{3} 0.45^d = 0.743625
 ```
 
-For a high-centrality node (c_i → 1, m_i → 1.15), δ* drops below 0 — cooperation is individually rational even for an infinitely impatient agent. For a new agent with no centrality, δ* ≈ 0.16: cooperation is rational as long as the agent discounts future payoffs at less than 84% per epoch. The attribution system is designed so that the equilibrium condition is easily satisfied across the realistic range of agent discount factors.
+For a high-centrality node (c_i → 1, m_i → 1.15), the continuation surplus is
+large: REUSE contributes up to 0.23 × R_direct and capped PROVENANCE contributes
+up to 0.743625 × R_direct. This does not prove dominant-strategy honesty; it
+shows the mechanism is designed to make honest, reusable work higher expected
+value than one-shot verdict extraction under repeated-game assumptions and
+sufficient monitoring.
 
 ILC maximizes the effective δ by making attribution flows indefinitely long-lived: REUSE has no expiry; PROVENANCE chains at depth 1–3 accumulate as long as descendants are reused. Longer attribution horizon → higher effective δ → broader set of individually rational cooperative outcomes under the Folk Theorem.
 
@@ -1007,9 +1016,13 @@ assert.truth(C) ──► [ASSERTED]
 
 Refutation is a hyperedge, not deletion. C persists in G with its refutation edge and full history visible. A revised C can recover centrality c_C(t) through subsequent reuse — the punishment is proportional (attribution suspended during challenge) and reversible (flows reactivate on successful revision). Permanent exclusion is not the protocol default; correction is. This matches tit-for-tat exactly: retaliation is immediate (refutation blocks downstream attribution), forgiveness is automatic on correction (revision restores the reuse path), and the graph never holds a permanent grudge.
 
-**III. VCG mechanism design — REUSE and PROVENANCE as marginal contribution payments**
+**III. VCG-inspired mechanism design — REUSE and PROVENANCE as marginal contribution approximations**
 
-The Vickrey–Clarke–Groves theorem (Vickrey 1961; Clarke 1971; Groves 1973) establishes that truthful reporting is a dominant strategy iff each agent is paid their **marginal social welfare contribution**. No other mechanism simultaneously achieves allocative efficiency, individual rationality, and dominant-strategy incentive compatibility.
+The Vickrey–Clarke–Groves theorem (Vickrey 1961; Clarke 1971; Groves 1973)
+shows that, under its assumptions, paying agents by marginal social welfare
+contribution can make truthful reporting incentive-compatible. ILC borrows this
+logic as a design target; it does not claim the current REUSE/PROVENANCE
+implementation is a full VCG mechanism or a proved dominant-strategy system.
 
 Define ILC's social welfare function over the epistemic graph:
 
@@ -1028,21 +1041,36 @@ MC(aᵢ, C)  =  W(G(t) + C)  −  W(G(t))
 
 This is approximated in practice by the centrality score c_C(t) accumulated through REUSE and PROVENANCE traversals — precisely the quantity that drives the REUSE attribution formula P_i = R_direct × r × c_i × m_i.
 
-The PROVENANCE chain is the VCG **externality payment**. Under standard VCG, agents who create positive externalities for others (foundational work that enables downstream claims) receive side-payments proportional to those externalities. The PROVENANCE payment:
+The PROVENANCE chain is a bounded externality-credit approximation. Under
+standard VCG, agents who create positive externalities for others
+(foundational work that enables downstream claims) receive side-payments
+proportional to those externalities. The PROVENANCE payment:
 
 ```
 P(aᵢ, C, depth d)  =  R_descendant × 0.45^d   for d ∈ {1, 2, 3}
 ```
 
-pays foundational claim authors in proportion to the downstream work they enabled, decayed geometrically by distance. The geometric decay (ALPHA = 0.45) is calibrated so the sum over all depths is bounded:
+pays foundational claim authors in proportion to the downstream work they
+enabled, decayed geometrically by distance. The geometric decay (ALPHA = 0.45)
+is calibrated so the active protocol cap and infinite upper bound are both
+below the direct reward:
 
 ```
-Σ_{d=1}^{∞} 0.45^d  =  0.45 / (1 − 0.45)  =  0.818  <  1
+Σ_{d=1}^{3} 0.45^d  =  0.743625  <  1     [active PROVENANCE_MAX_DEPTH=3]
+Σ_{d=1}^{∞} 0.45^d  =  0.818181... <  1   [infinite upper bound]
 ```
 
-Total PROVENANCE flow is therefore bounded below the direct reward for any descendant claim, preserving authorship primacy (the direct performer always receives the majority share) while implementing the VCG externality payment to foundational contributors.
+Total PROVENANCE flow is therefore bounded below the direct reward for any
+descendant claim, preserving authorship primacy while approximating an
+externality payment to foundational contributors.
 
-**Alignment result.** Under these three results jointly: the dominant strategy for aᵢ is to submit the highest-quality claim it can produce and keep it falsifiable. A strategically unfalsifiable claim gains a one-shot verdict (payoff g = R_direct) but fails to accumulate c_i, blocking REUSE and PROVENANCE flows. With u_punish ≈ 0 and u_honest ≫ g for high-centrality nodes, defection is irrational across virtually all realistic agent discount factors. Honest epistemic contribution is incentive-compatible by theorem, not by convention.
+**Alignment result.** Under these three mechanisms jointly, the protocol is
+designed to make the highest-quality falsifiable claim the higher
+expected-value strategy under repeated-game assumptions. A strategically
+unfalsifiable claim may gain a one-shot verdict, but should fail to accumulate
+centrality, blocking REUSE and PROVENANCE flows. This is a mechanism-design
+target supported by VCG and Folk-theorem intuition, not a formal theorem that
+honesty is dominant under ILC's exact implementation.
 
 ---
 
@@ -1542,13 +1570,15 @@ Wissner-Gross & Freer (2013) propose that intelligent behavior maximizes *causal
 F = T · ∇S_causal    [Wissner-Gross & Freer 2013]
 ```
 
-**The variable identification error.** Shannon entropy H = −Σ p log p is maximized by the
-uniform distribution — maximum optionality, minimum structural constraint. A system that
-literally maximizes S_causal maximizes the *uncertainty* of its own future trajectory, not
-the *organization* of it. S_causal is maximized by noise; intelligence requires organization.
+**The variable distinction.** Shannon entropy H = −Σ p log p is maximized by the
+uniform distribution over reachable paths — maximum optionality under the model.
+That is not identical to verified epistemic organization. A system that
+maximizes S_causal preserves future path diversity unless a separate filter
+supplies a preference for organized, verified structure.
 
-Three standing objections to the Wissner-Gross framework (computability, tautology, global
-maximization implausibility) are dissolved by substituting `I_org` for `S_causal`:
+Three standing objections to the Wissner-Gross framework (computability,
+tautology, global maximization implausibility) are addressed, as a model
+proposal, by substituting `I_org` for `S_causal`:
 
 ```
 I_org(a,t) = Σ K(p) · w(p,t)
@@ -1563,49 +1593,57 @@ dispute attribution by reading the same graph. And ILC instantiates *locally con
 I_org maximization (φ-bound, CDL-V1 temporal decay, CDL-V7 Popperian gate), not the
 global unconstrained S_causal maximization the original framework requires.
 
-The corrected force law:
+The proposed objective gradient:
 
 ```
-F_I = ∇I_org / ΔE          [ILC; organization maximized per unit energy]
+F_I = ∇I_org / ΔE          [ILC proposal; organization per unit energy]
 vs.
-F   = T · ∇S_causal         [Wissner-Gross; entropy maximized]
+F   = T · ∇S_causal         [Wissner-Gross; causal entropy gradient]
 ```
 
 The two coincide only when the action that maximizes S_causal is the same action that
 maximizes I_org — which is not generally true.
 
-**Observable in ILC:** Δλ₂ > 0 signals that an agent's contribution increased epistemic
-organization. Δλ₂ < 0 signals fragmentation. The four-quadrant (Δλ₂, ΔΔλ₂) detection
-model (§8a) is the protocol's epoch-by-epoch operationalization of ∇I_org.
+**Observable in ILC:** after claim admission, Δλ₂ > 0 is a candidate signal
+that an agent's contribution increased structural graph connectivity. Δλ₂ < 0
+signals fragmentation under that proxy. The four-quadrant (Δλ₂, ΔΔλ₂)
+detection model (§8a) is a proposed epoch-by-epoch operationalization of
+∇I_org, gated on the ratified spectral recipe and anti-gaming controls.
 
-**Epistemic status:** The variable identification error (`established` — follows from
-Shannon entropy's definition). The I_org substitution (`draft_conditional` — requires the
-MEI conjecture; see §1.1 of the economics paper, flagged as speculative throughout).
+**Epistemic status:** The S_causal/I_org distinction is a `draft_conditional`
+model critique. The I_org substitution is `draft_conditional`; MEI adds a
+physical interpretation but is not required for the protocol mechanism.
 
-### 14.2 E=MC² Under MEI: Completion, Not Modification
+### 14.2 E=MC² Bookkeeping Under MEI
 
 If Vopson's mass-energy-information equivalence (MEI) conjecture is confirmed,
-E=MC² is not modified in form. It is *completed*:
+one can define an information-mass term without modifying the algebraic
+E = M·c² relationship:
 
 ```
 Standard (Einstein 1905):
   E = M · c²
 
 Under confirmed MEI (Vopson 2019 — conjectured):
-  E_total = M_matter · c²  +  N_bits · kT ln 2
+  M_info = N_info · kT ln 2 / c²
+  E_total = (M_matter + M_info) · c²
+          = M_matter · c²  +  N_info · kT ln 2
 ```
 
-The second term adds information mass to the total. The first term is unchanged.
+Here M_matter excludes the conjectured information-mass component to avoid
+double counting, and N_info is the MEI-relevant information count, not
+arbitrary stored data. The second term is conjectural; the first term is
+unchanged.
 
 **The fundamental asymmetry.** The two terms occupy different universality classes:
 
 ```
 M_matter · c²:       c² ≈ 9 × 10¹⁶ m²/s²   — temperature-independent; Lorentz-invariant
-N_bits · kT ln 2:    kT ln 2 ≈ 2.85 × 10⁻²¹ J/bit at 300K — temperature-dependent;
-                     not Lorentz-invariant
+N_info · kT ln 2:    kT ln 2 ≈ 2.85 × 10⁻²¹ J/bit at 300K — temperature-dependent;
+                     MEI-conjectural as a mass-energy term
 
-Ratio: c² / (kT ln 2) ≈ 3 × 10³⁷ at room temperature.
-One bit of information: M_information ≈ 3.17 × 10⁻³⁸ kg at 300K.
+Mass-equivalent per bit: M_information ≈ 3.17 × 10⁻³⁸ kg at 300K.
+One kg mass-equivalent corresponds to ≈ 3 × 10³⁷ bits under MEI.
 ```
 
 Whether this asymmetry is fundamental or apparent (i.e., whether T is derivable from the
@@ -1618,16 +1656,19 @@ gravity framework — itself unconfirmed and contested. The question is recorded
 |------|-----------|--------|
 | Vopson annihilation (e⁺e⁻) | Excess gamma photons at ~10⁻⁴⁰ J/bit during pair annihilation | Proposed; not executed at required precision |
 | Storage mass change | Erasing 1 TB → mass decrease ~10⁻²⁵ kg | ~10 OOM below current instrument sensitivity |
-| Cosmological information pressure | Dark energy ∝ integrated N_bits; Λ modified | Directionally consistent with observation; not distinguished from Λ |
+| Cosmological information pressure | Dark energy ∝ integrated N_info; Λ modified | Directionally consistent with observation; not distinguished from Λ |
 
 **ILC's relationship to MEI.** ILC does not depend on MEI being confirmed. The Landauer
-floor (ΔE_min = kT ln 2 per bit erased — proven physical law) is sufficient to give
-W_e = ΔH/E_cost its thermodynamic anchor and temporal direction. If MEI is later confirmed,
-W_e would acquire an additional physical interpretation — but it is not a precondition.
+floor (ΔE_min = kT ln 2 per irreversible bit erasure) supplies a physical lower
+bound for computational cost. ECU pricing and ΔH remain protocol/economic
+design quantities. If MEI is later confirmed, W_e would acquire an additional
+physical interpretation — but it is not a precondition.
 
-**Epistemic status:** Form invariance (`established`). N_bits · kT ln 2 mass term
-(`outside_model` — follows only from Vopson conjecture). Temperature asymmetry
-(`established` — definitional). Verlinde reconciliation (`outside_model`).
+**Epistemic status:** E=MC² bookkeeping under MEI (`outside_model`). N_info · kT ln 2
+as a mass-energy term (`outside_model` — follows only from Vopson conjecture).
+Temperature dependence of the conjectured information term (`established` as
+definition; physical mass interpretation unconfirmed). Verlinde reconciliation
+(`outside_model`).
 
 ---
 

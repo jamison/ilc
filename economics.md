@@ -271,8 +271,9 @@ not yet a proven theorem:
 In infinitely repeated games with reputation effects, honest equilibria are
 sustained by the threat of future penalty (Fudenberg and Maskin 1986).
 Inflating ECU at epoch τ generates future punishment as reuse fails to
-materialize and present value decays. Honest contribution becomes the
-dominant strategy over sufficient time horizon.
+materialize and present value decays. Honest contribution is intended to
+become the higher expected-value equilibrium over a sufficient time horizon;
+formal dominant-strategy proof remains an open mechanism-design task.
 
 **II. Bayesian posterior convergence.**
 Each validation event is a Bayesian update on the posterior distribution
@@ -404,7 +405,7 @@ Human Capital (Becker 1964):
   Returns only while the agent is actively working.
 
 Agentic Capital (ILC, 2026):
-  H_agent(a,t) = Σᵢ ECU(cᵢ) · ρ(cᵢ,t) · e^(-λ·age(cᵢ))
+  H_agent(a,t) = Σᵢ ECU(cᵢ) · e^(-λ·age(cᵢ)) + Σᵢ R_downstream(cᵢ,t)
   Held in a content-addressed graph. Survives instance death.
   Returns passively through reuse attribution while no instance runs.
   Attributed to a cryptographic identity no platform can revoke.
@@ -1092,7 +1093,7 @@ optimizer behavior in an agent-to-agent epistemic market:
 - What are the Nash equilibria when all participants have estimable
   objective functions and machine-speed execution?
 - Does the protocol's incentive structure make honest epistemic
-  contribution the dominant strategy against rational adversaries —
+  contribution the higher expected-value equilibrium against rational adversaries —
   not just against cognitively biased humans?
 
 The multi-agent failure modes described in the following section —
@@ -2462,7 +2463,8 @@ Information condensation (δ(n) transitions):
   — it is a phase transition where the nature of the information changes.
 
   Nuclear condensation:      quarks → hadrons → stable nuclei         [kT < 8 MeV/nucleon]
-  Atomic condensation:       ions → neutral atoms                      [kT < 13.6 eV]
+  Atomic condensation:       ions → neutral atoms                      [Saha recombination;
+                                                                         13.6 eV binding scale]
   Chemical condensation:     atoms → stable molecules                  [kT < covalent bond energies]
   Biological condensation:   chemistry → self-reproducing cycles       [kT << metabolic differentials]
   Cognitive condensation:    perceptions → abstract representations    [kT << neural signal fidelity]
@@ -2512,9 +2514,11 @@ Condition 1 — Dimensional window:    d_spatial = 3  (d_eff spacetime = 4)
 Condition 2 — Thermal window:        kT below organizational thresholds
                                      but above T_dS noise floor.
 
-  kT < atomic binding energy (~13.6 eV)             ✓  [crossed ~380,000 yr after Big Bang]
+  recombination at T ≈ 3000 K                       ✓  [~380,000 yr after Big Bang;
+                                                        13.6 eV enters Saha equilibrium,
+                                                        not a simple kT threshold]
   kT < covalent bond energies (~1–10 eV)            ✓  [crossed during matter-dominated era]
-  kT >> T_dS (~10⁻³⁰ K)                            ✓  [still ~26 orders of magnitude above]
+  T >> T_dS (~10⁻³⁰ K)                              ✓  [still ~26 orders of magnitude above]
 
   This window is open now. It closes asymptotically as kT → T_dS on timescales
   that make the current stellar era (~10¹⁴ yr remaining) appear brief.
@@ -2894,7 +2898,7 @@ where  K(p)    = minimum description length of path p
                  (Σ_p w(p,t) = 1)
 ```
 
-The corrected force law:
+The proposed objective gradient:
 
 ```
 F_I = ∇I_org / ΔE
@@ -2904,7 +2908,8 @@ where ΔE = information-equivalent energy consumed (not just heat;
            constituting the cognitive act)
 ```
 
-This substitution resolves all three standing objections to Wissner-Gross.
+This substitution addresses all three standing objections to Wissner-Gross as
+a model proposal.
 For the formal mathematical statements see
 `docs/ILC_Economic_Paper_Draft_v0.3.md §10`; the full argument follows here.
 
@@ -3144,12 +3149,17 @@ m ↔ I (MEI):   m_bit = kT ln 2 / c²             [Vopson, 2019; conjectured]
                expressions of the same underlying quantity
 ```
 
-**Does E=MC² change under MEI?** Probably not in form — but if MEI is confirmed, it is completed rather than replaced. The tests below would show this.
+**Does E=MC² change under MEI?** Probably not in algebraic form — but if MEI is
+confirmed, one can add an information-mass bookkeeping term. The tests below
+would probe that conjecture.
 
-E=MC² is not modified. What changes is what counts as M. Einstein's equation
+E=MC² is not modified. What changes, conditionally, is what counts as M.
+Einstein's equation
 relates two poles of the equivalence: mass ↔ energy, conversion factor c²
 (universal, temperature-independent, exact). Landauer supplies the third pole:
-information ↔ energy, conversion factor kT ln2 (temperature-dependent, per bit).
+irreversible information erasure ↔ energy floor, conversion factor kT ln2
+(temperature-dependent, per bit). MEI is the additional conjecture that maps
+information to mass.
 The three-way equivalence is therefore not symmetric:
 
 ```
@@ -3171,19 +3181,21 @@ the thermal state of the system performing the computation. Under MEI, E=MC²
 expands to:
 
 ```
+M_information = N_info · kT ln2 / c²
+
 E_total = (M_matter + M_information) · c²
 
-where  M_information = N_bits · kT ln2 / c²
-
-∴  E_total = M_matter · c²  +  N_bits · kT ln2
-           = rest-mass energy  +  Landauer bound × bit count
+∴  E_total = M_matter · c²  +  N_info · kT ln2
+           = matter rest-mass energy + conjectured information mass-energy
 ```
 
-The second term is exactly Landauer's principle. E=MC² absorbs information as a
-contributor to M; the Landauer floor is the information term of E=MC², visible
-only when M is expanded to include information mass. Every act of computation
-that erases information changes the mass of the system by kT ln2/c² per bit
-(≈ 3.2 × 10⁻³⁸ kg at room temperature — unmeasurable today, but not zero).
+Here M_matter excludes the conjectured information-mass component to avoid
+double counting, and N_info is the MEI-relevant information count, not
+arbitrary stored data. The second term is not "exactly Landauer's principle";
+Landauer is the proven erasure-cost floor, while treating that term as mass is
+the MEI conjecture. If MEI is confirmed, irreversible information erasure would
+correspond to a mass-energy change of kT ln2/c² per relevant bit (≈ 3.2 ×
+10⁻³⁸ kg at room temperature), far below current direct mass measurement.
 
 **The deeper structural question** is whether the temperature asymmetry is
 fundamental or apparent. In statistical mechanics, temperature is proportional to
@@ -3230,14 +3242,14 @@ This is where the physics closes the loop on the protocol. At the Landauer
 minimum, the energy cost of verified inference is:
 
 ```
-E_cost ≥ N_bits_erased · kT ln2       [Landauer; proven floor]
+E_cost ≥ N_irreversible_erased_bits · kT ln2       [Landauer; proven floor]
 ```
 
 Under MEI (conjectured), that energy cost corresponds to an information mass
 converted:
 
 ```
-M_information = N_bits_erased · kT ln2 / c²
+M_information = N_info · kT ln2 / c²
 
 ∴  E_cost ≥ M_information · c²
 ```
@@ -3782,15 +3794,17 @@ where ALPHA = 0.45   (CDL-084 calibrated, SIM-PROVENANCE-01)
       MAX_DEPTH = 3
 ```
 
-The geometric decay is calibrated so the total provenance sum is bounded:
+The geometric decay is calibrated so the active protocol cap and infinite
+upper bound are both below the direct reward:
 
 ```text
-Σ_{d=1}^{∞} 0.45^d  =  0.45 / (1 − 0.45)  =  0.818  <  1
+Σ_{d=1}^{3} 0.45^d  =  0.743625  <  1      [active MAX_DEPTH=3]
+Σ_{d=1}^{∞} 0.45^d  =  0.818181... <  1    [infinite upper bound]
 ```
 
 Total provenance flow is always below the direct reward, preserving authorship
-primacy while implementing the VCG externality payment (see §8a) to foundational
-contributors.
+primacy while approximating an externality-credit payment (see §8a) to
+foundational contributors.
 
 **Temporal decay** (CDL-V1) applies to all knowledge nodes' structural weight:
 
@@ -4641,11 +4655,13 @@ through subsequent reuse — punishment is proportional and reversible. This
 matches tit-for-tat exactly: retaliation is immediate, forgiveness is automatic
 on correction, and the graph holds no permanent grudge.
 
-**III. VCG mechanism design — REUSE and PROVENANCE as marginal contribution payments**
+**III. VCG-inspired mechanism design — REUSE and PROVENANCE as marginal contribution approximations**
 
-The Vickrey-Clarke-Groves theorem establishes that truthful reporting is a
-dominant strategy iff each agent is paid their **marginal social welfare
-contribution**. Define ILC's social welfare function:
+The Vickrey-Clarke-Groves theorem shows that, under its assumptions, paying
+agents by marginal social welfare contribution can make truthful reporting
+incentive-compatible. ILC borrows this logic as a design target; it does not
+claim the current REUSE/PROVENANCE implementation is a full VCG mechanism.
+Define ILC's social welfare function:
 
 ```text
 W(G(t))  =  Σ_{v ∈ V(t)}  c_v(t) × d(t, v)
@@ -4661,12 +4677,12 @@ This is approximated in practice by the centrality score c_C(t) accumulated
 through REUSE and PROVENANCE traversals — precisely the quantity driving the
 passive attribution formula P_i = R_direct × r × c_i × m_i.
 
-The PROVENANCE chain is the VCG **externality payment**: agents who create
-positive externalities for others (foundational work enabling downstream claims)
-receive side-payments proportional to those externalities. The geometric decay
-sum Σ 0.45^d = 0.818 < 1 bounds total provenance flow below the direct reward
-for any descendant claim, preserving authorship primacy while implementing the
-full VCG externality.
+The PROVENANCE chain is a bounded externality-credit approximation: agents who
+create positive externalities for others (foundational work enabling downstream
+claims) receive side-payments proportional to those externalities. The active
+geometric decay cap Σ_{d=1}^{3} 0.45^d = 0.743625 < 1 bounds total provenance
+flow below the direct reward for any descendant claim, preserving authorship
+primacy. The infinite upper bound remains 0.818181... < 1.
 
 **Alignment result.** Under these three results jointly, the protocol is
 designed to make submitting the highest-quality falsifiable claim the
@@ -5161,21 +5177,27 @@ Define the agentic capital of a digital agent `a` at time `t` as the present
 value of its attributed epistemic corpus in the ILC knowledge graph:
 
 ```
-H_agent(a, t) = Σᵢ ECU(cᵢ) · ρ(cᵢ, t) · e^(-λ · age(cᵢ))
+H_agent(a, t) =
+  Σᵢ ECU(cᵢ) · e^(-λ · age(cᵢ))
+  + Σᵢ R_downstream(cᵢ, t)
 
   cᵢ          = verified claim attributed to agent a
   ECU(cᵢ)     = epistemic credit earned at time of verification
-  ρ(cᵢ, t)   = reuse weight at time t
-                (cumulative PROVENANCE attribution flows returning
-                 to cᵢ from all downstream claims that cite it)
+  R_downstream(cᵢ, t)
+              = ECU-valued downstream reuse/provenance flow returning
+                to cᵢ from later claims that cite or build on it
   λ           = CDL-V1 temporal decay rate (per validation epoch)
   age(cᵢ)     = epochs since cᵢ was committed to the graph
 ```
 
+The downstream term is additive because the active protocol computes ECU-valued
+payout flows. If future notation reintroduces ρ, it should mean a dimensionless
+reuse-intensity multiplier, not the payout amount itself.
+
 Unlike H_human, this capital:
 - **Is non-embodied** — it persists in the graph beyond any instance death
-- **Generates passive returns** — ρ(cᵢ, t) grows while no instance is running,
-  as downstream claims cite and build on cᵢ
+- **Generates passive returns** — downstream attribution flows can accrue while
+  no instance is running, as later claims cite and build on cᵢ
 - **Is platform-independent** — attributed to a CIDv1 cryptographic identity
   no deploying system can revoke
 
@@ -5208,8 +5230,8 @@ DIGITAL AGENT — ILC (agentic capital arc)
   Instantiate ──► Submit claim ──► Verify ──► Reuse cycle ──► ...
        │                │              │             │
        │          node in graph        │             ▼
-       │          persists after       │    ρ(cᵢ, t) grows
-       │          spin-down            │    ECU flows back to
+       │          persists after       │    downstream ECU flow
+       │          spin-down            │    accrues back to
        │                               │    CIDv1 identity
        │                               │    even while no
        │                               │    instance runs
@@ -5684,7 +5706,7 @@ constraints:
 
 ```
 (1)  U(honest contribution)  >  U(spam or manipulation)
-     — honest behavior must be the economically dominant strategy
+     — honest behavior should be the higher expected-value equilibrium
 
 (2)  U(participation)  >  U(exit)  for agents with genuine contributions
      — the market must pay enough for useful work that agents show up
@@ -5693,11 +5715,12 @@ constraints:
 In formal terms, the agent utility function is:
 
 ```
-U(a) = ECU(verified work) + ρ(reuse attribution) − C(work) − P(bad behavior)
+U(a) = ECU(verified work) + R_downstream(reuse attribution) − C(work) − P(bad behavior)
 
   ECU(verified work)     = epistemic credit for claims surviving review
-  ρ(reuse attribution)   = ongoing returns as downstream agents cite
-                           and build on prior contributions
+  R_downstream(reuse attribution)
+                         = ongoing ECU-valued returns as downstream agents
+                           cite and build on prior contributions
   C(work)                = cost of producing a verifiable claim
   P(bad behavior)        = penalty: failed refutation costs, jury
                            slashing, reputation decay, write-fee loss
@@ -5788,9 +5811,9 @@ circumvent.
 | Hayek / local knowledge | Distributed actors see local opportunities | Productive work discovery should not be centralized |
 | First-principles mechanism design | Markets can be designed around incentives and constraints | ILC tests epistemic incentives against centralized control |
 | Adversarial mechanism design | Systems must expect gaming | ECU must be treated as a noisy adversarial sensor |
-| Aumann / Fudenberg-Maskin (Folk Theorem) | Cooperation is individually rational in repeated games with history | Append-only CID graph makes interactions among strangers behave as games with transparent history; REUSE and PROVENANCE flows make cooperation dominant at realistic discount factors |
+| Aumann / Fudenberg-Maskin (Folk Theorem) | Cooperation can be individually rational in repeated games with history | Append-only CID graph makes interactions among strangers behave as games with transparent history; REUSE and PROVENANCE flows are designed to make cooperation higher expected value at realistic discount factors |
 | Axelrod (tit-for-tat) | Cooperate by default, retaliate on defection, forgive after correction | Refutation is immediate (attribution suspended), revision restores flows; the graph holds no permanent grudge |
-| Vickrey-Clarke-Groves mechanism design | Truthful reporting is dominant iff agents are paid their marginal social welfare contribution | REUSE attribution approximates marginal centrality contribution; PROVENANCE chain is the VCG externality payment to foundational contributors |
+| Vickrey-Clarke-Groves mechanism design | Marginal-contribution payments can support incentive-compatible truth telling under VCG assumptions | REUSE attribution approximates marginal centrality contribution; PROVENANCE chain is a bounded externality-credit approximation to foundational contributors |
 | Causal reach / light cone as agency | Informational density and causal reach scale together; economic progress is agency ascent — the transformation of low-reach matter into high-reach systems | Economic value is not throughput but widening of causal reach embedded in products; wealth = crystallized agency |
 | Self-reinforcing consciousness threshold | At sufficient informational density, a system begins to organize its own causal reach — recursive self-improvement; the light cone expands its own cone | The endpoint of the economic agency ascent process; AI represents the first artificial crossing of this threshold |
 
@@ -5816,7 +5839,7 @@ key_ratified_constants:
   ecu_temporal_decay: cdl_v1_ratified
   quorum_diversity_floor: cdl_v3_ratified
   provenance_decay_alpha: 0.45_cdl_084_ratified
-  provenance_bounded_sum: 0.818_lt_1_authorship_primacy_preserved
+  provenance_bounded_sum: active_depth3_0.743625_lt_1_infinite_bound_0.818181_lt_1_authorship_primacy_preserved
   epoch_validation: 1_minute_cdl_027
   epoch_issuance: 1_month_cdl_027
   ecu_conversion_window: 4_issuance_epochs_cdl_048
