@@ -162,7 +162,7 @@ impl IlcAppReadService for ApplicationInterface {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::epoch_settlement::EpochSettlementProtocol;
+    use crate::epoch_settlement::{test_epoch_not_before_unix_ms, EpochSettlementProtocol};
     use crate::types::{
         AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
         ValidatorID, ValidatorSet,
@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(resp.current_epoch, 0);
 
         // 2. We inject a valid EpochSettlement sequence via the M-006 domain logic mapped over LMDB
-        let protocol = EpochSettlementProtocol::new(epoch_store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
 
         let (vset, entries) = setup_validators();
         // SEC-FIX-02: commit epochs sequentially from 1.
@@ -267,7 +267,7 @@ mod tests {
             let r = EpochSettlementRecord {
                 epoch: EpochSeq(ep),
                 state_root: CIDv1Root::new([ep as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(ep),
             };
             let (sigs, signers) = agg_sig_all(&r, &entries);
             let cp = EpochCheckpoint {
@@ -310,7 +310,7 @@ mod tests {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
-        let protocol = EpochSettlementProtocol::new(epoch_store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: commit sequentially.
@@ -342,14 +342,14 @@ mod tests {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
-        let protocol = EpochSettlementProtocol::new(epoch_store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, entries) = setup_validators();
 
         for i in 1..=5 {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
             protocol
@@ -380,14 +380,14 @@ mod tests {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
-        let protocol = EpochSettlementProtocol::new(epoch_store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, entries) = setup_validators();
 
         for i in 1..=(MAX_EPOCH_CHAIN_BATCH + 2) {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
             protocol
@@ -420,7 +420,7 @@ mod tests {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
         let app = ApplicationInterface::new(balance_store, epoch_store.clone());
-        let protocol = EpochSettlementProtocol::new(epoch_store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(epoch_store.clone());
         let (vset, entries) = setup_validators();
 
         // Commit 1-3 via the sequential protocol path, then inject epoch 5 directly
@@ -431,7 +431,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
             protocol
@@ -450,7 +450,7 @@ mod tests {
             .commit_epoch_record(EpochSettlementRecord {
                 epoch: EpochSeq(5),
                 state_root: CIDv1Root::new([5u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(5),
             })
             .unwrap();
 

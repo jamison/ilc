@@ -1,0 +1,53 @@
+{
+  "version": "mysticeti_mainnet_rc01_v0.1",
+  "network_id": "ilc-rc01",
+  "settlement_path": "mysticeti_fast_path",
+  "real_ecu": true,
+  "epoch": 0,
+  "n": 4,
+  "f": 1,
+  "required_votes": 3,
+  "validators": [
+    {
+      "validator_id": 1,
+      "agent_id": "8fc76b0b897092833d575794290242b4dfd41a39eb59a08189c4dbd805612749a35b47b7a2dd7d31c9bfd353ebdfb833",
+      "validator_key": "8fc76b0b897092833d575794290242b4dfd41a39eb59a08189c4dbd805612749a35b47b7a2dd7d31c9bfd353ebdfb833",
+      "stake_micro_ecu": 1000000,
+      "tailscale_ip": "203.0.113.11",
+      "port": 7101,
+      "host": "ilc-rc01-validator-1.example",
+      "role": "honest"
+    },
+    {
+      "validator_id": 2,
+      "agent_id": "922486d898592c3725e45f4e20d10946565d08c0cbe75d2068fd43727e6be825ad124b54c6a53d625c08dadc7f66bc5d",
+      "validator_key": "922486d898592c3725e45f4e20d10946565d08c0cbe75d2068fd43727e6be825ad124b54c6a53d625c08dadc7f66bc5d",
+      "stake_micro_ecu": 1000000,
+      "tailscale_ip": "203.0.113.12",
+      "port": 7101,
+      "host": "ilc-rc01-validator-2.example",
+      "role": "honest"
+    },
+    {
+      "validator_id": 3,
+      "agent_id": "86b28a5eb409ed07c091450524a7e03b29e63e3fa7d7ea319529e75bca5d742f65c4cfdfba2c85218b1fead6dd744818",
+      "validator_key": "86b28a5eb409ed07c091450524a7e03b29e63e3fa7d7ea319529e75bca5d742f65c4cfdfba2c85218b1fead6dd744818",
+      "stake_micro_ecu": 1000000,
+      "tailscale_ip": "203.0.113.13",
+      "port": 7101,
+      "host": "ilc-rc01-validator-3.example",
+      "role": "honest"
+    },
+    {
+      "validator_id": 4,
+      "agent_id": "a07b32c8d62605d2c533002c22e5a9a410b8541a76bb12150ef28b3c97240b8710175ae16d9f36812d6d2e78d3bb655c",
+      "validator_key": "a07b32c8d62605d2c533002c22e5a9a410b8541a76bb12150ef28b3c97240b8710175ae16d9f36812d6d2e78d3bb655c",
+      "stake_micro_ecu": 1000000,
+      "tailscale_ip": "203.0.113.14",
+      "port": 7101,
+      "host": "ilc-rc01-validator-4.example",
+      "role": "honest"
+    }
+  ],
+  "note": "phase_1588_public_rc01_candidate_config_legacy_timing_flag_absent_timing_is_immutable_in_rust_binary_operator_must_replace_example_endpoints_and_tls_paths_before_launch"
+}

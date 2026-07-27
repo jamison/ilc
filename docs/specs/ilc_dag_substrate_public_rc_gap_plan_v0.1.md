@@ -41,7 +41,7 @@ criteria, or explicitly removed from public RC scope with a human-approved non-c
 | `PASSIVE_ECU_WIRING_NOT_ACTIVATED` | `ilc_core/economics/epoch_attribution_settle_runtime.py:56` | `False` | Operationally set for 49-epoch private soak; no SENSITIVE authorization phase ran |
 | `public_claimability_activated` | `ilc_core/sidecars/wallet_action_semantics_preflight.py:60,146` | `False` (enforced by `_require_all_false()`) | Must flip to `True` at public RC |
 | `ilc_settlement_authorized` | `ilc_core/sidecars/wallet_action_semantics_preflight.py:68,174` | `False` (enforced by `_require_all_false()`) | Must flip to `True` at public RC |
-| `is_testnet` | `config/mysticeti_testnet_M009/genesis.json` | `true` | All timing enforcement bypassed; needed: `false` for mainnet |
+| `is_testnet` | `config/mysticeti_testnet_M009/genesis.json` | Historical `true` in legacy testnet configs | Phase 1588 removes the Rust parser/runtime field entirely; mainnet RC01 must not contain this field |
 | `SettlementPath` | `ilc_consensus/src/config.rs:97` | `None` in all current configs | `MysticetiFastPath` not activated in any config |
 | `process_epoch_checkpoint()` | `ilc_consensus/src/epoch_settlement.rs:233` | Implemented (BLS verify + LMDB write) | Rust-side settlement exists; no exposed write endpoint from Python |
 | Rust gRPC proposal ingress | `ilc_consensus/src/app_interface.rs` | Read-only (`IlcAppReadService`) | No proposal ingress for epoch settlement submission |
@@ -65,7 +65,7 @@ the Python proposal call nor the Rust proposal ingress currently exist.
 | GAP-SUBSTRATE-BRIDGE-SPEC | Wire protocol spec: Python submits a canonical epoch settlement proposal; Rust validators own BFT ordering/signing/checkpoint commitment | Yes — gates implementation | **1585** |
 | GAP-SUBSTRATE-BRIDGE-RUST | Implement authenticated Rust proposal ingress; route into consensus-owned checkpoint processing, not a direct externally supplied checkpoint bypass | Yes — core activation | **1586** |
 | GAP-SUBSTRATE-BRIDGE-PY | Implement Python client in `production_bridge.py`; flip `PRODUCTION_BRIDGE_ACTIVE = True` | Yes — core activation | **1587** |
-| GAP-SUBSTRATE-CONFIG | Mainnet genesis config (`is_testnet=false`); provision timing enforcement | Yes — mainnet gate | **1588** |
+| GAP-SUBSTRATE-CONFIG | Mainnet genesis config with no `is_testnet` field; immutable timing enforced in Rust | Yes — mainnet gate | **1588** |
 | GAP-SUBSTRATE-ADMISSION | Validator admission activation: clear `PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED` guard, implement production path | Yes — validators must join | **1589** |
 | GAP-SUBSTRATE-TLA | TLA+ timing/admission model update plus TLC evidence, or explicit human-approved removal of those semantics from public RC scope | Yes — formal substrate gap | **1590** |
 | GAP-INTEGRATION-SOAK | E2E soak: Python proposal → Rust authenticated ingress → BFT/quorum checkpoint → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1591** |
@@ -322,22 +322,22 @@ and no gRPC proposal client.
 **Prompt status:** Drafted and validator-compliant
 
 **Background:**
-All current configs use `is_testnet: true` (`config/mysticeti_testnet_M009/genesis.json`).
-With `is_testnet=true`, `epoch_settlement.rs` bypasses all timing enforcement:
+Legacy testnet configs use `is_testnet: true` (`config/mysticeti_testnet_M009/genesis.json`).
+Before Phase 1588, `epoch_settlement.rs` used that field to bypass timing enforcement:
 - Forward skew guard (`CLOCK_SKEW_TOLERANCE_MS = 300_000` — 5 min) is skipped
 - Minimum epoch duration guard (`MIN_EPOCH_DURATION_MS = 2_592_000_000` — 30 days) is skipped
 
-Public RC requires a mainnet genesis config with `is_testnet: false` to enforce these
-guards. This also gates Phase 1589 (validator admission), which must be tested against
-a mainnet-mode config.
+Public RC requires a mainnet genesis config with no `is_testnet` field and a Rust binary
+whose timing guards are unconditional. This also gates Phase 1589 (validator admission),
+which must be tested against the RC01 config.
 
 **Scope:**
 
 1. Create `config/mysticeti_mainnet_rc01/genesis.json` with:
-   - `"is_testnet": false`
+   - no `"is_testnet"` field
    - `"network_id": "ilc-rc01"` (or human-specified RC network ID)
-   - Real BLS12-381 G1 public keys for the validator set (per human decision on f-value
-     from Phase 1585: single-validator f=0 with HIGH-002 disposition, or multi-validator)
+   - Real BLS12-381 G1 public keys for the validator set (per human Decision 1
+     from Phase 1585: N>=4, f=1; single-validator f=0 is not authorized for public RC)
    - `"settlement_path": "mysticeti_fast_path"`
    - All other required genesis fields
 
@@ -436,7 +436,8 @@ TLA+ Spec D (Phase 1385a, 2026-05-18) proved `SafetyNoDualCert` over 67M states.
 does not model:
 1. `not_before_unix_ms` — the timing field added to `EpochSettlementRecord` in the
    1575h-Fix5 commit (`63cab34cc`, 2026-07-23). This field triggers a 5-min forward
-   skew guard and 30-day minimum epoch duration guard, both gated on `is_testnet=false`.
+   skew guard and 30-day minimum epoch duration guard; after Phase 1588 both guards
+   are unconditional in production Rust.
 2. Validator admission and ejection — `admit_validator()` and `eject_validator()` are
    not modeled in any TLA+ spec.
 
@@ -453,7 +454,7 @@ Produce formal-methods evidence, not only a documentation note:
    - Validator ejection finality (ejected validator cannot re-enter in the same epoch)
 3. Adds or updates a bounded TLA+ model for the active RC substrate mode, with at least:
    - `NoSkipEpoch`
-   - `NoFastMainnetEpoch` when `is_testnet=false`
+   - `NoFastEpoch` under unconditional Phase 1588 timing enforcement
    - `NoFutureCheckpointAccepted`
    - validator-admission/ejection membership safety for the selected RC scope
    - `SafetyNoDualCert` preserved under the new timing/membership fields
@@ -690,7 +691,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | 1585 | COMPLETE; NON-SENSITIVE; spec committed with token `production_bridge_proposal_ingress_spec_committed_phase_1585` | RESOLVED |
 | 1586 | Drafted; GO required after 1585 | — |
 | 1587 | Drafted; GO required after 1586 | — |
-| 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
+| 1588 | COMPLETE; immutable timing enforced in Rust and RC01 config committed | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
 | 1590 | COMPLETE via Fix1 quorum-intersection hardening; TLC PASS depth 10 | RESOLVED |
 | 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 + invite/spectral/discovery/wallet-gate prerequisites | — |

@@ -1,0 +1,47 @@
+[network]
+network_id = "ilc-rc01"
+settlement_path = "mysticeti_fast_path"
+environment_required = "ILC_D2D_PUBLIC_MODE=1"
+
+[security]
+verify_peer_tls = true
+allow_private_peer_endpoints_for_tests = false
+authority_bearing_gossip_types_must_include = ["centrality_delta"]
+reject_unverifiable_authority_bearing_gossip_before_buffering = true
+
+[grpc]
+grpc_listen_addr = "0.0.0.0:50151"
+
+[tls]
+tls_cert_path = "config/mysticeti_mainnet_rc01/certs/validator_cert.pem"
+tls_key_path = "config/mysticeti_mainnet_rc01/certs/validator_key.pem"
+peer_ca_cert_path = "config/mysticeti_mainnet_rc01/certs/peer_ca_cert.pem"
+
+[storage]
+lmdb_path = "/var/lib/ilc/rc01"
+lmdb_balance_map_size_bytes = 67108864
+lmdb_epoch_map_size_bytes = 16777216
+
+[[validators]]
+validator_id = 1
+host = "ilc-rc01-validator-1.example"
+p2p_addr = "203.0.113.11:7101"
+grpc_addr = "203.0.113.11:50151"
+
+[[validators]]
+validator_id = 2
+host = "ilc-rc01-validator-2.example"
+p2p_addr = "203.0.113.12:7101"
+grpc_addr = "203.0.113.12:50151"
+
+[[validators]]
+validator_id = 3
+host = "ilc-rc01-validator-3.example"
+p2p_addr = "203.0.113.13:7101"
+grpc_addr = "203.0.113.13:50151"
+
+[[validators]]
+validator_id = 4
+host = "ilc-rc01-validator-4.example"
+p2p_addr = "203.0.113.14:7101"
+grpc_addr = "203.0.113.14:50151"

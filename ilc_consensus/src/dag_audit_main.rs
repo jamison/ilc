@@ -451,7 +451,9 @@ fn hex_decode_exact(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {
 mod tests {
     use super::*;
     use blst::min_pk::{AggregateSignature, SecretKey};
-    use ilc_consensus::epoch_settlement::{EpochSettlementProtocol, EpochStore};
+    use ilc_consensus::epoch_settlement::{
+        EpochSettlementProtocol, EpochStore, MIN_EPOCH_DURATION_MS,
+    };
     use ilc_consensus::types::{
         AggSig, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ValidatorID,
         ValidatorKey, ValidatorSet,
@@ -474,7 +476,7 @@ mod tests {
             .open(lmdb_path.as_path())?;
         let env = Arc::new(env);
         let store = Arc::new(EpochStore::new(Arc::clone(&env))?);
-        let protocol = EpochSettlementProtocol::new(Arc::clone(&store), true);
+        let protocol = EpochSettlementProtocol::new(Arc::clone(&store));
 
         let keys = vec![
             SecretKey::key_gen(&[1u8; 32], &[])
@@ -498,7 +500,11 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: 1_000_000u64.saturating_add(
+                    epoch
+                        .saturating_sub(1)
+                        .saturating_mul(MIN_EPOCH_DURATION_MS),
+                ),
             };
             let checkpoint = EpochCheckpoint {
                 record: record.clone(),

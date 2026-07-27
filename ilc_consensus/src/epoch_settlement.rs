@@ -16,6 +16,30 @@ pub const MIN_EPOCH_DURATION_MS: u64 = 2_592_000_000;
 /// Tolerance window for accepting checkpoints with future not_before_unix_ms (5 minutes).
 pub const CLOCK_SKEW_TOLERANCE_MS: u64 = 300_000;
 
+#[cfg(test)]
+pub const TEST_MIN_EPOCH_DURATION_MS: u64 = 10_000;
+#[cfg(test)]
+pub const TEST_EPOCH_NOT_BEFORE_BASE_MS: u64 = 1_000_000;
+
+#[cfg(test)]
+fn effective_min_epoch_duration_ms() -> u64 {
+    TEST_MIN_EPOCH_DURATION_MS
+}
+
+#[cfg(not(test))]
+fn effective_min_epoch_duration_ms() -> u64 {
+    MIN_EPOCH_DURATION_MS
+}
+
+#[cfg(test)]
+pub fn test_epoch_not_before_unix_ms(epoch: u64) -> u64 {
+    TEST_EPOCH_NOT_BEFORE_BASE_MS.saturating_add(
+        epoch
+            .saturating_sub(1)
+            .saturating_mul(effective_min_epoch_duration_ms()),
+    )
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct StoredCheckpoint {
     pub record: EpochSettlementRecord,
@@ -220,15 +244,11 @@ impl EpochStore {
 /// The Shared-Object equivalent to the BCB FastPath.
 pub struct EpochSettlementProtocol {
     epoch_store: Arc<EpochStore>,
-    is_testnet: bool,
 }
 
 impl EpochSettlementProtocol {
-    pub fn new(epoch_store: Arc<EpochStore>, is_testnet: bool) -> Self {
-        Self {
-            epoch_store,
-            is_testnet,
-        }
+    pub fn new(epoch_store: Arc<EpochStore>) -> Self {
+        Self { epoch_store }
     }
 
     /// Executed via the ApplicationInterface trait boundary upon DAG commitment.
@@ -299,18 +319,15 @@ impl EpochSettlementProtocol {
 
         // SEC-FIX-03: Epoch timing enforcement.
         // Reject checkpoints claiming to be valid far in the future (clock skew guard).
-        // Only enforced on mainnet (is_testnet bypasses for fast testbed soaks).
-        if !self.is_testnet {
-            let now_ms = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .map(|d| d.as_millis() as u64)
-                .unwrap_or(0);
-            if checkpoint.record.not_before_unix_ms > now_ms.saturating_add(CLOCK_SKEW_TOLERANCE_MS)
-            {
-                return Err(ILCConsensusError::Other(
-                    "epoch_checkpoint_not_before_too_far_future".to_string(),
-                ));
-            }
+        // Phase 1588: this guard is unconditional; no genesis/runtime flag can bypass it.
+        let now_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis() as u64)
+            .unwrap_or(0);
+        if checkpoint.record.not_before_unix_ms > now_ms.saturating_add(CLOCK_SKEW_TOLERANCE_MS) {
+            return Err(ILCConsensusError::Other(
+                "epoch_checkpoint_not_before_too_far_future".to_string(),
+            ));
         }
 
         let mut txn = self
@@ -351,9 +368,9 @@ impl EpochSettlementProtocol {
         }
 
         // SEC-FIX-03: Minimum epoch duration enforcement.
-        // If this is not the first epoch and we're on mainnet, verify the checkpoint's
+        // If this is not the first epoch, verify the checkpoint's
         // not_before_unix_ms is at least MIN_EPOCH_DURATION_MS after the previous epoch's value.
-        if !self.is_testnet && current_epoch > 0 {
+        if current_epoch > 0 {
             // Read the previous epoch's not_before_unix_ms from LMDB.
             let prev_key = current_epoch.to_be_bytes();
             match txn.get(self.epoch_store.db, &prev_key) {
@@ -364,7 +381,7 @@ impl EpochSettlementProtocol {
                         })?;
                     let prev_not_before = prev_stored.record.not_before_unix_ms;
                     if checkpoint.record.not_before_unix_ms
-                        < prev_not_before.saturating_add(MIN_EPOCH_DURATION_MS)
+                        < prev_not_before.saturating_add(effective_min_epoch_duration_ms())
                     {
                         return Err(ILCConsensusError::Other(
                             "epoch_checkpoint_min_duration_not_elapsed".to_string(),
@@ -514,7 +531,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(epoch),
             state_root: CIDv1Root::new([fill; 36]),
-            not_before_unix_ms: 0,
+            not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
         };
         let (sigs, signers) = agg_sig_all(&record, entries);
         let checkpoint = EpochCheckpoint {
@@ -529,7 +546,7 @@ mod tests {
     fn test_get_epochs_after_cursor_zero_returns_all() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         commit_epoch(&protocol, 1, 0x01, &vset, &keys);
         commit_epoch(&protocol, 2, 0x02, &vset, &keys);
@@ -545,7 +562,7 @@ mod tests {
     fn test_get_epochs_after_cursor_mid_returns_tail() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         commit_epoch(&protocol, 1, 0x01, &vset, &keys);
         commit_epoch(&protocol, 2, 0x02, &vset, &keys);
@@ -564,7 +581,7 @@ mod tests {
     fn test_get_epochs_after_cursor_at_max_returns_empty() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         commit_epoch(&protocol, 1, 0x01, &vset, &keys);
         commit_epoch(&protocol, 2, 0x02, &vset, &keys);
@@ -587,7 +604,7 @@ mod tests {
     fn test_get_epochs_after_cap_at_64() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, keys) = setup_validators();
         // Commit 70 epochs — response should be capped at 64.
         for i in 1u64..=70 {
@@ -615,7 +632,7 @@ mod tests {
     fn test_epoch_settlement_commit() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
@@ -647,13 +664,13 @@ mod tests {
     fn test_epoch_monotonicity() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
-            not_before_unix_ms: 0,
+            not_before_unix_ms: test_epoch_not_before_unix_ms(2),
         };
         let (sigs, signers) = agg_sig_all(&epoch_record, &entries);
         let checkpoint = EpochCheckpoint {
@@ -692,7 +709,7 @@ mod tests {
         // (N=2, quorum_threshold=1, but we claim 2 signers → aggregate mismatch.)
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         let record = EpochSettlementRecord {
@@ -720,7 +737,7 @@ mod tests {
     fn test_valid_checkpoint_accepted() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must start from epoch 1.
@@ -744,7 +761,7 @@ mod tests {
     fn test_epoch_checkpoint_agg_sig_stored_in_lmdb() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must start from epoch 1.
@@ -773,7 +790,7 @@ mod tests {
     fn test_recovery_path_verifies_signature() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: must use epoch 1 so the monotonicity gate passes and the
@@ -833,7 +850,7 @@ mod tests {
         // Prior guard only checked for duplicates; +1 enforcement blocks this.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         let record = EpochSettlementRecord {
@@ -863,14 +880,14 @@ mod tests {
         // Epochs 1→2→3 committed in order must all succeed.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         for epoch in 1u64..=3 {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
-                not_before_unix_ms: 0,
+                not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
             let checkpoint = EpochCheckpoint {
@@ -891,7 +908,7 @@ mod tests {
         // After committing epoch 3, submitting epoch 2 again must return InvalidEpoch.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         commit_epoch(&protocol, 1, 0x01, &vset, &entries);
@@ -925,7 +942,7 @@ mod tests {
         // After committing 1→2→3, submitting epoch 10 must be rejected.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         commit_epoch(&protocol, 1, 0x01, &vset, &entries);
@@ -993,7 +1010,7 @@ mod tests {
         // N=4, f=1: quorum_threshold=3. Three validators signing must be sufficient.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_n_validators(4);
         assert_eq!(vset.f, 1);
 
@@ -1024,7 +1041,7 @@ mod tests {
         // N=4, f=1: quorum_threshold=3. Two validators signing is insufficient.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_n_validators(4);
         assert_eq!(vset.f, 1);
 
@@ -1056,7 +1073,7 @@ mod tests {
         // Listing the same validator twice in signers must be rejected.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_n_validators(4);
 
         let record = EpochSettlementRecord {
@@ -1091,7 +1108,7 @@ mod tests {
         // A signer not in the active validator set must be rejected.
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_n_validators(4);
 
         let record = EpochSettlementRecord {
@@ -1128,7 +1145,7 @@ mod tests {
     fn test_signer_list_larger_than_validator_set_rejected_before_resolution() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_n_validators(4);
 
         let record = EpochSettlementRecord {
@@ -1155,7 +1172,7 @@ mod tests {
     fn test_signer_list_above_max_cap_rejected_before_duplicate_or_bls_resolution() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let validator_count = (MAX_SIGNERS_PER_CHECKPOINT + 1) as u32;
         let (vset, entries) = setup_n_validators(validator_count);
 
@@ -1188,15 +1205,14 @@ mod tests {
     fn test_epoch_timing_rejected_on_mainnet_if_too_soon() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        // is_testnet=false: timing enforcement ON
-        let protocol = EpochSettlementProtocol::new(store.clone(), false);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
-        // Commit epoch 1 with not_before_unix_ms = 1_000_000 (some past time)
+        // Commit epoch 1 with a deterministic past lower-bound timestamp.
         let record1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
-            not_before_unix_ms: 1_000_000,
+            not_before_unix_ms: test_epoch_not_before_unix_ms(1),
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
         protocol
@@ -1214,7 +1230,7 @@ mod tests {
         let record2 = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
-            not_before_unix_ms: 1_000_001, // only 1ms later, need MIN_EPOCH_DURATION_MS gap
+            not_before_unix_ms: test_epoch_not_before_unix_ms(1) + 1,
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
         let err = protocol
@@ -1238,14 +1254,14 @@ mod tests {
     fn test_epoch_timing_accepted_on_mainnet_after_min_duration() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        let protocol = EpochSettlementProtocol::new(store.clone(), false);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
         // Commit epoch 1
         let record1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
-            not_before_unix_ms: 0,
+            not_before_unix_ms: test_epoch_not_before_unix_ms(1),
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
         protocol
@@ -1259,11 +1275,11 @@ mod tests {
             )
             .unwrap();
 
-        // Epoch 2 with not_before_unix_ms >= MIN_EPOCH_DURATION_MS ahead of epoch 1 — accepted
+        // Epoch 2 with not_before_unix_ms >= test minimum duration after epoch 1 — accepted.
         let record2 = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
-            not_before_unix_ms: MIN_EPOCH_DURATION_MS, // exactly MIN after epoch 1 (0 + MIN)
+            not_before_unix_ms: test_epoch_not_before_unix_ms(2),
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
         protocol
@@ -1279,31 +1295,34 @@ mod tests {
     }
 
     #[test]
-    fn test_epoch_timing_bypassed_on_testnet() {
+    fn test_epoch_timing_enforced_unconditionally_for_back_to_back_epochs() {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
-        // is_testnet=true: timing enforcement OFF
-        let protocol = EpochSettlementProtocol::new(store.clone(), true);
+        let protocol = EpochSettlementProtocol::new(store.clone());
         let (vset, entries) = setup_validators();
 
-        // Commit epochs back-to-back with not_before_unix_ms=0 — must succeed on testnet
-        for ep in 1u64..=3 {
-            let record = EpochSettlementRecord {
-                epoch: EpochSeq(ep),
-                state_root: CIDv1Root::new([ep as u8; 36]),
-                not_before_unix_ms: 0,
-            };
-            let (sigs, signers) = agg_sig_all(&record, &entries);
-            protocol
-                .process_epoch_checkpoint(
-                    EpochCheckpoint {
-                        record,
-                        sigs,
-                        signers,
-                    },
-                    &vset,
-                )
-                .unwrap();
-        }
+        commit_epoch(&protocol, 1, 0x01, &vset, &entries);
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(2),
+            state_root: CIDv1Root::new([2u8; 36]),
+            not_before_unix_ms: test_epoch_not_before_unix_ms(1),
+        };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
+        let err = protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record,
+                    sigs,
+                    signers,
+                },
+                &vset,
+            )
+            .unwrap_err();
+        assert!(
+            format!("{:?}", err).contains("min_duration_not_elapsed"),
+            "back-to-back epochs must be rejected without a testnet bypass: {:?}",
+            err
+        );
     }
 }
