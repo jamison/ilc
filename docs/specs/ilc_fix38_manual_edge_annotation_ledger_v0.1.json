@@ -63245,6 +63245,55 @@
         "UNBLOCKS"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_238_phase_1584_passive_ecu_guard_disposition",
+      "chronology_note": "2026-07-27 Phase 1584: passive ECU public-RC guard disposition Path B authorization",
+      "manual_read_summary": "Walkthrough recording exact Path-B GO phrase, live PASSIVE_ECU_WIRING_NOT_ACTIVATED=False value before and after, CDL-052/CDL-060/CDL-078 authority trace, verification outputs, test correction, output token, and non-claims.",
+      "repo_path": "docs/phases/phase_1584_gap_cdl060_passive_ecu_guard_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1584_g10_gap_substrate_passive_ecu_guard_disposition.md",
+          "review_status": "accepted_path_b_go"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_ilc_semantic_boundary_spec_GAP_VALUE_ECU_00_v0.1.md",
+          "review_status": "disposition_input"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+          "review_status": "cdl_052_060_078_ratified"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DISPOSITIONS",
+          "target": "phase:passive_ecu_public_rc_disposition_requires_guard_clearance_phase_1581"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:passive_ecu_guard_disposition_committed_phase_1584"
+        },
+        {
+          "edge_type": "UNBLOCKS",
+          "target": "phase:1591_substrate_e2e_soak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DISPOSITIONS",
+        "EVIDENCES",
+        "UNBLOCKS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
