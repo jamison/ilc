@@ -62302,6 +62302,83 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575r_cdl048_production_conversion_rehearsal_walkthrough.md",
       "repo_path": "docs/phases/phase_1575r_cdl048_production_conversion_rehearsal_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:pre_rc_economic_activation_lane_complete_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only:tools/phase1575t_e2e_production_soak.py",
+      "repo_path": "tools/phase1575t_e2e_production_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:double_entry_conservation_proven_e2e_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575t_end_to_end_production_economic_soak.py",
+      "repo_path": "tests/test_phase_1575t_end_to_end_production_economic_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
     }
   ],
   "boundary": {
@@ -63162,6 +63239,83 @@
       ],
       "recommended_graph_action": "graph_delta=status_updated:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:pre_rc_economic_activation_lane_complete_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only:tools/phase1575t_e2e_production_soak.py",
+      "repo_path": "tools/phase1575t_e2e_production_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:double_entry_conservation_proven_e2e_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575t_end_to_end_production_economic_soak.py",
+      "repo_path": "tests/test_phase_1575t_end_to_end_production_economic_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [
@@ -67973,7 +68127,7 @@
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_fix1_g10_cdl048_conversion_rehearsal_gap_fill.md"
     },
-  {
+    {
       "annotation_batch": "manual_batch_229_phase_1575r_fix1_cdl048_gap_fill_walkthrough",
       "chronology_note": "2026-07-26 - Phase 1575r-Fix1: CDL-048 conversion rehearsal gap fill walkthrough",
       "manual_read_summary": "Walkthrough documenting six added 1575r gap tests, the rehearsal OOM guard, corrected ILC-value conservation semantics, refreshed private evidence hashes, verification command outputs, tokens, and non-claims.",
@@ -68196,6 +68350,83 @@
       ],
       "recommended_graph_action": "support_only:tests/test_phase_1575c_fix3g_genesis_long_horizon_sim.py",
       "repo_path": "tests/test_phase_1575c_fix3g_genesis_long_horizon_sim.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:pre_rc_economic_activation_lane_complete_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only:tools/phase1575t_e2e_production_soak.py",
+      "repo_path": "tools/phase1575t_e2e_production_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:double_entry_conservation_proven_e2e_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575t_end_to_end_production_economic_soak.py",
+      "repo_path": "tests/test_phase_1575t_end_to_end_production_economic_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:end_to_end_production_economic_soak_committed_phase_1575t"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
