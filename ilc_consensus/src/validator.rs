@@ -6,19 +6,20 @@ pub fn validator_dst(network_id: &str) -> Vec<u8> {
     format!("ILC_FAST_PATH_V1:{}", network_id).into_bytes()
 }
 
-/// Returns the BFT quorum threshold: the minimum number of validator signatures
-/// required to commit an epoch checkpoint.
+/// Returns the intersection-safe BFT quorum threshold: the minimum number of
+/// validator signatures required to commit an epoch checkpoint.
 ///
-/// Derived from the Mysticeti safety threshold f = floor((N-1)/3):
-///   quorum_threshold(N) = 2f + 1 = 2 * floor((N-1)/3) + 1
+/// Phase 1590-Fix1: dynamic validator admission invalidated the older
+/// `2f + 1` shortcut for intermediate set sizes such as N=5 and N=6. Two
+/// size-3 quorums at N=5 can intersect only at the Byzantine validator. The
+/// production rule is therefore `N - f`, where `f = floor((N - 1) / 3)`,
+/// which guarantees any two quorums intersect in at least f+1 validators.
 ///
 /// Verified values:
-///   N=1 → 1, N=2 → 1, N=3 → 1, N=4 → 3, N=7 → 5, N=10 → 7
-///
-/// HIGH-002 fix: `process_epoch_checkpoint` uses this threshold instead of
-/// requiring all N validators to sign.
+///   N=1 → 1, N=2 → 2, N=3 → 3, N=4 → 3, N=5 → 4, N=6 → 5,
+///   N=7 → 5, N=8 → 6, N=9 → 7, N=10 → 7
 pub fn quorum_threshold(n: usize) -> usize {
-    2 * (n.saturating_sub(1) / 3) + 1
+    n.saturating_sub(n.saturating_sub(1) / 3)
 }
 
 /// Minimum stake required for validator admission (1,000 ECU = 1,000,000,000 micro-ECU).
@@ -324,7 +325,8 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU).unwrap();
+        set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU)
+            .unwrap();
 
         assert_eq!(set.validators.len(), 4);
         assert_eq!(set.f, 1);
@@ -336,7 +338,9 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        let err = set.admit_validator(ValidatorID(1), key, MIN_STAKE_MICRO_ECU).unwrap_err();
+        let err = set
+            .admit_validator(ValidatorID(1), key, MIN_STAKE_MICRO_ECU)
+            .unwrap_err();
         assert_eq!(
             err,
             ILCConsensusError::Other("validator 1 already present".to_string())
@@ -362,10 +366,13 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        let err = set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU - 1).unwrap_err();
+        let err = set
+            .admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU - 1)
+            .unwrap_err();
         assert!(
             format!("{:?}", err).contains("insufficient stake"),
-            "stake below minimum must be rejected, got: {:?}", err
+            "stake below minimum must be rejected, got: {:?}",
+            err
         );
     }
 

@@ -1,0 +1,36 @@
+TLC2 Version 2026.04.22.172729 (rev: 6320a09)
+Warning: Please run the Java VM, which executes TLC with a throughput optimized garbage collector, by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 98 and seed -8826995620116397398 with 4 workers on 4 cores with 6144MB heap and 64MB offheap memory [pid: 97887] (Mac OS X 15.7.1 x86_64, Homebrew 25.0.2 64bit, MSBDiskFPSet, DiskStateQueue).
+Parsing file /Users/jamison/Documents/ILC_Main/01_Current/docs/specs/tla/ilc_substrate_timing_admission_1590.tla
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/Naturals.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Naturals.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/FiniteSets.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/FiniteSets.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/Sequences.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Sequences.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/TLC.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/TLC.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/_TLCTrace.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/_TLCTrace.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/TLCExt.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/TLCExt.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2191866739381131678/Integers.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Integers.tla)
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module Integers
+Semantic processing of module TLCExt
+Semantic processing of module _TLCTrace
+Semantic processing of module ilc_substrate_timing_admission_1590
+Linting of module TLCExt
+Linting of module _TLCTrace
+Linting of module ilc_substrate_timing_admission_1590
+Starting... (2026-07-27 21:49:31)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-07-27 21:49:31.
+Progress(6) at 2026-07-27 21:49:34: 10,196 states generated (10,196 s/min), 4,891 distinct states found (4,891 ds/min), 4,603 states left on queue.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.1E-8
+  based on the actual fingerprints:  val = 6.4E-10
+1031138 states generated, 255483 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 10.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 31 and the 95th percentile is 5).
+Finished in 39s at (2026-07-27 21:50:10)

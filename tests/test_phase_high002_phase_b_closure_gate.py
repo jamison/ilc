@@ -112,9 +112,8 @@ def test_phase_a_high002_unit_tests_present():
 def test_phase_a_quorum_threshold_in_validator_rs():
     text = read(VALIDATOR_RS)
     assert "quorum_threshold" in text, "quorum_threshold function missing from validator.rs"
-    assert "2 * (n.saturating_sub(1) / 3) + 1" in text or \
-           "2 * ((n - 1) / 3) + 1" in text or \
-           "2 * (n.saturating_sub(1)/3) + 1" in text, (
+    assert "n.saturating_sub(n.saturating_sub(1) / 3)" in text or \
+           "n - floor((N - 1) / 3)" in text, (
         "quorum_threshold BFT formula missing from validator.rs"
     )
 

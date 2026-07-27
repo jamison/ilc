@@ -870,8 +870,10 @@ impl NodeRunner {
         checkpoint: crate::types::EpochCheckpoint,
     ) -> Result<(), ILCConsensusError> {
         let vs_guard = self.fast_path.validator_set.read().unwrap();
-        let protocol =
-            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone(), self.is_testnet);
+        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(
+            self.epoch_store.clone(),
+            self.is_testnet,
+        );
         let epoch = checkpoint.record.epoch.0;
 
         match protocol.process_epoch_checkpoint(checkpoint, &*vs_guard) {
@@ -900,8 +902,10 @@ impl NodeRunner {
         &self,
         records: Vec<crate::epoch_settlement::StoredCheckpoint>,
     ) -> Result<(), ILCConsensusError> {
-        let protocol =
-            crate::epoch_settlement::EpochSettlementProtocol::new(self.epoch_store.clone(), self.is_testnet);
+        let protocol = crate::epoch_settlement::EpochSettlementProtocol::new(
+            self.epoch_store.clone(),
+            self.is_testnet,
+        );
         let vs_guard = self.fast_path.validator_set.read().unwrap();
 
         for stored in records {

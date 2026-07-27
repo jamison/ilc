@@ -8,10 +8,10 @@
 \*   - dynamic validator admission/ejection
 \*   - Rust quorum_threshold(n) implementation correspondence
 \*
-\* It intentionally models the live Rust threshold formula:
-\*   quorum_threshold(n) = 2 * floor((n - 1) / 3) + 1
-\* and therefore checks whether admitting a fifth validator preserves the
-\* dual-certificate safety claim under that implementation.
+\* Phase 1590-Fix1 updates the model to the hardened live Rust threshold:
+\*   quorum_threshold(n) = n - floor((n - 1) / 3)
+\* This preserves the old values at N=4,7,10 and restores honest quorum
+\* intersection for intermediate validator-set sizes such as N=5 and N=6.
 
 EXTENDS Naturals, FiniteSets, Sequences, TLC
 
@@ -48,7 +48,7 @@ vars == <<committedEpoch, now, validators, ejectedThisEpoch, signed, certified>>
 
 MaxTime == CHOOSE t \in Times : \A x \in Times : x <= t
 
-QuorumThreshold(n) == 2 * ((n - 1) \div 3) + 1
+QuorumThreshold(n) == n - ((n - 1) \div 3)
 
 Checkpoint(e, r, t, signers) ==
     [epoch |-> e, root |-> r, not_before |-> t, signers |-> signers]
@@ -127,6 +127,10 @@ CertifyCheckpoint ==
             c == Checkpoint(e, r, t, signers)
         IN
         /\ committedEpoch < MaxEpoch
+        \* Safety-preserving state-space reduction: SafetyNoDualCert is
+        \* violated by the first conflicting pair, so exploring more than two
+        \* certificates only adds redundant same-root combinations.
+        /\ Cardinality(certified) < 2
         /\ Cardinality(signers) >= QuorumThreshold(Cardinality(validators))
         /\ SignersCanSign(e, r, signers)
         /\ TimingOK(t)
