@@ -289,10 +289,11 @@ def commit_epoch_buffer(epoch: int, state: dict) -> dict:
     pending = _state_pending_map(state_map)
     zeroed_epochs = _zeroed_epoch_markers(state_map)
     event_log = _state_event_log(state_map)
-    epoch_buffer = pending.pop(normalized_epoch, None)
+    epoch_buffer = pending.get(normalized_epoch)
 
     if normalized_epoch in zeroed_epochs:
         zeroed_epochs.remove(normalized_epoch)
+        pending.pop(normalized_epoch, None)
         event_log.append(
             {
                 "event": EPOCH_BUFFER_ZEROED_EVENT,
@@ -309,6 +310,7 @@ def commit_epoch_buffer(epoch: int, state: dict) -> dict:
     if len(epoch_buffer) > MAX_PENDING_NODES_PER_EPOCH:
         raise ValueError("centrality_pending_epoch_node_cap_exceeded")
 
+    pending.pop(normalized_epoch, None)
     for node_id, delta in epoch_buffer.items():
         normalized_node = _require_non_empty_string(
             "node_id",
