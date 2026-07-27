@@ -63391,6 +63391,155 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1584_fix2_passive_ecu_buffer_state_preservation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_241_phase_1588_gap_substrate_config",
+      "chronology_note": "2026-07-28 Phase 1588: immutable epoch timing and mainnet RC01 substrate config",
+      "manual_read_summary": "Phase 1588 removes EpochSettlementProtocol is_testnet runtime bypass and makes epoch timing enforcement unconditional in production Rust, with cfg(test) shortened timing helpers for tests only.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:is_testnet_field_removed_from_rust_phase_1588"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_consensus/src/epoch_settlement.rs->genesis:genesis_root_v0.4",
+      "repo_path": "ilc_consensus/src/epoch_settlement.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_241_phase_1588_gap_substrate_config",
+      "chronology_note": "2026-07-28 Phase 1588: immutable epoch timing and mainnet RC01 substrate config",
+      "manual_read_summary": "Phase 1588 removes is_testnet from RawGenesis parsing and adds an RC01 genesis-load regression test for N=4 f=1 quorum structure.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:is_testnet_field_removed_from_rust_phase_1588"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_consensus/src/config.rs->genesis:genesis_root_v0.4",
+      "repo_path": "ilc_consensus/src/config.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_241_phase_1588_gap_substrate_config",
+      "chronology_note": "2026-07-28 Phase 1588: immutable epoch timing and mainnet RC01 substrate config",
+      "manual_read_summary": "Phase 1588 RC01 mainnet genesis config: network_id ilc-rc01, real_ecu true, N=4, f=1, required_votes=3, no is_testnet field, BLS validator public keys copied from the live M009 validator set.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mainnet_rc01_genesis_config_committed_phase_1588"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:config/mysticeti_mainnet_rc01/genesis.json->genesis:genesis_root_v0.4",
+      "repo_path": "config/mysticeti_mainnet_rc01/genesis.json"
+    },
+    {
+      "annotation_batch": "manual_batch_241_phase_1588_gap_substrate_config",
+      "chronology_note": "2026-07-28 Phase 1588: immutable epoch timing and mainnet RC01 substrate config",
+      "manual_read_summary": "Phase 1588 operator-facing RC01 node config profile records D2D public-mode invariants: ILC_D2D_PUBLIC_MODE=1, verify_peer_tls=true, no private peer endpoints, centrality_delta authority-bearing gossip.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mainnet_rc01_genesis_config_committed_phase_1588"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:config/mysticeti_mainnet_rc01/node_config.toml->genesis:genesis_root_v0.4",
+      "repo_path": "config/mysticeti_mainnet_rc01/node_config.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_241_phase_1588_gap_substrate_config",
+      "chronology_note": "2026-07-28 Phase 1588: immutable epoch timing and mainnet RC01 substrate config",
+      "manual_read_summary": "Phase 1588 walkthrough records GO phrase, source correction, Rust timing immutability changes, full RC01 config field inventory, verification outputs, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mainnet_rc01_genesis_config_committed_phase_1588"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:is_testnet_field_removed_from_rust_phase_1588"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1588_gap_substrate_config_walkthrough.md",
+      "repo_path": "docs/phases/phase_1588_gap_substrate_config_walkthrough.md"
     }
   ],
   "boundary": {

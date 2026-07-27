@@ -267,7 +267,7 @@ pub struct EpochSettlementRecord {
     /// Wall-clock lower bound (milliseconds since Unix epoch) after which this
     /// epoch is valid. Included in the BLS-signed message — prevents timestamp
     /// forgery by a colluding validator quorum.
-    /// Set to 0 in testnet mode (timing enforcement bypassed when is_testnet=true).
+    /// Phase 1588: timing enforcement is unconditional; no genesis field can bypass it.
     pub not_before_unix_ms: u64,
 }
 

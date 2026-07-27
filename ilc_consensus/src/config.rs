@@ -37,7 +37,6 @@ struct RawGenesisValidator {
 #[derive(Debug, Deserialize)]
 struct RawGenesis {
     network_id: String, // returned alongside ValidatorSet so main.rs avoids double-read
-    is_testnet: bool,
     #[allow(dead_code)]
     real_ecu: bool,
     f: usize,
@@ -143,12 +142,10 @@ pub struct NodeConfig {
 // Load functions
 // ---------------------------------------------------------------------------
 
-/// Load genesis.json → (ValidatorSet, network_id, is_testnet).
-/// Returns the network_id and is_testnet flag alongside ValidatorSet so callers don't need to re-read the file.
+/// Load genesis.json → (ValidatorSet, network_id).
+/// Returns the network_id alongside ValidatorSet so callers don't need to re-read the file.
 /// Translates hex-encoded validator_key and agent_id into runtime types.
-pub fn load_genesis(
-    genesis_path: &Path,
-) -> Result<(ValidatorSet, String, bool), ILCConsensusError> {
+pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCConsensusError> {
     let raw = fs::read_to_string(genesis_path)
         .map_err(|e| ILCConsensusError::Other(format!("Cannot read genesis: {}", e)))?;
     let genesis: RawGenesis = serde_json::from_str(&raw)
@@ -181,7 +178,7 @@ pub fn load_genesis(
     }
 
     let validator_set = ValidatorSet::new(validators, genesis.f)?;
-    Ok((validator_set, genesis.network_id, genesis.is_testnet))
+    Ok((validator_set, genesis.network_id))
 }
 
 /// Load validator config JSON and resolve all deployment paths into runtime types.
@@ -458,7 +455,15 @@ fn decode_char(c: u8, table: &[u8; 128]) -> Result<u8, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::validator::quorum_threshold;
     use std::path::Path;
+
+    fn repo_config_path(relative_path: &str) -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("ilc_consensus should live under the repository root")
+            .join(relative_path)
+    }
 
     #[test]
     fn test_hex_decode_exact_correct_length() {
@@ -500,15 +505,15 @@ mod tests {
         // Note: validator_key placeholder bytes are not valid BLS points — this test
         // checks parse + hex-decode path up to the BLS point check, which will fail on
         // placeholder values. The test documents the expected error for placeholder data.
-        let genesis_path = Path::new("config/mysticeti_testnet_M009/genesis.json");
+        let genesis_path = repo_config_path("config/mysticeti_testnet_M009/genesis.json");
         if !genesis_path.exists() {
             return; // skip in environments without config
         }
         // Placeholder keys are all-same-byte patterns which are not valid BLS12-381 points.
         // load_genesis will return an error on the BLS deserialization step — that's expected.
-        let result = load_genesis(genesis_path);
+        let result = load_genesis(&genesis_path);
         match result {
-            Ok((_validator_set, _network_id, _is_testnet)) => {} // real keys: pass
+            Ok((_validator_set, _network_id)) => {} // real keys: pass
             Err(ILCConsensusError::Other(ref msg)) => {
                 // Acceptable error: BLS point rejection on placeholder keys
                 assert!(
@@ -519,6 +524,22 @@ mod tests {
             }
             Err(e) => panic!("unexpected error type: {:?}", e),
         }
+    }
+
+    #[test]
+    fn test_load_mainnet_rc01_genesis_structure() {
+        let genesis_path = repo_config_path("config/mysticeti_mainnet_rc01/genesis.json");
+        assert!(
+            genesis_path.exists(),
+            "Phase 1588 RC01 genesis config must exist"
+        );
+
+        let (validator_set, network_id) =
+            load_genesis(&genesis_path).expect("Phase 1588 RC01 genesis must load");
+        assert_eq!(network_id, "ilc-rc01");
+        assert_eq!(validator_set.validators.len(), 4);
+        assert_eq!(validator_set.f, 1);
+        assert_eq!(quorum_threshold(validator_set.validators.len()), 3);
     }
 
     #[test]
