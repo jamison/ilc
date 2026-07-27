@@ -62906,6 +62906,83 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_235_phase_1585_bridge_proposal_ingress_spec",
+      "chronology_note": "2026-07-27 Phase 1585 spec: bridge proposal ingress wire protocol for Python-to-Rust epoch settlement proposals",
+      "manual_read_summary": "Spec document defining SubmitEpochProposal request/response, BFT-routed BLS signing chain, error contract, ConsensusBridgeConfig write-path extension, and SettlementPath=mysticeti_fast_path prerequisite; no runtime code or guard changed.",
+      "repo_path": "docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_coupling_invariants_governance_lock_663_v0.1.md",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_067_settlement_substrate_governance_ratification_evidence_709_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1585_bridge_proposal_ingress_spec"
+        },
+        {
+          "edge_type": "GATES",
+          "target": "phase:1586_bridge_rust_proposal_ingress"
+        },
+        {
+          "edge_type": "GATES",
+          "target": "phase:1587_bridge_python_write_client"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "GATES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_235_phase_1585_bridge_proposal_ingress_spec",
+      "chronology_note": "2026-07-27 Phase 1585 walkthrough: bridge proposal ingress spec execution evidence",
+      "manual_read_summary": "Walkthrough recording source reads, prompt hardening, spec decisions, verification outputs, STATUS token, and non-claims for Phase 1585.",
+      "repo_path": "docs/phases/phase_1585_gap_substrate_bridge_spec_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1585_g10_gap_substrate_bridge_proposal_ingress_spec.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1585_bridge_proposal_ingress_spec"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

@@ -200,8 +200,8 @@ Produce `docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md` de
    active. Spec must define how Python detects and enforces this.
 
 **Deliverables:**
-- `docs/specs/ilc_production_bridge_write_path_spec_1585_v0.1.md`
-- Output token: `production_bridge_write_path_spec_committed_phase_1585`
+- `docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md`
+- Output token: `production_bridge_proposal_ingress_spec_committed_phase_1585`
 
 **Human decision required (before Phase 1586 begins):**
 The BLS signing chain option in item 2 above is the key architectural decision. The
@@ -663,7 +663,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | Phase | Prompt status | Blocking decision |
 |-------|--------------|-------------------|
 | 1584 | Drafted; GO required (PATH-B per Decision 2) | RESOLVED |
-| 1585 | Drafted; NON-SENSITIVE; can start immediately | RESOLVED |
+| 1585 | COMPLETE; NON-SENSITIVE; spec committed with token `production_bridge_proposal_ingress_spec_committed_phase_1585` | RESOLVED |
 | 1586 | Drafted; GO required after 1585 | — |
 | 1587 | Drafted; GO required after 1586 | — |
 | 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
