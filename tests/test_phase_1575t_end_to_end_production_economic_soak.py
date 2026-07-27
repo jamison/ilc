@@ -56,6 +56,13 @@ def _certificate(evidence: dict) -> dict:
 
 
 def _refresh_evidence_hashes(evidence: dict) -> None:
+    """Refresh hashes after a test mutates already-updated evidence fields.
+
+    Tests that mutate envelope-owned hashes such as balance_ledger_sha256 or
+    base_emission_settlement_root_sha256 must update those fields before
+    calling this helper; this helper then refreshes the enclosing envelope and
+    certificate hashes.
+    """
     certificate = evidence["soak_completion_certificate"]
     envelope = evidence["e2e_soak_envelope"]
     double_entry = evidence["double_entry_conservation"]
@@ -399,6 +406,18 @@ def test_verify_rejects_output_token_removal_even_when_hashes_match(tmp_path: Pa
     _refresh_evidence_hashes(tampered)
 
     with pytest.raises(ValueError, match="phase1575t_certificate_output_tokens_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_missing_named_gate_even_when_gate_count_is_five(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    gates = tampered["soak_completion_certificate"]["gate_results"]
+    gates["fake_gate_with_pass_true"] = {"pass": True}
+    del gates["gate_2_cdl048_live_conversion"]
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_gate_results_missing"):
         verify_soak_evidence(tampered)
 
 
