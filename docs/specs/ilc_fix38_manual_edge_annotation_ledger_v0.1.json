@@ -41793,7 +41793,7 @@
     },
     {
       "annotation_batch": "catchup_batch_020_phase_backfill",
-      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module",
+      "chronology_note": "2026-07-09 phase_backfill_batches_002_020 \u2014 historical ilc_core/ runtime module; 2026-07-27 phase 1575t-Fix2 - comment-only constitutional disposition of sweeper MEDIUM-003; no logic, guard, variable, or value change.",
       "manual_read_summary": "CDL-048 conversion sweeper runtime: identifies and processes expired ECU-to-ILC conversion candidates within the sweeper epoch window.",
       "proposed_authority_trace_edges": [
         {
@@ -62305,7 +62305,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
-      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner; 2026-07-27 phase 1575t-Fix2 - added total_ilc_emitted_from_emission_path as a reference-only emission-path field and added verifier finite/positive guard; proven remains limited to ECU, CDL-048 value, and base-fee equations.",
       "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
       "proposed_semantic_edges": [
         {
@@ -62331,7 +62331,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
-      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests; 2026-07-27 phase 1575t-Fix2 - added emission reference field regression and zero emission reference verifier rejection test.",
       "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
       "proposed_semantic_edges": [
         {
@@ -62356,7 +62356,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
-      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary; 2026-07-27 phase 1575t-Fix2 - updated active evidence hashes and documented dual-surface ILC accounting boundary.",
       "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
       "proposed_semantic_edges": [
         {
@@ -62379,6 +62379,36 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md",
       "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_231_phase_1575t_fix2_ilc_conservation_boundary_walkthrough",
+      "chronology_note": "2026-07-27 phase 1575t-Fix2 - walkthrough for ILC accounting boundary documentation and sweeper MEDIUM-003 disposition",
+      "manual_read_summary": "Walkthrough recording source reads, regenerated evidence hashes, positive emission reference field, rejected cross-surface equation absence, sweeper comment-only disposition, verification outputs, tokens, and non-claims for Phase 1575t-Fix2.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ilc_component_conservation_boundary_documented_phase_1575t_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sweeper_medium_003_constitutionally_dispositioned_phase_1575t_fix2"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md"
     }
   ],
   "boundary": {
@@ -63242,7 +63272,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
-      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner; 2026-07-27 phase 1575t-Fix2 - added total_ilc_emitted_from_emission_path as a reference-only emission-path field and added verifier finite/positive guard; proven remains limited to ECU, CDL-048 value, and base-fee equations.",
       "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
       "proposed_semantic_edges": [
         {
@@ -63268,7 +63298,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
-      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests; 2026-07-27 phase 1575t-Fix2 - added emission reference field regression and zero emission reference verifier rejection test.",
       "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
       "proposed_semantic_edges": [
         {
@@ -63293,7 +63323,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
-      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary; 2026-07-27 phase 1575t-Fix2 - updated active evidence hashes and documented dual-surface ILC accounting boundary.",
       "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
       "proposed_semantic_edges": [
         {
@@ -63319,8 +63349,8 @@
     },
     {
       "annotation_batch": "manual_batch_230_phase_1575t_fix2_ilc_conservation_close",
-      "chronology_note": "2026-07-27 phase 1575t-Fix2 \u2014 phase prompt to close ILC component conservation equation carry-forward and constitutionally disposition sweeper MEDIUM-003",
-      "manual_read_summary": "Phase prompt for Phase 1575t-Fix2, which adds total_agent_ilc_credit + genesis_ilc_credit + ilc_burned == cumulative_issued to the proven flag in the e2e production soak runner and provides a constitutional disposition for the sweeper per-lot conservation tautology (MEDIUM-003, deferred to Phase 1388).",
+      "chronology_note": "2026-07-27 phase 1575t-Fix2 \u2014 phase prompt to close ILC component conservation equation carry-forward and constitutionally disposition sweeper MEDIUM-003; 2026-07-27 phase 1575t-Fix2 - prompt hardened after blocker; no cross-surface conservation equation is authorized.",
+      "manual_read_summary": "Phase prompt for Phase 1575t-Fix2, revised after the mid-phase blocker: add total_ilc_emitted_from_emission_path as a reference-only field, document the dual-surface accounting boundary, keep the rejected cross-surface equation out of proven, and constitutionally disposition sweeper MEDIUM-003 as pre-Phase 1388.",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix2_g10_ilc_conservation_equation_close.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -63338,6 +63368,36 @@
         "REFERENCES_PHASE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_231_phase_1575t_fix2_ilc_conservation_boundary_walkthrough",
+      "chronology_note": "2026-07-27 phase 1575t-Fix2 - walkthrough for ILC accounting boundary documentation and sweeper MEDIUM-003 disposition",
+      "manual_read_summary": "Walkthrough recording source reads, regenerated evidence hashes, positive emission reference field, rejected cross-surface equation absence, sweeper comment-only disposition, verification outputs, tokens, and non-claims for Phase 1575t-Fix2.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ilc_component_conservation_boundary_documented_phase_1575t_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sweeper_medium_003_constitutionally_dispositioned_phase_1575t_fix2"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [
@@ -68375,7 +68435,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tool",
-      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner",
+      "chronology_note": "2026-07-27 - Phase 1575t private E2E economic soak runner; 2026-07-27 phase 1575t-Fix2 - added total_ilc_emitted_from_emission_path as a reference-only emission-path field and added verifier finite/positive guard; proven remains limited to ECU, CDL-048 value, and base-fee equations.",
       "manual_read_summary": "Private evidence generator exercising live attribution settlement, CDL-048 activated wire quotes, lifecycle LMDB settled-balance commits, Genesis Option C2 credit, and canonical E2E envelope root production.",
       "proposed_semantic_edges": [
         {
@@ -68401,7 +68461,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_tests",
-      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests",
+      "chronology_note": "2026-07-27 - Phase 1575t focused E2E economic soak tests; 2026-07-27 phase 1575t-Fix2 - added emission reference field regression and zero emission reference verifier rejection test.",
       "manual_read_summary": "Focused tests for all five 1575t gates, no synthetic agent IDs, Decimal-only evidence, Genesis overhead equality, non-negative balances, deterministic envelope roots, atomic writes, minimum epoch count, and prompt scope corrections.",
       "proposed_semantic_edges": [
         {
@@ -68426,7 +68486,7 @@
     },
     {
       "annotation_batch": "manual_batch_229_phase_1575t_end_to_end_production_economic_soak_walkthrough",
-      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary",
+      "chronology_note": "2026-07-27 - Phase 1575t walkthrough and completion evidence summary; 2026-07-27 phase 1575t-Fix2 - updated active evidence hashes and documented dual-surface ILC accounting boundary.",
       "manual_read_summary": "Walkthrough recording GO phrase, all five gate results, ECU/ILC/Genesis totals, exact double-entry equations, evidence hashes, command outputs, output tokens, non-claims, and E2E envelope scope boundary.",
       "proposed_semantic_edges": [
         {

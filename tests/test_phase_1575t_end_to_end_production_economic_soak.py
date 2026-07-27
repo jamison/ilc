@@ -279,6 +279,29 @@ def test_default_price_is_non_unit_canary(tmp_path: Path) -> None:
     assert ilc != ecu
 
 
+def test_ilc_component_summary_has_emission_reference_field(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    proof = evidence["double_entry_conservation"]
+    ilc = proof["ilc_component_summary"]
+
+    assert proof["proven"] is True
+    assert Decimal(ilc["total_ilc_emitted_from_emission_path"]) > Decimal("0")
+    assert "dual_surface_boundary" in ilc["accounting_scope"]
+    assert "lifecycle_commit_scope" in ilc["accounting_scope"]
+
+
+def test_verify_rejects_zero_emission_reference_field(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["double_entry_conservation"]["ilc_component_summary"][
+        "total_ilc_emitted_from_emission_path"
+    ] = "0"
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_ilc_emitted_reference_field_zero_or_negative"):
+        verify_soak_evidence(tampered)
+
+
 def test_lifecycle_rejects_non_finite_reward_delta(tmp_path: Path) -> None:
     store = LmdbWalletStore(tmp_path / "wallet_lmdb")
     runtime = EcuIlcLifecycleRuntime(wallet_store=store, ecu_runtime=EcuActiveLayerRuntime())
