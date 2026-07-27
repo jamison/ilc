@@ -54,6 +54,20 @@ def _certificate(evidence: dict) -> dict:
     return evidence["soak_completion_certificate"]
 
 
+def _refresh_evidence_hashes(evidence: dict) -> None:
+    certificate = evidence["soak_completion_certificate"]
+    envelope = evidence["e2e_soak_envelope"]
+    double_entry = evidence["double_entry_conservation"]
+    certificate["gate_results"]["gate_5_double_entry_conservation"][
+        "double_entry_conservation_sha256"
+    ] = stable_sha256(double_entry)
+    envelope["double_entry_conservation_sha256"] = stable_sha256(double_entry)
+    certificate["e2e_soak_envelope_sha256"] = stable_sha256(envelope)
+    body = dict(certificate)
+    body.pop("certificate_payload_sha256", None)
+    certificate["certificate_payload_sha256"] = stable_sha256(body)
+
+
 def test_gate_1_non_synthetic_ecu_confirmed(tmp_path: Path) -> None:
     evidence = _evidence(tmp_path)
     cert = _certificate(evidence)
@@ -305,6 +319,40 @@ def test_verify_rejects_tampered_quote_payload(tmp_path: Path) -> None:
     tampered["epoch_records"][0]["cdl048_quote_payloads"][0]["amount_ilc_credit"] = "0"
 
     with pytest.raises(ValueError, match="phase1575t_quote_payloads_sha256_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_non_finite_double_entry_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    ecu = tampered["double_entry_conservation"]["ecu_equation"]
+    ecu["total_ecu_converted"] = "Infinity"
+    ecu["total_ecu_generated"] = "Infinity"
+    ecu["total_ecu_remaining"] = "0"
+    ecu["holds"] = True
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_ecu_equation_non_finite"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_envelope_epoch_count_mismatch_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["e2e_soak_envelope"]["epoch_count"] = tampered["soak_completion_certificate"]["epoch_count"] + 1
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_envelope_epoch_count_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_envelope_summary_mismatch_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["e2e_soak_envelope"]["cdl048_wire_quote_summary"]["total_agent_ilc_credit"] = "0"
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_summary_ilc_credit_mismatch"):
         verify_soak_evidence(tampered)
 
 
