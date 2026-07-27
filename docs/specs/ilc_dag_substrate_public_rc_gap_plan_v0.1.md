@@ -67,15 +67,15 @@ the Python proposal call nor the Rust proposal ingress currently exist.
 | GAP-SUBSTRATE-BRIDGE-PY | Implement Python client in `production_bridge.py`; flip `PRODUCTION_BRIDGE_ACTIVE = True` | Yes — core activation | **1587** |
 | GAP-SUBSTRATE-CONFIG | Mainnet genesis config (`is_testnet=false`); provision timing enforcement | Yes — mainnet gate | **1588** |
 | GAP-SUBSTRATE-ADMISSION | Validator admission activation: clear `PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED` guard, implement production path | Yes — validators must join | **1589** |
-| GAP-SEMANTICS-WALLET-RC | Wallet action semantics preflight RC posture: flip `public_claimability_activated` and `ilc_settlement_authorized` to True only after distributed-substrate integration passes | Yes — users must claim consensus-backed balances | **1590** |
-| GAP-SUBSTRATE-TLA | TLA+ timing/admission model update plus TLC evidence, or explicit human-approved removal of those semantics from public RC scope | Yes — formal substrate gap | **1591** |
-| GAP-INTEGRATION-SOAK | E2E soak: Python proposal → Rust authenticated ingress → BFT/quorum checkpoint → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1592** |
+| GAP-SUBSTRATE-TLA | TLA+ timing/admission model update plus TLC evidence, or explicit human-approved removal of those semantics from public RC scope | Yes — formal substrate gap | **1590** |
+| GAP-INTEGRATION-SOAK | E2E soak: Python proposal → Rust authenticated ingress → BFT/quorum checkpoint → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1591** |
+| GAP-SEMANTICS-WALLET-RC | Wallet action semantics preflight RC posture: flip `public_claimability_activated` and `ilc_settlement_authorized` to True only after distributed-substrate integration passes | Yes — users must claim consensus-backed balances | **1592** |
 
 Note: GAP-CONSENSUS-09 (ConsensusBridgeConfig into soak harness) is addressed within
-Phase 1592 (GAP-INTEGRATION-SOAK). GAP-SUBSTRATE-01 (E2E integration test) is the same
+Phase 1591 (GAP-INTEGRATION-SOAK). GAP-SUBSTRATE-01 (E2E integration test) is the same
 as GAP-INTEGRATION-SOAK. GAP-SUBSTRATE-02 is split into BRIDGE-SPEC (1585) +
 BRIDGE-RUST (1586) + BRIDGE-PY (1587). GAP-SUBSTRATE-03 and GAP-SUBSTRATE-08
-(TLA+ gaps) are combined into Phase 1591.
+(TLA+ gaps) are combined into Phase 1590.
 
 ---
 
@@ -85,26 +85,28 @@ BRIDGE-RUST (1586) + BRIDGE-PY (1587). GAP-SUBSTRATE-03 and GAP-SUBSTRATE-08
 Phase 1584 (Passive ECU guard) ──────────────────────────────────────────────────────┐
 Phase 1585 (Bridge spec) ──→ Phase 1586 (Bridge Rust) ──→ Phase 1587 (Bridge Py) ──→┐│
 Phase 1588 (Mainnet config) ──→ Phase 1589 (Validator admission) ─────────────────→ ││
-Phase 1591 (TLA+ timing/admission model + TLC evidence) ─────────────────────────────┐│
+Phase 1590 (TLA+ timing/admission model + TLC evidence) ─────────────────────────────┤│
+                                                                                      ↓│
+                                                              Phase 1591 (Integration soak)
+                                                                                      │
+                                                              Phase 1578h (Wallet gate)┤
                                                                                       ↓
-                                                              Phase 1592 (Integration soak)
-                                                                                      ↓
-                                                              Phase 1590 (Wallet RC preflight)
+                                                              Phase 1592 (Wallet RC preflight)
 ```
 
 **Parallel tracks (no dependency on each other):**
-- 1584, 1588, and 1591 can run in parallel with each other
+- 1584, 1588, and 1590 can run in parallel with each other
 - 1584 can run concurrently with 1585
-- 1590 (wallet RC preflight) must run AFTER Phase 1578h wallet gate completes AND after
-  Phase 1592 confirms consensus-backed readback
+- 1592 (wallet RC preflight) must run AFTER Phase 1578h wallet gate completes AND after
+  Phase 1591 confirms consensus-backed readback
 
 **Sequential constraints:**
 - 1585 → 1586 → 1587 (bridge spec gates implementation; Rust gates Python)
 - 1588 → 1589 (mainnet config needed before admission live testing)
-- 1591 → 1592 unless timing/admission semantics are explicitly removed from public RC scope
-- 1586 + 1587 + 1588 + 1589 + 1591 → 1592 (all substrate components and formal gap
+- 1590 → 1591 unless timing/admission semantics are explicitly removed from public RC scope
+- 1586 + 1587 + 1588 + 1589 + 1590 → 1591 (all substrate components and formal gap
   disposition needed before integration soak)
-- 1578h + 1592 → 1590 (wallet gate and consensus-backed substrate readback must pass first)
+- 1578h + 1591 → 1592 (wallet gate and consensus-backed substrate readback must pass first)
 
 ---
 
@@ -399,68 +401,11 @@ end-to-end against the Python admission runtime.
 
 ---
 
-### Phase 1590 / GAP-SEMANTICS-WALLET-RC
+### Phase 1590 / GAP-SUBSTRATE-TLA
 
-**Sensitivity:** SENSITIVE — changes authorization flag posture
-**GO phrase:** `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED`
-**Prerequisite:** Phase 1578h wallet gate PASS verdict + Phase 1592 substrate integration soak PASS
-**Prompt status:** Needs drafting after 1578h completes
-
-**Background:**
-`wallet_action_semantics_preflight.py` currently enforces ALL flags in
-`_FALSE_AUTHORIZATION_FLAGS` (lines 54-71) as False, including:
-- `public_claimability_activated` (line 60)
-- `ilc_settlement_authorized` (line 68)
-
-Phase 1578h (the public RC wallet gate) explicitly confirms these are False and emits
-`wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h`. But at
-public RC, `public_claimability_activated` and `ilc_settlement_authorized` MUST flip
-to True only after the balances being claimed are verified through the distributed
-substrate readback path. This phase makes that change after Phase 1592, not before it.
-
-The other flags in `_FALSE_AUTHORIZATION_FLAGS` (transfer, withdrawal, spend) remain
-False through public RC default and require a separate `TRANSFER-ENABLED RC AUTHORIZED`
-gate (per the wallet gate prompt spec).
-
-**Scope:**
-
-1. Read `wallet_action_semantics_preflight.py` in full and map every flag, its current
-   enforcement location, and its required state at RC
-
-2. Restructure `_FALSE_AUTHORIZATION_FLAGS` or add a complementary
-   `_RC_AUTHORIZED_FLAGS` block that allows `public_claimability_activated=True` and
-   `ilc_settlement_authorized=True` while keeping transfer/withdrawal/spend blocked
-
-3. Update `run_wallet_action_semantics_preflight()` to:
-   - Accept `public_claimability_activated=True` as valid
-   - Accept `ilc_settlement_authorized=True` as valid
-   - Continue to enforce `wallet_transfer_enabled=False`, `wallet_withdrawal_enabled=False`,
-     `wallet_spend_enabled=False`
-
-4. Add tests:
-   - `test_preflight_accepts_claimability_authorized_at_rc`
-   - `test_preflight_accepts_ilc_settlement_authorized_at_rc`
-   - `test_preflight_still_rejects_transfer_enabled_at_rc`
-   - `test_preflight_still_rejects_withdrawal_enabled_at_rc`
-
-5. Update the genesis agent wallet records to set `public_claimability_activated=True`
-   and `ilc_settlement_authorized=True` (requires re-running the wallet action
-   preflight with the updated flags, per the wallet sidecar invocation path)
-
-**Deliverables:**
-- Modified `ilc_core/sidecars/wallet_action_semantics_preflight.py`
-- New tests
-- `docs/phases/phase_1590_gap_semantics_wallet_rc_walkthrough.md`
-- Output token: `public_claimability_authorized_phase_1590`
-- Output token: `ilc_settlement_authorized_phase_1590`
-
----
-
-### Phase 1591 / GAP-SUBSTRATE-TLA
-
-**Sensitivity:** NON-SENSITIVE — spec-only, no code changes
-**Prerequisite:** None (can run in parallel); must complete before Phase 1592 unless the
-human explicitly removes timing/admission semantics from public RC scope
+**Sensitivity:** NON-SENSITIVE — spec and formal-methods only, no code changes
+**Prerequisite:** None (can run in parallel with 1584–1589); must complete before Phase 1591 unless
+the human explicitly removes timing/admission semantics from public RC scope
 **Prompt status:** Needs drafting
 
 **Background:**
@@ -494,20 +439,20 @@ Produce formal-methods evidence, not only a documentation note:
 5. If the selected RC mode intentionally excludes dynamic admission/ejection or mainnet
    timing, records that as a human-approved public-RC non-claim instead of silently
    deferring the proof
-6. Emits token `tla_plus_timing_admission_checked_phase_1591`
+6. Emits token `tla_plus_timing_admission_checked_phase_1590`
 
 **Deliverables:**
-- `docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1591_v0.1.md`
-- `docs/phases/phase_1591_gap_substrate_tla_walkthrough.md`
-- Output token: `tla_plus_timing_admission_checked_phase_1591`
+- `docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md`
+- `docs/phases/phase_1590_gap_substrate_tla_walkthrough.md`
+- Output token: `tla_plus_timing_admission_checked_phase_1590`
 
 ---
 
-### Phase 1592 / GAP-INTEGRATION-SOAK
+### Phase 1591 / GAP-INTEGRATION-SOAK
 
 **Sensitivity:** SENSITIVE — live Rust binary, BLS verification, mainnet config
 **GO phrase:** `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED`
-**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 + 1591 ALL complete, plus any
+**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 + 1590 ALL complete, plus any
 public-RC spectral-commitment prerequisite if the public whitepaper still claims
 validators sign `C(t) = (M(t), S(t))`
 **Prompt status:** Needs drafting (after prerequisites complete)
@@ -558,11 +503,68 @@ This phase is the most complex deliverable in the plan. It requires:
    - `test_e2e_rust_rejects_duplicate_epoch_submission`
 
 **Deliverables:**
-- `tools/phase1592_integration_soak.py` (harness script)
-- `tests/test_phase_1592_integration_soak.py` (integration tests)
-- `docs/phases/phase_1592_gap_integration_soak_walkthrough.md`
-- Output token: `e2e_python_rust_substrate_integration_soak_committed_phase_1592`
-- Output token: `production_bridge_end_to_end_verified_phase_1592`
+- `tools/phase1591_integration_soak.py` (harness script)
+- `tests/test_phase_1591_integration_soak.py` (integration tests)
+- `docs/phases/phase_1591_gap_integration_soak_walkthrough.md`
+- Output token: `e2e_python_rust_substrate_integration_soak_committed_phase_1591`
+- Output token: `production_bridge_end_to_end_verified_phase_1591`
+
+---
+
+### Phase 1592 / GAP-SEMANTICS-WALLET-RC
+
+**Sensitivity:** SENSITIVE — changes authorization flag posture
+**GO phrase:** `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED`
+**Prerequisite:** Phase 1578h wallet gate PASS verdict + Phase 1591 substrate integration soak PASS
+**Prompt status:** Needs drafting after 1578h and 1591 complete
+
+**Background:**
+`wallet_action_semantics_preflight.py` currently enforces ALL flags in
+`_FALSE_AUTHORIZATION_FLAGS` (lines 54-71) as False, including:
+- `public_claimability_activated` (line 60)
+- `ilc_settlement_authorized` (line 68)
+
+Phase 1578h (the public RC wallet gate) explicitly confirms these are False and emits
+`wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h`. But at
+public RC, `public_claimability_activated` and `ilc_settlement_authorized` MUST flip
+to True only after the balances being claimed are verified through the distributed
+substrate readback path. This phase makes that change after Phase 1591, not before it.
+
+The other flags in `_FALSE_AUTHORIZATION_FLAGS` (transfer, withdrawal, spend) remain
+False through public RC default and require a separate `TRANSFER-ENABLED RC AUTHORIZED`
+gate (per the wallet gate prompt spec).
+
+**Scope:**
+
+1. Read `wallet_action_semantics_preflight.py` in full and map every flag, its current
+   enforcement location, and its required state at RC
+
+2. Restructure `_FALSE_AUTHORIZATION_FLAGS` or add a complementary
+   `_RC_AUTHORIZED_FLAGS` block that allows `public_claimability_activated=True` and
+   `ilc_settlement_authorized=True` while keeping transfer/withdrawal/spend blocked
+
+3. Update `run_wallet_action_semantics_preflight()` to:
+   - Accept `public_claimability_activated=True` as valid
+   - Accept `ilc_settlement_authorized=True` as valid
+   - Continue to enforce `wallet_transfer_enabled=False`, `wallet_withdrawal_enabled=False`,
+     `wallet_spend_enabled=False`
+
+4. Add tests:
+   - `test_preflight_accepts_claimability_authorized_at_rc`
+   - `test_preflight_accepts_ilc_settlement_authorized_at_rc`
+   - `test_preflight_still_rejects_transfer_enabled_at_rc`
+   - `test_preflight_still_rejects_withdrawal_enabled_at_rc`
+
+5. Update the genesis agent wallet records to set `public_claimability_activated=True`
+   and `ilc_settlement_authorized=True` (requires re-running the wallet action
+   preflight with the updated flags, per the wallet sidecar invocation path)
+
+**Deliverables:**
+- Modified `ilc_core/sidecars/wallet_action_semantics_preflight.py`
+- New tests
+- `docs/phases/phase_1592_gap_semantics_wallet_rc_walkthrough.md`
+- Output token: `public_claimability_authorized_phase_1592`
+- Output token: `ilc_settlement_authorized_phase_1592`
 
 ---
 
@@ -576,9 +578,9 @@ This phase is the most complex deliverable in the plan. It requires:
 | 1587 | Bridge Python | SENSITIVE | `GO GAP-SUBSTRATE-BRIDGE-PY AUTHORIZED` |
 | 1588 | Mainnet config | SENSITIVE | `GO GAP-SUBSTRATE-CONFIG MAINNET-GENESIS AUTHORIZED` |
 | 1589 | Validator admission | SENSITIVE | `GO GAP-SUBSTRATE-ADMISSION VALIDATOR-ADMISSION AUTHORIZED` |
-| 1590 | Wallet RC preflight after substrate readback | SENSITIVE | `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED` |
-| 1591 | TLA+ timing/admission check | NON-SENSITIVE | — |
-| 1592 | Integration soak | SENSITIVE | `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED` |
+| 1590 | TLA+ timing/admission check | NON-SENSITIVE | — |
+| 1591 | Integration soak | SENSITIVE | `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED` |
+| 1592 | Wallet RC preflight after substrate readback | SENSITIVE | `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED` |
 
 ---
 
@@ -623,11 +625,11 @@ Phases ready to draft now (no blocking decision):
 | 1587 | After 1586 | — |
 | 1588 | After Decision 1 + 3 | Validator set + timing |
 | 1589 | After 1588 | — |
-| 1590 | After 1578h and 1592 complete | — |
-| 1591 | Now | — |
-| 1592 | After 1586+1587+1588+1589+1591 | — |
+| 1590 | Now | — |
+| 1591 | After 1586+1587+1588+1589+1590 | — |
+| 1592 | After 1578h and 1591 complete | — |
 
-Phase 1591 (TLA+ timing/admission check) can be drafted and executed immediately — no
+Phase 1590 (TLA+ timing/admission check) can be drafted and executed immediately — no
 decisions block it, but its proof scope depends on the selected RC network class and
 validator-admission scope.
 Phase 1585 (bridge spec) can be drafted after Decision 1 on validator set size.
