@@ -62983,6 +62983,144 @@
         "EVIDENCES"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_blocker_evidence",
+      "chronology_note": "2026-07-27 Phase 1590: TLA+ timing/admission TLC blocker evidence",
+      "manual_read_summary": "Evidence report documenting fresh TLC counterexample for SafetyNoDualCert after validator admission to N=5 under the live Rust quorum_threshold formula; Phase 1590 completion token was not emitted.",
+      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_BLOCKER",
+          "target": "phase:1590_tla_timing_admission"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "phase:1591_substrate_e2e_soak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES_BLOCKER",
+        "BLOCKS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_model",
+      "chronology_note": "2026-07-27 Phase 1590: TLA+ model for timing/admission and dynamic validator membership",
+      "manual_read_summary": "TLA+ model extending Phase 1385a fixed-set epoch checkpoint safety with timing guards, validator admission/ejection, and live Rust quorum-threshold correspondence.",
+      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.tla",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MODELS",
+          "target": "ilc_consensus/src/epoch_settlement.rs"
+        },
+        {
+          "edge_type": "MODELS",
+          "target": "ilc_consensus/src/validator.rs"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "MODELS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_tlc_config",
+      "chronology_note": "2026-07-27 Phase 1590: TLC config for dynamic-admission counterexample run",
+      "manual_read_summary": "TLC config using validators {1,2,3,4,5}, initial validators {1,2,3,4}, ByzantineSet {5}, two roots, seven timing values, and two epochs.",
+      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.cfg",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONFIGURES",
+          "target": "docs/specs/tla/ilc_substrate_timing_admission_1590.tla"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONFIGURES"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_tlc_output",
+      "chronology_note": "2026-07-27 Phase 1590: TLC output showing SafetyNoDualCert violation",
+      "manual_read_summary": "Fresh TLC output showing conflicting epoch-1 certificates with signer sets {1,2,5} and {3,4,5}; invariant SafetyNoDualCert violated before completion.",
+      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590.tlc.out",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_BLOCKER",
+          "target": "phase:1590_tla_timing_admission"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES_BLOCKER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_walkthrough",
+      "chronology_note": "2026-07-27 Phase 1590 walkthrough: TLA timing/admission blocker and disposition",
+      "manual_read_summary": "Walkthrough recording source reads, stale Spec D path correction, TLC command, counterexample, non-emission of completion token, and recommended SENSITIVE Fix1.",
+      "repo_path": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_BLOCKER",
+          "target": "phase:1590_tla_timing_admission"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "phase:1591_substrate_e2e_soak"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES_BLOCKER",
+        "BLOCKS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

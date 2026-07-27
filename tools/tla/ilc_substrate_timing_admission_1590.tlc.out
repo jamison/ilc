@@ -1,0 +1,80 @@
+TLC2 Version 2026.04.22.172729 (rev: 6320a09)
+Warning: Please run the Java VM, which executes TLC with a throughput optimized garbage collector, by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 12 and seed 1199142577884556728 with 4 workers on 4 cores with 6144MB heap and 64MB offheap memory [pid: 96535] (Mac OS X 15.7.1 x86_64, Homebrew 25.0.2 64bit, MSBDiskFPSet, DiskStateQueue).
+Parsing file /Users/jamison/Documents/ILC_Main/01_Current/docs/specs/tla/ilc_substrate_timing_admission_1590.tla
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/Naturals.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Naturals.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/FiniteSets.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/FiniteSets.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/Sequences.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Sequences.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/TLC.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/TLC.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/_TLCTrace.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/_TLCTrace.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/TLCExt.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/TLCExt.tla)
+Parsing file /private/var/folders/yh/7vtwcmys5_vcdscj3vczm5s40000gn/T/tlc-2242898797049733034/Integers.tla (jar:file:/Users/jamison/Documents/ILC_Main/01_Current/tools/tla/tla2tools.jar!/tla2sany/StandardModules/Integers.tla)
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module Integers
+Semantic processing of module TLCExt
+Semantic processing of module _TLCTrace
+Semantic processing of module ilc_substrate_timing_admission_1590
+Linting of module TLCExt
+Linting of module _TLCTrace
+Linting of module ilc_substrate_timing_admission_1590
+Starting... (2026-07-27 21:19:31)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-07-27 21:19:31.
+Progress(5) at 2026-07-27 21:19:34: 4,841 states generated (4,841 s/min), 2,720 distinct states found (2,720 ds/min), 2,575 states left on queue.
+Error: Invariant SafetyNoDualCert is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ validators = {1, 2, 3, 4}
+/\ signed = {}
+/\ committedEpoch = 0
+/\ now = 0
+/\ certified = {}
+/\ ejectedThisEpoch = {}
+
+State 2: <Tick line 106, col 9 to line 108, col 88 of module ilc_substrate_timing_admission_1590>
+/\ validators = {1, 2, 3, 4}
+/\ signed = {}
+/\ committedEpoch = 0
+/\ now = 1
+/\ certified = {}
+/\ ejectedThisEpoch = {}
+
+State 3: <AdmitValidator line 112, col 9 to line 115, col 81 of module ilc_substrate_timing_admission_1590>
+/\ validators = {1, 2, 3, 4, 5}
+/\ signed = {}
+/\ committedEpoch = 0
+/\ now = 1
+/\ certified = {}
+/\ ejectedThisEpoch = {}
+
+State 4: <CertifyCheckpoint line 125, col 5 to line 136, col 74 of module ilc_substrate_timing_admission_1590>
+/\ validators = {1, 2, 3, 4, 5}
+/\ signed = { [epoch |-> 1, root |-> "root_a", signer |-> 1],
+  [epoch |-> 1, root |-> "root_a", signer |-> 2],
+  [epoch |-> 1, root |-> "root_a", signer |-> 5] }
+/\ committedEpoch = 0
+/\ now = 1
+/\ certified = {[signers |-> {1, 2, 5}, epoch |-> 1, root |-> "root_a", not_before |-> 0]}
+/\ ejectedThisEpoch = {}
+
+State 5: <CertifyCheckpoint line 125, col 5 to line 136, col 74 of module ilc_substrate_timing_admission_1590>
+/\ validators = {1, 2, 3, 4, 5}
+/\ signed = { [epoch |-> 1, root |-> "root_a", signer |-> 1],
+  [epoch |-> 1, root |-> "root_a", signer |-> 2],
+  [epoch |-> 1, root |-> "root_a", signer |-> 5],
+  [epoch |-> 1, root |-> "root_b", signer |-> 3],
+  [epoch |-> 1, root |-> "root_b", signer |-> 4],
+  [epoch |-> 1, root |-> "root_b", signer |-> 5] }
+/\ committedEpoch = 0
+/\ now = 1
+/\ certified = {[signers |-> {1, 2, 5}, epoch |-> 1, root |-> "root_a", not_before |-> 0], [signers |-> {3, 4, 5}, epoch |-> 1, root |-> "root_b", not_before |-> 0]}
+/\ ejectedThisEpoch = {}
+
+10144 states generated, 5666 distinct states found, 5412 states left on queue.
+The depth of the complete state graph search is 6.
+Finished in 05s at (2026-07-27 21:19:36)
+Trace exploration spec path: docs/specs/tla/ilc_substrate_timing_admission_1590_TTrace_1785179970.tla

@@ -405,7 +405,17 @@ end-to-end against the Python admission runtime.
 
 **Sensitivity:** NON-SENSITIVE — spec and formal-methods only, no code changes
 **Prerequisite:** None (can run in parallel with 1584–1589); must complete before Phase 1591
-**Prompt status:** Drafted and validator-compliant
+**Prompt status:** Executed to blocker on 2026-07-27; Fix1 required before completion
+
+**Execution result (2026-07-27):**
+TLC found a real `SafetyNoDualCert` counterexample after dynamic admission to five
+validators. With the live Rust threshold `quorum_threshold(5)=3`, signer sets
+`{1,2,5}` and `{3,4,5}` can certify conflicting epoch-1 roots while intersecting
+only at Byzantine validator `5`. Completion token
+`tla_plus_timing_admission_checked_phase_1590` was not emitted. Phase 1591 remains
+blocked until a SENSITIVE quorum-intersection hardening phase reruns TLC cleanly.
+Recommended fix: change production quorum threshold to `n - f`, or otherwise
+constrain admission to intersection-safe validator-set sizes.
 
 **Background:**
 TLA+ Spec D (Phase 1385a, 2026-05-18) proved `SafetyNoDualCert` over 67M states. It
@@ -668,7 +678,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | 1587 | Drafted; GO required after 1586 | — |
 | 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
-| 1590 | Drafted; NON-SENSITIVE; can start immediately | — |
+| 1590 | BLOCKED by TLC `SafetyNoDualCert` counterexample under N=5 admission; requires SENSITIVE Fix1 quorum-intersection hardening | BLOCKED |
 | 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 + invite/spectral/discovery/wallet-gate prerequisites | — |
 | 1592 | Drafted; GO required after 1578h and 1591 | — |
 | 1593 | Drafted (closure gate); GO required after all phases | — |
