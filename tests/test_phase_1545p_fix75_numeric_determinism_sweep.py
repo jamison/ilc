@@ -57,13 +57,13 @@ def test_node_dissemination_rejects_non_finite_before_digest() -> None:
 
 
 def test_passive_ecu_decimal_runtime_rejects_finite_float_ingress() -> None:
-    with pytest.raises(ValueError, match="base_reward_must_be_non_negative_float"):
+    with pytest.raises(ValueError, match="base_reward_must_be_non_negative_decimal"):
         passive_ecu.compute_passive_ecu(1.0, Decimal("0.5"), Decimal("0.5"))  # type: ignore[arg-type]
 
-    with pytest.raises(ValueError, match="centrality_score_must_be_non_negative_float"):
+    with pytest.raises(ValueError, match="centrality_score_must_be_non_negative_decimal"):
         passive_ecu.compute_passive_ecu(Decimal("1"), 0.5, Decimal("0.5"))  # type: ignore[arg-type]
 
-    with pytest.raises(ValueError, match="q_i_must_be_float_in_unit_interval"):
+    with pytest.raises(ValueError, match="q_i_must_be_decimal_in_unit_interval"):
         passive_ecu.compute_passive_ecu(Decimal("1"), Decimal("0.5"), 0.5)  # type: ignore[arg-type]
 
 

@@ -106,10 +106,10 @@ def test_u_floor_boundary_is_inclusive() -> None:
     runtime.accumulate_centrality_delta('node-boundary', runtime.U_FLOOR, 1, boundary_state)
 
     if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert low_state['node-low'] == Decimal("0E-12")
+        assert 'node-low' not in low_state
         assert boundary_state['node-boundary'] == runtime.U_FLOOR
     else:
-        assert low_state['_pending'][1]['node-low'] == Decimal("0E-12")
+        assert '_pending' not in low_state
         assert boundary_state['_pending'][1]['node-boundary'] == runtime.U_FLOOR
 
 

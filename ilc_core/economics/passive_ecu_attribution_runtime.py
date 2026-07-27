@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 
 from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
     CDL_060_GOSSIP_RUNTIME_VERSION as _CDL_060_GOSSIP_RUNTIME_CHECK,
@@ -19,6 +19,12 @@ DECAY_FLOOR = Decimal("0.05")
 ATTRIBUTION_CAP = Decimal("0.15")
 GAMMA = Decimal("0.15")
 _TWELVE_PLACES = Decimal("0.000000000001")
+MAX_PASSIVE_ECU_DECIMAL_DIGITS = 80
+MAX_PASSIVE_ECU_DECIMAL_ADJUSTED_EXPONENT = 18
+PASSIVE_ECU_DECIMAL_MAGNITUDE_TOKEN = "passive_ecu_decimal_magnitude_too_large"
+Q_I_DECIMAL_INTERVAL_TOKEN = "q_i_must_be_decimal_in_unit_interval"
+BASE_REWARD_DECIMAL_TOKEN = "base_reward_must_be_non_negative_decimal"
+CENTRALITY_SCORE_DECIMAL_TOKEN = "centrality_score_must_be_non_negative_decimal"
 
 
 class PassiveECUAttributionContractError(RuntimeError):
@@ -56,18 +62,24 @@ def _coerce_decimal(value: object, token: str) -> Decimal:
         raise ValueError(token) from exc
     if not amount.is_finite():
         raise ValueError(token)
+    if (
+        len(amount.as_tuple().digits) > MAX_PASSIVE_ECU_DECIMAL_DIGITS
+        or amount.adjusted() > MAX_PASSIVE_ECU_DECIMAL_ADJUSTED_EXPONENT
+    ):
+        raise ValueError(PASSIVE_ECU_DECIMAL_MAGNITUDE_TOKEN)
     return amount
 
 
 def quality_factor(q_i: Decimal) -> Decimal:
     """Compute the bounded quality multiplier for a normalized quality score."""
 
-    normalized = _coerce_decimal(q_i, "q_i_must_be_float_in_unit_interval")
+    normalized = _coerce_decimal(q_i, Q_I_DECIMAL_INTERVAL_TOKEN)
     if normalized < Decimal("0") or normalized > Decimal("1"):
-        raise ValueError("q_i_must_be_float_in_unit_interval")
-    return (Decimal("1") + GAMMA * (Decimal("2") * normalized - Decimal("1"))).quantize(
-        _TWELVE_PLACES
-    )
+        raise ValueError(Q_I_DECIMAL_INTERVAL_TOKEN)
+    with localcontext() as ctx:
+        ctx.prec = MAX_PASSIVE_ECU_DECIMAL_DIGITS
+        value = Decimal("1") + GAMMA * (Decimal("2") * normalized - Decimal("1"))
+        return value.quantize(_TWELVE_PLACES)
 
 
 def compute_passive_ecu(
@@ -78,26 +90,28 @@ def compute_passive_ecu(
     """Compute passive ECU attribution for one reuse path."""
 
     normalized_base_reward = _coerce_decimal(
-        base_reward, "base_reward_must_be_non_negative_float"
+        base_reward, BASE_REWARD_DECIMAL_TOKEN
     )
     if normalized_base_reward < Decimal("0"):
-        raise ValueError("base_reward_must_be_non_negative_float")
+        raise ValueError(BASE_REWARD_DECIMAL_TOKEN)
     if normalized_base_reward == Decimal("0"):
         return Decimal("0")
 
     normalized_centrality = _coerce_decimal(
-        centrality_score, "centrality_score_must_be_non_negative_float"
+        centrality_score, CENTRALITY_SCORE_DECIMAL_TOKEN
     )
     if normalized_centrality < Decimal("0") or normalized_centrality > Decimal("1"):
-        raise ValueError("centrality_score_must_be_non_negative_float")
+        raise ValueError(CENTRALITY_SCORE_DECIMAL_TOKEN)
     if normalized_centrality < DECAY_FLOOR:
         return Decimal("0")
 
-    raw = (
-        normalized_base_reward
-        * PASSIVE_ATTRIBUTION_RATE
-        * normalized_centrality
-        * quality_factor(q_i)
-    )
-    cap = normalized_base_reward * ATTRIBUTION_CAP
-    return min(raw, cap).quantize(_TWELVE_PLACES)
+    with localcontext() as ctx:
+        ctx.prec = MAX_PASSIVE_ECU_DECIMAL_DIGITS
+        raw = (
+            normalized_base_reward
+            * PASSIVE_ATTRIBUTION_RATE
+            * normalized_centrality
+            * quality_factor(q_i)
+        )
+        cap = normalized_base_reward * ATTRIBUTION_CAP
+        return min(raw, cap).quantize(_TWELVE_PLACES)

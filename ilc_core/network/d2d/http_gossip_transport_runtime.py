@@ -68,6 +68,7 @@ GOSSIP_SIGNED_CONTEXT_KEYS = frozenset({
 })
 AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
     "agent_submission",
+    "centrality_delta",
     "panel_verdict",
     "ecu_claim_batch",
 })

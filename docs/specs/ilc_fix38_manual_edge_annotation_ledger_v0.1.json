@@ -62417,8 +62417,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
-          "review_status": "candidate_wallet_lane_forward_plan_trace"
+          "review_status": "candidate_wallet_lane_forward_plan_trace",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62446,8 +62446,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
-          "review_status": "candidate_wallet_lane_forward_plan_trace"
+          "review_status": "candidate_wallet_lane_forward_plan_trace",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62475,8 +62475,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
-          "review_status": "candidate_wallet_lane_forward_plan_trace"
+          "review_status": "candidate_wallet_lane_forward_plan_trace",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62514,8 +62514,8 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
-          "review_status": "candidate_wallet_lane_forward_plan_trace"
+          "review_status": "candidate_wallet_lane_forward_plan_trace",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62548,17 +62548,16 @@
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1584-1593 DAG Substrate Public RC Activation window guidance doc",
       "manual_read_summary": "Window 1584-1593 guidance doc covering 9 substrate gaps for public RC: passive ECU guard, bridge spec, Rust proposal ingress, Python bridge, mainnet config, validator admission, TLA+, integration soak, and wallet claimability.",
-      "repo_path": "docs/specs/ilc_window_1584_1593_dag_substrate_public_rc_activation_candidate_phase_grouping_v0.1.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62576,18 +62575,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_window_1584_1593_dag_substrate_public_rc_activation_candidate_phase_grouping_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1584 prompt: GAP-CDL060-PASSIVE-ECU-GUARD passive ECU guard disposition",
       "manual_read_summary": "Phase prompt for Phase 1584 GAP-CDL060-PASSIVE-ECU-GUARD: disposes of PASSIVE_ECU_WIRING_NOT_ACTIVATED ambiguity via Path A (re-guard to True) or Path B (authorize current state).",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1584_g10_gap_substrate_passive_ecu_guard_disposition.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62605,18 +62604,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1584_g10_gap_substrate_passive_ecu_guard_disposition.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1585 prompt: GAP-SUBSTRATE-BRIDGE-SPEC bridge proposal ingress wire protocol spec",
       "manual_read_summary": "Phase prompt for Phase 1585: spec-only phase producing SubmitEpochProposal gRPC wire protocol spec, BLS signing chain, ConsensusBridgeConfig extension, and error contract.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1585_g10_gap_substrate_bridge_proposal_ingress_spec.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62634,18 +62633,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1585_g10_gap_substrate_bridge_proposal_ingress_spec.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1586 prompt: GAP-SUBSTRATE-BRIDGE-RUST Rust SubmitEpochProposal implementation",
       "manual_read_summary": "Phase prompt for Phase 1586: implements SubmitEpochProposal RPC in ilc_consensus/src/app_interface.rs, extends proto, wires into main.rs, adds 3+ Rust unit tests.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1586_g10_gap_substrate_bridge_rust_proposal_ingress.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62663,18 +62662,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1586_g10_gap_substrate_bridge_rust_proposal_ingress.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1587 prompt: GAP-SUBSTRATE-BRIDGE-PY Python bridge client activation",
       "manual_read_summary": "Phase prompt for Phase 1587: replaces submit_ecu_transfer_via_quic() stub with real gRPC client, flips PRODUCTION_BRIDGE_ACTIVE=True, enforces TLS and socket timeout, adds 4+ tests.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62692,18 +62691,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1588 prompt: GAP-SUBSTRATE-CONFIG mainnet RC01 genesis config",
       "manual_read_summary": "Phase prompt for Phase 1588: creates config/mysticeti_mainnet_rc01/genesis.json with is_testnet=false, settlement_path=mysticeti_fast_path, real BLS validator keys.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62721,23 +62720,23 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1589 prompt: GAP-SUBSTRATE-ADMISSION validator admission production path",
       "manual_read_summary": "Phase prompt for Phase 1589: implements production admit_validator() with 1000 ECU minimum stake, removes NOT_ACTIVATED guard, wires to Rust via ConsensusBridgeConfig, adds 3+ tests.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589_g10_gap_substrate_validator_admission_activation.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62755,18 +62754,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589_g10_gap_substrate_validator_admission_activation.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1590 prompt: GAP-SUBSTRATE-TLA TLA+ timing/admission formal evidence",
       "manual_read_summary": "Phase prompt for Phase 1590: extends TLA+ Spec D with timing properties and validator admission/ejection; runs TLC; records PASS evidence; emits tla_plus_timing_admission_checked_phase_1590.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62784,18 +62783,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1591 prompt: GAP-INTEGRATION-SOAK E2E Python to Rust substrate integration soak",
       "manual_read_summary": "Phase prompt for Phase 1591: harness starts validator_harness binary, runs mini soak, submits epoch proposal via production bridge, verifies BFT path and gRPC readback, 4 integration tests.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1591_g10_gap_substrate_integration_soak_e2e.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62813,18 +62812,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1591_g10_gap_substrate_integration_soak_e2e.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1592 prompt: GAP-SEMANTICS-WALLET-RC wallet claimability activation",
       "manual_read_summary": "Phase prompt for Phase 1592: activates public_claimability_activated and ilc_settlement_authorized flags after Phase 1578h wallet gate and Phase 1591 soak; transfer/withdrawal/spend remain blocked.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1592_g10_gap_substrate_wallet_rc_claimability_activation.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62842,23 +62841,23 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1592_g10_gap_substrate_wallet_rc_claimability_activation.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Phase 1593 prompt: window 1584-1593 closure gate DAG substrate RC activation",
       "manual_read_summary": "Phase prompt for Phase 1593: closure gate verifying all 9-11 STATUS tokens present, reads guard states from source, produces closure verdict and window handoff doc, updates PLANNING_INDEX.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1593_g10_gap_substrate_window_1584_1593_closure_gate.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_window_closure_handoff_doc_schema_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62876,18 +62875,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1593_g10_gap_substrate_window_1584_1593_closure_gate.md"
     },
     {
       "annotation_batch": "manual_batch_234_phase_1584_1593_dag_substrate_prompts",
       "chronology_note": "2026-07-27 Updated gap plan: corrected phase numbering 1590=TLA+, 1591=soak, 1592=wallet",
       "manual_read_summary": "Gap plan for DAG substrate public RC activation with corrected phase numbering: Phase 1590 is TLA+ timing/admission, Phase 1591 is integration soak, Phase 1592 is wallet RC claimability.",
-      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62905,28 +62904,28 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_235_phase_1585_bridge_proposal_ingress_spec",
       "chronology_note": "2026-07-27 Phase 1585 spec: bridge proposal ingress wire protocol for Python-to-Rust epoch settlement proposals",
       "manual_read_summary": "Spec document defining SubmitEpochProposal request/response, BFT-routed BLS signing chain, error contract, ConsensusBridgeConfig write-path extension, and SettlementPath=mysticeti_fast_path prerequisite; no runtime code or guard changed.",
-      "repo_path": "docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_coupling_invariants_governance_lock_663_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_coupling_invariants_governance_lock_663_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_cdl_067_settlement_substrate_governance_ratification_evidence_709_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_067_settlement_substrate_governance_ratification_evidence_709_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62953,18 +62952,18 @@
         "EVIDENCES",
         "GATES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_235_phase_1585_bridge_proposal_ingress_spec",
       "chronology_note": "2026-07-27 Phase 1585 walkthrough: bridge proposal ingress spec execution evidence",
       "manual_read_summary": "Walkthrough recording source reads, prompt hardening, spec decisions, verification outputs, STATUS token, and non-claims for Phase 1585.",
-      "repo_path": "docs/phases/phase_1585_gap_substrate_bridge_spec_walkthrough.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1585_g10_gap_substrate_bridge_proposal_ingress_spec.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1585_g10_gap_substrate_bridge_proposal_ingress_spec.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -62982,18 +62981,18 @@
         "REFERENCES_AUTHORITY",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1585_gap_substrate_bridge_spec_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_blocker_evidence",
       "chronology_note": "2026-07-27 Phase 1590: TLA+ timing/admission TLC blocker evidence",
       "manual_read_summary": "Evidence report documenting fresh TLC counterexample for SafetyNoDualCert after validator admission to N=5 under the live Rust quorum_threshold formula; Phase 1590 completion token was not emitted.",
-      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63016,13 +63015,13 @@
         "EVIDENCES_BLOCKER",
         "BLOCKS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_model",
       "chronology_note": "2026-07-27 Phase 1590: TLA+ model for timing/admission and dynamic validator membership",
       "manual_read_summary": "TLA+ model extending Phase 1385a fixed-set epoch checkpoint safety with timing guards, validator admission/ejection, and live Rust quorum-threshold correspondence.",
-      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.tla",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -63042,13 +63041,13 @@
         "SOURCE_TREE_MEMBER",
         "MODELS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.tla"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_tlc_config",
       "chronology_note": "2026-07-27 Phase 1590: TLC config for dynamic-admission counterexample run",
       "manual_read_summary": "TLC config using validators {1,2,3,4,5}, initial validators {1,2,3,4}, ByzantineSet {5}, two roots, seven timing values, and two epochs.",
-      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.cfg",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -63064,13 +63063,13 @@
         "SOURCE_TREE_MEMBER",
         "CONFIGURES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/tla/ilc_substrate_timing_admission_1590.cfg"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_tlc_output",
       "chronology_note": "2026-07-27 Phase 1590: TLC output showing SafetyNoDualCert violation",
       "manual_read_summary": "Fresh TLC output showing conflicting epoch-1 certificates with signer sets {1,2,5} and {3,4,5}; invariant SafetyNoDualCert violated before completion.",
-      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590.tlc.out",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -63086,18 +63085,18 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES_BLOCKER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590.tlc.out"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1590_tla_timing_admission_walkthrough",
       "chronology_note": "2026-07-27 Phase 1590 walkthrough: TLA timing/admission blocker and disposition",
       "manual_read_summary": "Walkthrough recording source reads, stale Spec D path correction, TLC command, counterexample, non-emission of completion token, and recommended SENSITIVE Fix1.",
-      "repo_path": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1590_g10_gap_substrate_tla_timing_admission_evidence.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63120,18 +63119,18 @@
         "EVIDENCES_BLOCKER",
         "BLOCKS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_237_phase_1590_fix1_quorum_intersection_runtime",
       "chronology_note": "2026-07-27 Phase 1590-Fix1: Rust quorum-intersection hardening",
       "manual_read_summary": "Runtime hardening replacing quorum_threshold(N) with N - floor((N - 1) / 3), closing the N=5 dynamic-admission SafetyNoDualCert counterexample from Phase 1590.",
-      "repo_path": "ilc_consensus/src/validator.rs",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
-          "review_status": "accepted_blocker"
+          "review_status": "accepted_blocker",
+          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63154,18 +63153,18 @@
         "FIXES",
         "HARDENS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_consensus/src/validator.rs"
     },
     {
       "annotation_batch": "manual_batch_237_phase_1590_fix1_tla_pass_evidence",
       "chronology_note": "2026-07-27 Phase 1590-Fix1: clean TLA/TLC evidence after quorum hardening",
       "manual_read_summary": "Evidence report recording hardened threshold, updated TLA model, clean TLC run with 1,031,138 states generated, and verification commands.",
-      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_fix1_evidence_1590_v0.1.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md",
-          "review_status": "supersedes_blocker"
+          "review_status": "supersedes_blocker",
+          "target": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63188,13 +63187,13 @@
         "EVIDENCES",
         "CLOSES_BLOCKER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_fix1_evidence_1590_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_237_phase_1590_fix1_tlc_output",
       "chronology_note": "2026-07-27 Phase 1590-Fix1: TLC output clean after hardened threshold",
       "manual_read_summary": "Fresh TLC output showing no violations for the hardened timing/admission model: 1,031,138 states generated, 255,483 distinct, depth 10.",
-      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590_fix1.tlc.out",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -63210,18 +63209,18 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590_fix1.tlc.out"
     },
     {
       "annotation_batch": "manual_batch_237_phase_1590_fix1_walkthrough",
       "chronology_note": "2026-07-27 Phase 1590-Fix1 walkthrough",
       "manual_read_summary": "Walkthrough recording GO phrase, the closed N=5 dual-certificate counterexample, changed threshold rule, verification commands, output tokens, and non-claims.",
-      "repo_path": "docs/phases/phase_1590_fix1_quorum_intersection_hardening_walkthrough.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
-          "review_status": "accepted_blocker"
+          "review_status": "accepted_blocker",
+          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63244,28 +63243,28 @@
         "EVIDENCES",
         "UNBLOCKS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1590_fix1_quorum_intersection_hardening_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_238_phase_1584_passive_ecu_guard_disposition",
       "chronology_note": "2026-07-27 Phase 1584: passive ECU public-RC guard disposition Path B authorization",
       "manual_read_summary": "Walkthrough recording exact Path-B GO phrase, live PASSIVE_ECU_WIRING_NOT_ACTIVATED=False value before and after, CDL-052/CDL-060/CDL-078 authority trace, verification outputs, test correction, output token, and non-claims.",
-      "repo_path": "docs/phases/phase_1584_gap_cdl060_passive_ecu_guard_walkthrough.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1584_g10_gap_substrate_passive_ecu_guard_disposition.md",
-          "review_status": "accepted_path_b_go"
+          "review_status": "accepted_path_b_go",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1584_g10_gap_substrate_passive_ecu_guard_disposition.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_ecu_ilc_semantic_boundary_spec_GAP_VALUE_ECU_00_v0.1.md",
-          "review_status": "disposition_input"
+          "review_status": "disposition_input",
+          "target": "docs/specs/ilc_ecu_ilc_semantic_boundary_spec_GAP_VALUE_ECU_00_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "cdl_052_060_078_ratified"
+          "review_status": "cdl_052_060_078_ratified",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -63293,7 +63292,63 @@
         "EVIDENCES",
         "UNBLOCKS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1584_gap_cdl060_passive_ecu_guard_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_239_phase_1584_fix1_passive_ecu_public_rc_hardening",
+      "chronology_note": "2026-07-27 Phase 1584-Fix1: passive ECU public-RC hardening closes all severity audit findings after Path-B authorization",
+      "manual_read_summary": "Prompt, walkthrough, regression tests, D2D centrality authority-bearing classification, centrality/passive ECU Decimal bounds, routing reputation buffer caps, passive ECU Decimal token rename, and Phase 1588 D2D public-mode prompt hardening.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1584_fix1_g10_passive_ecu_public_rc_hardening.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "path_b_authorized_input",
+          "target": "docs/phases/phase_1584_gap_cdl060_passive_ecu_guard_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "hardened_future_gate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1588_g10_gap_substrate_mainnet_genesis_config.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:passive_ecu_public_rc_hardening_complete_phase_1584_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:centrality_delta_authority_bearing_phase_1584_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:centrality_memory_bounds_enforced_phase_1584_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:passive_ecu_decimal_tokens_hardened_phase_1584_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:phase_1588_d2d_public_mode_gate_hardened_phase_1584_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1584_fix1_passive_ecu_public_rc_hardening_walkthrough.md"
     }
   ],
   "boundary": {
@@ -64236,7 +64291,6 @@
       "annotation_batch": "manual_batch_230_phase_1575t_fix2_ilc_conservation_close",
       "chronology_note": "2026-07-27 phase 1575t-Fix2 \u2014 phase prompt to close ILC component conservation equation carry-forward and constitutionally disposition sweeper MEDIUM-003; 2026-07-27 phase 1575t-Fix2 - prompt hardened after blocker; no cross-surface conservation equation is authorized.",
       "manual_read_summary": "Phase prompt for Phase 1575t-Fix2, revised after the mid-phase blocker: add total_ilc_emitted_from_emission_path as a reference-only field, document the dual-surface accounting boundary, keep the rejected cross-surface equation out of proven, and constitutionally disposition sweeper MEDIUM-003 as pre-Phase 1388.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix2_g10_ilc_conservation_equation_close.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -64252,7 +64306,8 @@
         "SOURCE_TREE_MEMBER",
         "REFERENCES_PHASE"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix2_g10_ilc_conservation_equation_close.md"
     },
     {
       "annotation_batch": "manual_batch_231_phase_1575t_fix2_ilc_conservation_boundary_walkthrough",
@@ -64288,7 +64343,6 @@
       "annotation_batch": "manual_batch_231_phase_1575t_fix3_verifier_hardening",
       "chronology_note": "2026-07-27 phase 1575t-Fix3 \u2014 phase prompt to harden verify_soak_evidence() by recomputing all authoritative totals from raw evidence (5 HIGH/MEDIUM gaps identified in parallel Sonnet+Codex audit)",
       "manual_read_summary": "Phase prompt for Phase 1575t-Fix3, which closes five verifier integrity gaps by adding recomputation of CDL-048 totals from quote_payloads, settlement roots from epoch_records, wallet readback from balance_ledger rows, ILC emitted from emission_quote budgets, and certificate authority fields from module constants.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix3_g10_verifier_hardening.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -64304,13 +64358,13 @@
         "SOURCE_TREE_MEMBER",
         "REFERENCES_PHASE"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix3_g10_verifier_hardening.md"
     },
     {
       "annotation_batch": "manual_batch_232_phase_1575t_fix3_verifier_hardening_walkthrough",
       "chronology_note": "2026-07-27 phase 1575t-Fix3 - walkthrough for verifier hardening execution and seven refreshed-hash tamper rejection tests.",
       "manual_read_summary": "Phase walkthrough records the verifier hardening implementation, source line anchors, seven negative tamper tests, command outputs, output tokens, and non-claims for Phase 1575t-Fix3.",
-      "repo_path": "docs/phases/phase_1575t_fix3_verifier_hardening_walkthrough.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -64335,13 +64389,13 @@
         "EVIDENCES",
         "CARRIES_FORWARD"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1575t_fix3_verifier_hardening_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_233_phase_1584_1592_dag_substrate_rc_gap_plan",
       "chronology_note": "2026-07-27 \u2014 Phase 1584-1592 planning: DAG substrate public RC gap plan",
       "manual_read_summary": "Planning document identifying 9 phases (1584\u20131592) required to activate the ILC distributed DAG consensus substrate at public RC, with gap inventory, critical path, phase scopes, human decision requirements, and sensitivity classifications.",
-      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -64365,7 +64419,8 @@
         "SOURCE_TREE_MEMBER",
         "REFERENCES"
       ],
-      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     }
   ],
   "manual_edge_annotations": [
