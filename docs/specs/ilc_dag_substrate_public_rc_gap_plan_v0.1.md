@@ -23,6 +23,12 @@ end-to-end. This plan closes that gap before public RC.
 **Canonical reference:** `docs/architecture/ilc_canonical_glossary_and_concepts_v0.2.md` §ILC;
 CDL-065 ("The Mysticeti substrate may carry ILC legitimacy, not author it").
 
+**Pre-RC hardening rule (Codex review correction, 2026-07-27):** Because the project
+is now close to public RC, substrate blockers must not be closed by "document and
+defer" dispositions when the public RC claim depends on the blocked behavior. Each
+discovered blocker must either be resolved in a Fix phase with executable pass
+criteria, or explicitly removed from public RC scope with a human-approved non-claim.
+
 ---
 
 ## §2 — Codebase State at Gap Discovery (2026-07-27)
@@ -38,16 +44,16 @@ CDL-065 ("The Mysticeti substrate may carry ILC legitimacy, not author it").
 | `is_testnet` | `config/mysticeti_testnet_M009/genesis.json` | `true` | All timing enforcement bypassed; needed: `false` for mainnet |
 | `SettlementPath` | `ilc_consensus/src/config.rs:97` | `None` in all current configs | `MysticetiFastPath` not activated in any config |
 | `process_epoch_checkpoint()` | `ilc_consensus/src/epoch_settlement.rs:233` | Implemented (BLS verify + LMDB write) | Rust-side settlement exists; no exposed write endpoint from Python |
-| Rust gRPC write service | `ilc_consensus/src/app_interface.rs` | Read-only (`IlcAppReadService`) | No write endpoint for epoch checkpoint submission |
+| Rust gRPC proposal ingress | `ilc_consensus/src/app_interface.rs` | Read-only (`IlcAppReadService`) | No proposal ingress for epoch settlement submission |
 | TLA+ Spec D | `docs/specs/ilc_tla_plus_spec_d_phase_1385a_v0.1.tla` (Phase 1385a) | 67M states proved SafetyNoDualCert | Does NOT model `not_before_unix_ms` timing or validator admission/ejection |
 
 **Key architecture fact (not previously documented in one place):** The Rust
 `validator_harness` binary runs an internal BFT consensus protocol via
 `FastPathProtocol` and `NodeRunner`. Python→Rust settlement is NOT a direct call
 to `process_epoch_checkpoint()` — it requires Python to submit epoch data to the
-validator network via a QUIC or gRPC write endpoint, which the validators then
+validator network via a QUIC or gRPC proposal ingress, which the validators then
 process through BFT agreement before calling `process_epoch_checkpoint()`. Neither
-the Python write call nor the Rust write endpoint currently exist.
+the Python proposal call nor the Rust proposal ingress currently exist.
 
 ---
 
@@ -56,14 +62,14 @@ the Python write call nor the Rust write endpoint currently exist.
 | Gap ID | What is missing | Blocking for RC? | Phase |
 |--------|----------------|-----------------|-------|
 | GAP-SUBSTRATE-07 | Passive ECU guard disposition (`PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` set without SENSITIVE authorization) | Yes — pre-mirror hard stop | **1584** |
-| GAP-SUBSTRATE-BRIDGE-SPEC | Wire protocol spec: what Python serializes, what Rust gRPC write service must expose, BLS signing chain | Yes — gates implementation | **1585** |
-| GAP-SUBSTRATE-BRIDGE-RUST | Implement `SubmitEpochCheckpoint` gRPC write service in Rust; wire to `process_epoch_checkpoint()` | Yes — core activation | **1586** |
+| GAP-SUBSTRATE-BRIDGE-SPEC | Wire protocol spec: Python submits a canonical epoch settlement proposal; Rust validators own BFT ordering/signing/checkpoint commitment | Yes — gates implementation | **1585** |
+| GAP-SUBSTRATE-BRIDGE-RUST | Implement authenticated Rust proposal ingress; route into consensus-owned checkpoint processing, not a direct externally supplied checkpoint bypass | Yes — core activation | **1586** |
 | GAP-SUBSTRATE-BRIDGE-PY | Implement Python client in `production_bridge.py`; flip `PRODUCTION_BRIDGE_ACTIVE = True` | Yes — core activation | **1587** |
 | GAP-SUBSTRATE-CONFIG | Mainnet genesis config (`is_testnet=false`); provision timing enforcement | Yes — mainnet gate | **1588** |
 | GAP-SUBSTRATE-ADMISSION | Validator admission activation: clear `PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED` guard, implement production path | Yes — validators must join | **1589** |
-| GAP-SEMANTICS-WALLET-RC | Wallet action semantics preflight RC posture: flip `public_claimability_activated` and `ilc_settlement_authorized` to True | Yes — users must claim | **1590** |
-| GAP-SUBSTRATE-TLA | TLA+ timing and admission gap documentation; formal disposition | Defer with explicit doc | **1591** |
-| GAP-INTEGRATION-SOAK | E2E soak: Python checkpoint → Rust gRPC write → BFT → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1592** |
+| GAP-SEMANTICS-WALLET-RC | Wallet action semantics preflight RC posture: flip `public_claimability_activated` and `ilc_settlement_authorized` to True only after distributed-substrate integration passes | Yes — users must claim consensus-backed balances | **1590** |
+| GAP-SUBSTRATE-TLA | TLA+ timing/admission model update plus TLC evidence, or explicit human-approved removal of those semantics from public RC scope | Yes — formal substrate gap | **1591** |
+| GAP-INTEGRATION-SOAK | E2E soak: Python proposal → Rust authenticated ingress → BFT/quorum checkpoint → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1592** |
 
 Note: GAP-CONSENSUS-09 (ConsensusBridgeConfig into soak harness) is addressed within
 Phase 1592 (GAP-INTEGRATION-SOAK). GAP-SUBSTRATE-01 (E2E integration test) is the same
@@ -79,22 +85,26 @@ BRIDGE-RUST (1586) + BRIDGE-PY (1587). GAP-SUBSTRATE-03 and GAP-SUBSTRATE-08
 Phase 1584 (Passive ECU guard) ──────────────────────────────────────────────────────┐
 Phase 1585 (Bridge spec) ──→ Phase 1586 (Bridge Rust) ──→ Phase 1587 (Bridge Py) ──→┐│
 Phase 1588 (Mainnet config) ──→ Phase 1589 (Validator admission) ─────────────────→ ││
-Phase 1590 (Wallet RC preflight) ────────────────────────────────────────────────────┘│
-Phase 1591 (TLA+ gap doc — parallel, not blocking)                                    │
+Phase 1591 (TLA+ timing/admission model + TLC evidence) ─────────────────────────────┐│
                                                                                       ↓
                                                               Phase 1592 (Integration soak)
+                                                                                      ↓
+                                                              Phase 1590 (Wallet RC preflight)
 ```
 
 **Parallel tracks (no dependency on each other):**
-- 1584, 1588, 1590, 1591 can all run in parallel with each other
+- 1584, 1588, and 1591 can run in parallel with each other
 - 1584 can run concurrently with 1585
-- 1590 (wallet RC preflight) must run AFTER Phase 1578h wallet gate completes
+- 1590 (wallet RC preflight) must run AFTER Phase 1578h wallet gate completes AND after
+  Phase 1592 confirms consensus-backed readback
 
 **Sequential constraints:**
 - 1585 → 1586 → 1587 (bridge spec gates implementation; Rust gates Python)
 - 1588 → 1589 (mainnet config needed before admission live testing)
-- 1586 + 1587 + 1588 + 1589 → 1592 (all substrate components needed before integration soak)
-- 1578h → 1590 (wallet gate must pass first)
+- 1591 → 1592 unless timing/admission semantics are explicitly removed from public RC scope
+- 1586 + 1587 + 1588 + 1589 + 1591 → 1592 (all substrate components and formal gap
+  disposition needed before integration soak)
+- 1578h + 1592 → 1590 (wallet gate and consensus-backed substrate readback must pass first)
 
 ---
 
@@ -154,35 +164,37 @@ The Python→Rust bridge (`production_bridge.py`) has a stub that raises
 Before Codex can implement either side, the wire protocol must be specified.
 
 **Scope:**
-Produce `docs/specs/ilc_production_bridge_write_path_spec_1585_v0.1.md` defining:
+Produce `docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md` defining:
 
-1. **Epoch checkpoint wire format:** How Python serializes an epoch settlement record
-   for submission to the Rust network. Define whether this uses:
-   - gRPC write service (`SubmitEpochCheckpoint`) added to `app_interface.rs`, or
+1. **Epoch proposal wire format:** How Python serializes a canonical epoch settlement
+   proposal for submission to the Rust network. Define whether this uses:
+   - gRPC proposal ingress (`SubmitEpochProposal`) added to `app_interface.rs`, or
    - QUIC datagram via `PersistentQuicSessionManager`
 
-   Recommendation: gRPC write service — consistent with existing read service pattern
-   and avoids raw QUIC framing complexity.
+   Recommendation: authenticated gRPC proposal ingress — consistent with the existing
+   read-service pattern and avoids raw QUIC framing complexity. Do not define an external
+   `SubmitEpochCheckpoint` API unless the request is already a post-consensus, quorum-signed
+   artifact produced by Rust validators.
 
 2. **BLS signing chain:** `process_epoch_checkpoint()` expects a `SignedEpochCheckpoint`
-   with BLS multi-signatures from validators. For Genesis-controlled RC0.1, the signing
-   chain must be specified:
+   with BLS multi-signatures from validators. The signing chain must be specified:
    - Who produces the `EpochSettlementRecord` (Python, from LMDB lifecycle writes)
-   - Who BLS-signs (Rust validators, after receiving the record from Python via gRPC)
-   - Whether Python submits unsigned record (Rust validators sign collectively via BFT)
-     OR Python signs using a genesis-controlled BLS key (single-validator fast path, f=0
-     with explicit HIGH-002 guard disposition)
+   - Who verifies the proposal preimage and evidence references
+   - Who BLS-signs (Rust validators, after receiving the proposal through the ingress path)
+   - Whether Python submits an unsigned proposal that Rust validators collectively sign via
+     BFT, or whether the phase is intentionally downgraded to a Genesis-controlled single
+     operator devnet with explicit non-BFT public-RC non-claims
 
 3. **Error contract:** What Rust returns on: BLS verify failure, timing violation
    (`not_before_unix_ms` too far future, `MIN_EPOCH_DURATION_MS` not elapsed),
    epoch sequence conflict, or duplicate submission.
 
 4. **`ConsensusBridgeConfig` extension:** What new fields are needed in the Python
-   `ConsensusBridgeConfig` dataclass to support the write path (gRPC write endpoint,
+   `ConsensusBridgeConfig` dataclass to support the proposal path (gRPC ingress endpoint,
    timeout, retry policy).
 
 5. **`SettlementPath=MysticetiFastPath` prerequisite check:** The Rust binary must be
-   running with `settlement_path=mysticeti_fast_path` for the write endpoint to be
+   running with `settlement_path=mysticeti_fast_path` for the proposal ingress to be
    active. Spec must define how Python detects and enforces this.
 
 **Deliverables:**
@@ -190,13 +202,15 @@ Produce `docs/specs/ilc_production_bridge_write_path_spec_1585_v0.1.md` defining
 - Output token: `production_bridge_write_path_spec_committed_phase_1585`
 
 **Human decision required (before Phase 1586 begins):**
-The BLS signing chain option in item 2 above is the key architectural decision. For
-Genesis-controlled RC0.1, the simplest path is single-validator BFT (f=0, genesis key
-signs) — but `check_settlement_path_gate()` currently rejects f=0 with an error:
+The BLS signing chain option in item 2 above is the key architectural decision. The
+default recommended public-RC path is N=4, f=1, because this matches the previous
+Mysticeti/TLA model family and demonstrates distributed BFT rather than single-operator
+settlement. `check_settlement_path_gate()` currently rejects f=0 with an error:
 "settlement_path=mysticeti_fast_path with f=0 is not permitted; HIGH-002 hardening
 required." Human must decide:
-- Accept HIGH-002 guard disposition for single-validator RC0.1 (fastest path)
-- OR provision at least 4 validators (N≥4, f≥1) for BFT quorum at RC0.1
+- Use N≥4, f≥1 for public RC (recommended)
+- OR explicitly downgrade RC0.1 to a Genesis-controlled non-BFT devnet and record that
+  non-claim before any public release language says distributed consensus is live
 
 This decision gates the BLS signing architecture in Phase 1586.
 
@@ -210,34 +224,37 @@ This decision gates the BLS signing architecture in Phase 1586.
 **Prompt status:** Needs drafting
 
 **Background:**
-The Rust `validator_harness` binary has no write endpoint for epoch checkpoint
+The Rust `validator_harness` binary has no proposal ingress for epoch settlement
 submission. `process_epoch_checkpoint()` exists at `epoch_settlement.rs:233` but is
 only called internally (in tests and node internals). Python has no path to trigger it.
 
 **Scope:**
-Implement `SubmitEpochCheckpoint` gRPC write service in Rust:
+Implement authenticated proposal ingress in Rust:
 
-1. Extend `ilc_app.proto` with a `SubmitEpochCheckpoint` RPC that accepts a
-   serialized `EpochSettlementRecord` (+ BLS aggregate signature, per Phase 1585 spec)
-2. Add `SubmitEpochCheckpointRequest` and `SubmitEpochCheckpointResponse` message types
+1. Extend `ilc_app.proto` with a `SubmitEpochProposal` RPC that accepts the canonical
+   proposal payload defined by Phase 1585
+2. Add `SubmitEpochProposalRequest` and `SubmitEpochProposalResponse` message types
 3. Implement the handler in `app_interface.rs`:
-   - Deserialize request into `SignedEpochCheckpoint`
-   - Call `EpochSettlementProtocol::process_epoch_checkpoint()`
+   - Authenticate the caller and enforce TLS/mTLS or an equivalent configured allowlist
+   - Validate domain, network ID, epoch number, idempotency key, max body size, and replay state
+   - Route the validated proposal into the Rust consensus-owned path
+   - Call `EpochSettlementProtocol::process_epoch_checkpoint()` only after BFT/quorum signing
+     has produced a valid `SignedEpochCheckpoint`
    - Return success/error token
-4. Wire the write service into the gRPC server in `main.rs` (alongside existing read service)
+4. Wire the proposal-ingress service into the gRPC server in `main.rs` (alongside existing read service)
 5. Gate behind `settlement_path == MysticetiFastPath` check
 6. Resolve HIGH-002 guard disposition per Phase 1585 human decision
-7. Add Rust unit tests for the new gRPC write handler
+7. Add Rust unit tests for the new gRPC proposal-ingress handler
 8. Rebuild and verify `validator_harness` binary
 
 **Deliverables:**
 - Modified `ilc_consensus/src/app_interface.rs` (new write handler)
 - Modified `ilc_consensus/proto/ilc_app.proto` (new RPC + message types)
-- Modified `ilc_consensus/src/main.rs` (wire write service into server)
+- Modified `ilc_consensus/src/main.rs` (wire proposal-ingress service into server)
 - Rust test coverage (at minimum: submit valid checkpoint passes; submit duplicate fails;
   submit checkpoint with invalid BLS fails)
 - `docs/phases/phase_1586_gap_substrate_bridge_rust_walkthrough.md`
-- Output token: `rust_grpc_submit_epoch_checkpoint_implemented_phase_1586`
+- Output token: `rust_grpc_submit_epoch_proposal_implemented_phase_1586`
 
 **ILC_CDL_MUTATION_AUTHORIZED:** Not required (no CDL mutation). Rust + proto changes require:
 `ILC_CDL_MUTATION_AUTHORIZED=not_required ILC_CDL_MUTATION_PHASE=1586`
@@ -248,20 +265,20 @@ Implement `SubmitEpochCheckpoint` gRPC write service in Rust:
 
 **Sensitivity:** SENSITIVE — Python runtime mutation (`ilc_core/`)
 **GO phrase:** `GO GAP-SUBSTRATE-BRIDGE-PY AUTHORIZED`
-**Prerequisite:** Phase 1586 complete (Rust write endpoint exists)
+**Prerequisite:** Phase 1586 complete (Rust proposal ingress exists)
 **Prompt status:** Needs drafting
 
 **Background:**
 `submit_ecu_transfer_via_quic()` at `production_bridge.py:607-614` raises
 `ValueError("production_bridge_activation_not_implemented_phase_1358")` even when
 `PRODUCTION_BRIDGE_ACTIVE = True`. Python has no serialization of `EpochSettlementRecord`
-and no gRPC write client.
+and no gRPC proposal client.
 
 **Scope:**
 
 1. Replace `submit_ecu_transfer_via_quic()` stub with actual implementation:
-   - Serialize the Python `EpochSettlementRecord` into the wire format defined by Phase 1585
-   - Call the Rust gRPC `SubmitEpochCheckpoint` endpoint via the existing `ConsensusBridgeConfig.target`
+   - Serialize the Python epoch settlement proposal into the wire format defined by Phase 1585
+   - Call the Rust gRPC `SubmitEpochProposal` endpoint via the existing `ConsensusBridgeConfig.target`
    - Handle all error responses from Phase 1586's error contract
    - Enforce socket timeout (`grpc_timeout_seconds`)
 
@@ -386,7 +403,7 @@ end-to-end against the Python admission runtime.
 
 **Sensitivity:** SENSITIVE — changes authorization flag posture
 **GO phrase:** `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED`
-**Prerequisite:** Phase 1578h wallet gate PASS verdict
+**Prerequisite:** Phase 1578h wallet gate PASS verdict + Phase 1592 substrate integration soak PASS
 **Prompt status:** Needs drafting after 1578h completes
 
 **Background:**
@@ -398,8 +415,8 @@ end-to-end against the Python admission runtime.
 Phase 1578h (the public RC wallet gate) explicitly confirms these are False and emits
 `wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h`. But at
 public RC, `public_claimability_activated` and `ilc_settlement_authorized` MUST flip
-to True to enable users to claim their ILC balances and for settlement authority to be
-live. This phase makes that change.
+to True only after the balances being claimed are verified through the distributed
+substrate readback path. This phase makes that change after Phase 1592, not before it.
 
 The other flags in `_FALSE_AUTHORIZATION_FLAGS` (transfer, withdrawal, spend) remain
 False through public RC default and require a separate `TRANSFER-ENABLED RC AUTHORIZED`
@@ -442,7 +459,8 @@ gate (per the wallet gate prompt spec).
 ### Phase 1591 / GAP-SUBSTRATE-TLA
 
 **Sensitivity:** NON-SENSITIVE — spec-only, no code changes
-**Prerequisite:** None (can run in parallel)
+**Prerequisite:** None (can run in parallel); must complete before Phase 1592 unless the
+human explicitly removes timing/admission semantics from public RC scope
 **Prompt status:** Needs drafting
 
 **Background:**
@@ -455,7 +473,7 @@ does not model:
    not modeled in any TLA+ spec.
 
 **Scope:**
-Produce a spec-only phase that:
+Produce formal-methods evidence, not only a documentation note:
 
 1. Documents the exact gap between Spec D and the current Rust implementation
 2. Records the specific invariants that need future TLA+ coverage:
@@ -465,16 +483,23 @@ Produce a spec-only phase that:
      on mainnet)
    - Validator admission monotonicity (once admitted, not double-admitted)
    - Validator ejection finality (ejected validator cannot re-enter in the same epoch)
-3. Commits an explicit disposition: formal TLA+ proofs for items 2a-2d are
-   **deferred to post-RC**. The timing enforcement is covered by Rust code review
-   (1575h-Fix5 commit) and integration soak tests (Phase 1592). This is not a
-   block for public RC.
-4. Emits token `tla_plus_timing_admission_gap_documented_phase_1591`
+3. Adds or updates a bounded TLA+ model for the active RC substrate mode, with at least:
+   - `NoSkipEpoch`
+   - `NoFastMainnetEpoch` when `is_testnet=false`
+   - `NoFutureCheckpointAccepted`
+   - validator-admission/ejection membership safety for the selected RC scope
+   - `SafetyNoDualCert` preserved under the new timing/membership fields
+4. Runs TLC with checked-in config(s), records state counts and PASS/FAIL output, and
+   commits the evidence
+5. If the selected RC mode intentionally excludes dynamic admission/ejection or mainnet
+   timing, records that as a human-approved public-RC non-claim instead of silently
+   deferring the proof
+6. Emits token `tla_plus_timing_admission_checked_phase_1591`
 
 **Deliverables:**
-- `docs/specs/ilc_tla_plus_substrate_gap_documentation_1591_v0.1.md`
+- `docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1591_v0.1.md`
 - `docs/phases/phase_1591_gap_substrate_tla_walkthrough.md`
-- Output token: `tla_plus_timing_admission_gap_documented_phase_1591`
+- Output token: `tla_plus_timing_admission_checked_phase_1591`
 
 ---
 
@@ -482,7 +507,9 @@ Produce a spec-only phase that:
 
 **Sensitivity:** SENSITIVE — live Rust binary, BLS verification, mainnet config
 **GO phrase:** `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED`
-**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 ALL complete
+**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 + 1591 ALL complete, plus any
+public-RC spectral-commitment prerequisite if the public whitepaper still claims
+validators sign `C(t) = (M(t), S(t))`
 **Prompt status:** Needs drafting (after prerequisites complete)
 
 **Background:**
@@ -500,13 +527,13 @@ This phase is the most complex deliverable in the plan. It requires:
    Phase 1588 mainnet RC01 config (or a timing-bypassed testnet config for the soak
    itself — see timing note below), waits for it to be ready, and tears it down after
 
-2. **Checkpoint production:** Python script that:
+2. **Proposal production:** Python script that:
    - Runs a mini economic soak (1-3 epochs via `EcuIlcLifecycleRuntime`)
-   - Serializes the resulting `EpochSettlementRecord` via the bridge wire format
-   - Submits via `submit_ecu_transfer_via_quic()` (which after Phase 1587 calls the
-     real gRPC write endpoint)
+   - Serializes the resulting epoch settlement proposal via the bridge wire format
+   - Submits via the Phase 1587 production bridge client
 
 3. **Rust processing verification:** Confirm via Rust logs or gRPC read response that:
+   - The proposal entered the consensus-owned path, not a direct external checkpoint bypass
    - `process_epoch_checkpoint()` was called
    - BLS verification passed
    - LMDB settlement record was written
@@ -544,13 +571,13 @@ This phase is the most complex deliverable in the plan. It requires:
 | Phase | Gap | Sensitivity | GO Phrase |
 |-------|-----|-------------|-----------|
 | 1584 | Passive ECU guard | SENSITIVE | `GO GAP-CDL060-PASSIVE-ECU-GUARD AUTHORIZED` |
-| 1585 | Bridge spec | NON-SENSITIVE | — |
-| 1586 | Bridge Rust | SENSITIVE | `GO GAP-SUBSTRATE-BRIDGE-RUST AUTHORIZED` |
+| 1585 | Bridge proposal-ingress spec | NON-SENSITIVE | — |
+| 1586 | Bridge Rust proposal ingress | SENSITIVE | `GO GAP-SUBSTRATE-BRIDGE-RUST AUTHORIZED` |
 | 1587 | Bridge Python | SENSITIVE | `GO GAP-SUBSTRATE-BRIDGE-PY AUTHORIZED` |
 | 1588 | Mainnet config | SENSITIVE | `GO GAP-SUBSTRATE-CONFIG MAINNET-GENESIS AUTHORIZED` |
 | 1589 | Validator admission | SENSITIVE | `GO GAP-SUBSTRATE-ADMISSION VALIDATOR-ADMISSION AUTHORIZED` |
-| 1590 | Wallet RC preflight | SENSITIVE | `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED` |
-| 1591 | TLA+ doc | NON-SENSITIVE | — |
+| 1590 | Wallet RC preflight after substrate readback | SENSITIVE | `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED` |
+| 1591 | TLA+ timing/admission check | NON-SENSITIVE | — |
 | 1592 | Integration soak | SENSITIVE | `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED` |
 
 ---
@@ -562,10 +589,10 @@ on them. Each is a blocking architectural decision, not a preference:
 
 **Decision 1 (before Phase 1585/1586): Validator set size at RC0.1**
 Current gate code (`check_settlement_path_gate`) rejects `settlement_path=mysticeti_fast_path`
-with `f=0`. Genesis-controlled RC0.1 would naturally have a single validator (f=0). Options:
-- A: Accept f=0 with HIGH-002 disposition for Genesis-controlled RC0.1; update guard to
-  permit f=0 under Genesis authority with explicit token
-- B: Provision at least 4 validators (N≥4, f≥1) for BFT quorum at RC0.1
+with `f=0`. Public RC should default to N≥4, f=1. Options:
+- A: Provision at least 4 validators (N≥4, f≥1) for BFT quorum at RC0.1 (recommended)
+- B: Accept f=0 only by explicitly downgrading RC0.1 to a Genesis-controlled non-BFT devnet;
+  update public claims and guard posture accordingly
 
 **Decision 2 (before Phase 1584): Passive ECU path at RC**
 `PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` — passive ECU IS active in the current repo.
@@ -596,11 +623,13 @@ Phases ready to draft now (no blocking decision):
 | 1587 | After 1586 | — |
 | 1588 | After Decision 1 + 3 | Validator set + timing |
 | 1589 | After 1588 | — |
-| 1590 | After 1578h completes | — |
+| 1590 | After 1578h and 1592 complete | — |
 | 1591 | Now | — |
-| 1592 | After 1586+1587+1588+1589 | — |
+| 1592 | After 1586+1587+1588+1589+1591 | — |
 
-Phase 1591 (TLA+ doc) can be drafted and executed immediately — no decisions block it.
+Phase 1591 (TLA+ timing/admission check) can be drafted and executed immediately — no
+decisions block it, but its proof scope depends on the selected RC network class and
+validator-admission scope.
 Phase 1585 (bridge spec) can be drafted after Decision 1 on validator set size.
 
 ---
