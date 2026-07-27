@@ -113,7 +113,11 @@ def test_centrality_score_is_capped_to_epoch_passive_ecu_bound() -> None:
     assert settle_runtime._get_centrality_score("node-alpha", 1, state) == Decimal("0.100000000000")
 
 
-def test_passive_ecu_guard_disabled_returns_zero() -> None:
+def test_historical_passive_ecu_guard_disabled_returns_zero(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(settle_runtime, "PASSIVE_ECU_WIRING_NOT_ACTIVATED", True)
+
     payouts = settle_runtime.settle_attribution_batch(
         _reuse_batch(),
         stake_map={},
@@ -141,8 +145,8 @@ def test_passive_ecu_wiring_active_nonzero(monkeypatch: pytest.MonkeyPatch) -> N
     ]
 
 
-def test_passive_ecu_guard_retained_no_settlement_activation() -> None:
-    assert settle_runtime.PASSIVE_ECU_WIRING_NOT_ACTIVATED is True
+def test_passive_ecu_guard_authorized_current_state_phase_1584() -> None:
+    assert settle_runtime.PASSIVE_ECU_WIRING_NOT_ACTIVATED is False
     assert settle_runtime.PASSIVE_ECU_WIRING_GUARD_TOKEN == (
         "passive_ecu_wiring_not_activated_phase_GAP_CDL060"
     )

@@ -116,10 +116,10 @@ Phase 1590 (TLA+ timing/admission model + TLC evidence) ────────
 
 ### Phase 1584 / GAP-CDL060-PASSIVE-ECU-GUARD
 
-**Sensitivity:** SENSITIVE — guard mutation requires explicit human GO
+**Sensitivity:** SENSITIVE — guard disposition requires explicit human GO
 **GO phrase:** `GO GAP-CDL060-PASSIVE-ECU-GUARD AUTHORIZED PATH-B AUTHORIZE-CURRENT-STATE`
 **Prerequisite:** None
-**Prompt status:** Drafted and validator-compliant
+**Prompt status:** COMPLETE on Path B, 2026-07-27
 
 **Background:**
 `PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` at
@@ -129,8 +129,15 @@ SENSITIVE authorization phase ran. The forward plan (Part 12b G-F row) states
 "deferred to a future SENSITIVE guard-clearance phase." Phase 1581 recorded the
 ambiguity but did not resolve it.
 
-**Scope:**
-Two resolution paths — human must choose before Codex executes:
+**Execution result:**
+Phase 1584 executed Path B. The current source value
+`PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` remains unchanged and is explicitly
+authorized for public RC under CDL-052/CDL-060/CDL-078 authority. The prior
+Phase 1581 ambiguity is resolved by token
+`passive_ecu_guard_disposition_committed_phase_1584`.
+
+**Historical scope:**
+Two resolution paths were available before execution:
 
 **Path A (Re-guard to True):** Set `PASSIVE_ECU_WIRING_NOT_ACTIVATED = True`. This
 matches the forward plan's deferred intent. Passive ECU is NOT active at public RC.
@@ -145,7 +152,7 @@ governance authority.
 
 **Deliverables:**
 - Walkthrough doc: `docs/phases/phase_1584_gap_cdl060_passive_ecu_guard_walkthrough.md`
-- One code change (either path): `ilc_core/economics/epoch_attribution_settle_runtime.py`
+- Test correction: `tests/test_phase_1577_passive_ecu_wiring.py`
 - Output token: `passive_ecu_guard_disposition_committed_phase_1584`
 
 **Non-claims:** No CDL is opened by this phase. Path A: passive ECU deferred to post-RC.
@@ -679,7 +686,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 
 | Phase | Prompt status | Blocking decision |
 |-------|--------------|-------------------|
-| 1584 | Drafted; GO required (PATH-B per Decision 2) | RESOLVED |
+| 1584 | COMPLETE Path B authorization; `PASSIVE_ECU_WIRING_NOT_ACTIVATED=False` authorized for public RC | RESOLVED |
 | 1585 | COMPLETE; NON-SENSITIVE; spec committed with token `production_bridge_proposal_ingress_spec_committed_phase_1585` | RESOLVED |
 | 1586 | Drafted; GO required after 1585 | — |
 | 1587 | Drafted; GO required after 1586 | — |
