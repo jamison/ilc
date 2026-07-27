@@ -69,12 +69,12 @@ def test_fix3e_agent_id_matches_pubkey_record() -> None:
     assert f"agent_id:                 {GENESIS_AGENT1_AGENT_ID}" in record
 
 
-def test_fix3e_destination_record_all_guards_false() -> None:
+def test_fix3e_destination_record_phase_1575s_guard_state() -> None:
     record = get_genesis_settlement_destination_record()
 
     assert record["genesis_wallet_write_authorized"] is False
-    assert record["genesis_settlement_write_authorized"] is False
-    assert record["genesis_minting_authorized"] is False
+    assert record["genesis_settlement_write_authorized"] is True
+    assert record["genesis_minting_authorized"] is True
 
 
 def test_fix3e_destination_record_burn_pool_not_routed() -> None:
@@ -100,19 +100,11 @@ def test_fix3e_verify_destination_record_rejects_wallet_write_true() -> None:
         verify_genesis_settlement_destination_record(record)
 
 
-@pytest.mark.parametrize(
-    "field",
-    [
-        "genesis_wallet_write_authorized",
-        "genesis_settlement_write_authorized",
-        "genesis_minting_authorized",
-    ],
-)
-def test_fix3e_verify_destination_record_rejects_missing_guard(field: str) -> None:
+def test_fix3e_verify_destination_record_rejects_missing_wallet_guard() -> None:
     record = get_genesis_settlement_destination_record()
-    record.pop(field)
+    record.pop("genesis_wallet_write_authorized")
 
-    with pytest.raises(ValueError, match=f"{field}_must_be_false"):
+    with pytest.raises(ValueError, match="genesis_wallet_write_authorized_must_be_false"):
         verify_genesis_settlement_destination_record(record)
 
 
@@ -123,13 +115,30 @@ def test_fix3e_verify_destination_record_rejects_missing_guard(field: str) -> No
         "genesis_minting_authorized",
     ],
 )
-def test_fix3e_verify_destination_record_rejects_each_write_guard_true(
+def test_fix3e_verify_destination_record_rejects_missing_accounting_guard(
     field: str,
 ) -> None:
     record = get_genesis_settlement_destination_record()
-    record[field] = True
+    record.pop(field)
 
-    with pytest.raises(ValueError, match=f"{field}_must_be_false"):
+    with pytest.raises(ValueError, match=f"{field}_must_be_true_phase_1575s"):
+        verify_genesis_settlement_destination_record(record)
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "genesis_settlement_write_authorized",
+        "genesis_minting_authorized",
+    ],
+)
+def test_fix3e_verify_destination_record_rejects_each_accounting_guard_false(
+    field: str,
+) -> None:
+    record = get_genesis_settlement_destination_record()
+    record[field] = False
+
+    with pytest.raises(ValueError, match=f"{field}_must_be_true_phase_1575s"):
         verify_genesis_settlement_destination_record(record)
 
 

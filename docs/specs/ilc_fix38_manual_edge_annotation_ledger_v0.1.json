@@ -67973,7 +67973,7 @@
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575r_fix1_g10_cdl048_conversion_rehearsal_gap_fill.md"
     },
-    {
+  {
       "annotation_batch": "manual_batch_229_phase_1575r_fix1_cdl048_gap_fill_walkthrough",
       "chronology_note": "2026-07-26 - Phase 1575r-Fix1: CDL-048 conversion rehearsal gap fill walkthrough",
       "manual_read_summary": "Walkthrough documenting six added 1575r gap tests, the rehearsal OOM guard, corrected ILC-value conservation semantics, refreshed private evidence hashes, verification command outputs, tokens, and non-claims.",
@@ -68017,6 +68017,185 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575r_fix1_cdl048_conversion_rehearsal_gap_fill_walkthrough.md",
       "repo_path": "docs/phases/phase_1575r_fix1_cdl048_conversion_rehearsal_gap_fill_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_genesis_ilc_minting_authorization_runtime",
+      "chronology_note": "2026-07-27 - Phase 1575s: Genesis ILC settled-balance accounting guard update",
+      "manual_read_summary": "Load-bearing Genesis destination runtime update: wallet-provider write authority remains false while internal settlement and minting accounting guards are true under Option C2. Verifier now rejects wallet-write authorization and requires settlement/minting accounting authorization for Phase 1575s.",
+      "phase_1575s_tokens": [
+        "genesis_wallet_write_authorized_remains_false_spend_transfer_deferred_phase_1575s",
+        "genesis_settlement_write_authorized_cleared_phase_1575s",
+        "genesis_minting_authorized_cleared_phase_1575s",
+        "genesis_ilc_wallet_option_c2_settled_balance_phase_1575s"
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:genesis_settlement_write_authorized_cleared_phase_1575s"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:genesis_minting_authorized_cleared_phase_1575s"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only:ilc_core/epoch/genesis_settlement_destination.py",
+      "repo_path": "ilc_core/epoch/genesis_settlement_destination.py"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_genesis_ilc_minting_authorization_tool",
+      "chronology_note": "2026-07-27 - Phase 1575s: Genesis ILC balance proof tool",
+      "manual_read_summary": "Private evidence tool that anchors Genesis Agent 1 Option C2 settled-balance accounting to canonical Phase 1575h epoch-1 evidence, recomputes the production settlement root, commits a 45 ILC settled-balance row through the LMDB wallet store, and verifies public wallet runtime visibility with claimability deferred.",
+      "phase_1575s_tokens": [
+        "genesis_ilc_balance_proof_committed_phase_1575s",
+        "genesis_ilc_credit_equals_overhead_pool_proven_phase_1575s",
+        "genesis_ilc_settled_balance_visible_via_public_wallet_runtime_phase_1575s"
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:genesis_ilc_balance_proof_committed_phase_1575s"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_ilc_credit_equals_overhead_pool_proven_phase_1575s"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tools/phase_1575s_genesis_ilc_minting_authorization.py",
+      "repo_path": "tools/phase_1575s_genesis_ilc_minting_authorization.py"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_genesis_ilc_minting_authorization_tests",
+      "chronology_note": "2026-07-27 - Phase 1575s tests: Genesis ILC settled-balance accounting",
+      "manual_read_summary": "Focused tests covering Option C2 guard semantics, destination verifier failures, canonical epoch-1 settlement root matching, fixed tranche reference preservation, evidence verification, non-claims, payload hash tamper rejection, stable JSON float/Decimal rejection, and atomic write hardening.",
+      "phase_1575s_tokens": [
+        "genesis_ilc_balance_proof_committed_phase_1575s",
+        "genesis_ilc_wallet_option_c2_settled_balance_phase_1575s",
+        "genesis_ilc_credit_equals_overhead_pool_proven_phase_1575s"
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/phase_1575s_genesis_ilc_minting_authorization.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_ilc_balance_proof_committed_phase_1575s"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575s_genesis_ilc_minting_authorization.py",
+      "repo_path": "tests/test_phase_1575s_genesis_ilc_minting_authorization.py"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_genesis_ilc_minting_authorization_walkthrough",
+      "chronology_note": "2026-07-27 - Phase 1575s walkthrough: Genesis ILC minting authorization evidence",
+      "manual_read_summary": "Walkthrough recording exact GO phrase, source correction from epoch 0 to epoch 1, guard state, canonical settlement root anchor, Genesis 45 ILC settled-balance proof, evidence hashes, verification commands, output tokens, and non-claims.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_ilc_balance_proof_committed_phase_1575s"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1575s_genesis_ilc_minting_authorization_walkthrough.md",
+      "repo_path": "docs/phases/phase_1575s_genesis_ilc_minting_authorization_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_fix3g_historical_sim_compatibility_tool",
+      "chronology_note": "2026-07-27 - Phase 1575s compatibility: Fix3g historical simulation live-boundary replay",
+      "manual_read_summary": "Updated the historical Genesis 5% long-horizon simulation tool so it no longer fails on later live guard clearances while preserving wallet-write false enforcement and reporting current guard boundary values.",
+      "phase_1575s_tokens": [
+        "genesis_settlement_write_authorized_cleared_phase_1575s",
+        "genesis_minting_authorized_cleared_phase_1575s"
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS_REGRESSION_COMPATIBILITY",
+          "target": "phase:1575c-Fix3g"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_wallet_write_authorized_remains_false_spend_transfer_deferred_phase_1575s"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS_REGRESSION_COMPATIBILITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tools/genesis_5pct_long_horizon_production_path_sim_fix3g.py",
+      "repo_path": "tools/genesis_5pct_long_horizon_production_path_sim_fix3g.py"
+    },
+    {
+      "annotation_batch": "manual_batch_230_phase_1575s_fix3g_historical_sim_compatibility_tests",
+      "chronology_note": "2026-07-27 - Phase 1575s compatibility tests: Fix3g historical simulation live-boundary replay",
+      "manual_read_summary": "Updated the historical Fix3g simulation tests to compare stable simulation constants/findings/grid/summary against the committed fixture while allowing live guard-boundary values to reflect later 1575g/1575s clearances.",
+      "phase_1575s_tokens": [
+        "genesis_settlement_write_authorized_cleared_phase_1575s",
+        "genesis_minting_authorized_cleared_phase_1575s"
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/genesis_5pct_long_horizon_production_path_sim_fix3g.py"
+        },
+        {
+          "edge_type": "SUPPORTS_REGRESSION_COMPATIBILITY",
+          "target": "phase:1575c-Fix3g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "SUPPORTS_REGRESSION_COMPATIBILITY"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1575c_fix3g_genesis_long_horizon_sim.py",
+      "repo_path": "tests/test_phase_1575c_fix3g_genesis_long_horizon_sim.py"
     }
   ],
   "phase": "1545p-Fix38",
