@@ -63585,6 +63585,36 @@
         "CARRIES_FORWARD"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_233_phase_1584_1592_dag_substrate_rc_gap_plan",
+      "chronology_note": "2026-07-27 \u2014 Phase 1584-1592 planning: DAG substrate public RC gap plan",
+      "manual_read_summary": "Planning document identifying 9 phases (1584\u20131592) required to activate the ILC distributed DAG consensus substrate at public RC, with gap inventory, critical path, phase scopes, human decision requirements, and sensitivity classifications.",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "ilc_core/consensus/production_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "ilc_consensus/src/epoch_settlement.rs"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     }
   ],
   "manual_edge_annotations": [
