@@ -405,7 +405,7 @@ end-to-end against the Python admission runtime.
 
 **Sensitivity:** NON-SENSITIVE — spec and formal-methods only, no code changes
 **Prerequisite:** None (can run in parallel with 1584–1589); must complete before Phase 1591
-**Prompt status:** Executed to blocker on 2026-07-27; Fix1 required before completion
+**Prompt status:** COMPLETE via Phase 1590-Fix1 on 2026-07-27
 
 **Execution result (2026-07-27):**
 TLC found a real `SafetyNoDualCert` counterexample after dynamic admission to five
@@ -416,6 +416,13 @@ only at Byzantine validator `5`. Completion token
 blocked until a SENSITIVE quorum-intersection hardening phase reruns TLC cleanly.
 Recommended fix: change production quorum threshold to `n - f`, or otherwise
 constrain admission to intersection-safe validator-set sizes.
+
+**Fix1 result (2026-07-27):**
+Phase 1590-Fix1 changed the Rust production threshold to
+`N - floor((N - 1) / 3)`, updated the TLA model to the same rule, and reran TLC
+cleanly. TLC result: 1,031,138 generated states, 255,483 distinct states, depth
+10, queue 0, no violations. Token `tla_plus_timing_admission_checked_phase_1590`
+is now live.
 
 **Background:**
 TLA+ Spec D (Phase 1385a, 2026-05-18) proved `SafetyNoDualCert` over 67M states. It
@@ -678,7 +685,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | 1587 | Drafted; GO required after 1586 | — |
 | 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
-| 1590 | BLOCKED by TLC `SafetyNoDualCert` counterexample under N=5 admission; requires SENSITIVE Fix1 quorum-intersection hardening | BLOCKED |
+| 1590 | COMPLETE via Fix1 quorum-intersection hardening; TLC PASS depth 10 | RESOLVED |
 | 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 + invite/spectral/discovery/wallet-gate prerequisites | — |
 | 1592 | Drafted; GO required after 1578h and 1591 | — |
 | 1593 | Drafted (closure gate); GO required after all phases | — |

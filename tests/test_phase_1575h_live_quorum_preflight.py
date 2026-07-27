@@ -23,10 +23,14 @@ from tools.phase_1575h_live_quorum_preflight import (
 
 def test_quorum_threshold_matches_bft_formula() -> None:
     assert quorum_threshold(1) == 1
-    assert quorum_threshold(2) == 1
-    assert quorum_threshold(3) == 1
+    assert quorum_threshold(2) == 2
+    assert quorum_threshold(3) == 3
     assert quorum_threshold(4) == 3
+    assert quorum_threshold(5) == 4
+    assert quorum_threshold(6) == 5
     assert quorum_threshold(7) == 5
+    assert quorum_threshold(8) == 6
+    assert quorum_threshold(9) == 7
     assert quorum_threshold(10) == 7
 
 

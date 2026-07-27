@@ -225,7 +225,10 @@ pub struct EpochSettlementProtocol {
 
 impl EpochSettlementProtocol {
     pub fn new(epoch_store: Arc<EpochStore>, is_testnet: bool) -> Self {
-        Self { epoch_store, is_testnet }
+        Self {
+            epoch_store,
+            is_testnet,
+        }
     }
 
     /// Executed via the ApplicationInterface trait boundary upon DAG commitment.
@@ -302,7 +305,8 @@ impl EpochSettlementProtocol {
                 .duration_since(std::time::UNIX_EPOCH)
                 .map(|d| d.as_millis() as u64)
                 .unwrap_or(0);
-            if checkpoint.record.not_before_unix_ms > now_ms.saturating_add(CLOCK_SKEW_TOLERANCE_MS) {
+            if checkpoint.record.not_before_unix_ms > now_ms.saturating_add(CLOCK_SKEW_TOLERANCE_MS)
+            {
                 return Err(ILCConsensusError::Other(
                     "epoch_checkpoint_not_before_too_far_future".to_string(),
                 ));
@@ -354,11 +358,14 @@ impl EpochSettlementProtocol {
             let prev_key = current_epoch.to_be_bytes();
             match txn.get(self.epoch_store.db, &prev_key) {
                 Ok(bytes) => {
-                    let prev_stored: StoredCheckpoint = bincode::deserialize(bytes).map_err(|e| {
-                        ILCConsensusError::Other(format!("Prev epoch deserialize error: {}", e))
-                    })?;
+                    let prev_stored: StoredCheckpoint =
+                        bincode::deserialize(bytes).map_err(|e| {
+                            ILCConsensusError::Other(format!("Prev epoch deserialize error: {}", e))
+                        })?;
                     let prev_not_before = prev_stored.record.not_before_unix_ms;
-                    if checkpoint.record.not_before_unix_ms < prev_not_before.saturating_add(MIN_EPOCH_DURATION_MS) {
+                    if checkpoint.record.not_before_unix_ms
+                        < prev_not_before.saturating_add(MIN_EPOCH_DURATION_MS)
+                    {
                         return Err(ILCConsensusError::Other(
                             "epoch_checkpoint_min_duration_not_elapsed".to_string(),
                         ));
@@ -368,7 +375,10 @@ impl EpochSettlementProtocol {
                     // Previous epoch not found — should not happen after +1 guard, but treat as non-fatal.
                 }
                 Err(e) => {
-                    return Err(ILCConsensusError::Other(format!("Prev epoch read error: {}", e)));
+                    return Err(ILCConsensusError::Other(format!(
+                        "Prev epoch read error: {}",
+                        e
+                    )));
                 }
             }
         }
@@ -949,15 +959,33 @@ mod tests {
 
     #[test]
     fn test_quorum_threshold_correctness() {
-        // quorum_threshold(N) = 2 * floor((N-1)/3) + 1
+        // Phase 1590-Fix1: quorum_threshold(N) = N - floor((N-1)/3).
         assert_eq!(quorum_threshold(1), 1, "N=1: f=0, threshold=1");
-        assert_eq!(quorum_threshold(2), 1, "N=2: f=0, threshold=1");
-        assert_eq!(quorum_threshold(3), 1, "N=3: f=0, threshold=1");
+        assert_eq!(quorum_threshold(2), 2, "N=2: f=0, threshold=2");
+        assert_eq!(quorum_threshold(3), 3, "N=3: f=0, threshold=3");
         assert_eq!(quorum_threshold(4), 3, "N=4: f=1, threshold=3");
-        assert_eq!(quorum_threshold(5), 3, "N=5: f=1, threshold=3");
-        assert_eq!(quorum_threshold(6), 3, "N=6: f=1, threshold=3");
+        assert_eq!(quorum_threshold(5), 4, "N=5: f=1, threshold=4");
+        assert_eq!(quorum_threshold(6), 5, "N=6: f=1, threshold=5");
         assert_eq!(quorum_threshold(7), 5, "N=7: f=2, threshold=5");
+        assert_eq!(quorum_threshold(8), 6, "N=8: f=2, threshold=6");
+        assert_eq!(quorum_threshold(9), 7, "N=9: f=2, threshold=7");
         assert_eq!(quorum_threshold(10), 7, "N=10: f=3, threshold=7");
+    }
+
+    #[test]
+    fn test_quorum_threshold_intersection_safety_for_intermediate_sizes() {
+        for n in [5usize, 6usize] {
+            let f = (n - 1) / 3;
+            let threshold = quorum_threshold(n);
+            let min_intersection = threshold.saturating_mul(2).saturating_sub(n);
+            assert!(
+                min_intersection > f,
+                "N={} threshold={} must force quorum intersection > f={} to prevent Byzantine-only overlap",
+                n,
+                threshold,
+                f
+            );
+        }
     }
 
     #[test]
@@ -1171,10 +1199,16 @@ mod tests {
             not_before_unix_ms: 1_000_000,
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
-        protocol.process_epoch_checkpoint(
-            EpochCheckpoint { record: record1, sigs: sigs1, signers: signers1 },
-            &vset,
-        ).unwrap();
+        protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record: record1,
+                    sigs: sigs1,
+                    signers: signers1,
+                },
+                &vset,
+            )
+            .unwrap();
 
         // Epoch 2 with not_before_unix_ms only 1ms after epoch 1 — must be rejected
         let record2 = EpochSettlementRecord {
@@ -1183,13 +1217,20 @@ mod tests {
             not_before_unix_ms: 1_000_001, // only 1ms later, need MIN_EPOCH_DURATION_MS gap
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
-        let err = protocol.process_epoch_checkpoint(
-            EpochCheckpoint { record: record2, sigs: sigs2, signers: signers2 },
-            &vset,
-        ).unwrap_err();
+        let err = protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record: record2,
+                    sigs: sigs2,
+                    signers: signers2,
+                },
+                &vset,
+            )
+            .unwrap_err();
         assert!(
             format!("{:?}", err).contains("min_duration_not_elapsed"),
-            "expected min_duration rejection, got: {:?}", err
+            "expected min_duration rejection, got: {:?}",
+            err
         );
     }
 
@@ -1207,10 +1248,16 @@ mod tests {
             not_before_unix_ms: 0,
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
-        protocol.process_epoch_checkpoint(
-            EpochCheckpoint { record: record1, sigs: sigs1, signers: signers1 },
-            &vset,
-        ).unwrap();
+        protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record: record1,
+                    sigs: sigs1,
+                    signers: signers1,
+                },
+                &vset,
+            )
+            .unwrap();
 
         // Epoch 2 with not_before_unix_ms >= MIN_EPOCH_DURATION_MS ahead of epoch 1 — accepted
         let record2 = EpochSettlementRecord {
@@ -1219,10 +1266,16 @@ mod tests {
             not_before_unix_ms: MIN_EPOCH_DURATION_MS, // exactly MIN after epoch 1 (0 + MIN)
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
-        protocol.process_epoch_checkpoint(
-            EpochCheckpoint { record: record2, sigs: sigs2, signers: signers2 },
-            &vset,
-        ).unwrap();
+        protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record: record2,
+                    sigs: sigs2,
+                    signers: signers2,
+                },
+                &vset,
+            )
+            .unwrap();
     }
 
     #[test]
@@ -1241,10 +1294,16 @@ mod tests {
                 not_before_unix_ms: 0,
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
-            protocol.process_epoch_checkpoint(
-                EpochCheckpoint { record, sigs, signers },
-                &vset,
-            ).unwrap();
+            protocol
+                .process_epoch_checkpoint(
+                    EpochCheckpoint {
+                        record,
+                        sigs,
+                        signers,
+                    },
+                    &vset,
+                )
+                .unwrap();
         }
     }
 }

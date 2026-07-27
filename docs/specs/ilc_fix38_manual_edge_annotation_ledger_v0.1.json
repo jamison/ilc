@@ -63121,6 +63121,130 @@
         "BLOCKS"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_237_phase_1590_fix1_quorum_intersection_runtime",
+      "chronology_note": "2026-07-27 Phase 1590-Fix1: Rust quorum-intersection hardening",
+      "manual_read_summary": "Runtime hardening replacing quorum_threshold(N) with N - floor((N - 1) / 3), closing the N=5 dynamic-admission SafetyNoDualCert counterexample from Phase 1590.",
+      "repo_path": "ilc_consensus/src/validator.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
+          "review_status": "accepted_blocker"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "FIXES",
+          "target": "phase:1590_tla_timing_admission"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "ilc_consensus:epoch_checkpoint_quorum"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "FIXES",
+        "HARDENS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_237_phase_1590_fix1_tla_pass_evidence",
+      "chronology_note": "2026-07-27 Phase 1590-Fix1: clean TLA/TLC evidence after quorum hardening",
+      "manual_read_summary": "Evidence report recording hardened threshold, updated TLA model, clean TLC run with 1,031,138 states generated, and verification commands.",
+      "repo_path": "docs/specs/ilc_tla_plus_substrate_timing_admission_fix1_evidence_1590_v0.1.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_tla_plus_substrate_timing_admission_evidence_1590_v0.1.md",
+          "review_status": "supersedes_blocker"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:tla_plus_timing_admission_checked_phase_1590"
+        },
+        {
+          "edge_type": "CLOSES_BLOCKER",
+          "target": "phase:1590_tla_counterexample"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "CLOSES_BLOCKER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_237_phase_1590_fix1_tlc_output",
+      "chronology_note": "2026-07-27 Phase 1590-Fix1: TLC output clean after hardened threshold",
+      "manual_read_summary": "Fresh TLC output showing no violations for the hardened timing/admission model: 1,031,138 states generated, 255,483 distinct, depth 10.",
+      "repo_path": "tools/tla/ilc_substrate_timing_admission_1590_fix1.tlc.out",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1590_fix1_quorum_intersection_hardening"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_237_phase_1590_fix1_walkthrough",
+      "chronology_note": "2026-07-27 Phase 1590-Fix1 walkthrough",
+      "manual_read_summary": "Walkthrough recording GO phrase, the closed N=5 dual-certificate counterexample, changed threshold rule, verification commands, output tokens, and non-claims.",
+      "repo_path": "docs/phases/phase_1590_fix1_quorum_intersection_hardening_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_1590_gap_substrate_tla_walkthrough.md",
+          "review_status": "accepted_blocker"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1590_fix1_quorum_intersection_hardening"
+        },
+        {
+          "edge_type": "UNBLOCKS",
+          "target": "phase:1590_tla_timing_admission"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "UNBLOCKS"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

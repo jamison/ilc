@@ -261,7 +261,7 @@ def rehearsal_check(repo_root: Path) -> dict[str, Any]:
 def quorum_threshold(n: int) -> int:
     if n <= 0:
         raise ValueError("validator_count_must_be_positive")
-    return 2 * ((n - 1) // 3) + 1
+    return n - ((n - 1) // 3)
 
 
 def validator_endpoint_checks() -> dict[str, Any]:

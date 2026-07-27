@@ -21,7 +21,7 @@ use ilc_consensus::types::{CIDv1Root, ValidatorID, ILC_EPOCH_SIG_DST};
 
 const SCHEMA_VERSION: &str = "ilc_dag_audit_v1";
 const SENTINEL: &[u8] = b"\xff";
-const HIGH_002_NOTE: &str = "HIGH-002 FIXED (Phase 842): EpochCheckpoint carries a signers subset. process_epoch_checkpoint accepts quorum_threshold(N) = 2*floor((N-1)/3)+1 signatures. At N=4: threshold=3. One offline validator no longer stalls epoch-close.";
+const HIGH_002_NOTE: &str = "HIGH-002 FIXED (Phase 842), hardened by Phase 1590-Fix1: EpochCheckpoint carries a signers subset. process_epoch_checkpoint accepts intersection-safe quorum_threshold(N) = N - floor((N-1)/3) signatures. At N=4: threshold=3. One offline validator no longer stalls epoch-close.";
 
 #[derive(Debug)]
 enum AuditError {

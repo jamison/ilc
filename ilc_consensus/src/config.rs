@@ -146,7 +146,9 @@ pub struct NodeConfig {
 /// Load genesis.json → (ValidatorSet, network_id, is_testnet).
 /// Returns the network_id and is_testnet flag alongside ValidatorSet so callers don't need to re-read the file.
 /// Translates hex-encoded validator_key and agent_id into runtime types.
-pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String, bool), ILCConsensusError> {
+pub fn load_genesis(
+    genesis_path: &Path,
+) -> Result<(ValidatorSet, String, bool), ILCConsensusError> {
     let raw = fs::read_to_string(genesis_path)
         .map_err(|e| ILCConsensusError::Other(format!("Cannot read genesis: {}", e)))?;
     let genesis: RawGenesis = serde_json::from_str(&raw)
