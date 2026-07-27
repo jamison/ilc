@@ -68429,6 +68429,35 @@
       "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
     }
   ],
+  "nodes": [
+    {
+      "annotation_batch": "manual_batch_230_phase_1575t_fix1_e2e_soak_evidence_hardening_prompt",
+      "chronology_note": "2026-07-27 - Phase 1575t-Fix1 prompt for E2E soak evidence hardening",
+      "manual_read_summary": "Validator-compliant prompt directing the Phase 1575t-Fix1 evidence hardening pass: non-unit P_e coverage, independent conservation checks, stronger verifier tamper rejection, active ECU readback, lifecycle wallet readback, and wallet-write semantic disambiguation.",
+      "node_kind": "phase_prompt",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:phase_1575t_fix1_e2e_soak_evidence_hardened"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:pre_rc_economic_activation_lane_complete_phase_1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix1_g10_end_to_end_soak_evidence_hardening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix1_g10_end_to_end_soak_evidence_hardening.md"
+    }
+  ],
   "phase": "1545p-Fix38",
   "schema_version": "ilc.fix38.manual_edge_annotation_ledger.v0.1"
 }
