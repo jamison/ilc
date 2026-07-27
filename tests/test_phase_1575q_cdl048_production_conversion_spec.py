@@ -53,16 +53,17 @@ def test_phase_1575q_spec_matches_live_conversion_receipt_guard_defaults() -> No
         assert f"| `{field}` | `False` |" in text
 
 
-def test_phase_1575q_spec_matches_live_genesis_guard_defaults() -> None:
+def test_phase_1575q_spec_records_historical_genesis_guard_defaults_and_live_1575s_state() -> None:
     text = _text(SPEC)
 
     assert GENESIS_WALLET_WRITE_AUTHORIZED is False
-    assert GENESIS_SETTLEMENT_WRITE_AUTHORIZED is False
-    assert GENESIS_MINTING_AUTHORIZED is False
+    assert GENESIS_SETTLEMENT_WRITE_AUTHORIZED is True
+    assert GENESIS_MINTING_AUTHORIZED is True
     assert GENESIS_AGENT1_AGENT_ID in _text(ROOT / "ilc_core/epoch/genesis_settlement_destination.py")
     assert "| `GENESIS_WALLET_WRITE_AUTHORIZED` | `False` |" in text
     assert "| `GENESIS_SETTLEMENT_WRITE_AUTHORIZED` | `False` |" in text
     assert "| `GENESIS_MINTING_AUTHORIZED` | `False` |" in text
+    assert "These fields are cleared by Phase 1575s" in text
 
 
 def test_phase_1575q_spec_selects_option_c_without_wallet_claims() -> None:

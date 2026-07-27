@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Phase 1575c-Fix3e Genesis settlement destination binding.
+"""Genesis settlement destination binding.
 
-Binds the CDL-029 genesis overhead pool to the canonical Genesis Agent 1 identity.
-No wallet writes, no treasury writes, no ILC minting, no activation.
-All fields are constitutionally locked; see CDL-048 amendment Phase 1575c-Fix3e.
+Binds the CDL-029 genesis overhead pool to the canonical Genesis Agent 1
+identity. Phase 1575s clears settlement/minting accounting for Option C2
+settled-balance writes while keeping wallet-provider spend/transfer/withdrawal
+authority disabled.
 """
 
 from __future__ import annotations
@@ -39,17 +40,23 @@ GENESIS_BURN_POOL_NOT_ROUTED_TO_GENESIS_AGENT_TOKEN = (
     "genesis_burn_pool_not_routed_to_genesis_agent_phase_1575c_fix3e"
 )
 
-# Activation guards — all must remain False until the public-RC economic
-# activation guard clears.
+# Activation guards. Phase 1575s clears only the internal settled-balance
+# accounting path; wallet-provider spend/transfer/withdrawal authority remains
+# blocked until a separate wallet authority phase.
 GENESIS_WALLET_WRITE_AUTHORIZED = False
-GENESIS_SETTLEMENT_WRITE_AUTHORIZED = False
-GENESIS_MINTING_AUTHORIZED = False
+GENESIS_SETTLEMENT_WRITE_AUTHORIZED = True
+GENESIS_MINTING_AUTHORIZED = True
 
 CDL_048_GENESIS_TRANCHE_TREATMENT = "explicitly_applied_by_authorized_value_path"
 
 _FORBIDDEN_TRUE_FIELDS = frozenset(
     {
         "genesis_wallet_write_authorized",
+    }
+)
+
+_REQUIRED_TRUE_FIELDS_PHASE_1575S = frozenset(
+    {
         "genesis_settlement_write_authorized",
         "genesis_minting_authorized",
     }
@@ -59,8 +66,9 @@ _FORBIDDEN_TRUE_FIELDS = frozenset(
 def get_genesis_settlement_destination_record() -> dict[str, Any]:
     """Return the canonical genesis settlement destination record.
 
-    This record is constitutionally locked by the CDL-048 amendment in Phase
-    1575c-Fix3e. It does not authorize wallet or settlement writes.
+    This record is constitutionally bound by the CDL-048 amendment in Phase
+    1575c-Fix3e and authorized for internal settled-balance accounting by Phase
+    1575s. It does not authorize wallet-provider spend/transfer/withdrawal.
     """
 
     return {
@@ -90,6 +98,9 @@ def verify_genesis_settlement_destination_record(record: dict[str, Any]) -> None
     for field in _FORBIDDEN_TRUE_FIELDS:
         if record.get(field) is not False:
             raise ValueError(f"genesis_settlement_{field}_must_be_false")
+    for field in _REQUIRED_TRUE_FIELDS_PHASE_1575S:
+        if record.get(field) is not True:
+            raise ValueError(f"genesis_settlement_{field}_must_be_true_phase_1575s")
     if record.get("agent_id") != GENESIS_AGENT1_AGENT_ID:
         raise ValueError("genesis_settlement_agent_id_mismatch")
     if record.get("cdl_048_genesis_tranche_treatment") != (

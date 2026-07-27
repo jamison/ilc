@@ -48,14 +48,14 @@ def test_phase_1575i_genesis_fixed_tranche_is_not_treasury_route() -> None:
     assert certificate["destination_requirements"]["must_not_default_to_genesis_agent1"] is True
 
 
-def test_phase_1575i_guard_state_is_default_off() -> None:
+def test_phase_1575i_guard_state_preserves_treasury_and_wallet_boundaries() -> None:
     certificate = build_treasury_readiness_certificate()
     guards = certificate["guard_state"]
 
     assert guards["treasury_distribution_not_activated"] is True
     assert guards["genesis_wallet_write_authorized"] is False
-    assert guards["genesis_settlement_write_authorized"] is False
-    assert guards["genesis_minting_authorized"] is False
+    assert guards["genesis_settlement_write_authorized"] is True
+    assert guards["genesis_minting_authorized"] is True
     assert "not_activated" in guards["treasury_distribution_guard_token"]
 
 
@@ -145,4 +145,3 @@ def test_phase_1575i_certificate_sha256_is_deterministic() -> None:
 
     assert certificate_sha256(first) == certificate_sha256(second)
     assert len(certificate_sha256(first)) == 64
-
