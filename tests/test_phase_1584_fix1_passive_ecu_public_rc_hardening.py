@@ -78,6 +78,23 @@ def test_centrality_pending_epoch_cap_is_enforced() -> None:
         )
 
 
+def test_commit_epoch_buffer_preserves_oversized_buffer_on_rejection() -> None:
+    state = {
+        "_pending": {
+            1: {
+                f"node-{index}": Decimal("0.050000000000")
+                for index in range(centrality_runtime.MAX_PENDING_NODES_PER_EPOCH + 1)
+            }
+        }
+    }
+
+    with pytest.raises(ValueError, match="centrality_pending_epoch_node_cap_exceeded"):
+        centrality_runtime.commit_epoch_buffer(1, state)
+
+    assert 1 in state["_pending"]
+    assert len(state["_pending"][1]) == centrality_runtime.MAX_PENDING_NODES_PER_EPOCH + 1
+
+
 def test_passive_ecu_decimal_magnitude_rejected_before_quantize() -> None:
     with pytest.raises(
         ValueError,
@@ -102,13 +119,20 @@ def test_passive_ecu_uses_decimal_error_tokens() -> None:
 def test_reputation_buffer_caps_epochs_and_nodes_without_raising() -> None:
     state = reputation_runtime.new_reputation_state()
 
-    for epoch in range(reputation_runtime.MAX_SERVE_BUFFER_EPOCHS + 1):
+    for epoch in range(reputation_runtime.MAX_SERVE_BUFFER_EPOCHS):
         reputation_runtime.record_serve_event("node-alpha", epoch, state)
+    reputation_runtime.record_serve_event(
+        "node-alpha",
+        reputation_runtime.MAX_SERVE_BUFFER_EPOCHS,
+        state,
+    )
 
     assert len(state["serve_buffer"]) == reputation_runtime.MAX_SERVE_BUFFER_EPOCHS
-    assert 0 not in state["serve_buffer"]
+    assert 0 in state["serve_buffer"]
+    assert reputation_runtime.MAX_SERVE_BUFFER_EPOCHS not in state["serve_buffer"]
 
     crowded_epoch = max(state["serve_buffer"]) + 1
+    state["serve_buffer"].pop(0)
     for index in range(reputation_runtime.MAX_SERVE_BUFFER_NODES_PER_EPOCH):
         reputation_runtime.record_serve_event(f"node-{index}", crowded_epoch, state)
     reputation_runtime.record_serve_event("node-overflow", crowded_epoch, state)
@@ -128,6 +152,8 @@ def test_reputation_flush_rejects_malicious_oversized_epoch_buffer() -> None:
 
     with pytest.raises(ValueError, match="serve_buffer_epoch_node_cap_exceeded"):
         reputation_runtime.flush_epoch_serve_events(1, state, {})
+
+    assert 1 in state["serve_buffer"]
 
 
 def test_reputation_flush_log_is_bounded() -> None:

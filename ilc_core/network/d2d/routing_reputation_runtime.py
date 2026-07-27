@@ -98,13 +98,6 @@ def _flush_log(state: dict) -> list:
     return state["flush_log"]
 
 
-def _prune_oldest_epoch(buf: dict[int, dict[str, int]]) -> None:
-    int_epochs = [epoch for epoch in buf if isinstance(epoch, int)]
-    if not int_epochs:
-        return
-    buf.pop(min(int_epochs), None)
-
-
 def _append_flush_receipt(state: dict, receipt: dict[str, Any]) -> None:
     log = _flush_log(state)
     log.append(receipt)
@@ -139,8 +132,6 @@ def record_serve_event(node_id: str, epoch: int, state: dict) -> None:
             return
         with _state_lock:
             buf = _serve_buffer(state)
-            if epoch not in buf and len(buf) >= MAX_SERVE_BUFFER_EPOCHS:
-                _prune_oldest_epoch(buf)
             if epoch not in buf and len(buf) >= MAX_SERVE_BUFFER_EPOCHS:
                 return
             epoch_buf = buf.setdefault(epoch, {})

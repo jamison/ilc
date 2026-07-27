@@ -63349,6 +63349,48 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1584_fix1_passive_ecu_public_rc_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_240_phase_1584_fix2_passive_ecu_buffer_state_preservation",
+      "chronology_note": "2026-07-27 Phase 1584-Fix2: passive ECU buffer state preservation audit fixes",
+      "manual_read_summary": "Prompt and walkthrough recording routing reputation over-cap epoch drop semantics and centrality commit validation-before-pop semantics, with focused regression tests.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1584_fix2_g10_passive_ecu_buffer_state_preservation.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "audit_input",
+          "target": "docs/phases/phase_1584_fix1_passive_ecu_public_rc_hardening_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:passive_ecu_buffer_state_preservation_complete_phase_1584_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:routing_reputation_overcap_preserves_existing_epochs_phase_1584_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:centrality_commit_reject_preserves_pending_buffer_phase_1584_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1584_fix2_passive_ecu_buffer_state_preservation_walkthrough.md"
     }
   ],
   "boundary": {
