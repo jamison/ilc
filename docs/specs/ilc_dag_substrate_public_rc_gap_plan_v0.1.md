@@ -4,7 +4,7 @@
 **Status:** DRAFT — for Codex review and human GO
 **Owner:** Genesis Agent
 **Sensitivity:** NON-SENSITIVE (planning document); individual phases below carry their own sensitivity
-**Phase series:** GAP-SUBSTRATE-01 through GAP-INTEGRATION-11, assigned Phases 1584–1592
+**Phase series:** GAP-SUBSTRATE-01 through GAP-INTEGRATION-11, assigned Phases 1584–1593
 
 ---
 
@@ -117,9 +117,9 @@ Phase 1590 (TLA+ timing/admission model + TLC evidence) ────────
 ### Phase 1584 / GAP-CDL060-PASSIVE-ECU-GUARD
 
 **Sensitivity:** SENSITIVE — guard mutation requires explicit human GO
-**GO phrase:** `GO GAP-CDL060-PASSIVE-ECU-GUARD AUTHORIZED`
+**GO phrase:** `GO GAP-CDL060-PASSIVE-ECU-GUARD AUTHORIZED PATH-B AUTHORIZE-CURRENT-STATE`
 **Prerequisite:** None
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 `PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` at
@@ -157,7 +157,7 @@ Path B: passive ECU authorized for RC with explicit governance citation.
 
 **Sensitivity:** NON-SENSITIVE — spec-only, no code changes
 **Prerequisite:** None
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 The Python→Rust bridge (`production_bridge.py`) has a stub that raises
@@ -223,7 +223,7 @@ This decision gates the BLS signing architecture in Phase 1586.
 **Sensitivity:** SENSITIVE — Rust runtime mutation
 **GO phrase:** `GO GAP-SUBSTRATE-BRIDGE-RUST AUTHORIZED`
 **Prerequisite:** Phase 1585 complete; human BLS signing architecture decision made
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 The Rust `validator_harness` binary has no proposal ingress for epoch settlement
@@ -268,7 +268,7 @@ Implement authenticated proposal ingress in Rust:
 **Sensitivity:** SENSITIVE — Python runtime mutation (`ilc_core/`)
 **GO phrase:** `GO GAP-SUBSTRATE-BRIDGE-PY AUTHORIZED`
 **Prerequisite:** Phase 1586 complete (Rust proposal ingress exists)
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 `submit_ecu_transfer_via_quic()` at `production_bridge.py:607-614` raises
@@ -312,7 +312,7 @@ and no gRPC proposal client.
 **Sensitivity:** SENSITIVE — creates mainnet configuration
 **GO phrase:** `GO GAP-SUBSTRATE-CONFIG MAINNET-GENESIS AUTHORIZED`
 **Prerequisite:** None
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 All current configs use `is_testnet: true` (`config/mysticeti_testnet_M009/genesis.json`).
@@ -362,7 +362,7 @@ a mainnet-mode config.
 **Sensitivity:** SENSITIVE — removes a production guard
 **GO phrase:** `GO GAP-SUBSTRATE-ADMISSION VALIDATOR-ADMISSION AUTHORIZED`
 **Prerequisite:** Phase 1588 (mainnet config) complete
-**Prompt status:** Needs drafting
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 `admit_validator()` at `ilc_core/validator/admission_ejection_runtime.py:269` returns
@@ -404,9 +404,8 @@ end-to-end against the Python admission runtime.
 ### Phase 1590 / GAP-SUBSTRATE-TLA
 
 **Sensitivity:** NON-SENSITIVE — spec and formal-methods only, no code changes
-**Prerequisite:** None (can run in parallel with 1584–1589); must complete before Phase 1591 unless
-the human explicitly removes timing/admission semantics from public RC scope
-**Prompt status:** Needs drafting
+**Prerequisite:** None (can run in parallel with 1584–1589); must complete before Phase 1591
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 TLA+ Spec D (Phase 1385a, 2026-05-18) proved `SafetyNoDualCert` over 67M states. It
@@ -452,10 +451,11 @@ Produce formal-methods evidence, not only a documentation note:
 
 **Sensitivity:** SENSITIVE — live Rust binary, BLS verification, mainnet config
 **GO phrase:** `GO GAP-INTEGRATION-SOAK SUBSTRATE-E2E AUTHORIZED`
-**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 + 1590 ALL complete, plus any
-public-RC spectral-commitment prerequisite if the public whitepaper still claims
-validators sign `C(t) = (M(t), S(t))`
-**Prompt status:** Needs drafting (after prerequisites complete)
+**Prerequisite:** Phases 1586 + 1587 + 1588 + 1589 + 1590 ALL complete, plus the
+confirmed public-RC live lanes: invite economics (1576m-1576r), spectral commitment
+(1580 + 1582, implementing validator-signed `C(t) = (M(t), S(t))`), dynamic discovery
+and validator identity (1577 + 1577a + 1577b + 1579 + 1583), and wallet gate 1578h PASS.
+**Prompt status:** Drafted and validator-compliant
 
 **Background:**
 All prior soaks (Phases 1575h, 1575p, 1575r, 1575s, 1575t) ran Python-only against
@@ -468,9 +468,16 @@ via the gRPC read service. This is the final integration gate before public RC.
 
 This phase is the most complex deliverable in the plan. It requires:
 
-1. **Test harness setup:** Script that starts the `validator_harness` binary with the
-   Phase 1588 mainnet RC01 config (or a timing-bypassed testnet config for the soak
-   itself — see timing note below), waits for it to be ready, and tears it down after
+0. **Public-RC live-scope prerequisite check:** Verify that invite economics, spectral
+   commitment, dynamic discovery / peer advertisement / validator identity, and wallet
+   gate 1578h are complete. These are confirmed public-RC live claims as of 2026-07-27,
+   so the integration soak must test the final public-RC substrate shape, not an
+   intermediate bridge-only system.
+
+1. **Test harness setup:** Script that starts the `validator_harness` binary or equivalent
+   test harness with `#[cfg(test)]`-shortened timing constants, while separately verifying
+   that the production binary enforces the Phase 1588 immutable timing constants. No
+   genesis-config timing bypass is authorized.
 
 2. **Proposal production:** Python script that:
    - Runs a mini economic soak (1-3 epochs via `EcuIlcLifecycleRuntime`)
@@ -519,7 +526,7 @@ This phase is the most complex deliverable in the plan. It requires:
 **Sensitivity:** SENSITIVE — changes authorization flag posture
 **GO phrase:** `GO GAP-SEMANTICS-WALLET-RC CLAIMABILITY-AUTHORIZED`
 **Prerequisite:** Phase 1578h wallet gate PASS verdict + Phase 1591 substrate integration soak PASS
-**Prompt status:** Needs drafting after 1578h and 1591 complete
+**Prompt status:** Drafted and validator-compliant; execute after 1578h and 1591 complete
 
 **Background:**
 `wallet_action_semantics_preflight.py` currently enforces ALL flags in
@@ -656,21 +663,22 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | Phase | Prompt status | Blocking decision |
 |-------|--------------|-------------------|
 | 1584 | Drafted; GO required (PATH-B per Decision 2) | RESOLVED |
-| 1585 | Drafted; NON-SENSITIVE; can start after 1584 | RESOLVED |
+| 1585 | Drafted; NON-SENSITIVE; can start immediately | RESOLVED |
 | 1586 | Drafted; GO required after 1585 | — |
 | 1587 | Drafted; GO required after 1586 | — |
 | 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
 | 1590 | Drafted; NON-SENSITIVE; can start immediately | — |
-| 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 | — |
+| 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 + invite/spectral/discovery/wallet-gate prerequisites | — |
 | 1592 | Drafted; GO required after 1578h and 1591 | — |
 | 1593 | Drafted (closure gate); GO required after all phases | — |
 
-**Phase 1591 timing note update:** Phase 1591 scope item 6 referenced running the
+**Phase 1591 timing note update:** Phase 1591 originally referenced running the
 integration soak with "testnet M009 config" to bypass timing. Since Phase 1588 removes
-`is_testnet` entirely, Phase 1591 must instead use a test genesis config with
-`#[cfg(test)]`-shortened timing constants compiled into the test binary. The Phase 1591
-prompt will need to be updated to reflect this before Codex executes it.
+`is_testnet` entirely, Phase 1591 must instead use a test binary or harness with
+`#[cfg(test)]`-shortened timing constants and separately verify that the production binary
+enforces the 30-day timing constants unconditionally. The Phase 1591 prompt has been
+updated to reflect this execution model.
 
 ---
 
