@@ -62409,6 +62409,140 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md",
       "repo_path": "docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1578g_wallet_cli_query_surface",
+      "chronology_note": "2026-07-27 phase_1578g added read-only wallet CLI query handler.",
+      "manual_read_summary": "Runtime module implements read-only wallet status, history, and identity CLI handlers over the existing public wallet runtime without transaction submission, signing, broadcast, or guard activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
+          "review_status": "candidate_wallet_lane_forward_plan_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_cli_query_surface_committed_phase_1578g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/wallet_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1578g_wallet_cli_query_surface",
+      "chronology_note": "2026-07-27 phase_1578g added module entrypoint for python -m ilc_core.cli smoke tests.",
+      "manual_read_summary": "Runtime entrypoint delegates python -m ilc_core.cli to ilc_core.cli.main.main so the wallet help hierarchy can be smoke-tested through the package module surface.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
+          "review_status": "candidate_wallet_lane_forward_plan_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_cli_help_hierarchy_conformant_phase_1578g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/__main__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1578g_wallet_cli_query_surface",
+      "chronology_note": "2026-07-27 phase_1578g added focused wallet CLI regression tests.",
+      "manual_read_summary": "Focused tests exercise wallet status, history, identity, JSON/text output, help hierarchy, and read-only guard invariants for the Phase 1578g CLI surface.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
+          "review_status": "candidate_wallet_lane_forward_plan_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/wallet_cli.py"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.cli.wallet_cli.run_wallet_command"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:wallet_cli_read_only_invariant_enforced_phase_1578g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "COVERS_SYMBOL",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1578g_wallet_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1578g_wallet_cli_query_surface",
+      "chronology_note": "2026-07-27 phase_1578g walkthrough records source reads, verification outputs, tokens, and non-claims.",
+      "manual_read_summary": "Phase walkthrough documents the wallet CLI implementation scope, runtime field mapping, read-only invariants, exact verification output, status tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md",
+          "review_status": "candidate_wallet_lane_forward_plan_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_cli_query_surface_committed_phase_1578g"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_cli_read_only_invariant_enforced_phase_1578g"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:wallet_cli_help_hierarchy_conformant_phase_1578g"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1578g_wallet_cli_query_surface_walkthrough.md"
     }
   ],
   "boundary": {

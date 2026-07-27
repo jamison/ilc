@@ -46,6 +46,7 @@ OPERATIONAL_COMMANDS = (
     "node",
     "sidecar",
     "skills",
+    "wallet",
     "ccss",
     "atlas",
     "doctor",
@@ -1499,6 +1500,43 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "wallet":
+            wallet_parser = subparsers.add_parser(
+                "wallet",
+                help="Read-only wallet query commands",
+            )
+            wallet_subparsers = wallet_parser.add_subparsers(
+                dest="wallet_subcommand",
+                required=True,
+            )
+
+            for wallet_query in ("status", "history", "identity"):
+                p_wallet_query = wallet_subparsers.add_parser(
+                    wallet_query,
+                    help=f"Show read-only wallet {wallet_query}",
+                )
+                p_wallet_query.add_argument(
+                    "--agent-id",
+                    default="",
+                    help="ILC-native agent_id account anchor; defaults to ILC_AGENT_ID",
+                )
+                p_wallet_query.add_argument(
+                    "--format",
+                    choices=("json", "text"),
+                    default="json",
+                    help="Output format",
+                )
+                if wallet_query in {"status", "history"}:
+                    p_wallet_query.add_argument(
+                        "--wallet-store",
+                        default="",
+                        help=(
+                            "Path to existing local LMDB wallet store; defaults to "
+                            "ILC_WALLET_STORE_PATH or out/public_runtime/wallet"
+                        ),
+                    )
+            continue
+
         if command == "ccss":
             ccss_parser = subparsers.add_parser(
                 "ccss",
@@ -2276,6 +2314,7 @@ def _run_top_level_command(
         "sidecar",
         "skills",
         "verify",
+        "wallet",
     }
     if command not in stateless_commands:
         _ensure_local_graph_state(graph_state_path, command)
@@ -2350,6 +2389,14 @@ def _run_top_level_command(
         try:
             data = run_atlas_command(args)
         except AtlasLmdbCliError as exc:
+            raise ValueError(str(exc)) from exc
+        return _success_payload(command, data)
+    if command == "wallet":
+        from ilc_core.cli.wallet_cli import WalletCliError, run_wallet_command
+
+        try:
+            data = run_wallet_command(args)
+        except WalletCliError as exc:
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "bootstrap":
