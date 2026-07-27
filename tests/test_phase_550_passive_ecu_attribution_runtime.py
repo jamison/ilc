@@ -136,7 +136,7 @@ def test_quality_factor_rejects_scores_outside_unit_interval() -> None:
         try:
             runtime.quality_factor(invalid)
         except ValueError as exc:
-            assert str(exc) == "q_i_must_be_float_in_unit_interval"
+            assert str(exc) == "q_i_must_be_decimal_in_unit_interval"
         else:
             raise AssertionError("expected ValueError for invalid quality score")
 

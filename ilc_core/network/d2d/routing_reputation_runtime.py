@@ -45,6 +45,11 @@ ROUTING_REPUTATION_NO_SETTLEMENT_TOKEN = (
 
 SERVE_CENTRALITY_DELTA = Decimal("0.01")
 SERVE_CENTRALITY_MAX_PER_EPOCH = Decimal("0.10")
+MAX_REPUTATION_NODE_ID_CHARS = 256
+MAX_SERVE_BUFFER_EPOCHS = 128
+MAX_SERVE_BUFFER_NODES_PER_EPOCH = 10_000
+MAX_SERVE_COUNT_PER_NODE = 1_000_000
+MAX_FLUSH_LOG_ENTRIES = 10_000
 
 # Dep-chain guards
 if _CDL_060_CHECK != "centrality_delta_gossip_runtime_GAP_CDL060.v0.2":
@@ -93,6 +98,20 @@ def _flush_log(state: dict) -> list:
     return state["flush_log"]
 
 
+def _prune_oldest_epoch(buf: dict[int, dict[str, int]]) -> None:
+    int_epochs = [epoch for epoch in buf if isinstance(epoch, int)]
+    if not int_epochs:
+        return
+    buf.pop(min(int_epochs), None)
+
+
+def _append_flush_receipt(state: dict, receipt: dict[str, Any]) -> None:
+    log = _flush_log(state)
+    log.append(receipt)
+    if len(log) > MAX_FLUSH_LOG_ENTRIES:
+        del log[:-MAX_FLUSH_LOG_ENTRIES]
+
+
 # ---------------------------------------------------------------------------
 # Core functions
 # ---------------------------------------------------------------------------
@@ -111,14 +130,31 @@ def record_serve_event(node_id: str, epoch: int, state: dict) -> None:
     try:
         if not isinstance(node_id, str) or not node_id.strip():
             return
+        clean_node_id = node_id.strip()
+        if len(clean_node_id) > MAX_REPUTATION_NODE_ID_CHARS:
+            return
         if not isinstance(epoch, int) or epoch < 0:
             return
         if not isinstance(state, dict):
             return
         with _state_lock:
             buf = _serve_buffer(state)
+            if epoch not in buf and len(buf) >= MAX_SERVE_BUFFER_EPOCHS:
+                _prune_oldest_epoch(buf)
+            if epoch not in buf and len(buf) >= MAX_SERVE_BUFFER_EPOCHS:
+                return
             epoch_buf = buf.setdefault(epoch, {})
-            epoch_buf[node_id] = epoch_buf.get(node_id, 0) + 1
+            if not isinstance(epoch_buf, dict):
+                return
+            if (
+                clean_node_id not in epoch_buf
+                and len(epoch_buf) >= MAX_SERVE_BUFFER_NODES_PER_EPOCH
+            ):
+                return
+            current = epoch_buf.get(clean_node_id, 0)
+            if not isinstance(current, int) or current < 0:
+                current = 0
+            epoch_buf[clean_node_id] = min(current + 1, MAX_SERVE_COUNT_PER_NODE)
     except Exception:  # noqa: BLE001
         pass  # best-effort — never propagate
 
@@ -149,6 +185,11 @@ def flush_epoch_serve_events(
 
     with _state_lock:
         buf = _serve_buffer(state)
+        epoch_buf = buf.get(epoch, {})
+        if not isinstance(epoch_buf, dict):
+            raise ValueError("serve_buffer_epoch_must_be_dict")
+        if len(epoch_buf) > MAX_SERVE_BUFFER_NODES_PER_EPOCH:
+            raise ValueError("serve_buffer_epoch_node_cap_exceeded")
         epoch_buf = buf.pop(epoch, {})
 
     nodes_flushed = 0
@@ -157,10 +198,17 @@ def flush_epoch_serve_events(
     for node_id, count in epoch_buf.items():
         if not isinstance(node_id, str) or not node_id.strip():
             continue
+        clean_node_id = node_id.strip()
+        if len(clean_node_id) > MAX_REPUTATION_NODE_ID_CHARS:
+            continue
         if not isinstance(count, int) or count <= 0:
             continue
-        raw_delta = min(count * SERVE_CENTRALITY_DELTA, SERVE_CENTRALITY_MAX_PER_EPOCH)
-        accumulate_centrality_delta(node_id, raw_delta, epoch, centrality_state)
+        effective_count = min(count, MAX_SERVE_COUNT_PER_NODE)
+        raw_delta = min(
+            effective_count * SERVE_CENTRALITY_DELTA,
+            SERVE_CENTRALITY_MAX_PER_EPOCH,
+        )
+        accumulate_centrality_delta(clean_node_id, raw_delta, epoch, centrality_state)
         nodes_flushed += 1
         total_delta += raw_delta
 
@@ -170,6 +218,6 @@ def flush_epoch_serve_events(
         "total_delta_emitted": format(total_delta.quantize(Decimal("0.000001")), "f"),
     }
     with _state_lock:
-        _flush_log(state).append(receipt)
+        _append_flush_receipt(state, receipt)
 
     return receipt

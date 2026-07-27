@@ -134,10 +134,9 @@ def test_validate_centrality_delta_message_rejects_empty_channel() -> None:
 def test_accumulate_centrality_delta_suppresses_delta_below_u_floor() -> None:
     state: dict[str, object] = {}
     updated = runtime.accumulate_centrality_delta('node-alpha', Decimal("0.01"), 1, state)
-    if runtime.ACCUMULATION_MODEL == 'write_through':
-        assert updated['node-alpha'] == Decimal("0E-12")
-    else:
-        assert updated['_pending'][1]['node-alpha'] == Decimal("0E-12")
+    assert updated is state
+    assert 'node-alpha' not in updated
+    assert '_pending' not in updated
 
 
 def test_accumulate_centrality_delta_accumulates_valid_delta_per_selected_model() -> None:

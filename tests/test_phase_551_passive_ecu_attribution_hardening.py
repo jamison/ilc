@@ -93,7 +93,7 @@ def test_negative_base_reward_raises_value_error() -> None:
     try:
         runtime.compute_passive_ecu(Decimal("-1"), Decimal("0.5"), Decimal("0.5"))
     except ValueError as exc:
-        assert str(exc) == "base_reward_must_be_non_negative_float"
+        assert str(exc) == "base_reward_must_be_non_negative_decimal"
     else:
         raise AssertionError("expected ValueError for negative base_reward")
 

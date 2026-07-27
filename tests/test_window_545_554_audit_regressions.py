@@ -24,7 +24,7 @@ def test_passive_runtime_rejects_non_finite_quality_scores() -> None:
         try:
             passive_runtime.quality_factor(invalid)
         except ValueError as exc:
-            assert str(exc) == 'q_i_must_be_float_in_unit_interval'
+            assert str(exc) == 'q_i_must_be_decimal_in_unit_interval'
         else:
             raise AssertionError('expected ValueError for non-finite q_i')
 
@@ -34,7 +34,7 @@ def test_passive_runtime_rejects_non_finite_base_reward() -> None:
         try:
             passive_runtime.compute_passive_ecu(invalid, Decimal("0.5"), Decimal("0.5"))
         except ValueError as exc:
-            assert str(exc) == 'base_reward_must_be_non_negative_float'
+            assert str(exc) == 'base_reward_must_be_non_negative_decimal'
         else:
             raise AssertionError('expected ValueError for non-finite base_reward')
 
@@ -44,7 +44,7 @@ def test_passive_runtime_rejects_non_finite_or_out_of_range_centrality_scores() 
         try:
             passive_runtime.compute_passive_ecu(Decimal("1"), invalid, Decimal("0.5"))
         except ValueError as exc:
-            assert str(exc) == 'centrality_score_must_be_non_negative_float'
+            assert str(exc) == 'centrality_score_must_be_non_negative_decimal'
         else:
             raise AssertionError('expected ValueError for invalid centrality_score')
 

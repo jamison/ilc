@@ -169,7 +169,7 @@ def test_passive_ecu_centrality_zero() -> None:
 
 
 def test_passive_ecu_non_finite_base_reward_rejected() -> None:
-    with pytest.raises(ValueError, match="base_reward_must_be_non_negative_float"):
+    with pytest.raises(ValueError, match="base_reward_must_be_non_negative_decimal"):
         passive_runtime.compute_passive_ecu(
             Decimal("NaN"),
             Decimal("0.10"),
@@ -191,7 +191,7 @@ def test_passive_ecu_quality_extremes_remain_bounded() -> None:
 
 
 def test_passive_ecu_non_finite_centrality_rejected() -> None:
-    with pytest.raises(ValueError, match="centrality_score_must_be_non_negative_float"):
+    with pytest.raises(ValueError, match="centrality_score_must_be_non_negative_decimal"):
         passive_runtime.compute_passive_ecu(
             Decimal("0.20"),
             Decimal("NaN"),
