@@ -63420,6 +63420,37 @@
         "REFERENCES_PHASE"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1575t_fix3_verifier_hardening_walkthrough",
+      "chronology_note": "2026-07-27 phase 1575t-Fix3 - walkthrough for verifier hardening execution and seven refreshed-hash tamper rejection tests.",
+      "manual_read_summary": "Phase walkthrough records the verifier hardening implementation, source line anchors, seven negative tamper tests, command outputs, output tokens, and non-claims for Phase 1575t-Fix3.",
+      "repo_path": "docs/phases/phase_1575t_fix3_verifier_hardening_walkthrough.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:verifier_hardening_complete_phase_1575t_fix3"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:high_findings_closed_phase_1575t_fix3"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CARRIES_FORWARD"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "manual_edge_annotations": [

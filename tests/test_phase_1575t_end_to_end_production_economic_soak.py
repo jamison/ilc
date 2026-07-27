@@ -26,6 +26,7 @@ from tools.phase1575t_e2e_production_soak import (
     PHASE,
     PROPOSED_P_E,
     SCHEMA_VERSION,
+    SOAK_VERSION,
     build_e2e_production_soak_evidence,
     load_phase1560_agent_ids,
     run_e2e_production_soak,
@@ -302,6 +303,18 @@ def test_verify_rejects_zero_emission_reference_field(tmp_path: Path) -> None:
         verify_soak_evidence(tampered)
 
 
+def test_verify_rejects_arbitrary_emission_reference_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["double_entry_conservation"]["ilc_component_summary"][
+        "total_ilc_emitted_from_emission_path"
+    ] = "1"
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_ilc_emitted_recomputation_mismatch"):
+        verify_soak_evidence(tampered)
+
+
 def test_lifecycle_rejects_non_finite_reward_delta(tmp_path: Path) -> None:
     store = LmdbWalletStore(tmp_path / "wallet_lmdb")
     runtime = EcuIlcLifecycleRuntime(wallet_store=store, ecu_runtime=EcuActiveLayerRuntime())
@@ -376,6 +389,98 @@ def test_verify_rejects_envelope_summary_mismatch_when_hashes_match(tmp_path: Pa
     _refresh_evidence_hashes(tampered)
 
     with pytest.raises(ValueError, match="phase1575t_summary_ilc_credit_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_output_token_removal_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["soak_completion_certificate"]["output_tokens"] = []
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_certificate_output_tokens_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_certificate_phase_and_soak_version_mismatch(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["soak_completion_certificate"]["phase"] = "wrong"
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_certificate_phase_mismatch"):
+        verify_soak_evidence(tampered)
+
+    tampered = copy.deepcopy(evidence)
+    assert tampered["soak_completion_certificate"]["soak_version"] == SOAK_VERSION
+    tampered["soak_completion_certificate"]["soak_version"] = "wrong"
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_certificate_soak_version_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_settlement_root_swap_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    count = tampered["soak_completion_certificate"]["epoch_count"]
+    fake_roots = ["0" * 64] * count
+    tampered["e2e_soak_envelope"]["base_emission_settlement_roots"] = fake_roots
+    root_sha256 = stable_sha256({"base_emission_settlement_roots": fake_roots})
+    tampered["e2e_soak_envelope"]["base_emission_settlement_root_sha256"] = root_sha256
+    tampered["soak_completion_certificate"]["base_emission_settlement_root_sha256"] = root_sha256
+    tampered["soak_completion_certificate"]["gate_results"]["gate_4_e2e_evidence_envelope_complete"][
+        "base_emission_settlement_root_sha256"
+    ] = root_sha256
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_settlement_roots_recomputation_mismatch"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_empty_quote_payloads_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    for record in tampered["epoch_records"]:
+        record["cdl048_quote_payloads"] = []
+    tampered["e2e_soak_envelope"]["cdl048_wire_quote_summary"]["quotes_sha256"] = stable_sha256([])
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_quote_payloads_missing"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_quote_activation_removed_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    for record in tampered["epoch_records"]:
+        for quote in record["cdl048_quote_payloads"]:
+            quote["tokens"] = []
+            quote["conversion_activation_authorized"] = False
+    quote_payloads = [
+        quote
+        for record in tampered["epoch_records"]
+        for quote in record["cdl048_quote_payloads"]
+    ]
+    tampered["e2e_soak_envelope"]["cdl048_wire_quote_summary"]["quotes_sha256"] = stable_sha256(
+        quote_payloads
+    )
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_quote_activation_not_authorized"):
+        verify_soak_evidence(tampered)
+
+
+def test_verify_rejects_wallet_readback_tamper_even_when_hashes_match(tmp_path: Path) -> None:
+    evidence = _evidence(tmp_path)
+    tampered = copy.deepcopy(evidence)
+    tampered["balance_ledger"]["agent_balances"][0]["balance_ilc"] = "0"
+    tampered["e2e_soak_envelope"]["balance_ledger_sha256"] = stable_sha256(
+        tampered["balance_ledger"]
+    )
+    _refresh_evidence_hashes(tampered)
+
+    with pytest.raises(ValueError, match="phase1575t_wallet_readback_recomputation_mismatch"):
         verify_soak_evidence(tampered)
 
 
