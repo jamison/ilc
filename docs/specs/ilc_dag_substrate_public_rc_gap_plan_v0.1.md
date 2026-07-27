@@ -491,10 +491,13 @@ This phase is the most complex deliverable in the plan. It requires:
    calls that exist in current test infrastructure)
 
 6. **Timing note:** The mainnet config's 30-day epoch minimum makes live integration
-   testing impractical without a testnet or timing override. The soak should run with
-   the testnet M009 config but with `SettlementPath=MysticetiFastPath` and the
-   production bridge activated — this confirms the integration path without requiring
-   a 30-day wait. The walkthrough must note this explicitly.
+   testing impractical. After Phase 1588 removes `is_testnet` entirely, there is no
+   timing bypass in any genesis config. The soak test binary must use a test genesis
+   config coupled with `#[cfg(test)]`-shortened timing constants (e.g.,
+   `MIN_EPOCH_DURATION_MS_TEST = 10_000` — 10 seconds) compiled into the test binary.
+   This confirms the integration path without requiring a 30-day wait, and without any
+   production bypass. The walkthrough must note that the test binary uses shortened
+   constants and that the production binary enforces 30-day timing unconditionally.
 
 7. **Tests:**
    - `test_e2e_python_to_rust_epoch_checkpoint_submission`
@@ -584,55 +587,90 @@ gate (per the wallet gate prompt spec).
 
 ---
 
-## §7 — Human Decisions Required Before Implementation
+## §7 — Human Decisions — CONFIRMED 2026-07-27
 
-The following decisions must be made before Codex begins work on the phases that depend
-on them. Each is a blocking architectural decision, not a preference:
-
-**Decision 1 (before Phase 1585/1586): Validator set size at RC0.1**
-Current gate code (`check_settlement_path_gate`) rejects `settlement_path=mysticeti_fast_path`
-with `f=0`. Public RC should default to N≥4, f=1. Options:
-- A: Provision at least 4 validators (N≥4, f≥1) for BFT quorum at RC0.1 (recommended)
-- B: Accept f=0 only by explicitly downgrading RC0.1 to a Genesis-controlled non-BFT devnet;
-  update public claims and guard posture accordingly
-
-**Decision 2 (before Phase 1584): Passive ECU path at RC**
-`PASSIVE_ECU_WIRING_NOT_ACTIVATED = False` — passive ECU IS active in the current repo.
-- Path A: Re-guard to True (passive ECU deferred to post-RC activation phase)
-- Path B: Authorize current False value (passive ECU active at RC with CDL-060 citation)
-
-**Decision 3 (before Phase 1588): RC0.1 epoch timing**
-Mainnet config enforces 30-day minimum epoch duration. This means the first epoch
-settlement on the distributed substrate takes at least 30 days after RC0.1 launch.
-- Option A: Accept this — RC0.1 visibility/claimability is live; settlement epoch
-  completes after 30 days naturally
-- Option B: Amend CDL-027 epoch duration for RC0.1 to a shorter period
-  (requires governance phase — adds to pre-RC work)
-- Option C: RC0.1 runs settlement in testnet mode (is_testnet=true) with MysticetiFastPath
-  activated, switching to is_testnet=false at production launch
+All three decisions confirmed by Genesis Agent on 2026-07-27.
 
 ---
 
-## §8 — Prompt Drafting Queue
+**Decision 1 (before Phase 1585/1586): Validator set size at RC0.1**
 
-Phases ready to draft now (no blocking decision):
+**CONFIRMED: N≥4, f=1 (true distributed BFT).**
 
-| Phase | Ready to draft? | Blocking decision |
-|-------|----------------|-------------------|
-| 1584 | After Decision 2 | Passive ECU path |
-| 1585 | After Decision 1 | Validator set size |
-| 1586 | After 1585 | — |
-| 1587 | After 1586 | — |
-| 1588 | After Decision 1 + 3 | Validator set + timing |
-| 1589 | After 1588 | — |
-| 1590 | Now | — |
-| 1591 | After 1586+1587+1588+1589+1590 | — |
-| 1592 | After 1578h and 1591 complete | — |
+Provision at least 4 validators for BFT quorum at RC0.1. `check_settlement_path_gate()`
+already rejects f=0 with `settlement_path=mysticeti_fast_path`. HIGH-002 is resolved by
+the quorum requirement, not by a single-validator bypass disposition. Phase 1585 must record
+Decision 1 as N≥4 f=1 in its spec §7 so downstream phases can cite it.
 
-Phase 1590 (TLA+ timing/admission check) can be drafted and executed immediately — no
-decisions block it, but its proof scope depends on the selected RC network class and
-validator-admission scope.
-Phase 1585 (bridge spec) can be drafted after Decision 1 on validator set size.
+---
+
+**Decision 2 (before Phase 1584): Passive ECU path at RC**
+
+**CONFIRMED: Path B — Authorize current state (PASSIVE_ECU_WIRING_NOT_ACTIVATED = False).**
+
+Phase 1584 is SENSITIVE and requires GO phrase:
+`GO GAP-CDL060-PASSIVE-ECU-GUARD AUTHORIZED PATH-B AUTHORIZE-CURRENT-STATE`
+
+Passive ECU IS active for public RC. Phase 1584 must review CDL-060, CDL-052, CDL-078,
+and the passive ECU attribution chain, confirm the current False value is correct under
+those authorities, and emit a governance-cited disposition token.
+
+---
+
+**Decision 3 (before Phase 1588): RC0.1 epoch timing**
+
+**CONFIRMED: Immutable compile-time constants; `is_testnet` field removed entirely.**
+
+Security rationale: Genesis Agent must not have unilateral power over epoch timing.
+Only the community via constitutional governance (CDL-027 amendment process) can change
+epoch duration. Giving a genesis config field control over timing enforcement would make
+whoever controls the genesis file a target and would allow minting-rate manipulation.
+
+**What Phase 1588 does:**
+- Remove `is_testnet: bool` from `EpochSettlementProtocol` struct in `epoch_settlement.rs`
+- Remove both `if !self.is_testnet { ... }` conditionals — timing guards are unconditional
+- Remove `is_testnet` from `GenesisConfig` struct and genesis parsing in `config.rs`
+- `MIN_EPOCH_DURATION_MS = 2_592_000_000` (30 days, CDL-027) and
+  `CLOCK_SKEW_TOLERANCE_MS = 300_000` (5 min) remain as compile-time Rust constants
+- Rust tests that need short epochs use `#[cfg(test)]`-gated shortened constants —
+  transparent in source code, zero production impact
+- Post-public-RC speedier testing uses private local simulation, not production bypass
+- Future timing changes require a CDL-027 amendment through full community governance
+
+**Explicitly rejected approaches:**
+- Option C (genesis-parameterized timing): rejected because genesis creator would have
+  unilateral power over timing and minting rate
+- Option B (CDL-027 amendment for shorter RC epochs): rejected; 30-day timing is accepted
+- Option A (accept 30-day timing, keep `is_testnet` flag): rejected; `is_testnet` bypass
+  must be removed for security hardening regardless of timing choice
+
+---
+
+## §8 — Prompt Drafting Status (as of 2026-07-27)
+
+All phase prompts for Window 1584–1593 were drafted and committed at
+`3dd282d1d` (window guidance doc + all 10 phase prompts + closure gate).
+Phase 1588 was subsequently amended at the commit following this gap plan
+update to reflect Decision 3 (immutable timing, `is_testnet` removed).
+
+| Phase | Prompt status | Blocking decision |
+|-------|--------------|-------------------|
+| 1584 | Drafted; GO required (PATH-B per Decision 2) | RESOLVED |
+| 1585 | Drafted; NON-SENSITIVE; can start after 1584 | RESOLVED |
+| 1586 | Drafted; GO required after 1585 | — |
+| 1587 | Drafted; GO required after 1586 | — |
+| 1588 | Drafted + amended for Decision 3 immutable timing; GO required | RESOLVED |
+| 1589 | Drafted; GO required after 1588 | — |
+| 1590 | Drafted; NON-SENSITIVE; can start immediately | — |
+| 1591 | Drafted; GO required after 1586+1587+1588+1589+1590 | — |
+| 1592 | Drafted; GO required after 1578h and 1591 | — |
+| 1593 | Drafted (closure gate); GO required after all phases | — |
+
+**Phase 1591 timing note update:** Phase 1591 scope item 6 referenced running the
+integration soak with "testnet M009 config" to bypass timing. Since Phase 1588 removes
+`is_testnet` entirely, Phase 1591 must instead use a test genesis config with
+`#[cfg(test)]`-shortened timing constants compiled into the test binary. The Phase 1591
+prompt will need to be updated to reflect this before Codex executes it.
 
 ---
 
