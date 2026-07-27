@@ -29,6 +29,7 @@ the Byzantine validator.
 | `tools/phase_1575h_live_quorum_preflight.py` | Python readiness helper updated to mirror Rust threshold |
 | `tests/test_phase_1575h_live_quorum_preflight.py` | Python threshold expectations updated |
 | `tests/test_phase_high002_phase_b_closure_gate.py` | legacy health test updated so it no longer preserves the unsafe formula |
+| `tests/test_dag_audit_cli.py` | stale `StoredCheckpoint` bincode offset corrected so empty-signature tamper testing actually targets `agg_sig_bytes` |
 
 ## Threshold Table
 
@@ -94,6 +95,7 @@ Command:
 | `ilc_consensus/src/validator.rs` | `d17e559b2c50f3b924b6f1a9ca3b7730e34fbfdbdec72848938059bae1dcc473` |
 | `ilc_consensus/src/epoch_settlement.rs` | `72a0be150152e116d7286a1e2a6f5c4668e35647eb6300ff9aebe5955eff2681` |
 | `tools/phase_1575h_live_quorum_preflight.py` | `574726254d13478e45caa001240f1a39c7b3afd7a6769ce4c3e42b9131f09e14` |
+| `tests/test_dag_audit_cli.py` | `c79f86f85b6aac9467823507cbf3f84db843d8abb0e7e655c18d9bec29419a08` |
 | `docs/specs/tla/ilc_substrate_timing_admission_1590.tla` | `f4e71b0421df33956d74feb7e8ace6a9069405376db4d7727aef62346ab2a86b` |
 | `docs/specs/tla/ilc_substrate_timing_admission_1590.cfg` | `2f275fecef0b83b12ae6110c2fe920e4b0505ed653f4bca5da8ae4b830f46a46` |
 | `tools/tla/ilc_substrate_timing_admission_1590_fix1.tlc.out` | `4d28d9eb4d0e58a4e99e4b49f682bebc1d191a9c43ffab9b769333d765bfca28` |
@@ -108,6 +110,17 @@ Command:
 | Rust release build | PASS — `cargo build --release` with two pre-existing dead-code warnings in `node.rs` |
 | Rust formatting | PASS — `cargo fmt --check` |
 | Python readiness helper tests | PASS — `.venv/bin/pytest -q tests/test_phase_1575h_live_quorum_preflight.py`, 10 passed |
+| DAG audit regression tests | PASS — `.venv/bin/pytest -q tests/test_dag_audit_cli.py tests/test_phase_high002_phase_b_closure_gate.py`, 5 passed, 8 skipped |
+
+## Follow-Up Test Hardening
+
+Post-commit verification found that `test_dag_audit_empty_sig_reports_honestly`
+was not mutating `agg_sig_bytes`: the hardcoded serialized
+`StoredCheckpoint.record` prefix was stale at 44 bytes and ignored
+`not_before_unix_ms`. The test now uses the correct 52-byte prefix and asserts
+the target signature vector is 96 bytes before tampering. The Rust audit runtime
+already rejected true empty signatures with `empty_sig_testnet_fault_sim_path`;
+this follow-up makes the regression test actually exercise that path.
 
 ## Tokens
 

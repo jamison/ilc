@@ -16,7 +16,8 @@ CARGO = os.environ.get("CARGO", str(Path.home() / ".cargo" / "bin" / "cargo"))
 EPOCH_RECORD_DB = b"epoch_records"
 EPOCH_1_KEY = (1).to_bytes(8, "big")
 EPOCH_2_KEY = (2).to_bytes(8, "big")
-STORED_CHECKPOINT_RECORD_LEN = 44
+STORED_CHECKPOINT_RECORD_LEN = 52
+EXPECTED_AGG_SIG_LEN = 96
 
 
 @pytest.fixture(scope="session")
@@ -126,6 +127,11 @@ def test_dag_audit_fail_on_invalid_sig(
     env, db = _open_epoch_db(fixture / "lmdb")
     with env.begin(write=True, db=db) as txn:
         value = bytearray(txn.get(EPOCH_1_KEY))
+        sig_len = int.from_bytes(
+            value[STORED_CHECKPOINT_RECORD_LEN : STORED_CHECKPOINT_RECORD_LEN + 8],
+            "little",
+        )
+        assert sig_len == EXPECTED_AGG_SIG_LEN
         value[STORED_CHECKPOINT_RECORD_LEN + 8 + 8] ^= 0x01
         txn.put(EPOCH_1_KEY, bytes(value))
     env.close()
@@ -151,6 +157,7 @@ def test_dag_audit_empty_sig_reports_honestly(
             value[STORED_CHECKPOINT_RECORD_LEN : STORED_CHECKPOINT_RECORD_LEN + 8],
             "little",
         )
+        assert sig_len == EXPECTED_AGG_SIG_LEN
         signers_tail = value[STORED_CHECKPOINT_RECORD_LEN + 8 + sig_len :]
         txn.put(
             EPOCH_1_KEY,
