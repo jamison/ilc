@@ -63398,6 +63398,28 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md",
       "repo_path": "docs/phases/phase_1575t_fix2_ilc_conservation_equation_close_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_231_phase_1575t_fix3_verifier_hardening",
+      "chronology_note": "2026-07-27 phase 1575t-Fix3 \u2014 phase prompt to harden verify_soak_evidence() by recomputing all authoritative totals from raw evidence (5 HIGH/MEDIUM gaps identified in parallel Sonnet+Codex audit)",
+      "manual_read_summary": "Phase prompt for Phase 1575t-Fix3, which closes five verifier integrity gaps by adding recomputation of CDL-048 totals from quote_payloads, settlement roots from epoch_records, wallet readback from balance_ledger rows, ILC emitted from emission_quote budgets, and certificate authority fields from module constants.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1575t_fix3_g10_verifier_hardening.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_PHASE",
+          "target": "phase:1575t"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_PHASE"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "manual_edge_annotations": [
