@@ -64149,6 +64149,122 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_244_phase_1586_fix2_liveness_low_patch",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2 follow-up: durable marker liveness LOW finding closed",
+      "manual_read_summary": "Follow-up Phase 1586-Fix2 LOW liveness patch: durable idempotency marker failure after checkpoint commit no longer leaves proposal stuck finalizing in-session.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/node.rs",
+      "repo_path": "ilc_consensus/src/node.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_244_phase_1586_fix2_liveness_low_patch",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2 follow-up: durable marker liveness LOW finding closed",
+      "manual_read_summary": "Walkthrough updated with durable marker liveness disposition and final 8-test/128-test verification counts.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_244_phase_1586_fix2_liveness_low_patch",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2 follow-up: durable marker liveness LOW finding closed",
+      "manual_read_summary": "STATUS updated with durable marker liveness disposition and final 8-test/128-test verification counts.",
+      "node_kind": "phase_status",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_244_phase_1586_fix2_liveness_low_patch",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2 follow-up: durable marker liveness LOW finding closed",
+      "manual_read_summary": "Planning index updated to include the Phase 1586-Fix2 durable marker liveness patch in the completion summary.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {
