@@ -66,7 +66,7 @@ the Python proposal call nor the Rust proposal ingress currently exist.
 | GAP-SUBSTRATE-BRIDGE-RUST | Implement authenticated Rust proposal ingress; route into consensus-owned checkpoint processing, not a direct externally supplied checkpoint bypass | Yes — core activation | **1586** |
 | GAP-SUBSTRATE-BRIDGE-PY | Implement Python client in `production_bridge.py`; flip `PRODUCTION_BRIDGE_ACTIVE = True` | Yes — core activation | **1587** |
 | GAP-SUBSTRATE-CONFIG | Mainnet genesis config with no `is_testnet` field; immutable timing enforced in Rust | Yes — mainnet gate | **1588** |
-| GAP-SUBSTRATE-ADMISSION | Validator admission activation: clear `PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED` guard, implement production path | Yes — validators must join | **1589** |
+| GAP-SUBSTRATE-ADMISSION | Validator admission activation: clear `PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED` guard only after implementing agent-bound validator role records, candidate/provisional/official state, and resolved eligibility/bond semantics | Yes — validators must join | **1589** |
 | GAP-SUBSTRATE-TLA | TLA+ timing/admission model update plus TLC evidence, or explicit human-approved removal of those semantics from public RC scope | Yes — formal substrate gap | **1590** |
 | GAP-INTEGRATION-SOAK | E2E soak: Python proposal → Rust authenticated ingress → BFT/quorum checkpoint → `process_epoch_checkpoint()` → LMDB → Python gRPC read | Yes — final gate | **1591** |
 | GAP-SEMANTICS-WALLET-RC | Wallet action semantics preflight RC posture: flip `public_claimability_activated` and `ilc_settlement_authorized` to True only after distributed-substrate integration passes | Yes — users must claim consensus-backed balances | **1592** |
@@ -371,7 +371,7 @@ which must be tested against the RC01 config.
 **Sensitivity:** SENSITIVE — removes a production guard
 **GO phrase:** `GO GAP-SUBSTRATE-ADMISSION VALIDATOR-ADMISSION AUTHORIZED`
 **Prerequisite:** Phase 1588 (mainnet config) complete
-**Prompt status:** Drafted and validator-compliant
+**Prompt status:** Hardened 2026-07-28 after MemPalace/repo rehydration of validator-as-agent canon
 
 **Background:**
 `admit_validator()` at `ilc_core/validator/admission_ejection_runtime.py:269` returns
@@ -380,27 +380,67 @@ token, and `require_production_validator_admission_activation()` at line 396 rai
 `ValueError("production_validator_admission_activation_not_implemented_phase_1353")`
 even with the correct token. Neither Python nor Rust side has a live admission path.
 
-The Rust side (`ilc_consensus/`) has `admit_validator()` in the Rust code with a 1,000
-ECU minimum stake requirement (per prior phase notes), but this has never been tested
-end-to-end against the Python admission runtime.
+Validator-admission planning was corrected on 2026-07-28. Direct reads confirmed the
+canonical design direction: validators are agents taking a validator role, not a
+separate entity class. The Rust substrate still has a concrete machine/process
+`ValidatorID`/`ValidatorKey` surface, so Phase 1589 must bind that surface to the
+backing `AgentID` rather than erase it.
+
+The prior legacy thousand-ECU floor phrasing is not safe as written. Current sources
+conflict: SIM-010/Phase 487 recommends `400.0`; Python has
+`GENESIS_STAKE_AMOUNT = Decimal("400")`; Rust has
+`MIN_STAKE_MICRO_ECU = 1_000_000_000`; RC01 genesis records currently use
+`stake_micro_ecu: 1000000`. Also, CDL-048 conversion means transient ECU should not
+be treated casually as a durable locked stake balance. Phase 1589 must resolve this
+as either an earned ECU work-score eligibility threshold, a separately named
+slashable bond surface, or a blocker requiring CDL-055 amendment.
 
 **Scope:**
 
 1. Review the full Python `admit_validator()` call path and the Rust counterpart; map
-   how they are meant to interlock (this is a pre-drafting claim-enumeration step)
+   how `AgentID`, `ValidatorID`, `ValidatorKey`, endpoint, epoch range, and quorum
+   weight interlock.
 
-2. Implement the production path in Python `admit_validator()`:
+2. Implement an agent-bound validator role state model:
+   - Required fields: `agent_id`, `validator_id`, `validator_key`,
+     `validator_endpoint`, `role_status`, `quorum_weight`, `effective_from_epoch`,
+     `effective_to_epoch`, `reputation_evidence_root`, `earned_ecu_work_score_root`,
+     `liveness_state_root`, and `admission_authority_token`.
+   - Allowed role states: `candidate`, `provisional`, `official`, `ejected`.
+   - `candidate` and `provisional` have zero BFT quorum weight.
+   - Only `official` epoch-active validators may alter or contribute to the Rust
+     `ValidatorSet`.
+   - Bootstrap/genesis validators may be official through explicit bootstrap authority,
+     but the evidence must not claim they satisfied earned ECU thresholds unless source
+     evidence proves it.
+
+3. Resolve stake/eligibility semantics before runtime activation:
+   - Do not enforce the legacy thousand-ECU floor as a raw current ECU balance unless a
+     direct-read ratified source requires that exact behavior.
+   - If using earned-work eligibility, implement a distinct
+     `earned_ecu_eligibility_score`/equivalent and keep it separate from current ECU
+     balance.
+   - If CDL-055 still requires a slashable bond, name it as a bond surface and do not
+     pretend transient ECU survives CDL-048 conversion.
+   - Stop and report if the resolution requires a new CDL-055 amendment.
+
+4. Implement the production path in Python `admit_validator()`:
    - Remove the NOT_ACTIVATED guard
    - Emit `PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN` in the return
-   - Wire to the Rust admission path via `ConsensusBridgeConfig` (or direct gRPC call)
-   - Enforce 1,000 ECU minimum stake check via `EcuActiveLayerRuntime`
+   - Wire only `official` epoch-active role records to the Rust admission path via
+     `ConsensusBridgeConfig` (or direct gRPC call)
+   - Enforce the resolved eligibility/bond rule
 
-3. Add integration test with Phase 1588 mainnet config:
-   - `test_admit_validator_mainnet_mode_requires_minimum_stake`
-   - `test_admit_validator_mainnet_mode_propagates_to_rust_consensus`
-   - `test_admit_validator_mainnet_mode_rejected_below_minimum_stake`
+5. Add integration tests with Phase 1588 mainnet config:
+   - role record binds agent, validator key, endpoint, and epoch range
+   - candidate/provisional validators cannot count toward BFT quorum
+   - official validators require resolved eligibility/bond evidence
+   - bootstrap official validators require explicit genesis/bootstrap authority evidence
+   - malformed/mismatched agent/key records cannot become official
+   - stake-unit mismatch is detected before activation
+   - production admission returns the activation token only after the above pass
 
-4. Document the validator admission invariants in the walkthrough
+6. Document the validator admission invariants in the walkthrough.
 
 **Deliverables:**
 - Modified `ilc_core/validator/admission_ejection_runtime.py`
