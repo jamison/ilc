@@ -315,7 +315,10 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         let read_svc = ilc_app_read_service_server::IlcAppReadServiceServer::new(app_iface);
         let proposal_svc =
             ilc_app_proposal_ingress_service_server::IlcAppProposalIngressServiceServer::new(
-                ProposalIngressService::new(Arc::clone(&runner)),
+                ProposalIngressService::new(
+                    Arc::clone(&runner),
+                    cfg.peer_cert_sha256_fingerprints.clone(),
+                ),
             );
         let grpc_tls_identity = Identity::from_pem(cfg.my_cert_pem.clone(), cfg.my_key_pem.clone());
         let peer_ca_pem = cfg.peer_cert_pem_bundle.clone();

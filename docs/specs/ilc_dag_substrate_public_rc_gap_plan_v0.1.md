@@ -164,7 +164,7 @@ Path B: passive ECU authorized for RC with explicit governance citation.
 
 **Sensitivity:** NON-SENSITIVE — spec-only, no code changes
 **Prerequisite:** None
-**Prompt status:** COMPLETE; Phase 1586 implemented Rust proposal ingress and Phase 1586-Fix1 hardened proposal commitment binding, ack verification, replay-state bounds, and gRPC mTLS root loading.
+**Prompt status:** COMPLETE; Phase 1586 implemented Rust proposal ingress, Phase 1586-Fix1 hardened proposal commitment binding, ack verification, replay-state bounds, and gRPC mTLS root loading, and Phase 1586-Fix2 hardened finalized record commitment binding, race-safe finalization, client certificate fingerprint binding, durable proposal idempotency, and total in-flight body byte bounds.
 
 **Background:**
 The Python→Rust bridge (`production_bridge.py`) has a stub that raises

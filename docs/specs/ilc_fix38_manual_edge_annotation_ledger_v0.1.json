@@ -63772,6 +63772,383 @@
       ],
       "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
       "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Rust epoch settlement record schema now binds finalized records to proposal_commitment_sha256.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/types.rs",
+      "repo_path": "ilc_consensus/src/types.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Rust proposal ingress finalization hardened with record commitment binding, race-safe finalizing state, durable replay checks, quorum boundary tests, and total body byte cap.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/node.rs",
+      "repo_path": "ilc_consensus/src/node.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "EpochStore durable seen-proposal LMDB keys added and aggregate verification continues over serialized extended records.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/epoch_settlement.rs",
+      "repo_path": "ilc_consensus/src/epoch_settlement.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "gRPC proposal ingress now requires allowlisted validator client certificate SHA-256 fingerprints.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/app_interface.rs",
+      "repo_path": "ilc_consensus/src/app_interface.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Node config derives deterministic peer certificate SHA-256 fingerprints from loaded peer certificates.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/config.rs",
+      "repo_path": "ilc_consensus/src/config.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Validator harness proposal ingress service receives configured peer certificate fingerprints.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/main.rs",
+      "repo_path": "ilc_consensus/src/main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Rust network tests updated for extended EpochSettlementRecord schema.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/network.rs",
+      "repo_path": "ilc_consensus/src/network.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Rust testnet client epoch-record fixture updated for extended EpochSettlementRecord schema.",
+      "node_kind": "runtime_tool",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/testnet_client_main.rs",
+      "repo_path": "ilc_consensus/src/testnet_client_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Rust DAG audit epoch-record fixture updated for extended EpochSettlementRecord schema.",
+      "node_kind": "runtime_tool",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/dag_audit_main.rs",
+      "repo_path": "ilc_consensus/src/dag_audit_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Phase 1586-Fix2 walkthrough records source reads, finding dispositions, line references, verification, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Planning index updated to record Phase 1586-Fix2 completion and next substrate phase.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "Forward plan current-position header updated from Fix1-hardened to Fix2-hardened Rust proposal ingress.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_243_phase_1586_fix2_gap_substrate_bridge_rust_finalization_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix2: Rust proposal ingress finalization hardening",
+      "manual_read_summary": "DAG substrate gap plan updated to include Phase 1586-Fix2 as current bridge baseline.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix2_g10_gap_substrate_bridge_rust_finalization_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix2_complete_phase_1586_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     }
   ],
   "boundary": {

@@ -1,3 +1,4 @@
+use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use tonic::{Request, Response, Status};
 
@@ -166,13 +167,18 @@ impl IlcAppReadService for ApplicationInterface {
 pub struct ProposalIngressService {
     runner: Arc<NodeRunner>,
     require_tls_client_cert: bool,
+    allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
 }
 
 impl ProposalIngressService {
-    pub fn new(runner: Arc<NodeRunner>) -> Self {
+    pub fn new(
+        runner: Arc<NodeRunner>,
+        allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
+    ) -> Self {
         Self {
             runner,
             require_tls_client_cert: true,
+            allowed_client_cert_sha256_fingerprints,
         }
     }
 
@@ -181,6 +187,7 @@ impl ProposalIngressService {
         Self {
             runner,
             require_tls_client_cert: false,
+            allowed_client_cert_sha256_fingerprints: vec![],
         }
     }
 }
@@ -191,7 +198,12 @@ impl IlcAppProposalIngressService for ProposalIngressService {
         &self,
         request: Request<SubmitEpochProposalRequest>,
     ) -> Result<Response<SubmitEpochProposalResponse>, Status> {
-        if self.require_tls_client_cert && !has_tls_peer_certificate(&request) {
+        if self.require_tls_client_cert
+            && !has_allowed_tls_peer_certificate(
+                &request,
+                &self.allowed_client_cert_sha256_fingerprints,
+            )
+        {
             return Ok(Response::new(error_response(
                 "submit_epoch_proposal_unauthenticated_phase_1586",
             )));
@@ -283,6 +295,9 @@ fn error_code_for(err: ILCConsensusError) -> String {
         ILCConsensusError::Other(msg) if msg.contains("body_too_large") => {
             "submit_epoch_proposal_body_too_large_phase_1586".into()
         }
+        ILCConsensusError::Other(msg) if msg.contains("inflight_body_bytes_cap_exceeded") => {
+            "submit_epoch_proposal_inflight_body_bytes_cap_exceeded_phase_1586_fix2".into()
+        }
         ILCConsensusError::Other(msg) if msg.contains("empty_body") => {
             "submit_epoch_proposal_empty_body_phase_1586".into()
         }
@@ -292,6 +307,9 @@ fn error_code_for(err: ILCConsensusError) -> String {
         ILCConsensusError::Other(msg) if msg.contains("idempotency_preimage_mismatch") => {
             "submit_epoch_proposal_idempotency_preimage_mismatch_phase_1586_fix1".into()
         }
+        ILCConsensusError::Other(msg) if msg.contains("durable") => {
+            "submit_epoch_proposal_duplicate_phase_1586_fix2_durable".into()
+        }
         ILCConsensusError::Other(msg) if msg.contains("idempotency_key") => {
             "submit_epoch_proposal_invalid_idempotency_key_phase_1586".into()
         }
@@ -299,14 +317,37 @@ fn error_code_for(err: ILCConsensusError) -> String {
     }
 }
 
-fn has_tls_peer_certificate<T>(_request: &Request<T>) -> bool {
+fn has_allowed_tls_peer_certificate<T>(
+    request: &Request<T>,
+    allowed_fingerprints: &[[u8; 32]],
+) -> bool {
     use tonic::transport::server::{TcpConnectInfo, TlsConnectInfo};
-    _request
+    if allowed_fingerprints.is_empty() {
+        return false;
+    }
+    request
         .extensions()
         .get::<TlsConnectInfo<TcpConnectInfo>>()
         .and_then(|info| info.peer_certs())
-        .map(|certs| !certs.is_empty())
+        .map(|certs| {
+            let der_refs: Vec<&[u8]> = certs.iter().map(|cert| cert.as_ref()).collect();
+            peer_cert_leaf_matches_fingerprint_allowlist(&der_refs, allowed_fingerprints)
+        })
         .unwrap_or(false)
+}
+
+fn peer_cert_leaf_matches_fingerprint_allowlist(
+    certs: &[&[u8]],
+    allowed_fingerprints: &[[u8; 32]],
+) -> bool {
+    if allowed_fingerprints.is_empty() {
+        return false;
+    }
+    let Some(leaf) = certs.first() else {
+        return false;
+    };
+    let fingerprint: [u8; 32] = Sha256::digest(*leaf).into();
+    allowed_fingerprints.contains(&fingerprint)
 }
 
 #[cfg(test)]
@@ -551,6 +592,30 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_phase1586_fix2_peer_cert_fingerprint_allowlist_matches_only_known_leaf_cert() {
+        let known = b"validator-2-der-cert";
+        let unknown = b"unknown-client-cert";
+        let allowed = vec![Sha256::digest(known).into()];
+
+        assert!(peer_cert_leaf_matches_fingerprint_allowlist(
+            &[known.as_slice()],
+            &allowed
+        ));
+        assert!(!peer_cert_leaf_matches_fingerprint_allowlist(
+            &[unknown.as_slice()],
+            &allowed
+        ));
+        assert!(!peer_cert_leaf_matches_fingerprint_allowlist(
+            &[unknown.as_slice(), known.as_slice()],
+            &allowed
+        ));
+        assert!(!peer_cert_leaf_matches_fingerprint_allowlist(
+            &[known.as_slice()],
+            &[]
+        ));
+    }
+
     #[tokio::test]
     async fn test_get_balance_request_wrong_length() {
         let (env, _dir) = setup_env();
@@ -587,6 +652,7 @@ mod tests {
             let r = EpochSettlementRecord {
                 epoch: EpochSeq(ep),
                 state_root: CIDv1Root::new([ep as u8; 36]),
+                proposal_commitment_sha256: [ep as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(ep),
             };
             let (sigs, signers) = agg_sig_all(&r, &entries);
@@ -637,6 +703,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -669,6 +736,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -707,6 +775,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -751,6 +820,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -770,6 +840,7 @@ mod tests {
             .commit_epoch_record(EpochSettlementRecord {
                 epoch: EpochSeq(5),
                 state_root: CIDv1Root::new([5u8; 36]),
+                proposal_commitment_sha256: [5u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(5),
             })
             .unwrap();
