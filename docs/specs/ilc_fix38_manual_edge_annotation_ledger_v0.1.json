@@ -63540,6 +63540,238 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1588_gap_substrate_config_walkthrough.md",
       "repo_path": "docs/phases/phase_1588_gap_substrate_config_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "Rust NodeRunner proposal-ingress hardening: canonical proposal commitment, ack verification before storage, post-commit completion marking, mandatory idempotency preimage checks, and TTL-bounded replay state.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/node.rs",
+      "repo_path": "ilc_consensus/src/node.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "EpochProposalAck schema hardening: proposal commitment bytes and proposal BLS signature added while retaining record signature for aggregate checkpoint compatibility.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/network.rs",
+      "repo_path": "ilc_consensus/src/network.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "gRPC proposal-ingress error mapping and tests updated for canonical idempotency keys, epoch-data hash mismatch, empty body, and preimage mismatch.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/app_interface.rs",
+      "repo_path": "ilc_consensus/src/app_interface.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "gRPC mTLS trust-root loading hardened: deterministic CA-first and sorted peer-leaf PEM bundle excluding the local validator.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/config.rs",
+      "repo_path": "ilc_consensus/src/config.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "Phase 1586-Fix1 walkthrough recording audit finding dispositions, verification commands, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1586_fix1_gap_substrate_bridge_rust_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1586_fix1_gap_substrate_bridge_rust_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "DAG substrate public-RC gap plan updated to mark Phase 1586 complete and Fix1-hardened.",
+      "node_kind": "planning_spec",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "Comprehensive forward plan current-position header updated to remove Phase 1586 from remaining DAG substrate hard stops.",
+      "node_kind": "planning_spec",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_242_phase_1586_fix1_gap_substrate_bridge_rust_hardening",
+      "chronology_note": "2026-07-28 Phase 1586-Fix1: Rust substrate proposal-ingress audit hardening",
+      "manual_read_summary": "Planning index addendum records Phase 1586-Fix1 completion, tokens, verification, and next substrate phase 1587.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1586_fix1_g10_gap_substrate_bridge_rust_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:rust_proposal_ingress_fix1_complete_phase_1586_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
     }
   ],
   "boundary": {

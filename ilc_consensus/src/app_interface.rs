@@ -283,6 +283,15 @@ fn error_code_for(err: ILCConsensusError) -> String {
         ILCConsensusError::Other(msg) if msg.contains("body_too_large") => {
             "submit_epoch_proposal_body_too_large_phase_1586".into()
         }
+        ILCConsensusError::Other(msg) if msg.contains("empty_body") => {
+            "submit_epoch_proposal_empty_body_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("epoch_data_hash_mismatch") => {
+            "submit_epoch_proposal_epoch_data_hash_mismatch_phase_1586_fix1".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("idempotency_preimage_mismatch") => {
+            "submit_epoch_proposal_idempotency_preimage_mismatch_phase_1586_fix1".into()
+        }
         ILCConsensusError::Other(msg) if msg.contains("idempotency_key") => {
             "submit_epoch_proposal_invalid_idempotency_key_phase_1586".into()
         }
@@ -313,6 +322,7 @@ mod tests {
     };
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
+    use sha2::{Digest, Sha256};
     use std::collections::HashMap;
     use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
     use tempfile::tempdir;
@@ -347,16 +357,65 @@ mod tests {
     }
 
     fn proposal_request(idempotency_key: &str) -> SubmitEpochProposalRequest {
+        let settlement_record_bytes = b"canonical-economic-evidence".to_vec();
+        let epoch_data_hash = Sha256::digest(&settlement_record_bytes).to_vec();
+        let idempotency_key = if idempotency_key == "auto" {
+            proposal_idempotency_key(
+                b"ILC_SUBMIT_EPOCH_PROPOSAL_V1",
+                "ilc-rc01",
+                1,
+                &[9; 48],
+                &[7; 36],
+                &epoch_data_hash,
+                &settlement_record_bytes,
+                0,
+            )
+        } else {
+            idempotency_key.to_string()
+        };
         SubmitEpochProposalRequest {
             submitter_agent_id: vec![9; 48],
             epoch_number: 1,
             state_root_cidv1: vec![7; 36],
-            epoch_data_hash: vec![8; 32],
-            settlement_record_bytes: b"canonical-economic-evidence".to_vec(),
-            idempotency_key: idempotency_key.to_string(),
+            epoch_data_hash,
+            settlement_record_bytes,
+            idempotency_key,
             not_before_unix_ms: 0,
             network_id: "ilc-rc01".to_string(),
         }
+    }
+
+    fn proposal_idempotency_key(
+        domain: &[u8],
+        network_id: &str,
+        epoch_number: u64,
+        submitter_agent_id: &[u8],
+        state_root: &[u8],
+        epoch_data_hash: &[u8],
+        settlement_record_bytes: &[u8],
+        not_before_unix_ms: u64,
+    ) -> String {
+        let settlement_hash = Sha256::digest(settlement_record_bytes);
+        let mut hasher = Sha256::new();
+        hasher.update(domain);
+        hasher.update(network_id.as_bytes());
+        hasher.update(epoch_number.to_be_bytes());
+        hasher.update(submitter_agent_id);
+        hasher.update(state_root);
+        hasher.update(epoch_data_hash);
+        hasher.update(settlement_hash);
+        hasher.update(not_before_unix_ms.to_be_bytes());
+        bytes_to_lower_hex(&hasher.finalize())
+    }
+
+    fn bytes_to_lower_hex(bytes: &[u8]) -> String {
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut out = String::with_capacity(bytes.len() * 2);
+        for &byte in bytes {
+            out.push(HEX[(byte >> 4) as usize] as char);
+            out.push(HEX[(byte & 0x0f) as usize] as char);
+        }
+        out
     }
 
     fn setup_single_validator_proposal_service() -> ProposalIngressService {
@@ -436,9 +495,7 @@ mod tests {
     async fn test_submit_epoch_proposal_valid_single_validator_commits() {
         let service = setup_single_validator_proposal_service();
         let resp = service
-            .submit_epoch_proposal(Request::new(proposal_request(
-                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            )))
+            .submit_epoch_proposal(Request::new(proposal_request("auto")))
             .await
             .unwrap()
             .into_inner();
@@ -454,9 +511,9 @@ mod tests {
     #[tokio::test]
     async fn test_submit_epoch_proposal_duplicate_rejected() {
         let service = setup_single_validator_proposal_service();
-        let key = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        let key = proposal_request("auto").idempotency_key;
         let first = service
-            .submit_epoch_proposal(Request::new(proposal_request(key)))
+            .submit_epoch_proposal(Request::new(proposal_request(&key)))
             .await
             .unwrap()
             .into_inner();
@@ -466,7 +523,7 @@ mod tests {
         );
 
         let second = service
-            .submit_epoch_proposal(Request::new(proposal_request(key)))
+            .submit_epoch_proposal(Request::new(proposal_request(&key)))
             .await
             .unwrap()
             .into_inner();
@@ -484,9 +541,7 @@ mod tests {
             service
         };
         let resp = service
-            .submit_epoch_proposal(Request::new(proposal_request(
-                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-            )))
+            .submit_epoch_proposal(Request::new(proposal_request("auto")))
             .await
             .unwrap()
             .into_inner();

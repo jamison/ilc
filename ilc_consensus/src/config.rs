@@ -299,18 +299,32 @@ pub fn load_node_config(
     })
 }
 
-/// Load all validator peer `.pem` certs from peer_cert_dir, excluding our own cert.
-/// The resulting concatenated PEM bundle is used as the tonic gRPC client-auth
-/// trust roots. QUIC keeps using DER pinning via `load_peer_cert_dir`.
+/// Load deterministic gRPC client-auth trust roots from peer_cert_dir.
+///
+/// Prefer `ca.cert.pem` when present, but also include validator leaf PEMs as
+/// pinned trust anchors. Existing testbed certificates are CA-issued validator
+/// leaves; keeping both roots preserves fail-closed compatibility across rustls
+/// verifier behavior while QUIC continues to use DER pinning via `load_peer_cert_dir`.
 fn load_peer_cert_pem_bundle(dir: &str, my_validator_id: u32) -> Result<Vec<u8>, String> {
     let path = Path::new(dir);
     if !path.exists() {
         return Err(format!("peer_cert_dir '{}' does not exist", dir));
     }
 
+    let mut bundle = Vec::new();
+    let ca_path = path.join("ca.cert.pem");
+    if ca_path.exists() {
+        let pem =
+            fs::read(&ca_path).map_err(|e| format!("cannot read cert 'ca.cert.pem': {}", e))?;
+        bundle.extend_from_slice(&pem);
+        if !bundle.ends_with(b"\n") {
+            bundle.push(b'\n');
+        }
+    }
+
     let entries =
         fs::read_dir(path).map_err(|e| format!("cannot read peer_cert_dir '{}': {}", dir, e))?;
-    let mut bundle = Vec::new();
+    let mut pem_paths = Vec::new();
     for entry in entries {
         let entry = entry.map_err(|e| format!("dir entry error: {}", e))?;
         let file_name = entry.file_name();
@@ -324,8 +338,12 @@ fn load_peer_cert_pem_bundle(dir: &str, my_validator_id: u32) -> Result<Vec<u8>,
         if id == my_validator_id {
             continue;
         }
-        let pem =
-            fs::read(entry.path()).map_err(|e| format!("cannot read cert '{}': {}", name, e))?;
+        pem_paths.push((id, name.to_string(), entry.path()));
+    }
+    pem_paths.sort_by_key(|(id, _, _)| *id);
+
+    for (_, name, path) in pem_paths {
+        let pem = fs::read(path).map_err(|e| format!("cannot read cert '{}': {}", name, e))?;
         bundle.extend_from_slice(&pem);
         if !bundle.ends_with(b"\n") {
             bundle.push(b'\n');
@@ -554,6 +572,29 @@ mod tests {
             parse_validator_cert_pem_filename("validator_42_cert.pem"),
             Some(42)
         );
+    }
+
+    #[test]
+    fn test_phase1586_fix1_peer_pem_bundle_includes_ca_and_sorted_peer_leaves() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("ca.cert.pem"), b"CA\n").unwrap();
+        std::fs::write(dir.path().join("validator_3_cert.pem"), b"V3\n").unwrap();
+        std::fs::write(dir.path().join("validator_1_cert.pem"), b"V1\n").unwrap();
+        std::fs::write(dir.path().join("validator_2_cert.pem"), b"V2\n").unwrap();
+        std::fs::write(dir.path().join("client_cert.pem"), b"CLIENT\n").unwrap();
+
+        let bundle = load_peer_cert_pem_bundle(dir.path().to_str().unwrap(), 2).unwrap();
+        assert_eq!(bundle, b"CA\nV1\nV3\n");
+    }
+
+    #[test]
+    fn test_phase1586_fix1_peer_pem_bundle_is_non_empty_without_ca_when_peers_exist() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("validator_1_cert.pem"), b"V1\n").unwrap();
+        std::fs::write(dir.path().join("validator_2_cert.pem"), b"V2\n").unwrap();
+
+        let bundle = load_peer_cert_pem_bundle(dir.path().to_str().unwrap(), 1).unwrap();
+        assert_eq!(bundle, b"V2\n");
     }
 
     #[test]
