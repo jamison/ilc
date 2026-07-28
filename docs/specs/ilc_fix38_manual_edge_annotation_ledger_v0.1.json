@@ -64907,6 +64907,156 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-00: source-grounded canon and runtime audit of all reputation surfaces.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_canon_audit_complete_GAP_REPUTATION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_00_canon_audit.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_00_canon_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-01: CDL-103 opening defining AgentReputationRecord schema.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_record_cdl_103_opened_GAP_REPUTATION_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_01_cdl_103_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_01_cdl_103_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-02: agent reputation extractor runtime implementation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_extractor_runtime_committed_GAP_REPUTATION_02"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_02_extractor_runtime.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_02_extractor_runtime.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-03: CDL-104 opening for reputation/ECU boundary and validator eligibility tiers.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_ecu_boundary_cdl_104_opened_GAP_REPUTATION_03"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_03_cdl_104_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_03_cdl_104_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-04: validator eligibility certificate runtime (hard gate for Phase 1589).",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:validator_eligibility_cert_runtime_committed_GAP_REPUTATION_04"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_04_eligibility_cert.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_04_eligibility_cert.md"
+    },
+    {
+      "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
+      "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-05: Rust reputation root binding to epoch settlement record.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_root_rust_binding_committed_GAP_REPUTATION_05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_05_rust_binding.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_05_rust_binding.md"
     }
   ],
   "boundary": {
