@@ -64584,6 +64584,329 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Hardened the Phase 1587 Python proposal bridge client: requires mTLS client key/certificate chain for real proposal ingress, aligns body cap with Rust, revalidates direct dataclass submissions before network I/O, and binds accepted response proposal_id to the idempotency key.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "phase:production_bridge_mtls_client_identity_wired_phase_1587_fix1"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "phase:production_bridge_submission_revalidation_added_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/consensus/production_bridge.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/production_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Exports Phase 1587 proposal body-cap constants needed by tests and downstream bridge clients.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "phase:production_bridge_python_rust_body_cap_aligned_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/consensus/__init__.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Adds Phase 1587-Fix1 regression coverage for mTLS client identity, Rust/Python body-cap alignment, direct dataclass tamper rejection, oversized-body rejection, response-idempotency mismatch, retry idempotency preservation, and deterministic hash/idempotency vectors.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1358_production_bridge.py",
+      "repo_path": "tests/test_phase_1358_production_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Hardened the Phase 1587 prompt with post-audit Fix1 requirements for proposal mTLS client credentials, body-cap alignment, submission revalidation, response idempotency binding, and regression tests.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "REFERENCES_PHASE",
+          "target": "phase:1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Updated Phase 1587 walkthrough with Fix1 audit-finding disposition table and refreshed verification output showing 17 focused bridge tests.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1587_gap_substrate_bridge_py_walkthrough.md",
+      "repo_path": "docs/phases/phase_1587_gap_substrate_bridge_py_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Appended Phase 1587-Fix1 status block with hardening summary, verification, tokens, authority record, and non-claims.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Prepended Phase 1587-Fix1 planning addendum and next-phase posture.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Updated public-RC current position and substrate lane rows to mark Phase 1587 complete and Fix1-hardened.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_246_phase_1587_fix1_bridge_client_audit_hardening",
+      "chronology_note": "2026-07-28 Phase 1587-Fix1: Python proposal bridge client audit hardening.",
+      "manual_read_summary": "Updated the DAG substrate gap-plan status table to record Phase 1587 Fix1 hardening as resolved.",
+      "node_kind": "gap_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_fix1_complete_phase_1587_fix1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS",
+        "VALIDATES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     }
   ],
   "boundary": {

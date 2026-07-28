@@ -13,12 +13,15 @@ from ilc_core.consensus import (
     GET_EPOCH_GET_BALANCE_GET_EPOCH_RECORD_GET_EPOCH_CHAIN_TOKEN,
     ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION,
     LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN,
+    MAX_PROPOSAL_BODY_BYTES,
+    MAX_PROPOSAL_GRPC_OVERHEAD_BYTES,
     PRODUCTION_BRIDGE_ACTIVE,
     PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN,
     QUIC_ECU_TRANSFER_SUBMISSION_PATH_TOKEN,
     SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
     TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN,
     ConsensusBridgeConfig,
+    EpochSettlementProposalSubmission,
     ILCConsensusGrpcReadAdapter,
     build_epoch_settlement_proposal_submission,
     build_quic_ecu_transfer_submission_path,
@@ -226,7 +229,7 @@ def test_phase_1587_epoch_proposal_submission_calls_grpc_write_endpoint() -> Non
             error_code="",
             accepted_epoch_number=1,
             accepted_state_root_cidv1=state_root,
-            proposal_id="proposal-1",
+            proposal_id=submission.idempotency_key,
         )
     )
     config = ConsensusBridgeConfig(
@@ -250,7 +253,7 @@ def test_phase_1587_epoch_proposal_submission_calls_grpc_write_endpoint() -> Non
     assert result.status_token == SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN
     assert result.accepted_epoch_number == 1
     assert result.accepted_state_root_cidv1 == state_root
-    assert result.proposal_id == "proposal-1"
+    assert result.proposal_id == submission.idempotency_key
     assert result.production_bridge_active is True
 
 
@@ -263,6 +266,22 @@ def test_phase_1587_submission_rejects_bad_config_and_payloads() -> None:
         ConsensusBridgeConfig(target="read.example:443", max_proposal_body_bytes=0)
     with pytest.raises(ValueError, match="proposal_retry_count_invalid_phase_1587"):
         ConsensusBridgeConfig(target="read.example:443", proposal_retry_count=-1)
+    with pytest.raises(
+        ValueError,
+        match="proposal_client_certificate_pair_invalid_phase_1587_fix1",
+    ):
+        ConsensusBridgeConfig(
+            target="read.example:443",
+            proposal_client_private_key=b"client-key",
+        )
+    with pytest.raises(
+        ValueError,
+        match="proposal_client_certificate_pair_invalid_phase_1587_fix1",
+    ):
+        ConsensusBridgeConfig(
+            target="read.example:443",
+            proposal_client_certificate_chain=b"client-cert",
+        )
 
     with pytest.raises(ValueError, match="submit_epoch_proposal_state_root_invalid_phase_1587"):
         build_epoch_settlement_proposal_submission(
@@ -318,7 +337,7 @@ def test_phase_1587_submission_retries_transport_with_same_idempotency_key() -> 
                 error_code="",
                 accepted_epoch_number=3,
                 accepted_state_root_cidv1=bytes([3]) * 36,
-                proposal_id="proposal-3",
+                proposal_id=request.idempotency_key,
             )
 
     class FlakyStub:
@@ -349,7 +368,112 @@ def test_phase_1587_submission_retries_transport_with_same_idempotency_key() -> 
     second_request, second_timeout = stub.SubmitEpochProposal.calls[1]
     assert first_request.idempotency_key == second_request.idempotency_key
     assert first_timeout == second_timeout == 13
-    assert result.proposal_id == "proposal-3"
+    assert result.proposal_id == submission.idempotency_key
+
+
+def test_phase_1587_submission_revalidates_direct_dataclass_before_network() -> None:
+    valid = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([4]) * 48,
+        epoch_number=4,
+        state_root_cidv1=bytes([4]) * 36,
+        settlement_record_bytes=b'{"epoch":4}',
+        not_before_unix_ms=4,
+        network_id="ilc-mainnet-rc01",
+    )
+    tampered = EpochSettlementProposalSubmission(
+        submitter_agent_id=valid.submitter_agent_id,
+        epoch_number=valid.epoch_number,
+        state_root_cidv1=valid.state_root_cidv1,
+        epoch_data_hash=bytes([9]) * 32,
+        settlement_record_bytes=valid.settlement_record_bytes,
+        idempotency_key=valid.idempotency_key,
+        not_before_unix_ms=valid.not_before_unix_ms,
+        network_id=valid.network_id,
+        production_bridge_active=valid.production_bridge_active,
+        activation_token=valid.activation_token,
+    )
+    fake_stub = FakeProposalStub(SimpleNamespace())
+
+    with pytest.raises(
+        ValueError,
+        match="submit_epoch_proposal_epoch_data_hash_mismatch_phase_1587_fix1",
+    ):
+        submit_ecu_transfer_via_quic(
+            tampered,
+            config=ConsensusBridgeConfig(target="validator.example:443"),
+            stub=fake_stub,
+        )
+    assert fake_stub.SubmitEpochProposal.calls == []
+
+
+def test_phase_1587_submission_rejects_oversized_body_before_network() -> None:
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([5]) * 48,
+        epoch_number=5,
+        state_root_cidv1=bytes([5]) * 36,
+        settlement_record_bytes=b"x" * (MAX_PROPOSAL_BODY_BYTES + 1),
+        not_before_unix_ms=5,
+        network_id="ilc-mainnet-rc01",
+    )
+    fake_stub = FakeProposalStub(SimpleNamespace())
+
+    with pytest.raises(ValueError, match="submit_epoch_proposal_body_too_large_phase_1587"):
+        submit_ecu_transfer_via_quic(
+            submission,
+            config=ConsensusBridgeConfig(target="validator.example:443"),
+            stub=fake_stub,
+        )
+    assert fake_stub.SubmitEpochProposal.calls == []
+
+
+def test_phase_1587_submission_rejects_response_proposal_id_mismatch() -> None:
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([6]) * 48,
+        epoch_number=6,
+        state_root_cidv1=bytes([6]) * 36,
+        settlement_record_bytes=b'{"epoch":6}',
+        not_before_unix_ms=6,
+        network_id="ilc-mainnet-rc01",
+    )
+    fake_stub = FakeProposalStub(
+        SimpleNamespace(
+            status_token=SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
+            error_code="",
+            accepted_epoch_number=6,
+            accepted_state_root_cidv1=bytes([6]) * 36,
+            proposal_id="0" * 64,
+        )
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="submit_epoch_proposal_idempotency_response_mismatch_phase_1587_fix1",
+    ):
+        submit_ecu_transfer_via_quic(
+            submission,
+            config=ConsensusBridgeConfig(target="validator.example:443"),
+            stub=fake_stub,
+        )
+
+
+def test_phase_1587_submission_golden_vector_hash_and_idempotency() -> None:
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([3]) * 48,
+        epoch_number=1,
+        state_root_cidv1=bytes([7]) * 36,
+        settlement_record_bytes=b'{"epoch":1,"root":"canonical"}',
+        not_before_unix_ms=123456789,
+        network_id="ilc-mainnet-rc01",
+    )
+
+    assert (
+        submission.epoch_data_hash.hex()
+        == "d9bb4e98479cdabbd9acce0b9df6fe1941d78666190038d83082a60ff4789aaf"
+    )
+    assert (
+        submission.idempotency_key
+        == "5f3a074b70b96f257ab73f2facefb503fc32fc7b79e9b89b869c0aaa9dfe6e3a"
+    )
 
 
 def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -410,8 +534,14 @@ def test_phase_1587_secure_proposal_stub_uses_tls_and_bounded_messages(
 
     class FakeGrpcModule:
         @staticmethod
-        def ssl_channel_credentials(root_certificates: bytes | None = None) -> str:
+        def ssl_channel_credentials(
+            root_certificates: bytes | None = None,
+            private_key: bytes | None = None,
+            certificate_chain: bytes | None = None,
+        ) -> str:
             calls["roots"] = root_certificates
+            calls["private_key"] = private_key
+            calls["certificate_chain"] = certificate_chain
             return "proposal-tls-creds"
 
         @staticmethod
@@ -426,20 +556,39 @@ def test_phase_1587_secure_proposal_stub_uses_tls_and_bounded_messages(
             return FakeChannel()
 
     monkeypatch.setitem(sys.modules, "grpc", FakeGrpcModule)
+    with pytest.raises(
+        ValueError,
+        match="proposal_client_certificate_pair_required_phase_1587_fix1",
+    ):
+        build_secure_grpc_proposal_ingress_stub(
+            ConsensusBridgeConfig(
+                target="read.example:443",
+                proposal_ingress_endpoint="write.example:443",
+                proposal_tls_root_certificates=b"proposal-root-ca",
+            )
+        )
+
     stub = build_secure_grpc_proposal_ingress_stub(
         ConsensusBridgeConfig(
             target="read.example:443",
             proposal_ingress_endpoint="write.example:443",
             max_proposal_body_bytes=4096,
             proposal_tls_root_certificates=b"proposal-root-ca",
+            proposal_client_private_key=b"client-key",
+            proposal_client_certificate_chain=b"client-cert",
         )
     )
 
     assert stub.SubmitEpochProposal is not None
     assert calls["roots"] == b"proposal-root-ca"
+    assert calls["private_key"] == b"client-key"
+    assert calls["certificate_chain"] == b"client-cert"
     assert calls["target"] == "write.example:443"
     assert calls["credentials"] == "proposal-tls-creds"
-    assert ("grpc.max_send_message_length", 4096) in calls["options"]
+    assert (
+        "grpc.max_send_message_length",
+        4096 + MAX_PROPOSAL_GRPC_OVERHEAD_BYTES,
+    ) in calls["options"]
     assert ("grpc.max_receive_message_length", 1_048_576) in calls["options"]
     assert calls["path"] == "/ilc_app.ILCAppProposalIngressService/SubmitEpochProposal"
     assert not hasattr(FakeGrpcModule, "insecure_channel")
