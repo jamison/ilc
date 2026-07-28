@@ -470,6 +470,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([7u8; 36]),
+            proposal_commitment_sha256: [7u8; 32],
             not_before_unix_ms: 0,
         };
         let msg_bytes = bincode::serialize(&record).unwrap();

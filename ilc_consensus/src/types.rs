@@ -264,6 +264,11 @@ impl CIDv1Root {
 pub struct EpochSettlementRecord {
     pub epoch: EpochSeq,
     pub state_root: CIDv1Root,
+    /// SHA-256 commitment to the full `SubmitEpochProposal` preimage. Phase
+    /// 1586-Fix2 binds the aggregate epoch BLS signature to this field so the
+    /// finalized record commits to submitter, network, epoch data hash, body
+    /// hash, state root, and timing rather than only the compact epoch tuple.
+    pub proposal_commitment_sha256: [u8; 32],
     /// Wall-clock lower bound (milliseconds since Unix epoch) after which this
     /// epoch is valid. Included in the BLS-signed message — prevents timestamp
     /// forgery by a colluding validator quorum.

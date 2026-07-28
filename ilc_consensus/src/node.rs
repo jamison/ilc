@@ -92,6 +92,7 @@ const MAX_MISSING_VERSIONS: usize = 1024;
 const MAX_SIGS_PER_INFLIGHT: usize = MAX_CERT_SIGS;
 const MAX_EPOCH_PROPOSAL_BODY_BYTES: usize = 256 * 1024;
 const MAX_EPOCH_PROPOSALS_IN_FLIGHT: usize = 1024;
+const MAX_EPOCH_PROPOSALS_IN_FLIGHT_BODY_BYTES: usize = 64 * 1024 * 1024;
 const EPOCH_PROPOSAL_TIMEOUT_MS: u64 = 5_000;
 const EPOCH_PROPOSAL_STALE_MS: u64 = EPOCH_PROPOSAL_TIMEOUT_MS * 2;
 const ILC_EPOCH_PROPOSAL_SIG_DST: &[u8] = b"ILC_EPOCH_PROPOSAL_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
@@ -106,6 +107,7 @@ struct EpochProposalInFlight {
     proposal: EpochProposal,
     sigs: Vec<(ValidatorID, crate::types::ValidatorSig)>,
     completed: bool,
+    finalizing: bool,
     inserted_at: tokio::time::Instant,
     waiter: Option<oneshot::Sender<Result<EpochProposalOutcome, ILCConsensusError>>>,
 }
@@ -297,7 +299,6 @@ impl NodeRunner {
                 "submit_epoch_proposal_settlement_path_not_mysticeti_phase_1586".into(),
             ));
         }
-
         let record = proposal_to_record(&proposal);
         let record_bytes = bincode::serialize(&record)
             .map_err(|e| ILCConsensusError::Other(format!("Epoch record serialize: {}", e)))?;
@@ -320,12 +321,21 @@ impl NodeRunner {
                 ));
             }
             evict_stale_epoch_proposals(&mut table);
+            if total_in_flight_body_bytes(&table)
+                .saturating_add(proposal.settlement_record_bytes.len())
+                > MAX_EPOCH_PROPOSALS_IN_FLIGHT_BODY_BYTES
+            {
+                return Err(ILCConsensusError::Other(
+                    "submit_epoch_proposal_inflight_body_bytes_cap_exceeded_phase_1586_fix2".into(),
+                ));
+            }
             table.insert(
                 proposal.idempotency_key.clone(),
                 EpochProposalInFlight {
                     proposal: proposal.clone(),
                     sigs: vec![(self.validator_id, own_sig)],
                     completed: false,
+                    finalizing: false,
                     inserted_at: tokio::time::Instant::now(),
                     waiter: Some(tx),
                 },
@@ -901,6 +911,9 @@ impl NodeRunner {
         let record = crate::types::EpochSettlementRecord {
             epoch: tx.epoch,
             state_root: tx.state_root,
+            // Testnet fault-simulation transactions predate proposal ingress.
+            // Production proposal ingress always binds the actual proposal commitment.
+            proposal_commitment_sha256: [0u8; 32],
             not_before_unix_ms: 0,
         };
         // Treat duplicate epoch records as idempotent (mirrors ConflictingTransfer handling).
@@ -1097,6 +1110,9 @@ impl NodeRunner {
             if entry.completed || entry.proposal.epoch_number != ack.epoch_number {
                 return Ok(());
             }
+            if entry.finalizing {
+                return Ok(());
+            }
             self.verify_epoch_proposal_ack(&entry.proposal, &ack, from)?;
             if !entry.sigs.iter().any(|(id, _)| *id == from) {
                 if entry.sigs.len() >= MAX_SIGNERS_PER_CHECKPOINT {
@@ -1122,6 +1138,9 @@ impl NodeRunner {
             if entry.completed {
                 return Ok(());
             }
+            if entry.finalizing {
+                return Ok(());
+            }
             let quorum = {
                 let vs = self.fast_path.validator_set.read().unwrap();
                 quorum_threshold(vs.validators.len())
@@ -1129,6 +1148,7 @@ impl NodeRunner {
             if entry.sigs.len() < quorum {
                 return Ok(());
             }
+            entry.finalizing = true;
             Some((
                 entry.proposal.clone(),
                 entry.sigs.clone(),
@@ -1158,9 +1178,12 @@ impl NodeRunner {
         };
         match result {
             Ok(_) => {
+                self.epoch_store
+                    .mark_seen_epoch_proposal(&proposal.idempotency_key)?;
                 {
                     let mut table = self.epoch_proposals.lock().await;
                     if let Some(entry) = table.get_mut(idempotency_key) {
+                        entry.finalizing = false;
                         entry.completed = true;
                     }
                 }
@@ -1189,6 +1212,12 @@ impl NodeRunner {
                 }
             }
             Err(e) => {
+                {
+                    let mut table = self.epoch_proposals.lock().await;
+                    if let Some(entry) = table.get_mut(idempotency_key) {
+                        entry.finalizing = false;
+                    }
+                }
                 if let Some(waiter) = waiter {
                     let _ = waiter.send(Err(e.clone()));
                 }
@@ -1230,6 +1259,14 @@ impl NodeRunner {
             ));
         }
         validate_proposal_hashes(proposal)?;
+        if self
+            .epoch_store
+            .has_seen_epoch_proposal(&proposal.idempotency_key)?
+        {
+            return Err(ILCConsensusError::Other(
+                "submit_epoch_proposal_duplicate_phase_1586_fix2_durable".into(),
+            ));
+        }
         let current = self.epoch_store.get_current_epoch()?;
         if proposal.epoch_number != current.saturating_add(1) {
             return Err(ILCConsensusError::InvalidEpoch);
@@ -1445,6 +1482,7 @@ fn proposal_to_record(proposal: &EpochProposal) -> EpochSettlementRecord {
     EpochSettlementRecord {
         epoch: EpochSeq(proposal.epoch_number),
         state_root: proposal.state_root,
+        proposal_commitment_sha256: proposal_commitment_sha256(proposal),
         not_before_unix_ms: proposal.not_before_unix_ms,
     }
 }
@@ -1500,6 +1538,13 @@ fn evict_stale_epoch_proposals(table: &mut HashMap<String, EpochProposalInFlight
     let now = tokio::time::Instant::now();
     let ttl = tokio::time::Duration::from_millis(EPOCH_PROPOSAL_STALE_MS);
     table.retain(|_, entry| now.duration_since(entry.inserted_at) <= ttl);
+}
+
+fn total_in_flight_body_bytes(table: &HashMap<String, EpochProposalInFlight>) -> usize {
+    table
+        .values()
+        .map(|entry| entry.proposal.settlement_record_bytes.len())
+        .sum()
 }
 
 fn is_lowercase_sha256_hex(value: &str) -> bool {
@@ -1620,11 +1665,19 @@ mod tests {
         (cert.der().to_vec(), key_pair.serialize_der())
     }
 
-    fn setup_proposal_runner(n: u32) -> (Arc<NodeRunner>, Vec<(ValidatorID, SecretKey)>) {
-        let (env, _dir) = setup_env();
+    fn setup_proposal_runner_from_env(
+        env: Arc<Environment>,
+        n: u32,
+        entries: &[(ValidatorID, SecretKey)],
+    ) -> Arc<NodeRunner> {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env).unwrap());
-        let (validator_set, entries) = setup_n_validators(n);
+        let validators = entries
+            .iter()
+            .map(|(id, sk)| (*id, crate::types::ValidatorKey(sk.sk_to_pk())))
+            .collect();
+        let validator_set =
+            ValidatorSet::new(validators, n.saturating_sub(1) as usize / 3).unwrap();
         let own_sk = entries[0].1.clone();
         let fast_path = Arc::new(FastPathProtocol::new(
             validator_set,
@@ -1636,7 +1689,7 @@ mod tests {
             PeerNetwork::new_client("127.0.0.1:0".parse().unwrap(), HashMap::new(), cert, key)
                 .unwrap(),
         );
-        let runner = Arc::new(
+        Arc::new(
             NodeRunner::new(
                 ValidatorID(1),
                 "ilc-rc01".to_string(),
@@ -1649,7 +1702,13 @@ mod tests {
                 vec![],
             )
             .with_proposal_ingress_enabled(true),
-        );
+        )
+    }
+
+    fn setup_proposal_runner(n: u32) -> (Arc<NodeRunner>, Vec<(ValidatorID, SecretKey)>) {
+        let (env, _dir) = setup_env();
+        let (_validator_set, entries) = setup_n_validators(n);
+        let runner = setup_proposal_runner_from_env(env, n, &entries);
         (runner, entries)
     }
 
@@ -1768,6 +1827,138 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_phase1586_fix2_epoch_record_binds_proposal_commitment() {
+        let (runner, entries) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let expected_commitment = proposal_commitment_sha256(&proposal);
+        let proposal_id = proposal.idempotency_key.clone();
+
+        let submit_runner = Arc::clone(&runner);
+        let submit =
+            tokio::spawn(async move { submit_runner.submit_epoch_proposal(proposal).await });
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+
+        for (signer, sk) in entries.iter().skip(1).take(2) {
+            let proposal = {
+                let table = runner.epoch_proposals.lock().await;
+                table.get(&proposal_id).unwrap().proposal.clone()
+            };
+            let (from, ack) = valid_epoch_proposal_ack(&proposal, *signer, sk);
+            runner.handle_epoch_proposal_ack(ack, from).await.unwrap();
+        }
+
+        submit.await.unwrap().unwrap();
+        let stored = runner.epoch_store.get_checkpoint(1).unwrap().unwrap();
+        assert_eq!(
+            stored.record.proposal_commitment_sha256,
+            expected_commitment
+        );
+        assert_eq!(stored.signers.len(), quorum_threshold(4));
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix2_own_plus_one_ack_does_not_finalize() {
+        let (runner, entries) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+
+        let submit_runner = Arc::clone(&runner);
+        let submit =
+            tokio::spawn(async move { submit_runner.submit_epoch_proposal(proposal).await });
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+
+        let proposal = {
+            let table = runner.epoch_proposals.lock().await;
+            table.get(&proposal_id).unwrap().proposal.clone()
+        };
+        let (from, ack) = valid_epoch_proposal_ack(&proposal, entries[1].0, &entries[1].1);
+        runner.handle_epoch_proposal_ack(ack, from).await.unwrap();
+
+        assert_eq!(runner.epoch_store.get_current_epoch().unwrap(), 0);
+        let table = runner.epoch_proposals.lock().await;
+        let entry = table.get(&proposal_id).unwrap();
+        assert_eq!(entry.sigs.len(), 2);
+        assert!(!entry.completed);
+        assert!(!entry.finalizing);
+        submit.abort();
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix2_finalizing_entry_blocks_duplicate_finalize() {
+        let (runner, entries) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+        let record = proposal_to_record(&proposal);
+        let record_bytes = bincode::serialize(&record).unwrap();
+        let mut sigs = vec![(
+            entries[0].0,
+            ValidatorSig(
+                entries[0]
+                    .1
+                    .sign(&record_bytes, crate::types::ILC_EPOCH_SIG_DST, &[]),
+            ),
+        )];
+        for (signer, sk) in entries.iter().skip(1).take(2) {
+            let (_from, ack) = valid_epoch_proposal_ack(&proposal, *signer, sk);
+            sigs.push((*signer, ack.sig));
+        }
+
+        {
+            let mut table = runner.epoch_proposals.lock().await;
+            table.insert(
+                proposal_id.clone(),
+                EpochProposalInFlight {
+                    proposal,
+                    sigs,
+                    completed: false,
+                    finalizing: true,
+                    inserted_at: tokio::time::Instant::now(),
+                    waiter: None,
+                },
+            );
+        }
+
+        runner
+            .try_finalize_epoch_proposal(&proposal_id)
+            .await
+            .unwrap();
+        assert_eq!(runner.epoch_store.get_current_epoch().unwrap(), 0);
+        let table = runner.epoch_proposals.lock().await;
+        assert!(table.get(&proposal_id).unwrap().finalizing);
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix2_durable_idempotency_rejects_after_restart() {
+        let (env, _dir) = setup_env();
+        let (_validator_set, entries) = setup_n_validators(4);
+        let runner = setup_proposal_runner_from_env(Arc::clone(&env), 4, &entries);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+
+        let submit_runner = Arc::clone(&runner);
+        let submit =
+            tokio::spawn(async move { submit_runner.submit_epoch_proposal(proposal).await });
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+
+        for (signer, sk) in entries.iter().skip(1).take(2) {
+            let proposal = {
+                let table = runner.epoch_proposals.lock().await;
+                table.get(&proposal_id).unwrap().proposal.clone()
+            };
+            let (from, ack) = valid_epoch_proposal_ack(&proposal, *signer, sk);
+            runner.handle_epoch_proposal_ack(ack, from).await.unwrap();
+        }
+        submit.await.unwrap().unwrap();
+
+        let restarted_runner = setup_proposal_runner_from_env(env, 4, &entries);
+        let replay = canonical_epoch_proposal(1);
+        let err = restarted_runner
+            .validate_epoch_proposal(&replay)
+            .unwrap_err();
+        assert!(format!("{err:?}").contains("duplicate_phase_1586_fix2_durable"));
+    }
+
+    #[tokio::test]
     async fn test_phase1586_fix1_bad_ack_does_not_poison_proposal() {
         let (runner, entries) = setup_proposal_runner(4);
         let proposal = canonical_epoch_proposal(1);
@@ -1868,6 +2059,7 @@ mod tests {
                 proposal: stale,
                 sigs: vec![],
                 completed: true,
+                finalizing: false,
                 inserted_at: tokio::time::Instant::now()
                     - tokio::time::Duration::from_millis(EPOCH_PROPOSAL_STALE_MS + 1),
                 waiter: None,
@@ -1879,6 +2071,7 @@ mod tests {
                 proposal: fresh,
                 sigs: vec![],
                 completed: true,
+                finalizing: false,
                 inserted_at: tokio::time::Instant::now(),
                 waiter: None,
             },
@@ -1887,6 +2080,42 @@ mod tests {
         evict_stale_epoch_proposals(&mut table);
         assert_eq!(table.len(), 1);
         assert_eq!(table.values().next().unwrap().proposal.epoch_number, 2);
+    }
+
+    #[test]
+    fn test_phase1586_fix2_total_inflight_body_bytes_is_bounded() {
+        let mut table: HashMap<String, EpochProposalInFlight> = HashMap::new();
+        let entry_count = MAX_EPOCH_PROPOSALS_IN_FLIGHT_BODY_BYTES / MAX_EPOCH_PROPOSAL_BODY_BYTES;
+        for i in 0..entry_count {
+            let mut proposal = canonical_epoch_proposal(i as u64 + 1);
+            proposal.settlement_record_bytes = vec![7; MAX_EPOCH_PROPOSAL_BODY_BYTES];
+            proposal.epoch_data_hash = Sha256::digest(&proposal.settlement_record_bytes).to_vec();
+            proposal.idempotency_key = bytes_to_lower_hex(&proposal_commitment_sha256(&proposal));
+            table.insert(
+                proposal.idempotency_key.clone(),
+                EpochProposalInFlight {
+                    proposal,
+                    sigs: vec![],
+                    completed: false,
+                    finalizing: false,
+                    inserted_at: tokio::time::Instant::now(),
+                    waiter: None,
+                },
+            );
+        }
+
+        assert_eq!(
+            total_in_flight_body_bytes(&table),
+            MAX_EPOCH_PROPOSALS_IN_FLIGHT_BODY_BYTES
+        );
+        let mut extra = canonical_epoch_proposal(99_999);
+        extra.settlement_record_bytes = vec![1; 1];
+        extra.epoch_data_hash = Sha256::digest(&extra.settlement_record_bytes).to_vec();
+        extra.idempotency_key = bytes_to_lower_hex(&proposal_commitment_sha256(&extra));
+        assert!(
+            total_in_flight_body_bytes(&table).saturating_add(extra.settlement_record_bytes.len())
+                > MAX_EPOCH_PROPOSALS_IN_FLIGHT_BODY_BYTES
+        );
     }
 
     // SEC-FIX-01: in_flight eviction — certified entries must not accumulate
@@ -1984,6 +2213,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                proposal_commitment_sha256: [epoch as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
             };
             let checkpoint = crate::types::EpochCheckpoint {
@@ -2110,11 +2340,13 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let wrong_record = EpochSettlementRecord {
             epoch: EpochSeq(99),
             state_root: CIDv1Root::new([99u8; 36]),
+            proposal_commitment_sha256: [99u8; 32],
             not_before_unix_ms: 0,
         };
         let wrong_sig_bytes = generate_valid_agg_sig(&wrong_record, &keys)
@@ -2147,6 +2379,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                proposal_commitment_sha256: [1u8; 32],
                 not_before_unix_ms: 0,
             },
             agg_sig_bytes: vec![],
@@ -2170,6 +2403,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                proposal_commitment_sha256: [1u8; 32],
                 not_before_unix_ms: 0,
             },
             agg_sig_bytes: vec![],
@@ -2200,6 +2434,7 @@ mod tests {
         let record_e1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         store.commit_epoch_record(record_e1.clone()).unwrap();
@@ -2220,6 +2455,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(2),
                 state_root: CIDv1Root::new([2u8; 36]),
+                proposal_commitment_sha256: [2u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(2),
             },
             agg_sig_bytes: vec![],

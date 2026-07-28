@@ -53,12 +53,20 @@ pub struct StoredCheckpoint {
 /// Kept in-band but distinguishable from epoch record keys (which are 8-byte big-endian u64s
 /// for epoch numbers 0..u64::MAX-1) by using a dedicated 1-byte sentinel key.
 const CURRENT_EPOCH_SENTINEL: &[u8] = b"\xff";
+const EPOCH_PROPOSAL_SEEN_PREFIX: &[u8] = b"seen_epoch_proposal:";
 
 /// EpochStore securely harbors the definitive Epoch boundaries natively aligned to the DAG-consensus.
 /// Segregated cleanly from the ECU balance mutations.
 pub struct EpochStore {
     env: Arc<Environment>,
     db: Database,
+}
+
+fn epoch_proposal_seen_key(idempotency_key: &str) -> Vec<u8> {
+    let mut key = Vec::with_capacity(EPOCH_PROPOSAL_SEEN_PREFIX.len() + idempotency_key.len());
+    key.extend_from_slice(EPOCH_PROPOSAL_SEEN_PREFIX);
+    key.extend_from_slice(idempotency_key.as_bytes());
+    key
 }
 
 impl EpochStore {
@@ -69,6 +77,43 @@ impl EpochStore {
                 ILCConsensusError::Other(format!("Failed to create epoch_records DB: {}", e))
             })?;
         Ok(Self { env, db })
+    }
+
+    pub fn has_seen_epoch_proposal(
+        &self,
+        idempotency_key: &str,
+    ) -> Result<bool, ILCConsensusError> {
+        let txn = self
+            .env
+            .begin_ro_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RO txn: {}", e)))?;
+        match txn.get(self.db, &epoch_proposal_seen_key(idempotency_key)) {
+            Ok(_) => Ok(true),
+            Err(lmdb_rkv::Error::NotFound) => Ok(false),
+            Err(e) => Err(ILCConsensusError::Other(format!(
+                "Epoch proposal idempotency read error: {}",
+                e
+            ))),
+        }
+    }
+
+    pub fn mark_seen_epoch_proposal(&self, idempotency_key: &str) -> Result<(), ILCConsensusError> {
+        let mut txn = self
+            .env
+            .begin_rw_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
+        txn.put(
+            self.db,
+            &epoch_proposal_seen_key(idempotency_key),
+            &1u64.to_be_bytes(),
+            WriteFlags::empty(),
+        )
+        .map_err(|e| {
+            ILCConsensusError::Other(format!("Epoch proposal idempotency Put error: {}", e))
+        })?;
+        txn.commit().map_err(|e| {
+            ILCConsensusError::Other(format!("Epoch proposal idempotency Commit error: {}", e))
+        })
     }
 
     /// Write an epoch record directly — called only by `handle_epoch_settlement_tx` which is
@@ -531,6 +576,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(epoch),
             state_root: CIDv1Root::new([fill; 36]),
+            proposal_commitment_sha256: [fill; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
         };
         let (sigs, signers) = agg_sig_all(&record, entries);
@@ -638,6 +684,7 @@ mod tests {
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&epoch_record, &entries);
@@ -670,6 +717,7 @@ mod tests {
         let epoch_record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
+            proposal_commitment_sha256: [2u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(2),
         };
         let (sigs, signers) = agg_sig_all(&epoch_record, &entries);
@@ -715,6 +763,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
 
@@ -744,6 +793,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -768,6 +818,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -798,6 +849,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
 
@@ -808,6 +860,7 @@ mod tests {
         let wrong_record = EpochSettlementRecord {
             epoch: EpochSeq(99),
             state_root: CIDv1Root::new([99u8; 36]),
+            proposal_commitment_sha256: [99u8; 32],
             not_before_unix_ms: 0,
         };
         let (wrong_agg, _) = agg_sig_all(&wrong_record, &entries);
@@ -856,6 +909,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(5),
             state_root: CIDv1Root::new([5u8; 36]),
+            proposal_commitment_sha256: [5u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -887,6 +941,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                proposal_commitment_sha256: [epoch as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
             };
             let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -919,6 +974,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
+            proposal_commitment_sha256: [2u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -952,6 +1008,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(10),
             state_root: CIDv1Root::new([10u8; 36]),
+            proposal_commitment_sha256: [10u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
@@ -1017,6 +1074,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         // Use only the first 3 validators (IDs 1, 2, 3) — validator 4 is "offline".
@@ -1048,6 +1106,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..2]);
@@ -1079,6 +1138,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, _) = agg_sig_for_subset(&record, &entries[0..3]);
@@ -1114,6 +1174,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, _) = agg_sig_for_subset(&record, &entries[0..3]);
@@ -1151,6 +1212,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, mut signers) = agg_sig_for_subset(&record, &entries[0..3]);
@@ -1179,6 +1241,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..3]);
@@ -1212,6 +1275,7 @@ mod tests {
         let record1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(1),
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
@@ -1230,6 +1294,7 @@ mod tests {
         let record2 = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
+            proposal_commitment_sha256: [2u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(1) + 1,
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
@@ -1261,6 +1326,7 @@ mod tests {
         let record1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(1),
         };
         let (sigs1, signers1) = agg_sig_all(&record1, &entries);
@@ -1279,6 +1345,7 @@ mod tests {
         let record2 = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
+            proposal_commitment_sha256: [2u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(2),
         };
         let (sigs2, signers2) = agg_sig_all(&record2, &entries);
@@ -1306,6 +1373,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(2),
             state_root: CIDv1Root::new([2u8; 36]),
+            proposal_commitment_sha256: [2u8; 32],
             not_before_unix_ms: test_epoch_not_before_unix_ms(1),
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);

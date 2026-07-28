@@ -12,6 +12,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use crate::types::{AgentID, ILCConsensusError, ValidatorID, ValidatorKey, ValidatorSet};
+use sha2::{Digest, Sha256};
 
 // ---------------------------------------------------------------------------
 // Raw JSON shapes (deployment format)
@@ -128,6 +129,8 @@ pub struct NodeConfig {
     pub my_key_pem: Vec<u8>,
     /// Peer certs keyed by validator_id, DER encoding.
     pub peer_certs: HashMap<u32, Vec<u8>>,
+    /// SHA-256 fingerprints of peer validator DER certs accepted by gRPC proposal ingress.
+    pub peer_cert_sha256_fingerprints: Vec<[u8; 32]>,
     /// Peer certificate PEM bundle for tonic gRPC client-auth roots.
     pub peer_cert_pem_bundle: Vec<u8>,
     /// Persistent consensus secret key mapping cleanly over dynamic network quorum limits.
@@ -240,6 +243,7 @@ pub fn load_node_config(
 
     let peer_certs = load_peer_cert_dir(&cfg.peer_cert_dir, cfg.validator_id)
         .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir: {}", e)))?;
+    let peer_cert_sha256_fingerprints = peer_cert_sha256_fingerprints(&peer_certs);
     let peer_cert_pem_bundle = load_peer_cert_pem_bundle(&cfg.peer_cert_dir, cfg.validator_id)
         .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir pem: {}", e)))?;
 
@@ -291,6 +295,7 @@ pub fn load_node_config(
         my_cert_pem,
         my_key_pem,
         peer_certs,
+        peer_cert_sha256_fingerprints,
         peer_cert_pem_bundle,
         validator_sk,
         grpc_listen_addr,
@@ -447,6 +452,15 @@ fn load_peer_cert_dir(dir: &str, my_validator_id: u32) -> Result<HashMap<u32, Ve
     Ok(map)
 }
 
+fn peer_cert_sha256_fingerprints(peer_certs: &HashMap<u32, Vec<u8>>) -> Vec<[u8; 32]> {
+    let mut certs: Vec<_> = peer_certs.iter().collect();
+    certs.sort_by_key(|(id, _)| **id);
+    certs
+        .into_iter()
+        .map(|(_, cert)| Sha256::digest(cert.as_slice()).into())
+        .collect()
+}
+
 /// Parse `validator_{id}_cert.der` → Some(id), or None if the name doesn't match.
 // MEDIUM-009 fix: removed hard-coded client_cert.der → ValidatorID(5) mapping.
 // All validator certs must use the standard validator_{id}_cert.der naming scheme.
@@ -595,6 +609,21 @@ mod tests {
 
         let bundle = load_peer_cert_pem_bundle(dir.path().to_str().unwrap(), 1).unwrap();
         assert_eq!(bundle, b"V2\n");
+    }
+
+    #[test]
+    fn test_phase1586_fix2_peer_cert_fingerprints_are_sorted() {
+        let mut certs = HashMap::new();
+        certs.insert(3, b"V3-DER".to_vec());
+        certs.insert(1, b"V1-DER".to_vec());
+
+        let fingerprints = peer_cert_sha256_fingerprints(&certs);
+
+        assert_eq!(fingerprints.len(), 2);
+        let expected_v1: [u8; 32] = Sha256::digest(b"V1-DER").into();
+        let expected_v3: [u8; 32] = Sha256::digest(b"V3-DER").into();
+        assert_eq!(fingerprints[0], expected_v1);
+        assert_eq!(fingerprints[1], expected_v3);
     }
 
     #[test]
