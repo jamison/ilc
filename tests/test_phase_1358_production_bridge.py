@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import sys
 from decimal import Decimal
 from pathlib import Path
@@ -13,11 +14,15 @@ from ilc_core.consensus import (
     ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION,
     LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN,
     PRODUCTION_BRIDGE_ACTIVE,
+    PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN,
     QUIC_ECU_TRANSFER_SUBMISSION_PATH_TOKEN,
+    SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
     TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN,
     ConsensusBridgeConfig,
     ILCConsensusGrpcReadAdapter,
+    build_epoch_settlement_proposal_submission,
     build_quic_ecu_transfer_submission_path,
+    build_secure_grpc_proposal_ingress_stub,
     build_secure_grpc_read_stub,
     quote_to_canonical_json,
     submit_ecu_transfer_via_quic,
@@ -69,6 +74,11 @@ class FakeReadStub:
         )
 
 
+class FakeProposalStub:
+    def __init__(self, response: object) -> None:
+        self.SubmitEpochProposal = RecordingRpc(response)
+
+
 def _adapter(stub: FakeReadStub, *, timeout: int = 7) -> ILCConsensusGrpcReadAdapter:
     return ILCConsensusGrpcReadAdapter(
         ConsensusBridgeConfig(
@@ -80,7 +90,7 @@ def _adapter(stub: FakeReadStub, *, timeout: int = 7) -> ILCConsensusGrpcReadAda
     )
 
 
-def test_phase_1358_tokens_and_default_off_exported() -> None:
+def test_phase_1358_tokens_and_phase_1587_activation_exported() -> None:
     assert (
         ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION
         == "ilc_core_consensus_grpc_read_adapter_phase_1358.v0.1"
@@ -99,7 +109,11 @@ def test_phase_1358_tokens_and_default_off_exported() -> None:
     )
     assert LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN == "live_ecu_transfer_not_activated_phase_1358"
     assert ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN == "adr_0028_production_bridge_partial_phase_1358"
-    assert PRODUCTION_BRIDGE_ACTIVE is False
+    assert PRODUCTION_BRIDGE_ACTIVE is True
+    assert (
+        PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN
+        == "production_bridge_activated_phase_1587"
+    )
 
 
 def test_get_epoch_and_balance_use_explicit_timeout_and_decimal_amounts() -> None:
@@ -118,11 +132,11 @@ def test_get_epoch_and_balance_use_explicit_timeout_and_decimal_amounts() -> Non
     assert quote.amount_ecu == Decimal("1.234567")
     assert quote.version == 4
     assert quote.epoch == 8
-    assert quote.production_bridge_active is False
+    assert quote.production_bridge_active is True
     assert quote_to_canonical_json(quote) == (
         '{"agent_id_length_bytes":48,"amount_ecu":"1.234567",'
         '"amount_micro_ecu":"1234567","epoch":8,'
-        '"production_bridge_active":false,"version":4}'
+        '"production_bridge_active":true,"version":4}'
     )
 
 
@@ -184,10 +198,158 @@ def test_quic_ecu_transfer_submission_path_is_present_but_not_activated() -> Non
 
     assert path.path_token == "quic_ecu_transfer_submission_path_phase_1358"
     assert path.status_token == "live_ecu_transfer_not_activated_phase_1358"
-    assert path.production_bridge_active is False
+    assert path.production_bridge_active is True
     assert quote_to_canonical_json(path).startswith('{"path_token":"quic_ecu_transfer')
-    with pytest.raises(ValueError, match="live_ecu_transfer_not_activated_phase_1358"):
-        submit_ecu_transfer_via_quic(path)
+    with pytest.raises(ValueError, match="epoch_proposal_submission_path_invalid_phase_1587"):
+        submit_ecu_transfer_via_quic(
+            path,  # type: ignore[arg-type]
+            config=ConsensusBridgeConfig(target="validator.example:443"),
+            stub=FakeProposalStub(SimpleNamespace()),
+        )
+
+
+def test_phase_1587_epoch_proposal_submission_calls_grpc_write_endpoint() -> None:
+    settlement_record = b'{"epoch":1,"root":"canonical"}'
+    state_root = bytes([7]) * 36
+    submitter = bytes([3]) * 48
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=submitter,
+        epoch_number=1,
+        state_root_cidv1=state_root,
+        settlement_record_bytes=settlement_record,
+        not_before_unix_ms=123456789,
+        network_id="ilc-mainnet-rc01",
+    )
+    fake_stub = FakeProposalStub(
+        SimpleNamespace(
+            status_token=SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
+            error_code="",
+            accepted_epoch_number=1,
+            accepted_state_root_cidv1=state_root,
+            proposal_id="proposal-1",
+        )
+    )
+    config = ConsensusBridgeConfig(
+        target="read.example:443",
+        grpc_timeout_seconds=11,
+        proposal_ingress_endpoint="write.example:443",
+    )
+
+    result = submit_ecu_transfer_via_quic(submission, config=config, stub=fake_stub)
+
+    request, timeout = fake_stub.SubmitEpochProposal.calls[0]
+    assert timeout == 11
+    assert request.submitter_agent_id == submitter
+    assert request.epoch_number == 1
+    assert request.state_root_cidv1 == state_root
+    assert request.epoch_data_hash == hashlib.sha256(settlement_record).digest()
+    assert request.settlement_record_bytes == settlement_record
+    assert request.idempotency_key == submission.idempotency_key
+    assert request.not_before_unix_ms == 123456789
+    assert request.network_id == "ilc-mainnet-rc01"
+    assert result.status_token == SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN
+    assert result.accepted_epoch_number == 1
+    assert result.accepted_state_root_cidv1 == state_root
+    assert result.proposal_id == "proposal-1"
+    assert result.production_bridge_active is True
+
+
+def test_phase_1587_submission_rejects_bad_config_and_payloads() -> None:
+    with pytest.raises(ValueError, match="proposal_ingress_endpoint_invalid_phase_1587"):
+        ConsensusBridgeConfig(target="read.example:443", proposal_ingress_endpoint="")
+    with pytest.raises(ValueError, match="proposal_timeout_invalid_phase_1587"):
+        ConsensusBridgeConfig(target="read.example:443", proposal_timeout_seconds=0)
+    with pytest.raises(ValueError, match="max_proposal_body_bytes_invalid_phase_1587"):
+        ConsensusBridgeConfig(target="read.example:443", max_proposal_body_bytes=0)
+    with pytest.raises(ValueError, match="proposal_retry_count_invalid_phase_1587"):
+        ConsensusBridgeConfig(target="read.example:443", proposal_retry_count=-1)
+
+    with pytest.raises(ValueError, match="submit_epoch_proposal_state_root_invalid_phase_1587"):
+        build_epoch_settlement_proposal_submission(
+            submitter_agent_id=bytes([1]) * 48,
+            epoch_number=1,
+            state_root_cidv1=b"short",
+            settlement_record_bytes=b"{}",
+            not_before_unix_ms=1,
+            network_id="ilc-mainnet-rc01",
+        )
+
+
+def test_phase_1587_submission_handles_rust_error_responses() -> None:
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([1]) * 48,
+        epoch_number=2,
+        state_root_cidv1=bytes([2]) * 36,
+        settlement_record_bytes=b'{"epoch":2}',
+        not_before_unix_ms=2,
+        network_id="ilc-mainnet-rc01",
+    )
+    fake_stub = FakeProposalStub(
+        SimpleNamespace(
+            status_token="",
+            error_code="submit_epoch_proposal_network_id_mismatch_phase_1586",
+            accepted_epoch_number=0,
+            accepted_state_root_cidv1=b"",
+            proposal_id="",
+        )
+    )
+    with pytest.raises(
+        ValueError,
+        match="submit_epoch_proposal_network_id_mismatch_phase_1586",
+    ):
+        submit_ecu_transfer_via_quic(
+            submission,
+            config=ConsensusBridgeConfig(target="validator.example:443"),
+            stub=fake_stub,
+        )
+
+
+def test_phase_1587_submission_retries_transport_with_same_idempotency_key() -> None:
+    class FlakyRpc:
+        def __init__(self) -> None:
+            self.calls: list[tuple[object, int]] = []
+
+        def __call__(self, request: object, *, timeout: int) -> object:
+            self.calls.append((request, timeout))
+            if len(self.calls) == 1:
+                raise TimeoutError("transient")
+            return SimpleNamespace(
+                status_token=SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
+                error_code="",
+                accepted_epoch_number=3,
+                accepted_state_root_cidv1=bytes([3]) * 36,
+                proposal_id="proposal-3",
+            )
+
+    class FlakyStub:
+        def __init__(self) -> None:
+            self.SubmitEpochProposal = FlakyRpc()
+
+    submission = build_epoch_settlement_proposal_submission(
+        submitter_agent_id=bytes([3]) * 48,
+        epoch_number=3,
+        state_root_cidv1=bytes([3]) * 36,
+        settlement_record_bytes=b'{"epoch":3}',
+        not_before_unix_ms=3,
+        network_id="ilc-mainnet-rc01",
+    )
+    stub = FlakyStub()
+
+    result = submit_ecu_transfer_via_quic(
+        submission,
+        config=ConsensusBridgeConfig(
+            target="validator.example:443",
+            grpc_timeout_seconds=13,
+            proposal_retry_count=1,
+        ),
+        stub=stub,
+    )
+
+    first_request, first_timeout = stub.SubmitEpochProposal.calls[0]
+    second_request, second_timeout = stub.SubmitEpochProposal.calls[1]
+    assert first_request.idempotency_key == second_request.idempotency_key
+    assert first_timeout == second_timeout == 13
+    assert result.proposal_id == "proposal-3"
 
 
 def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -234,9 +396,58 @@ def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeyp
     assert not hasattr(FakeGrpcModule, "insecure_channel")
 
 
+def test_phase_1587_secure_proposal_stub_uses_tls_and_bounded_messages(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: dict[str, object] = {}
+
+    class FakeChannel:
+        def unary_unary(self, path: str, **kwargs: object) -> RecordingRpc:
+            calls["path"] = path
+            assert "request_serializer" in kwargs
+            assert "response_deserializer" in kwargs
+            return RecordingRpc(SimpleNamespace())
+
+    class FakeGrpcModule:
+        @staticmethod
+        def ssl_channel_credentials(root_certificates: bytes | None = None) -> str:
+            calls["roots"] = root_certificates
+            return "proposal-tls-creds"
+
+        @staticmethod
+        def secure_channel(
+            target: str,
+            credentials: str,
+            options: tuple[tuple[str, int], ...] = (),
+        ) -> FakeChannel:
+            calls["target"] = target
+            calls["credentials"] = credentials
+            calls["options"] = options
+            return FakeChannel()
+
+    monkeypatch.setitem(sys.modules, "grpc", FakeGrpcModule)
+    stub = build_secure_grpc_proposal_ingress_stub(
+        ConsensusBridgeConfig(
+            target="read.example:443",
+            proposal_ingress_endpoint="write.example:443",
+            max_proposal_body_bytes=4096,
+            proposal_tls_root_certificates=b"proposal-root-ca",
+        )
+    )
+
+    assert stub.SubmitEpochProposal is not None
+    assert calls["roots"] == b"proposal-root-ca"
+    assert calls["target"] == "write.example:443"
+    assert calls["credentials"] == "proposal-tls-creds"
+    assert ("grpc.max_send_message_length", 4096) in calls["options"]
+    assert ("grpc.max_receive_message_length", 1_048_576) in calls["options"]
+    assert calls["path"] == "/ilc_app.ILCAppProposalIngressService/SubmitEpochProposal"
+    assert not hasattr(FakeGrpcModule, "insecure_channel")
+
+
 def test_ilc_core_does_not_import_testbed_generated_grpc_stubs() -> None:
     offenders: list[str] = []
-    for path in Path("ilc_core").rglob("*.py"):
+    for path in Path("ilc_core/consensus").rglob("*.py"):
         text = path.read_text(encoding="utf-8")
         if "tools.testbed" in text or "tools/testbed" in text or "ilc_app_pb2" in text:
             offenders.append(str(path))

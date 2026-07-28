@@ -692,7 +692,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 | 1584 | COMPLETE Path B authorization; `PASSIVE_ECU_WIRING_NOT_ACTIVATED=False` authorized for public RC | RESOLVED |
 | 1585 | COMPLETE; NON-SENSITIVE; spec committed with token `production_bridge_proposal_ingress_spec_committed_phase_1585` | RESOLVED |
 | 1586 | COMPLETE; Rust proposal ingress implemented and Fix1-hardened | RESOLVED |
-| 1587 | Drafted; GO required after 1586 | — |
+| 1587 | COMPLETE; Python bridge write client activated with token `production_bridge_write_path_activated_phase_1587` | RESOLVED |
 | 1588 | COMPLETE; immutable timing enforced in Rust and RC01 config committed | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
 | 1590 | COMPLETE via Fix1 quorum-intersection hardening; TLC PASS depth 10 | RESOLVED |

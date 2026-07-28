@@ -64265,6 +64265,325 @@
       ],
       "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
       "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Activated PRODUCTION_BRIDGE_ACTIVE and implemented the secure gRPC SubmitEpochProposal Python write client with Rust-matching idempotency preimage validation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added: ilc_core/consensus/production_bridge.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/production_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Exported Phase 1587 proposal submission types, token constants, and secure proposal-ingress stub builder.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added: ilc_core/consensus/__init__.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Extended existing production bridge tests to cover Phase 1587 activation, request construction, config validation, Rust error responses, retry idempotency, and secure proposal stub construction.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1358_production_bridge.py",
+      "repo_path": "tests/test_phase_1358_production_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Hardened TLS proof assertion to check the Rust TLS construction property instead of an exact import string.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_production_tls_grpc_proof_1386a.py",
+      "repo_path": "tests/test_production_tls_grpc_proof_1386a.py"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Updated stale bridge-active assertion while preserving the decay lane no-demurrage invariant.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_decay_bridge_01_temporal_decay_bridge_audit.py",
+      "repo_path": "tests/test_gap_decay_bridge_01_temporal_decay_bridge_audit.py"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Corrected stale test filename and clarified taboo-check recording requirements for Phase 1587.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Recorded Phase 1587 execution, verification outputs, taboo-check outputs, TLS checks, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1587_gap_substrate_bridge_py_walkthrough.md",
+      "repo_path": "docs/phases/phase_1587_gap_substrate_bridge_py_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Appended Phase 1587 status token, guard state, verification summary, and non-claims.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Prepended Phase 1587 completion addendum and next-substrate-phase note.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Updated current-position, substrate counts, and locked queue to mark Phase 1587 complete.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_245_phase_1587_gap_substrate_bridge_py",
+      "chronology_note": "2026-07-28 Phase 1587: Python production bridge write client activated under explicit SENSITIVE GO.",
+      "manual_read_summary": "Marked the Phase 1587 substrate row resolved with the live output token.",
+      "node_kind": "gap_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "executed",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1587_g10_gap_substrate_bridge_python_client.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_write_path_activated_phase_1587"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
+      "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
     }
   ],
   "boundary": {
