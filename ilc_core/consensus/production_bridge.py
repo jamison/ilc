@@ -1,13 +1,15 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Phase 1358 production bridge from ilc_core to ilc_consensus.
+"""Production bridge from ilc_core to ilc_consensus.
 
-The bridge exposes the read-only ILCAppReadService gRPC surface and records the
-QUIC ECU-transfer submission boundary without activating live value routing.
+The bridge exposes the read-only ILCAppReadService gRPC surface plus the Phase
+1587 SubmitEpochProposal ingress client. The historical QUIC transfer path name
+is retained for compatibility, but end-user ECU transfer remains unauthorized.
 """
 
 from __future__ import annotations
 
 import importlib
+import hashlib
 import json
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
@@ -28,14 +30,20 @@ TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN = (
 )
 LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN = "live_ecu_transfer_not_activated_phase_1358"
 ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN = "adr_0028_production_bridge_partial_phase_1358"
+PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN = "production_bridge_activated_phase_1587"
 
-PRODUCTION_BRIDGE_ACTIVE = False
+PRODUCTION_BRIDGE_ACTIVE = True
 DEFAULT_GRPC_TIMEOUT_SECONDS = 5
 MAX_EPOCH_CHAIN_RECORDS = 1024
 MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
+MAX_PROPOSAL_BODY_BYTES = 1_048_576
 MICRO_ECU_PER_ECU = Decimal("1000000")
 UINT64_MAX = Decimal("18446744073709551615")
 AGENT_ID_LENGTH_BYTES = 48
+CIDV1_ROOT_LENGTH_BYTES = 36
+SHA256_LENGTH_BYTES = 32
+SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN = "submit_epoch_proposal_accepted_phase_1586"
+EPOCH_PROPOSAL_PREIMAGE_DOMAIN = b"ILC_SUBMIT_EPOCH_PROPOSAL_V1"
 
 
 class UnaryUnaryRpc(Protocol):
@@ -49,6 +57,10 @@ class ILCAppReadServiceStubProtocol(Protocol):
     GetEpochChain: UnaryUnaryRpc
 
 
+class ILCAppProposalIngressServiceStubProtocol(Protocol):
+    SubmitEpochProposal: UnaryUnaryRpc
+
+
 @dataclass(frozen=True)
 class ConsensusBridgeConfig:
     target: str
@@ -56,6 +68,11 @@ class ConsensusBridgeConfig:
     max_epoch_chain_records: int = MAX_EPOCH_CHAIN_RECORDS
     max_epoch_chain_receive_bytes: int = MAX_EPOCH_CHAIN_RECEIVE_BYTES
     tls_root_certificates: bytes | None = None
+    proposal_ingress_endpoint: str | None = None
+    proposal_timeout_seconds: int = DEFAULT_GRPC_TIMEOUT_SECONDS
+    max_proposal_body_bytes: int = MAX_PROPOSAL_BODY_BYTES
+    proposal_retry_count: int = 0
+    proposal_tls_root_certificates: bytes | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.target, str) or not self.target.strip():
@@ -82,6 +99,33 @@ class ConsensusBridgeConfig:
             self.tls_root_certificates, bytes
         ):
             raise ValueError("consensus_bridge_tls_roots_invalid_phase_1358")
+        if self.proposal_ingress_endpoint is not None and (
+            not isinstance(self.proposal_ingress_endpoint, str)
+            or not self.proposal_ingress_endpoint.strip()
+        ):
+            raise ValueError("proposal_ingress_endpoint_invalid_phase_1587")
+        if isinstance(self.proposal_timeout_seconds, bool) or not isinstance(
+            self.proposal_timeout_seconds, int
+        ):
+            raise ValueError("proposal_timeout_invalid_phase_1587")
+        if self.proposal_timeout_seconds <= 0:
+            raise ValueError("proposal_timeout_invalid_phase_1587")
+        if isinstance(self.max_proposal_body_bytes, bool) or not isinstance(
+            self.max_proposal_body_bytes, int
+        ):
+            raise ValueError("max_proposal_body_bytes_invalid_phase_1587")
+        if self.max_proposal_body_bytes <= 0:
+            raise ValueError("max_proposal_body_bytes_invalid_phase_1587")
+        if isinstance(self.proposal_retry_count, bool) or not isinstance(
+            self.proposal_retry_count, int
+        ):
+            raise ValueError("proposal_retry_count_invalid_phase_1587")
+        if self.proposal_retry_count < 0:
+            raise ValueError("proposal_retry_count_invalid_phase_1587")
+        if self.proposal_tls_root_certificates is not None and not isinstance(
+            self.proposal_tls_root_certificates, bytes
+        ):
+            raise ValueError("proposal_tls_roots_invalid_phase_1587")
 
 
 @dataclass(frozen=True)
@@ -161,6 +205,54 @@ class QuicEcuTransferSubmissionPath:
 
 
 @dataclass(frozen=True)
+class EpochSettlementProposalSubmission:
+    submitter_agent_id: bytes
+    epoch_number: int
+    state_root_cidv1: bytes
+    epoch_data_hash: bytes
+    settlement_record_bytes: bytes
+    idempotency_key: str
+    not_before_unix_ms: int
+    network_id: str
+    production_bridge_active: bool
+    activation_token: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "activation_token": self.activation_token,
+            "epoch_data_hash_hex": self.epoch_data_hash.hex(),
+            "epoch_number": self.epoch_number,
+            "idempotency_key": self.idempotency_key,
+            "network_id": self.network_id,
+            "not_before_unix_ms": self.not_before_unix_ms,
+            "production_bridge_active": self.production_bridge_active,
+            "settlement_record_bytes_sha256": hashlib.sha256(
+                self.settlement_record_bytes
+            ).hexdigest(),
+            "state_root_cidv1_hex": self.state_root_cidv1.hex(),
+            "submitter_agent_id_hex": self.submitter_agent_id.hex(),
+        }
+
+
+@dataclass(frozen=True)
+class EpochProposalSubmissionResult:
+    status_token: str
+    accepted_epoch_number: int
+    accepted_state_root_cidv1: bytes
+    proposal_id: str
+    production_bridge_active: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "accepted_epoch_number": self.accepted_epoch_number,
+            "accepted_state_root_cidv1_hex": self.accepted_state_root_cidv1.hex(),
+            "production_bridge_active": self.production_bridge_active,
+            "proposal_id": self.proposal_id,
+            "status_token": self.status_token,
+        }
+
+
+@dataclass(frozen=True)
 class _MessageTypes:
     GetBalanceRequest: type[Any]
     GetBalanceResponse: type[Any]
@@ -170,6 +262,8 @@ class _MessageTypes:
     GetEpochRecordResponse: type[Any]
     GetEpochChainRequest: type[Any]
     GetEpochChainResponse: type[Any]
+    SubmitEpochProposalRequest: type[Any]
+    SubmitEpochProposalResponse: type[Any]
 
 
 def _decimal_to_string(value: Decimal) -> str:
@@ -258,6 +352,72 @@ def _normalize_agent_id(agent_id: bytes | bytearray | memoryview) -> bytes:
     if len(normalized) != AGENT_ID_LENGTH_BYTES:
         raise ValueError("agent_id_must_be_48_bytes_phase_1358")
     return normalized
+
+
+def _require_exact_bytes(value: Any, expected_len: int, token: str) -> bytes:
+    normalized = _require_bytes(value, token)
+    if len(normalized) != expected_len:
+        raise ValueError(token)
+    return normalized
+
+
+def _require_lower_sha256_hex(value: Any, token: str) -> str:
+    if not isinstance(value, str) or len(value) != 64:
+        raise ValueError(token)
+    if any(char not in "0123456789abcdef" for char in value):
+        raise ValueError(token)
+    return value
+
+
+def _sha256_bytes(value: bytes) -> bytes:
+    return hashlib.sha256(value).digest()
+
+
+def _build_epoch_proposal_preimage(
+    *,
+    network_id: str,
+    epoch_number: int,
+    submitter_agent_id: bytes,
+    state_root_cidv1: bytes,
+    epoch_data_hash: bytes,
+    settlement_record_bytes: bytes,
+    not_before_unix_ms: int,
+) -> bytes:
+    return b"".join(
+        (
+            EPOCH_PROPOSAL_PREIMAGE_DOMAIN,
+            network_id.encode("utf-8"),
+            epoch_number.to_bytes(8, "big"),
+            submitter_agent_id,
+            state_root_cidv1,
+            epoch_data_hash,
+            _sha256_bytes(settlement_record_bytes),
+            not_before_unix_ms.to_bytes(8, "big"),
+        )
+    )
+
+
+def _epoch_proposal_idempotency_key(
+    *,
+    network_id: str,
+    epoch_number: int,
+    submitter_agent_id: bytes,
+    state_root_cidv1: bytes,
+    epoch_data_hash: bytes,
+    settlement_record_bytes: bytes,
+    not_before_unix_ms: int,
+) -> str:
+    return hashlib.sha256(
+        _build_epoch_proposal_preimage(
+            network_id=network_id,
+            epoch_number=epoch_number,
+            submitter_agent_id=submitter_agent_id,
+            state_root_cidv1=state_root_cidv1,
+            epoch_data_hash=epoch_data_hash,
+            settlement_record_bytes=settlement_record_bytes,
+            not_before_unix_ms=not_before_unix_ms,
+        )
+    ).hexdigest()
 
 
 def _add_field(
@@ -365,6 +525,43 @@ def _build_message_types() -> _MessageTypes:
         4,
         descriptor_pb2.FieldDescriptorProto.TYPE_BOOL,
     )
+    _add_message(
+        file_proto,
+        "SubmitEpochProposalRequest",
+        (
+            ("submitter_agent_id", 1, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
+            ("epoch_number", 2, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+            ("state_root_cidv1", 3, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
+            ("epoch_data_hash", 4, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
+            (
+                "settlement_record_bytes",
+                5,
+                descriptor_pb2.FieldDescriptorProto.TYPE_BYTES,
+            ),
+            ("idempotency_key", 6, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("not_before_unix_ms", 7, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+            ("network_id", 8, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+        ),
+    )
+    _add_message(
+        file_proto,
+        "SubmitEpochProposalResponse",
+        (
+            ("status_token", 1, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("error_code", 2, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            (
+                "accepted_epoch_number",
+                3,
+                descriptor_pb2.FieldDescriptorProto.TYPE_UINT64,
+            ),
+            (
+                "accepted_state_root_cidv1",
+                4,
+                descriptor_pb2.FieldDescriptorProto.TYPE_BYTES,
+            ),
+            ("proposal_id", 5, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+        ),
+    )
 
     pool = descriptor_pool.DescriptorPool()
     pool.Add(file_proto)
@@ -382,6 +579,8 @@ def _build_message_types() -> _MessageTypes:
         GetEpochRecordResponse=message_class("GetEpochRecordResponse"),
         GetEpochChainRequest=message_class("GetEpochChainRequest"),
         GetEpochChainResponse=message_class("GetEpochChainResponse"),
+        SubmitEpochProposalRequest=message_class("SubmitEpochProposalRequest"),
+        SubmitEpochProposalResponse=message_class("SubmitEpochProposalResponse"),
     )
 
 
@@ -410,6 +609,16 @@ class _DynamicILCAppReadServiceStub:
             "/ilc_app.ILCAppReadService/GetEpochChain",
             messages.GetEpochChainRequest.SerializeToString,
             messages.GetEpochChainResponse.FromString,
+        )
+
+
+class _DynamicILCAppProposalIngressServiceStub:
+    def __init__(self, channel: Any, messages: _MessageTypes) -> None:
+        self.SubmitEpochProposal = _unary_unary(
+            channel,
+            "/ilc_app.ILCAppProposalIngressService/SubmitEpochProposal",
+            messages.SubmitEpochProposalRequest.SerializeToString,
+            messages.SubmitEpochProposalResponse.FromString,
         )
 
 
@@ -446,6 +655,34 @@ def build_secure_grpc_read_stub(
         ),
     )
     return _DynamicILCAppReadServiceStub(channel, messages or _build_message_types())
+
+
+def build_secure_grpc_proposal_ingress_stub(
+    config: ConsensusBridgeConfig,
+    *,
+    messages: _MessageTypes | None = None,
+) -> ILCAppProposalIngressServiceStubProtocol:
+    grpc_module = importlib.import_module("grpc")
+    credentials = grpc_module.ssl_channel_credentials(
+        root_certificates=(
+            config.proposal_tls_root_certificates or config.tls_root_certificates
+        )
+    )
+    channel = grpc_module.secure_channel(
+        config.proposal_ingress_endpoint or config.target,
+        credentials,
+        options=(
+            ("grpc.max_send_message_length", config.max_proposal_body_bytes),
+            (
+                "grpc.max_receive_message_length",
+                config.max_epoch_chain_receive_bytes,
+            ),
+        ),
+    )
+    return _DynamicILCAppProposalIngressServiceStub(
+        channel,
+        messages or _build_message_types(),
+    )
 
 
 class ILCConsensusGrpcReadAdapter:
@@ -604,14 +841,150 @@ def build_quic_ecu_transfer_submission_path(
     )
 
 
+def build_epoch_settlement_proposal_submission(
+    *,
+    submitter_agent_id: bytes | bytearray | memoryview,
+    epoch_number: int,
+    state_root_cidv1: bytes | bytearray | memoryview,
+    settlement_record_bytes: bytes | bytearray | memoryview,
+    not_before_unix_ms: int,
+    network_id: str,
+    idempotency_key: str | None = None,
+) -> EpochSettlementProposalSubmission:
+    normalized_submitter = _normalize_agent_id(submitter_agent_id)
+    normalized_epoch = _require_uint64_int(
+        epoch_number,
+        "submit_epoch_proposal_epoch_number_invalid_phase_1587",
+    )
+    normalized_root = _require_exact_bytes(
+        state_root_cidv1,
+        CIDV1_ROOT_LENGTH_BYTES,
+        "submit_epoch_proposal_state_root_invalid_phase_1587",
+    )
+    normalized_record = _require_bytes(
+        settlement_record_bytes,
+        "submit_epoch_proposal_settlement_record_invalid_phase_1587",
+    )
+    if not normalized_record:
+        raise ValueError("submit_epoch_proposal_settlement_record_empty_phase_1587")
+    normalized_not_before = _require_uint64_int(
+        not_before_unix_ms,
+        "submit_epoch_proposal_not_before_invalid_phase_1587",
+    )
+    normalized_network_id = _require_non_empty_str(
+        network_id,
+        "submit_epoch_proposal_network_id_invalid_phase_1587",
+    )
+    epoch_data_hash = _sha256_bytes(normalized_record)
+    expected_key = _epoch_proposal_idempotency_key(
+        network_id=normalized_network_id,
+        epoch_number=normalized_epoch,
+        submitter_agent_id=normalized_submitter,
+        state_root_cidv1=normalized_root,
+        epoch_data_hash=epoch_data_hash,
+        settlement_record_bytes=normalized_record,
+        not_before_unix_ms=normalized_not_before,
+    )
+    normalized_key = (
+        expected_key
+        if idempotency_key is None
+        else _require_lower_sha256_hex(
+            idempotency_key,
+            "submit_epoch_proposal_idempotency_key_invalid_phase_1587",
+        )
+    )
+    if normalized_key != expected_key:
+        raise ValueError("submit_epoch_proposal_idempotency_preimage_mismatch_phase_1587")
+    return EpochSettlementProposalSubmission(
+        submitter_agent_id=normalized_submitter,
+        epoch_number=normalized_epoch,
+        state_root_cidv1=normalized_root,
+        epoch_data_hash=epoch_data_hash,
+        settlement_record_bytes=normalized_record,
+        idempotency_key=normalized_key,
+        not_before_unix_ms=normalized_not_before,
+        network_id=normalized_network_id,
+        production_bridge_active=PRODUCTION_BRIDGE_ACTIVE,
+        activation_token=PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN,
+    )
+
+
 def submit_ecu_transfer_via_quic(
-    submission_path: QuicEcuTransferSubmissionPath,
-) -> None:
-    if not isinstance(submission_path, QuicEcuTransferSubmissionPath):
-        raise ValueError("quic_ecu_transfer_submission_path_invalid_phase_1358")
+    submission_path: EpochSettlementProposalSubmission,
+    *,
+    config: ConsensusBridgeConfig,
+    stub: ILCAppProposalIngressServiceStubProtocol | None = None,
+    messages: _MessageTypes | None = None,
+) -> EpochProposalSubmissionResult:
+    if not isinstance(submission_path, EpochSettlementProposalSubmission):
+        raise ValueError("epoch_proposal_submission_path_invalid_phase_1587")
     if not PRODUCTION_BRIDGE_ACTIVE:
         raise ValueError(LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN)
-    raise ValueError("production_bridge_activation_not_implemented_phase_1358")
+    if len(submission_path.settlement_record_bytes) > config.max_proposal_body_bytes:
+        raise ValueError("submit_epoch_proposal_body_too_large_phase_1587")
+    message_types = messages or _build_message_types()
+    proposal_stub = stub or build_secure_grpc_proposal_ingress_stub(
+        config,
+        messages=message_types,
+    )
+    request = message_types.SubmitEpochProposalRequest(
+        submitter_agent_id=submission_path.submitter_agent_id,
+        epoch_number=submission_path.epoch_number,
+        state_root_cidv1=submission_path.state_root_cidv1,
+        epoch_data_hash=submission_path.epoch_data_hash,
+        settlement_record_bytes=submission_path.settlement_record_bytes,
+        idempotency_key=submission_path.idempotency_key,
+        not_before_unix_ms=submission_path.not_before_unix_ms,
+        network_id=submission_path.network_id,
+    )
+
+    response: Any | None = None
+    last_exc: Exception | None = None
+    for _attempt in range(config.proposal_retry_count + 1):
+        try:
+            response = proposal_stub.SubmitEpochProposal(
+                request,
+                timeout=config.grpc_timeout_seconds,
+            )
+            break
+        except Exception as exc:
+            last_exc = exc
+    if response is None:
+        raise ValueError("submit_epoch_proposal_transport_failed_phase_1587") from last_exc
+
+    error_code = getattr(response, "error_code", "")
+    if error_code:
+        raise ValueError(error_code)
+    status_token = _require_non_empty_str(
+        getattr(response, "status_token", None),
+        "submit_epoch_proposal_status_token_invalid_phase_1587",
+    )
+    if status_token != SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN:
+        raise ValueError("submit_epoch_proposal_unexpected_status_phase_1587")
+    accepted_epoch = _require_uint64_int(
+        getattr(response, "accepted_epoch_number", None),
+        "submit_epoch_proposal_accepted_epoch_invalid_phase_1587",
+    )
+    accepted_root = _require_exact_bytes(
+        getattr(response, "accepted_state_root_cidv1", None),
+        CIDV1_ROOT_LENGTH_BYTES,
+        "submit_epoch_proposal_accepted_root_invalid_phase_1587",
+    )
+    proposal_id = _require_non_empty_str(
+        getattr(response, "proposal_id", None),
+        "submit_epoch_proposal_id_invalid_phase_1587",
+    )
+    if accepted_epoch != submission_path.epoch_number:
+        raise ValueError("submit_epoch_proposal_accepted_epoch_mismatch_phase_1587")
+    if accepted_root != submission_path.state_root_cidv1:
+        raise ValueError("submit_epoch_proposal_accepted_root_mismatch_phase_1587")
+    return EpochProposalSubmissionResult(
+        status_token=status_token,
+        accepted_epoch_number=accepted_epoch,
+        accepted_state_root_cidv1=accepted_root,
+        proposal_id=proposal_id,
+        production_bridge_active=PRODUCTION_BRIDGE_ACTIVE,
+    )
 
 
 __all__ = [
@@ -620,19 +993,27 @@ __all__ = [
     "BalanceQuote",
     "ConsensusBridgeConfig",
     "DEFAULT_GRPC_TIMEOUT_SECONDS",
+    "EPOCH_PROPOSAL_PREIMAGE_DOMAIN",
     "EpochChainQuote",
+    "EpochProposalSubmissionResult",
     "EpochRecordQuote",
+    "EpochSettlementProposalSubmission",
     "GET_EPOCH_GET_BALANCE_GET_EPOCH_RECORD_GET_EPOCH_CHAIN_TOKEN",
     "ILCConsensusGrpcReadAdapter",
     "ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION",
     "LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN",
+    "MAX_PROPOSAL_BODY_BYTES",
     "MAX_EPOCH_CHAIN_RECORDS",
     "MAX_EPOCH_CHAIN_RECEIVE_BYTES",
     "PRODUCTION_BRIDGE_ACTIVE",
+    "PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN",
     "QUIC_ECU_TRANSFER_SUBMISSION_PATH_TOKEN",
     "QuicEcuTransferSubmissionPath",
+    "SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN",
     "TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN",
+    "build_epoch_settlement_proposal_submission",
     "build_quic_ecu_transfer_submission_path",
+    "build_secure_grpc_proposal_ingress_stub",
     "build_secure_grpc_read_stub",
     "quote_to_canonical_json",
     "submit_ecu_transfer_via_quic",

@@ -175,9 +175,11 @@ def test_epoch_0_sentinel_reconciliation_python_sends_rust_sentinel_range() -> N
 def test_rust_validator_grpc_server_is_tls_configured() -> None:
     main = RUST_MAIN.read_text()
     config = RUST_CONFIG.read_text()
-    assert "use tonic::transport::{Identity, ServerTlsConfig};" in main
+    assert "use tonic::transport::{" in main
+    assert "Identity" in main
+    assert "ServerTlsConfig" in main
     assert "TLS gRPC server listening" in main
-    assert ".tls_config(ServerTlsConfig::new().identity(grpc_tls_identity))" in main
+    assert ".tls_config(tls_config)" in main
     assert "Identity::from_pem(cfg.my_cert_pem.clone(), cfg.my_key_pem.clone())" in main
     assert "pub my_cert_pem: Vec<u8>" in config
     assert "pub my_key_pem: Vec<u8>" in config

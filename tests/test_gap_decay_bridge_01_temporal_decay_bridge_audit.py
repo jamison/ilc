@@ -55,7 +55,8 @@ def test_rust_balance_store_is_commit_layer_not_economics_engine() -> None:
 
     assert "pub fn apply_attribution(&self, batch: AttributionBatch)" in balance_store
     assert "checked_add(amount)" in balance_store
-    assert "PRODUCTION_BRIDGE_ACTIVE = False" in production_bridge
+    assert "PRODUCTION_BRIDGE_ACTIVE = True" in production_bridge
+    assert "PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN" in production_bridge
     assert "rust_balance_store_commit_layer_confirmed_phase_1577d" in attestation
     assert "no_balance_demurrage_rule_added_phase_1577d" in attestation
 
