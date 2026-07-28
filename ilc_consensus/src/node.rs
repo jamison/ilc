@@ -37,6 +37,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use quinn::Connection;
+use sha2::{Digest, Sha256};
 use tokio::sync::{oneshot, Mutex};
 
 use crate::balance_store::BalanceStore;
@@ -92,6 +93,9 @@ const MAX_SIGS_PER_INFLIGHT: usize = MAX_CERT_SIGS;
 const MAX_EPOCH_PROPOSAL_BODY_BYTES: usize = 256 * 1024;
 const MAX_EPOCH_PROPOSALS_IN_FLIGHT: usize = 1024;
 const EPOCH_PROPOSAL_TIMEOUT_MS: u64 = 5_000;
+const EPOCH_PROPOSAL_STALE_MS: u64 = EPOCH_PROPOSAL_TIMEOUT_MS * 2;
+const ILC_EPOCH_PROPOSAL_SIG_DST: &[u8] = b"ILC_EPOCH_PROPOSAL_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
+const EPOCH_PROPOSAL_PREIMAGE_DOMAIN: &[u8] = b"ILC_SUBMIT_EPOCH_PROPOSAL_V1";
 
 pub const SUBMIT_EPOCH_PROPOSAL_ACCEPTED_PHASE_1586: &str =
     "submit_epoch_proposal_accepted_phase_1586";
@@ -102,6 +106,7 @@ struct EpochProposalInFlight {
     proposal: EpochProposal,
     sigs: Vec<(ValidatorID, crate::types::ValidatorSig)>,
     completed: bool,
+    inserted_at: tokio::time::Instant,
     waiter: Option<oneshot::Sender<Result<EpochProposalOutcome, ILCConsensusError>>>,
 }
 
@@ -277,13 +282,9 @@ impl NodeRunner {
         &self,
         proposal: EpochProposal,
     ) -> Result<EpochProposalOutcome, ILCConsensusError> {
-        if !is_lowercase_sha256_hex(&proposal.idempotency_key) {
-            return Err(ILCConsensusError::Other(
-                "submit_epoch_proposal_invalid_idempotency_key_phase_1586".into(),
-            ));
-        }
         {
-            let table = self.epoch_proposals.lock().await;
+            let mut table = self.epoch_proposals.lock().await;
+            evict_stale_epoch_proposals(&mut table);
             if table.contains_key(&proposal.idempotency_key) {
                 return Err(ILCConsensusError::Other(
                     "submit_epoch_proposal_duplicate_phase_1586".into(),
@@ -318,12 +319,14 @@ impl NodeRunner {
                     "submit_epoch_proposal_inflight_cap_exceeded_phase_1586".into(),
                 ));
             }
+            evict_stale_epoch_proposals(&mut table);
             table.insert(
                 proposal.idempotency_key.clone(),
                 EpochProposalInFlight {
                     proposal: proposal.clone(),
                     sigs: vec![(self.validator_id, own_sig)],
                     completed: false,
+                    inserted_at: tokio::time::Instant::now(),
                     waiter: Some(tx),
                 },
             );
@@ -1054,6 +1057,7 @@ impl NodeRunner {
         from: ValidatorID,
     ) -> Result<(), ILCConsensusError> {
         self.validate_epoch_proposal(&proposal)?;
+        let proposal_commitment = proposal_commitment_sha256(&proposal);
         let record = proposal_to_record(&proposal);
         let msg = bincode::serialize(&record)
             .map_err(|e| ILCConsensusError::Other(format!("Epoch record serialize: {}", e)))?;
@@ -1062,11 +1066,18 @@ impl NodeRunner {
             crate::types::ILC_EPOCH_SIG_DST,
             &[],
         ));
+        let proposal_sig = crate::types::ValidatorSig(self.validator_sk.sign(
+            &proposal_commitment,
+            ILC_EPOCH_PROPOSAL_SIG_DST,
+            &[],
+        ));
         self.send_to_peer(
             from,
             GossipMessage::EpochProposalAck(EpochProposalAck {
                 idempotency_key: proposal.idempotency_key,
                 epoch_number: proposal.epoch_number,
+                proposal_commitment_sha256: proposal_commitment.to_vec(),
+                proposal_sig,
                 sig,
             }),
         )
@@ -1086,6 +1097,7 @@ impl NodeRunner {
             if entry.completed || entry.proposal.epoch_number != ack.epoch_number {
                 return Ok(());
             }
+            self.verify_epoch_proposal_ack(&entry.proposal, &ack, from)?;
             if !entry.sigs.iter().any(|(id, _)| *id == from) {
                 if entry.sigs.len() >= MAX_SIGNERS_PER_CHECKPOINT {
                     return Err(ILCConsensusError::Other(
@@ -1117,7 +1129,6 @@ impl NodeRunner {
             if entry.sigs.len() < quorum {
                 return Ok(());
             }
-            entry.completed = true;
             Some((
                 entry.proposal.clone(),
                 entry.sigs.clone(),
@@ -1147,6 +1158,12 @@ impl NodeRunner {
         };
         match result {
             Ok(_) => {
+                {
+                    let mut table = self.epoch_proposals.lock().await;
+                    if let Some(entry) = table.get_mut(idempotency_key) {
+                        entry.completed = true;
+                    }
+                }
                 for (peer_id, _addr) in &self.peer_addrs {
                     if let Err(e) = self
                         .send_to_peer(
@@ -1187,9 +1204,19 @@ impl NodeRunner {
                 "submit_epoch_proposal_invalid_submitter_agent_id_phase_1586".into(),
             ));
         }
+        if !is_lowercase_sha256_hex(&proposal.idempotency_key) {
+            return Err(ILCConsensusError::Other(
+                "submit_epoch_proposal_invalid_idempotency_key_phase_1586".into(),
+            ));
+        }
         if proposal.epoch_data_hash.len() != 32 {
             return Err(ILCConsensusError::Other(
                 "submit_epoch_proposal_invalid_epoch_data_hash_phase_1586".into(),
+            ));
+        }
+        if proposal.settlement_record_bytes.is_empty() {
+            return Err(ILCConsensusError::Other(
+                "submit_epoch_proposal_empty_body_phase_1586".into(),
             ));
         }
         if proposal.settlement_record_bytes.len() > MAX_EPOCH_PROPOSAL_BODY_BYTES {
@@ -1202,7 +1229,7 @@ impl NodeRunner {
                 "submit_epoch_proposal_wrong_network_phase_1586".into(),
             ));
         }
-        debug_assert!(is_lowercase_sha256_hex(&proposal.idempotency_key));
+        validate_proposal_hashes(proposal)?;
         let current = self.epoch_store.get_current_epoch()?;
         if proposal.epoch_number != current.saturating_add(1) {
             return Err(ILCConsensusError::InvalidEpoch);
@@ -1216,6 +1243,62 @@ impl NodeRunner {
         {
             return Err(ILCConsensusError::Other(
                 "submit_epoch_proposal_not_before_too_far_future_phase_1586".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    fn verify_epoch_proposal_ack(
+        &self,
+        proposal: &EpochProposal,
+        ack: &EpochProposalAck,
+        from: ValidatorID,
+    ) -> Result<(), ILCConsensusError> {
+        let commitment = proposal_commitment_sha256(proposal);
+        if ack.proposal_commitment_sha256.as_slice() != commitment {
+            return Err(ILCConsensusError::Other(
+                "epoch_proposal_ack_commitment_mismatch_phase_1586_fix1".into(),
+            ));
+        }
+
+        let record = proposal_to_record(proposal);
+        let record_bytes = bincode::serialize(&record)
+            .map_err(|e| ILCConsensusError::Other(format!("Epoch record serialize: {}", e)))?;
+        let validator_key = {
+            let vs = self.fast_path.validator_set.read().unwrap();
+            vs.validators.get(&from).cloned().ok_or_else(|| {
+                ILCConsensusError::Other(format!(
+                    "epoch_proposal_ack_unknown_validator_phase_1586_fix1:{}",
+                    from.0
+                ))
+            })?
+        };
+
+        let record_ok = ack.sig.0.verify(
+            true,
+            &record_bytes,
+            crate::types::ILC_EPOCH_SIG_DST,
+            &[],
+            &validator_key.0,
+            true,
+        );
+        if record_ok != blst::BLST_ERROR::BLST_SUCCESS {
+            return Err(ILCConsensusError::Other(
+                "epoch_proposal_ack_invalid_record_sig_phase_1586_fix1".into(),
+            ));
+        }
+
+        let proposal_ok = ack.proposal_sig.0.verify(
+            true,
+            &commitment,
+            ILC_EPOCH_PROPOSAL_SIG_DST,
+            &[],
+            &validator_key.0,
+            true,
+        );
+        if proposal_ok != blst::BLST_ERROR::BLST_SUCCESS {
+            return Err(ILCConsensusError::Other(
+                "epoch_proposal_ack_invalid_proposal_sig_phase_1586_fix1".into(),
             ));
         }
         Ok(())
@@ -1366,6 +1449,59 @@ fn proposal_to_record(proposal: &EpochProposal) -> EpochSettlementRecord {
     }
 }
 
+fn validate_proposal_hashes(proposal: &EpochProposal) -> Result<(), ILCConsensusError> {
+    let settlement_hash = Sha256::digest(&proposal.settlement_record_bytes);
+    if proposal.epoch_data_hash.as_slice() != settlement_hash.as_slice() {
+        return Err(ILCConsensusError::Other(
+            "submit_epoch_proposal_epoch_data_hash_mismatch_phase_1586_fix1".into(),
+        ));
+    }
+    let commitment = proposal_commitment_sha256(proposal);
+    if proposal.idempotency_key != bytes_to_lower_hex(&commitment) {
+        return Err(ILCConsensusError::Other(
+            "submit_epoch_proposal_idempotency_preimage_mismatch_phase_1586_fix1".into(),
+        ));
+    }
+    Ok(())
+}
+
+fn proposal_commitment_sha256(proposal: &EpochProposal) -> [u8; 32] {
+    let settlement_hash = Sha256::digest(&proposal.settlement_record_bytes);
+    let mut hasher = Sha256::new();
+    hasher.update(EPOCH_PROPOSAL_PREIMAGE_DOMAIN);
+    hasher.update(proposal.network_id.as_bytes());
+    hasher.update(proposal.epoch_number.to_be_bytes());
+    hasher.update(&proposal.submitter_agent_id);
+    hasher.update(cid_root_bytes(&proposal.state_root));
+    hasher.update(&proposal.epoch_data_hash);
+    hasher.update(settlement_hash);
+    hasher.update(proposal.not_before_unix_ms.to_be_bytes());
+    hasher.finalize().into()
+}
+
+fn cid_root_bytes(root: &CIDv1Root) -> [u8; 36] {
+    let mut out = [0u8; 36];
+    out[..32].copy_from_slice(&root.p1);
+    out[32..].copy_from_slice(&root.p2);
+    out
+}
+
+fn bytes_to_lower_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for &byte in bytes {
+        out.push(HEX[(byte >> 4) as usize] as char);
+        out.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    out
+}
+
+fn evict_stale_epoch_proposals(table: &mut HashMap<String, EpochProposalInFlight>) {
+    let now = tokio::time::Instant::now();
+    let ttl = tokio::time::Duration::from_millis(EPOCH_PROPOSAL_STALE_MS);
+    table.retain(|_, entry| now.duration_since(entry.inserted_at) <= ttl);
+}
+
 fn is_lowercase_sha256_hex(value: &str) -> bool {
     value.len() == 64
         && value
@@ -1438,7 +1574,7 @@ mod tests {
     };
     use crate::types::{
         AgentID, AggSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementRecord, ObjectRef,
-        ValidatorSet,
+        ValidatorID, ValidatorSet, ValidatorSig,
     };
     use crate::validator::validator_dst;
     use blst::min_pk::{AggregateSignature, SecretKey};
@@ -1461,6 +1597,97 @@ mod tests {
             validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
         }
         (ValidatorSet::new(validators, 0).unwrap(), keys)
+    }
+
+    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+        let mut entries = Vec::new();
+        let mut validators = Vec::new();
+        for i in 1..=n {
+            let ikm = [i as u8; 32];
+            let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
+            let pk = sk.sk_to_pk();
+            let id = ValidatorID(i);
+            entries.push((id, sk));
+            validators.push((id, crate::types::ValidatorKey(pk)));
+        }
+        let f = n.saturating_sub(1) as usize / 3;
+        (ValidatorSet::new(validators, f).unwrap(), entries)
+    }
+
+    fn generate_ephemeral_cert() -> (Vec<u8>, Vec<u8>) {
+        let rcgen::CertifiedKey { cert, key_pair } =
+            rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
+        (cert.der().to_vec(), key_pair.serialize_der())
+    }
+
+    fn setup_proposal_runner(n: u32) -> (Arc<NodeRunner>, Vec<(ValidatorID, SecretKey)>) {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env).unwrap());
+        let (validator_set, entries) = setup_n_validators(n);
+        let own_sk = entries[0].1.clone();
+        let fast_path = Arc::new(FastPathProtocol::new(
+            validator_set,
+            Arc::clone(&balance_store),
+            "ilc-rc01".to_string(),
+        ));
+        let (cert, key) = generate_ephemeral_cert();
+        let network = Arc::new(
+            PeerNetwork::new_client("127.0.0.1:0".parse().unwrap(), HashMap::new(), cert, key)
+                .unwrap(),
+        );
+        let runner = Arc::new(
+            NodeRunner::new(
+                ValidatorID(1),
+                "ilc-rc01".to_string(),
+                n.saturating_sub(1) as usize / 3,
+                own_sk,
+                network,
+                fast_path,
+                balance_store,
+                epoch_store,
+                vec![],
+            )
+            .with_proposal_ingress_enabled(true),
+        );
+        (runner, entries)
+    }
+
+    fn canonical_epoch_proposal(epoch_number: u64) -> EpochProposal {
+        let settlement_record_bytes = b"canonical-economic-evidence-phase-1586-fix1".to_vec();
+        let epoch_data_hash = Sha256::digest(&settlement_record_bytes).to_vec();
+        let mut proposal = EpochProposal {
+            submitter_agent_id: vec![9; 48],
+            epoch_number,
+            state_root: CIDv1Root::new([7; 36]),
+            epoch_data_hash,
+            settlement_record_bytes,
+            idempotency_key: String::new(),
+            not_before_unix_ms: 0,
+            network_id: "ilc-rc01".to_string(),
+        };
+        proposal.idempotency_key = bytes_to_lower_hex(&proposal_commitment_sha256(&proposal));
+        proposal
+    }
+
+    fn valid_epoch_proposal_ack(
+        proposal: &EpochProposal,
+        signer: ValidatorID,
+        sk: &SecretKey,
+    ) -> (ValidatorID, EpochProposalAck) {
+        let record = proposal_to_record(proposal);
+        let record_bytes = bincode::serialize(&record).unwrap();
+        let commitment = proposal_commitment_sha256(proposal);
+        (
+            signer,
+            EpochProposalAck {
+                idempotency_key: proposal.idempotency_key.clone(),
+                epoch_number: proposal.epoch_number,
+                proposal_commitment_sha256: commitment.to_vec(),
+                proposal_sig: ValidatorSig(sk.sign(&commitment, ILC_EPOCH_PROPOSAL_SIG_DST, &[])),
+                sig: ValidatorSig(sk.sign(&record_bytes, crate::types::ILC_EPOCH_SIG_DST, &[])),
+            },
+        )
     }
 
     fn generate_valid_agg_sig(record: &EpochSettlementRecord, keys: &[SecretKey]) -> AggSig {
@@ -1510,6 +1737,156 @@ mod tests {
         let sig = sk.sign(msg, &dst, &[]);
         let result = sig.verify(true, msg, &dst, &[], &pk, true);
         assert_eq!(result, blst::BLST_ERROR::BLST_SUCCESS);
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_n4_f1_quorum_commits_epoch_proposal() {
+        let (runner, entries) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+
+        let submit_runner = Arc::clone(&runner);
+        let submit =
+            tokio::spawn(async move { submit_runner.submit_epoch_proposal(proposal).await });
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+
+        for (signer, sk) in entries.iter().skip(1).take(2) {
+            let proposal = {
+                let table = runner.epoch_proposals.lock().await;
+                table.get(&proposal_id).unwrap().proposal.clone()
+            };
+            let (from, ack) = valid_epoch_proposal_ack(&proposal, *signer, sk);
+            runner.handle_epoch_proposal_ack(ack, from).await.unwrap();
+        }
+
+        let outcome = submit.await.unwrap().unwrap();
+        assert_eq!(
+            outcome.status_token,
+            SUBMIT_EPOCH_PROPOSAL_ACCEPTED_PHASE_1586
+        );
+        assert_eq!(runner.epoch_store.get_current_epoch().unwrap(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_bad_ack_does_not_poison_proposal() {
+        let (runner, entries) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+
+        let submit_runner = Arc::clone(&runner);
+        let submit =
+            tokio::spawn(async move { submit_runner.submit_epoch_proposal(proposal).await });
+        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
+
+        let proposal = {
+            let table = runner.epoch_proposals.lock().await;
+            table.get(&proposal_id).unwrap().proposal.clone()
+        };
+        let (bad_from, mut bad_ack) =
+            valid_epoch_proposal_ack(&proposal, entries[1].0, &entries[1].1);
+        bad_ack.proposal_sig = valid_epoch_proposal_ack(&proposal, entries[2].0, &entries[2].1)
+            .1
+            .proposal_sig;
+        assert!(runner
+            .handle_epoch_proposal_ack(bad_ack, bad_from)
+            .await
+            .is_err());
+        {
+            let table = runner.epoch_proposals.lock().await;
+            let entry = table.get(&proposal_id).unwrap();
+            assert!(!entry.completed);
+            assert_eq!(entry.sigs.len(), 1, "bad ack must not be stored");
+        }
+
+        for (signer, sk) in entries.iter().skip(1).take(2) {
+            let (from, ack) = valid_epoch_proposal_ack(&proposal, *signer, sk);
+            runner.handle_epoch_proposal_ack(ack, from).await.unwrap();
+        }
+
+        let outcome = submit.await.unwrap().unwrap();
+        assert_eq!(
+            outcome.status_token,
+            SUBMIT_EPOCH_PROPOSAL_ACCEPTED_PHASE_1586
+        );
+        assert_eq!(runner.epoch_store.get_current_epoch().unwrap(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_rejects_epoch_data_hash_mismatch() {
+        let (runner, _) = setup_proposal_runner(4);
+        let mut proposal = canonical_epoch_proposal(1);
+        proposal.epoch_data_hash = vec![3; 32];
+        proposal.idempotency_key = bytes_to_lower_hex(&proposal_commitment_sha256(&proposal));
+        let err = runner.validate_epoch_proposal(&proposal).unwrap_err();
+        assert!(format!("{err:?}").contains("epoch_data_hash_mismatch"));
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_rejects_idempotency_preimage_mismatch() {
+        let (runner, _) = setup_proposal_runner(4);
+        let mut proposal = canonical_epoch_proposal(1);
+        proposal.idempotency_key = "a".repeat(64);
+        let err = runner.validate_epoch_proposal(&proposal).unwrap_err();
+        assert!(format!("{err:?}").contains("idempotency_preimage_mismatch"));
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_rejects_malformed_idempotency_on_peer_path() {
+        let (runner, _) = setup_proposal_runner(4);
+        let mut proposal = canonical_epoch_proposal(1);
+        proposal.idempotency_key = "A".repeat(64);
+        let err = runner.validate_epoch_proposal(&proposal).unwrap_err();
+        assert!(format!("{err:?}").contains("invalid_idempotency_key"));
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix1_rejects_wrong_network_and_body_cap() {
+        let (runner, _) = setup_proposal_runner(4);
+        let mut wrong_network = canonical_epoch_proposal(1);
+        wrong_network.network_id = "ilc-wrong-network".to_string();
+        wrong_network.idempotency_key =
+            bytes_to_lower_hex(&proposal_commitment_sha256(&wrong_network));
+        let err = runner.validate_epoch_proposal(&wrong_network).unwrap_err();
+        assert!(format!("{err:?}").contains("wrong_network"));
+
+        let mut oversized = canonical_epoch_proposal(1);
+        oversized.settlement_record_bytes = vec![1; MAX_EPOCH_PROPOSAL_BODY_BYTES + 1];
+        oversized.epoch_data_hash = Sha256::digest(&oversized.settlement_record_bytes).to_vec();
+        oversized.idempotency_key = bytes_to_lower_hex(&proposal_commitment_sha256(&oversized));
+        let err = runner.validate_epoch_proposal(&oversized).unwrap_err();
+        assert!(format!("{err:?}").contains("body_too_large"));
+    }
+
+    #[test]
+    fn test_phase1586_fix1_epoch_proposal_ttl_cleanup_bounds_table() {
+        let mut table: HashMap<String, EpochProposalInFlight> = HashMap::new();
+        let stale = canonical_epoch_proposal(1);
+        let fresh = canonical_epoch_proposal(2);
+        table.insert(
+            stale.idempotency_key.clone(),
+            EpochProposalInFlight {
+                proposal: stale,
+                sigs: vec![],
+                completed: true,
+                inserted_at: tokio::time::Instant::now()
+                    - tokio::time::Duration::from_millis(EPOCH_PROPOSAL_STALE_MS + 1),
+                waiter: None,
+            },
+        );
+        table.insert(
+            fresh.idempotency_key.clone(),
+            EpochProposalInFlight {
+                proposal: fresh,
+                sigs: vec![],
+                completed: true,
+                inserted_at: tokio::time::Instant::now(),
+                waiter: None,
+            },
+        );
+
+        evict_stale_epoch_proposals(&mut table);
+        assert_eq!(table.len(), 1);
+        assert_eq!(table.values().next().unwrap().proposal.epoch_number, 2);
     }
 
     // SEC-FIX-01: in_flight eviction — certified entries must not accumulate

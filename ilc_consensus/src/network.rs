@@ -79,6 +79,8 @@ pub struct EpochProposal {
 pub struct EpochProposalAck {
     pub idempotency_key: String,
     pub epoch_number: u64,
+    pub proposal_commitment_sha256: Vec<u8>,
+    pub proposal_sig: ValidatorSig,
     pub sig: ValidatorSig,
 }
 

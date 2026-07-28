@@ -164,7 +164,7 @@ Path B: passive ECU authorized for RC with explicit governance citation.
 
 **Sensitivity:** NON-SENSITIVE — spec-only, no code changes
 **Prerequisite:** None
-**Prompt status:** Drafted and validator-compliant
+**Prompt status:** COMPLETE; Phase 1586 implemented Rust proposal ingress and Phase 1586-Fix1 hardened proposal commitment binding, ack verification, replay-state bounds, and gRPC mTLS root loading.
 
 **Background:**
 The Python→Rust bridge (`production_bridge.py`) has a stub that raises
@@ -263,7 +263,9 @@ Implement authenticated proposal ingress in Rust:
 - Rust test coverage (at minimum: submit valid checkpoint passes; submit duplicate fails;
   submit checkpoint with invalid BLS fails)
 - `docs/phases/phase_1586_gap_substrate_bridge_rust_walkthrough.md`
+- `docs/phases/phase_1586_fix1_gap_substrate_bridge_rust_hardening_walkthrough.md`
 - Output token: `rust_grpc_submit_epoch_proposal_implemented_phase_1586`
+- Fix1 output token: `rust_proposal_ingress_fix1_complete_phase_1586_fix1`
 
 **ILC_CDL_MUTATION_AUTHORIZED:** Not required (no CDL mutation). Rust + proto changes require:
 `ILC_CDL_MUTATION_AUTHORIZED=not_required ILC_CDL_MUTATION_PHASE=1586`
@@ -689,7 +691,7 @@ update to reflect Decision 3 (immutable timing, `is_testnet` removed).
 |-------|--------------|-------------------|
 | 1584 | COMPLETE Path B authorization; `PASSIVE_ECU_WIRING_NOT_ACTIVATED=False` authorized for public RC | RESOLVED |
 | 1585 | COMPLETE; NON-SENSITIVE; spec committed with token `production_bridge_proposal_ingress_spec_committed_phase_1585` | RESOLVED |
-| 1586 | Drafted; GO required after 1585 | — |
+| 1586 | COMPLETE; Rust proposal ingress implemented and Fix1-hardened | RESOLVED |
 | 1587 | Drafted; GO required after 1586 | — |
 | 1588 | COMPLETE; immutable timing enforced in Rust and RC01 config committed | RESOLVED |
 | 1589 | Drafted; GO required after 1588 | — |
