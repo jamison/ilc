@@ -7,11 +7,15 @@ pub mod ilc_app {
 
 use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
-use crate::types::AgentID;
+use crate::network::EpochProposal;
+use crate::node::{EpochProposalOutcome, NodeRunner};
+use crate::types::{AgentID, CIDv1Root, ILCConsensusError};
+use ilc_app::ilc_app_proposal_ingress_service_server::IlcAppProposalIngressService;
 use ilc_app::ilc_app_read_service_server::IlcAppReadService;
 use ilc_app::{
     GetBalanceRequest, GetBalanceResponse, GetEpochChainRequest, GetEpochChainResponse,
     GetEpochRecordRequest, GetEpochRecordResponse, GetEpochRequest, GetEpochResponse,
+    SubmitEpochProposalRequest, SubmitEpochProposalResponse,
 };
 
 pub const MAX_EPOCH_CHAIN_BATCH: u64 = 128;
@@ -159,16 +163,158 @@ impl IlcAppReadService for ApplicationInterface {
     }
 }
 
+pub struct ProposalIngressService {
+    runner: Arc<NodeRunner>,
+    require_tls_client_cert: bool,
+}
+
+impl ProposalIngressService {
+    pub fn new(runner: Arc<NodeRunner>) -> Self {
+        Self {
+            runner,
+            require_tls_client_cert: true,
+        }
+    }
+
+    #[cfg(test)]
+    fn new_for_tests_without_tls(runner: Arc<NodeRunner>) -> Self {
+        Self {
+            runner,
+            require_tls_client_cert: false,
+        }
+    }
+}
+
+#[tonic::async_trait]
+impl IlcAppProposalIngressService for ProposalIngressService {
+    async fn submit_epoch_proposal(
+        &self,
+        request: Request<SubmitEpochProposalRequest>,
+    ) -> Result<Response<SubmitEpochProposalResponse>, Status> {
+        if self.require_tls_client_cert && !has_tls_peer_certificate(&request) {
+            return Ok(Response::new(error_response(
+                "submit_epoch_proposal_unauthenticated_phase_1586",
+            )));
+        }
+
+        let req = request.into_inner();
+        let proposal = match request_to_epoch_proposal(req) {
+            Ok(proposal) => proposal,
+            Err(code) => return Ok(Response::new(error_response(code))),
+        };
+
+        match self.runner.submit_epoch_proposal(proposal).await {
+            Ok(outcome) => Ok(Response::new(outcome_response(outcome))),
+            Err(e) => Ok(Response::new(error_response(error_code_for(e).as_str()))),
+        }
+    }
+}
+
+fn request_to_epoch_proposal(
+    req: SubmitEpochProposalRequest,
+) -> Result<EpochProposal, &'static str> {
+    if req.submitter_agent_id.len() != 48 {
+        return Err("submit_epoch_proposal_invalid_submitter_agent_id_phase_1586");
+    }
+    if req.state_root_cidv1.len() != 36 {
+        return Err("submit_epoch_proposal_invalid_state_root_phase_1586");
+    }
+    if req.epoch_data_hash.len() != 32 {
+        return Err("submit_epoch_proposal_invalid_epoch_data_hash_phase_1586");
+    }
+    let mut root = [0u8; 36];
+    root.copy_from_slice(&req.state_root_cidv1);
+    Ok(EpochProposal {
+        submitter_agent_id: req.submitter_agent_id,
+        epoch_number: req.epoch_number,
+        state_root: CIDv1Root::new(root),
+        epoch_data_hash: req.epoch_data_hash,
+        settlement_record_bytes: req.settlement_record_bytes,
+        idempotency_key: req.idempotency_key,
+        not_before_unix_ms: req.not_before_unix_ms,
+        network_id: req.network_id,
+    })
+}
+
+fn outcome_response(outcome: EpochProposalOutcome) -> SubmitEpochProposalResponse {
+    let mut root = [0u8; 36];
+    root[..32].copy_from_slice(&outcome.state_root.p1);
+    root[32..].copy_from_slice(&outcome.state_root.p2);
+    SubmitEpochProposalResponse {
+        status_token: outcome.status_token,
+        error_code: String::new(),
+        accepted_epoch_number: outcome.epoch_number,
+        accepted_state_root_cidv1: root.to_vec(),
+        proposal_id: outcome.proposal_id,
+    }
+}
+
+fn error_response(code: &str) -> SubmitEpochProposalResponse {
+    SubmitEpochProposalResponse {
+        status_token: String::new(),
+        error_code: code.to_string(),
+        accepted_epoch_number: 0,
+        accepted_state_root_cidv1: vec![],
+        proposal_id: String::new(),
+    }
+}
+
+fn error_code_for(err: ILCConsensusError) -> String {
+    match err {
+        ILCConsensusError::InvalidEpoch => "submit_epoch_proposal_invalid_epoch_phase_1586".into(),
+        ILCConsensusError::InvalidSignature | ILCConsensusError::BLSVerificationFailed => {
+            "submit_epoch_proposal_invalid_bls_phase_1586".into()
+        }
+        ILCConsensusError::InsufficientSignatures => {
+            "submit_epoch_proposal_bft_rejected_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("bft_rejected") => {
+            "submit_epoch_proposal_bft_rejected_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("duplicate") => {
+            "submit_epoch_proposal_duplicate_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("settlement_path") => {
+            "submit_epoch_proposal_settlement_path_not_mysticeti_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("wrong_network") => {
+            "submit_epoch_proposal_wrong_network_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("body_too_large") => {
+            "submit_epoch_proposal_body_too_large_phase_1586".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("idempotency_key") => {
+            "submit_epoch_proposal_invalid_idempotency_key_phase_1586".into()
+        }
+        _ => "submit_epoch_proposal_bft_rejected_phase_1586".into(),
+    }
+}
+
+fn has_tls_peer_certificate<T>(_request: &Request<T>) -> bool {
+    use tonic::transport::server::{TcpConnectInfo, TlsConnectInfo};
+    _request
+        .extensions()
+        .get::<TlsConnectInfo<TcpConnectInfo>>()
+        .and_then(|info| info.peer_certs())
+        .map(|certs| !certs.is_empty())
+        .unwrap_or(false)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::epoch_settlement::{test_epoch_not_before_unix_ms, EpochSettlementProtocol};
+    use crate::fast_path::FastPathProtocol;
+    use crate::network::PeerNetwork;
+    use crate::node::NodeRunner;
     use crate::types::{
         AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
         ValidatorID, ValidatorSet,
     };
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
+    use std::collections::HashMap;
+    use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
     use tempfile::tempdir;
 
     fn setup_env() -> (Arc<Environment>, tempfile::TempDir) {
@@ -188,6 +334,61 @@ mod tests {
             validators.push((id, crate::types::ValidatorKey(pk)));
         }
         (ValidatorSet::new(validators, 0).unwrap(), entries)
+    }
+
+    fn generate_ephemeral_cert() -> (Vec<u8>, Vec<u8>) {
+        let rcgen::CertifiedKey { cert, key_pair } =
+            rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
+        (cert.der().to_vec(), key_pair.serialize_der())
+    }
+
+    fn mock_socket() -> SocketAddr {
+        SocketAddr::V4(SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), 0))
+    }
+
+    fn proposal_request(idempotency_key: &str) -> SubmitEpochProposalRequest {
+        SubmitEpochProposalRequest {
+            submitter_agent_id: vec![9; 48],
+            epoch_number: 1,
+            state_root_cidv1: vec![7; 36],
+            epoch_data_hash: vec![8; 32],
+            settlement_record_bytes: b"canonical-economic-evidence".to_vec(),
+            idempotency_key: idempotency_key.to_string(),
+            not_before_unix_ms: 0,
+            network_id: "ilc-rc01".to_string(),
+        }
+    }
+
+    fn setup_single_validator_proposal_service() -> ProposalIngressService {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env).unwrap());
+        let sk = SecretKey::key_gen(&[71u8; 32], &[]).unwrap();
+        let vk = crate::types::ValidatorKey(sk.sk_to_pk());
+        let validator_set = ValidatorSet::new(vec![(ValidatorID(1), vk)], 0).unwrap();
+        let fast_path = Arc::new(FastPathProtocol::new(
+            validator_set,
+            Arc::clone(&balance_store),
+            "ilc-rc01".to_string(),
+        ));
+        let (cert, key) = generate_ephemeral_cert();
+        let network =
+            Arc::new(PeerNetwork::new_client(mock_socket(), HashMap::new(), cert, key).unwrap());
+        let runner = Arc::new(
+            NodeRunner::new(
+                ValidatorID(1),
+                "ilc-rc01".to_string(),
+                0,
+                sk,
+                network,
+                fast_path,
+                balance_store,
+                epoch_store,
+                vec![],
+            )
+            .with_proposal_ingress_enabled(true),
+        );
+        ProposalIngressService::new_for_tests_without_tls(runner)
     }
 
     fn agg_sig_all(
@@ -229,6 +430,70 @@ mod tests {
         assert_eq!(resp.amount_micro_ecu, 999_000);
         assert_eq!(resp.version, 0);
         assert_eq!(resp.epoch, 1);
+    }
+
+    #[tokio::test]
+    async fn test_submit_epoch_proposal_valid_single_validator_commits() {
+        let service = setup_single_validator_proposal_service();
+        let resp = service
+            .submit_epoch_proposal(Request::new(proposal_request(
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            )))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            resp.status_token,
+            "submit_epoch_proposal_accepted_phase_1586"
+        );
+        assert_eq!(resp.error_code, "");
+        assert_eq!(resp.accepted_epoch_number, 1);
+        assert_eq!(resp.accepted_state_root_cidv1, vec![7; 36]);
+    }
+
+    #[tokio::test]
+    async fn test_submit_epoch_proposal_duplicate_rejected() {
+        let service = setup_single_validator_proposal_service();
+        let key = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        let first = service
+            .submit_epoch_proposal(Request::new(proposal_request(key)))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            first.status_token,
+            "submit_epoch_proposal_accepted_phase_1586"
+        );
+
+        let second = service
+            .submit_epoch_proposal(Request::new(proposal_request(key)))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            second.error_code,
+            "submit_epoch_proposal_duplicate_phase_1586"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_epoch_proposal_requires_tls_client_cert() {
+        let service = {
+            let mut service = setup_single_validator_proposal_service();
+            service.require_tls_client_cert = true;
+            service
+        };
+        let resp = service
+            .submit_epoch_proposal(Request::new(proposal_request(
+                "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            )))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            resp.error_code,
+            "submit_epoch_proposal_unauthenticated_phase_1586"
+        );
     }
 
     #[tokio::test]
