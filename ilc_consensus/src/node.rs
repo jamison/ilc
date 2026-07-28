@@ -1178,15 +1178,12 @@ impl NodeRunner {
         };
         match result {
             Ok(_) => {
-                self.epoch_store
-                    .mark_seen_epoch_proposal(&proposal.idempotency_key)?;
-                {
-                    let mut table = self.epoch_proposals.lock().await;
-                    if let Some(entry) = table.get_mut(idempotency_key) {
-                        entry.finalizing = false;
-                        entry.completed = true;
-                    }
-                }
+                self.complete_finalized_epoch_proposal(
+                    idempotency_key,
+                    self.epoch_store
+                        .mark_seen_epoch_proposal(&proposal.idempotency_key),
+                )
+                .await;
                 for (peer_id, _addr) in &self.peer_addrs {
                     if let Err(e) = self
                         .send_to_peer(
@@ -1225,6 +1222,24 @@ impl NodeRunner {
             }
         }
         Ok(())
+    }
+
+    async fn complete_finalized_epoch_proposal(
+        &self,
+        idempotency_key: &str,
+        durable_mark_result: Result<(), ILCConsensusError>,
+    ) {
+        if let Err(e) = durable_mark_result {
+            eprintln!(
+                "[phase1586_fix2] validator_id={} durable proposal idempotency marker failed after checkpoint commit for idempotency_key={}: {}; continuing with completed in-memory state",
+                self.validator_id.0, idempotency_key, e
+            );
+        }
+        let mut table = self.epoch_proposals.lock().await;
+        if let Some(entry) = table.get_mut(idempotency_key) {
+            entry.finalizing = false;
+            entry.completed = true;
+        }
     }
 
     fn validate_epoch_proposal(&self, proposal: &EpochProposal) -> Result<(), ILCConsensusError> {
@@ -1925,6 +1940,41 @@ mod tests {
         assert_eq!(runner.epoch_store.get_current_epoch().unwrap(), 0);
         let table = runner.epoch_proposals.lock().await;
         assert!(table.get(&proposal_id).unwrap().finalizing);
+    }
+
+    #[tokio::test]
+    async fn test_phase1586_fix2_durable_marker_failure_does_not_stick_finalizing() {
+        let (runner, _) = setup_proposal_runner(4);
+        let proposal = canonical_epoch_proposal(1);
+        let proposal_id = proposal.idempotency_key.clone();
+        {
+            let mut table = runner.epoch_proposals.lock().await;
+            table.insert(
+                proposal_id.clone(),
+                EpochProposalInFlight {
+                    proposal,
+                    sigs: vec![],
+                    completed: false,
+                    finalizing: true,
+                    inserted_at: tokio::time::Instant::now(),
+                    waiter: None,
+                },
+            );
+        }
+
+        runner
+            .complete_finalized_epoch_proposal(
+                &proposal_id,
+                Err(ILCConsensusError::Other(
+                    "injected durable marker failure".into(),
+                )),
+            )
+            .await;
+
+        let table = runner.epoch_proposals.lock().await;
+        let entry = table.get(&proposal_id).unwrap();
+        assert!(!entry.finalizing);
+        assert!(entry.completed);
     }
 
     #[tokio::test]
