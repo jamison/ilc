@@ -64930,8 +64930,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_00_canon_audit.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_00_canon_audit.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589a_g10_gap_reputation_00_canon_audit.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589a_g10_gap_reputation_00_canon_audit.md"
     },
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
@@ -64955,8 +64955,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_01_cdl_103_opening.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_01_cdl_103_opening.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589b_g10_gap_reputation_01_cdl_106_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589b_g10_gap_reputation_01_cdl_106_opening.md"
     },
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
@@ -64980,8 +64980,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_02_extractor_runtime.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_02_extractor_runtime.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589c_g10_gap_reputation_02_extractor_runtime.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589c_g10_gap_reputation_02_extractor_runtime.md"
     },
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
@@ -65005,8 +65005,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_03_cdl_104_opening.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_03_cdl_104_opening.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589d_g10_gap_reputation_03_cdl_107_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589d_g10_gap_reputation_03_cdl_107_opening.md"
     },
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
@@ -65030,8 +65030,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_04_eligibility_cert.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_04_eligibility_cert.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589e_g10_gap_reputation_04_eligibility_cert.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589e_g10_gap_reputation_04_eligibility_cert.md"
     },
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
@@ -65055,8 +65055,8 @@
         "GOVERNS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_05_rust_binding.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reputation_05_rust_binding.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589f_g10_gap_reputation_05_rust_binding.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589f_g10_gap_reputation_05_rust_binding.md"
     }
   ],
   "boundary": {
