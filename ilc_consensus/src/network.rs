@@ -1,6 +1,7 @@
 use crate::epoch_settlement::StoredCheckpoint;
 use crate::types::{
-    EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate, ValidatorID,
+    CIDv1Root, EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate,
+    ValidatorID, ValidatorSig,
 };
 use bincode::Options;
 use quinn::{ClientConfig, Connection, Endpoint, RecvStream, SendStream, ServerConfig};
@@ -52,7 +53,33 @@ pub enum GossipMessage {
     MissingEpochResponse {
         records: Vec<StoredCheckpoint>,
     },
+    /// Phase 1586: authenticated gRPC ingress is converted to a validator-owned
+    /// epoch proposal. This is not a checkpoint and carries no external BLS authority.
+    EpochProposal(EpochProposal),
+    /// Phase 1586: validator signature over the EpochSettlementRecord derived
+    /// from an EpochProposal. Originator aggregates quorum acks into an internal
+    /// EpochCheckpoint before committing.
+    EpochProposalAck(EpochProposalAck),
     EpochCheckpointMsg(EpochCheckpoint),
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
+pub struct EpochProposal {
+    pub submitter_agent_id: Vec<u8>,
+    pub epoch_number: u64,
+    pub state_root: CIDv1Root,
+    pub epoch_data_hash: Vec<u8>,
+    pub settlement_record_bytes: Vec<u8>,
+    pub idempotency_key: String,
+    pub not_before_unix_ms: u64,
+    pub network_id: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct EpochProposalAck {
+    pub idempotency_key: String,
+    pub epoch_number: u64,
+    pub sig: ValidatorSig,
 }
 
 /// CDL-061: HTTP/3 structured framing envelope

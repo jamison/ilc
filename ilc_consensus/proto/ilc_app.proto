@@ -10,6 +10,32 @@ service ILCAppReadService {
     rpc GetEpochChain (GetEpochChainRequest) returns (GetEpochChainResponse) {}
 }
 
+// Authenticated proposal ingress. This accepts an unsigned economic proposal,
+// not a Python-supplied checkpoint. Rust validators own BFT signing and epoch
+// checkpoint commitment after ingress validation.
+service ILCAppProposalIngressService {
+    rpc SubmitEpochProposal (SubmitEpochProposalRequest) returns (SubmitEpochProposalResponse) {}
+}
+
+message SubmitEpochProposalRequest {
+    bytes  submitter_agent_id      = 1; // exactly 48 bytes
+    uint64 epoch_number            = 2;
+    bytes  state_root_cidv1        = 3; // exactly 36 bytes
+    bytes  epoch_data_hash         = 4; // exactly 32 bytes SHA-256 digest
+    bytes  settlement_record_bytes = 5; // bounded canonical economic evidence
+    string idempotency_key         = 6; // lowercase 64-hex SHA-256 over canonical preimage
+    uint64 not_before_unix_ms      = 7;
+    string network_id              = 8;
+}
+
+message SubmitEpochProposalResponse {
+    string status_token              = 1;
+    string error_code                = 2;
+    uint64 accepted_epoch_number     = 3;
+    bytes  accepted_state_root_cidv1 = 4;
+    string proposal_id               = 5;
+}
+
 message GetBalanceRequest {
     bytes agent_id = 1; // 48 bytes AgentID lookup target
 }

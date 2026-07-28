@@ -17,7 +17,7 @@ lmdb_rkv = { package = "lmdb-rkv", version = "0.14" }  # Existing ILC LMDB patte
 quinn = "0.11"         # QUIC transport
 tokio = { version = "1.36", features = ["full"] }
 prost = "0.14"
-tonic = { version = "0.14", features = ["tls-ring"] }
+tonic = { version = "0.14", features = ["tls-ring", "tls-connect-info"] }
 tonic-prost = "0.14"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"

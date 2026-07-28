@@ -128,6 +128,8 @@ pub struct NodeConfig {
     pub my_key_pem: Vec<u8>,
     /// Peer certs keyed by validator_id, DER encoding.
     pub peer_certs: HashMap<u32, Vec<u8>>,
+    /// Peer certificate PEM bundle for tonic gRPC client-auth roots.
+    pub peer_cert_pem_bundle: Vec<u8>,
     /// Persistent consensus secret key mapping cleanly over dynamic network quorum limits.
     pub validator_sk: blst::min_pk::SecretKey,
     /// Optional gRPC listen address. None = gRPC not started.
@@ -238,6 +240,8 @@ pub fn load_node_config(
 
     let peer_certs = load_peer_cert_dir(&cfg.peer_cert_dir, cfg.validator_id)
         .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir: {}", e)))?;
+    let peer_cert_pem_bundle = load_peer_cert_pem_bundle(&cfg.peer_cert_dir, cfg.validator_id)
+        .map_err(|e| ILCConsensusError::Other(format!("peer_cert_dir pem: {}", e)))?;
 
     let grpc_listen_addr = cfg
         .grpc_listen_addr
@@ -287,11 +291,47 @@ pub fn load_node_config(
         my_cert_pem,
         my_key_pem,
         peer_certs,
+        peer_cert_pem_bundle,
         validator_sk,
         grpc_listen_addr,
         settlement_path,
         endpoint_projection_path: cfg.endpoint_projection_path.map(PathBuf::from),
     })
+}
+
+/// Load all validator peer `.pem` certs from peer_cert_dir, excluding our own cert.
+/// The resulting concatenated PEM bundle is used as the tonic gRPC client-auth
+/// trust roots. QUIC keeps using DER pinning via `load_peer_cert_dir`.
+fn load_peer_cert_pem_bundle(dir: &str, my_validator_id: u32) -> Result<Vec<u8>, String> {
+    let path = Path::new(dir);
+    if !path.exists() {
+        return Err(format!("peer_cert_dir '{}' does not exist", dir));
+    }
+
+    let entries =
+        fs::read_dir(path).map_err(|e| format!("cannot read peer_cert_dir '{}': {}", dir, e))?;
+    let mut bundle = Vec::new();
+    for entry in entries {
+        let entry = entry.map_err(|e| format!("dir entry error: {}", e))?;
+        let file_name = entry.file_name();
+        let name = file_name.to_string_lossy();
+        if !name.ends_with(".pem") {
+            continue;
+        }
+        let Some(id) = parse_validator_cert_pem_filename(&name) else {
+            continue;
+        };
+        if id == my_validator_id {
+            continue;
+        }
+        let pem =
+            fs::read(entry.path()).map_err(|e| format!("cannot read cert '{}': {}", name, e))?;
+        bundle.extend_from_slice(&pem);
+        if !bundle.ends_with(b"\n") {
+            bundle.push(b'\n');
+        }
+    }
+    Ok(bundle)
 }
 
 // ---------------------------------------------------------------------------
@@ -397,6 +437,11 @@ fn parse_validator_cert_filename(name: &str) -> Option<u32> {
     stripped.parse().ok()
 }
 
+fn parse_validator_cert_pem_filename(name: &str) -> Option<u32> {
+    let stripped = name.strip_prefix("validator_")?.strip_suffix("_cert.pem")?;
+    stripped.parse().ok()
+}
+
 /// Minimal base64 decode (standard alphabet, no padding enforcement beyond length).
 fn base64_decode(s: &str) -> Result<Vec<u8>, String> {
     const TABLE: &[u8; 128] = b"\
@@ -497,6 +542,18 @@ mod tests {
         assert_eq!(parse_validator_cert_filename("validator_cert.der"), None);
         assert_eq!(parse_validator_cert_filename("other.der"), None);
         assert_eq!(parse_validator_cert_filename("validator_2_cert.pem"), None);
+    }
+
+    #[test]
+    fn test_parse_validator_cert_pem_filename_valid() {
+        assert_eq!(
+            parse_validator_cert_pem_filename("validator_2_cert.pem"),
+            Some(2)
+        );
+        assert_eq!(
+            parse_validator_cert_pem_filename("validator_42_cert.pem"),
+            Some(42)
+        );
     }
 
     #[test]
