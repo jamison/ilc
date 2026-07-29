@@ -72,7 +72,7 @@ def _resolve_phase_506_commit_ref() -> str:
 def test_validator_package_and_module_import() -> None:
     importlib.import_module('ilc_core.validator.staking_liveness_runtime')
     assert validator_pkg.STAKING_LIVENESS_RUNTIME_VERSION == 'staking_liveness_runtime_506.v0.1'
-    assert validator_pkg.LIVENESS_PENALTY_FRACTION == 0.25
+    assert validator_pkg.LIVENESS_PENALTY_FRACTION == Decimal("0.25")
 
 
 def test_runtime_version_constant_value() -> None:
@@ -84,7 +84,7 @@ def test_dependency_constant_value() -> None:
 
 
 def test_genesis_stake_amount_positive() -> None:
-    assert staking_liveness_runtime.GENESIS_STAKE_AMOUNT == 400.0
+    assert staking_liveness_runtime.GENESIS_STAKE_AMOUNT == Decimal("400")
     assert staking_liveness_runtime.GENESIS_STAKE_AMOUNT > 0
 
 
@@ -95,8 +95,8 @@ def test_liveness_miss_threshold_positive_integer() -> None:
 
 
 def test_penalty_fraction_constants() -> None:
-    assert staking_liveness_runtime.EQUIVOCATION_FULL_SLASH == 1.0
-    assert staking_liveness_runtime.LIVENESS_PENALTY_FRACTION == 0.25
+    assert staking_liveness_runtime.EQUIVOCATION_FULL_SLASH == Decimal("1")
+    assert staking_liveness_runtime.LIVENESS_PENALTY_FRACTION == Decimal("0.25")
 
 
 def test_active_state_validation() -> None:
@@ -117,7 +117,6 @@ def test_equivocation_slash_state() -> None:
 def test_validate_staking_and_liveness_state_rejects_invalid_inputs() -> None:
     invalid_cases = (
         ((True, 0, False), 'stake_must_be_positive'),
-        (('400', 0, False), 'stake_must_be_positive'),
         ((0.0, 0, False), 'stake_must_be_positive'),
         ((400.0, 0, False), 'stake_must_be_positive'),
         ((Decimal("400"), -1, False), 'consecutive_missed_epochs_must_be_non_negative_int'),
@@ -130,6 +129,11 @@ def test_validate_staking_and_liveness_state_rejects_invalid_inputs() -> None:
             assert str(exc) == expected_token
         else:
             raise AssertionError(f'expected ValueError for args={args!r}')
+
+
+def test_validate_staking_and_liveness_state_accepts_exact_string_stake() -> None:
+    result = staking_liveness_runtime.validate_staking_and_liveness_state("400", 0, False)
+    assert result == {"status": "active", "penalty_fraction": "0"}
 
 
 def test_forbidden_token_absent_from_module_source() -> None:

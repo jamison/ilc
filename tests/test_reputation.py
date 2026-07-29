@@ -55,6 +55,34 @@ def test_calculate_voting_power_rejects_float_input() -> None:
         calculate_voting_power(100.0, {"accuracy": Decimal("1")})
 
 
+def test_calculate_voting_power_rejects_non_finite_trust_values() -> None:
+    for field in ("accuracy", "precision", "potential"):
+        trust_vector = {
+            "accuracy": Decimal("1"),
+            "precision": Decimal("1"),
+            "potential": Decimal("0"),
+        }
+        trust_vector[field] = Decimal("NaN")
+        with pytest.raises(ValueError, match="invalid_amount_non_finite"):
+            calculate_voting_power(Decimal("100"), trust_vector)
+
+
+def test_calculate_voting_power_rejects_trust_values_above_one() -> None:
+    for field, token in (
+        ("accuracy", "reputation_accuracy_must_be_non_negative_decimal_phase_1357"),
+        ("precision", "reputation_precision_must_be_non_negative_decimal_phase_1357"),
+        ("potential", "reputation_potential_must_be_non_negative_decimal_phase_1357"),
+    ):
+        trust_vector = {
+            "accuracy": Decimal("1"),
+            "precision": Decimal("1"),
+            "potential": Decimal("0"),
+        }
+        trust_vector[field] = Decimal("1.000000000001")
+        with pytest.raises(ValueError, match=token):
+            calculate_voting_power(Decimal("100"), trust_vector)
+
+
 def test_apply_atrophy_no_decay_returns_copy_without_mutation() -> None:
     current_epoch = 2000
     agent_state = {
@@ -68,6 +96,20 @@ def test_apply_atrophy_no_decay_returns_copy_without_mutation() -> None:
     assert new_state["trust_vector"]["accuracy"] == Decimal("1")
     assert new_state["trust_vector"]["precision"] == Decimal("1")
     assert agent_state["trust_vector"]["accuracy"] == Decimal("1")
+
+
+def test_apply_atrophy_rejects_last_active_epoch_after_current_epoch() -> None:
+    with pytest.raises(
+        ValueError,
+        match="reputation_current_epoch_precedes_last_active_epoch_phase_1357",
+    ):
+        apply_atrophy(
+            {
+                "last_active_epoch": 11,
+                "trust_vector": {"accuracy": Decimal("1"), "precision": Decimal("1")},
+            },
+            10,
+        )
 
 
 def test_apply_atrophy_decay() -> None:

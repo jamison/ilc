@@ -43,6 +43,7 @@ use ilc_consensus::{
         ValidatorID, ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
     },
 };
+use sha2::{Digest, Sha256};
 
 // ---------------------------------------------------------------------------
 // Args
@@ -585,10 +586,16 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
             for i in 0..args.count {
                 let epoch = start_epoch + i;
+                let not_before_unix_ms = 0;
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
                     state_root,
-                    not_before_unix_ms: 0,
+                    proposal_commitment_sha256: testnet_direct_checkpoint_commitment(
+                        epoch,
+                        &state_root,
+                        not_before_unix_ms,
+                    ),
+                    not_before_unix_ms,
                 };
 
                 let msg_bytes = bincode::serialize(&record).unwrap();
@@ -959,6 +966,20 @@ fn cidv1_root_from_required_arg(
     let mut fixed = [0u8; 36];
     fixed.copy_from_slice(&bytes);
     Ok(CIDv1Root::new(fixed))
+}
+
+fn testnet_direct_checkpoint_commitment(
+    epoch: u64,
+    state_root: &CIDv1Root,
+    not_before_unix_ms: u64,
+) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(b"ILC_TESTNET_DIRECT_EPOCH_CHECKPOINT_V1");
+    hasher.update(epoch.to_be_bytes());
+    hasher.update(state_root.p1);
+    hasher.update(state_root.p2);
+    hasher.update(not_before_unix_ms.to_be_bytes());
+    hasher.finalize().into()
 }
 
 fn hex_decode_exact_lowercase(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {

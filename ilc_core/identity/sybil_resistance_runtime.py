@@ -46,7 +46,7 @@ def _require_numeric(name: str, value: float) -> Decimal:
             "cdl_v2_sybil_invalid_numeric",
             f"{name} must be a finite numeric value",
         )
-    return number
+    return _ZERO if number.is_signed() and number == _ZERO else number
 
 
 def _require_unit_interval(name: str, value: float) -> Decimal:
@@ -83,7 +83,12 @@ def compute_identity_cluster_risk(
     shared_infrastructure_fraction: float,
     key_rotation_overlap_fraction: float,
 ) -> float:
-    """Compute bounded cluster-risk signal from overlap indicators."""
+    """Compute bounded cluster-risk signal from overlap indicators.
+
+    Return value is an advisory float. It MUST NOT be passed into ECU, stake,
+    settlement, or quorum-weight computations. Convert to Decimal only within a
+    CDL-107-authorized scoring path.
+    """
 
     operator = _require_unit_interval("shared_operator_fraction", shared_operator_fraction)
     infrastructure = _require_unit_interval(
@@ -108,7 +113,12 @@ def compute_burst_write_penalty(
     burst_sensitivity: float = 0.35,
     epoch_type: str = "validation_epoch",
 ) -> float:
-    """Compute bounded penalty for burst-write anomalies."""
+    """Compute bounded penalty for burst-write anomalies.
+
+    Return value is an advisory float. It MUST NOT be passed into ECU, stake,
+    settlement, or quorum-weight computations. Convert to Decimal only within a
+    CDL-107-authorized scoring path.
+    """
 
     writes = _require_numeric("writes_per_validation_epoch", writes_per_validation_epoch)
     baseline = _require_numeric(
@@ -141,7 +151,12 @@ def compute_diversity_floor_contribution(
     distinct_cluster_refs: float,
     expected_diversity_floor: float,
 ) -> float:
-    """Compute contribution signal for diversity-floor satisfaction."""
+    """Compute contribution signal for diversity-floor satisfaction.
+
+    Return value is an advisory float. It MUST NOT be passed into ECU, stake,
+    settlement, or quorum-weight computations. Convert to Decimal only within a
+    CDL-107-authorized scoring path.
+    """
 
     distinct_refs = _require_numeric("distinct_cluster_refs", distinct_cluster_refs)
     expected_floor = _require_numeric("expected_diversity_floor", expected_diversity_floor)
@@ -162,7 +177,12 @@ def compute_sybil_penalty(
     burst_write_penalty: float,
     diversity_floor_contribution: float,
 ) -> float:
-    """Map risk signals to bounded sybil penalty score in [0, 1]."""
+    """Map risk signals to bounded sybil penalty score in [0, 1].
+
+    Return value is an advisory float. It MUST NOT be passed into ECU, stake,
+    settlement, or quorum-weight computations. Convert to Decimal only within a
+    CDL-107-authorized scoring path.
+    """
 
     risk = _require_unit_interval("cluster_risk", cluster_risk)
     burst = _require_unit_interval("burst_write_penalty", burst_write_penalty)

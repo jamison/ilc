@@ -18,7 +18,7 @@ def validate_staking_and_liveness_state(
     consecutive_missed_epochs: int,
     equivocation_state: bool,
 ) -> dict[str, str]:
-    if isinstance(stake, bool) or isinstance(stake, str):
+    if isinstance(stake, (bool, float)):
         raise ValueError('stake_must_be_positive')
     if to_decimal(stake, token="stake_must_be_positive") <= Decimal("0"):
         raise ValueError('stake_must_be_positive')

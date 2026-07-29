@@ -197,6 +197,29 @@ def test_invalid_unit_interval_inputs_raise_tokenized_error() -> None:
     assert exc_nan.value.token == "cdl_v2_sybil_invalid_numeric"
 
 
+def test_negative_zero_inputs_are_normalized_to_zero() -> None:
+    assert compute_identity_cluster_risk(
+        shared_operator_fraction=Decimal("-0"),
+        shared_infrastructure_fraction=Decimal("-0.0"),
+        key_rotation_overlap_fraction="-0.000",
+    ) == 0.0
+    assert compute_burst_write_penalty(
+        writes_per_validation_epoch=Decimal("-0"),
+        baseline_writes_per_validation_epoch=5,
+    ) == 0.0
+
+
+def test_public_helpers_document_advisory_float_boundary() -> None:
+    for helper in (
+        compute_identity_cluster_risk,
+        compute_burst_write_penalty,
+        compute_diversity_floor_contribution,
+        compute_sybil_penalty,
+    ):
+        assert "advisory float" in (helper.__doc__ or "")
+        assert "CDL-107-authorized scoring path" in (helper.__doc__ or "")
+
+
 def test_invalid_rate_inputs_raise_tokenized_error() -> None:
     with pytest.raises(SybilResistanceValidationError) as exc:
         compute_burst_write_penalty(

@@ -94,6 +94,10 @@ class ValidatorAdmissionDecision:
     re_admission_cooldown_remaining: int
     trust_tier_requested: bool
     trust_tier_eligible: bool
+    trust_tier_consecutive_missed_epochs: int
+    trust_tier_equivocation_state: bool
+    current_agent_ids: tuple[str, ...]
+    next_agent_ids: tuple[str, ...]
     current_validator_ids: tuple[int, ...]
     next_validator_ids: tuple[int, ...]
     production_validator_admission_activated: bool
@@ -125,8 +129,14 @@ class ValidatorAdmissionDecision:
             "runtime_version": self.runtime_version,
             "sec_004_epoch_binding_token": self.sec_004_epoch_binding_token,
             "stake_ecu": decimal_to_canonical_string(self.stake_ecu),
+            "trust_tier_consecutive_missed_epochs": (
+                self.trust_tier_consecutive_missed_epochs
+            ),
+            "trust_tier_equivocation_state": self.trust_tier_equivocation_state,
             "trust_tier_eligible": self.trust_tier_eligible,
             "trust_tier_requested": self.trust_tier_requested,
+            "current_agent_ids": self.current_agent_ids,
+            "next_agent_ids": self.next_agent_ids,
             "validator_id": self.validator_id,
         }
 
@@ -223,6 +233,15 @@ def _require_agent_id(agent_id: str) -> str:
     return agent_id
 
 
+def _normalize_agent_ids(values: tuple[str, ...] | list[str]) -> tuple[str, ...]:
+    if not isinstance(values, (tuple, list)):
+        raise ValueError("current_agent_ids_must_be_sequence")
+    normalized = tuple(_require_agent_id(value) for value in values)
+    if len(set(normalized)) != len(normalized):
+        raise ValueError("current_agent_ids_must_be_unique")
+    return tuple(sorted(normalized))
+
+
 def _require_stake(value: Decimal | int | str) -> Decimal:
     if isinstance(value, float):
         raise ValueError("validator_stake_ecu_must_be_exact_decimal")
@@ -274,9 +293,12 @@ def admit_validator(
     validator_id: int,
     agent_id: str,
     stake_ecu: Decimal | int | str,
+    current_agent_ids: tuple[str, ...] | list[str] | None = None,
     prior_exit_reason: str | None = None,
     epochs_since_exit: int | None = None,
     trust_tier_requested: bool = False,
+    trust_tier_consecutive_missed_epochs: int = 0,
+    trust_tier_equivocation_state: bool = False,
 ) -> ValidatorAdmissionDecision:
     """Build a default-off CDL-017 admission decision.
 
@@ -292,12 +314,23 @@ def admit_validator(
         raise ValueError("validator_already_active_phase_1353")
 
     validated_agent_id = _require_agent_id(agent_id)
+    normalized_agent_ids = _normalize_agent_ids(current_agent_ids or [])
+    if validated_agent_id in normalized_agent_ids:
+        raise ValueError("validator_agent_already_active_phase_1353")
     stake = _require_stake(stake_ecu)
     requested_trust_tier = _require_bool(trust_tier_requested, "trust_tier_requested")
+    trust_missed_epochs = _require_epoch(
+        trust_tier_consecutive_missed_epochs,
+        "trust_tier_consecutive_missed_epochs",
+    )
+    trust_equivocation = _require_bool(
+        trust_tier_equivocation_state,
+        "trust_tier_equivocation_state",
+    )
     trust_tier_eligible = is_trust_tier_eligible(
-        consecutive_missed_epochs=0,
+        consecutive_missed_epochs=trust_missed_epochs,
         liveness_miss_threshold=LIVENESS_MISS_THRESHOLD,
-        equivocation_state=False,
+        equivocation_state=trust_equivocation,
     )
 
     cooldown_remaining = 0
@@ -315,6 +348,7 @@ def admit_validator(
         raise ValueError("prior_exit_reason_required_for_epochs_since_exit_phase_1353")
 
     next_ids = tuple(sorted((*normalized_ids, validated_validator_id)))
+    next_agent_ids = tuple(sorted((*normalized_agent_ids, validated_agent_id)))
     return ValidatorAdmissionDecision(
         runtime_version=VALIDATOR_ADMISSION_EJECTION_RUNTIME_VERSION,
         cdl_017_dependency=CDL_017_DEPENDENCY,
@@ -331,6 +365,10 @@ def admit_validator(
         re_admission_cooldown_remaining=cooldown_remaining,
         trust_tier_requested=requested_trust_tier,
         trust_tier_eligible=trust_tier_eligible,
+        trust_tier_consecutive_missed_epochs=trust_missed_epochs,
+        trust_tier_equivocation_state=trust_equivocation,
+        current_agent_ids=normalized_agent_ids,
+        next_agent_ids=next_agent_ids,
         current_validator_ids=normalized_ids,
         next_validator_ids=next_ids,
         production_validator_admission_activated=False,

@@ -96,6 +96,49 @@ def test_bridge_rejects_malformed_agent_id() -> None:
     assert excinfo.value.token == "agent_id_hex_must_be_96_lower_hex"
 
 
+def test_bridge_rejects_duplicate_claim_id_in_same_batch() -> None:
+    claim_payload = _passing_claim_payload()
+    claim_payload["claims"][1]["claim_id"] = claim_payload["claims"][0]["claim_id"]
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "claim_id_duplicate_in_batch"
+
+
+def test_bridge_rejects_claim_count_above_maximum() -> None:
+    claim_payload = _passing_claim_payload()
+    claim_payload["claims"] = [claim_payload["claims"][0]] * 10_001
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "claim_count_exceeds_maximum"
+
+
+def test_bridge_wraps_rust_ingest_timeout(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    def _timeout_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        raise subprocess.TimeoutExpired(cmd=["attribution_batch_ingest"], timeout=1)
+
+    fake_binary = tmp_path / "attribution_batch_ingest"
+    fake_binary.touch()
+    monkeypatch.setattr(subprocess, "run", _timeout_run)
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            build_attribution_batch_from_claims(_passing_claim_payload()),
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=fake_binary,
+            dry_run=True,
+            timeout_seconds=1,
+        )
+
+    assert excinfo.value.token == "rust_attribution_batch_ingest_timeout"
+
+
 def test_agent_loop_cli_builds_attribution_batch(tmp_path: Path) -> None:
     claims_path = tmp_path / "ecu_claims.json"
     claims_path.write_text(
