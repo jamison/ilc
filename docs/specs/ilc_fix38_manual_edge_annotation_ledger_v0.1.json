@@ -71456,6 +71456,40 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576pb_g10_invite_nullifier_d2d_gossip.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576pb_g10_invite_nullifier_d2d_gossip.md"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1589a_gap_reputation_00",
+      "chronology_note": "2026-07-29 GAP-REPUTATION-00 canon and runtime audit",
+      "manual_read_summary": "Source-grounded reputation gap audit: no AgentReputationRecord, no extractor, no AgentReputationRoot, and no validator-admission reputation binding.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_reputation_gap_audit_GAP_REPUTATION_00_v0.1.md",
+      "repo_path": "docs/specs/ilc_reputation_gap_audit_GAP_REPUTATION_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_1589a_gap_reputation_00",
+      "chronology_note": "2026-07-29 GAP-REPUTATION-00 canon and runtime audit",
+      "manual_read_summary": "Walkthrough for the reputation canon audit; records MemPalace/source reads, verification outputs, CDL numbering reconciliation, and non-claims.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_00_canon_audit_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_reputation_00_canon_audit_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
