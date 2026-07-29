@@ -61,6 +61,13 @@ def _non_negative_decimal(value: object, token: str) -> Decimal:
     return number
 
 
+def _unit_interval_decimal(value: object, token: str) -> Decimal:
+    number = _non_negative_decimal(value, token)
+    if number > ONE:
+        raise ValueError(token)
+    return number
+
+
 def _require_epoch(value: object, token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError(token)
@@ -74,7 +81,12 @@ def _decay_multiplier(inactive_epochs: int) -> Decimal:
 
 
 def calculate_voting_power(stake: ExactNumberish, trust_vector: Mapping[str, object]) -> Decimal:
-    """Calculate L1 voting power with exact Decimal arithmetic."""
+    """Calculate L1 voting power with exact Decimal arithmetic.
+
+    Caller MUST invoke `require_production_reputation_scoring_activation()` before
+    calling this on any production consensus path. This helper remains usable for
+    tests, audits, and non-activating quote surfaces only.
+    """
 
     if not isinstance(trust_vector, Mapping):
         raise ValueError("reputation_trust_vector_must_be_mapping_phase_1357")
@@ -83,15 +95,15 @@ def calculate_voting_power(stake: ExactNumberish, trust_vector: Mapping[str, obj
         stake,
         "reputation_stake_must_be_non_negative_decimal_phase_1357",
     )
-    accuracy = _non_negative_decimal(
+    accuracy = _unit_interval_decimal(
         trust_vector.get("accuracy", ZERO),
         "reputation_accuracy_must_be_non_negative_decimal_phase_1357",
     )
-    precision = _non_negative_decimal(
+    precision = _unit_interval_decimal(
         trust_vector.get("precision", ZERO),
         "reputation_precision_must_be_non_negative_decimal_phase_1357",
     )
-    potential = _non_negative_decimal(
+    potential = _unit_interval_decimal(
         trust_vector.get("potential", ZERO),
         "reputation_potential_must_be_non_negative_decimal_phase_1357",
     )
@@ -102,7 +114,12 @@ def calculate_voting_power(stake: ExactNumberish, trust_vector: Mapping[str, obj
 
 
 def apply_atrophy(agent_state: Mapping[str, object], current_epoch: int) -> dict[str, object]:
-    """Return an atrophy-adjusted copy of agent_state without mutating the caller."""
+    """Return an atrophy-adjusted copy of agent_state without mutating the caller.
+
+    Caller MUST invoke `require_production_reputation_scoring_activation()` before
+    calling this on any production consensus path. This helper remains usable for
+    tests, audits, and non-activating quote surfaces only.
+    """
 
     if not isinstance(agent_state, Mapping):
         raise ValueError("reputation_agent_state_must_be_mapping_phase_1357")
@@ -125,6 +142,10 @@ def apply_atrophy(agent_state: Mapping[str, object], current_epoch: int) -> dict
     next_trust_vector = dict(trust_vector)
     inactive_epochs = normalized_current_epoch - last_active_epoch
 
+    # The grace boundary is exclusive: epoch 1440 is still grace, epoch 1441
+    # decays. The half-life clock intentionally starts at last_active_epoch, not
+    # at the end of the grace window. CDL-107 must explicitly re-authorize any
+    # future formula that changes this boundary.
     if inactive_epochs > ATROPHY_GRACE_EPOCHS:
         decay = _decay_multiplier(inactive_epochs)
         # Only accuracy and precision are decayed. potential is intentionally excluded:

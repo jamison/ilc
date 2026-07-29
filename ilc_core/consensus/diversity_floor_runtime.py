@@ -125,7 +125,13 @@ def compute_diversity_floor_penalty(
     max_cluster_share: object,
     max_cluster_share_ceiling: object,
 ) -> Decimal:
-    """Compute bounded diversity-floor penalty score in [0, 1]."""
+    """Compute bounded diversity-floor penalty score in [0, 1].
+
+    Diagnostic-only in the current protocol path: finality decisions consume
+    the boolean floor/ceiling gates, not this graduated penalty. A future phase
+    must add explicit authority before the penalty changes settlement, quorum,
+    admission, or finality outcomes.
+    """
 
     distinct = _require_numeric("distinct_clusters", distinct_clusters)
     floor = _require_positive("distinct_cluster_floor", distinct_cluster_floor)

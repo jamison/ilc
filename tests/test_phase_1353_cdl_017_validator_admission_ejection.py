@@ -63,9 +63,43 @@ def test_phase_1353_admit_validator_returns_default_off_rotation_decision() -> N
     assert decision.rotation_token == VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_TOKEN
     assert decision.current_validator_ids == (1, 2, 3)
     assert decision.next_validator_ids == (1, 2, 3, 4)
+    assert decision.current_agent_ids == ()
+    assert decision.next_agent_ids == (_agent_id(),)
     assert decision.production_validator_admission_activated is False
     assert decision.stake_ecu == GENESIS_STAKE_AMOUNT
     assert decision.to_canonical_record()["stake_ecu"] == "400"
+
+
+def test_phase_1353_admit_validator_rejects_already_active_agent_id() -> None:
+    with pytest.raises(ValueError, match="validator_agent_already_active_phase_1353"):
+        admit_validator(
+            current_epoch=10,
+            active_from_epoch=11,
+            current_validator_ids=[1, 2, 3],
+            validator_id=4,
+            agent_id=_agent_id(1),
+            stake_ecu=Decimal("400"),
+            current_agent_ids=[_agent_id(1), _agent_id(2), _agent_id(3)],
+        )
+
+
+def test_phase_1353_admit_validator_records_trust_tier_evidence() -> None:
+    decision = admit_validator(
+        current_epoch=10,
+        active_from_epoch=11,
+        current_validator_ids=[1, 2, 3],
+        validator_id=4,
+        agent_id=_agent_id(9),
+        stake_ecu=Decimal("400"),
+        trust_tier_requested=True,
+        trust_tier_consecutive_missed_epochs=LIVENESS_MISS_THRESHOLD,
+        trust_tier_equivocation_state=False,
+    )
+
+    assert decision.trust_tier_requested is True
+    assert decision.trust_tier_consecutive_missed_epochs == LIVENESS_MISS_THRESHOLD
+    assert decision.trust_tier_equivocation_state is False
+    assert decision.trust_tier_eligible is False
 
 
 def test_phase_1353_admit_rejects_float_non_finite_and_low_stake() -> None:

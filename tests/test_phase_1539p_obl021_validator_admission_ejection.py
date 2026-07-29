@@ -39,6 +39,7 @@ def _admit_inputs(validator_id: int = 5) -> dict[str, object]:
         "validator_id": validator_id,
         "agent_id": _agent_id(validator_id),
         "stake_ecu": Decimal("400"),
+        "current_agent_ids": [_agent_id(1), _agent_id(2), _agent_id(3), _agent_id(4)],
     }
 
 
@@ -77,6 +78,12 @@ def test_phase_1539p_builds_guarded_transition_result() -> None:
     assert result.production_validator_admission_activated is False
     assert result.guard_token == VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN
     assert result.admission_decision.validator_id == 5
+    assert result.admission_decision.current_agent_ids == tuple(
+        sorted((_agent_id(1), _agent_id(2), _agent_id(3), _agent_id(4)))
+    )
+    assert result.admission_decision.next_agent_ids == tuple(
+        sorted((_agent_id(1), _agent_id(2), _agent_id(3), _agent_id(4), _agent_id(5)))
+    )
     assert result.ejection_decision.validator_id == 2
     assert result.transition_context == "validator_set_transition:admit_5_epoch_11:eject_2_epoch_11"
 
@@ -130,8 +137,41 @@ def test_phase_1539p_validator_id_sets_are_canonicalized_before_root() -> None:
     assert result.ejection_decision.next_validator_ids == (1, 3, 4)
     assert payload["event_payloads"][0]["current_validator_ids"] == [1, 2, 3, 4]
     assert payload["event_payloads"][0]["next_validator_ids"] == [1, 2, 3, 4, 5]
+    assert payload["event_payloads"][0]["current_agent_ids"] == list(
+        result.admission_decision.current_agent_ids
+    )
+    assert payload["event_payloads"][0]["next_agent_ids"] == list(
+        result.admission_decision.next_agent_ids
+    )
     assert payload["event_payloads"][1]["current_validator_ids"] == [1, 2, 3, 4]
     assert payload["event_payloads"][1]["next_validator_ids"] == [1, 3, 4]
+    assert payload["event_payloads"][1]["current_agent_ids"] == []
+    assert payload["event_payloads"][1]["next_agent_ids"] == []
+
+
+def test_phase_1539p_rejects_agent_id_already_active_for_admission() -> None:
+    with pytest.raises(ValueError, match="validator_agent_already_active_phase_1353"):
+        build_validator_set_transition_result(
+            _admit_inputs() | {"agent_id": _agent_id(3)},
+            _eject_inputs(),
+        )
+
+
+def test_phase_1539p_trust_tier_evidence_is_caller_supplied() -> None:
+    result = build_validator_set_transition_result(
+        _admit_inputs()
+        | {
+            "trust_tier_requested": True,
+            "trust_tier_consecutive_missed_epochs": 8,
+            "trust_tier_equivocation_state": False,
+        },
+        _eject_inputs(),
+    )
+
+    assert result.admission_decision.trust_tier_requested is True
+    assert result.admission_decision.trust_tier_consecutive_missed_epochs == 8
+    assert result.admission_decision.trust_tier_equivocation_state is False
+    assert result.admission_decision.trust_tier_eligible is False
 
 
 def test_phase_1539p_emits_canonical_events_with_root_injected() -> None:

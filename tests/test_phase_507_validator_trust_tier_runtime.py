@@ -149,6 +149,26 @@ def test_apply_consensus_dispute_tiebreaker_falls_back_to_first_candidate_withou
     assert result == {"validator_id": "v1", "trust_tier": False}
 
 
+def test_apply_consensus_dispute_tiebreaker_preserves_caller_order_contract() -> None:
+    first_order = [
+        {"validator_id": "v1", "trust_tier": False},
+        {"validator_id": "v2", "trust_tier": False},
+    ]
+    second_order = [
+        {"validator_id": "v2", "trust_tier": False},
+        {"validator_id": "v1", "trust_tier": False},
+    ]
+
+    assert trust_tier_runtime.apply_consensus_dispute_tiebreaker(
+        "fork_choice",
+        first_order,
+    ) == {"validator_id": "v1", "trust_tier": False}
+    assert trust_tier_runtime.apply_consensus_dispute_tiebreaker(
+        "fork_choice",
+        second_order,
+    ) == {"validator_id": "v2", "trust_tier": False}
+
+
 def test_apply_consensus_dispute_tiebreaker_returns_none_for_empty_candidates() -> None:
     assert trust_tier_runtime.apply_consensus_dispute_tiebreaker("equivocation", []) is None
 

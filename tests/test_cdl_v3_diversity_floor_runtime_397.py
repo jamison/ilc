@@ -159,6 +159,12 @@ def test_compute_diversity_floor_penalty_is_bounded_and_monotonic() -> None:
     assert better < worse
 
 
+def test_compute_diversity_floor_penalty_documents_diagnostic_only_scope() -> None:
+    doc = " ".join((compute_diversity_floor_penalty.__doc__ or "").split())
+    assert "Diagnostic-only" in doc
+    assert "before the penalty changes settlement, quorum, admission, or finality" in doc
+
+
 def test_cluster_share_rejects_largest_exceeding_total() -> None:
     with pytest.raises(DiversityFloorValidationError) as exc:
         compute_max_cluster_share(largest_cluster_slots=9, total_panel_slots=8)

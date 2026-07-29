@@ -4,6 +4,11 @@
 This module converts accepted agent-loop ECU claim payloads into the narrow
 JSON shape consumed by the Rust `attribution_batch_ingest` binary. It is not a
 review, jury, CDL-048, ILC allocation, or settlement-root runtime.
+
+GAP-ECU-04b extension point: when backward-attribution traversal is ratified
+and implemented, this bridge schema is the place to add a `provenance_chain`
+field. Until then, provenance fields are intentionally absent so fixed
+per-event provenance cannot masquerade as graph-derived backward attribution.
 """
 
 from __future__ import annotations
@@ -20,6 +25,7 @@ from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
+MAX_CLAIMS_PER_BATCH = 10_000
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 
 
@@ -40,6 +46,11 @@ def _require_claims(value: Any) -> list[dict[str, Any]]:
         raise AttributionBatchBridgeError(
             "accepted_claims_required",
             "accepted claim payload must contain at least one claim",
+        )
+    if len(value) > MAX_CLAIMS_PER_BATCH:
+        raise AttributionBatchBridgeError(
+            "claim_count_exceeds_maximum",
+            f"accepted claim payload exceeds maximum of {MAX_CLAIMS_PER_BATCH} claims",
         )
     claims: list[dict[str, Any]] = []
     for item in value:
@@ -116,6 +127,7 @@ def build_attribution_batch_from_claims(
 
     selected_epoch: int | None = epoch
     aggregated: dict[str, dict[str, Any]] = {}
+    seen_claim_ids: set[str] = set()
     total_source = Decimal("0")
     total_dust = Decimal("0")
     for claim in claims:
@@ -135,6 +147,12 @@ def build_attribution_batch_from_claims(
         claim_id = claim.get("claim_id")
         if not isinstance(claim_id, str) or not claim_id:
             raise AttributionBatchBridgeError("claim_id_required", "each claim must have a claim_id")
+        if claim_id in seen_claim_ids:
+            raise AttributionBatchBridgeError(
+                "claim_id_duplicate_in_batch",
+                "claim_id values must be unique within an attribution batch",
+            )
+        seen_claim_ids.add(claim_id)
         entry = aggregated.setdefault(
             agent_id,
             {
@@ -212,13 +230,19 @@ def apply_attribution_batch_with_rust(
         ]
         if dry_run:
             command.append("--dry-run")
-        result = subprocess.run(
-            command,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout_seconds,
-        )
+        try:
+            result = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise AttributionBatchBridgeError(
+                "rust_attribution_batch_ingest_timeout",
+                f"Rust attribution binary timed out after {timeout_seconds} seconds",
+            ) from exc
     finally:
         input_path.unlink(missing_ok=True)
     if result.returncode != 0:

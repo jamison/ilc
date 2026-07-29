@@ -8,6 +8,7 @@ use serde::Deserialize;
 /// - Enforce config.network_id == genesis.network_id at load time
 /// - Read own TLS cert/key as DER bytes for PeerNetwork construction
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -102,6 +103,17 @@ pub enum SettlementPath {
     MysticetiFastPath,
 }
 
+/// Metadata parsed from genesis.json and retained for agent-reputation and
+/// validator-role admission phases. The legacy `ValidatorSet` remains a compact
+/// consensus key map; callers that need agent/stake binding must use
+/// `load_genesis_with_metadata`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GenesisValidatorMetadata {
+    pub agent_id: AgentID,
+    pub stake_micro_ecu: u64,
+    pub role: String,
+}
+
 /// Typed peer entry produced after config loading.
 #[derive(Debug, Clone)]
 pub struct PeerAddr {
@@ -151,13 +163,32 @@ pub struct NodeConfig {
 /// Returns the network_id alongside ValidatorSet so callers don't need to re-read the file.
 /// Translates hex-encoded validator_key and agent_id into runtime types.
 pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCConsensusError> {
+    let (validator_set, network_id, _) = load_genesis_with_metadata(genesis_path)?;
+    Ok((validator_set, network_id))
+}
+
+/// Load genesis.json and preserve validator metadata needed by reputation and
+/// validator-role phases.
+pub fn load_genesis_with_metadata(
+    genesis_path: &Path,
+) -> Result<
+    (
+        ValidatorSet,
+        String,
+        HashMap<ValidatorID, GenesisValidatorMetadata>,
+    ),
+    ILCConsensusError,
+> {
     let raw = fs::read_to_string(genesis_path)
         .map_err(|e| ILCConsensusError::Other(format!("Cannot read genesis: {}", e)))?;
     let genesis: RawGenesis = serde_json::from_str(&raw)
         .map_err(|e| ILCConsensusError::Other(format!("Genesis parse error: {}", e)))?;
 
     let mut validators = Vec::with_capacity(genesis.validators.len());
+    let mut metadata = HashMap::with_capacity(genesis.validators.len());
+    let mut seen_agent_ids = HashSet::with_capacity(genesis.validators.len());
     for v in &genesis.validators {
+        let validator_id = ValidatorID(v.validator_id);
         // blst::min_pk::PublicKey (G1 compressed) is 48 bytes = 96 hex chars.
         let key_bytes = hex_decode_exact(&v.validator_key, 48).map_err(|e| {
             ILCConsensusError::Other(format!(
@@ -178,12 +209,26 @@ pub fn load_genesis(genesis_path: &Path) -> Result<(ValidatorSet, String), ILCCo
                 v.validator_id
             ))
         })?;
-        let _agent_id = hex_decode_agent_id(&v.agent_id, v.validator_id)?;
-        validators.push((ValidatorID(v.validator_id), ValidatorKey(pubkey)));
+        let agent_id = hex_decode_agent_id(&v.agent_id, v.validator_id)?;
+        if !seen_agent_ids.insert(agent_id) {
+            return Err(ILCConsensusError::Other(format!(
+                "validator_id={}: duplicate agent_id in genesis validator metadata",
+                v.validator_id
+            )));
+        }
+        validators.push((validator_id, ValidatorKey(pubkey)));
+        metadata.insert(
+            validator_id,
+            GenesisValidatorMetadata {
+                agent_id,
+                stake_micro_ecu: v.stake_micro_ecu,
+                role: v.role.clone(),
+            },
+        );
     }
 
     let validator_set = ValidatorSet::new(validators, genesis.f)?;
-    Ok((validator_set, genesis.network_id))
+    Ok((validator_set, genesis.network_id, metadata))
 }
 
 /// Load validator config JSON and resolve all deployment paths into runtime types.
@@ -535,6 +580,42 @@ mod tests {
     use crate::validator::quorum_threshold;
     use std::path::Path;
 
+    fn bytes_to_hex(bytes: &[u8]) -> String {
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut out = String::with_capacity(bytes.len() * 2);
+        for &byte in bytes {
+            out.push(HEX[(byte >> 4) as usize] as char);
+            out.push(HEX[(byte & 0x0f) as usize] as char);
+        }
+        out
+    }
+
+    fn valid_validator_key_hex(seed: u8) -> String {
+        let sk = blst::min_pk::SecretKey::key_gen(&[seed; 32], &[]).unwrap();
+        bytes_to_hex(&sk.sk_to_pk().compress())
+    }
+
+    fn agent_id_hex(seed: u8) -> String {
+        bytes_to_hex(&[seed; 48])
+    }
+
+    fn write_genesis_json(validators: &str, f: usize) -> tempfile::NamedTempFile {
+        use std::io::Write;
+        let mut file = tempfile::NamedTempFile::new().unwrap();
+        write!(
+            file,
+            r#"{{
+                "network_id": "ilc-test-metadata",
+                "real_ecu": true,
+                "f": {},
+                "validators": [{}]
+            }}"#,
+            f, validators
+        )
+        .unwrap();
+        file
+    }
+
     fn repo_config_path(relative_path: &str) -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR"))
             .parent()
@@ -667,6 +748,75 @@ mod tests {
         assert_eq!(validator_set.validators.len(), 4);
         assert_eq!(validator_set.f, 1);
         assert_eq!(quorum_threshold(validator_set.validators.len()), 3);
+    }
+
+    #[test]
+    fn test_load_genesis_with_metadata_retains_agent_and_stake_binding() {
+        let validators = format!(
+            r#"{{
+                "validator_id": 1,
+                "agent_id": "{}",
+                "validator_key": "{}",
+                "stake_micro_ecu": 1234567,
+                "tailscale_ip": "100.0.0.1",
+                "port": 9001,
+                "host": "node1",
+                "role": "genesis_bootstrap"
+            }}"#,
+            agent_id_hex(1),
+            valid_validator_key_hex(11)
+        );
+        let file = write_genesis_json(&validators, 0);
+
+        let (validator_set, network_id, metadata) =
+            load_genesis_with_metadata(file.path()).unwrap();
+
+        assert_eq!(network_id, "ilc-test-metadata");
+        assert_eq!(validator_set.validators.len(), 1);
+        let entry = metadata.get(&ValidatorID(1)).expect("metadata retained");
+        assert_eq!(entry.agent_id, AgentID([1u8; 48]));
+        assert_eq!(entry.stake_micro_ecu, 1_234_567);
+        assert_eq!(entry.role, "genesis_bootstrap");
+    }
+
+    #[test]
+    fn test_load_genesis_with_metadata_rejects_duplicate_agent_ids() {
+        let duplicate_agent = agent_id_hex(7);
+        let validators = format!(
+            r#"{{
+                "validator_id": 1,
+                "agent_id": "{}",
+                "validator_key": "{}",
+                "stake_micro_ecu": 1000000,
+                "tailscale_ip": "100.0.0.1",
+                "port": 9001,
+                "host": "node1",
+                "role": "honest"
+            }},
+            {{
+                "validator_id": 2,
+                "agent_id": "{}",
+                "validator_key": "{}",
+                "stake_micro_ecu": 1000000,
+                "tailscale_ip": "100.0.0.2",
+                "port": 9002,
+                "host": "node2",
+                "role": "honest"
+            }}"#,
+            duplicate_agent,
+            valid_validator_key_hex(21),
+            duplicate_agent,
+            valid_validator_key_hex(22)
+        );
+        let file = write_genesis_json(&validators, 0);
+
+        let err = load_genesis_with_metadata(file.path()).unwrap_err();
+
+        assert!(
+            format!("{:?}", err).contains("duplicate agent_id"),
+            "expected duplicate agent_id rejection, got: {:?}",
+            err
+        );
     }
 
     #[test]
