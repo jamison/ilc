@@ -65266,7 +65266,7 @@
     {
       "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
       "chronology_note": "2026-07-29 GAP-ECU-01a / Phase 1595b backward attribution SIM contract committed before simulation execution.",
-      "manual_read_summary": "Spec locks the GAP-ECU-01b backward-attribution simulation contract: parameter grid for all nine Phase 1492p surfaces, five adversarial scenarios, CDL-083/CDL-084 no-double-count checks, evidence schema, viability criteria, and human-review gate.",
+      "manual_read_summary": "Spec locks the GAP-ECU-01b backward-attribution simulation contract: parameter grid for all nine Phase 1492p surfaces, six adversarial scenarios including novelty-gate bypass / thin-node inflation, CDL-083/CDL-084 no-double-counting, defined gini evidence semantics, and machine-verifiable evidence requirements.",
       "node_kind": "spec_doc",
       "proposed_authority_trace_edges": [
         {
@@ -65311,7 +65311,7 @@
     {
       "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
       "chronology_note": "2026-07-29 GAP-ECU-01a walkthrough records SIM-contract execution and review gate before GAP-ECU-01b.",
-      "manual_read_summary": "Walkthrough records source reads, the exact nine parameter surfaces, adversarial scenario summaries, no-double-counting contract, viability criteria, human-review gate, verification outputs, ledger batch, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough records source reads, the exact nine parameter surfaces, six adversarial scenario summaries, no-double-counting contract, viability criteria, human-review gate, and Fix2 gini/novelty amendment.",
       "node_kind": "phase_walkthrough",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -65334,7 +65334,7 @@
     {
       "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
       "chronology_note": "2026-07-29 GAP-ECU-01a focused regression test protects SIM-contract completeness before GAP-ECU-01b.",
-      "manual_read_summary": "Focused tests verify the GAP-ECU-01a contract covers all nine parameter surfaces, five adversarial scenarios, specific anti-gaming thresholds, CDL-083/CDL-084 no-double-pay requirements, evidence schema, human-review gate, non-claims, and STATUS/walkthrough tokens.",
+      "manual_read_summary": "Focused tests verify the GAP-ECU-01a contract covers all nine parameter surfaces, six adversarial scenarios, specific anti-gaming thresholds including thin-node amplification, gini definition/advisory threshold, CDL-083/CDL-084 no-double-pay requirements, evidence schema, human-review gate, non-claims, and STATUS/walkthrough tokens.",
       "node_kind": "test_file",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
@@ -65380,6 +65380,52 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_00_01a_fix1_runtime_bound_audit_hardening_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_ecu_00_01a_fix1_runtime_bound_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_252_phase_GAP_ECU_01a_fix2",
+      "chronology_note": "2026-07-29 GAP-ECU-01a Fix2 amended SIM contract before GAP-ECU-01b.",
+      "manual_read_summary": "Walkthrough records gini evidence-field definition, novelty-gate bypass Scenario 6, stale five-scenario reference cleanup, focused verification, and non-claims before GAP-ECU-01b.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:gap_ecu_01a_fix2_gini_novelty_contract_hardened"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_01a_fix2_gini_novelty_contract_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_ecu_01a_fix2_gini_novelty_contract_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_252_phase_GAP_ECU_01a_fix2",
+      "chronology_note": "2026-07-29 GAP-ECU-01a Fix2 hardened GAP-ECU-01b execution prompt against stale five-scenario contract assumptions.",
+      "manual_read_summary": "Prompt now requires the amended six-scenario SIM contract, gini over agent-level backward-credit shares, novelty-gate bypass metrics, and thin_node_amplification_factor <= \"2.0\" before GAP-ECU-01b can produce evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_backward_attribution_sim_contract_GAP_ECU_01a_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md"
     }
   ],
   "boundary": {
@@ -71641,8 +71687,8 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_01b_sim_execution.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_01b_sim_execution.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md"
     },
     {
       "annotation_batch": "manual_batch_231_phase_GAP_ECU_planning_hardening",
