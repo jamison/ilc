@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Claim Extractor — segments document text into candidate assertion units.
 
 A "claim" is a declarative statement that asserts a relationship, mechanism,

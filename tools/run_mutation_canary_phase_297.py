@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
 import fcntl
@@ -62,10 +63,10 @@ _CDL026_NEW_SUFFIX = "7 |"
 # Probe 4 — centrality_delta_gossip_version_guard
 # Mutation: changes the ratified Phase 548 runtime version constant.
 _CDL060_GOSSIP_VERSION_LINE = (
-    'CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v0.1"'
+    'CDL_060_GOSSIP_RUNTIME_VERSION = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"'
 )
 _CDL060_GOSSIP_VERSION_MUTANT = (
-    'CDL_060_GOSSIP_RUNTIME_VERSION = "cdl_060_gossip_runtime_548.v9.9"'
+    'CDL_060_GOSSIP_RUNTIME_VERSION = "centrality_delta_gossip_runtime_GAP_CDL060.v9.9"'
 )
 
 # Probe 5 — centrality_delta_gossip_d2d_dependency_guard

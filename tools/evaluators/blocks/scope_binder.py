@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Scope Binder — tags each claim with conditions of applicability.
 
 A claim's scope defines the domain, assumptions, and regime in which it is

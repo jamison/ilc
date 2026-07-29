@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 Convenience wrapper for deterministic Cluster A replay-proof fixture generation.
 """

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Falsifiability Checker — tests whether a claim has an operational falsification condition.
 
 A claim is falsifiable (in the operational ILC sense) if it contains or implies

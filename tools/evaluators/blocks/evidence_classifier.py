@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Evidence Classifier — labels the evidence type backing each claim.
 
 A claim's epistemic strength depends on the type of evidence that supports

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1568-Fix2w H-013 sigma adversary-model simulation.
 
 This is a standalone research/SIM tool. It intentionally imports no ilc_core

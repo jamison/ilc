@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """SIM-SPECTRAL-02 harness: relative epistemic energy signal exploration."""
 
 from __future__ import annotations

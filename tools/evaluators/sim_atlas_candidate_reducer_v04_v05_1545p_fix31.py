@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1545p-Fix31 Atlas v0.4/v0.5 candidate reducer.
 
 This runner is intentionally conservative. It prepares a decision packet over

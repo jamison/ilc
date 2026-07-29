@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Fix53: Apply canonical-only heuristic GOVERNS edges from CDL source patterns.
 
 Four heuristics:

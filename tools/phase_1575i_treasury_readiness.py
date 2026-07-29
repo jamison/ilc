@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Build the Phase 1575i treasury readiness certificate.
 
 This tool is documentation/evidence only. It does not clear treasury guards,

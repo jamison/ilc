@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """SIM-PROVENANCE-01: PROVENANCE decay alpha calibration harness.
 
 AutoResearch-pattern mutable harness. Modify the PARAMETERS block to explore

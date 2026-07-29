@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 835 — settlement-path dry-run preflight tool.
 
 Reads one or more node config JSON files and validates the settlement_path

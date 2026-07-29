@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Domain profiles for the ILC decomposition evaluator.
 
 A profile is a Python module that provides supplementary pattern sets for one

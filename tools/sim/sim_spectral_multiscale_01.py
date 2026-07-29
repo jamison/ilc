@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 H-006b Parts 1-2: multiscale spectral simulation on a synthetic T2-like
 topology.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 316 composed schema/genesis/epoch preflight runner."""
 
 from __future__ import annotations

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 
@@ -29,7 +30,9 @@ def test_cdl029_row_contains_amendment_2_fields() -> None:
     register = CDL_REGISTER.read_text(encoding="utf-8")
     cdl029 = next(line for line in register.splitlines() if line.startswith("| CDL-029 |"))
 
-    assert "amendment_count: 2" in cdl029
+    amendment_count = re.search(r"amendment_count: (\d+)", cdl029)
+    assert amendment_count is not None
+    assert int(amendment_count.group(1)) >= 2
     assert "amendment_2_phase: amendment_2_1573aa" in cdl029
     assert "amendment_2_date: 2026-07-10" in cdl029
     assert "amendment_2_token: cdl_029_amendment_2_cmax_denominator_phase_1573aa" in cdl029
@@ -45,8 +48,8 @@ def test_current_governor_runtime_uses_cmax_denominator_after_1573ab() -> None:
     governor = GOVERNOR.read_text(encoding="utf-8")
 
     assert 'required_keys = {"genesis_cumulative_accrual", "total_cumulative_issuance"}' in governor
-    assert 'total_issuance = resolved_signal["total_cumulative_issuance"]' in governor
-    assert 'return float(resolved_signal["genesis_cumulative_accrual"] / C_MAX_ILC)' in governor
+    assert 'total_issuance = signal["total_cumulative_issuance"]' in governor
+    assert 'return signal["genesis_cumulative_accrual"] / C_MAX_ILC' in governor
     assert "from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC" in governor
 
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Run the Fix52 authority graph SIM battery."""
 
 from __future__ import annotations

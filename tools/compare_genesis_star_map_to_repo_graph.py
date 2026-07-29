@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Compare the proposed Genesis core star-map against observed repo evidence.
 
 This is a research/atlas tool only. It derives an observed hypergraph from

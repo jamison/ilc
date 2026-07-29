@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 SIM-HYPEREDGE-01: Hyperedge weight function W(e) calibration.
 

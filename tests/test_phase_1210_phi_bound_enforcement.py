@@ -140,8 +140,10 @@ def test_phi_bound_uses_decimal_not_float() -> None:
 
 
 def test_runtime_version_contains_1210() -> None:
-    assert "1210" in EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
-    assert "v0.7" in EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
+    assert (
+        EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION
+        == "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
+    )
 
 
 def test_batch_settle_method_forwards_epoch_node_mint_count() -> None:

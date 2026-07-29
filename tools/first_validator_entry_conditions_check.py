@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 836 — First-validator deployment entry conditions verification harness.
 
 Mechanically checks the Phase 826 entry conditions checklist against the
