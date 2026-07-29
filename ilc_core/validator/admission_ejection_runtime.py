@@ -285,6 +285,35 @@ def _penalty_fraction_for_exit_reason(
     return ZERO
 
 
+def _parse_admission_options(
+    admission_options: dict[str, object],
+) -> tuple[tuple[str, ...], int, bool]:
+    allowed = {
+        "current_agent_ids",
+        "trust_tier_consecutive_missed_epochs",
+        "trust_tier_equivocation_state",
+    }
+    unknown = sorted(set(admission_options) - allowed)
+    if unknown:
+        raise ValueError("unknown_validator_admission_option_phase_1353")
+
+    current_agent_ids = admission_options.get("current_agent_ids", [])
+    if current_agent_ids is None:
+        current_agent_ids = []
+    if not isinstance(current_agent_ids, (tuple, list)):
+        raise ValueError("current_agent_ids_must_be_sequence")
+    normalized_agent_ids = _normalize_agent_ids(current_agent_ids)
+    trust_missed_epochs = _require_epoch(
+        admission_options.get("trust_tier_consecutive_missed_epochs", 0),
+        "trust_tier_consecutive_missed_epochs",
+    )
+    trust_equivocation = _require_bool(
+        admission_options.get("trust_tier_equivocation_state", False),
+        "trust_tier_equivocation_state",
+    )
+    return normalized_agent_ids, trust_missed_epochs, trust_equivocation
+
+
 def admit_validator(
     *,
     current_epoch: int,
@@ -293,12 +322,10 @@ def admit_validator(
     validator_id: int,
     agent_id: str,
     stake_ecu: Decimal | int | str,
-    current_agent_ids: tuple[str, ...] | list[str] | None = None,
     prior_exit_reason: str | None = None,
     epochs_since_exit: int | None = None,
     trust_tier_requested: bool = False,
-    trust_tier_consecutive_missed_epochs: int = 0,
-    trust_tier_equivocation_state: bool = False,
+    **admission_options: object,
 ) -> ValidatorAdmissionDecision:
     """Build a default-off CDL-017 admission decision.
 
@@ -314,19 +341,13 @@ def admit_validator(
         raise ValueError("validator_already_active_phase_1353")
 
     validated_agent_id = _require_agent_id(agent_id)
-    normalized_agent_ids = _normalize_agent_ids(current_agent_ids or [])
+    normalized_agent_ids, trust_missed_epochs, trust_equivocation = _parse_admission_options(
+        admission_options
+    )
     if validated_agent_id in normalized_agent_ids:
         raise ValueError("validator_agent_already_active_phase_1353")
     stake = _require_stake(stake_ecu)
     requested_trust_tier = _require_bool(trust_tier_requested, "trust_tier_requested")
-    trust_missed_epochs = _require_epoch(
-        trust_tier_consecutive_missed_epochs,
-        "trust_tier_consecutive_missed_epochs",
-    )
-    trust_equivocation = _require_bool(
-        trust_tier_equivocation_state,
-        "trust_tier_equivocation_state",
-    )
     trust_tier_eligible = is_trust_tier_eligible(
         consecutive_missed_epochs=trust_missed_epochs,
         liveness_miss_threshold=LIVENESS_MISS_THRESHOLD,

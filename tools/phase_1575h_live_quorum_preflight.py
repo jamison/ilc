@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Read-only live-quorum preflight for Phase 1575h.
 
 This tool is intentionally non-activating. It checks repo tokens, runtime guard

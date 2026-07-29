@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Composed security runtime gate for phases 240-243 runtime surfaces.
 
 Contract:

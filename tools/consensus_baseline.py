@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Consensus-only runtime baseline.
 
 Runs only the four consensus measurements (quorum-record generation,

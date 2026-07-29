@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Fix27 semantic pre-pass classifier.
 
 Implements discovered patterns P1-P29 over the Fix26 deferred queue.

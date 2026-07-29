@@ -89,7 +89,11 @@ def test_fix62i_lmdb_contains_support_edges_and_node_classification() -> None:
 
     for entry in repo_sample:
         node_id = entry["candidate_id"]
-        assert (node_id, "SOURCE_TREE_MEMBER", SOURCE_TREE_MANIFEST) in edge_semantics
+        source_tree_edge = (node_id, "SOURCE_TREE_MEMBER", SOURCE_TREE_MANIFEST)
+        if _fix66_complete():
+            assert source_tree_edge not in edge_semantics
+        else:
+            assert source_tree_edge in edge_semantics
 
 
 def test_fix62i_status_tokens_and_non_claims() -> None:

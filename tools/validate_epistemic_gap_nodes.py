@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Validate epistemic_gap nodes in a Genesis Atlas candidate graph.
 
 This validator intentionally avoids a jsonschema runtime dependency. It checks

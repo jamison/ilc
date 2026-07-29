@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Apply the Phase 1573aj Atlas edge-retirement migration.
 
 This tool consumes the source-read replacement plan emitted by Phase 1573ai-Fix1,

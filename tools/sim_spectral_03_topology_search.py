@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """SIM-SPECTRAL-03 topology calibration search for Phase 1145a.
 
 This is a non-canonical research harness. It does not mutate the signed Genesis

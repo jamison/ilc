@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Build Phase 1575j validator reward distribution rehearsal evidence.
 
 This tool is retained private rehearsal evidence only. It does not clear

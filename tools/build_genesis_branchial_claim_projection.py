@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Build the SIM-SPECTRAL-05 branchial claim-state projection.
 
 The artifact is research/simulation scope. It is deterministic and leaves signed

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """SIM-SPECTRAL-05 Track A structural discriminant calibration."""
 
 from __future__ import annotations

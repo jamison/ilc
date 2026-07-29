@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Diagnose whether the Genesis core star-map can compile the observed repo graph.
 
 This is a research/atlas diagnostic only. It does not mutate protocol runtime state.

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 SIM-BEACON-01: privacy / utility calibration for spectral beacon emission.
 

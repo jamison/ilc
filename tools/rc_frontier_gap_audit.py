@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Deterministic RC frontier gap audit for Phase 1250 Fix1.
 
 This is a planning/audit tool, not runtime code. It re-runs the useful part of

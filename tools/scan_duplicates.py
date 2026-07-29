@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Scan for duplicate definitions and imports in the codebase.
 
 CI-friendly: exits with code 2 when duplicates found, 1 for errors, 0 for clean.

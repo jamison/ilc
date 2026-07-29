@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Prepare a no-push public release propagation receipt.
 
 This tool is local-only. It records the source commit, source-export rehearsal

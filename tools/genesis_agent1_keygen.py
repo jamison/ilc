@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Genesis Agent 1 permanent PQ keypair generator — Phase 838a.
 
 Calls the pq_keygen Rust binary (CDL-069 compliant) and optionally writes

@@ -1,5 +1,7 @@
 import sys
 import os
+from decimal import Decimal
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from ilc_core.graph import EpistemicGraph
@@ -49,7 +51,7 @@ def test_auto_mine_uses_archetype_strategy():
     archetypes = load_hardware_archetypes()
     asic = archetypes["asic"]
 
-    agent.wallet_balance = 10.0
+    agent.wallet_balance = Decimal("10")
     configure_agent_from_archetype(agent, asic)
 
     parent = "axiom:math:01"
@@ -58,4 +60,4 @@ def test_auto_mine_uses_archetype_strategy():
     assert node is not None
     assert node.id in graph.nodes
     # Agent should have spent some stake according to its strategy.
-    assert agent.wallet_balance < 10.0
+    assert agent.wallet_balance < Decimal("10")

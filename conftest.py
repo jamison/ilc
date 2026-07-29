@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Project-level pytest configuration.
 
 Ensures that subprocess calls within tests (which use bare "python3") resolve

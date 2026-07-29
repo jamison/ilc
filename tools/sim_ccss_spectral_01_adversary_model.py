@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 1573h CCSS-SPECTRAL-01 adversary-model simulation.
 
 The relay adversary sees fresh opaque token material, not lambda vectors. Under

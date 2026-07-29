@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Composed security ratification verification gate for Phase 252.
 
 Verifies Phase-251 ratification integrity and regresses security-runtime behavior.

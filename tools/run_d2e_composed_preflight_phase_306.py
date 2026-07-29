@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Phase 306 composed query/verify/bundle preflight runner.
 
 This helper executes deterministic cross-lane scenarios and emits a machine-readable

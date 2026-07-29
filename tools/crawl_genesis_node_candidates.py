@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """Deterministically crawl candidate Genesis-level graph nodes.
 
 This is a research/atlas tool only. It does not mutate protocol runtime state.

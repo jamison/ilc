@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: AGPL-3.0-only
 """
 SIM-EMBED-01: embedding model calibration per payload-modality family.
 
