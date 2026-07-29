@@ -63,6 +63,7 @@ def test_gap_ecu_01a_contract_preserves_cdl083_cdl084_no_double_pay():
     assert 'duplicate_refutation_credit == "0"' in text
     assert "same downstream/upstream/event triple is paid by both CDL-084 and backward attribution" in text
     assert "cdl084_explicit_chain_already_settled" in text
+    assert "`settle_attribution_batch()` processing `AttributionEvent` objects" in text
 
 
 def test_gap_ecu_01a_contract_requires_machine_verifiable_evidence():
@@ -95,8 +96,9 @@ def test_gap_ecu_01a_human_review_gate_and_non_claims_are_recorded():
 
 def test_gap_ecu_01a_status_and_walkthrough_tokens():
     status = STATUS.read_text(encoding="utf-8")
+    block = status.split("### Phase GAP-ECU-01a", 1)[1].split("\n### ", 1)[0]
     walkthrough = WALKTHROUGH.read_text(encoding="utf-8")
     token = "backward_attribution_sim_contract_committed_GAP_ECU_01a"
-    assert token in status
+    assert token in block
     assert token in walkthrough
-    assert "pending human review before GAP-ECU-01b" in status
+    assert "pending human review before GAP-ECU-01b" in block
