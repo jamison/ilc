@@ -65262,6 +65262,101 @@
       ],
       "recommended_graph_action": "support_only:tests/test_gap_ecu_00_canon_reconciliation.py",
       "repo_path": "tests/test_gap_ecu_00_canon_reconciliation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
+      "chronology_note": "2026-07-29 GAP-ECU-01a / Phase 1595b backward attribution SIM contract committed before simulation execution.",
+      "manual_read_summary": "Spec locks the GAP-ECU-01b backward-attribution simulation contract: parameter grid for all nine Phase 1492p surfaces, five adversarial scenarios, CDL-083/CDL-084 no-double-count checks, evidence schema, viability criteria, and human-review gate.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:backward_attribution_sim_contract_committed_GAP_ECU_01a"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-083"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-084"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_ecu_backward_attribution_canon_reconciliation_GAP_ECU_00_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_backward_attribution_classification_spec_1492p_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_backward_attribution_sim_contract_GAP_ECU_01a_v0.1.md -> governance/backward-attribution-cdl-candidate",
+      "repo_path": "docs/specs/ilc_backward_attribution_sim_contract_GAP_ECU_01a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
+      "chronology_note": "2026-07-29 GAP-ECU-01a walkthrough records SIM-contract execution and review gate before GAP-ECU-01b.",
+      "manual_read_summary": "Walkthrough records source reads, the exact nine parameter surfaces, adversarial scenario summaries, no-double-counting contract, viability criteria, human-review gate, verification outputs, ledger batch, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:backward_attribution_sim_contract_committed_GAP_ECU_01a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_01a_sim_contract_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_ecu_01a_sim_contract_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_GAP_ECU_01a",
+      "chronology_note": "2026-07-29 GAP-ECU-01a focused regression test protects SIM-contract completeness before GAP-ECU-01b.",
+      "manual_read_summary": "Focused tests verify the GAP-ECU-01a contract covers all nine parameter surfaces, five adversarial scenarios, specific anti-gaming thresholds, CDL-083/CDL-084 no-double-pay requirements, evidence schema, human-review gate, non-claims, and STATUS/walkthrough tokens.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_backward_attribution_sim_contract_GAP_ECU_01a_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/phases/phase_gap_ecu_01a_sim_contract_walkthrough.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_ecu_01a_sim_contract.py",
+      "repo_path": "tests/test_gap_ecu_01a_sim_contract.py"
     }
   ],
   "boundary": {
