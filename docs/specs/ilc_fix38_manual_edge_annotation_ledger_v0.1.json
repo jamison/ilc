@@ -65426,6 +65426,87 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595c_g10_gap_ecu_01b_sim_execution.md"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_GAP_ECU_01b",
+      "chronology_note": "2026-07-30 GAP-ECU-01b executed the deterministic backward-attribution SIM contract and produced candidate parameter recommendations for GAP-ECU-02.",
+      "manual_read_summary": "All six adversarial scenarios passed for the locked recommended region; Scenario 6 records novelty_filtered_or_discounted_count=120, proving active novelty-discount instrumentation rather than inferred novelty behavior.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:backward_attribution_sim_contract_committed_GAP_ECU_01a"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "phase:gap_ecu_01a_fix2_gini_novelty_contract_hardened"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_backward_attribution_sim_results_GAP_ECU_01b_v0.1.md -> governance/backward-attribution-cdl-candidate",
+      "repo_path": "docs/specs/ilc_backward_attribution_sim_results_GAP_ECU_01b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_GAP_ECU_01b",
+      "chronology_note": "2026-07-30 GAP-ECU-01b executed the deterministic backward-attribution SIM contract and produced candidate parameter recommendations for GAP-ECU-02.",
+      "manual_read_summary": "All six adversarial scenarios passed for the locked recommended region; Scenario 6 records novelty_filtered_or_discounted_count=120, proving active novelty-discount instrumentation rather than inferred novelty behavior.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:backward_attribution_sim_contract_committed_GAP_ECU_01a"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "phase:gap_ecu_01a_fix2_gini_novelty_contract_hardened"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_ecu_01b_backward_attribution_sim.py",
+      "repo_path": "tests/test_gap_ecu_01b_backward_attribution_sim.py"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_GAP_ECU_01b",
+      "chronology_note": "2026-07-30 GAP-ECU-01b executed the deterministic backward-attribution SIM contract and produced candidate parameter recommendations for GAP-ECU-02.",
+      "manual_read_summary": "All six adversarial scenarios passed for the locked recommended region; Scenario 6 records novelty_filtered_or_discounted_count=120, proving active novelty-discount instrumentation rather than inferred novelty behavior.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:backward_attribution_sim_contract_committed_GAP_ECU_01a"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "phase:gap_ecu_01a_fix2_gini_novelty_contract_hardened"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_01b_sim_execution_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_ecu_01b_sim_execution_walkthrough.md"
     }
   ],
   "boundary": {
