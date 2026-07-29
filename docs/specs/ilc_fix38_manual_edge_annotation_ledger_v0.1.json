@@ -64936,13 +64936,13 @@
     {
       "annotation_batch": "manual_batch_247_phase_GAP_REPUTATION_planning",
       "chronology_note": "2026-07-28 GAP-REPUTATION lane planning: six phase prompts for agent reputation gap closure.",
-      "manual_read_summary": "Phase prompt for GAP-REPUTATION-01: CDL-103 opening defining AgentReputationRecord schema.",
+      "manual_read_summary": "Phase prompt for GAP-REPUTATION-01: CDL-106 opening defining AgentReputationRecord schema.",
       "node_kind": "phase_prompt",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "GOVERNS",
           "review_status": "candidate",
-          "target": "phase:reputation_record_cdl_103_opened_GAP_REPUTATION_01"
+          "target": "phase:reputation_record_cdl_106_opened_GAP_REPUTATION_01"
         }
       ],
       "proposed_semantic_edges": [
@@ -65057,6 +65057,111 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1589f_g10_gap_reputation_05_rust_binding.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1589f_g10_gap_reputation_05_rust_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_248_phase_GAP_REPUTATION_01",
+      "chronology_note": "2026-07-29 GAP-REPUTATION-01 opened CDL-106 AgentReputationRecord schema after explicit human GO.",
+      "manual_read_summary": "CDL-106 opening document defines AgentReputationRecord as a first-class CID-addressed immutable epoch-bound graph node and AgentReputationRoot commitment; no runtime activation, scoring formula, validator admission, ECU/ILC settlement, or public mirror push.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:reputation_record_cdl_106_opened_GAP_REPUTATION_01"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-034"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-035"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-042"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-V1"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-V2"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_reputation_gap_audit_GAP_REPUTATION_00_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added: docs/specs/ilc_cdl_106_agent_reputation_record_opening_GAP_REPUTATION_01_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_106_agent_reputation_record_opening_GAP_REPUTATION_01_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_248_phase_GAP_REPUTATION_01",
+      "chronology_note": "2026-07-29 GAP-REPUTATION-01 walkthrough records CDL-106 opening execution and verification outputs.",
+      "manual_read_summary": "Phase walkthrough records the AgentReputationRecord field table, AgentReputationRoot definition, non-claims, verification commands, and focused-test disposition for the CDL-106 opening.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:reputation_record_cdl_106_opened_GAP_REPUTATION_01"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_01_cdl_106_opening_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_reputation_01_cdl_106_opening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_248_phase_GAP_REPUTATION_01",
+      "chronology_note": "2026-07-29 GAP-REPUTATION-01 focused regression test for CDL-106 opening artifacts.",
+      "manual_read_summary": "Focused test verifies the CDL-106 opening field list, non-activation boundaries, canonical AgentReputationRoot serialization constraints, register row, and STATUS output token.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_106_agent_reputation_record_opening_GAP_REPUTATION_01_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1589b_cdl106_opening.py",
+      "repo_path": "tests/test_phase_1589b_cdl106_opening.py"
     }
   ],
   "boundary": {
