@@ -65507,6 +65507,85 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_01b_sim_execution_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_ecu_01b_sim_execution_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_GAP_ECU_02",
+      "chronology_note": "2026-07-30 GAP-ECU-02 opened CDL-108 for backward attribution after GAP-ECU-01b SIM evidence passed all six adversarial scenarios.",
+      "manual_read_summary": "CDL-108 records all nine candidate backward-attribution parameter surfaces and carries forward mandatory evidence-limit conditions for cap semantics, CDL-083 scope, CDL-085 phi-bound interaction, invite-init mechanics, and production calibration.",
+      "node_kind": "cdl_opening_document",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_backward_attribution_sim_results_GAP_ECU_01b_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_083_refutation_economics_ratification_evidence_1420_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_084_provenance_chain_attribution_ratification_evidence_1422_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:backward_attribution_cdl_opened_GAP_ECU_02"
+        },
+        {
+          "edge_type": "CARRIES_FORWARD",
+          "target": "phase:backward_attribution_sim_results_committed_GAP_ECU_01b"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "GOVERNS",
+        "CARRIES_FORWARD",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_108_backward_attribution_opening_GAP_ECU_02_v0.1.md -> governance/cdl-108-backward-attribution-opening",
+      "repo_path": "docs/specs/ilc_cdl_108_backward_attribution_opening_GAP_ECU_02_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_GAP_ECU_02",
+      "chronology_note": "2026-07-30 GAP-ECU-02 opened CDL-108 for backward attribution after GAP-ECU-01b SIM evidence passed all six adversarial scenarios.",
+      "manual_read_summary": "Phase walkthrough records the GO phrase, conflict-free CDL-108 assignment, verification commands, non-activation boundary, and output token for the backward-attribution CDL opening.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1595d_g10_gap_ecu_02_cdl_opening.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_opening_GAP_ECU_02_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:backward_attribution_cdl_opened_GAP_ECU_02"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_02_cdl_opening_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_ecu_02_cdl_opening_walkthrough.md"
     }
   ],
   "boundary": {
