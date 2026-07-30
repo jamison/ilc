@@ -13,6 +13,7 @@ per-event provenance cannot masquerade as graph-derived backward attribution.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -203,6 +204,26 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     except Exception:
         tmp_path.unlink(missing_ok=True)
         raise
+
+
+def _backward_attribution_batch_root(backward_entries: list[dict[str, Any]]) -> str | None:
+    if not backward_entries:
+        return None
+    sorted_entries = sorted(
+        backward_entries,
+        key=lambda item: (
+            item["event_id"],
+            item["upstream_artifact_id"],
+            item["recipient_agent_id"],
+        ),
+    )
+    preimage = json.dumps(
+        sorted_entries,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    return hashlib.sha256(preimage).hexdigest()
 
 
 def build_attribution_batch_from_claims(
@@ -406,17 +427,24 @@ def build_attribution_batch_from_claims(
         "attributions": attributions,
     }
     if backward_attribution_graph_context is not None:
+        sorted_backward_entries = sorted(
+            backward_entries,
+            key=lambda item: (
+                item["event_id"],
+                item["upstream_artifact_id"],
+                item["recipient_agent_id"],
+            ),
+        )
         batch.update(
             {
                 "backward_attribution_caps_applied": True,
                 "backward_attribution_entry_count": len(backward_entries),
-                "backward_attribution_entries": sorted(
-                    backward_entries,
-                    key=lambda item: (
-                        item["event_id"],
-                        item["upstream_artifact_id"],
-                        item["recipient_agent_id"],
-                    ),
+                "backward_attribution_entries": sorted_backward_entries,
+                "backward_attribution_batch_root": (
+                    _backward_attribution_batch_root(sorted_backward_entries)
+                ),
+                "backward_attribution_batch_root_algorithm": (
+                    "sha256_sorted_backward_attribution_entries_v1"
                 ),
                 "backward_attribution_marker": (
                     "backward_attribution_runtime_wired_GAP_ECU_04b"

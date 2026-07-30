@@ -382,6 +382,8 @@ pub enum ILCConsensusError {
 pub struct AttributionBatch {
     pub epoch: EpochSeq,
     pub attributions: Vec<(AgentID, u64)>, // Added micro-ecu additions
+    #[serde(default)]
+    pub backward_attribution_batch_root: Option<[u8; 32]>,
 }
 
 #[cfg(test)]
