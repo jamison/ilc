@@ -14,6 +14,7 @@ per-event provenance cannot masquerade as graph-derived backward attribution.
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import tempfile
@@ -22,11 +23,17 @@ from pathlib import Path
 from typing import Any
 
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
+from ilc_core.economics.backward_attribution_traversal import (
+    BACKWARD_ATTRIBUTION_CDL_VERSION,
+    BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP,
+    BackwardAttributionTraversal,
+)
 
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
 MAX_CLAIMS_PER_BATCH = 10_000
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+ATTRIBUTION_EVENT_LOG_KEY_PREFIX = b"attr_event:"
 
 
 class AttributionBatchBridgeError(ValueError):
@@ -105,10 +112,106 @@ def _amount_to_micro_ecu(amount: Decimal) -> tuple[int, Decimal]:
     return int(floored), dust
 
 
+def _append_amount(
+    aggregated: dict[str, dict[str, Any]],
+    *,
+    agent_id: str,
+    amount: Decimal,
+    source_id: str,
+) -> tuple[int, Decimal]:
+    micro_amount, dust = _amount_to_micro_ecu(amount)
+    entry = aggregated.setdefault(
+        agent_id,
+        {
+            "agent_id_hex": agent_id,
+            "amount_micro_ecu": 0,
+            "source_amount_ecu": Decimal("0"),
+            "source_claim_ids": [],
+            "dust_ecu": Decimal("0"),
+        },
+    )
+    entry["amount_micro_ecu"] += micro_amount
+    entry["source_amount_ecu"] += amount
+    entry["dust_ecu"] += dust
+    entry["source_claim_ids"].append(source_id)
+    return micro_amount, dust
+
+
+def _require_backward_graph_context(value: Any) -> dict[str, Any]:
+    context = _require_dict("backward_attribution_graph_context", value)
+    if not isinstance(context.get("nodes"), dict):
+        raise AttributionBatchBridgeError(
+            "backward_attribution_nodes_required",
+            "backward attribution graph context requires nodes",
+        )
+    if not isinstance(context.get("edges"), list):
+        raise AttributionBatchBridgeError(
+            "backward_attribution_edges_required",
+            "backward attribution graph context requires edges",
+        )
+    if not isinstance(context.get("events"), list) or not context["events"]:
+        raise AttributionBatchBridgeError(
+            "backward_attribution_events_required",
+            "backward attribution graph context requires events",
+        )
+    return context
+
+
+def _require_backward_event(value: Any) -> dict[str, Any]:
+    event = _require_dict("backward_attribution_event", value)
+    _require_non_empty_bridge_string(event.get("event_id"), "backward_event_id_required")
+    _require_non_empty_bridge_string(
+        event.get("source_node_id"),
+        "backward_source_node_id_required",
+    )
+    _require_epoch(event.get("event_epoch"))
+    _require_decimal_amount(event.get("event_budget_ecu"))
+    return event
+
+
+def _require_non_empty_bridge_string(value: Any, token: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise AttributionBatchBridgeError(token, token)
+    return value.strip()
+
+
+def _attribution_event_log_key(epoch: int, ordinal: int) -> str:
+    key = (
+        ATTRIBUTION_EVENT_LOG_KEY_PREFIX
+        + epoch.to_bytes(8, "little", signed=False)
+        + ordinal.to_bytes(8, "little", signed=False)
+    )
+    return key.hex()
+
+
+def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+        text=True,
+    )
+    tmp_path = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, sort_keys=True, separators=(",", ":"), allow_nan=False)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_path, path)
+    except Exception:
+        tmp_path.unlink(missing_ok=True)
+        raise
+
+
 def build_attribution_batch_from_claims(
     claim_payload: dict[str, Any],
     *,
     epoch: int | None = None,
+    backward_attribution_graph_context: dict[str, Any] | None = None,
+    attribution_event_log_dir: str | Path | None = None,
+    cdl084_settled_event_ids: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
     """Build a Rust `AttributionBatch` JSON payload from accepted claims.
 
@@ -141,9 +244,7 @@ def build_attribution_batch_from_claims(
             )
         agent_id = _require_agent_id(claim.get("agent_id"))
         amount = _require_decimal_amount(claim.get("amount"))
-        micro_amount, dust = _amount_to_micro_ecu(amount)
         total_source += amount
-        total_dust += dust
         claim_id = claim.get("claim_id")
         if not isinstance(claim_id, str) or not claim_id:
             raise AttributionBatchBridgeError("claim_id_required", "each claim must have a claim_id")
@@ -153,20 +254,126 @@ def build_attribution_batch_from_claims(
                 "claim_id values must be unique within an attribution batch",
             )
         seen_claim_ids.add(claim_id)
-        entry = aggregated.setdefault(
-            agent_id,
-            {
-                "agent_id_hex": agent_id,
-                "amount_micro_ecu": 0,
-                "source_amount_ecu": Decimal("0"),
-                "source_claim_ids": [],
-                "dust_ecu": Decimal("0"),
-            },
+        _, dust = _append_amount(
+            aggregated,
+            agent_id=agent_id,
+            amount=amount,
+            source_id=claim_id,
         )
-        entry["amount_micro_ecu"] += micro_amount
-        entry["source_amount_ecu"] += amount
-        entry["dust_ecu"] += dust
-        entry["source_claim_ids"].append(claim_id)
+        total_dust += dust
+
+    backward_entries: list[dict[str, Any]] = []
+    attribution_event_log: list[dict[str, Any]] = []
+    total_backward_final = Decimal("0")
+    total_backward_unissued = Decimal("0")
+    if backward_attribution_graph_context is not None:
+        context = _require_backward_graph_context(backward_attribution_graph_context)
+        traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
+        settled_ids = frozenset(cdl084_settled_event_ids or ())
+        for ordinal, raw_event in enumerate(context["events"]):
+            event = _require_backward_event(raw_event)
+            event_id = _require_non_empty_bridge_string(
+                event["event_id"],
+                "backward_event_id_required",
+            )
+            event_epoch = _require_epoch(event["event_epoch"])
+            if selected_epoch is not None and event_epoch != selected_epoch:
+                raise AttributionBatchBridgeError(
+                    "backward_event_epoch_must_match_batch_epoch",
+                    "backward attribution events must share the batch epoch",
+                )
+            selected_epoch = event_epoch
+            source_node_id = _require_non_empty_bridge_string(
+                event["source_node_id"],
+                "backward_source_node_id_required",
+            )
+            event_budget = _require_decimal_amount(event["event_budget_ecu"])
+            log_key = _attribution_event_log_key(event_epoch, ordinal)
+            if event_id in settled_ids or event.get("already_settled_by_cdl084") is True:
+                log_record = {
+                    "cdl084_explicit_chain_preserved": True,
+                    "credit_amount": "0",
+                    "dedup_reason": "cdl084_explicit_chain_already_settled",
+                    "edge_type": "PROVENANCE",
+                    "epoch": event_epoch,
+                    "event_id": event_id,
+                    "lmdb_key_hex": log_key,
+                    "source_node_cid": source_node_id,
+                }
+                attribution_event_log.append(log_record)
+                continue
+
+            result = traversal.traverse(
+                source_node_id,
+                event_id=event_id,
+                event_budget_ecu=event_budget,
+                event_epoch=event_epoch,
+                apply_antigaming_caps=True,
+            )
+            total_backward_unissued += result.unissued_backward_pool_ecu
+            for final_credit in result.final_credits:
+                cap_applied = (
+                    final_credit.node_cap_applied
+                    or final_credit.agent_cap_applied
+                    or final_credit.cluster_cap_applied
+                )
+                applied_cap_values = []
+                if final_credit.node_cap_applied:
+                    applied_cap_values.append(result.node_cap_amount_ecu)
+                if final_credit.agent_cap_applied:
+                    applied_cap_values.append(result.agent_cap_amount_ecu)
+                if final_credit.cluster_cap_applied:
+                    applied_cap_values.append(result.cluster_cap_amount_ecu)
+                cap_value = min(applied_cap_values) if applied_cap_values else None
+                entry = {
+                    "agent_cap_applied": final_credit.agent_cap_applied,
+                    "anti_gaming_cap_applied": cap_applied,
+                    "cap_value": (
+                        decimal_to_canonical_string(cap_value)
+                        if cap_value is not None
+                        else None
+                    ),
+                    "clipped_residual_ecu": decimal_to_canonical_string(
+                        final_credit.clipped_residual_ecu
+                    ),
+                    "cluster_cap_applied": final_credit.cluster_cap_applied,
+                    "cluster_id": final_credit.cluster_id,
+                    "credit_amount": decimal_to_canonical_string(
+                        final_credit.final_credit_ecu
+                    ),
+                    "edge_type": "PROVENANCE",
+                    "epoch": event_epoch,
+                    "event_id": final_credit.event_id,
+                    "hop_count": final_credit.depth,
+                    "lmdb_key_hex": log_key,
+                    "node_cap_applied": final_credit.node_cap_applied,
+                    "pre_cap_credit_ecu": decimal_to_canonical_string(
+                        final_credit.pre_cap_credit_ecu
+                    ),
+                    "recipient_agent_id": final_credit.recipient_agent_id,
+                    "source_node_cid": source_node_id,
+                    "upstream_artifact_id": final_credit.upstream_artifact_id,
+                }
+                attribution_event_log.append(entry)
+                backward_entries.append(entry)
+                if final_credit.final_credit_ecu > Decimal("0"):
+                    recipient_agent_id = _require_agent_id(final_credit.recipient_agent_id)
+                    _, dust = _append_amount(
+                        aggregated,
+                        agent_id=recipient_agent_id,
+                        amount=final_credit.final_credit_ecu,
+                        source_id=f"backward:{event_id}:{final_credit.upstream_artifact_id}",
+                    )
+                    total_dust += dust
+                    total_backward_final += final_credit.final_credit_ecu
+        if attribution_event_log_dir is not None:
+            log_dir = Path(attribution_event_log_dir)
+            for index, record in enumerate(attribution_event_log):
+                _write_json_atomic(
+                    log_dir / f"attr_event_{selected_epoch}_{index:04d}.json",
+                    record,
+                )
+        total_source += total_backward_final
 
     if selected_epoch is None:
         raise AttributionBatchBridgeError("attribution_epoch_required", "attribution epoch is required")
@@ -185,7 +392,7 @@ def build_attribution_batch_from_claims(
             }
         )
 
-    return {
+    batch = {
         "marker": "attribution_batch_bridge_ok",
         "runtime_version": ATTRIBUTION_BATCH_BRIDGE_VERSION,
         "epoch": selected_epoch,
@@ -198,6 +405,43 @@ def build_attribution_batch_from_claims(
         "total_dust_ecu": decimal_to_canonical_string(total_dust),
         "attributions": attributions,
     }
+    if backward_attribution_graph_context is not None:
+        batch.update(
+            {
+                "backward_attribution_caps_applied": True,
+                "backward_attribution_entry_count": len(backward_entries),
+                "backward_attribution_entries": sorted(
+                    backward_entries,
+                    key=lambda item: (
+                        item["event_id"],
+                        item["upstream_artifact_id"],
+                        item["recipient_agent_id"],
+                    ),
+                ),
+                "backward_attribution_marker": (
+                    "backward_attribution_runtime_wired_GAP_ECU_04b"
+                ),
+                "backward_attribution_runtime_version": BACKWARD_ATTRIBUTION_CDL_VERSION,
+                "backward_attribution_total_final_credit_ecu": (
+                    decimal_to_canonical_string(total_backward_final)
+                ),
+                "backward_attribution_total_unissued_ecu": (
+                    decimal_to_canonical_string(total_backward_unissued)
+                ),
+                "attribution_event_log": sorted(
+                    attribution_event_log,
+                    key=lambda item: (
+                        item["event_id"],
+                        item.get("upstream_artifact_id", ""),
+                        item.get("recipient_agent_id", ""),
+                    ),
+                ),
+                "sybil_diversity_guard_cdl_gap": (
+                    BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP
+                ),
+            }
+        )
+    return batch
 
 
 def apply_attribution_batch_with_rust(
