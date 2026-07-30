@@ -595,39 +595,43 @@ class BackwardAttributionTraversal:
                     event_epoch,
                     next_confidence,
                 )
-                if raw_score == ZERO:
-                    continue
-                scores.append(
-                    BackwardAttributionPathScore(
-                        event_id=event_id,
-                        upstream_artifact_id=upstream_node.node_id,
-                        recipient_agent_id=upstream_node.recipient_agent_id,
-                        depth=next_depth,
-                        path_node_ids=next_path_nodes,
-                        path_edge_types=next_edge_types,
-                        raw_path_score=raw_score,
-                        age_weight=_age_weight(
-                            upstream_node.created_epoch,
-                            event_epoch,
-                        ),
-                        typed_path_weight=ONE,
-                        artifact_weight=ONE,
-                        status_quality_weight=upstream_node.status_quality_weight,
-                        novelty_weight=_novelty_weight(upstream_node),
-                        edge_confidence_weight=next_confidence,
-                        path_edge_confidences=next_edge_confidences,
+                if raw_score > ZERO:
+                    scores.append(
+                        BackwardAttributionPathScore(
+                            event_id=event_id,
+                            upstream_artifact_id=upstream_node.node_id,
+                            recipient_agent_id=upstream_node.recipient_agent_id,
+                            depth=next_depth,
+                            path_node_ids=next_path_nodes,
+                            path_edge_types=next_edge_types,
+                            raw_path_score=raw_score,
+                            age_weight=_age_weight(
+                                upstream_node.created_epoch,
+                                event_epoch,
+                            ),
+                            typed_path_weight=ONE,
+                            artifact_weight=ONE,
+                            status_quality_weight=upstream_node.status_quality_weight,
+                            novelty_weight=_novelty_weight(upstream_node),
+                            edge_confidence_weight=next_confidence,
+                            path_edge_confidences=next_edge_confidences,
+                        )
                     )
-                )
-                stack.append(
-                    (
-                        edge.target_node_id,
-                        next_depth,
-                        next_path_nodes,
-                        next_edge_types,
-                        next_confidence,
-                        next_edge_confidences,
+                # CDL-108 scores each upstream artifact as a terminal. A node
+                # that earns zero credit remains a valid routing hop through
+                # typed edges, so foundational upstream work is not erased by
+                # a weak or excluded intermediate artifact.
+                if next_depth < BACKWARD_ATTRIBUTION_MAX_DEPTH:
+                    stack.append(
+                        (
+                            edge.target_node_id,
+                            next_depth,
+                            next_path_nodes,
+                            next_edge_types,
+                            next_confidence,
+                            next_edge_confidences,
+                        )
                     )
-                )
         return scores, cycle_count, repeated_count, len(traversed_node_ids), traversed_edges
 
     @staticmethod
