@@ -65838,6 +65838,147 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595f_g10_gap_ecu_03_cdl_ratification.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595f_g10_gap_ecu_03_cdl_ratification.md"
+    },
+    {
+      "annotation_batch": "manual_batch_257_phase_GAP_ECU_04a",
+      "chronology_note": "2026-07-30 GAP-ECU-04a implemented the isolated CDL-108 backward attribution traversal engine core.",
+      "manual_read_summary": "Runtime module implements BackwardAttributionTraversal with ratified CDL-108 constants, typed-edge traversal, Decimal-only scoring, cycle/repeated-node rejection, duplicate collapse, novelty and artifact gates, and event-local backward-pool quote generation. It is not wired to production settlement.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_prelock_GAP_ECU_02b_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_opening_GAP_ECU_02_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:backward_attribution_cdl_ratified_GAP_ECU_03"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:backward_attribution_traversal_engine_committed_GAP_ECU_04a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/economics/backward_attribution_traversal.py -> governance/backward-attribution-cdl-ratified",
+      "repo_path": "ilc_core/economics/backward_attribution_traversal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_257_phase_GAP_ECU_04a",
+      "chronology_note": "2026-07-30 GAP-ECU-04a added focused tests for the isolated backward attribution traversal engine.",
+      "manual_read_summary": "Tests cover two-hop traversal, cycle termination, max-depth enforcement, decay, bidirectional coefficient separation, dead ends, refuted upstream nodes, non-finite Decimal rejection, novelty gating, duplicate artifact collapse, event-id collapse, and cap-reference amounts.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/backward_attribution_traversal.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:backward_attribution_traversal_engine_committed_GAP_ECU_04a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_ecu_04a_backward_attribution_traversal.py",
+      "repo_path": "tests/test_gap_ecu_04a_backward_attribution_traversal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_257_phase_GAP_ECU_04a",
+      "chronology_note": "2026-07-30 GAP-ECU-04a recorded execution evidence and verification outputs for the traversal engine core.",
+      "manual_read_summary": "Walkthrough records source reads, MemPalace context, ratified constants, cycle and duplicate handling, refutation rule, verification outputs, non-activation boundary, ledger update, and output token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1595g_g10_gap_ecu_04a_traversal_engine.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/backward_attribution_traversal.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:backward_attribution_traversal_engine_committed_GAP_ECU_04a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_257_phase_GAP_ECU_04a",
+      "chronology_note": "2026-07-30 GAP-ECU-04a added validator-compliant numeric phase-prompt alias for the traversal engine core.",
+      "manual_read_summary": "Prompt alias phase 1595g-G10 preserves the same GAP-ECU-04a GO phrase and authority boundary while satisfying the phase-prompt filename and section validator.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_04a_traversal_engine.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:backward_attribution_traversal_engine_committed_GAP_ECU_04a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595g_g10_gap_ecu_04a_traversal_engine.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595g_g10_gap_ecu_04a_traversal_engine.md"
     }
   ],
   "boundary": {
