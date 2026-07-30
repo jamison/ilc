@@ -7,10 +7,14 @@ from ilc_core.economics.backward_attribution_traversal import (
     BACKWARD_ATTRIBUTION_DECAY_ALPHA,
     BACKWARD_ATTRIBUTION_FORWARD_RETAINED_SHARE,
     BACKWARD_ATTRIBUTION_MAX_DEPTH,
+    BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES,
+    BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES,
     BACKWARD_ATTRIBUTION_NOVELTY_MINIMUM_SCORE,
     BACKWARD_ATTRIBUTION_PER_AGENT_CAP,
     BACKWARD_ATTRIBUTION_PER_CLUSTER_CAP,
     BACKWARD_ATTRIBUTION_PER_NODE_CAP,
+    BackwardAttributionEdge,
+    BackwardAttributionNode,
     BackwardAttributionTraversal,
 )
 
@@ -196,6 +200,59 @@ def test_thin_node_below_novelty_gate_gets_no_credit() -> None:
     assert result.credits == ()
 
 
+def test_novelty_threshold_is_inclusive() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(
+                agent="agent-b",
+                novelty=str(BACKWARD_ATTRIBUTION_NOVELTY_MINIMUM_SCORE),
+            ),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert [credit.upstream_artifact_id for credit in result.credits] == ["B"]
+    assert result.path_scores[0].novelty_weight == BACKWARD_ATTRIBUTION_NOVELTY_MINIMUM_SCORE
+
+
+def test_missing_status_quality_weight_fails_closed() -> None:
+    node_without_status = {
+        "artifact_type": "claim",
+        "recipient_agent_id": "agent-b",
+        "created_epoch": 0,
+        "novelty_score": Decimal("1"),
+    }
+    engine = _engine(
+        {"A": _node(agent="agent-a"), "B": node_without_status},
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+    assert result.unissued_backward_pool_ecu == result.backward_pool_ecu
+
+
+def test_missing_edge_confidence_fails_closed() -> None:
+    edge_without_confidence = {
+        "source_node_id": "A",
+        "target_node_id": "B",
+        "edge_type": "PROVENANCE",
+    }
+    engine = _engine(
+        {"A": _node(agent="agent-a"), "B": _node(agent="agent-b")},
+        [edge_without_confidence],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+    assert result.unissued_backward_pool_ecu == result.backward_pool_ecu
+
+
 def test_thin_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
     engine = _engine(
         {
@@ -209,6 +266,120 @@ def test_thin_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
     result = _quote(engine)
 
     assert result.credits == ()
+
+
+def test_refuted_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", refuted=True),
+            "C": _node(agent="agent-c"),
+        },
+        [_edge("A", "B"), _edge("B", "C")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+
+
+def test_public_rc_excluded_artifact_gets_no_credit() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", public_rc_excluded=True),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+
+
+def test_phi_suppressed_artifact_gets_no_credit() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", phi_suppressed=True),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+
+
+def test_mixed_type_path_is_dropped_at_invalid_edge() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b"),
+            "C": _node(agent="agent-c"),
+        },
+        [_edge("A", "B"), _edge("B", "C", edge_type="GOVERNANCE")],
+    )
+
+    result = _quote(engine)
+
+    assert {credit.upstream_artifact_id for credit in result.credits} == {"B"}
+    assert "C" not in {score.upstream_artifact_id for score in result.path_scores}
+
+
+def test_node_count_cap_raises() -> None:
+    nodes = {
+        f"N{index}": _node(agent=f"agent-{index}")
+        for index in range(BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES + 1)
+    }
+
+    with pytest.raises(ValueError, match="backward_attribution_node_count_exceeds_maximum"):
+        _engine(nodes, [])
+
+
+def test_edge_count_cap_raises() -> None:
+    nodes = {
+        "A": _node(agent="agent-a"),
+        "B": _node(agent="agent-b"),
+    }
+    edges = [_edge("A", "B") for _ in range(BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES + 1)]
+
+    with pytest.raises(ValueError, match="backward_attribution_edge_count_exceeds_maximum"):
+        _engine(nodes, edges)
+
+
+@pytest.mark.parametrize("bad_value", [Decimal("NaN"), Decimal("Infinity")])
+def test_dataclass_node_numeric_fields_are_revalidated(bad_value: Decimal) -> None:
+    node = BackwardAttributionNode(
+        node_id="A",
+        artifact_type="claim",
+        recipient_agent_id="agent-a",
+        created_epoch=0,
+        status_quality_weight=bad_value,
+        novelty_score=Decimal("1"),
+    )
+
+    with pytest.raises(ValueError, match="backward_attribution_status_quality_weight_invalid"):
+        BackwardAttributionTraversal({"A": node}, [])
+
+
+def test_dataclass_edge_numeric_fields_are_revalidated() -> None:
+    edge = BackwardAttributionEdge(
+        source_node_id="A",
+        target_node_id="B",
+        edge_type="PROVENANCE",
+        edge_confidence=Decimal("NaN"),
+    )
+
+    with pytest.raises(ValueError, match="backward_attribution_edge_confidence_invalid"):
+        _engine({"A": _node(), "B": _node(agent="agent-b")}, [edge])
+
+
+def test_string_boolean_flags_are_rejected() -> None:
+    node = _node(agent="agent-b", refuted="False")
+
+    with pytest.raises(ValueError, match="backward_attribution_refuted_must_be_bool"):
+        _engine({"A": _node(agent="agent-a"), "B": node}, [_edge("A", "B")])
 
 
 def test_duplicate_artifact_paths_collapse_to_highest_score() -> None:

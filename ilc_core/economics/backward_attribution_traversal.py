@@ -177,20 +177,80 @@ def _require_factor(value: object, token: str) -> Decimal:
     return factor
 
 
+def _require_bool(value: object, token: str) -> bool:
+    if type(value) is not bool:
+        raise ValueError(token)
+    return value
+
+
 def _canonical_edge_type(value: object) -> str:
     raw = _require_non_empty_string(value, "backward_attribution_edge_type_required")
     return raw.strip().upper()
 
 
 def _node_from_mapping(node_id: str, value: object) -> BackwardAttributionNode:
+    normalized_node_id = _require_non_empty_string(
+        node_id,
+        "backward_attribution_node_id_required",
+    )
     if isinstance(value, BackwardAttributionNode):
-        if value.node_id != node_id:
+        value_node_id = _require_non_empty_string(
+            value.node_id,
+            "backward_attribution_node_id_required",
+        )
+        if value_node_id != normalized_node_id:
             raise ValueError("backward_attribution_node_id_mismatch")
-        return value
+        return BackwardAttributionNode(
+            node_id=value_node_id,
+            artifact_type=_require_non_empty_string(
+                value.artifact_type,
+                "backward_attribution_artifact_type_required",
+            ),
+            recipient_agent_id=_require_non_empty_string(
+                value.recipient_agent_id,
+                "backward_attribution_recipient_agent_id_required",
+            ),
+            created_epoch=_require_non_negative_int(
+                value.created_epoch,
+                "backward_attribution_created_epoch_must_be_non_negative_int",
+            ),
+            status_quality_weight=_require_factor(
+                value.status_quality_weight,
+                "backward_attribution_status_quality_weight_invalid",
+            ),
+            novelty_score=_require_factor(
+                value.novelty_score,
+                "backward_attribution_novelty_score_invalid",
+            ),
+            refuted=_require_bool(
+                value.refuted,
+                "backward_attribution_refuted_must_be_bool",
+            ),
+            phi_suppressed=_require_bool(
+                value.phi_suppressed,
+                "backward_attribution_phi_suppressed_must_be_bool",
+            ),
+            private_artifact=_require_bool(
+                value.private_artifact,
+                "backward_attribution_private_artifact_must_be_bool",
+            ),
+            public_rc_excluded=_require_bool(
+                value.public_rc_excluded,
+                "backward_attribution_public_rc_excluded_must_be_bool",
+            ),
+            governance_control=_require_bool(
+                value.governance_control,
+                "backward_attribution_governance_control_must_be_bool",
+            ),
+            unverified_mirror_metadata=_require_bool(
+                value.unverified_mirror_metadata,
+                "backward_attribution_unverified_mirror_metadata_must_be_bool",
+            ),
+        )
     if not isinstance(value, Mapping):
         raise ValueError("backward_attribution_node_must_be_mapping")
     return BackwardAttributionNode(
-        node_id=node_id,
+        node_id=normalized_node_id,
         artifact_type=_require_non_empty_string(
             value.get("artifact_type"),
             "backward_attribution_artifact_type_required",
@@ -211,18 +271,50 @@ def _node_from_mapping(node_id: str, value: object) -> BackwardAttributionNode:
             value.get("novelty_score", ZERO),
             "backward_attribution_novelty_score_invalid",
         ),
-        refuted=bool(value.get("refuted", False)),
-        phi_suppressed=bool(value.get("phi_suppressed", False)),
-        private_artifact=bool(value.get("private_artifact", False)),
-        public_rc_excluded=bool(value.get("public_rc_excluded", False)),
-        governance_control=bool(value.get("governance_control", False)),
-        unverified_mirror_metadata=bool(value.get("unverified_mirror_metadata", False)),
+        refuted=_require_bool(
+            value.get("refuted", False),
+            "backward_attribution_refuted_must_be_bool",
+        ),
+        phi_suppressed=_require_bool(
+            value.get("phi_suppressed", False),
+            "backward_attribution_phi_suppressed_must_be_bool",
+        ),
+        private_artifact=_require_bool(
+            value.get("private_artifact", False),
+            "backward_attribution_private_artifact_must_be_bool",
+        ),
+        public_rc_excluded=_require_bool(
+            value.get("public_rc_excluded", False),
+            "backward_attribution_public_rc_excluded_must_be_bool",
+        ),
+        governance_control=_require_bool(
+            value.get("governance_control", False),
+            "backward_attribution_governance_control_must_be_bool",
+        ),
+        unverified_mirror_metadata=_require_bool(
+            value.get("unverified_mirror_metadata", False),
+            "backward_attribution_unverified_mirror_metadata_must_be_bool",
+        ),
     )
 
 
 def _edge_from_mapping(value: object) -> BackwardAttributionEdge:
     if isinstance(value, BackwardAttributionEdge):
-        return value
+        return BackwardAttributionEdge(
+            source_node_id=_require_non_empty_string(
+                value.source_node_id,
+                "backward_attribution_edge_source_required",
+            ),
+            target_node_id=_require_non_empty_string(
+                value.target_node_id,
+                "backward_attribution_edge_target_required",
+            ),
+            edge_type=_canonical_edge_type(value.edge_type),
+            edge_confidence=_require_factor(
+                value.edge_confidence,
+                "backward_attribution_edge_confidence_invalid",
+            ),
+        )
     if not isinstance(value, Mapping):
         raise ValueError("backward_attribution_edge_must_be_mapping")
     return BackwardAttributionEdge(
@@ -279,6 +371,10 @@ class BackwardAttributionTraversal:
         nodes: Mapping[str, object],
         edges: tuple[object, ...] | list[object],
     ) -> None:
+        if not isinstance(nodes, Mapping):
+            raise ValueError("backward_attribution_nodes_must_be_mapping")
+        if not isinstance(edges, (list, tuple)):
+            raise ValueError("backward_attribution_edges_must_be_sequence")
         self._nodes = {
             _require_non_empty_string(node_id, "backward_attribution_node_id_required"): (
                 _node_from_mapping(node_id, node)
