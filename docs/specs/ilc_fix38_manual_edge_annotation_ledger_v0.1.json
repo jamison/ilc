@@ -71785,8 +71785,8 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_02_cdl_opening.md",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_02_cdl_opening.md"
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595d_g10_gap_ecu_02_cdl_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595d_g10_gap_ecu_02_cdl_opening.md"
     },
     {
       "annotation_batch": "manual_batch_231_phase_GAP_ECU_planning_hardening",
