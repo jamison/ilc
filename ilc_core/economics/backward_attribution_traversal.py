@@ -49,6 +49,10 @@ BACKWARD_ATTRIBUTION_REFUTATION_INTERACTION = (
     "refutation_excluded_from_generic_backward_pool"
 )
 BACKWARD_ATTRIBUTION_AUDIT_SURFACE = "hybrid_merkle_proof"
+BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP = (
+    "no CDL-108 locked threshold; omitted from Phase 1595h; requires governance "
+    "phase to define and lock threshold before implementation"
+)
 
 ZERO = Decimal("0")
 ONE = Decimal("1")
@@ -106,9 +110,8 @@ class BackwardAttributionPathScore:
 class BackwardAttributionCreditQuote:
     """Pre-cap traversal quote for an upstream artifact.
 
-    GAP-ECU-04a does not wire production dominance caps. The cap reference
-    amounts are returned for GAP-ECU-04b, while this isolated engine emits
-    normalized pre-cap credit quotes only.
+    The pre-cap quote remains inspectable after GAP-ECU-04b. The authoritative
+    capped credit is emitted separately as BackwardAttributionFinalCredit.
     """
 
     event_id: str
@@ -117,6 +120,24 @@ class BackwardAttributionCreditQuote:
     depth: int
     raw_path_score: Decimal
     pre_cap_credit_ecu: Decimal
+
+
+@dataclass(frozen=True)
+class BackwardAttributionFinalCredit:
+    """Final CDL-108 credit after event-local anti-gaming caps."""
+
+    event_id: str
+    upstream_artifact_id: str
+    recipient_agent_id: str
+    depth: int
+    raw_path_score: Decimal
+    pre_cap_credit_ecu: Decimal
+    final_credit_ecu: Decimal
+    clipped_residual_ecu: Decimal
+    node_cap_applied: bool
+    agent_cap_applied: bool
+    cluster_cap_applied: bool
+    cluster_id: str
 
 
 @dataclass(frozen=True)
@@ -132,11 +153,13 @@ class BackwardAttributionResult:
     forward_retained_ecu: Decimal
     path_scores: tuple[BackwardAttributionPathScore, ...]
     credits: tuple[BackwardAttributionCreditQuote, ...]
+    final_credits: tuple[BackwardAttributionFinalCredit, ...]
     unissued_backward_pool_ecu: Decimal
     node_cap_amount_ecu: Decimal
     agent_cap_amount_ecu: Decimal
     cluster_cap_amount_ecu: Decimal
     caps_applied: bool
+    sybil_diversity_guard_cdl_gap: str
     cycle_rejections: int
     repeated_node_rejections: int
     traversal_node_count: int
@@ -425,6 +448,7 @@ class BackwardAttributionTraversal:
                     key=lambda edge: (edge.target_node_id, edge.edge_type),
                 )
             )
+        self._cluster_ids = self._compute_mutual_citation_cluster_ids()
 
     @staticmethod
     def collapse_event_ids(event_ids: tuple[str, ...] | list[str]) -> tuple[str, ...]:
@@ -439,6 +463,7 @@ class BackwardAttributionTraversal:
         event_budget_ecu: Decimal | int | str,
         event_epoch: int,
         event_ids: tuple[str, ...] | list[str] | None = None,
+        apply_antigaming_caps: bool = False,
     ) -> BackwardAttributionResult:
         """Traverse upstream graph paths and quote event-local backward credit."""
         source_id = _require_non_empty_string(
@@ -514,6 +539,14 @@ class BackwardAttributionTraversal:
                 )
             )
         issued = sum((credit.pre_cap_credit_ecu for credit in credits), ZERO)
+        final_credits, issued_final = self._apply_antigaming_caps(
+            credits=tuple(credits),
+            apply_caps=apply_antigaming_caps,
+            node_cap_amount=node_cap_amount,
+            agent_cap_amount=agent_cap_amount,
+            cluster_cap_amount=cluster_cap_amount,
+        )
+        issued_authoritative = issued_final if apply_antigaming_caps else issued
         return BackwardAttributionResult(
             cdl_version=BACKWARD_ATTRIBUTION_CDL_VERSION,
             score_formula=BACKWARD_ATTRIBUTION_SCORE_FORMULA,
@@ -524,11 +557,13 @@ class BackwardAttributionTraversal:
             forward_retained_ecu=forward_retained,
             path_scores=positive_scores,
             credits=tuple(credits),
-            unissued_backward_pool_ecu=backward_pool - issued,
+            final_credits=final_credits,
+            unissued_backward_pool_ecu=backward_pool - issued_authoritative,
             node_cap_amount_ecu=node_cap_amount,
             agent_cap_amount_ecu=agent_cap_amount,
             cluster_cap_amount_ecu=cluster_cap_amount,
-            caps_applied=False,
+            caps_applied=apply_antigaming_caps,
+            sybil_diversity_guard_cdl_gap=BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP,
             cycle_rejections=cycle_count,
             repeated_node_rejections=repeated_count,
             traversal_node_count=traversed_nodes,
@@ -536,6 +571,122 @@ class BackwardAttributionTraversal:
             loaded_node_count=len(self._nodes),
             loaded_edge_count=len(self._edges),
         )
+
+    def _apply_antigaming_caps(
+        self,
+        *,
+        credits: tuple[BackwardAttributionCreditQuote, ...],
+        apply_caps: bool,
+        node_cap_amount: Decimal,
+        agent_cap_amount: Decimal,
+        cluster_cap_amount: Decimal,
+    ) -> tuple[tuple[BackwardAttributionFinalCredit, ...], Decimal]:
+        node_issued: dict[str, Decimal] = {}
+        agent_issued: dict[str, Decimal] = {}
+        cluster_issued: dict[str, Decimal] = {}
+        final_credits: list[BackwardAttributionFinalCredit] = []
+        total_final = ZERO
+
+        for credit in credits:
+            cluster_id = self._cluster_ids.get(
+                credit.upstream_artifact_id,
+                f"singleton:{credit.upstream_artifact_id}",
+            )
+            node_remaining = node_cap_amount - node_issued.get(
+                credit.upstream_artifact_id, ZERO
+            )
+            agent_remaining = agent_cap_amount - agent_issued.get(
+                credit.recipient_agent_id, ZERO
+            )
+            cluster_remaining = cluster_cap_amount - cluster_issued.get(cluster_id, ZERO)
+
+            if apply_caps:
+                final_credit = min(
+                    credit.pre_cap_credit_ecu,
+                    max(node_remaining, ZERO),
+                    max(agent_remaining, ZERO),
+                    max(cluster_remaining, ZERO),
+                )
+            else:
+                final_credit = credit.pre_cap_credit_ecu
+
+            clipped_residual = credit.pre_cap_credit_ecu - final_credit
+            if final_credit > ZERO:
+                node_issued[credit.upstream_artifact_id] = (
+                    node_issued.get(credit.upstream_artifact_id, ZERO) + final_credit
+                )
+                agent_issued[credit.recipient_agent_id] = (
+                    agent_issued.get(credit.recipient_agent_id, ZERO) + final_credit
+                )
+                cluster_issued[cluster_id] = (
+                    cluster_issued.get(cluster_id, ZERO) + final_credit
+                )
+                total_final += final_credit
+
+            final_credits.append(
+                BackwardAttributionFinalCredit(
+                    event_id=credit.event_id,
+                    upstream_artifact_id=credit.upstream_artifact_id,
+                    recipient_agent_id=credit.recipient_agent_id,
+                    depth=credit.depth,
+                    raw_path_score=credit.raw_path_score,
+                    pre_cap_credit_ecu=credit.pre_cap_credit_ecu,
+                    final_credit_ecu=final_credit,
+                    clipped_residual_ecu=clipped_residual,
+                    node_cap_applied=apply_caps
+                    and credit.pre_cap_credit_ecu > max(node_remaining, ZERO),
+                    agent_cap_applied=apply_caps
+                    and credit.pre_cap_credit_ecu > max(agent_remaining, ZERO),
+                    cluster_cap_applied=apply_caps
+                    and credit.pre_cap_credit_ecu > max(cluster_remaining, ZERO),
+                    cluster_id=cluster_id,
+                )
+            )
+
+        return tuple(final_credits), total_final
+
+    def _compute_mutual_citation_cluster_ids(self) -> dict[str, str]:
+        parent: dict[str, str] = {node_id: node_id for node_id in self._nodes}
+
+        def find(node_id: str) -> str:
+            parent.setdefault(node_id, node_id)
+            while parent[node_id] != node_id:
+                parent[node_id] = parent[parent[node_id]]
+                node_id = parent[node_id]
+            return node_id
+
+        def union(left: str, right: str) -> None:
+            left_root = find(left)
+            right_root = find(right)
+            if left_root == right_root:
+                return
+            if left_root < right_root:
+                parent[right_root] = left_root
+            else:
+                parent[left_root] = right_root
+
+        directed_pairs = {
+            (edge.source_node_id, edge.target_node_id)
+            for edge in self._edges
+            if edge.edge_type in BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES
+        }
+        for source_id, target_id in sorted(directed_pairs):
+            if (target_id, source_id) in directed_pairs:
+                union(source_id, target_id)
+
+        components: dict[str, list[str]] = {}
+        for node_id in sorted(parent):
+            components.setdefault(find(node_id), []).append(node_id)
+
+        cluster_ids: dict[str, str] = {}
+        for members in components.values():
+            if len(members) <= 1:
+                cluster_ids[members[0]] = f"singleton:{members[0]}"
+                continue
+            cluster_id = "cluster:" + "|".join(sorted(members))
+            for member in members:
+                cluster_ids[member] = cluster_id
+        return cluster_ids
 
     def _collect_raw_scores(
         self,
