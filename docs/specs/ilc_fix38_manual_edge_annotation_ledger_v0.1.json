@@ -66766,6 +66766,86 @@
       ],
       "recommended_graph_action": "Keep as legacy prompt node pointing to validator-compliant alias; do not execute instead of 1595i alias.",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_05_rust_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_263_phase_GAP_ECU_06_prompt_hardening",
+      "chronology_note": "GAP-ECU-06 prompt hardening prepared 2026-07-31 after GAP-ECU-05 completion; sensitive execution remains gated on direct human GO.",
+      "manual_read_summary": "Validator-compliant GAP-ECU-06 focused backward attribution soak prompt with Sybil gap disposition and Python lifecycle wallet readback scope.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_prompt_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP_ECU_06_prompt_ready"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_sybil_threshold_without_cdl_108_authority"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_rust_wallet_readback_conflation_gap_ecu_06"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/validate_phase_prompt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize as prompt-hardening evidence; no runtime activation or soak completion token is claimed.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595j_g10_gap_ecu_06_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_263_phase_GAP_ECU_06_prompt_hardening",
+      "chronology_note": "GAP-ECU-06 prompt hardening prepared 2026-07-31 after GAP-ECU-05 completion; sensitive execution remains gated on direct human GO.",
+      "manual_read_summary": "Legacy GAP-ECU-06 prompt path reduced to alias pointer to prevent stale Sybil guard and wallet readback instructions from being executed.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_prompt_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP_ECU_06_prompt_ready"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_sybil_threshold_without_cdl_108_authority"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_rust_wallet_readback_conflation_gap_ecu_06"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/validate_phase_prompt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize as prompt-hardening evidence; no runtime activation or soak completion token is claimed.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_06_soak.md"
     }
   ],
   "boundary": {
