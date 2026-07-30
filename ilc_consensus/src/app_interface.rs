@@ -517,6 +517,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent_id, 999_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 

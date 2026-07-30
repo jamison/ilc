@@ -66438,6 +66438,334 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595h_g10_gap_ecu_04b_antigaming_bridge.md -> planning/frontier",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595h_g10_gap_ecu_04b_antigaming_bridge.md"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Adds optional AttributionBatch.backward_attribution_batch_root metadata field; EpochSettlementRecord remains unchanged.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "ilc_consensus/src/types.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Stores and reads epoch-keyed backward attribution batch root metadata alongside flat ECU attribution deltas.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "ilc_consensus/src/balance_store.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Parses optional 64-hex backward attribution batch roots into Rust [u8; 32] and echoes audit report root state.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "ilc_consensus/src/attribution_batch_ingest_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Emits deterministic SHA-256 root over sorted GAP-ECU-04b final backward attribution entries.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "ilc_core/consensus/attribution_batch_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Verifies root presence/absence/determinism/mutation, Rust ingest acceptance/rejection, and EpochSettlementRecord non-mutation.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "tests/test_phase_1595i_rust_binding.py"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Records GAP-ECU-05 execution evidence, verification outputs, guard disposition, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "docs/phases/phase_1595i_backward_attribution_rust_binding_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30 after GAP-ECU-04b tokens were present.",
+      "manual_read_summary": "Hardened numeric GAP-ECU-05 prompt with AttributionBatch-only binding scope and live bridge guard disposition.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_runtime_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_settlement_record_mutation_gap_ecu_05"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_phase_1595i_rust_binding.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Materialize GAP-ECU-05 runtime/test/walkthrough nodes and preserve CDL-108 authority trace plus EpochSettlementRecord non-mutation invariant.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595i_g10_gap_ecu_05_rust_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_GAP_ECU_05_rust_binding",
+      "chronology_note": "Phase 1595i / GAP-ECU-05 backward attribution Rust binding executed 2026-07-30; legacy prompt retained but synchronized to avoid future drift.",
+      "manual_read_summary": "Legacy GAP-ECU-05 prompt copy hardened to point at validator-compliant 1595i alias and remove stale production-bridge guard assertions and artifact names.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_108_prompt_trace",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_ECU_05_backward_attribution_rust_binding"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:backward_attribution_rust_binding_committed_GAP_ECU_05"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_stale_gap_ecu_05_prompt_guard_assertion"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/validate_phase_prompt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "EVIDENCES",
+        "REGRESSES",
+        "TESTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "Keep as legacy prompt node pointing to validator-compliant alias; do not execute instead of 1595i alias.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_05_rust_binding.md"
     }
   ],
   "boundary": {

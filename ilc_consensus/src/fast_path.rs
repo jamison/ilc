@@ -260,6 +260,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -379,6 +380,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -417,6 +419,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -459,6 +462,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -662,6 +666,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -827,6 +832,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(0),
                 attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
@@ -887,6 +893,7 @@ mod tests {
             .apply_attribution(AttributionBatch {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent, 1_000_000)],
+                backward_attribution_batch_root: None,
             })
             .unwrap();
 
