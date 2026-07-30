@@ -66901,6 +66901,89 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1576o_invite_nonce_merkle_proof_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_265_phase_1576p_invite_nullifier_registry_local",
+      "chronology_note": "2026-07-31 phase 1576p local invite nullifier registry runtime",
+      "manual_read_summary": "Runtime module defines a local in-process invite nullifier registry with SHA-256 hex validation and a 10000-entry OOM guard; cross-node D2D propagation remains out of scope.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:invite_nullifier_registry_local_committed_phase_1576p"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_invite_nullifier_d2d_claim_in_phase_1576p"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/genesis/invite_nullifier_registry.py"
+    },
+    {
+      "annotation_batch": "manual_batch_265_phase_1576p_invite_nullifier_registry_local",
+      "chronology_note": "2026-07-31 phase 1576p local invite nullifier registry tests",
+      "manual_read_summary": "Focused tests cover registry acceptance, duplicate detection, unknown nullifiers, OOM guard failure, invalid hex rejection, sidecar local replay rejection, persistent replay preservation, D2D non-creation, and cross-node gap annotation retention.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invite_nullifier_registry.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_invite_bootstrap.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nullifier_registry_local_committed_phase_1576p"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_invite_nullifier_registry_1576p.py"
+    },
+    {
+      "annotation_batch": "manual_batch_265_phase_1576p_invite_nullifier_registry_local",
+      "chronology_note": "2026-07-31 phase 1576p local invite nullifier registry walkthrough",
+      "manual_read_summary": "Walkthrough records source reads, local registry implementation, D2D non-creation, downstream token correction, verification outputs, non-claims, and output token for Phase 1576p.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nullifier_registry_local_committed_phase_1576p"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1576p_invite_nullifier_registry_local_walkthrough.md"
     }
   ],
   "boundary": {
