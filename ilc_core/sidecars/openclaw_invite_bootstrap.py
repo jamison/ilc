@@ -17,6 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
+
 OPENCLAW_INVITE_BOOTSTRAP_VERSION = "openclaw_invite_bootstrap_1575b_fix2d.v0.1"
 NULLIFIER_STORE_SCHEMA_VERSION = "openclaw_invite_nullifiers.v0.1"
 
@@ -54,6 +56,10 @@ BLOCKED_ACTIONS = (
     "settle_ilc",
     "wallet_setup",
     "wallet_write",
+)
+CROSS_NODE_REPLAY_PREVENTION_GAP = (
+    "local_detection_implemented_phase_1576p;"
+    "cross_node_d2d_propagation_remains_open_phase_1576p_b"
 )
 
 
@@ -94,6 +100,7 @@ class InviteNullifierStore:
     def __init__(self, path: str | Path | None = None) -> None:
         self.path = Path(path) if path is not None else Path.home() / ".ilc" / "invite_nullifiers.json"
         self._used = _load_nullifier_map(self.path)
+        self.local_registry = InviteNullifierRegistry()
 
     def contains(self, nullifier: str) -> bool:
         _require_sha256_hex(nullifier, "openclaw_invite_nullifier_invalid")
@@ -125,6 +132,7 @@ def verify_invite_bootstrap(
     expected_profile: str,
     current_epoch: int,
     nullifier_store: InviteNullifierStore | None = None,
+    local_nullifier_registry: InviteNullifierRegistry | None = None,
     persist_nullifier: bool = True,
     production_required: bool = False,
 ) -> BootstrapDecision:
@@ -151,6 +159,10 @@ def verify_invite_bootstrap(
             return _deny("wrong_profile", nullifier, "not_checked", "not_checked", "not_checked")
         if intended_epoch != epoch or created_epoch > epoch:
             return _deny("wrong_epoch_window", nullifier, "not_checked", "not_checked", "not_checked")
+        store = nullifier_store or InviteNullifierStore()
+        local_registry = local_nullifier_registry if local_nullifier_registry is not None else store.local_registry
+        if local_registry.is_known(nullifier):
+            return _deny("invite_nullifier_already_seen", nullifier, "not_checked", "used", "not_checked")
         membership_status = _verify_nonce_membership(
             nonce_hex=nonce_hex,
             nonce_merkle_root=nonce_merkle_root,
@@ -159,7 +171,6 @@ def verify_invite_bootstrap(
         )
         if membership_status != "verified":
             return _deny(membership_status, nullifier, membership_status, "not_checked", "not_checked")
-        store = nullifier_store or InviteNullifierStore()
         if store.contains(nullifier):
             return _deny("replayed_nullifier", nullifier, "verified", "used", "not_checked")
         signature_status = _signature_status(inviter_sig)
@@ -180,6 +191,7 @@ def verify_invite_bootstrap(
                     "signature_authority_status": signature_status,
                 },
             )
+        local_registry.register_nullifier(nullifier)
         production_ready = signature_status == "verified" and redeemer_status == "verified"
         return BootstrapDecision(
             bootstrap_allowed=True,
@@ -192,7 +204,7 @@ def verify_invite_bootstrap(
             nullifier_status="recorded" if persist_nullifier else "unused",
             redeemer_key_binding_status=redeemer_status,
             production_ready=production_ready,
-            cross_node_replay_prevention_gap="redeemer_key_binding_required",
+            cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
         )
     except (KeyError, TypeError, ValueError, OSError):
         return _deny("malformed_invite", None, "not_checked", "not_checked", "not_checked")
@@ -249,7 +261,7 @@ def _deny(
         nullifier_status=nullifier_status,
         redeemer_key_binding_status=redeemer_status,
         production_ready=False,
-        cross_node_replay_prevention_gap="redeemer_key_binding_required",
+        cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
     )
 
 
@@ -449,7 +461,9 @@ def _validate_json_value(value: Any, *, depth: int = 0, allow_bool: bool = False
 __all__ = [
     "BLOCKED_ACTIONS",
     "BootstrapDecision",
+    "CROSS_NODE_REPLAY_PREVENTION_GAP",
     "INVITE_NULLIFIER_DOMAIN",
+    "InviteNullifierRegistry",
     "InviteNullifierStore",
     "LOCAL_BOOTSTRAP_ALLOWED_ACTIONS",
     "NO_INVITE_ALLOWED_ACTIONS",
