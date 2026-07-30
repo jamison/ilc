@@ -66846,6 +66846,61 @@
       ],
       "recommended_graph_action": "Materialize as prompt-hardening evidence; no runtime activation or soak completion token is claimed.",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_06_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_264_phase_1576o_invite_nonce_merkle_proof",
+      "chronology_note": "2026-07-31 phase 1576o canonical invite nonce Merkle proof utility",
+      "manual_read_summary": "Focused tests cover the canonical invite nonce Merkle proof utility and OpenClaw sidecar mirror rejection of wrong-length proofs.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invitation_provenance_record.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_invite_bootstrap.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nonce_merkle_proof_committed_phase_1576o"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_invite_nonce_merkle_proof_1576o.py"
+    },
+    {
+      "annotation_batch": "manual_batch_264_phase_1576o_invite_nonce_merkle_proof",
+      "chronology_note": "2026-07-31 phase 1576o walkthrough for canonical invite nonce Merkle proof utility",
+      "manual_read_summary": "Walkthrough records source reads, algorithm constants, implementation boundary, verification outputs, non-claims, and output token for Phase 1576o.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nonce_merkle_proof_committed_phase_1576o"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1576o_invite_nonce_merkle_proof_walkthrough.md"
     }
   ],
   "boundary": {

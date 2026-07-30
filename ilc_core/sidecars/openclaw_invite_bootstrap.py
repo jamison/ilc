@@ -260,6 +260,8 @@ def _verify_nonce_membership(
     count: int,
     proof: object,
 ) -> str:
+    # Mirrors canonical verify_nonce_membership_proof without importing the
+    # private provenance module, preserving this sidecar's public-safe boundary.
     nonce_bytes = _nonce_bytes(nonce_hex)
     leaf = _invite_nonce_leaf_hash(nonce_bytes)
     if count == 1:
@@ -268,6 +270,8 @@ def _verify_nonce_membership(
         return "nonce_membership_proof_required"
     if not isinstance(proof, Sequence) or isinstance(proof, (str, bytes, bytearray)):
         return "nonce_membership_proof_invalid"
+    if len(proof) != _invite_nonce_merkle_proof_length(count):
+        return "nonce_membership_proof_length_invalid"
     digest = leaf
     for item in proof:
         if not isinstance(item, Mapping):
@@ -305,6 +309,17 @@ def _redeemer_binding_status(invite_bundle: Mapping[str, Any]) -> str:
 
 def _invite_nonce_leaf_hash(nonce: bytes) -> bytes:
     return hashlib.sha256(INVITE_NONCE_LEAF_DOMAIN + nonce).digest()
+
+
+def _invite_nonce_merkle_proof_length(count: int) -> int:
+    if type(count) is not int or count < 1:
+        raise ValueError("openclaw_invite_count_invalid")
+    length = 0
+    width = count
+    while width > 1:
+        length += 1
+        width = (width + 1) // 2
+    return length
 
 
 def _nonce_bytes(value: object) -> bytes:
