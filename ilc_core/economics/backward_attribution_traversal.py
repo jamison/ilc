@@ -94,9 +94,12 @@ class BackwardAttributionPathScore:
     path_edge_types: tuple[str, ...]
     raw_path_score: Decimal
     age_weight: Decimal
+    typed_path_weight: Decimal
+    artifact_weight: Decimal
     status_quality_weight: Decimal
     novelty_weight: Decimal
     edge_confidence_weight: Decimal
+    path_edge_confidences: tuple[Decimal, ...]
 
 
 @dataclass(frozen=True)
@@ -121,6 +124,7 @@ class BackwardAttributionResult:
     """Deterministic output of one backward traversal event quote."""
 
     cdl_version: str
+    score_formula: str
     event_id: str
     source_node_id: str
     event_budget_ecu: Decimal
@@ -137,6 +141,8 @@ class BackwardAttributionResult:
     repeated_node_rejections: int
     traversal_node_count: int
     traversal_edge_count: int
+    loaded_node_count: int
+    loaded_edge_count: int
 
 
 def _require_non_empty_string(value: object, token: str) -> str:
@@ -186,6 +192,24 @@ def _require_bool(value: object, token: str) -> bool:
 def _canonical_edge_type(value: object) -> str:
     raw = _require_non_empty_string(value, "backward_attribution_edge_type_required")
     return raw.strip().upper()
+
+
+def collapse_event_ids(event_ids: tuple[str, ...] | list[str]) -> tuple[str, ...]:
+    """Collapse duplicate event ids while preserving first-seen order."""
+    seen: set[str] = set()
+    collapsed: list[str] = []
+    for event_id in event_ids:
+        normalized = _require_non_empty_string(
+            event_id,
+            "backward_attribution_event_id_required",
+        )
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        collapsed.append(normalized)
+    if not collapsed:
+        raise ValueError("backward_attribution_event_id_required")
+    return tuple(collapsed)
 
 
 def _node_from_mapping(node_id: str, value: object) -> BackwardAttributionNode:
@@ -404,21 +428,8 @@ class BackwardAttributionTraversal:
 
     @staticmethod
     def collapse_event_ids(event_ids: tuple[str, ...] | list[str]) -> tuple[str, ...]:
-        """Collapse duplicate event ids while preserving first-seen order."""
-        seen: set[str] = set()
-        collapsed: list[str] = []
-        for event_id in event_ids:
-            normalized = _require_non_empty_string(
-                event_id,
-                "backward_attribution_event_id_required",
-            )
-            if normalized in seen:
-                continue
-            seen.add(normalized)
-            collapsed.append(normalized)
-        if not collapsed:
-            raise ValueError("backward_attribution_event_id_required")
-        return tuple(collapsed)
+        """Compatibility wrapper for the module-level helper."""
+        return collapse_event_ids(event_ids)
 
     def traverse(
         self,
@@ -454,11 +465,13 @@ class BackwardAttributionTraversal:
         if budget <= ZERO:
             raise ValueError("backward_attribution_event_budget_must_be_positive")
 
-        raw_scores, cycle_count, repeated_count, traversed_edges = self._collect_raw_scores(
-            source_id,
-            all_event_ids[0],
-            normalized_epoch,
-        )
+        (
+            raw_scores,
+            cycle_count,
+            repeated_count,
+            traversed_nodes,
+            traversed_edges,
+        ) = self._collect_raw_scores(source_id, all_event_ids[0], normalized_epoch)
         collapsed_scores = self._collapse_scores(raw_scores)
         positive_scores = tuple(
             score for score in collapsed_scores if score.raw_path_score > ZERO
@@ -472,7 +485,10 @@ class BackwardAttributionTraversal:
 
         credits: list[BackwardAttributionCreditQuote] = []
         if score_total > ZERO:
-            for score in positive_scores:
+            running_credit = ZERO
+            for score in positive_scores[:-1]:
+                pre_cap_credit = backward_pool * score.raw_path_score / score_total
+                running_credit += pre_cap_credit
                 credits.append(
                     BackwardAttributionCreditQuote(
                         event_id=score.event_id,
@@ -480,14 +496,27 @@ class BackwardAttributionTraversal:
                         recipient_agent_id=score.recipient_agent_id,
                         depth=score.depth,
                         raw_path_score=score.raw_path_score,
-                        pre_cap_credit_ecu=backward_pool
-                        * score.raw_path_score
-                        / score_total,
+                        pre_cap_credit_ecu=pre_cap_credit,
                     )
                 )
+            last_score = positive_scores[-1]
+            last_credit = backward_pool - running_credit
+            if last_credit < ZERO:
+                raise ValueError("backward_attribution_credit_allocation_overflow")
+            credits.append(
+                BackwardAttributionCreditQuote(
+                    event_id=last_score.event_id,
+                    upstream_artifact_id=last_score.upstream_artifact_id,
+                    recipient_agent_id=last_score.recipient_agent_id,
+                    depth=last_score.depth,
+                    raw_path_score=last_score.raw_path_score,
+                    pre_cap_credit_ecu=last_credit,
+                )
+            )
         issued = sum((credit.pre_cap_credit_ecu for credit in credits), ZERO)
         return BackwardAttributionResult(
             cdl_version=BACKWARD_ATTRIBUTION_CDL_VERSION,
+            score_formula=BACKWARD_ATTRIBUTION_SCORE_FORMULA,
             event_id=all_event_ids[0],
             source_node_id=source_id,
             event_budget_ecu=budget,
@@ -502,8 +531,10 @@ class BackwardAttributionTraversal:
             caps_applied=False,
             cycle_rejections=cycle_count,
             repeated_node_rejections=repeated_count,
-            traversal_node_count=len(self._nodes),
+            traversal_node_count=traversed_nodes,
             traversal_edge_count=traversed_edges,
+            loaded_node_count=len(self._nodes),
+            loaded_edge_count=len(self._edges),
         )
 
     def _collect_raw_scores(
@@ -511,10 +542,11 @@ class BackwardAttributionTraversal:
         source_node_id: str,
         event_id: str,
         event_epoch: int,
-    ) -> tuple[list[BackwardAttributionPathScore], int, int, int]:
+    ) -> tuple[list[BackwardAttributionPathScore], int, int, int, int]:
         scores: list[BackwardAttributionPathScore] = []
         cycle_count = 0
         repeated_count = 0
+        traversed_node_ids = {source_node_id}
         traversed_edges = 0
         stack = [
             (
@@ -523,10 +555,18 @@ class BackwardAttributionTraversal:
                 (source_node_id,),
                 (),
                 ONE,
+                (),
             )
         ]
         while stack:
-            current_node_id, depth, path_nodes, path_edge_types, confidence = stack.pop()
+            (
+                current_node_id,
+                depth,
+                path_nodes,
+                path_edge_types,
+                confidence,
+                path_edge_confidences,
+            ) = stack.pop()
             for edge in self._outgoing.get(current_node_id, ()):
                 traversed_edges += 1
                 if traversed_edges > BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES:
@@ -537,14 +577,18 @@ class BackwardAttributionTraversal:
                 if next_depth > BACKWARD_ATTRIBUTION_MAX_DEPTH:
                     continue
                 if edge.target_node_id in path_nodes:
-                    cycle_count += 1
-                    repeated_count += 1
+                    if edge.target_node_id == source_node_id:
+                        cycle_count += 1
+                    else:
+                        repeated_count += 1
                     continue
 
                 upstream_node = self._nodes[edge.target_node_id]
+                traversed_node_ids.add(edge.target_node_id)
                 next_path_nodes = (*path_nodes, edge.target_node_id)
                 next_edge_types = (*path_edge_types, edge.edge_type)
                 next_confidence = confidence * edge.edge_confidence
+                next_edge_confidences = (*path_edge_confidences, edge.edge_confidence)
                 raw_score = self._score_path(
                     upstream_node,
                     next_depth,
@@ -566,9 +610,12 @@ class BackwardAttributionTraversal:
                             upstream_node.created_epoch,
                             event_epoch,
                         ),
+                        typed_path_weight=ONE,
+                        artifact_weight=ONE,
                         status_quality_weight=upstream_node.status_quality_weight,
                         novelty_weight=_novelty_weight(upstream_node),
                         edge_confidence_weight=next_confidence,
+                        path_edge_confidences=next_edge_confidences,
                     )
                 )
                 stack.append(
@@ -578,9 +625,10 @@ class BackwardAttributionTraversal:
                         next_path_nodes,
                         next_edge_types,
                         next_confidence,
+                        next_edge_confidences,
                     )
                 )
-        return scores, cycle_count, repeated_count, traversed_edges
+        return scores, cycle_count, repeated_count, len(traversed_node_ids), traversed_edges
 
     @staticmethod
     def _score_path(
