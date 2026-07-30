@@ -306,7 +306,7 @@ def test_missing_edge_confidence_fails_closed() -> None:
     assert result.unissued_backward_pool_ecu == result.backward_pool_ecu
 
 
-def test_thin_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
+def test_thin_intermediate_node_earns_no_credit_but_routes_to_descendant() -> None:
     engine = _engine(
         {
             "A": _node(agent="agent-a"),
@@ -318,10 +318,12 @@ def test_thin_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
 
     result = _quote(engine)
 
-    assert result.credits == ()
+    assert [credit.upstream_artifact_id for credit in result.credits] == ["C"]
+    assert "B" not in {score.upstream_artifact_id for score in result.path_scores}
+    assert result.path_scores[0].depth == 2
 
 
-def test_refuted_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
+def test_refuted_intermediate_node_earns_no_credit_but_routes_to_descendant() -> None:
     engine = _engine(
         {
             "A": _node(agent="agent-a"),
@@ -333,7 +335,9 @@ def test_refuted_intermediate_node_cannot_bridge_credit_to_descendant() -> None:
 
     result = _quote(engine)
 
-    assert result.credits == ()
+    assert [credit.upstream_artifact_id for credit in result.credits] == ["C"]
+    assert "B" not in {score.upstream_artifact_id for score in result.path_scores}
+    assert result.path_scores[0].depth == 2
 
 
 def test_public_rc_excluded_artifact_gets_no_credit() -> None:
@@ -362,6 +366,24 @@ def test_phi_suppressed_artifact_gets_no_credit() -> None:
     result = _quote(engine)
 
     assert result.credits == ()
+
+
+def test_governance_control_intermediate_transparently_routes_to_upstream_claim() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", artifact_type="claim", governance_control=True),
+            "C": _node(agent="agent-c", artifact_type="claim"),
+        },
+        [_edge("A", "B"), _edge("B", "C")],
+    )
+
+    result = _quote(engine)
+
+    assert [credit.upstream_artifact_id for credit in result.credits] == ["C"]
+    assert "B" not in {score.upstream_artifact_id for score in result.path_scores}
+    assert result.path_scores[0].path_node_ids == ("A", "B", "C")
+    assert result.path_scores[0].raw_path_score == BACKWARD_ATTRIBUTION_DECAY_ALPHA**2
 
 
 @pytest.mark.parametrize(

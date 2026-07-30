@@ -66147,6 +66147,180 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Traversal now treats zero-scoring intermediate artifacts as transparent typed-edge routing hops while withholding terminal credit from those artifacts.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "PRESERVES_INVARIANT"
+      ],
+      "recommended_graph_action": "load_bearing_code_changed:ilc_core/economics/backward_attribution_traversal.py -> economics/backward-attribution/cdl108-traversal",
+      "repo_path": "ilc_core/economics/backward_attribution_traversal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Focused traversal suite now includes H-3 regression coverage for thin, refuted, and governance-control zero-credit intermediates routing to eligible upstream artifacts; 39 tests pass.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/economics/backward_attribution_traversal.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VALIDATES",
+          "target": "phase:backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VALIDATES",
+        "REGRESSION_COVERAGE"
+      ],
+      "recommended_graph_action": "support_tests_changed:tests/test_gap_ecu_04a_backward_attribution_traversal.py -> validation/backward-attribution/cdl108-traversal",
+      "repo_path": "tests/test_gap_ecu_04a_backward_attribution_traversal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Walkthrough records that the prior H-3 pruning disposition was superseded and documents transparent intermediate routing plus 39-test focused verification.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPERSEDES_DISPOSITION"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md -> planning/frontier",
+      "repo_path": "docs/phases/phase_gap_ecu_04a_traversal_engine_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "STATUS records H-3 definitive routing token and updates GAP-ECU-04a focused test count to 39.",
+      "node_kind": "phase_status",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DECLARES_TOKEN",
+          "target": "backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "STATUS_TOKEN",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md -> planning/frontier",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Planning index now records GAP-ECU-04a 39-test hardened state and H-3 transparent intermediate routing invariant.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REFERENCES_STATUS",
+          "target": "backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "FRONTIER_UPDATE"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md -> planning/frontier",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Forward plan records GAP-ECU-04a H-3 hardening and points GAP-ECU-04b to the validator-compliant 1595h prompt alias.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GATES_NEXT",
+          "target": "phase:GAP-ECU-04b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "FRONTIER_UPDATE"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md -> planning/frontier",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Legacy GAP-ECU-04b prompt hardened to preserve transparent zero-credit intermediate routing and require a regression test before production bridge wiring.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "PRESERVES_INVARIANT",
+          "target": "backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_HARDENING"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_04b_antigaming_bridge.md -> planning/frontier",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_04b_antigaming_bridge.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_GAP_ECU_04a_fix3_h3_transparent_routing",
+      "chronology_note": "2026-07-30 GAP-ECU-04a H-3 definitive transparent intermediate routing fix and GAP-ECU-04b prompt hardening.",
+      "manual_read_summary": "Validator-compliant numeric GAP-ECU-04b prompt alias added and hardened with the H-3 transparent intermediate routing invariant.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "PRESERVES_INVARIANT",
+          "target": "backward_attribution_intermediate_routing_bug_fixed_GAP_ECU_04a_fix3"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_ALIAS",
+        "PROMPT_HARDENING"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1595h_g10_gap_ecu_04b_antigaming_bridge.md -> planning/frontier",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1595h_g10_gap_ecu_04b_antigaming_bridge.md"
     }
   ],
   "boundary": {
