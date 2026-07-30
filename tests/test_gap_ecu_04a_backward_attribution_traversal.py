@@ -4,8 +4,10 @@ import pytest
 
 from ilc_core.economics.backward_attribution_traversal import (
     BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA,
+    BACKWARD_ATTRIBUTION_CDL_VERSION,
     BACKWARD_ATTRIBUTION_DECAY_ALPHA,
     BACKWARD_ATTRIBUTION_FORWARD_RETAINED_SHARE,
+    BACKWARD_ATTRIBUTION_SCORE_FORMULA,
     BACKWARD_ATTRIBUTION_MAX_DEPTH,
     BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES,
     BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES,
@@ -16,6 +18,7 @@ from ilc_core.economics.backward_attribution_traversal import (
     BackwardAttributionEdge,
     BackwardAttributionNode,
     BackwardAttributionTraversal,
+    collapse_event_ids,
 )
 
 
@@ -94,9 +97,26 @@ def test_cycle_detection_terminates() -> None:
     result = _quote(engine)
 
     assert result.cycle_rejections == 1
-    assert result.repeated_node_rejections == 1
+    assert result.repeated_node_rejections == 0
     assert {credit.upstream_artifact_id for credit in result.credits} == {"B", "C"}
     assert "A" not in {credit.upstream_artifact_id for credit in result.credits}
+
+
+def test_internal_repeated_node_rejection_is_distinct_from_source_cycle() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b"),
+            "C": _node(agent="agent-c"),
+        },
+        [_edge("A", "B"), _edge("B", "C"), _edge("C", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.cycle_rejections == 0
+    assert result.repeated_node_rejections == 1
+    assert {credit.upstream_artifact_id for credit in result.credits} == {"B", "C"}
 
 
 def test_max_depth_enforcement() -> None:
@@ -133,6 +153,26 @@ def test_decay_application() -> None:
     assert by_depth[3] == BACKWARD_ATTRIBUTION_DECAY_ALPHA**3
 
 
+def test_age_weight_half_life_floor_applies_at_positive_epoch_age() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a", epoch=32),
+            "B": _node(agent="agent-b", epoch=0),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = engine.traverse(
+        "A",
+        event_id="event-1",
+        event_budget_ecu=Decimal("100"),
+        event_epoch=32,
+    )
+
+    assert result.path_scores[0].age_weight == Decimal("0.25")
+    assert result.path_scores[0].raw_path_score == BACKWARD_ATTRIBUTION_DECAY_ALPHA * Decimal("0.25")
+
+
 def test_bidirectional_coefficient_separation() -> None:
     engine = _engine(
         {"A": _node(), "B": _node(agent="agent-b")},
@@ -156,6 +196,19 @@ def test_dead_end_path() -> None:
     assert result.path_scores == ()
     assert result.credits == ()
     assert result.unissued_backward_pool_ecu == result.backward_pool_ecu
+
+
+@pytest.mark.parametrize("bad_budget", [Decimal("0"), Decimal("-1")])
+def test_non_positive_event_budget_rejected(bad_budget: Decimal) -> None:
+    engine = _engine({"A": _node(agent="agent-a")}, [])
+
+    with pytest.raises(ValueError, match="backward_attribution_event_budget_must_be_positive"):
+        engine.traverse(
+            "A",
+            event_id="event-1",
+            event_budget_ecu=bad_budget,
+            event_epoch=0,
+        )
 
 
 def test_refuted_upstream_node() -> None:
@@ -311,6 +364,42 @@ def test_phi_suppressed_artifact_gets_no_credit() -> None:
     assert result.credits == ()
 
 
+@pytest.mark.parametrize(
+    ("flag_name", "flag_value"),
+    [
+        ("private_artifact", True),
+        ("governance_control", True),
+        ("unverified_mirror_metadata", True),
+    ],
+)
+def test_artifact_exclusion_flags_get_no_credit(flag_name: str, flag_value: bool) -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", **{flag_name: flag_value}),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+
+
+def test_artifact_type_outside_mask_gets_no_credit() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b", artifact_type="governance-control"),
+        },
+        [_edge("A", "B")],
+    )
+
+    result = _quote(engine)
+
+    assert result.credits == ()
+
+
 def test_mixed_type_path_is_dropped_at_invalid_edge() -> None:
     engine = _engine(
         {
@@ -346,6 +435,30 @@ def test_edge_count_cap_raises() -> None:
 
     with pytest.raises(ValueError, match="backward_attribution_edge_count_exceeds_maximum"):
         _engine(nodes, edges)
+
+
+def test_runtime_edge_traversal_cap_raises_on_path_explosion() -> None:
+    fanout = 20
+    nodes = {"S": _node(agent="agent-source")}
+    edges: list[dict[str, object]] = []
+    for first in range(fanout):
+        first_id = f"F{first}"
+        nodes[first_id] = _node(agent=f"agent-first-{first}")
+        edges.append(_edge("S", first_id))
+    for first in range(fanout):
+        for middle in range(fanout):
+            middle_id = f"M{middle}"
+            nodes.setdefault(middle_id, _node(agent=f"agent-middle-{middle}"))
+            edges.append(_edge(f"F{first}", middle_id))
+    for middle in range(fanout):
+        for sink in range(fanout):
+            sink_id = f"K{sink}"
+            nodes.setdefault(sink_id, _node(agent=f"agent-sink-{sink}"))
+            edges.append(_edge(f"M{middle}", sink_id))
+    engine = _engine(nodes, edges)
+
+    with pytest.raises(ValueError, match="backward_attribution_edge_traversal_exceeds_maximum"):
+        _quote(engine, source="S")
 
 
 @pytest.mark.parametrize("bad_value", [Decimal("NaN"), Decimal("Infinity")])
@@ -416,6 +529,50 @@ def test_duplicate_event_ids_are_collapsed_before_traversal() -> None:
 
     assert result.event_id == "event-1"
     assert len(result.credits) == 1
+    assert collapse_event_ids(["event-1", "event-2", "event-2"]) == (
+        "event-1",
+        "event-2",
+    )
+
+
+def test_credit_allocation_never_exceeds_backward_pool_for_many_equal_paths() -> None:
+    nodes = {"A": _node(agent="agent-a")}
+    edges = []
+    for index in range(18):
+        node_id = f"N{index}"
+        nodes[node_id] = _node(agent=f"agent-{index}")
+        edges.append(_edge("A", node_id))
+    engine = _engine(nodes, edges)
+
+    result = _quote(engine)
+
+    issued = sum((credit.pre_cap_credit_ecu for credit in result.credits), Decimal("0"))
+    assert issued == result.backward_pool_ecu
+    assert issued <= result.backward_pool_ecu
+    assert result.unissued_backward_pool_ecu == Decimal("0")
+
+
+def test_receipt_exposes_formula_and_loaded_vs_traversed_counts() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b"),
+            "C": _node(agent="agent-c"),
+        },
+        [_edge("A", "B"), _edge("B", "C")],
+    )
+
+    result = _quote(engine)
+
+    assert result.cdl_version == BACKWARD_ATTRIBUTION_CDL_VERSION
+    assert result.score_formula == BACKWARD_ATTRIBUTION_SCORE_FORMULA
+    assert result.loaded_node_count == 3
+    assert result.loaded_edge_count == 2
+    assert result.traversal_node_count == 3
+    assert result.traversal_edge_count == 2
+    assert result.path_scores[0].typed_path_weight == Decimal("1")
+    assert result.path_scores[0].artifact_weight == Decimal("1")
+    assert result.path_scores[1].path_edge_confidences == (Decimal("1"), Decimal("1"))
 
 
 def test_cap_reference_amounts_are_event_local_and_not_applied_in_04a() -> None:
