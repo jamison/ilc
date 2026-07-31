@@ -68505,6 +68505,91 @@
       ],
       "recommended_graph_action": "support_only:tests/test_invite_provenance_wiring_1576q.py",
       "repo_path": "tests/test_invite_provenance_wiring_1576q.py"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_1576r_invite_chain_integration_tests",
+      "chronology_note": "2026-08-01 Phase 1576r invite chain integration tests.",
+      "manual_read_summary": "Integration tests cover invite batch creation, redemption, Merkle proof verification, local nullifier registration, D2D nullifier propagation, enforcement gate behavior, OpenClaw proof rejection before nullifier recording, and invite-init PROVENANCE edge creation through the live Phase 1576q writer API.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-108"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invitation_provenance_record.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invite_enforcement.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invite_nullifier_registry.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/invite_nullifier_gossip.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invite_provenance_wiring.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/openclaw_invite_bootstrap.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:tests/test_invite_chain_integration_1576r.py",
+      "repo_path": "tests/test_invite_chain_integration_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_1576r_invite_chain_integration_tests",
+      "chronology_note": "2026-08-01 Phase 1576r prompt hardening.",
+      "manual_read_summary": "Prompt corrected to target the live Phase 1576q invite provenance API and to require six prerequisite tokens instead of the stale five-token count.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:invite_ecu_credit_runtime_committed_phase_1576q"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1576r_g10_invite_integration_tests.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "HARDENS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576r_g10_invite_integration_tests.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576r_g10_invite_integration_tests.md"
     }
   ],
   "boundary": {
@@ -74938,6 +75023,40 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1576q_invite_ecu_credit_runtime_walkthrough.md",
       "repo_path": "docs/phases/phase_1576q_invite_ecu_credit_runtime_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_260_phase_1576r_invite_chain_integration_tests",
+      "chronology_note": "2026-08-01 Phase 1576r invite chain integration tests walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt correction, six-token audit, baseline and post-phase invite counts, verification commands, non-claims, and output token for invite chain integration tests.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-108"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:invite_integration_tests_committed_phase_1576r"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1576r_invite_integration_tests_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576r_invite_integration_tests_walkthrough.md"
     }
   ],
   "nodes": [
