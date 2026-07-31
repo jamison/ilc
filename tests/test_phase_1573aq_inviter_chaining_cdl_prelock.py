@@ -21,15 +21,17 @@ PROMPT = Path(
 )
 
 
-def test_cdl_102_row_is_prelocked_not_ratified() -> None:
+def test_cdl_102_prelock_artifact_is_preserved_after_ratification() -> None:
     text = CDL.read_text(encoding="utf-8")
     row = next(line for line in text.splitlines() if line.startswith("| CDL-102 |"))
 
-    assert " | prelocked | " in row
+    assert " | ratified | " in row
     assert "prelock_phase: 1573aq" in row
     assert "prelock_token: inviter_chaining_cdl_prelocked_phase_1573aq" in row
-    assert "ratification_status: not_ratified_deferred_to_1576m_live_network_evidence" in row
-    assert "CDL-091 remains ratified Jury Incentive Economics and is not reused" in row
+    assert "ratified_phase: 1576m" in row
+    assert "ratification_token: cdl_102_ratified_phase_1576m" in row
+    assert "cdl_091_status: unchanged" in row
+    assert "invite_credit_model: organic_cdl_108_backward_attribution" in row
 
 
 def test_prelock_doc_records_exact_runtime_fields_and_deferred_depth() -> None:
