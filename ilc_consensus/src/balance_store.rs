@@ -8,6 +8,7 @@ use crate::types::{
 };
 
 const BACKWARD_ATTRIBUTION_BATCH_ROOT_KEY_PREFIX: &[u8] = b"backward_attr_root:";
+const AGENT_REPUTATION_ROOT_KEY_PREFIX: &[u8] = b"agent_reputation_root:";
 
 pub struct BalanceStore {
     env: Arc<Environment>,
@@ -68,6 +69,31 @@ impl BalanceStore {
                 if bytes.len() != 32 {
                     return Err(ILCConsensusError::Other(
                         "stored backward attribution batch root has invalid length".to_string(),
+                    ));
+                }
+                let mut root = [0u8; 32];
+                root.copy_from_slice(bytes);
+                Ok(Some(root))
+            }
+            Err(lmdb_rkv::Error::NotFound) => Ok(None),
+            Err(e) => Err(ILCConsensusError::Other(format!("LMDB get error: {}", e))),
+        }
+    }
+
+    pub fn get_agent_reputation_root(
+        &self,
+        epoch: EpochSeq,
+    ) -> Result<Option<[u8; 32]>, ILCConsensusError> {
+        let txn = self
+            .env
+            .begin_ro_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin txn: {}", e)))?;
+        let key = agent_reputation_root_key(epoch);
+        match txn.get(self.db, &key) {
+            Ok(bytes) => {
+                if bytes.len() != 32 {
+                    return Err(ILCConsensusError::Other(
+                        "stored agent reputation root has invalid length".to_string(),
                     ));
                 }
                 let mut root = [0u8; 32];
@@ -247,6 +273,12 @@ impl BalanceStore {
             txn.put(self.db, &key, &root_bytes, WriteFlags::empty())
                 .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
         }
+        if let Some(root) = batch.agent_reputation_root {
+            let key = agent_reputation_root_key(batch.epoch);
+            let root_bytes = root.to_vec();
+            txn.put(self.db, &key, &root_bytes, WriteFlags::empty())
+                .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
+        }
 
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
@@ -260,6 +292,14 @@ fn backward_attribution_batch_root_key(epoch: EpochSeq) -> Vec<u8> {
         BACKWARD_ATTRIBUTION_BATCH_ROOT_KEY_PREFIX.len() + std::mem::size_of::<u64>(),
     );
     key.extend_from_slice(BACKWARD_ATTRIBUTION_BATCH_ROOT_KEY_PREFIX);
+    key.extend_from_slice(&epoch.0.to_be_bytes());
+    key
+}
+
+fn agent_reputation_root_key(epoch: EpochSeq) -> Vec<u8> {
+    let mut key =
+        Vec::with_capacity(AGENT_REPUTATION_ROOT_KEY_PREFIX.len() + std::mem::size_of::<u64>());
+    key.extend_from_slice(AGENT_REPUTATION_ROOT_KEY_PREFIX);
     key.extend_from_slice(&epoch.0.to_be_bytes());
     key
 }
@@ -296,6 +336,7 @@ mod tests {
             epoch: EpochSeq(1),
             attributions: vec![(agent1, 1_000_000)], // 1 ECU
             backward_attribution_batch_root: None,
+            agent_reputation_root: None,
         };
         store.apply_attribution(batch).unwrap();
 
@@ -355,6 +396,7 @@ mod tests {
             epoch: EpochSeq(5),
             attributions: vec![(agent, 500_000)],
             backward_attribution_batch_root: None,
+            agent_reputation_root: None,
         };
         // First application: succeeds and sets epoch=5 for this agent.
         store.apply_attribution(batch.clone()).unwrap();
@@ -389,6 +431,7 @@ mod tests {
             epoch: EpochSeq(0),
             attributions: vec![(agent, 100_000)],
             backward_attribution_batch_root: None,
+            agent_reputation_root: None,
         };
         store.apply_attribution(batch).unwrap();
         let bal = store.get_balance(&agent).unwrap();
@@ -407,6 +450,7 @@ mod tests {
                 epoch: EpochSeq(10),
                 attributions: vec![(agent, 200_000)],
                 backward_attribution_batch_root: None,
+                agent_reputation_root: None,
             })
             .unwrap();
 
@@ -415,6 +459,7 @@ mod tests {
                 epoch: EpochSeq(9),
                 attributions: vec![(agent, 999_000)],
                 backward_attribution_batch_root: None,
+                agent_reputation_root: None,
             })
             .unwrap_err();
         assert_eq!(
@@ -436,6 +481,7 @@ mod tests {
                 epoch: EpochSeq(11),
                 attributions: vec![(agent, 321_000)],
                 backward_attribution_batch_root: Some(root),
+                agent_reputation_root: None,
             })
             .unwrap();
 
@@ -451,5 +497,28 @@ mod tests {
                 .unwrap(),
             None
         );
+    }
+
+    #[test]
+    fn test_apply_attribution_stores_agent_reputation_root() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent = AgentID([11; 48]);
+        let root = [77u8; 32];
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(13),
+                attributions: vec![(agent, 654_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: Some(root),
+            })
+            .unwrap();
+
+        assert_eq!(
+            store.get_agent_reputation_root(EpochSeq(13)).unwrap(),
+            Some(root)
+        );
+        assert_eq!(store.get_agent_reputation_root(EpochSeq(14)).unwrap(), None);
     }
 }

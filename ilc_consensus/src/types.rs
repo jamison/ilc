@@ -384,6 +384,8 @@ pub struct AttributionBatch {
     pub attributions: Vec<(AgentID, u64)>, // Added micro-ecu additions
     #[serde(default)]
     pub backward_attribution_batch_root: Option<[u8; 32]>,
+    #[serde(default)]
+    pub agent_reputation_root: Option<[u8; 32]>,
 }
 
 #[cfg(test)]
@@ -425,6 +427,34 @@ mod tests {
     /// All-zeros G1 bytes (48 bytes with no compression flag).
     fn g1_invalid_bytes() -> Vec<u8> {
         vec![0u8; 48]
+    }
+
+    #[test]
+    fn test_attribution_batch_accepts_agent_reputation_root() {
+        let batch = AttributionBatch {
+            epoch: EpochSeq(17),
+            attributions: vec![(AgentID([1u8; 48]), 10)],
+            backward_attribution_batch_root: None,
+            agent_reputation_root: Some([9u8; 32]),
+        };
+
+        assert_eq!(batch.agent_reputation_root, Some([9u8; 32]));
+    }
+
+    #[test]
+    fn test_attribution_batch_without_agent_reputation_root_deserializes_from_json() {
+        let agent_bytes = vec![2u8; 48];
+        let payload = serde_json::json!({
+            "epoch": 18,
+            "attributions": [[agent_bytes, 20]]
+        });
+
+        let batch: AttributionBatch = serde_json::from_value(payload).unwrap();
+
+        assert_eq!(batch.epoch, EpochSeq(18));
+        assert_eq!(batch.attributions, vec![(AgentID([2u8; 48]), 20)]);
+        assert_eq!(batch.backward_attribution_batch_root, None);
+        assert_eq!(batch.agent_reputation_root, None);
     }
 
     // ---------------------------------------------------------------------------
