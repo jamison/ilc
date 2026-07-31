@@ -67065,6 +67065,98 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1595j_backward_attribution_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_267_phase_1589c_gap_reputation_02_extractor_runtime",
+      "chronology_note": "2026-07-31 Phase 1589c / GAP-REPUTATION-02 extractor runtime",
+      "graph_delta": "load_bearing_artifact_added:ilc_core/economics/agent_reputation_extractor.py -> genesis:genesis_root_v0.4",
+      "manual_read_summary": "Standalone CDL-106 AgentReputationRecord extractor runtime with deterministic evidence roots, AgentReputationRoot SHA-256 commitment, Decimal-only score arithmetic, and production activation guard.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_reputation_gap_audit_GAP_REPUTATION_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_cdl_106_agent_reputation_record_opening_GAP_REPUTATION_01_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_reputation_gap_audit_GAP_REPUTATION_00_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1589c_gap_reputation_02"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/economics/agent_reputation_extractor.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/agent_reputation_extractor.py"
+    },
+    {
+      "annotation_batch": "manual_batch_267_phase_1589c_gap_reputation_02_extractor_runtime",
+      "chronology_note": "2026-07-31 Phase 1589c / GAP-REPUTATION-02 extractor runtime",
+      "graph_delta": "support_tests_added:tests/test_agent_reputation_extractor.py -> validation/reputation",
+      "manual_read_summary": "Focused extractor tests covering extraction, Decimal quantization, non-finite and binary numeric rejection, canonical roots, production guard, advisory eligibility flags, duplicate agent rejection, CDL-107 gate, and node-value-kernel exclusion.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/economics/agent_reputation_extractor.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:agent_reputation_root_deterministic_sorted_records"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_tests_added:tests/test_agent_reputation_extractor.py -> validation/reputation",
+      "repo_path": "tests/test_agent_reputation_extractor.py"
+    },
+    {
+      "annotation_batch": "manual_batch_267_phase_1589c_gap_reputation_02_extractor_runtime",
+      "chronology_note": "2026-07-31 Phase 1589c / GAP-REPUTATION-02 extractor runtime",
+      "graph_delta": "support_only:docs/phases/phase_gap_reputation_02_extractor_runtime_walkthrough.md -> planning/frontier",
+      "manual_read_summary": "Walkthrough for Phase 1589c / GAP-REPUTATION-02 recording source reads, implementation boundaries, verification outputs, non-claims, and output token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1589c_gap_reputation_02"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_02_extractor_runtime_walkthrough.md -> planning/frontier",
+      "repo_path": "docs/phases/phase_gap_reputation_02_extractor_runtime_walkthrough.md"
     }
   ],
   "boundary": {
