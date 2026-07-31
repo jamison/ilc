@@ -68121,6 +68121,276 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Added default-off invite enforcement gate with Genesis bypass, canonical InviteRedemptionRecord validation, redeemer mismatch rejection, and optional local nullifier replay check.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/genesis/invite_enforcement.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/invite_enforcement.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Exposed validate_invite_redemption_record() as the canonical public validation boundary for invite enforcement.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_core/genesis/invitation_provenance_record.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/invitation_provenance_record.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Wired require_invite_for_enrollment() into CLI identity init as the current concrete enrollment hook while the general enrollment runtime remains spec-only.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_core/cli/main.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Added 16 focused tests for default-off behavior, active rejection, valid invite acceptance, Genesis bypass, redeemer mismatch, nullifier replay, validator wrapper, fail-closed registration, missing-agent rejection, default-off optional-seed compatibility, and CLI identity-init hook.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "module:ilc_core/genesis/invite_enforcement.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_invite_enforcement_gate_1576n.py",
+      "repo_path": "tests/test_invite_enforcement_gate_1576n.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Walkthrough records source reads, implementation summary, verification results, output token, and non-claims for Phase 1576n.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1576n_invite_enforcement_gate_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576n_invite_enforcement_gate_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Recorded Phase 1576n completion and invite_enforcement_gate_committed_phase_1576n output token.",
+      "node_kind": "status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Updated 44-phase pre-RC count to 28 complete and 16 remaining after Phase 1576n.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Updated invite lane remaining count and Phase 1576n status after invite enforcement gate completion.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1598_phase_1576n_invite_enforcement_gate",
+      "chronology_note": "2026-07-31 Phase 1576n invite enforcement gate execution.",
+      "manual_read_summary": "Recorded corrected GO phrase and completion status for the Phase 1576n prompt.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-102"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:1576n"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576n_g10_invite_enforcement_gate.md"
     }
   ],
   "boundary": {

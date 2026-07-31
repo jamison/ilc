@@ -530,6 +530,25 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
             state["invite_redemption_record_cid"] = redemption.canonical_cid()
             state["invite_runtime_version"] = "invite_batch_runtime_1573z.v0.1"
             state["production_graph_write"] = False
+
+        enrollment_agent_id = ""
+        if "invite_redemption_record" in state:
+            invite_record = state["invite_redemption_record"]
+            if isinstance(invite_record, dict):
+                maybe_agent_id = invite_record.get("redeemer_agent_id")
+                if isinstance(maybe_agent_id, str):
+                    enrollment_agent_id = maybe_agent_id
+        else:
+            enrollment_agent_id = ""
+
+        # Phase 1578a found no general enrollment runtime yet; identity init is
+        # the current concrete enrollment hook until that runtime exists.
+        from ilc_core.genesis.invite_enforcement import require_invite_for_enrollment
+
+        require_invite_for_enrollment(
+            enrollment_agent_id,
+            state.get("invite_redemption_record"),
+        )
         _write_identity_state(state_path, state)
         return {"action": "init", "state_path": str(state_path), "state": state}
 
