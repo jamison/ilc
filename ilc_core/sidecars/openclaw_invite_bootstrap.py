@@ -80,6 +80,9 @@ class BootstrapDecision:
     production_ready: bool
     cross_node_replay_prevention_gap: str
     nullifier_gossip_status: str
+    invite_provenance_edge_status: str
+    invite_provenance_edge: dict[str, Any] | None
+    invite_provenance_write_receipt: dict[str, Any] | None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -88,6 +91,9 @@ class BootstrapDecision:
             "bootstrap_allowed": self.bootstrap_allowed,
             "cross_node_replay_prevention_gap": self.cross_node_replay_prevention_gap,
             "defect_token": self.defect_token,
+            "invite_provenance_edge": self.invite_provenance_edge,
+            "invite_provenance_edge_status": self.invite_provenance_edge_status,
+            "invite_provenance_write_receipt": self.invite_provenance_write_receipt,
             "nonce_membership_status": self.nonce_membership_status,
             "nullifier_gossip_status": self.nullifier_gossip_status,
             "nullifier_status": self.nullifier_status,
@@ -142,6 +148,10 @@ def verify_invite_bootstrap(
     production_required: bool = False,
     nullifier_gossip_broadcaster: Callable[[Mapping[str, str]], object] | None = None,
     nullifier_gossip_claimed_actor: str | None = None,
+    invite_provenance_atlas_writer: object | None = None,
+    invite_provenance_source_node_id: str | None = None,
+    invite_provenance_target_node_id: str | None = None,
+    invite_provenance_redeemer_agent_id: str | None = None,
 ) -> BootstrapDecision:
     _require_non_empty_string(expected_profile, "openclaw_expected_profile_invalid")
     epoch = _require_non_negative_int(current_epoch, "openclaw_current_epoch_invalid")
@@ -199,6 +209,21 @@ def verify_invite_bootstrap(
                 },
             )
         local_registry.register_nullifier(nullifier)
+        (
+            invite_provenance_edge_status,
+            invite_provenance_edge,
+            invite_provenance_receipt,
+        ) = _maybe_write_invite_provenance_edge(
+            atlas_writer=invite_provenance_atlas_writer,
+            source_node_id=invite_provenance_source_node_id,
+            target_node_id=invite_provenance_target_node_id or inviter_cid,
+            redemption_nullifier=nullifier,
+            batch_id=batch_id,
+            inviter_cid=inviter_cid,
+            redeemer_agent_id=invite_provenance_redeemer_agent_id
+            or _optional_str(invite_bundle.get("redeemer_agent_id")),
+            redemption_epoch=epoch,
+        )
         nullifier_gossip_status = _broadcast_nullifier_gossip(
             nullifier,
             nullifier_gossip_broadcaster,
@@ -218,6 +243,9 @@ def verify_invite_bootstrap(
             production_ready=production_ready,
             cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
             nullifier_gossip_status=nullifier_gossip_status,
+            invite_provenance_edge_status=invite_provenance_edge_status,
+            invite_provenance_edge=invite_provenance_edge,
+            invite_provenance_write_receipt=invite_provenance_receipt,
         )
     except (KeyError, TypeError, ValueError, OSError):
         return _deny("malformed_invite", None, "not_checked", "not_checked", "not_checked")
@@ -276,7 +304,46 @@ def _deny(
         production_ready=False,
         cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
         nullifier_gossip_status="not_configured",
+        invite_provenance_edge_status="not_configured",
+        invite_provenance_edge=None,
+        invite_provenance_write_receipt=None,
     )
+
+
+def _maybe_write_invite_provenance_edge(
+    *,
+    atlas_writer: object | None,
+    source_node_id: str | None,
+    target_node_id: str | None,
+    redemption_nullifier: str | None,
+    batch_id: str | None,
+    inviter_cid: str | None,
+    redeemer_agent_id: str | None,
+    redemption_epoch: int | None,
+) -> tuple[str, dict[str, Any] | None, dict[str, Any] | None]:
+    from ilc_core.genesis.invite_provenance_wiring import (
+        InviteProvenanceWiringError,
+        maybe_write_invite_provenance_edge,
+    )
+
+    try:
+        status, record, receipt = maybe_write_invite_provenance_edge(
+            atlas_writer=atlas_writer,
+            source_node_id=source_node_id,
+            target_node_id=target_node_id,
+            redemption_nullifier=redemption_nullifier,
+            batch_id=batch_id,
+            inviter_cid=inviter_cid,
+            redeemer_agent_id=redeemer_agent_id,
+            redemption_epoch=redemption_epoch,
+        )
+    except (InviteProvenanceWiringError, OSError, ValueError) as exc:
+        return f"write_failed:{exc.__class__.__name__}", None, None
+    return status, record.to_dict() if record is not None else None, receipt
+
+
+def _optional_str(value: object) -> str | None:
+    return value if type(value) is str and value else None
 
 
 def _broadcast_nullifier_gossip(
