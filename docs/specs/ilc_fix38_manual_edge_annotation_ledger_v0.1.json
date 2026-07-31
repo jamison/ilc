@@ -67333,6 +67333,86 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_04_eligibility_cert_walkthrough.md -> planning/frontier",
       "repo_path": "docs/phases/phase_gap_reputation_04_eligibility_cert_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_270_phase_1589_gap_substrate_admission_activation",
+      "chronology_note": "2026-07-31 Phase 1589 / GAP-SUBSTRATE-ADMISSION validator admission activation",
+      "manual_read_summary": "Runtime admission path now consumes Phase 1589e Fix1 ValidatorEligibilityCertificate semantics to produce deterministic agent-bound ValidatorRoleRecord artifacts. Official admission requires an epoch-active official certificate, non-None earned ECU work and liveness roots, zero-quorum candidate/provisional roles, and preserves CDL-055 stake/bond as a separate surface. No Rust ValidatorSet mutation occurs in this phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:017_validator_governance_framework"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "cdl:107_reputation_ecu_boundary_validator_eligibility"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "cdl:055_validator_staking_and_liveness"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:production_validator_admission_activated_phase_1589"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/validator/admission_ejection_runtime.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/validator/admission_ejection_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_270_phase_1589_gap_substrate_admission_activation",
+      "chronology_note": "2026-07-31 Phase 1589 / GAP-SUBSTRATE-ADMISSION validator admission activation",
+      "manual_read_summary": "Focused tests cover bootstrap substitution for reputation root only, mandatory earned ECU work and liveness roots for official admission, candidate/provisional zero-quorum enforcement, mismatched eligibility certificate rejection, and preserved default-off behavior without the Phase 1589 activation token.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/validator/admission_ejection_runtime.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_validator_admission.py -> verification/test_surface",
+      "repo_path": "tests/test_validator_admission.py"
+    },
+    {
+      "annotation_batch": "manual_batch_270_phase_1589_gap_substrate_admission_activation",
+      "chronology_note": "2026-07-31 Phase 1589 / GAP-SUBSTRATE-ADMISSION validator admission activation",
+      "manual_read_summary": "Walkthrough records GO phrase, direct-read sources, implementation choices, Fix1 bootstrap semantics, CDL-055 stake/bond boundary, focused verification output, taboo-check result, non-claims, and output token for Phase 1589.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_validator_admission_activated_phase_1589"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1589_gap_substrate_admission_walkthrough.md -> planning/frontier",
+      "repo_path": "docs/phases/phase_1589_gap_substrate_admission_walkthrough.md"
     }
   ],
   "boundary": {
