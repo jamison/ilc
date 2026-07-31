@@ -67256,6 +67256,83 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_03_cdl_107_opening_walkthrough.md -> planning/frontier",
       "repo_path": "docs/phases/phase_gap_reputation_03_cdl_107_opening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_269_phase_1589e_gap_reputation_04_eligibility_cert",
+      "chronology_note": "2026-07-31 Phase 1589e / GAP-REPUTATION-04 validator eligibility certificate runtime",
+      "manual_read_summary": "Runtime module adds deterministic ValidatorEligibilityCertificate and GenesisBootstrapAuthorityCertificate artifacts with candidate/provisional/official verdicts, subject-bound bootstrap authority, canonical certificate hashing, validation hardening, and default-off production guard. No admission wiring occurs in this phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:107_reputation_ecu_boundary_validator_eligibility"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "cdl:106_agent_reputation_record"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GATES",
+          "target": "phase:1589_validator_admission_activation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "GATES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/validator/validator_eligibility_certificate.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/validator/validator_eligibility_certificate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_269_phase_1589e_gap_reputation_04_eligibility_cert",
+      "chronology_note": "2026-07-31 Phase 1589e / GAP-REPUTATION-04 validator eligibility certificate runtime",
+      "manual_read_summary": "Focused test file covering candidate/provisional/official verdicts, active and expired bootstrap behavior, authorized-agent bootstrap binding, direct verdict mismatch rejection, invalid roots and agent IDs, negative epoch, non-finite Decimal, float rejection, production guard, and canonical hash determinism.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/validator/validator_eligibility_certificate.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:tests/test_validator_eligibility_certificate.py -> verification/test_surface",
+      "repo_path": "tests/test_validator_eligibility_certificate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_269_phase_1589e_gap_reputation_04_eligibility_cert",
+      "chronology_note": "2026-07-31 Phase 1589e / GAP-REPUTATION-04 validator eligibility certificate runtime",
+      "manual_read_summary": "Walkthrough records GO phrase, direct-read sources, dataclass definitions, verdict truth table, bootstrap scope disposition, verification outputs, non-claims, and output token for Phase 1589e.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1589e_gap_reputation_04"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_04_eligibility_cert_walkthrough.md -> planning/frontier",
+      "repo_path": "docs/phases/phase_gap_reputation_04_eligibility_cert_walkthrough.md"
     }
   ],
   "boundary": {
