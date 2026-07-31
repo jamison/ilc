@@ -74304,6 +74304,61 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md",
       "repo_path": "docs/phases/phase_1575t_end_to_end_production_economic_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_231_phase_gap_werner_01_werner_runtime",
+      "chronology_note": "2026-07-31 phase gap-werner-01 \u2014 Werner credit pressure-signal runtime module; ships behind WERNER_CREDIT_WIRING_NOT_ACTIVATED guard",
+      "manual_read_summary": "Implements Werner credit as a dimensionless topology-pressure flow signal per CDL-096 and CDL-053; computes degree centrality, EMA smoothing, beta signal, spectral trust eligibility, and candidate priority; no ECU attribution, no guard clearance",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-096"
+        },
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-053"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "spec:werner_credit_pressure_signal"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNED_BY",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/economics/werner_runtime.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/economics/werner_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_232_phase_gap_werner_01_werner_tests",
+      "chronology_note": "2026-07-31 phase gap-werner-01 \u2014 Werner credit runtime test suite (51 tests)",
+      "manual_read_summary": "Test suite for werner_runtime.py covering zero topology, single node, symmetric topology, clique, star hub/leaf, non-finite rejection, no-float output, beta signal, EMA smoothing, spectral trust, multi-epoch priority, and flow budget",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "module:ilc_core/economics/werner_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_werner_01_werner_runtime.py",
+      "repo_path": "tests/test_gap_werner_01_werner_runtime.py"
     }
   ],
   "nodes": [
