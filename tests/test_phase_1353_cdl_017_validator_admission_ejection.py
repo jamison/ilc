@@ -187,16 +187,12 @@ def test_phase_1353_eject_validator_rejects_invalid_reasons_and_thresholds() -> 
         )
 
 
-def test_phase_1353_production_activation_remains_unimplemented() -> None:
+def test_phase_1353_default_off_guard_preserved_and_phase_1589_token_clears() -> None:
     with pytest.raises(ValueError, match=PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN):
         require_production_validator_admission_activation()
-    with pytest.raises(
-        ValueError,
-        match="production_validator_admission_activation_not_implemented_phase_1353",
-    ):
-        require_production_validator_admission_activation(
-            "first_non_genesis_validator_deployment_requires_later_human_gate"
-        )
+    require_production_validator_admission_activation(
+        "production_validator_admission_activated_phase_1589"
+    )
 
 
 def test_phase_1353_fast_path_records_sec_004_and_rotation_tokens() -> None:
