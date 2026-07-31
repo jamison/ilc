@@ -203,9 +203,80 @@ def test_duplicate_agent_ids_rejected_for_epoch_root() -> None:
         compute_agent_reputation_root([_record(), _record()])
 
 
+def test_empty_agent_reputation_root_rejected() -> None:
+    with pytest.raises(ValueError, match="agent_reputation_root_requires_records"):
+        compute_agent_reputation_root([])
+
+
 def test_deployment_efficiency_is_cdl_107_gated() -> None:
     with pytest.raises(ValueError, match=DEPLOYMENT_EFFICIENCY_REQUIRES_CDL_107_TOKEN):
         _record(deployment_efficiency="0.50")
+
+
+def test_equivocation_detected_alias_branch_is_supported() -> None:
+    record = _record(
+        liveness_evidence={
+            "stake": "400",
+            "consecutive_missed_epochs": 0,
+            "equivocation_state": True,
+        },
+        equivocation_evidence={
+            "equivocation_detected": True,
+            "evidence_count": 1,
+        },
+    )
+
+    assert record.eligibility_flags["panel_eligible"] is False
+
+
+def test_liveness_stake_passed_downstream_as_parsed_decimal(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: dict[str, object] = {}
+
+    def fake_validate(stake: object, missed_epochs: int, equivocation_state: bool) -> dict[str, object]:
+        seen["stake"] = stake
+        seen["missed_epochs"] = missed_epochs
+        seen["equivocation_state"] = equivocation_state
+        return {"status": "active"}
+
+    monkeypatch.setattr(extractor, "validate_staking_and_liveness_state", fake_validate)
+
+    _record()
+
+    assert seen == {
+        "stake": Decimal("400"),
+        "missed_epochs": 0,
+        "equivocation_state": False,
+    }
+
+
+def test_reputation_atrophy_grace_boundary_is_stable() -> None:
+    grace_record = _record(
+        epoch=1450,
+        lifecycle_evidence={
+            "last_active_epoch": 10,
+            "trust_vector": {
+                "accuracy": "0.80",
+                "precision": "0.70",
+                "potential": "0.20",
+            },
+        },
+    )
+    decayed_record = _record(
+        epoch=1451,
+        lifecycle_evidence={
+            "last_active_epoch": 10,
+            "trust_vector": {
+                "accuracy": "0.80",
+                "precision": "0.70",
+                "potential": "0.20",
+            },
+        },
+    )
+
+    assert grace_record.reputation_score == Decimal("0.847000000000")
+    assert decayed_record.reputation_score < grace_record.reputation_score
 
 
 def test_analysis_grade_node_value_kernel_not_imported() -> None:

@@ -187,6 +187,11 @@ def _attribution_event_log_key(epoch: int, ordinal: int) -> str:
 
 def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        raise AttributionBatchBridgeError(
+            "attribution_event_log_file_exists",
+            f"attribution event log already exists: {path}",
+        )
     fd, tmp_name = tempfile.mkstemp(
         prefix=f".{path.name}.",
         suffix=".tmp",
@@ -209,14 +214,7 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
 def _backward_attribution_batch_root(backward_entries: list[dict[str, Any]]) -> str | None:
     if not backward_entries:
         return None
-    sorted_entries = sorted(
-        backward_entries,
-        key=lambda item: (
-            item["event_id"],
-            item["upstream_artifact_id"],
-            item["recipient_agent_id"],
-        ),
-    )
+    sorted_entries = _require_sorted_backward_entries(backward_entries)
     preimage = json.dumps(
         sorted_entries,
         sort_keys=True,
@@ -224,6 +222,26 @@ def _backward_attribution_batch_root(backward_entries: list[dict[str, Any]]) -> 
         allow_nan=False,
     ).encode("utf-8")
     return hashlib.sha256(preimage).hexdigest()
+
+
+def _backward_entry_sort_key(item: dict[str, Any]) -> tuple[object, object, object]:
+    return (
+        item["event_id"],
+        item["upstream_artifact_id"],
+        item["recipient_agent_id"],
+    )
+
+
+def _require_sorted_backward_entries(
+    backward_entries: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    sorted_entries = sorted(backward_entries, key=_backward_entry_sort_key)
+    if backward_entries != sorted_entries:
+        raise AttributionBatchBridgeError(
+            "backward_attribution_entries_must_be_canonical_sorted",
+            "backward attribution entries must be sorted before hashing",
+        )
+    return backward_entries
 
 
 def build_attribution_batch_from_claims(
@@ -375,13 +393,13 @@ def build_attribution_batch_from_claims(
                     "source_node_cid": source_node_id,
                     "upstream_artifact_id": final_credit.upstream_artifact_id,
                 }
+                _require_agent_id(final_credit.recipient_agent_id)
                 attribution_event_log.append(entry)
                 backward_entries.append(entry)
                 if final_credit.final_credit_ecu > Decimal("0"):
-                    recipient_agent_id = _require_agent_id(final_credit.recipient_agent_id)
                     _, dust = _append_amount(
                         aggregated,
-                        agent_id=recipient_agent_id,
+                        agent_id=final_credit.recipient_agent_id,
                         amount=final_credit.final_credit_ecu,
                         source_id=f"backward:{event_id}:{final_credit.upstream_artifact_id}",
                     )
@@ -429,11 +447,7 @@ def build_attribution_batch_from_claims(
     if backward_attribution_graph_context is not None:
         sorted_backward_entries = sorted(
             backward_entries,
-            key=lambda item: (
-                item["event_id"],
-                item["upstream_artifact_id"],
-                item["recipient_agent_id"],
-            ),
+            key=_backward_entry_sort_key,
         )
         batch.update(
             {

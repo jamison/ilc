@@ -9,6 +9,7 @@ import pytest
 
 from ilc_core.consensus.attribution_batch_bridge import (
     AttributionBatchBridgeError,
+    _backward_attribution_batch_root,
     apply_attribution_batch_with_rust,
     build_attribution_batch_from_claims,
 )
@@ -17,6 +18,8 @@ from tests.test_agent_loop_v1_runtime import _cdl069_seed, _legacy_seed, _submis
 
 
 ROOT = Path(__file__).resolve().parents[1]
+AGENT_A = "a" * 96
+AGENT_B = "b" * 96
 
 
 def _cargo() -> str:
@@ -67,6 +70,57 @@ def _passing_claim_payload() -> dict[str, object]:
     return agent_loop_v1.build_ecu_claim_batch(_task(), panel_payload)
 
 
+def _simple_claim_payload() -> dict[str, object]:
+    return {
+        "claims": [
+            {
+                "agent_id": AGENT_B,
+                "amount": "1",
+                "claim_id": "claim-1",
+                "epoch": 7,
+            }
+        ],
+        "marker": "agent_loop_claims_ok",
+    }
+
+
+def _backward_node(agent_id: str) -> dict[str, object]:
+    return {
+        "artifact_type": "claim",
+        "created_epoch": 0,
+        "novelty_score": "1",
+        "recipient_agent_id": agent_id,
+        "status_quality_weight": "1",
+    }
+
+
+def _backward_edge(source: str, target: str) -> dict[str, object]:
+    return {
+        "edge_confidence": "1",
+        "edge_type": "PROVENANCE",
+        "source_node_id": source,
+        "target_node_id": target,
+    }
+
+
+def _simple_backward_context() -> dict[str, object]:
+    return {
+        "edges": [_backward_edge("source", "upstream")],
+        "events": [
+            {
+                "event_budget_ecu": "100",
+                "event_epoch": 7,
+                "event_id": "event-1",
+                "source_node_id": "source",
+            }
+        ],
+        "nodes": {
+            "source": _backward_node(AGENT_B),
+            "upstream": _backward_node(AGENT_A),
+        },
+    }
+
+
 def test_claim_payload_converts_to_consensus_attribution_batch_with_dust_accounting() -> None:
     claim_payload = _passing_claim_payload()
 
@@ -114,6 +168,68 @@ def test_bridge_rejects_claim_count_above_maximum() -> None:
         build_attribution_batch_from_claims(claim_payload)
 
     assert excinfo.value.token == "claim_count_exceeds_maximum"
+
+
+def test_backward_root_requires_canonical_sorted_entries() -> None:
+    sorted_entries = [
+        {"event_id": "a", "recipient_agent_id": AGENT_A, "upstream_artifact_id": "node-a"},
+        {"event_id": "b", "recipient_agent_id": AGENT_B, "upstream_artifact_id": "node-b"},
+    ]
+    unsorted_entries = list(reversed(sorted_entries))
+
+    assert isinstance(_backward_attribution_batch_root(sorted_entries), str)
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        _backward_attribution_batch_root(unsorted_entries)
+
+    assert excinfo.value.token == "backward_attribution_entries_must_be_canonical_sorted"
+
+
+def test_attribution_event_log_retry_does_not_silently_overwrite(tmp_path: Path) -> None:
+    build_attribution_batch_from_claims(
+        _simple_claim_payload(),
+        backward_attribution_graph_context=_simple_backward_context(),
+        attribution_event_log_dir=tmp_path,
+    )
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _simple_claim_payload(),
+            backward_attribution_graph_context=_simple_backward_context(),
+            attribution_event_log_dir=tmp_path,
+        )
+
+    assert excinfo.value.token == "attribution_event_log_file_exists"
+
+
+def test_zero_credit_backward_recipient_agent_id_is_still_validated() -> None:
+    nodes = {"source": _backward_node(AGENT_B)}
+    edges: list[dict[str, object]] = []
+    for index in range(6):
+        node_id = f"N{index}"
+        recipient = "not-a-hex-agent" if index == 5 else f"{index:x}" * 96
+        nodes[node_id] = _backward_node(recipient)
+        edges.append(_backward_edge("source", node_id))
+        edges.append(_backward_edge(node_id, "source"))
+    context = {
+        "edges": edges,
+        "events": [
+            {
+                "event_budget_ecu": "1000",
+                "event_epoch": 7,
+                "event_id": "event-cluster",
+                "source_node_id": "source",
+            }
+        ],
+        "nodes": nodes,
+    }
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _simple_claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "agent_id_hex_must_be_96_lower_hex"
 
 
 def test_bridge_wraps_rust_ingest_timeout(

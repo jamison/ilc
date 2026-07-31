@@ -9,7 +9,7 @@ activation path.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Mapping
 
 
@@ -124,7 +124,11 @@ class BackwardAttributionCreditQuote:
 
 @dataclass(frozen=True)
 class BackwardAttributionFinalCredit:
-    """Final CDL-108 credit after event-local anti-gaming caps."""
+    """Final CDL-108 credit after event-local anti-gaming caps.
+
+    The *_cap_applied flags are per-credit clipping flags. They do not mean the
+    event-level cap headroom was globally exhausted for all later credits.
+    """
 
     event_id: str
     upstream_artifact_id: str
@@ -383,7 +387,9 @@ def _edge_from_mapping(value: object) -> BackwardAttributionEdge:
 
 def _age_weight(created_epoch: int, event_epoch: int) -> Decimal:
     age_epochs = max(0, event_epoch - created_epoch)
-    return Decimal("0.5") ** (age_epochs // BACKWARD_ATTRIBUTION_AGE_HALF_LIFE_EPOCHS)
+    with localcontext() as ctx:
+        ctx.prec = 50
+        return Decimal("0.5") ** (age_epochs // BACKWARD_ATTRIBUTION_AGE_HALF_LIFE_EPOCHS)
 
 
 def _eligible_artifact_weight(node: BackwardAttributionNode) -> Decimal:
@@ -719,11 +725,11 @@ class BackwardAttributionTraversal:
                 path_edge_confidences,
             ) = stack.pop()
             for edge in self._outgoing.get(current_node_id, ()):
+                if edge.edge_type not in BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES:
+                    continue
                 traversed_edges += 1
                 if traversed_edges > BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES:
                     raise ValueError("backward_attribution_edge_traversal_exceeds_maximum")
-                if edge.edge_type not in BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES:
-                    continue
                 next_depth = depth + 1
                 if next_depth > BACKWARD_ATTRIBUTION_MAX_DEPTH:
                     continue
@@ -798,14 +804,16 @@ class BackwardAttributionTraversal:
         novelty = _novelty_weight(upstream_node)
         if novelty == ZERO:
             return ZERO
-        return (
-            (BACKWARD_ATTRIBUTION_DECAY_ALPHA ** depth)
-            * _age_weight(upstream_node.created_epoch, event_epoch)
-            * edge_confidence_weight
-            * artifact_weight
-            * upstream_node.status_quality_weight
-            * novelty
-        )
+        with localcontext() as ctx:
+            ctx.prec = 50
+            return (
+                (BACKWARD_ATTRIBUTION_DECAY_ALPHA ** depth)
+                * _age_weight(upstream_node.created_epoch, event_epoch)
+                * edge_confidence_weight
+                * artifact_weight
+                * upstream_node.status_quality_weight
+                * novelty
+            )
 
     @staticmethod
     def _collapse_scores(
