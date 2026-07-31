@@ -67157,6 +67157,105 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_02_extractor_runtime_walkthrough.md -> planning/frontier",
       "repo_path": "docs/phases/phase_gap_reputation_02_extractor_runtime_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_268_phase_1589d_gap_reputation_03_cdl_107_opening",
+      "chronology_note": "2026-07-31 Phase 1589d / GAP-REPUTATION-03 CDL-107 opening",
+      "graph_delta": "load_bearing_artifact_added:docs/specs/ilc_cdl_107_reputation_ecu_boundary_validator_eligibility_opening_GAP_REPUTATION_03_v0.1.md -> governance/cdl",
+      "manual_read_summary": "CDL-107 opening for reputation/ECU boundary and validator eligibility tiers; records eligibility-not-payout boundary, candidate/provisional/official states, sunsetted Genesis bootstrap certificate, Decimal quantization, official promotion evidence roots, and SIM-F-gated deployment efficiency disposition.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:106_agent_reputation_record_schema"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:0008_node_usefulness_governance_weight_genesis_dilution"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:055_validator_staking_liveness"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:056_validator_trust_tier"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "invariant:reputation_gates_validator_eligibility_not_ecu_amounts"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "invariant:candidate_provisional_validators_zero_bft_quorum_weight"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "invariant:genesis_bootstrap_authority_certificate_sunsetted_not_reputation_floor"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_107_reputation_ecu_boundary_validator_eligibility_opening_GAP_REPUTATION_03_v0.1.md -> governance/cdl",
+      "repo_path": "docs/specs/ilc_cdl_107_reputation_ecu_boundary_validator_eligibility_opening_GAP_REPUTATION_03_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_268_phase_1589d_gap_reputation_03_cdl_107_opening",
+      "chronology_note": "2026-07-31 Phase 1589d / GAP-REPUTATION-03 CDL-107 opening",
+      "graph_delta": "load_bearing_artifact_added:docs/specs/ilc_constitutional_decision_log_v0.1.md -> governance/cdl_register",
+      "manual_read_summary": "Constitutional decision log row added for CDL-107 with opened status, opening token, non-activation boundaries, SIM-F-gated deployment efficiency status, and validator admission deferral.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REGISTERS",
+          "target": "cdl:107_reputation_ecu_boundary_validator_eligibility"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGISTERS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_constitutional_decision_log_v0.1.md -> governance/cdl_register",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_268_phase_1589d_gap_reputation_03_cdl_107_opening",
+      "chronology_note": "2026-07-31 Phase 1589d / GAP-REPUTATION-03 CDL-107 opening",
+      "graph_delta": "support_only:docs/phases/phase_gap_reputation_03_cdl_107_opening_walkthrough.md -> planning/frontier",
+      "manual_read_summary": "Walkthrough for Phase 1589d recording GO phrase, direct-read sources, five governance decisions, SIM-F disposition, CDL number resolution, non-claims, and output token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1589d_gap_reputation_03"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_reputation_03_cdl_107_opening_walkthrough.md -> planning/frontier",
+      "repo_path": "docs/phases/phase_gap_reputation_03_cdl_107_opening_walkthrough.md"
     }
   ],
   "boundary": {
