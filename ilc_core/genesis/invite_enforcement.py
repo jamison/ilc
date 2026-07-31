@@ -10,10 +10,6 @@ from __future__ import annotations
 from typing import Mapping
 
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
-from ilc_core.genesis.invitation_provenance_record import (
-    InviteRedemptionRecord,
-    validate_invite_redemption_record,
-)
 from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
 
 INVITE_ENFORCEMENT_RUNTIME_VERSION = "invite_enforcement_gate_1576n.v0.1"
@@ -28,7 +24,7 @@ def is_enrollment_invite_enforced() -> bool:
 
 def require_invite_for_enrollment(
     agent_id: str,
-    invite_redemption_record: InviteRedemptionRecord | Mapping[str, object] | None,
+    invite_redemption_record: object | Mapping[str, object] | None,
     *,
     nullifier_registry: InviteNullifierRegistry | None = None,
     register_nullifier: bool = False,
@@ -46,6 +42,8 @@ def require_invite_for_enrollment(
         return
     if invite_redemption_record is None:
         raise ValueError("invite_required_for_enrollment")
+
+    from ilc_core.genesis.invitation_provenance_record import validate_invite_redemption_record
 
     record = validate_invite_redemption_record(invite_redemption_record)
     if not isinstance(agent_id, str) or not agent_id:

@@ -95,13 +95,14 @@ def test_persistent_store_replay_rejection_still_works(tmp_path: Path) -> None:
     assert decision.defect_token == "replayed_nullifier"
 
 
-def test_cross_node_gap_annotation_remains() -> None:
+def test_cross_node_gap_annotation_records_1576pb_closure() -> None:
     source = Path("ilc_core/sidecars/openclaw_invite_bootstrap.py").read_text(encoding="utf-8")
     assert "cross_node_replay_prevention_gap" in source
     assert "1576p-b" in source or "1576p_b" in source
     assert "local_detection_implemented_phase_1576p" in CROSS_NODE_REPLAY_PREVENTION_GAP
-    assert "cross_node_d2d_propagation_remains_open_phase_1576p_b" in CROSS_NODE_REPLAY_PREVENTION_GAP
+    assert "cross_node_replay_prevention_phase_1576pb" in CROSS_NODE_REPLAY_PREVENTION_GAP
+    assert "cross_node_d2d_propagation_remains_open_phase_1576p_b" not in CROSS_NODE_REPLAY_PREVENTION_GAP
 
 
-def test_invite_nullifier_gossip_file_absent() -> None:
-    assert not Path("ilc_core/network/d2d/invite_nullifier_gossip.py").exists()
+def test_invite_nullifier_gossip_file_present_after_1576pb() -> None:
+    assert Path("ilc_core/network/d2d/invite_nullifier_gossip.py").exists()
