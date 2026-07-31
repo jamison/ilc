@@ -12,16 +12,18 @@ def _register_text() -> str:
     return CDL_REGISTER.read_text(encoding="utf-8")
 
 
-def test_phase_1573ad_cdl_102_row_preserves_opening_after_prelock() -> None:
+def test_phase_1573ad_cdl_102_row_preserves_opening_after_ratification() -> None:
     text = _register_text()
     row = next(line for line in text.splitlines() if line.startswith("| CDL-102 |"))
 
     assert "Inviter-Chaining Economics" in row
-    assert " | prelocked | " in row
+    assert " | ratified | " in row
     assert "opened_phase: 1573ad" in row
     assert "opening_token: cdl_102_inviter_chaining_economics_opened_phase_1573ad" in row
     assert "prelock_phase: 1573aq" in row
     assert "prelock_token: inviter_chaining_cdl_prelocked_phase_1573aq" in row
+    assert "ratified_phase: 1576m" in row
+    assert "ratification_token: cdl_102_ratified_phase_1576m" in row
     assert "economics_activation_status: not_authorized" in row
     assert "public_path_status: blocked" in row
 
