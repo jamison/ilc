@@ -71,6 +71,7 @@ AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
     "centrality_delta",
     "panel_verdict",
     "ecu_claim_batch",
+    "invite_nullifier_v1",
 })
 UNVERIFIABLE_NO_PUBKEY_TOKEN = "gossip_signature_unverifiable_no_pubkey"
 UNVERIFIABLE_AUTHORITY_GOSSIP_REJECTED_TOKEN = (

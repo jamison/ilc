@@ -12,12 +12,13 @@ import hashlib
 import json
 import os
 import tempfile
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
+from ilc_core.network.d2d.invite_nullifier_gossip import build_nullifier_gossip_message
 
 OPENCLAW_INVITE_BOOTSTRAP_VERSION = "openclaw_invite_bootstrap_1575b_fix2d.v0.1"
 NULLIFIER_STORE_SCHEMA_VERSION = "openclaw_invite_nullifiers.v0.1"
@@ -59,8 +60,9 @@ BLOCKED_ACTIONS = (
 )
 CROSS_NODE_REPLAY_PREVENTION_GAP = (
     "local_detection_implemented_phase_1576p;"
-    "cross_node_d2d_propagation_remains_open_phase_1576p_b"
+    "cross_node_replay_prevention_phase_1576pb"
 )
+# cross_node_replay_prevention_phase_1576pb: cross-node D2D gossip closed by Phase 1576p-b
 
 
 @dataclass(frozen=True)
@@ -76,6 +78,7 @@ class BootstrapDecision:
     redeemer_key_binding_status: str
     production_ready: bool
     cross_node_replay_prevention_gap: str
+    nullifier_gossip_status: str
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -85,6 +88,7 @@ class BootstrapDecision:
             "cross_node_replay_prevention_gap": self.cross_node_replay_prevention_gap,
             "defect_token": self.defect_token,
             "nonce_membership_status": self.nonce_membership_status,
+            "nullifier_gossip_status": self.nullifier_gossip_status,
             "nullifier_status": self.nullifier_status,
             "production_ready": self.production_ready,
             "redeemer_key_binding_status": self.redeemer_key_binding_status,
@@ -135,6 +139,7 @@ def verify_invite_bootstrap(
     local_nullifier_registry: InviteNullifierRegistry | None = None,
     persist_nullifier: bool = True,
     production_required: bool = False,
+    nullifier_gossip_broadcaster: Callable[[Mapping[str, str]], object] | None = None,
 ) -> BootstrapDecision:
     _require_non_empty_string(expected_profile, "openclaw_expected_profile_invalid")
     epoch = _require_non_negative_int(current_epoch, "openclaw_current_epoch_invalid")
@@ -192,6 +197,10 @@ def verify_invite_bootstrap(
                 },
             )
         local_registry.register_nullifier(nullifier)
+        nullifier_gossip_status = _broadcast_nullifier_gossip(
+            nullifier,
+            nullifier_gossip_broadcaster,
+        )
         production_ready = signature_status == "verified" and redeemer_status == "verified"
         return BootstrapDecision(
             bootstrap_allowed=True,
@@ -205,6 +214,7 @@ def verify_invite_bootstrap(
             redeemer_key_binding_status=redeemer_status,
             production_ready=production_ready,
             cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
+            nullifier_gossip_status=nullifier_gossip_status,
         )
     except (KeyError, TypeError, ValueError, OSError):
         return _deny("malformed_invite", None, "not_checked", "not_checked", "not_checked")
@@ -262,7 +272,22 @@ def _deny(
         redeemer_key_binding_status=redeemer_status,
         production_ready=False,
         cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
+        nullifier_gossip_status="not_configured",
     )
+
+
+def _broadcast_nullifier_gossip(
+    nullifier_hex: str,
+    broadcaster: Callable[[Mapping[str, str]], object] | None,
+) -> str:
+    message = build_nullifier_gossip_message(nullifier_hex)
+    if broadcaster is None:
+        return "not_configured"
+    try:
+        broadcaster(message)
+    except Exception as exc:  # noqa: BLE001 - gossip failure must not unwind an accepted local redemption.
+        return f"broadcast_failed:{exc.__class__.__name__}"
+    return "broadcast_requested"
 
 
 def _verify_nonce_membership(
