@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 import pytest
 
@@ -20,6 +20,7 @@ from ilc_core.economics.backward_attribution_traversal import (
     BackwardAttributionTraversal,
     collapse_event_ids,
 )
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 
 def _node(
@@ -171,6 +172,47 @@ def test_age_weight_half_life_floor_applies_at_positive_epoch_age() -> None:
 
     assert result.path_scores[0].age_weight == Decimal("0.25")
     assert result.path_scores[0].raw_path_score == BACKWARD_ATTRIBUTION_DECAY_ALPHA * Decimal("0.25")
+
+
+def test_age_weight_half_life_boundaries_are_exact() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a", epoch=32),
+            "B": _node(agent="agent-b", epoch=32),
+            "C": _node(agent="agent-c", epoch=16),
+            "D": _node(agent="agent-d", epoch=0),
+        },
+        [_edge("A", "B"), _edge("A", "C"), _edge("A", "D")],
+    )
+
+    result = engine.traverse(
+        "A",
+        event_id="event-1",
+        event_budget_ecu=Decimal("100"),
+        event_epoch=32,
+    )
+
+    weights = {score.upstream_artifact_id: score.age_weight for score in result.path_scores}
+    assert weights == {"B": Decimal("1"), "C": Decimal("0.5"), "D": Decimal("0.25")}
+
+
+def test_path_scoring_ignores_caller_decimal_context_precision() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a"),
+            "B": _node(agent="agent-b"),
+            "C": _node(agent="agent-c"),
+            "D": _node(agent="agent-d"),
+        },
+        [_edge("A", "B"), _edge("B", "C"), _edge("C", "D")],
+    )
+
+    with localcontext() as ctx:
+        ctx.prec = 2
+        result = _quote(engine)
+
+    by_depth = {score.depth: score.raw_path_score for score in result.path_scores}
+    assert by_depth[3] == Decimal("0.091125")
 
 
 def test_bidirectional_coefficient_separation() -> None:
@@ -459,6 +501,25 @@ def test_edge_count_cap_raises() -> None:
         _engine(nodes, edges)
 
 
+def test_filtered_edge_types_do_not_consume_runtime_edge_budget() -> None:
+    nodes = {
+        "A": _node(agent="agent-a"),
+        "B": _node(agent="agent-b"),
+    }
+    edges = [
+        _edge("A", "B", edge_type="GOVERNANCE")
+        for _ in range(BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES - 1)
+    ]
+    edges.append(_edge("A", "B"))
+    engine = _engine(nodes, edges)
+
+    result = _quote(engine)
+
+    assert result.loaded_edge_count == BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_EDGES
+    assert result.traversal_edge_count == 1
+    assert [credit.upstream_artifact_id for credit in result.credits] == ["B"]
+
+
 def test_runtime_edge_traversal_cap_raises_on_path_explosion() -> None:
     fanout = 20
     nodes = {"S": _node(agent="agent-source")}
@@ -535,6 +596,34 @@ def test_duplicate_artifact_paths_collapse_to_highest_score() -> None:
     assert b_scores[0].raw_path_score == BACKWARD_ATTRIBUTION_DECAY_ALPHA * Decimal("0.50")
 
 
+def test_cluster_cap_clips_multiple_agents_in_same_mutual_citation_cluster() -> None:
+    nodes = {"A": _node(agent="agent-source")}
+    edges: list[dict[str, object]] = []
+    for index in range(6):
+        node_id = f"N{index}"
+        nodes[node_id] = _node(agent=f"agent-{index}")
+        edges.append(_edge("A", node_id))
+        edges.append(_edge(node_id, "A"))
+    engine = _engine(nodes, edges)
+
+    result = engine.traverse(
+        "A",
+        event_id="event-cluster",
+        event_budget_ecu=Decimal("1000"),
+        event_epoch=0,
+        apply_antigaming_caps=True,
+    )
+
+    cluster_credit = sum(
+        credit.final_credit_ecu
+        for credit in result.final_credits
+        if credit.cluster_id.startswith("cluster:")
+    )
+    assert cluster_credit == result.cluster_cap_amount_ecu
+    assert any(credit.cluster_cap_applied for credit in result.final_credits)
+    assert result.unissued_backward_pool_ecu > Decimal("0")
+
+
 def test_duplicate_event_ids_are_collapsed_before_traversal() -> None:
     engine = _engine(
         {"A": _node(), "B": _node(agent="agent-b")},
@@ -609,3 +698,10 @@ def test_cap_reference_amounts_are_event_local_and_not_applied_in_04a() -> None:
     assert result.agent_cap_amount_ecu == result.backward_pool_ecu * BACKWARD_ATTRIBUTION_PER_AGENT_CAP
     assert result.cluster_cap_amount_ecu == result.backward_pool_ecu * BACKWARD_ATTRIBUTION_PER_CLUSTER_CAP
     assert result.caps_applied is False
+
+
+def test_decimal_to_canonical_string_root_format_contract() -> None:
+    assert decimal_to_canonical_string(Decimal("0.5000")) == "0.5"
+    assert decimal_to_canonical_string(Decimal("00012.3400")) == "12.34"
+    assert decimal_to_canonical_string(Decimal("-0.000")) == "0"
+    assert decimal_to_canonical_string(Decimal("1E-6")) == "0.000001"

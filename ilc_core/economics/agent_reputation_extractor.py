@@ -385,7 +385,7 @@ def extract_agent_reputation_record(
 
     trust_vector = _read_trust_vector(lifecycle)
     last_active_epoch = _require_epoch(lifecycle.get("last_active_epoch", normalized_epoch))
-    _, missed_epochs, liveness_equivocation = _read_liveness_inputs(liveness)
+    stake, missed_epochs, liveness_equivocation = _read_liveness_inputs(liveness)
     equivocation_state = _read_equivocation_state(equivocation, liveness_equivocation)
 
     adjusted_state = apply_atrophy(
@@ -396,7 +396,7 @@ def extract_agent_reputation_record(
     reputation_score = _normalize_reputation_score(score)
 
     staking_status = validate_staking_and_liveness_state(
-        liveness["stake"],
+        stake,
         missed_epochs,
         liveness_equivocation,
     )
