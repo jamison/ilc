@@ -33,6 +33,7 @@ MAX_SEQUENCE_ITEMS = 64
 MAX_DEPTH = 8
 NONCE_HEX_CHARS = 64
 SHA256_HEX_CHARS = 64
+MAX_NULLIFIER_STORE_BYTES = 4 * 1024 * 1024
 
 NO_INVITE_ALLOWED_ACTIONS = ("docs", "status", "request_invite", "local_help")
 LOCAL_BOOTSTRAP_ALLOWED_ACTIONS = (
@@ -140,6 +141,7 @@ def verify_invite_bootstrap(
     persist_nullifier: bool = True,
     production_required: bool = False,
     nullifier_gossip_broadcaster: Callable[[Mapping[str, str]], object] | None = None,
+    nullifier_gossip_claimed_actor: str | None = None,
 ) -> BootstrapDecision:
     _require_non_empty_string(expected_profile, "openclaw_expected_profile_invalid")
     epoch = _require_non_negative_int(current_epoch, "openclaw_current_epoch_invalid")
@@ -200,6 +202,7 @@ def verify_invite_bootstrap(
         nullifier_gossip_status = _broadcast_nullifier_gossip(
             nullifier,
             nullifier_gossip_broadcaster,
+            claimed_actor=nullifier_gossip_claimed_actor,
         )
         production_ready = signature_status == "verified" and redeemer_status == "verified"
         return BootstrapDecision(
@@ -210,7 +213,7 @@ def verify_invite_bootstrap(
             redemption_nullifier=nullifier,
             signature_authority_status=signature_status,
             nonce_membership_status="verified",
-            nullifier_status="recorded" if persist_nullifier else "unused",
+            nullifier_status="recorded" if persist_nullifier else "local_recorded_not_persisted",
             redeemer_key_binding_status=redeemer_status,
             production_ready=production_ready,
             cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
@@ -279,11 +282,18 @@ def _deny(
 def _broadcast_nullifier_gossip(
     nullifier_hex: str,
     broadcaster: Callable[[Mapping[str, str]], object] | None,
+    *,
+    claimed_actor: str | None,
 ) -> str:
-    message = build_nullifier_gossip_message(nullifier_hex)
     if broadcaster is None:
         return "not_configured"
+    if claimed_actor is None:
+        return "broadcast_not_configured_claimed_actor_required"
     try:
+        message = build_nullifier_gossip_message(
+            nullifier_hex,
+            claimed_actor=claimed_actor,
+        )
         broadcaster(message)
     except Exception as exc:  # noqa: BLE001 - gossip failure must not unwind an accepted local redemption.
         return f"broadcast_failed:{exc.__class__.__name__}"
@@ -370,7 +380,12 @@ def _nonce_bytes(value: object) -> bytes:
 def _load_nullifier_map(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
-    data = json.loads(path.read_text(encoding="utf-8"))
+    if path.stat().st_size > MAX_NULLIFIER_STORE_BYTES:
+        raise ValueError("openclaw_nullifier_store_too_large")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError("openclaw_nullifier_store_invalid") from exc
     if not isinstance(data, Mapping):
         raise ValueError("openclaw_nullifier_store_invalid")
     if data.get("schema_version") != NULLIFIER_STORE_SCHEMA_VERSION:
@@ -378,6 +393,8 @@ def _load_nullifier_map(path: Path) -> dict[str, Any]:
     used = data.get("used_nullifiers")
     if not isinstance(used, Mapping):
         raise ValueError("openclaw_nullifier_store_used_invalid")
+    if len(used) > InviteNullifierRegistry._MAX_REGISTRY_SIZE:
+        raise ValueError("openclaw_nullifier_store_too_many_entries")
     result: dict[str, Any] = {}
     for key, value in used.items():
         _require_sha256_hex(key, "openclaw_nullifier_store_key_invalid")
@@ -412,8 +429,7 @@ def _write_nullifier_map(path: Path, used: Mapping[str, Any]) -> None:
 
 def _required_str(payload: Mapping[str, Any], key: str, token: str) -> str:
     value = payload.get(key)
-    _require_non_empty_string(value, token)
-    return value
+    return _require_non_empty_string(value, token)
 
 
 def _required_int(payload: Mapping[str, Any], key: str, token: str) -> int:
@@ -438,9 +454,13 @@ def _require_non_negative_int(value: object, token: str) -> int:
     return value
 
 
-def _require_non_empty_string(value: object, token: str) -> None:
-    if type(value) is not str or not value or len(value) > MAX_STRING_CHARS:
+def _require_non_empty_string(value: object, token: str) -> str:
+    if type(value) is not str:
         raise ValueError(token)
+    normalized = value.strip()
+    if not normalized or normalized != value or len(normalized) > MAX_STRING_CHARS:
+        raise ValueError(token)
+    return normalized
 
 
 def _require_sha256_hex(value: object, token: str) -> None:
@@ -491,6 +511,7 @@ __all__ = [
     "InviteNullifierRegistry",
     "InviteNullifierStore",
     "LOCAL_BOOTSTRAP_ALLOWED_ACTIONS",
+    "MAX_NULLIFIER_STORE_BYTES",
     "NO_INVITE_ALLOWED_ACTIONS",
     "OPENCLAW_INVITE_BOOTSTRAP_VERSION",
     "build_synthetic_invite_bundle",

@@ -30,8 +30,19 @@ from ilc_core.network.d2d.gossip_peer_registry import (
     GossipPeerRegistry,
     validate_peer_endpoint,
 )
+from ilc_core.network.d2d.invite_nullifier_gossip import (
+    INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
+    build_nullifier_gossip_message,
+    decode_nullifier_gossip_payload,
+    encode_nullifier_gossip_payload,
+    handle_nullifier_gossip_message,
+)
 from ilc_core.network.d2d.tls_policy import (
     D2D_PUBLIC_MODE_ENV,
+)
+from ilc_core.genesis.invite_nullifier_registry import (
+    InviteNullifierError,
+    InviteNullifierRegistry,
 )
 
 
@@ -71,7 +82,7 @@ AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
     "centrality_delta",
     "panel_verdict",
     "ecu_claim_batch",
-    "invite_nullifier_v1",
+    INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
 })
 UNVERIFIABLE_NO_PUBKEY_TOKEN = "gossip_signature_unverifiable_no_pubkey"
 UNVERIFIABLE_AUTHORITY_GOSSIP_REJECTED_TOKEN = (
@@ -297,9 +308,11 @@ class HttpGossipTransportRuntime:
         config: TransportRuntimeConfig,
         *,
         peer_registry: GossipPeerRegistry | None = None,
+        invite_nullifier_registry: InviteNullifierRegistry | None = None,
     ) -> None:
         self.config = config
         self._peer_registry = peer_registry
+        self._invite_nullifier_registry = invite_nullifier_registry
         self._replay_cache = _GossipReplayCache()
         self.state: dict[str, Any] = {
             "transport_kind": config.transport_kind,
@@ -524,6 +537,7 @@ class HttpGossipTransportRuntime:
             )
             self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+        invite_nullifier_replay_key: tuple[str, str, int, str, str, str] | None = None
         if payload is not None:
             if not isinstance(payload, bytes):
                 self._record("incoming_envelope_rejected", token="gossip_payload_must_be_bytes")
@@ -649,6 +663,19 @@ class HttpGossipTransportRuntime:
                 if gossip_type in AUTHORITY_BEARING_GOSSIP_TYPES:
                     claimed_actor = _extract_claimed_actor(payload)
                     if (
+                        gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE
+                        and claimed_actor is None
+                    ):
+                        self._record(
+                            "incoming_envelope_rejected",
+                            token="invite_nullifier_gossip_claimed_actor_required",
+                            peer_id=sender_peer_id,
+                            key_id=key_id,
+                            gossip_type=gossip_type,
+                        )
+                        self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                        return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    if (
                         claimed_actor is not None
                         and not self._peer_registry.is_actor_authorized_for_peer(
                             sender_peer_id,
@@ -665,7 +692,49 @@ class HttpGossipTransportRuntime:
                         self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
                         return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
 
-                self._replay_cache.record(replay_key)
+                if gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE:
+                    invite_nullifier_replay_key = replay_key
+                else:
+                    self._replay_cache.record(replay_key)
+
+        if gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE:
+            if payload is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="invite_nullifier_gossip_payload_required",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            if self._invite_nullifier_registry is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="invite_nullifier_gossip_registry_not_configured",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            try:
+                message = decode_nullifier_gossip_payload(payload)
+                nullifier_status = handle_nullifier_gossip_message(
+                    message,
+                    self._invite_nullifier_registry,
+                )
+            except InviteNullifierError as exc:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token=str(exc) or exc.__class__.__name__,
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            self._record(
+                "incoming_invite_nullifier_gossip_applied",
+                claimed_actor=message["claimed_actor"],
+                nullifier_sha256=hashlib.sha256(
+                    message["nullifier_hex"].encode("utf-8")
+                ).hexdigest(),
+                nullifier_status=nullifier_status,
+            )
+            if invite_nullifier_replay_key is not None:
+                self._replay_cache.record(invite_nullifier_replay_key)
 
         event_payload: dict[str, Any] = {"path": path}
         if payload is not None:
@@ -681,6 +750,51 @@ class HttpGossipTransportRuntime:
         self._record("incoming_envelope_buffered", **event_payload)
         self.state["last_status_code"] = gossip_transport.HTTP_STATUS_BUFFERED
         return gossip_transport.HTTP_STATUS_BUFFERED
+
+    def broadcast_invite_nullifier(
+        self,
+        nullifier_hex: str,
+        *,
+        channel: str,
+        epoch: int,
+        signature: str,
+        sender_peer_id: str,
+        key_id: str,
+        claimed_actor: str,
+        fanout: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Broadcast an invite nullifier over the signed HTTP gossip fanout path."""
+
+        if self._peer_registry is None:
+            raise ValueError("invite_nullifier_gossip_peer_registry_required")
+        peer_count = self._peer_registry.peer_count()
+        selected_fanout = peer_count if fanout is None else fanout
+        endpoints = self._peer_registry.select_fanout_peers(selected_fanout)
+        message = build_nullifier_gossip_message(
+            nullifier_hex,
+            claimed_actor=claimed_actor,
+        )
+        payload = encode_nullifier_gossip_payload(message)
+        statuses: list[dict[str, Any]] = []
+        for endpoint in endpoints:
+            status_code = self.send_gossip(
+                endpoint,
+                gossip_type=INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
+                channel=channel,
+                epoch=epoch,
+                signature=signature,
+                payload=payload,
+                sender_peer_id=sender_peer_id,
+                key_id=key_id,
+                content_type="application/json",
+            )
+            statuses.append(
+                {
+                    "endpoint": endpoint,
+                    "status_code": status_code,
+                }
+            )
+        return statuses
 
     def send_gossip(
         self,
