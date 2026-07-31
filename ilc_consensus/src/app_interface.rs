@@ -518,6 +518,7 @@ mod tests {
                 epoch: EpochSeq(1),
                 attributions: vec![(agent_id, 999_000)],
                 backward_attribution_batch_root: None,
+                agent_reputation_root: None,
             })
             .unwrap();
 

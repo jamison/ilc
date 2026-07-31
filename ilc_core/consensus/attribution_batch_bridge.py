@@ -34,6 +34,7 @@ ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
 MAX_CLAIMS_PER_BATCH = 10_000
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+_SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 ATTRIBUTION_EVENT_LOG_KEY_PREFIX = b"attr_event:"
 
 
@@ -81,6 +82,17 @@ def _require_agent_id(value: Any) -> str:
             "agent_id_hex_must_be_96_lower_hex",
             "agent_id must be 96 lowercase hex characters",
         )
+    return normalized
+
+
+def _require_optional_sha256_hex(value: Any, token: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise AttributionBatchBridgeError(token, "root must be a lowercase 64-hex string")
+    normalized = value.strip()
+    if not _SHA256_HEX_RE.fullmatch(normalized):
+        raise AttributionBatchBridgeError(token, "root must be a lowercase 64-hex string")
     return normalized
 
 
@@ -249,6 +261,7 @@ def build_attribution_batch_from_claims(
     *,
     epoch: int | None = None,
     backward_attribution_graph_context: dict[str, Any] | None = None,
+    agent_reputation_root: str | None = None,
     attribution_event_log_dir: str | Path | None = None,
     cdl084_settled_event_ids: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
@@ -266,6 +279,10 @@ def build_attribution_batch_from_claims(
             "only accepted agent_loop_claims_ok payloads can be bridged",
         )
     claims = _require_claims(payload.get("claims"))
+    normalized_agent_reputation_root = _require_optional_sha256_hex(
+        agent_reputation_root,
+        "agent_reputation_root_must_be_64_lower_hex",
+    )
 
     selected_epoch: int | None = epoch
     aggregated: dict[str, dict[str, Any]] = {}
@@ -483,6 +500,8 @@ def build_attribution_batch_from_claims(
                 ),
             }
         )
+    if normalized_agent_reputation_root is not None:
+        batch["agent_reputation_root"] = normalized_agent_reputation_root
     return batch
 
 

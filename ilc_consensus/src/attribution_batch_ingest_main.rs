@@ -29,6 +29,8 @@ struct JsonAttributionBatch {
     attributions: Vec<JsonAttribution>,
     #[serde(default)]
     backward_attribution_batch_root: Option<String>,
+    #[serde(default)]
+    agent_reputation_root: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -46,6 +48,7 @@ struct IngestReport {
     total_micro_ecu: u64,
     input_sha256: String,
     backward_attribution_batch_root: Option<String>,
+    agent_reputation_root: Option<String>,
     balances: Vec<BalanceReport>,
 }
 
@@ -93,6 +96,7 @@ fn run() -> Result<IngestReport, String> {
             backward_attribution_batch_root: batch
                 .backward_attribution_batch_root
                 .map(|root| hex_encode(&root)),
+            agent_reputation_root: batch.agent_reputation_root.map(|root| hex_encode(&root)),
             balances: vec![],
         });
     }
@@ -118,6 +122,10 @@ fn run() -> Result<IngestReport, String> {
         .backward_attribution_batch_root
         .as_ref()
         .map(|root| hex_encode(root));
+    let agent_reputation_root = batch
+        .agent_reputation_root
+        .as_ref()
+        .map(|root| hex_encode(root));
     store
         .apply_attribution(batch)
         .map_err(|err| format!("balance_store_apply_attribution_failed: {err}"))?;
@@ -141,6 +149,7 @@ fn run() -> Result<IngestReport, String> {
         total_micro_ecu,
         input_sha256,
         backward_attribution_batch_root,
+        agent_reputation_root,
         balances,
     })
 }
@@ -217,24 +226,31 @@ fn to_attribution_batch(json_batch: JsonAttributionBatch) -> Result<AttributionB
         attributions,
         backward_attribution_batch_root: parse_optional_sha256_root(
             json_batch.backward_attribution_batch_root,
+            "backward_attribution_batch_root",
+        )?,
+        agent_reputation_root: parse_optional_sha256_root(
+            json_batch.agent_reputation_root,
+            "agent_reputation_root",
         )?,
     })
 }
 
-fn parse_optional_sha256_root(value: Option<String>) -> Result<Option<[u8; 32]>, String> {
+fn parse_optional_sha256_root(
+    value: Option<String>,
+    field_name: &'static str,
+) -> Result<Option<[u8; 32]>, String> {
     let Some(raw) = value else {
         return Ok(None);
     };
+    let error_token = format!("{field_name}_must_be_64_hex");
     let normalized = raw.trim();
     if normalized.len() != 64 {
-        return Err("backward_attribution_batch_root_must_be_64_hex".to_string());
+        return Err(error_token);
     }
     let mut bytes = [0u8; 32];
     for (index, pair) in normalized.as_bytes().chunks_exact(2).enumerate() {
-        let hi = hex_nibble(pair[0])
-            .ok_or_else(|| "backward_attribution_batch_root_must_be_64_hex".to_string())?;
-        let lo = hex_nibble(pair[1])
-            .ok_or_else(|| "backward_attribution_batch_root_must_be_64_hex".to_string())?;
+        let hi = hex_nibble(pair[0]).ok_or_else(|| error_token.clone())?;
+        let lo = hex_nibble(pair[1]).ok_or_else(|| error_token.clone())?;
         bytes[index] = (hi << 4) | lo;
     }
     Ok(Some(bytes))
@@ -303,6 +319,7 @@ mod tests {
         let batch = to_attribution_batch(JsonAttributionBatch {
             epoch: 7,
             backward_attribution_batch_root: Some("ab".repeat(32)),
+            agent_reputation_root: Some("cd".repeat(32)),
             attributions: vec![
                 JsonAttribution {
                     agent_id_hex: agent_hex("02"),
@@ -319,6 +336,7 @@ mod tests {
         assert_eq!(batch.attributions[0].0 .0, [1u8; 48]);
         assert_eq!(batch.attributions[1].0 .0, [2u8; 48]);
         assert_eq!(batch.backward_attribution_batch_root, Some([0xabu8; 32]));
+        assert_eq!(batch.agent_reputation_root, Some([0xcdu8; 32]));
         assert_eq!(checked_total(&batch).unwrap(), 3);
     }
 
@@ -327,6 +345,7 @@ mod tests {
         let err = to_attribution_batch(JsonAttributionBatch {
             epoch: 7,
             backward_attribution_batch_root: None,
+            agent_reputation_root: None,
             attributions: vec![
                 JsonAttribution {
                     agent_id_hex: agent_hex("02"),
@@ -352,9 +371,23 @@ mod tests {
 
     #[test]
     fn rejects_malformed_backward_attribution_batch_root() {
-        let err = parse_optional_sha256_root(Some("00".repeat(31))).unwrap_err();
+        let err =
+            parse_optional_sha256_root(Some("00".repeat(31)), "backward_attribution_batch_root")
+                .unwrap_err();
         assert_eq!(err, "backward_attribution_batch_root_must_be_64_hex");
-        let err = parse_optional_sha256_root(Some("gg".repeat(32))).unwrap_err();
+        let err =
+            parse_optional_sha256_root(Some("gg".repeat(32)), "backward_attribution_batch_root")
+                .unwrap_err();
         assert_eq!(err, "backward_attribution_batch_root_must_be_64_hex");
+    }
+
+    #[test]
+    fn rejects_malformed_agent_reputation_root() {
+        let err =
+            parse_optional_sha256_root(Some("00".repeat(31)), "agent_reputation_root").unwrap_err();
+        assert_eq!(err, "agent_reputation_root_must_be_64_hex");
+        let err =
+            parse_optional_sha256_root(Some("zz".repeat(32)), "agent_reputation_root").unwrap_err();
+        assert_eq!(err, "agent_reputation_root_must_be_64_hex");
     }
 }
