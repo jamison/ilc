@@ -20,31 +20,35 @@ from ilc_core.genesis.invite_nullifier_registry import (
 INVITE_NULLIFIER_GOSSIP_RUNTIME_VERSION = "invite_nullifier_gossip_1576pb.v0.1"
 INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE: str = "invite_nullifier_v1"
 INVITE_NULLIFIER_GOSSIP_SCHEMA_VERSION = "invite_nullifier_gossip_message.v1"
-MAX_MESSAGE_KEYS = 4
+MAX_MESSAGE_KEYS = 5
+MAX_CLAIMED_ACTOR_CHARS = 128
 SHA256_HEX_CHARS = 64
-_REQUIRED_KEYS = frozenset({"message_type", "nullifier_hex", "schema_version"})
-_OPTIONAL_KEYS = frozenset({"claimed_actor"})
+_REQUIRED_KEYS = frozenset({
+    "claimed_actor",
+    "message_type",
+    "nullifier_hex",
+    "schema_version",
+})
+_OPTIONAL_KEYS = frozenset()
 
 
 def build_nullifier_gossip_message(
     nullifier_hex: str,
     *,
-    claimed_actor: str | None = None,
+    claimed_actor: str,
 ) -> dict[str, str]:
     """Build a canonical invite-nullifier gossip message."""
 
     _require_sha256_hex(nullifier_hex, "invite_nullifier_gossip_invalid_hex")
-    message = {
+    return {
+        "claimed_actor": _require_non_empty_string(
+            claimed_actor,
+            "invite_nullifier_gossip_claimed_actor_invalid",
+        ),
         "message_type": INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
         "nullifier_hex": nullifier_hex,
         "schema_version": INVITE_NULLIFIER_GOSSIP_SCHEMA_VERSION,
     }
-    if claimed_actor is not None:
-        message["claimed_actor"] = _require_non_empty_string(
-            claimed_actor,
-            "invite_nullifier_gossip_claimed_actor_invalid",
-        )
-    return message
 
 
 def encode_nullifier_gossip_payload(message: Mapping[str, object]) -> bytes:
@@ -80,7 +84,7 @@ def decode_nullifier_gossip_payload(payload: bytes | str) -> dict[str, str]:
 def handle_nullifier_gossip_message(
     message: Mapping[str, object],
     registry: InviteNullifierRegistry,
-) -> None:
+) -> str:
     """Register an incoming nullifier gossip message, discarding duplicates."""
 
     if not isinstance(registry, InviteNullifierRegistry):
@@ -88,8 +92,9 @@ def handle_nullifier_gossip_message(
     validated = _validated_message(message)
     nullifier_hex = validated["nullifier_hex"]
     if registry.is_known(nullifier_hex):
-        return
+        return "duplicate_discarded"
     registry.register_nullifier(nullifier_hex)
+    return "registered"
 
 
 def _validated_message(message: object) -> dict[str, str]:
@@ -135,15 +140,24 @@ def _require_sha256_hex(value: object, token: str) -> str:
 
 
 def _require_non_empty_string(value: object, token: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str):
         raise InviteNullifierError(token)
-    return value.strip()
+    normalized = value.strip()
+    if (
+        not normalized
+        or normalized != value
+        or len(normalized) > MAX_CLAIMED_ACTOR_CHARS
+        or any(char.isspace() for char in normalized)
+    ):
+        raise InviteNullifierError(token)
+    return normalized
 
 
 __all__ = [
     "INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE",
     "INVITE_NULLIFIER_GOSSIP_RUNTIME_VERSION",
     "INVITE_NULLIFIER_GOSSIP_SCHEMA_VERSION",
+    "MAX_CLAIMED_ACTOR_CHARS",
     "MAX_MESSAGE_KEYS",
     "build_nullifier_gossip_message",
     "decode_nullifier_gossip_payload",

@@ -48,7 +48,7 @@ def require_invite_for_enrollment(
     record = validate_invite_redemption_record(invite_redemption_record)
     if not isinstance(agent_id, str) or not agent_id:
         raise ValueError("invite_enrollment_agent_id_required")
-    if agent_id and record.redeemer_agent_id != agent_id:
+    if record.redeemer_agent_id != agent_id:
         raise ValueError("invite_redeemer_agent_id_mismatch")
     if register_nullifier and nullifier_registry is None:
         raise ValueError("invite_nullifier_registry_required_for_registration")
