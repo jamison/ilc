@@ -75217,6 +75217,53 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1578f_proof_claimability_gate_rerun_walkthrough.md",
       "repo_path": "docs/phases/phase_1578f_proof_claimability_gate_rerun_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_262_phase_1578h_public_rc_wallet_gate",
+      "chronology_note": "2026-08-01 Phase 1578h GAP-WALLET-09 public RC wallet gate.",
+      "manual_read_summary": "Walkthrough records the final wallet lane gate verdict. All 16 wallet input tokens are present, required artifacts exist, wallet display is visibility plus proof-claimability, and transfer, spend, withdrawal, signing, wallet ledger writes, and external-address claimability remain blocked because TRANSFER-ENABLED RC AUTHORIZED was not issued.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:wallet_visibility_proof_claimability_rc_cleared_phase_1578h"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "docs/specs/ilc_wallet_lane_forward_plan_pre_rc_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:wallet_rc_gate_verdict_committed_phase_1578h"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:wallet_visibility_proof_claimability_rc_cleared_phase_1578h"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1578h_public_rc_wallet_gate_walkthrough.md",
+      "repo_path": "docs/phases/phase_1578h_public_rc_wallet_gate_walkthrough.md"
     }
   ],
   "nodes": [
