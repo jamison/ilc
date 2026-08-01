@@ -69075,6 +69075,54 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_validator_endpoint_assertions_manifest_1577b_fix1_v0.1.json",
       "repo_path": "docs/specs/ilc_validator_endpoint_assertions_manifest_1577b_fix1_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_234_phase_gap_werner_02a_stub",
+      "chronology_note": "2026-08-01 phase GAP-WERNER-02a: research-complete stub for Werner CDL deliberation phase \u2014 records all scoping findings pending CDL-093 amendment decision, runtime_policy_cap ratification, and attribution path scope deliberation.",
+      "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02a Werner CDL deliberation; documents open governance questions blocking Werner guard clearance without executing any CDL mutation or runtime change.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+          "review_status": "candidate_role_specific_authority_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_235_phase_gap_werner_02b_stub",
+      "chronology_note": "2026-08-01 phase GAP-WERNER-02b: research-complete stub for Werner guard clearance and implementation phase \u2014 documents wiring plan and integration point (attribution_batch_bridge.py) pending GAP-WERNER-02a CDL outputs.",
+      "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02b Werner guard clearance; documents implementation plan for clearing WERNER_CREDIT_WIRING_NOT_ACTIVATED and wiring werner_runtime.py as a dimensionless reweighting factor, pending GAP-WERNER-02a completion.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+          "review_status": "candidate_role_specific_authority_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md"
     }
   ],
   "boundary": {
