@@ -7,7 +7,10 @@ from pathlib import Path
 from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_key_id
 from ilc_core.ledger.settlement_verification import hash_inputs
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
-from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime
+from ilc_core.protocol.public_wallet_runtime import (
+    WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+    PublicWalletRuntime,
+)
 from ilc_core.security.key_compromise_runtime import (
     TRIGGER_CUSTODY_LOSS,
     KeyCompromiseResponseRuntime,
@@ -193,12 +196,14 @@ def test_security_lineage_and_compromise_ids_are_full_sha256() -> None:
     assert all(_is_full_sha256(record.event_id) for record in registry.transition_log)
 
 
-def test_public_wallet_and_lifecycle_runtime_still_expose_deferred_claimability_only() -> None:
+def test_public_wallet_display_reconciles_proof_claimability_without_lifecycle_activation() -> None:
     lifecycle_source = LIFECYCLE_RUNTIME_PATH.read_text(encoding="utf-8")
     wallet_source = PUBLIC_WALLET_RUNTIME_PATH.read_text(encoding="utf-8")
 
     assert '"claimability_state": "deferred"' in lifecycle_source
-    assert '"claimability_state": "deferred"' in wallet_source
+    assert '"claimability_state": "deferred"' not in wallet_source
+    assert "WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED" in wallet_source
+    assert WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED == "proof_claimability_authorized"
 
     public_methods = {
         name

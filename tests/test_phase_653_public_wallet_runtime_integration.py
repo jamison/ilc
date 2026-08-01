@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
 from ilc_core.server import create_app
 
 DOC_PATH = Path("docs/specs/ilc_public_wallet_runtime_integration_653_v0.1.md")
@@ -160,7 +161,7 @@ def test_wallet_status_history_export_and_ledger_summary_are_read_only_and_accou
 
         assert status["balance_ilc"] == "3"
         assert status["ecu_accrual"] == "8.5"
-        assert status["claimability_state"] == "deferred"
+        assert status["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
         assert history["record_count"] == 1
         assert history["records"][0]["epoch_id"] == "epoch-001"
         assert history["records"][0]["settled_amount_ilc"] == "3"
