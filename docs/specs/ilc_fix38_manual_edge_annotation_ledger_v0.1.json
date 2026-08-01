@@ -69123,6 +69123,30 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md"
+    },
+    {
+      "annotation_batch": "manual_batch_236_phase_1577f_validator_cert_renewal_stub",
+      "chronology_note": "2026-08-02 phase 1577f: research-complete prompt for GAP-VALIDATOR-CERT-01 M009 testbed certificate renewal \u2014 regenerate expired CA and leaf certs, re-sign BLS assertions, deploy to VPS, TLS probe, commit new manifest; unblocks guard clearance phase 1577g.",
+      "manual_read_summary": "Phase prompt for Phase 1577f GAP-VALIDATOR-CERT-01: operationally renews the M009 testbed TLS certs and BLS-signed ValidatorEndpointAssertion objects that expired 2026-05-01/05-20 per the Phase 1577b-Fix1 cert blocker record; does not clear the VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED guard.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+          "review_status": "candidate_role_specific_authority_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
     }
   ],
   "boundary": {
