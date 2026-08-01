@@ -17,6 +17,12 @@ from typing import Any, Callable, Mapping, Protocol
 
 from google.protobuf import descriptor_pb2, descriptor_pool, message_factory
 
+from ilc_core.consensus.validator_endpoint_assertion import (
+    BlsVerifier,
+    load_from_atlas,
+    verify_bls_signature,
+)
+
 
 ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION = (
     "ilc_core_consensus_grpc_read_adapter_phase_1358.v0.1"
@@ -33,6 +39,7 @@ ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN = "adr_0028_production_bridge_partial_p
 PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN = "production_bridge_activated_phase_1587"
 
 PRODUCTION_BRIDGE_ACTIVE = True
+VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED = True
 DEFAULT_GRPC_TIMEOUT_SECONDS = 5
 MAX_EPOCH_CHAIN_RECORDS = 1024
 MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
@@ -378,6 +385,14 @@ def _require_exact_bytes(value: Any, expected_len: int, token: str) -> bytes:
 
 def _require_lower_sha256_hex(value: Any, token: str) -> str:
     if not isinstance(value, str) or len(value) != 64:
+        raise ValueError(token)
+    if any(char not in "0123456789abcdef" for char in value):
+        raise ValueError(token)
+    return value
+
+
+def _require_lower_sha384_hex(value: Any, token: str) -> str:
+    if not isinstance(value, str) or len(value) != 96:
         raise ValueError(token)
     if any(char not in "0123456789abcdef" for char in value):
         raise ValueError(token)
@@ -782,6 +797,27 @@ class ILCConsensusGrpcReadAdapter:
         self.messages = messages or _build_message_types()
         self.stub = stub or build_secure_grpc_read_stub(config, messages=self.messages)
 
+    def verify_validator_cert_against_graph(
+        self,
+        *,
+        validator_agent_id: str,
+        presented_cert_der: bytes | bytearray | memoryview,
+        atlas_reader: Any,
+        expected_bls_public_key_hex: str,
+        network_id: str,
+        bls_verifier: BlsVerifier | None = None,
+        graph_binding_guard: bool | None = None,
+    ) -> bool:
+        return verify_validator_cert_against_graph(
+            validator_agent_id=validator_agent_id,
+            presented_cert_der=presented_cert_der,
+            atlas_reader=atlas_reader,
+            expected_bls_public_key_hex=expected_bls_public_key_hex,
+            network_id=network_id,
+            bls_verifier=bls_verifier,
+            graph_binding_guard=graph_binding_guard,
+        )
+
     def _call(self, method_name: str, request: Any) -> Any:
         method = getattr(self.stub, method_name, None)
         if method is None:
@@ -894,6 +930,61 @@ def _normalize_epoch_record_response(response: Any, token: str) -> EpochRecordQu
         state_root=_require_bytes(getattr(response, "state_root", None), token),
         agg_sig=_require_bytes(getattr(response, "agg_sig", None), token),
     )
+
+
+def verify_validator_cert_against_graph(
+    *,
+    validator_agent_id: str,
+    presented_cert_der: bytes | bytearray | memoryview,
+    atlas_reader: Any,
+    expected_bls_public_key_hex: str,
+    network_id: str,
+    bls_verifier: BlsVerifier | None = None,
+    graph_binding_guard: bool | None = None,
+) -> bool:
+    """Verify TLS certificate identity against the Atlas assertion graph.
+
+    The live Phase 1577b guard remains closed. While
+    ``VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED`` is true, this function is a
+    no-op and preserves the current TLS-only bridge behavior. Tests pass an
+    explicit false guard to exercise the fail-closed CDL-105 branches.
+    """
+
+    guard = (
+        VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED
+        if graph_binding_guard is None
+        else graph_binding_guard
+    )
+    if not isinstance(guard, bool):
+        raise ValueError("validator_cert_graph_binding_guard_invalid_phase_1577b")
+    if guard:
+        return True
+
+    cert_bytes = _require_bytes(
+        presented_cert_der,
+        "validator_cert_der_invalid_phase_1577b",
+    )
+    if not cert_bytes:
+        raise ValueError("validator_cert_der_invalid_phase_1577b")
+    assertion = load_from_atlas(atlas_reader, validator_agent_id)
+    if assertion.revised_by is not None:
+        raise ValueError("validator_cert_assertion_superseded")
+    fingerprint = hashlib.sha256(cert_bytes).hexdigest()
+    if assertion.tls_cert_sha256_fingerprint != fingerprint:
+        raise ValueError("validator_cert_fingerprint_mismatch")
+    if not verify_bls_signature(
+        assertion,
+        network_id=network_id,
+        verifier=bls_verifier,
+    ):
+        raise ValueError("validator_cert_assertion_bls_invalid")
+    expected_key = _require_lower_sha384_hex(
+        expected_bls_public_key_hex,
+        "validator_cert_expected_bls_key_invalid_phase_1577b",
+    )
+    if assertion.bls_public_key_hex != expected_key:
+        raise ValueError("validator_cert_bls_key_identity_mismatch")
+    return True
 
 
 def build_quic_ecu_transfer_submission_path(
@@ -1100,10 +1191,12 @@ __all__ = [
     "QuicEcuTransferSubmissionPath",
     "SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN",
     "TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN",
+    "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED",
     "build_epoch_settlement_proposal_submission",
     "build_quic_ecu_transfer_submission_path",
     "build_secure_grpc_proposal_ingress_stub",
     "build_secure_grpc_read_stub",
     "quote_to_canonical_json",
     "submit_ecu_transfer_via_quic",
+    "verify_validator_cert_against_graph",
 ]
