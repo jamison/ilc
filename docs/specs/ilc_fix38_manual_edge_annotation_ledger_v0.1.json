@@ -75362,6 +75362,112 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_discov_01_dynamic_peer_discovery_spec_and_cdl_open_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_discov_01_dynamic_peer_discovery_spec_and_cdl_open_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_266_phase_gap_validator_ident_01_prompt_hardening",
+      "chronology_note": "2026-08-01 Phase 1577a GAP-VALIDATOR-IDENT-01 validator operational surface CDL opening",
+      "manual_read_summary": "Validator identity phase prompt hardened with required no-ellipses walkthrough rule and revalidated before execution.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:gap_validator_ident_01_validator_operational_surface_cdl_opening"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577a_g10_gap_validator_ident_01_validator_cdl_opening.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577a_g10_gap_validator_ident_01_validator_cdl_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_267_phase_gap_validator_ident_01_cdl_105_opening",
+      "chronology_note": "2026-08-01 Phase 1577a GAP-VALIDATOR-IDENT-01 validator operational surface CDL opening",
+      "manual_read_summary": "CDL-105 opened for graph-bound validator gRPC endpoint and TLS certificate assertions tied to validator AgentID and BLS consensus key.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "OPENED_FOR",
+          "target": "cdl:cdl_105_validator_operational_surface"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:017"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:103"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "OPENED_FOR",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_105_validator_operational_surface_registration_opening_1577a_v0.1.md -> cdl:cdl_105_validator_operational_surface",
+      "repo_path": "docs/specs/ilc_cdl_105_validator_operational_surface_registration_opening_1577a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_268_phase_gap_validator_ident_01_assertion_spec",
+      "chronology_note": "2026-08-01 Phase 1577a GAP-VALIDATOR-IDENT-01 validator operational surface CDL opening",
+      "manual_read_summary": "Protocol spec defining validator_grpc_endpoint_assertion schema, canonical BLS payload, bridge verification flow, rotation protocol, and non-activation boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "node_kind:validator_grpc_endpoint_assertion"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:cdl_105_validator_operational_surface"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_validator_grpc_endpoint_assertion_spec_v0.1.md -> cdl:cdl_105_validator_operational_surface",
+      "repo_path": "docs/specs/ilc_validator_grpc_endpoint_assertion_spec_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_269_phase_gap_validator_ident_01_walkthrough",
+      "chronology_note": "2026-08-01 Phase 1577a GAP-VALIDATOR-IDENT-01 validator operational surface CDL opening",
+      "manual_read_summary": "Walkthrough documenting prompt hardening, source-read claim table, CDL-105 assignment, BLS implementation constraint, verification, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_105_validator_operational_surface_opened_phase_gap_validator_ident_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_validator_ident_01_validator_operational_surface_cdl_opening_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_validator_ident_01_validator_operational_surface_cdl_opening_walkthrough.md"
     }
   ],
   "nodes": [
