@@ -75264,6 +75264,104 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1578h_public_rc_wallet_gate_walkthrough.md",
       "repo_path": "docs/phases/phase_1578h_public_rc_wallet_gate_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_263_phase_gap_discov_01_peer_discovery_spec",
+      "chronology_note": "2026-08-01 Phase 1577 GAP-DISCOV-01 dynamic peer discovery spec v0.1.",
+      "manual_read_summary": "Specifies the ILC dynamic peer discovery protocol: PeerAdvertisement schema, TTL-scoped D2D gossip propagation, curated bootstrap introduction, deterministic or VRF-derived introduction-set design, and anti-eclipse mitigation targets without runtime activation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "opened",
+          "target": "cdl:CDL-103"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "source",
+          "target": "docs/specs/ilc_peer_discovery_readiness_spec_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:dynamic_peer_discovery_spec_committed_gap_discov_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "GOVERNED_BY",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_dynamic_peer_discovery_spec_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_dynamic_peer_discovery_spec_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_264_phase_gap_discov_01_cdl_103_draft",
+      "chronology_note": "2026-08-01 Phase 1577 GAP-DISCOV-01 CDL-103 dynamic peer discovery draft opening.",
+      "manual_read_summary": "CDL-103 opening draft for dynamic peer discovery governance; status OPEN with unresolved ratification questions for TTL, known-peer caps, introduction sampling, identity/key binding, peer-table roots, and multi-seed comparison.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "opened",
+          "target": "cdl:CDL-103"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:cdl_103_opened_gap_discov_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "GOVERNED_BY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_103_dynamic_peer_discovery_draft_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_103_dynamic_peer_discovery_draft_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_265_phase_gap_discov_01_walkthrough",
+      "chronology_note": "2026-08-01 Phase 1577 GAP-DISCOV-01 walkthrough.",
+      "manual_read_summary": "Walkthrough records direct-read evidence, GO authority, claim-table resolution, static peer registry summary, committed PeerAdvertisement schema, anti-eclipse non-claim, verification outputs, STATUS tokens, and public mirror non-authorization for CDL-103 opening.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:cdl_103_opened_gap_discov_01"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:anti_eclipse_mitigation_documented_not_claimed_solved_gap_discov_01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:peer_advertisement_schema_defined_gap_discov_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_discov_01_dynamic_peer_discovery_spec_and_cdl_open_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_discov_01_dynamic_peer_discovery_spec_and_cdl_open_walkthrough.md"
     }
   ],
   "nodes": [
