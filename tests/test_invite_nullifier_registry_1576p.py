@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,17 @@ def test_registry_detects_duplicate() -> None:
     registry = InviteNullifierRegistry()
     registry.register_nullifier(NULLIFIER)
     assert registry.is_known(NULLIFIER) is True
+
+
+def test_register_if_new_is_atomic_for_duplicates() -> None:
+    registry = InviteNullifierRegistry()
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda _: registry.register_if_new(NULLIFIER), range(64)))
+
+    assert results.count(True) == 1
+    assert results.count(False) == 63
+    assert len(registry) == 1
 
 
 def test_registry_unknown_returns_false() -> None:
@@ -93,6 +105,54 @@ def test_persistent_store_replay_rejection_still_works(tmp_path: Path) -> None:
     )
     assert decision.bootstrap_allowed is False
     assert decision.defect_token == "replayed_nullifier"
+
+
+def test_persistent_store_write_failure_does_not_mutate_memory(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    store = InviteNullifierStore(tmp_path / "invite_nullifiers.json")
+
+    def fail_write(_path: Path, _used: dict[str, object]) -> None:
+        raise OSError("disk full")
+
+    monkeypatch.setattr(
+        "ilc_core.sidecars.openclaw_invite_bootstrap._write_nullifier_map",
+        fail_write,
+    )
+    with pytest.raises(OSError):
+        store.add(NULLIFIER)
+
+    assert store.contains(NULLIFIER) is False
+
+
+def test_openclaw_rolls_back_local_registry_on_persistence_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    bundle = build_synthetic_invite_bundle(intended_profile=PROFILE)
+    nonce_hex = str(bundle["private_invite_nonce"])
+    nullifier = derive_redemption_nullifier("openclaw-fix2d-batch", nonce_hex)
+    registry = InviteNullifierRegistry()
+
+    def fail_write(_path: Path, _used: dict[str, object]) -> None:
+        raise OSError("disk full")
+
+    monkeypatch.setattr(
+        "ilc_core.sidecars.openclaw_invite_bootstrap._write_nullifier_map",
+        fail_write,
+    )
+    decision = verify_invite_bootstrap(
+        bundle,
+        expected_profile=PROFILE,
+        current_epoch=0,
+        local_nullifier_registry=registry,
+        nullifier_store=InviteNullifierStore(tmp_path / "invite_nullifiers.json"),
+    )
+
+    assert decision.bootstrap_allowed is False
+    assert decision.defect_token == "malformed_invite"
+    assert registry.is_known(nullifier) is False
 
 
 def test_cross_node_gap_annotation_records_1576pb_closure() -> None:

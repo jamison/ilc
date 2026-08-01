@@ -33,6 +33,7 @@ _ROOTS_DB_NAME = b"roots"
 _RECORD_KEY_PREFIX = b"rep_records:"
 _ROOT_KEY_PREFIX = b"rep_root:"
 _MAX_U64 = (1 << 64) - 1
+_SHA256_HEX_CHARS = 64
 
 
 def require_production_reputation_store_activation() -> None:
@@ -87,6 +88,33 @@ def _decode_records(payload: bytes | None) -> list[dict[str, Any]] | None:
     if not isinstance(value, list) or not all(isinstance(item, dict) for item in value):
         raise ValueError("reputation_store_records_payload_invalid")
     return cast(list[dict[str, Any]], value)
+
+
+def _require_sha256_root(value: object) -> str:
+    if (
+        not isinstance(value, str)
+        or len(value) != _SHA256_HEX_CHARS
+        or any(char not in "0123456789abcdef" for char in value)
+    ):
+        raise ValueError("reputation_store_root_payload_invalid")
+    return value
+
+
+def _records_from_canonical_payload(
+    records: list[dict[str, Any]],
+    *,
+    epoch: int,
+) -> list[AgentReputationRecord]:
+    reconstructed: list[AgentReputationRecord] = []
+    try:
+        for item in records:
+            record = AgentReputationRecord(**item)
+            if record.epoch != epoch:
+                raise ValueError("reputation_store_record_epoch_mismatch")
+            reconstructed.append(record)
+    except TypeError as exc:
+        raise ValueError("reputation_store_records_payload_invalid") from exc
+    return reconstructed
 
 
 class AgentReputationLmdbStore:
@@ -161,7 +189,20 @@ class AgentReputationLmdbStore:
             )
         if records_payload is None or root_payload is None:
             raise ValueError("reputation_store_epoch_not_found")
-        return _decode_records(records_payload) or [], root_payload.decode("utf-8")
+        stored_root = _require_sha256_root(root_payload.decode("utf-8"))
+        decoded_records = _decode_records(records_payload) or []
+        reconstructed = _records_from_canonical_payload(
+            decoded_records,
+            epoch=normalized_epoch,
+        )
+        recomputed_root = compute_agent_reputation_root(reconstructed)
+        if recomputed_root != stored_root:
+            raise ValueError("reputation_store_root_mismatch")
+        canonical_records = sorted(
+            [record.to_canonical_record() for record in reconstructed],
+            key=lambda item: item["agent_id"],
+        )
+        return canonical_records, stored_root
 
     def get_committed_root(self, epoch: int) -> str:
         normalized_epoch = _require_epoch(epoch)
@@ -169,7 +210,7 @@ class AgentReputationLmdbStore:
             root_payload = txn.get(_epoch_key(_ROOT_KEY_PREFIX, normalized_epoch))
         if root_payload is None:
             raise ValueError("reputation_store_epoch_not_found")
-        return root_payload.decode("utf-8")
+        return _require_sha256_root(root_payload.decode("utf-8"))
 
 
 __all__ = [

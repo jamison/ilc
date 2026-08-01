@@ -244,7 +244,7 @@ fn parse_optional_sha256_root(
     };
     let error_token = format!("{field_name}_must_be_64_hex");
     let normalized = raw.trim();
-    if normalized.len() != 64 {
+    if normalized != raw || normalized.len() != 64 {
         return Err(error_token);
     }
     let mut bytes = [0u8; 32];
@@ -260,7 +260,6 @@ fn hex_nibble(byte: u8) -> Option<u8> {
     match byte {
         b'0'..=b'9' => Some(byte - b'0'),
         b'a'..=b'f' => Some(byte - b'a' + 10),
-        b'A'..=b'F' => Some(byte - b'A' + 10),
         _ => None,
     }
 }

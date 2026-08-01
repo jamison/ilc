@@ -121,8 +121,10 @@ class InviteNullifierStore:
         _require_sha256_hex(nullifier, "openclaw_invite_nullifier_invalid")
         entry = dict(metadata or {})
         _validate_json_value(entry)
-        self._used[nullifier] = entry
-        _write_nullifier_map(self.path, self._used)
+        updated = dict(self._used)
+        updated[nullifier] = entry
+        _write_nullifier_map(self.path, updated)
+        self._used = updated
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -196,19 +198,24 @@ def verify_invite_bootstrap(
             return _deny("invite_signature_authority_unverified", nullifier, "verified", "unused", redeemer_status)
         if production_required and redeemer_status != "verified":
             return _deny("redeemer_key_binding_required", nullifier, "verified", "unused", redeemer_status)
+        if not local_registry.register_if_new(nullifier):
+            return _deny("invite_nullifier_already_seen", nullifier, "verified", "used", redeemer_status)
         if persist_nullifier:
-            store.add(
-                nullifier,
-                {
-                    "batch_id": batch_id,
-                    "created_epoch": created_epoch,
-                    "expected_profile": expected_profile,
-                    "intended_epoch": intended_epoch,
-                    "inviter_cid": inviter_cid,
-                    "signature_authority_status": signature_status,
-                },
-            )
-        local_registry.register_nullifier(nullifier)
+            try:
+                store.add(
+                    nullifier,
+                    {
+                        "batch_id": batch_id,
+                        "created_epoch": created_epoch,
+                        "expected_profile": expected_profile,
+                        "intended_epoch": intended_epoch,
+                        "inviter_cid": inviter_cid,
+                        "signature_authority_status": signature_status,
+                    },
+                )
+            except Exception:
+                local_registry.discard_nullifier(nullifier)
+                raise
         (
             invite_provenance_edge_status,
             invite_provenance_edge,
@@ -485,7 +492,14 @@ def _write_nullifier_map(path: Path, used: Mapping[str, Any]) -> None:
         with os.fdopen(fd, "wb") as handle:
             handle.write(body)
             handle.write(b"\n")
+            handle.flush()
+            os.fsync(handle.fileno())
         os.replace(tmp_path, path)
+        dir_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
     except Exception:
         try:
             tmp_path.unlink()

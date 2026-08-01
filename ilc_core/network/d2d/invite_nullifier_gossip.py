@@ -91,9 +91,8 @@ def handle_nullifier_gossip_message(
         raise InviteNullifierError("invite_nullifier_gossip_registry_invalid")
     validated = _validated_message(message)
     nullifier_hex = validated["nullifier_hex"]
-    if registry.is_known(nullifier_hex):
+    if not registry.register_if_new(nullifier_hex):
         return "duplicate_discarded"
-    registry.register_nullifier(nullifier_hex)
     return "registered"
 
 

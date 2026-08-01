@@ -36,7 +36,7 @@ CANDIDATE_EVIDENCE_RATIONALE = "no_eligibility_evidence_roots_GAP_REPUTATION_04"
 
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
-_NETWORK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._:-]{0,127}$")
+_NETWORK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,62}$")
 
 
 def _reject_float_or_non_finite_decimal(value: object, field_name: str) -> None:

@@ -5,9 +5,11 @@ import hashlib
 import pytest
 
 from ilc_core.genesis.invitation_provenance_record import (
+    INVITE_NONCE_BYTES,
     INVITE_NONCE_LEAF_DOMAIN,
     INVITE_NONCE_NODE_DOMAIN,
     InvitationProvenanceError,
+    build_invite_batch_record,
     invite_nonce_merkle_root,
     verify_nonce_membership_proof,
 )
@@ -43,6 +45,28 @@ def _verify(
 def test_valid_proof_single_nonce() -> None:
     nonce = b"a" * 32
     _verify(nonce=nonce, root=_leaf(nonce).hex(), count=1, proof=())
+
+
+def test_nonce_bytes_must_be_exactly_32_bytes() -> None:
+    assert INVITE_NONCE_BYTES == 32
+    with pytest.raises(InvitationProvenanceError, match="invite_nonce_invalid"):
+        invite_nonce_merkle_root((b"a",))
+    with pytest.raises(InvitationProvenanceError, match="invite_nonce_invalid"):
+        build_invite_batch_record(
+            inviter_cid="genesis_agent:01",
+            batch_id="short-nonce",
+            count=1,
+            created_epoch=0,
+            inviter_sig="genesis",
+            nonces=(b"a",),
+        )
+    with pytest.raises(InvitationProvenanceError, match="invite_nonce_invalid"):
+        verify_nonce_membership_proof(
+            nonce_bytes=b"a",
+            nonce_merkle_root="00" * 32,
+            count=1,
+            proof=(),
+        )
 
 
 def test_valid_proof_two_nonces_left() -> None:
