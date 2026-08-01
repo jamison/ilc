@@ -50,6 +50,7 @@ from .production_bridge import (
     QUIC_ECU_TRANSFER_SUBMISSION_PATH_TOKEN,
     SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
     TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN,
+    VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED,
     BalanceQuote,
     ConsensusBridgeConfig,
     EpochChainQuote,
@@ -64,6 +65,7 @@ from .production_bridge import (
     build_secure_grpc_read_stub,
     quote_to_canonical_json,
     submit_ecu_transfer_via_quic,
+    verify_validator_cert_against_graph,
 )
 
 __all__ = [
@@ -87,6 +89,7 @@ __all__ = [
     "MAX_PROPOSAL_GRPC_OVERHEAD_BYTES",
     "PRODUCTION_BRIDGE_ACTIVE",
     "PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN",
+    "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED",
     "SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN",
     "DiversityFloorValidationError",
     "CircuitBreakerInterfaceError",
@@ -106,6 +109,7 @@ __all__ = [
     "quote_to_canonical_json",
     "summarize_circuit_breaker_quorum_state",
     "submit_ecu_transfer_via_quic",
+    "verify_validator_cert_against_graph",
     "verify_circuit_breaker_request",
     "compute_max_cluster_share",
     "meets_distinct_cluster_floor",

@@ -68886,6 +68886,144 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_discov_02_dynamic_peer_discovery_runtime_implementation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b validator endpoint assertion runtime",
+      "manual_read_summary": "Runtime dataclass, canonical payload, Atlas loader, and fail-closed BLS verification hook for CDL-105 validator gRPC endpoint assertions.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-105"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/consensus/validator_endpoint_assertion.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/consensus/validator_endpoint_assertion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b Rust BLS subprocess helper",
+      "manual_read_summary": "Narrow Rust helper binary for signing and verifying CDL-105 canonical validator endpoint assertion payloads using consensus BLS primitives.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:validator_ident_runtime_committed_phase_1577b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only:ilc_consensus/src/validator_endpoint_assertion_bls_main.rs",
+      "repo_path": "ilc_consensus/src/validator_endpoint_assertion_bls_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b testbed assertion generator",
+      "manual_read_summary": "Tooling that computes validator DER cert fingerprints, builds CDL-105 assertion JSON, signs canonical payloads through the Rust helper, and optionally writes local Atlas candidate nodes.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:validator_ident_runtime_committed_phase_1577b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only:tools/testbed/generate_validator_endpoint_assertions.py",
+      "repo_path": "tools/testbed/generate_validator_endpoint_assertions.py"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b validator endpoint assertion tests",
+      "manual_read_summary": "Focused tests for dataclass schema, canonical payload, missing/superseded/fingerprint/BLS/key mismatch fail-closed paths, guard no-op behavior, and generator importability.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:validator_ident_runtime_committed_phase_1577b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_validator_endpoint_assertion_1577b.py",
+      "repo_path": "tests/test_validator_endpoint_assertion_1577b.py"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b CDL-105 ratification",
+      "manual_read_summary": "Ratification evidence for CDL-105 validator operational surface registration with guard-retained runtime implementation and M009 testbed assertion fingerprints.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-105"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "RATIFIES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_105_validator_operational_surface_registration_ratification_1577b_v0.1.md -> cdl:CDL-105",
+      "repo_path": "docs/specs/ilc_cdl_105_validator_operational_surface_registration_ratification_1577b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_250_phase_1577b_validator_identity_runtime_graph_bound_assertions",
+      "chronology_note": "2026-08-01 Phase 1577b walkthrough",
+      "manual_read_summary": "Execution walkthrough recording input tokens, implementation map, generated fingerprints, verification output, ledger batch, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_ident_runtime_committed_phase_1577b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1577b_gap_validator_ident_02_runtime_graph_bound_assertions_walkthrough.md",
+      "repo_path": "docs/phases/phase_1577b_gap_validator_ident_02_runtime_graph_bound_assertions_walkthrough.md"
     }
   ],
   "boundary": {
