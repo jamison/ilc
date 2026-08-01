@@ -69024,6 +69024,57 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1577b_gap_validator_ident_02_runtime_graph_bound_assertions_walkthrough.md",
       "repo_path": "docs/phases/phase_1577b_gap_validator_ident_02_runtime_graph_bound_assertions_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_270_phase_1577b_fix1_validator_endpoint_assertion_audit_hardening",
+      "chronology_note": "2026-08-01 Phase 1577b-Fix1 validator endpoint assertion audit hardening",
+      "manual_read_summary": "Walkthrough documenting guard-clearance fail-closed adapter wiring, assertion expiry checks, revision-edge supersession, assertion-specific BLS DST, atomic write hardening, verification, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_ident_runtime_hardened_phase_1577b_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1577b_fix1_validator_endpoint_assertion_audit_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1577b_fix1_validator_endpoint_assertion_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_270_phase_1577b_fix1_validator_endpoint_assertion_manifest",
+      "chronology_note": "2026-08-01 Phase 1577b-Fix1 committed validator endpoint assertion manifest",
+      "manual_read_summary": "Committed deterministic manifest for regenerated M009 validator endpoint assertions using assertion-specific BLS DST; manifest explicitly records blocked_expired_m009_testbed_certificates status for future guard clearance.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_endpoint_assertions_manifest_committed_phase_1577b_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/specs/ilc_cdl_105_validator_operational_surface_registration_ratification_1577b_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_validator_endpoint_assertions_manifest_1577b_fix1_v0.1.json",
+      "repo_path": "docs/specs/ilc_validator_endpoint_assertions_manifest_1577b_fix1_v0.1.json"
     }
   ],
   "boundary": {

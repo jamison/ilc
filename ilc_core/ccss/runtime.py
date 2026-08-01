@@ -1180,7 +1180,11 @@ class _PeerHandler(socketserver.BaseRequestHandler):
 
     def _reply(self, payload: dict[str, Any]) -> None:
         try:
-            self.request.sendall((json.dumps(payload, sort_keys=True) + "\n").encode("utf-8"))
+            self.request.sendall(
+                (json.dumps(payload, sort_keys=True, allow_nan=False) + "\n").encode(
+                    "utf-8"
+                )
+            )
         except OSError:
             pass
 

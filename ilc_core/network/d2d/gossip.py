@@ -20,6 +20,7 @@ from .peer import D2D_PEERING_DEPENDENCY
 
 D2D_GOSSIP_RUNTIME_VERSION = "d2d_gossip_runtime_382.v0.1"
 D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"
+MAX_OBSERVER_METADATA_TRACE_PEERS = 1024
 
 _EXPECTED_PEERING_DEPENDENCY = "d2d_peering_381.v0.1"
 if D2D_PEERING_DEPENDENCY != _EXPECTED_PEERING_DEPENDENCY:
@@ -177,6 +178,11 @@ def build_observer_metadata_trace(
         raise D2dGossipValidationError(
             "d2d_epoch_slot_invalid",
             f"epoch_slot_invalid:{epoch_slot}",
+        )
+    if len(selected_peers) > MAX_OBSERVER_METADATA_TRACE_PEERS:
+        raise D2dGossipValidationError(
+            "d2d_observer_trace_peer_limit_exceeded",
+            f"observer_trace_peer_limit_exceeded:{len(selected_peers)}",
         )
 
     channel_tag = hashlib.sha256(normalized_channel.encode("utf-8")).hexdigest()[:16]
