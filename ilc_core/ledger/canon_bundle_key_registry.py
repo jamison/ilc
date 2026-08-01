@@ -382,7 +382,7 @@ def sign_registry_file(
     }
     
     try:
-        sig_path.write_text(_canonical_signature_sidecar_json(sig_data), encoding="utf-8")
+        _atomic_write(sig_path, _canonical_signature_sidecar_json(sig_data))
     except OSError as e:
         return {"ok": False, "error": f"failed_to_write_sig:{e}"}
     
@@ -637,7 +637,7 @@ def backup_registry(
         content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()[:12]
         backup_name = f"{registry_path.name}.{stamp}.{content_hash}.bak"
         backup_path = backup_dir / backup_name
-        backup_path.write_text(content, encoding="utf-8")
+        _atomic_write(backup_path, content)
     except ValueError as e:
         return {"ok": False, "error": str(e)}
     except json.JSONDecodeError:

@@ -5,6 +5,8 @@ import binascii
 import hashlib
 import hmac
 import json
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -66,6 +68,27 @@ def load_key_from_file(path: Path) -> bytes:
         raise LedgerExportContractError("invalid_key_file") from exc
 
 
+def _atomic_write_bytes(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=path.parent,
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except FileNotFoundError:
+            pass
+        raise
+
+
 def sign_manifest(
     bundle_dir: Path,
     key: bytes,
@@ -109,17 +132,16 @@ def sign_manifest(
     manifest["sig_alg"] = "hmac-sha256"
     manifest["signed_at"] = _resolve_manifest_signed_at(manifest, signed_at)
     
-    # Write updated manifest
-    manifest_path.write_text(_canonical_manifest_json(manifest), encoding="utf-8")
-        
-    # Read manifest bytes as-is for signing
-    data = manifest_path.read_bytes()
+    # Write updated manifest atomically and sign the in-memory bytes to avoid a
+    # crash/TOCTOU gap between write and readback.
+    data = _canonical_manifest_json(manifest).encode("utf-8")
+    _atomic_write_bytes(manifest_path, data)
     
     # Compute HMAC
     sig = hmac.new(key, data, hashlib.sha256).digest()
     sig_b64 = base64.b64encode(sig)
     
     # Write detached signature, single-line
-    sig_path.write_bytes(sig_b64 + b"\n")
+    _atomic_write_bytes(sig_path, sig_b64 + b"\n")
     
     return sig_path

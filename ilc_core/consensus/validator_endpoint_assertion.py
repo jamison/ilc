@@ -16,6 +16,7 @@ import re
 import shlex
 import subprocess
 from dataclasses import dataclass, fields
+from datetime import datetime, timezone
 from typing import Any, Callable, Mapping
 
 
@@ -24,11 +25,18 @@ VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND = "validator_grpc_endpoint_assertion"
 VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION = "validator_grpc_endpoint_assertion.v0.1"
 VALIDATOR_ENDPOINT_ASSERTION_CANDIDATE_PREFIX = "validator_grpc_endpoint_assertion:"
 VALIDATOR_ENDPOINT_ASSERTION_BLS_COMMAND_ENV = "ILC_VALIDATOR_ENDPOINT_ASSERTION_BLS_VERIFY_COMMAND"
+VALIDATOR_ENDPOINT_ASSERTION_BLS_DST_PREFIX = "ILC_VALIDATOR_ENDPOINT_ASSERTION_V1"
+MAX_ASSERTION_ATLAS_SCAN_NODES = 10_000
 
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
 _AGENT_OR_BLS_KEY_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _ISO_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+_ATLAS_METADATA_FIELDS = frozenset(
+    {"candidate_id", "content_sha256", "source_phase", "tier"}
+)
+_SUPERCESSION_FORWARD_EDGE_TYPES = frozenset({"revised_by", "superseded_by"})
+_SUPERCESSION_REVERSE_EDGE_TYPES = frozenset({"revision", "replaces", "supersedes"})
 
 BlsVerifier = Callable[[bytes, str, str, str], bool]
 
@@ -62,8 +70,9 @@ class ValidatorEndpointAssertion:
             96,
             "validator_assertion_bls_public_key_invalid_phase_1577b",
         )
-        _require_lower_even_hex(
+        _require_lower_hex_exact(
             self.bls_signature_hex,
+            192,
             "validator_assertion_bls_signature_invalid_phase_1577b",
         )
         if not isinstance(self.genesis_witness, bool):
@@ -88,6 +97,9 @@ class ValidatorEndpointAssertion:
     def from_dict(cls, payload: Mapping[str, Any]) -> "ValidatorEndpointAssertion":
         if not isinstance(payload, Mapping):
             raise ValueError("validator_assertion_payload_invalid_phase_1577b")
+        allowed = {field.name for field in fields(cls)} | _ATLAS_METADATA_FIELDS
+        if set(payload).difference(allowed):
+            raise ValueError("validator_assertion_unknown_field_phase_1577b_fix1")
         values = {field.name: payload.get(field.name) for field in fields(cls)}
         return cls(**values)
 
@@ -201,19 +213,72 @@ def load_from_atlas(atlas_reader: Any, validator_agent_id: str) -> ValidatorEndp
 
     iter_nodes = getattr(atlas_reader, "iter_nodes", None)
     if callable(iter_nodes):
-        matches = [
-            node
-            for node in iter_nodes()
-            if isinstance(node, Mapping)
-            and node.get("node_kind") == VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND
-            and node.get("validator_agent_id") == normalized_agent_id
-        ]
+        matches: list[ValidatorEndpointAssertion] = []
+        for index, node in enumerate(iter_nodes(), start=1):
+            if index > MAX_ASSERTION_ATLAS_SCAN_NODES:
+                raise ValueError(
+                    "validator_cert_assertion_scan_limit_exceeded_phase_1577b_fix1"
+                )
+            if (
+                isinstance(node, Mapping)
+                and node.get("node_kind") == VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND
+                and node.get("validator_agent_id") == normalized_agent_id
+            ):
+                matches.append(ValidatorEndpointAssertion.from_dict(node))
         if matches:
-            return ValidatorEndpointAssertion.from_dict(
-                sorted(matches, key=lambda node: int(node.get("asserted_at_epoch", -1)))[-1]
-            )
+            return sorted(matches, key=lambda assertion: assertion.asserted_at_epoch)[-1]
 
     raise ValueError("validator_cert_assertion_not_found")
+
+
+def assertion_is_superseded(atlas_reader: Any, assertion: ValidatorEndpointAssertion) -> bool:
+    """Return true when an inline marker or Atlas revision edge supersedes an assertion."""
+
+    if assertion.revised_by is not None:
+        return True
+
+    candidate_id = validator_assertion_candidate_id(assertion.validator_agent_id)
+    iter_edges = getattr(atlas_reader, "iter_edges", None)
+    if not callable(iter_edges):
+        return False
+
+    for index, edge in enumerate(iter_edges(), start=1):
+        if index > MAX_ASSERTION_ATLAS_SCAN_NODES:
+            raise ValueError(
+                "validator_cert_assertion_edge_scan_limit_exceeded_phase_1577b_fix1"
+            )
+        if isinstance(edge, Mapping) and _edge_supersedes_assertion(edge, candidate_id):
+            return True
+    return False
+
+
+def assertion_valid_at(
+    assertion: ValidatorEndpointAssertion,
+    *,
+    now_utc: datetime | None = None,
+) -> bool:
+    """Validate the assertion certificate validity window at a UTC instant."""
+
+    if now_utc is None:
+        raise ValueError("validator_assertion_now_utc_required_phase_1577b_fix1")
+    now = now_utc
+    if now.tzinfo is None or now.utcoffset() is None:
+        raise ValueError("validator_assertion_now_utc_invalid_phase_1577b_fix1")
+    normalized_now = now.astimezone(timezone.utc)
+    not_before = _parse_iso_utc(
+        assertion.tls_cert_not_before_utc,
+        "validator_cert_assertion_not_yet_valid",
+    )
+    if normalized_now < not_before:
+        raise ValueError("validator_cert_assertion_not_yet_valid")
+    if assertion.tls_cert_not_after_utc is not None:
+        not_after = _parse_iso_utc(
+            assertion.tls_cert_not_after_utc,
+            "validator_cert_assertion_expired",
+        )
+        if normalized_now > not_after:
+            raise ValueError("validator_cert_assertion_expired")
+    return True
 
 
 def validator_assertion_candidate_id(validator_agent_id: str) -> str:
@@ -280,6 +345,38 @@ def _require_iso_utc(value: Any, token: str) -> str:
     return value
 
 
+def _parse_iso_utc(value: str, token: str) -> datetime:
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=timezone.utc
+        )
+    except ValueError as exc:
+        raise ValueError(token) from exc
+
+
+def _edge_supersedes_assertion(edge: Mapping[str, Any], candidate_id: str) -> bool:
+    edge_type = str(edge.get("edge_type") or edge.get("type") or "").lower()
+    source = (
+        edge.get("source_candidate_id")
+        or edge.get("source")
+        or edge.get("from")
+        or edge.get("old_candidate_id")
+    )
+    target = (
+        edge.get("target_candidate_id")
+        or edge.get("target")
+        or edge.get("to")
+        or edge.get("new_candidate_id")
+    )
+    if edge_type in _SUPERCESSION_FORWARD_EDGE_TYPES and source == candidate_id:
+        return True
+    if edge_type in _SUPERCESSION_REVERSE_EDGE_TYPES and target == candidate_id:
+        return True
+    if edge_type == "revision" and (source == candidate_id or target == candidate_id):
+        return True
+    return False
+
+
 def _require_network_id(value: Any) -> str:
     if not isinstance(value, str) or not value or any(char.isspace() for char in value):
         raise ValueError("validator_assertion_network_id_invalid_phase_1577b")
@@ -289,12 +386,15 @@ def _require_network_id(value: Any) -> str:
 __all__ = [
     "BlsVerifier",
     "VALIDATOR_ENDPOINT_ASSERTION_BLS_COMMAND_ENV",
+    "VALIDATOR_ENDPOINT_ASSERTION_BLS_DST_PREFIX",
     "VALIDATOR_ENDPOINT_ASSERTION_CANDIDATE_PREFIX",
     "VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND",
     "VALIDATOR_ENDPOINT_ASSERTION_RUNTIME_VERSION",
     "VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION",
     "ValidatorEndpointAssertion",
+    "assertion_is_superseded",
     "assertion_to_atlas_node",
+    "assertion_valid_at",
     "canonical_assertion_payload",
     "load_from_atlas",
     "validator_assertion_candidate_id",

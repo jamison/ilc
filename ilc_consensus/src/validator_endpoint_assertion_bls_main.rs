@@ -5,7 +5,7 @@ use std::io::{self, Read};
 use std::path::PathBuf;
 
 fn dst(network_id: &str) -> Vec<u8> {
-    format!("ILC_FAST_PATH_V1:{}", network_id).into_bytes()
+    format!("ILC_VALIDATOR_ENDPOINT_ASSERTION_V1:{}", network_id).into_bytes()
 }
 
 fn main() {

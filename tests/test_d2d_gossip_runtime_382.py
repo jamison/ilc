@@ -10,6 +10,7 @@ from ilc_core.network.d2d.gossip import (
     D2D_GOSSIP_DEPENDENCY,
     D2D_GOSSIP_RUNTIME_VERSION,
     D2dGossipValidationError,
+    MAX_OBSERVER_METADATA_TRACE_PEERS,
     analyze_passive_observer_membership_leakage,
     build_observer_metadata_trace,
     build_transport_envelope,
@@ -134,6 +135,22 @@ def test_gossip_candidate_selection_determinism() -> None:
     assert one == two
     assert one != three
     assert len(one) == 3
+
+
+def test_observer_metadata_trace_peer_count_is_bounded() -> None:
+    peers = [
+        f"peer:bounded-{index:04d}"
+        for index in range(MAX_OBSERVER_METADATA_TRACE_PEERS + 1)
+    ]
+    try:
+        build_observer_metadata_trace(
+            peers,
+            channel_id="cid:1234abcd5678ef901234abcd5678ef90",
+            epoch_slot=1,
+        )
+        raise AssertionError("expected_observer_trace_limit_rejection")
+    except D2dGossipValidationError as exc:
+        assert exc.token == "d2d_observer_trace_peer_limit_exceeded"
 
 
 def test_invariant_creator_agent_id_absent_from_transport_structures() -> None:

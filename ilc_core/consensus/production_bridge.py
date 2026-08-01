@@ -12,6 +12,7 @@ import importlib
 import hashlib
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable, Mapping, Protocol
 
@@ -19,6 +20,8 @@ from google.protobuf import descriptor_pb2, descriptor_pool, message_factory
 
 from ilc_core.consensus.validator_endpoint_assertion import (
     BlsVerifier,
+    assertion_is_superseded,
+    assertion_valid_at,
     load_from_atlas,
     verify_bls_signature,
 )
@@ -83,6 +86,9 @@ class ConsensusBridgeConfig:
     proposal_tls_root_certificates: bytes | None = None
     proposal_client_private_key: bytes | None = None
     proposal_client_certificate_chain: bytes | None = None
+    graph_binding_validator_agent_id: str | None = None
+    graph_binding_expected_bls_public_key_hex: str | None = None
+    graph_binding_network_id: str | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.target, str) or not self.target.strip():
@@ -148,6 +154,21 @@ class ConsensusBridgeConfig:
             self.proposal_client_certificate_chain is None
         ):
             raise ValueError("proposal_client_certificate_pair_invalid_phase_1587_fix1")
+        if self.graph_binding_validator_agent_id is not None:
+            _require_lower_sha384_hex(
+                self.graph_binding_validator_agent_id,
+                "validator_cert_graph_binding_agent_id_invalid_phase_1577b_fix1",
+            )
+        if self.graph_binding_expected_bls_public_key_hex is not None:
+            _require_lower_sha384_hex(
+                self.graph_binding_expected_bls_public_key_hex,
+                "validator_cert_graph_binding_bls_key_invalid_phase_1577b_fix1",
+            )
+        if self.graph_binding_network_id is not None:
+            _require_non_empty_str(
+                self.graph_binding_network_id,
+                "validator_cert_graph_binding_network_id_invalid_phase_1577b_fix1",
+            )
 
 
 @dataclass(frozen=True)
@@ -792,10 +813,21 @@ class ILCConsensusGrpcReadAdapter:
         *,
         stub: ILCAppReadServiceStubProtocol | None = None,
         messages: _MessageTypes | None = None,
+        validator_graph_binding_atlas_reader: Any | None = None,
+        validator_graph_binding_cert_der_provider: (
+            Callable[[], bytes | bytearray | memoryview] | None
+        ) = None,
+        validator_graph_binding_bls_verifier: BlsVerifier | None = None,
+        validator_graph_binding_now_utc: datetime | None = None,
     ) -> None:
         self.config = config
         self.messages = messages or _build_message_types()
         self.stub = stub or build_secure_grpc_read_stub(config, messages=self.messages)
+        self._validator_graph_binding_atlas_reader = validator_graph_binding_atlas_reader
+        self._validator_graph_binding_cert_der_provider = validator_graph_binding_cert_der_provider
+        self._validator_graph_binding_bls_verifier = validator_graph_binding_bls_verifier
+        self._validator_graph_binding_now_utc = validator_graph_binding_now_utc
+        self._validator_graph_binding_verified = False
 
     def verify_validator_cert_against_graph(
         self,
@@ -822,7 +854,35 @@ class ILCConsensusGrpcReadAdapter:
         method = getattr(self.stub, method_name, None)
         if method is None:
             raise ValueError("consensus_grpc_stub_method_missing_phase_1358")
+        self._verify_validator_graph_binding_if_required()
         return method(request, timeout=self.config.grpc_timeout_seconds)
+
+    def _verify_validator_graph_binding_if_required(self) -> None:
+        if (
+            VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED
+            or self._validator_graph_binding_verified
+        ):
+            return
+        if (
+            self.config.graph_binding_validator_agent_id is None
+            or self.config.graph_binding_expected_bls_public_key_hex is None
+            or self.config.graph_binding_network_id is None
+            or self._validator_graph_binding_atlas_reader is None
+            or self._validator_graph_binding_cert_der_provider is None
+            or self._validator_graph_binding_now_utc is None
+        ):
+            raise ValueError("validator_cert_graph_binding_config_missing_phase_1577b_fix1")
+        verify_validator_cert_against_graph(
+            validator_agent_id=self.config.graph_binding_validator_agent_id,
+            presented_cert_der=self._validator_graph_binding_cert_der_provider(),
+            atlas_reader=self._validator_graph_binding_atlas_reader,
+            expected_bls_public_key_hex=self.config.graph_binding_expected_bls_public_key_hex,
+            network_id=self.config.graph_binding_network_id,
+            bls_verifier=self._validator_graph_binding_bls_verifier,
+            graph_binding_guard=False,
+            now_utc=self._validator_graph_binding_now_utc,
+        )
+        self._validator_graph_binding_verified = True
 
     def get_epoch(self) -> int:
         response = self._call("GetEpoch", self.messages.GetEpochRequest())
@@ -941,6 +1001,7 @@ def verify_validator_cert_against_graph(
     network_id: str,
     bls_verifier: BlsVerifier | None = None,
     graph_binding_guard: bool | None = None,
+    now_utc: datetime | None = None,
 ) -> bool:
     """Verify TLS certificate identity against the Atlas assertion graph.
 
@@ -967,8 +1028,9 @@ def verify_validator_cert_against_graph(
     if not cert_bytes:
         raise ValueError("validator_cert_der_invalid_phase_1577b")
     assertion = load_from_atlas(atlas_reader, validator_agent_id)
-    if assertion.revised_by is not None:
+    if assertion_is_superseded(atlas_reader, assertion):
         raise ValueError("validator_cert_assertion_superseded")
+    assertion_valid_at(assertion, now_utc=now_utc)
     fingerprint = hashlib.sha256(cert_bytes).hexdigest()
     if assertion.tls_cert_sha256_fingerprint != fingerprint:
         raise ValueError("validator_cert_fingerprint_mismatch")
