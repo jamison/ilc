@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Phase 562 static gossip peer registry.
+"""Phase 562 static gossip peer registry with GAP-DISCOV-02 hybrid scaffold.
 
 This module provides local static peer configuration only. Dynamic discovery is
 intentionally deferred because CDL-039 topology privacy requires explicit
-constitutional authorization for any discovery mechanism beyond static v1.
+constitutional authorization for any discovery mechanism beyond static v1. The
+GAP-DISCOV-02 dynamic table remains behind a default-on NOT_ACTIVATED guard.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ from ilc_core.crypto.pq_signature_verify import (
 from ilc_core.network.d2d.gossip_transport import (
     GOSSIP_TRANSPORT_RUNTIME_VERSION as _GOSSIP_TRANSPORT_CHECK,
 )
+from ilc_core.network.d2d.peer_advertisement import PeerAdvertisement
 
 
 GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
@@ -28,10 +30,12 @@ CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_1572.v0.1"
 PEER_DISCOVERY_MODE = "static_v1"
+DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = True
 LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
     "lexicographic_gossip_fanout_rotation_deferred_pending_cdl_103_phase_1575h_fix2"
 )
 MAX_PEERS = 16
+N_MAX = 1000
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
 _LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
 _NONSTANDARD_IPV4_LITERAL_CHARS = frozenset("0123456789abcdefABCDEFxX.")
@@ -219,7 +223,7 @@ def _normalize_peer_entry(
 
 
 class GossipPeerRegistry:
-    """Static v1 peer registry — no dynamic discovery."""
+    """Static v1 peer registry with default-off dynamic advertisement support."""
 
     def __init__(
         self,
@@ -247,11 +251,80 @@ class GossipPeerRegistry:
         self._peers = [entry.endpoint for entry in self._entries]
         self._entries_by_peer_id = entries_by_peer_id
         self._allow_private_address_literals = allow_private_address_literals
+        self._dynamic_ad_table: dict[str, PeerAdvertisement] = {}
+        self._vrf_introduction_table: dict[str, PeerAdvertisement] = {}
 
     def peer_count(self) -> int:
-        return len(self._peers)
+        return len(self.get_peers())
 
     def get_peers(self) -> list[str]:
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED or not self._dynamic_ad_table:
+            return list(self._peers)
+        dynamic_endpoints = [
+            ad.endpoint_url
+            for ad in sorted(self._dynamic_ad_table.values(), key=lambda item: item.agent_id)
+            if ad.endpoint_url not in self._peers
+        ]
+        return list(self._peers) + dynamic_endpoints
+
+    def add_peer_advertisement(self, ad: PeerAdvertisement, current_epoch: int) -> bool:
+        """Add or replace a dynamic peer advertisement when the guard is cleared."""
+
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
+            raise RuntimeError("dynamic_peer_discovery_not_activated")
+        current = _require_epoch(current_epoch, "peer_advertisement_current_epoch_invalid")
+        if not isinstance(ad, PeerAdvertisement):
+            raise ValueError("peer_advertisement_invalid")
+        if ad.is_expired(current):
+            return False
+        if ad.endpoint_url in self._peers:
+            return False
+        existing = self._dynamic_ad_table.get(ad.agent_id)
+        if existing is None and len(self._dynamic_ad_table) >= N_MAX:
+            return False
+        if existing is not None and ad.peer_timestamp_epoch < existing.peer_timestamp_epoch:
+            return False
+        self._dynamic_ad_table[ad.agent_id] = ad
+        return True
+
+    def expire_ads(self, current_epoch: int) -> int:
+        current = _require_epoch(current_epoch, "peer_advertisement_current_epoch_invalid")
+        expired_agent_ids = [
+            agent_id
+            for agent_id, ad in self._dynamic_ad_table.items()
+            if ad.is_expired(current)
+        ]
+        for agent_id in expired_agent_ids:
+            del self._dynamic_ad_table[agent_id]
+            self._vrf_introduction_table.pop(agent_id, None)
+        return len(expired_agent_ids)
+
+    def get_dynamic_peers(self, current_epoch: int | None = None) -> list[PeerAdvertisement]:
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
+            return []
+        if current_epoch is not None:
+            self.expire_ads(current_epoch)
+        return sorted(self._dynamic_ad_table.values(), key=lambda item: item.agent_id)
+
+    def add_introduction_entries(self, ads: Sequence[PeerAdvertisement]) -> None:
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
+            raise RuntimeError("dynamic_peer_discovery_not_activated")
+        if not isinstance(ads, Sequence):
+            raise ValueError("peer_introduction_entries_invalid")
+        for ad in ads:
+            if not isinstance(ad, PeerAdvertisement):
+                raise ValueError("peer_introduction_entry_invalid")
+        self._vrf_introduction_table = {
+            ad.agent_id: ad
+            for ad in sorted(ads, key=lambda item: item.agent_id)
+        }
+
+    def get_introduction_entries(self) -> list[PeerAdvertisement]:
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
+            return []
+        return sorted(self._vrf_introduction_table.values(), key=lambda item: item.agent_id)
+
+    def get_static_peers(self) -> list[str]:
         return list(self._peers)
 
     def get_peer_pubkey(self, peer_id: str) -> str | None:
