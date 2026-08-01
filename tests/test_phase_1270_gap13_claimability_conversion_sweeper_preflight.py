@@ -5,7 +5,10 @@ from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
-from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime
+from ilc_core.protocol.public_wallet_runtime import (
+    WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+    PublicWalletRuntime,
+)
 from ilc_core.rc.local_skill_preview import build_local_skill_preview_manifest
 from ilc_core.rc.package_profile_ci_gate import build_package_profile_ci_audit
 from ilc_core.rc.package_profiles import PROFILE_OPENCLAW_SKILL_CLAIMABLE
@@ -96,7 +99,7 @@ def test_phase_1270_records_broad_discovery_and_source_expansion() -> None:
         assert "TransportPrincipal" in text
 
 
-def test_phase_1270_lifecycle_and_public_wallet_remain_deferred_read_only() -> None:
+def test_phase_1270_lifecycle_remains_deferred_public_wallet_display_is_authorized() -> None:
     wallet_store = _WalletStore()
     lifecycle = EcuIlcLifecycleRuntime(
         wallet_store=wallet_store,
@@ -113,10 +116,22 @@ def test_phase_1270_lifecycle_and_public_wallet_remain_deferred_read_only() -> N
     )
 
     assert commit["data"]["claimability_state"] == "deferred"
-    assert wallet_runtime.wallet_status(agent_id="agent:alpha")["data"]["claimability_state"] == "deferred"
-    assert wallet_runtime.wallet_history(agent_id="agent:alpha")["data"]["claimability_state"] == "deferred"
-    assert wallet_runtime.wallet_export(agent_id="agent:alpha")["data"]["claimability_state"] == "deferred"
-    assert wallet_runtime.ledger_summary(agent_id="agent:alpha")["data"]["claimability_state"] == "deferred"
+    assert (
+        wallet_runtime.wallet_status(agent_id="agent:alpha")["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    )
+    assert (
+        wallet_runtime.wallet_history(agent_id="agent:alpha")["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    )
+    assert (
+        wallet_runtime.wallet_export(agent_id="agent:alpha")["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    )
+    assert (
+        wallet_runtime.ledger_summary(agent_id="agent:alpha")["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    )
 
     source = _read(PUBLIC_WALLET_RUNTIME_PATH)
     for forbidden in ("def withdraw", "def transfer", "def spend", "def sign", "mint_ecu", "settle_ilc"):

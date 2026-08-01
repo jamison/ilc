@@ -8,6 +8,7 @@ from pathlib import Path
 
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
 from ilc_core.sidecars.wallet_action_semantics_preflight import wallet_action_semantics_preflight_manifest
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
@@ -82,7 +83,7 @@ def test_wallet_history_includes_claimability_state(tmp_path: Path) -> None:
     )
 
     assert payload["subcommand"] == "history"
-    assert payload["data"]["claimability_state"] == "deferred"
+    assert payload["data"]["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
     assert payload["data"]["record_count"] == 1
 
 

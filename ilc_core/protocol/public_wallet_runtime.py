@@ -13,6 +13,7 @@ from ilc_core.protocol.harness_interfaces import PublicWalletStore
 
 
 PUBLIC_WALLET_RUNTIME_VERSION = "public_wallet_runtime_653.v0.1"
+WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED = "proof_claimability_authorized"
 
 
 class PublicWalletRuntimeError(ValueError):
@@ -55,7 +56,7 @@ class PublicWalletRuntime:
                 "history_digest": status_data.get("history_digest"),
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": "deferred",
+                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
             },
         }
 
@@ -76,7 +77,7 @@ class PublicWalletRuntime:
                 "history_digest": history_data.get("history_digest"),
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": "deferred",
+                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
                 "wallet_store_kind": "lmdb_wallet_store",
             },
         }
@@ -103,7 +104,7 @@ class PublicWalletRuntime:
                 "history_digest": snapshot["history_digest"],
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": "deferred",
+                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
                 "wallet_store_kind": "lmdb_wallet_store",
             },
         }
@@ -127,7 +128,7 @@ class PublicWalletRuntime:
             "agent_id": agent_id,
             "balance_ilc": lifecycle_data["balance_ilc"],
             "ecu_accrual": lifecycle_data["balance_ecu"],
-            "claimability_state": "deferred",
+            "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
             "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
             "history_digest": lifecycle_data.get("history_digest"),
             "latest_balance_receipt": latest_balance_receipt,
@@ -212,4 +213,5 @@ __all__ = [
     "PUBLIC_WALLET_RUNTIME_VERSION",
     "PublicWalletRuntime",
     "PublicWalletRuntimeError",
+    "WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED",
 ]

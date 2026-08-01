@@ -68590,6 +68590,124 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1576r_g10_invite_integration_tests.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1576r_g10_invite_integration_tests.md"
+    },
+    {
+      "annotation_batch": "manual_batch_261_phase_1578f_proof_claimability_gate_rerun",
+      "chronology_note": "2026-08-01 Phase 1578f proof-claimability gate rerun display transition.",
+      "manual_read_summary": "Public wallet runtime display claimability_state is reconciled from deferred to proof_claimability_authorized through a single named constant. Wallet action guard file is not changed; transfer, spend, withdrawal, public_claimability_activated guard, and external-address claimability remain blocked.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-088"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:public_claimability_activated_phase_1438"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:claimability_state_transition_committed_phase_1578f"
+        },
+        {
+          "edge_type": "PRESERVES_BOUNDARY",
+          "target": "ilc_core/sidecars/wallet_action_semantics_preflight.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "PRESERVES_BOUNDARY",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed:ilc_core/protocol/public_wallet_runtime.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/protocol/public_wallet_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_261_phase_1578f_proof_claimability_gate_rerun",
+      "chronology_note": "2026-08-01 Phase 1578f proof-claimability gate rerun tests.",
+      "manual_read_summary": "Focused tests cover proof_claimability_authorized display on all public wallet query surfaces, single named constant usage, wallet action guards remaining false, sidecar Phase 1438 authority, and absence of external-address claimability surfaces.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:public_claimability_activated_phase_1438"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:proof_claimability_gate_verdict_committed_phase_1578f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/protocol/public_wallet_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/wallet_action_semantics_preflight.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/claimability_receipt_verifier.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1578f_proof_claimability_gate.py",
+      "repo_path": "tests/test_phase_1578f_proof_claimability_gate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_261_phase_1578f_proof_claimability_gate_rerun",
+      "chronology_note": "2026-08-01 Phase 1578f adjacent wallet display regression updates.",
+      "manual_read_summary": "Existing public wallet and claimability boundary tests updated to distinguish lifecycle claimability_state deferred from the public wallet display proof_claimability_authorized state introduced by Phase 1578f.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:claimability_state_transition_committed_phase_1578f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/protocol/public_wallet_runtime.py"
+        },
+        {
+          "edge_type": "PRESERVES_BOUNDARY",
+          "target": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "PRESERVES_BOUNDARY",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_1252_gap13_claimability_resolution_boundary.py;tests/test_phase_1270_gap13_claimability_conversion_sweeper_preflight.py;tests/test_phase_1578g_wallet_cli.py;tests/test_phase_653_public_wallet_runtime_integration.py",
+      "repo_path": "tests/test_phase_1252_gap13_claimability_resolution_boundary.py"
     }
   ],
   "boundary": {
@@ -75057,6 +75175,48 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1576r_invite_integration_tests_walkthrough.md",
       "repo_path": "docs/phases/phase_1576r_invite_integration_tests_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_261_phase_1578f_proof_claimability_gate_rerun",
+      "chronology_note": "2026-08-01 Phase 1578f proof-claimability gate rerun walkthrough.",
+      "manual_read_summary": "Walkthrough records the human disposition of the sidecar activation blocker, PASS gate verdict, direct-read authority evidence, display-only before/after transition, verification command outputs, STATUS tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "phase:public_claimability_activated_phase_1438"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "phase_trace",
+          "target": "cdl:CDL-088"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:proof_claimability_gate_verdict_committed_phase_1578f"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:claimability_state_transition_committed_phase_1578f"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:external_address_claimability_remains_blocked_phase_1578f"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1578f_proof_claimability_gate_rerun_walkthrough.md",
+      "repo_path": "docs/phases/phase_1578f_proof_claimability_gate_rerun_walkthrough.md"
     }
   ],
   "nodes": [
