@@ -156,6 +156,27 @@ def test_rust_ingestion_rejects_malformed_reputation_root(
     assert "agent_reputation_root_must_be_64_hex" in str(excinfo.value)
 
 
+@pytest.mark.parametrize("bad_root", [AGENT_ROOT.upper(), f" {AGENT_ROOT}", f"{AGENT_ROOT}\n"])
+def test_rust_ingestion_rejects_noncanonical_reputation_root(
+    attribution_binary: Path,
+    tmp_path: Path,
+    bad_root: str,
+) -> None:
+    batch = build_attribution_batch_from_claims(_claim_payload())
+    batch["agent_reputation_root"] = bad_root
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            batch,
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=attribution_binary,
+            dry_run=True,
+        )
+
+    assert excinfo.value.token == "rust_attribution_batch_ingest_failed"
+    assert "agent_reputation_root_must_be_64_hex" in str(excinfo.value)
+
+
 def test_epoch_settlement_record_schema_not_modified_for_reputation_root() -> None:
     source = (ROOT / "ilc_consensus" / "src" / "types.rs").read_text(encoding="utf-8")
     settlement_match = re.search(

@@ -9,6 +9,7 @@ use crate::types::{
 
 const BACKWARD_ATTRIBUTION_BATCH_ROOT_KEY_PREFIX: &[u8] = b"backward_attr_root:";
 const AGENT_REPUTATION_ROOT_KEY_PREFIX: &[u8] = b"agent_reputation_root:";
+const ATTRIBUTION_EPOCH_COMMIT_KEY_PREFIX: &[u8] = b"attribution_epoch_commit:";
 
 pub struct BalanceStore {
     env: Arc<Environment>,
@@ -227,6 +228,13 @@ impl BalanceStore {
             .begin_rw_txn()
             .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
 
+        let epoch_commit_key = attribution_epoch_commit_key(batch.epoch);
+        match txn.get(self.db, &epoch_commit_key) {
+            Ok(_) => return Err(ILCConsensusError::InvalidEpoch),
+            Err(lmdb_rkv::Error::NotFound) => {}
+            Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
+        }
+
         for (agent_id, amount) in batch.attributions {
             let (mut agent_bal, is_new) = match txn.get(self.db, &agent_id.0) {
                 Ok(bytes) => (
@@ -279,6 +287,13 @@ impl BalanceStore {
             txn.put(self.db, &key, &root_bytes, WriteFlags::empty())
                 .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
         }
+        txn.put(
+            self.db,
+            &epoch_commit_key,
+            b"committed_attribution_epoch_v1",
+            WriteFlags::empty(),
+        )
+        .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
 
         txn.commit()
             .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
@@ -300,6 +315,14 @@ fn agent_reputation_root_key(epoch: EpochSeq) -> Vec<u8> {
     let mut key =
         Vec::with_capacity(AGENT_REPUTATION_ROOT_KEY_PREFIX.len() + std::mem::size_of::<u64>());
     key.extend_from_slice(AGENT_REPUTATION_ROOT_KEY_PREFIX);
+    key.extend_from_slice(&epoch.0.to_be_bytes());
+    key
+}
+
+fn attribution_epoch_commit_key(epoch: EpochSeq) -> Vec<u8> {
+    let mut key =
+        Vec::with_capacity(ATTRIBUTION_EPOCH_COMMIT_KEY_PREFIX.len() + std::mem::size_of::<u64>());
+    key.extend_from_slice(ATTRIBUTION_EPOCH_COMMIT_KEY_PREFIX);
     key.extend_from_slice(&epoch.0.to_be_bytes());
     key
 }
@@ -417,6 +440,81 @@ mod tests {
             bal_after.amount_micro_ecu, 500_000,
             "balance must not change after replay"
         );
+    }
+
+    #[test]
+    fn test_apply_attribution_same_epoch_disjoint_agent_rejected() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent1 = AgentID([17; 48]);
+        let agent2 = AgentID([18; 48]);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(21),
+                attributions: vec![(agent1, 500_000)],
+                backward_attribution_batch_root: Some([1u8; 32]),
+                agent_reputation_root: Some([2u8; 32]),
+            })
+            .unwrap();
+
+        let err = store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(21),
+                attributions: vec![(agent2, 700_000)],
+                backward_attribution_batch_root: Some([3u8; 32]),
+                agent_reputation_root: Some([4u8; 32]),
+            })
+            .unwrap_err();
+
+        assert_eq!(err, ILCConsensusError::InvalidEpoch);
+        assert_eq!(store.get_balance(&agent2).unwrap().amount_micro_ecu, 0);
+        assert_eq!(
+            store
+                .get_backward_attribution_batch_root(EpochSeq(21))
+                .unwrap(),
+            Some([1u8; 32])
+        );
+        assert_eq!(
+            store.get_agent_reputation_root(EpochSeq(21)).unwrap(),
+            Some([2u8; 32])
+        );
+    }
+
+    #[test]
+    fn test_apply_attribution_root_bearing_batch_after_rootless_epoch_rejected() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+        let agent1 = AgentID([19; 48]);
+        let agent2 = AgentID([20; 48]);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(22),
+                attributions: vec![(agent1, 500_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: None,
+            })
+            .unwrap();
+
+        let err = store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(22),
+                attributions: vec![(agent2, 700_000)],
+                backward_attribution_batch_root: Some([5u8; 32]),
+                agent_reputation_root: Some([6u8; 32]),
+            })
+            .unwrap_err();
+
+        assert_eq!(err, ILCConsensusError::InvalidEpoch);
+        assert_eq!(store.get_balance(&agent2).unwrap().amount_micro_ecu, 0);
+        assert_eq!(
+            store
+                .get_backward_attribution_batch_root(EpochSeq(22))
+                .unwrap(),
+            None
+        );
+        assert_eq!(store.get_agent_reputation_root(EpochSeq(22)).unwrap(), None);
     }
 
     // SEC-FIX-02: new agents in epoch 0 must be attributable on first call

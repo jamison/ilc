@@ -118,6 +118,73 @@ def test_edge_record_is_deterministic_and_declares_no_fixed_fraction() -> None:
     assert len(first.record_hash()) == 64
 
 
+def test_edge_id_includes_redemption_nullifier_to_avoid_edge_collision() -> None:
+    first = build_invite_provenance_edge_record(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier="1" * 64,
+        batch_id="batch-1576q-a",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+    )
+    second = build_invite_provenance_edge_record(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier="2" * 64,
+        batch_id="batch-1576q-b",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+    )
+
+    assert first.edge_id() != second.edge_id()
+
+
+def test_direct_edge_record_construction_rejects_stale_schema_and_non_bool_flags() -> None:
+    stale_schema = build_invite_provenance_edge_record(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier=NULLIFIER,
+        batch_id="batch-1576q",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+    ).__class__(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier=NULLIFIER,
+        batch_id="batch-1576q",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+        schema_version="stale",
+    )
+    with pytest.raises(InviteProvenanceWiringError, match="invite_provenance_schema_version_invalid"):
+        write_invite_provenance_edge(stale_schema, PutEdgesWriter())
+
+    bad_flag = build_invite_provenance_edge_record(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier=NULLIFIER,
+        batch_id="batch-1576q",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+    ).__class__(
+        source_node_id="redeemer-init-node",
+        target_node_id="inviter-node",
+        redemption_nullifier=NULLIFIER,
+        batch_id="batch-1576q",
+        inviter_cid="inviter-node",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+        non_recursive_invite_credit="true",  # type: ignore[arg-type]
+    )
+    with pytest.raises(InviteProvenanceWiringError, match="invite_provenance_must_be_non_recursive"):
+        write_invite_provenance_edge(bad_flag, PutEdgesWriter())
+
+
 def test_record_from_invite_redemption_uses_inviter_cid_as_default_target() -> None:
     redemption = _redemption()
 

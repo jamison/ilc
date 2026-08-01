@@ -171,3 +171,45 @@ def test_phase_1589_default_off_path_remains_available_without_activation_token(
     assert decision.production_validator_admission_activated is False
     assert decision.decision_token == PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN
     assert decision.validator_role_record is None
+
+
+def test_phase_1589_default_off_role_record_uses_not_activated_authority() -> None:
+    decision = admit_validator(
+        current_epoch=0,
+        active_from_epoch=1,
+        current_validator_ids=[1, 2, 3, 4],
+        validator_id=5,
+        agent_id=AGENT_ID,
+        stake_ecu=Decimal("400"),
+        network_id=NETWORK_ID,
+        validator_key=VALIDATOR_KEY,
+        validator_endpoint=VALIDATOR_ENDPOINT,
+    )
+
+    assert decision.production_validator_admission_activated is False
+    assert decision.validator_role_record is not None
+    assert (
+        decision.validator_role_record.admission_authority_token
+        == PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN
+    )
+
+
+def test_phase_1589_activation_rejects_role_authority_token_mismatch() -> None:
+    cert = _official_certificate()
+
+    with pytest.raises(ValueError, match="validator_role_record_authority_token_mismatch_phase_1589"):
+        admit_validator(
+            current_epoch=0,
+            active_from_epoch=1,
+            current_validator_ids=[1, 2, 3, 4],
+            current_agent_ids=[],
+            validator_id=5,
+            agent_id=AGENT_ID,
+            stake_ecu=Decimal("400"),
+            activation_token=PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN,
+            network_id=NETWORK_ID,
+            validator_key=VALIDATOR_KEY,
+            validator_endpoint=VALIDATOR_ENDPOINT,
+            eligibility_certificate=cert,
+            admission_authority_token="wrong_authority_token",
+        )

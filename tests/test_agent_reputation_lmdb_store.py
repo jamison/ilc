@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from ilc_core.economics.agent_reputation_extractor import (
@@ -117,6 +119,40 @@ def test_get_committed_root_matches_written(tmp_path) -> None:
         root = store.write_epoch_records(10, [record])
 
         assert store.get_committed_root(10) == root
+
+
+def test_read_rejects_tampered_records_even_when_root_key_exists(tmp_path) -> None:
+    record = _record()
+    with AgentReputationLmdbStore(tmp_path / "reputation") as store:
+        store.write_epoch_records(10, [record])
+        tampered = [record.to_canonical_record()]
+        tampered[0]["reputation_score"] = "0.999"
+        with store.env.begin(write=True) as txn:
+            txn.put(
+                b"rep_records:" + (10).to_bytes(8, "big", signed=False),
+                json.dumps(tampered, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+                db=store._records_db,
+            )
+
+        with pytest.raises(ValueError, match="reputation_store_root_mismatch"):
+            store.read_epoch_records(10)
+
+
+def test_read_rejects_malformed_committed_root(tmp_path) -> None:
+    record = _record()
+    with AgentReputationLmdbStore(tmp_path / "reputation") as store:
+        store.write_epoch_records(10, [record])
+        with store.env.begin(write=True) as txn:
+            txn.put(
+                b"rep_root:" + (10).to_bytes(8, "big", signed=False),
+                b"Z" * 64,
+                db=store._roots_db,
+            )
+
+        with pytest.raises(ValueError, match="reputation_store_root_payload_invalid"):
+            store.get_committed_root(10)
+        with pytest.raises(ValueError, match="reputation_store_root_payload_invalid"):
+            store.read_epoch_records(10)
 
 
 def test_production_guard_raises() -> None:

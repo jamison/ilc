@@ -570,7 +570,7 @@ def build_validator_role_record(
     role_status: str | None = None,
     quorum_weight: int | None = None,
     effective_to_epoch: int | None = None,
-    admission_authority_token: str = PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN,
+    admission_authority_token: str = PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN,
 ) -> ValidatorRoleRecord:
     """Build the Phase 1589 agent-bound validator-role record.
 
@@ -698,6 +698,11 @@ def admit_validator(
         required = {"network_id", "validator_key", "validator_endpoint"}
         if not required.issubset(role_options):
             raise ValueError("validator_role_record_missing_required_fields_phase_1589")
+        default_role_authority_token = (
+            PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN
+            if production_active
+            else PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN
+        )
         validator_role_record = build_validator_role_record(
             agent_id=validated_agent_id,
             validator_id=validated_validator_id,
@@ -711,7 +716,7 @@ def admit_validator(
             effective_to_epoch=role_options.get("effective_to_epoch"),  # type: ignore[arg-type]
             admission_authority_token=role_options.get(
                 "admission_authority_token",
-                PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN,
+                default_role_authority_token,
             ),  # type: ignore[arg-type]
         )
 
@@ -724,6 +729,11 @@ def admit_validator(
             raise ValueError("validator_activation_requires_official_role_phase_1589")
         if not validator_role_record.rust_validator_set_eligible:
             raise ValueError("validator_activation_requires_rust_eligible_role_phase_1589")
+        if (
+            validator_role_record.admission_authority_token
+            != PRODUCTION_VALIDATOR_ADMISSION_ACTIVATION_TOKEN
+        ):
+            raise ValueError("validator_role_record_authority_token_mismatch_phase_1589")
 
     next_ids = tuple(sorted((*normalized_ids, validated_validator_id)))
     next_agent_ids = tuple(sorted((*normalized_agent_ids, validated_agent_id)))

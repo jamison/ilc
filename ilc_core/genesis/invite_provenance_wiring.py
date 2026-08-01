@@ -123,9 +123,15 @@ class InviteProvenanceEdgeRecord:
 
     def edge_id(self) -> str:
         digest = hashlib.sha256(
-            f"{self.source_node_id}|{self.edge_type}|{self.target_node_id}".encode(
-                "utf-8"
-            )
+            "|".join(
+                (
+                    self.source_node_id,
+                    self.edge_type,
+                    self.target_node_id,
+                    self.provenance_subtype,
+                    self.redemption_nullifier,
+                )
+            ).encode("utf-8")
         ).hexdigest()[:16]
         return f"edge:{digest}"
 
@@ -343,6 +349,8 @@ def _mapping_from_record(record: Mapping[str, Any] | object) -> Mapping[str, Any
 
 
 def _validate_record(record: InviteProvenanceEdgeRecord) -> None:
+    if record.schema_version != INVITE_PROVENANCE_WIRING_VERSION:
+        raise InviteProvenanceWiringError("invite_provenance_schema_version_invalid")
     if record.edge_type != INVITE_PROVENANCE_EDGE_TYPE:
         raise InviteProvenanceWiringError("invite_provenance_edge_type_must_be_provenance")
     if record.provenance_subtype != INVITE_PROVENANCE_SUBTYPE:
@@ -351,12 +359,23 @@ def _validate_record(record: InviteProvenanceEdgeRecord) -> None:
         raise InviteProvenanceWiringError("invite_provenance_credit_model_invalid")
     if record.source_node_id == record.target_node_id:
         raise InviteProvenanceWiringError("invite_provenance_self_edge_rejected")
-    if not record.non_recursive_invite_credit:
-        raise InviteProvenanceWiringError("invite_provenance_must_be_non_recursive")
-    if not record.no_fixed_invite_fraction:
-        raise InviteProvenanceWiringError("invite_provenance_fixed_fraction_forbidden")
-    if not record.no_cdl084_explicit_chain_settlement:
-        raise InviteProvenanceWiringError("invite_provenance_cdl084_settlement_forbidden")
+    _require_true_flag(
+        record.non_recursive_invite_credit,
+        "invite_provenance_must_be_non_recursive",
+    )
+    _require_true_flag(
+        record.no_fixed_invite_fraction,
+        "invite_provenance_fixed_fraction_forbidden",
+    )
+    _require_true_flag(
+        record.no_cdl084_explicit_chain_settlement,
+        "invite_provenance_cdl084_settlement_forbidden",
+    )
+
+
+def _require_true_flag(value: object, token: str) -> None:
+    if type(value) is not bool or value is not True:
+        raise InviteProvenanceWiringError(token)
 
 
 def _require_non_empty_string(value: object, token: str) -> str:

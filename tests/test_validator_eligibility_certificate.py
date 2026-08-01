@@ -235,9 +235,18 @@ def test_invalid_agent_id_rejected() -> None:
         evaluate_eligibility(agent_id="not-hex", network_id=NETWORK_ID, epoch=0)
 
 
-def test_invalid_network_id_rejected() -> None:
+@pytest.mark.parametrize(
+    "network_id",
+    [
+        "Bad Network",
+        "i",
+        "ilc:rc01",
+        "a" * 64,
+    ],
+)
+def test_invalid_network_id_rejected(network_id: str) -> None:
     with pytest.raises(ValueError, match="network_id_must_be_non_empty_network_id"):
-        evaluate_eligibility(agent_id=AGENT_ID, network_id="Bad Network", epoch=0)
+        evaluate_eligibility(agent_id=AGENT_ID, network_id=network_id, epoch=0)
 
 
 def test_invalid_root_rejected() -> None:
