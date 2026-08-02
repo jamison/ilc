@@ -22,6 +22,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
     VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
     ValidatorEndpointAssertion,
+    assertion_content_sha256,
     assertion_valid_at,
     canonical_assertion_payload,
     load_from_atlas,
@@ -192,6 +193,40 @@ def test_verify_superseded_assertion_fails_from_revision_edge() -> None:
             graph_binding_guard=False,
             now_utc=datetime(2026, 6, 1, tzinfo=timezone.utc),
         )
+
+
+def test_content_hash_scoped_revision_edge_does_not_supersede_new_assertion() -> None:
+    new_cert_der = b"new-cert"
+    old_assertion = _assertion(tls_cert_sha256_fingerprint="1" * 64)
+    new_assertion = _assertion(
+        tls_cert_sha256_fingerprint=hashlib.sha256(new_cert_der).hexdigest()
+    )
+    atlas = EdgeAtlas(
+        new_assertion,
+        [
+            {
+                "edge_type": "REVISED_BY",
+                "source_assertion_sha256": assertion_content_sha256(old_assertion),
+                "source_candidate_id": validator_assertion_candidate_id(AGENT),
+                "target_assertion_sha256": assertion_content_sha256(new_assertion),
+                "target_candidate_id": validator_assertion_candidate_id(AGENT),
+            }
+        ],
+    )
+
+    assert (
+        verify_validator_cert_against_graph(
+            validator_agent_id=AGENT,
+            presented_cert_der=new_cert_der,
+            atlas_reader=atlas,
+            expected_bls_public_key_hex=BLS_KEY,
+            network_id="ilc-testnet",
+            bls_verifier=lambda *_args: True,
+            graph_binding_guard=False,
+            now_utc=datetime(2026, 6, 1, tzinfo=timezone.utc),
+        )
+        is True
+    )
 
 
 def test_verify_expired_assertion_fails() -> None:
