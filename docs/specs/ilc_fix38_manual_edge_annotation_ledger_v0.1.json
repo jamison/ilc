@@ -69247,6 +69247,94 @@
       ],
       "recommended_graph_action": "support_only:tests/test_phase_1577g_guard_clearance.py",
       "repo_path": "tests/test_phase_1577g_guard_clearance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_252_phase_1576r_fix1_invite_nullifier_lmdb_persistence",
+      "chronology_note": "2026-08-02 Phase 1576r-Fix1 invite nullifier LMDB persistence closure.",
+      "manual_read_summary": "Durable restart-safe LMDB-backed InviteNullifierRegistry subclass preserving existing enforcement and D2D gossip APIs, duplicate semantics, rollback delete surface, capacity guard, lowercase SHA-256 validation, and corrupt payload fail-closed behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:invite_nullifier_lmdb_persistence_committed_phase_1576r"
+        },
+        {
+          "edge_type": "CLOSES",
+          "target": "phase:invite_nullifier_lmdb_persistence_required_pre_rc"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "ilc_core/genesis/invite_nullifier_registry.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "CLOSES",
+        "HARDENS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/genesis/invite_nullifier_lmdb_store.py -> genesis:genesis_root_v0.4",
+      "repo_path": "ilc_core/genesis/invite_nullifier_lmdb_store.py"
+    },
+    {
+      "annotation_batch": "manual_batch_252_phase_1576r_fix1_invite_nullifier_lmdb_persistence",
+      "chronology_note": "2026-08-02 Phase 1576r-Fix1 invite nullifier LMDB persistence closure.",
+      "manual_read_summary": "Focused tests for LMDB invite nullifier restart persistence, duplicate rejection after restart, D2D gossip compatibility, persisted capacity behavior, rollback delete behavior, and corrupt payload fail-closed behavior.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/genesis/invite_nullifier_lmdb_store.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nullifier_lmdb_persistence_committed_phase_1576r"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_invite_nullifier_lmdb_persistence_1576r_fix1.py",
+      "repo_path": "tests/test_invite_nullifier_lmdb_persistence_1576r_fix1.py"
+    },
+    {
+      "annotation_batch": "manual_batch_252_phase_1576r_fix1_invite_nullifier_lmdb_persistence",
+      "chronology_note": "2026-08-02 Phase 1576r-Fix1 invite nullifier LMDB persistence closure.",
+      "manual_read_summary": "Walkthrough documenting the token audit, LMDB persistence implementation, focused verification, output tokens, and non-claims for Phase 1576r-Fix1.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nullifier_lmdb_persistence_committed_phase_1576r"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:invite_nullifier_lmdb_persistence_required_pre_rc_closed_phase_1576r_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1576r_fix1_invite_nullifier_lmdb_persistence_walkthrough.md",
+      "repo_path": "docs/phases/phase_1576r_fix1_invite_nullifier_lmdb_persistence_walkthrough.md"
     }
   ],
   "boundary": {
