@@ -137,7 +137,7 @@ def compute_degree_centrality(
     if n == 0:
         return {}
 
-    # Validate all keys are strings
+    # Validate all keys and neighbor node ids are strings.
     for node in adjacency:
         if not isinstance(node, str):
             raise ValueError("werner_adjacency_keys_must_be_strings")
@@ -149,7 +149,12 @@ def compute_degree_centrality(
     max_degree = Decimal(str(n - 1))
     centrality: dict[str, Decimal] = {}
     for node, neighbors in adjacency.items():
-        degree = Decimal(str(len(list(neighbors))))
+        if isinstance(neighbors, (str, bytes)) or not isinstance(neighbors, Sequence):
+            raise ValueError("werner_adjacency_neighbors_must_be_sequence")
+        neighbor_list = list(neighbors)
+        if any(not isinstance(neighbor, str) for neighbor in neighbor_list):
+            raise ValueError("werner_adjacency_neighbor_values_must_be_strings")
+        degree = Decimal(str(len(neighbor_list)))
         centrality[node] = degree / max_degree
 
     return centrality
@@ -515,4 +520,4 @@ def compute_flow_budget(
     cap = _coerce_decimal(runtime_policy_cap, "runtime_policy_cap")
     _require_non_negative(cp, "candidate_priority")
     _require_non_negative(cap, "runtime_policy_cap")
-    return min(cap, cp)
+    return min(cap, cp).quantize(_TWELVE_PLACES)
