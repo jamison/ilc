@@ -69335,6 +69335,126 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1576r_fix1_invite_nullifier_lmdb_persistence_walkthrough.md",
       "repo_path": "docs/phases/phase_1576r_fix1_invite_nullifier_lmdb_persistence_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_1580_gap_spectral_01a_cdl104_opening",
+      "chronology_note": "2026-08-02 Phase 1580 GAP-SPECTRAL-01a CDL-104 spectral hash epoch commitment opening.",
+      "manual_read_summary": "CDL-104 opening document reconciles whitepaper/glossary SHA-256 top-k spectral hash claims, ADR-0029 CDL requirement, live fixed-point int64-le spectral_utils helper, legacy float-hash rejection, SHA-384 planning rejection, and Phase 1582 ratification boundary.",
+      "node_kind": "cdl_opening_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_104_opened_gap_spectral_01a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_cdl_104_spectral_hash_epoch_commitment_opening_gap_spectral_01a_v0.1.md",
+      "repo_path": "docs/specs/ilc_cdl_104_spectral_hash_epoch_commitment_opening_gap_spectral_01a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_1580_gap_spectral_01a_cdl104_opening",
+      "chronology_note": "2026-08-02 Phase 1580 GAP-SPECTRAL-01a CDL-104 spectral hash epoch commitment opening.",
+      "manual_read_summary": "Focused tests verify the CDL-104 opening text, fixed-point SHA-256 recipe, legacy float-hash rejection, Rust EpochSettlementRecord no-spectral-field boundary, CDL/STATUS tokens, and SpectralRouteToken namespace separation.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_104_spectral_hash_epoch_commitment_opening_gap_spectral_01a_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:spectral_digest_recipe_canonicalized_gap_spectral_01a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_spectral_01a_cdl104_recipe_reconciliation.py",
+      "repo_path": "tests/test_gap_spectral_01a_cdl104_recipe_reconciliation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_1580_gap_spectral_01a_cdl104_opening",
+      "chronology_note": "2026-08-02 Phase 1580 GAP-SPECTRAL-01a CDL-104 spectral hash epoch commitment opening.",
+      "manual_read_summary": "Walkthrough documents direct reads, MemPalace reconciliation, stale prompt token reconciliation, chosen spectral digest recipe, output tokens, verification, and non-claims for Phase 1580.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:gap_spectral_01a_complete"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-104"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1580_gap_spectral_01a_cdl104_spectral_commitment_opening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1580_gap_spectral_01a_cdl104_spectral_commitment_opening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_253_phase_1580_gap_spectral_01a_cdl104_opening",
+      "chronology_note": "2026-08-02 Phase 1580 GAP-SPECTRAL-01a CDL-104 spectral hash epoch commitment opening.",
+      "manual_read_summary": "CDL register updated with opened CDL-104 row for spectral hash epoch commitment, preserving no-ratification and no-runtime-activation boundaries.",
+      "node_kind": "cdl_register",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_104_opened_gap_spectral_01a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
     }
   ],
   "boundary": {
