@@ -10,7 +10,6 @@ from types import SimpleNamespace
 
 import pytest
 
-import ilc_core.consensus.production_bridge as production_bridge_module
 from ilc_core.consensus.production_bridge import (
     VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED,
     ConsensusBridgeConfig,
@@ -326,8 +325,16 @@ def test_graph_binding_requires_explicit_verification_instant() -> None:
         )
 
 
-def test_guard_not_activated_skips_verification() -> None:
-    assert VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED is True
+def test_guard_cleared_activates_enforcement_and_explicit_true_guard_documents_legacy_skip() -> None:
+    assert VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED is False
+    with pytest.raises(ValueError, match="validator_cert_der_invalid_phase_1577b"):
+        verify_validator_cert_against_graph(
+            validator_agent_id="not-even-hex",
+            presented_cert_der=b"",
+            atlas_reader=None,
+            expected_bls_public_key_hex="also-bad",
+            network_id="ilc-testnet",
+        )
     assert (
         verify_validator_cert_against_graph(
             validator_agent_id="not-even-hex",
@@ -335,6 +342,7 @@ def test_guard_not_activated_skips_verification() -> None:
             atlas_reader=None,
             expected_bls_public_key_hex="also-bad",
             network_id="ilc-testnet",
+            graph_binding_guard=True,
         )
         is True
     )
@@ -349,15 +357,14 @@ def test_guard_not_activated_skips_verification() -> None:
             atlas_reader=None,
             expected_bls_public_key_hex="also-bad",
             network_id="ilc-testnet",
+            graph_binding_guard=True,
         )
         is True
     )
 
 
 def test_adapter_fails_closed_if_graph_binding_guard_is_cleared_without_config(
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(production_bridge_module, "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED", False)
     stub = FakeReadStub()
     adapter = ILCConsensusGrpcReadAdapter(
         ConsensusBridgeConfig(target="validator.example:7101"),
@@ -372,9 +379,7 @@ def test_adapter_fails_closed_if_graph_binding_guard_is_cleared_without_config(
 
 
 def test_adapter_verifies_graph_binding_once_when_guard_is_cleared(
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(production_bridge_module, "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED", False)
     stub = FakeReadStub()
     cert_calls = 0
 

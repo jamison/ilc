@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import datetime as dt
+import hashlib
 import ipaddress
 import sys
 from pathlib import Path
@@ -20,6 +21,11 @@ from ilc_core.consensus.production_bridge import (
     ILCConsensusGrpcReadAdapter,
     build_secure_grpc_read_stub,
 )
+from ilc_core.consensus.validator_endpoint_assertion import (
+    VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+    VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+    validator_assertion_candidate_id,
+)
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -28,6 +34,37 @@ RUST_MAIN = REPO / "ilc_consensus/src/main.rs"
 RUST_CONFIG = REPO / "ilc_consensus/src/config.rs"
 PROOF = REPO / "docs/specs/ilc_production_tls_grpc_proof_1386a_v0.1.md"
 WALKTHROUGH = REPO / "docs/phases/phase_1386a_production_tls_grpc_proof_walkthrough.md"
+GRAPH_BINDING_AGENT_ID = "a" * 96
+GRAPH_BINDING_BLS_KEY = "b" * 96
+GRAPH_BINDING_CERT_DER = b"phase-1386a-test-validator-cert"
+
+
+def _atlas_for_cert(cert_der: bytes) -> dict[str, dict[str, object]]:
+    return {
+        validator_assertion_candidate_id(GRAPH_BINDING_AGENT_ID): {
+            "asserted_at_epoch": 0,
+            "bls_public_key_hex": GRAPH_BINDING_BLS_KEY,
+            "bls_signature_hex": "c" * 192,
+            "genesis_witness": True,
+            "grpc_endpoint": "validator.testnet.invalid:50162",
+            "node_kind": VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+            "schema_version": VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+            "tls_cert_not_after_utc": "2036-01-01T00:00:00Z",
+            "tls_cert_not_before_utc": "2026-01-01T00:00:00Z",
+            "tls_cert_sha256_fingerprint": hashlib.sha256(cert_der).hexdigest(),
+            "validator_agent_id": GRAPH_BINDING_AGENT_ID,
+        }
+    }
+
+
+def _graph_bound_config(target: str, **overrides: object) -> ConsensusBridgeConfig:
+    return ConsensusBridgeConfig(
+        target=target,
+        graph_binding_validator_agent_id=GRAPH_BINDING_AGENT_ID,
+        graph_binding_expected_bls_public_key_hex=GRAPH_BINDING_BLS_KEY,
+        graph_binding_network_id="ilc-testnet",
+        **overrides,
+    )
 
 
 class _RecordingChannel:
@@ -153,8 +190,12 @@ class _SentinelStub:
 def test_epoch_0_sentinel_reconciliation_python_sends_rust_sentinel_range() -> None:
     stub = _SentinelStub()
     adapter = ILCConsensusGrpcReadAdapter(
-        ConsensusBridgeConfig(target="validator.testnet.invalid:50162"),
+        _graph_bound_config("validator.testnet.invalid:50162"),
         stub=stub,
+        validator_graph_binding_atlas_reader=_atlas_for_cert(GRAPH_BINDING_CERT_DER),
+        validator_graph_binding_cert_der_provider=lambda: GRAPH_BINDING_CERT_DER,
+        validator_graph_binding_bls_verifier=lambda *_args: True,
+        validator_graph_binding_now_utc=dt.datetime(2026, 6, 1, tzinfo=dt.timezone.utc),
     )
     chain = adapter.get_epoch_chain(0, 0)
 
@@ -212,12 +253,21 @@ def test_secure_stub_reaches_local_tls_endpoint() -> None:
     server.add_generic_rpc_handlers((handler,))
     server.start()
     try:
-        config = ConsensusBridgeConfig(
+        cert_der = x509.load_pem_x509_certificate(cert_pem).public_bytes(
+            serialization.Encoding.DER
+        )
+        config = _graph_bound_config(
             target=f"127.0.0.1:{port}",
             tls_root_certificates=cert_pem,
             grpc_timeout_seconds=3,
         )
-        adapter = ILCConsensusGrpcReadAdapter(config)
+        adapter = ILCConsensusGrpcReadAdapter(
+            config,
+            validator_graph_binding_atlas_reader=_atlas_for_cert(cert_der),
+            validator_graph_binding_cert_der_provider=lambda: cert_der,
+            validator_graph_binding_bls_verifier=lambda *_args: True,
+            validator_graph_binding_now_utc=dt.datetime.now(dt.timezone.utc),
+        )
         assert adapter.get_epoch() == 0
     finally:
         server.stop(grace=None)
