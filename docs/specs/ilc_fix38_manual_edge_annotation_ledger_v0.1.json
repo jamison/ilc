@@ -76534,6 +76534,246 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md -> planning:pre_rc_sequence",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "CDL-104 ratification document locks the fixed-point SHA-256 top-k spectral digest recipe and ratifies spectral_hash: [u8; 32] as the S(t) field in signed epoch commitments.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "EMITS",
+          "target": "phase:cdl_104_ratified_phase_1582"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "RATIFIES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_104_spectral_hash_epoch_commitment_ratification_1582_v0.1.md -> cdl:CDL-104",
+      "repo_path": "docs/specs/ilc_cdl_104_spectral_hash_epoch_commitment_ratification_1582_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Rust EpochSettlementRecord now includes spectral_hash: [u8; 32], so the serialized BLS-signed epoch record commits to C(t) = (M(t), S(t)).",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "EMITS",
+          "target": "phase:spectral_hash_rust_field_committed_phase_1582"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_consensus/src/types.rs -> cdl:CDL-104",
+      "repo_path": "ilc_consensus/src/types.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Rust proposal-to-record conversion and proposal_commitment_sha256 preimage now bind spectral_hash before epoch_data_hash.",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "HARDENS",
+          "target": "phase:rust_epoch_record_binds_proposal_commitment_phase_1586_fix2"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "HARDENS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_consensus/src/node.rs -> cdl:CDL-104",
+      "repo_path": "ilc_consensus/src/node.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Rust EpochProposal now carries spectral_hash so proposal ingress can pass S(t) into the signed settlement record.",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_consensus/src/network.rs -> cdl:CDL-104",
+      "repo_path": "ilc_consensus/src/network.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "gRPC app interface validates SubmitEpochProposalRequest.spectral_hash and exposes committed spectral_hash in epoch record readback.",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_consensus/src/app_interface.rs -> cdl:CDL-104",
+      "repo_path": "ilc_consensus/src/app_interface.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "SubmitEpochProposalRequest and GetEpochRecordResponse protobuf contracts now include spectral_hash fields for CDL-104 S(t).",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_consensus/proto/ilc_app.proto -> cdl:CDL-104",
+      "repo_path": "ilc_consensus/proto/ilc_app.proto"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Python production bridge validates, exports, submits, and idempotency-binds exact 32-byte spectral hashes; helper converts spectral eigenvalues through spectral_hash_fixed_point_int64_le(k=20).",
+      "node_kind": "source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_production_bridge_proposal_ingress_spec_1585_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:ilc_core/consensus/production_bridge.py -> cdl:CDL-104",
+      "repo_path": "ilc_core/consensus/production_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Focused Phase 1582 tests verify Rust field presence/order, protobuf fields, preimage binding, bridge validation, readback, CDL register/status tokens, CCSS namespace separation, and golden idempotency vector.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "cdl:CDL-104"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "phase:spectral_hash_rust_field_committed_phase_1582"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_spectral_01b_cdl104_rust_impl_1582.py",
+      "repo_path": "tests/test_gap_spectral_01b_cdl104_rust_impl_1582.py"
+    },
+    {
+      "annotation_batch": "manual_batch_254_phase_1582_gap_spectral_01b_cdl104_ratification",
+      "chronology_note": "2026-08-02 Phase 1582 GAP-SPECTRAL-01b CDL-104 ratification and Rust spectral commitment implementation.",
+      "manual_read_summary": "Walkthrough records the GO phrase, prompt correction, implemented CDL-104 Rust/Python surfaces, verification results, cargo-unavailable caveat, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_104_ratified_phase_1582"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:spectral_hash_rust_field_committed_phase_1582"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1582_gap_spectral_01b_cdl104_ratification_rust_impl_walkthrough.md",
+      "repo_path": "docs/phases/phase_1582_gap_spectral_01b_cdl104_ratification_rust_impl_walkthrough.md"
     }
   ],
   "nodes": [

@@ -264,6 +264,10 @@ impl CIDv1Root {
 pub struct EpochSettlementRecord {
     pub epoch: EpochSeq,
     pub state_root: CIDv1Root,
+    /// CDL-104 spectral commitment S(t): SHA-256 over sorted top-k fixed-point
+    /// normalized hypergraph Laplacian eigenvalues. Included in the serialized
+    /// record that validators BLS-sign, forming C(t) = (M(t), S(t)).
+    pub spectral_hash: [u8; 32],
     /// SHA-256 commitment to the full `SubmitEpochProposal` preimage. Phase
     /// 1586-Fix2 binds the aggregate epoch BLS signature to this field so the
     /// finalized record commits to submitter, network, epoch data hash, body

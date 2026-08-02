@@ -94,6 +94,7 @@ impl IlcAppReadService for ApplicationInterface {
                     state_root: state_root.to_vec(),
                     agg_sig: stored.agg_sig_bytes,
                     found: true,
+                    spectral_hash: stored.record.spectral_hash.to_vec(),
                 }))
             }
             Ok(None) => Ok(Response::new(GetEpochRecordResponse {
@@ -101,6 +102,7 @@ impl IlcAppReadService for ApplicationInterface {
                 state_root: vec![],
                 agg_sig: vec![],
                 found: false,
+                spectral_hash: vec![],
             })),
             Err(e) => Err(Status::internal(format!("LMDB read error: {:?}", e))),
         }
@@ -145,6 +147,7 @@ impl IlcAppReadService for ApplicationInterface {
                             state_root: state_root.to_vec(),
                             agg_sig: stored.agg_sig_bytes,
                             found: true,
+                            spectral_hash: stored.record.spectral_hash.to_vec(),
                         });
                     }
                     Ok(None) => break,
@@ -234,12 +237,18 @@ fn request_to_epoch_proposal(
     if req.epoch_data_hash.len() != 32 {
         return Err("submit_epoch_proposal_invalid_epoch_data_hash_phase_1586");
     }
+    if req.spectral_hash.len() != 32 {
+        return Err("submit_epoch_proposal_invalid_spectral_hash_phase_1582");
+    }
     let mut root = [0u8; 36];
     root.copy_from_slice(&req.state_root_cidv1);
+    let mut spectral_hash = [0u8; 32];
+    spectral_hash.copy_from_slice(&req.spectral_hash);
     Ok(EpochProposal {
         submitter_agent_id: req.submitter_agent_id,
         epoch_number: req.epoch_number,
         state_root: CIDv1Root::new(root),
+        spectral_hash,
         epoch_data_hash: req.epoch_data_hash,
         settlement_record_bytes: req.settlement_record_bytes,
         idempotency_key: req.idempotency_key,
@@ -407,6 +416,7 @@ mod tests {
                 1,
                 &[9; 48],
                 &[7; 36],
+                &[13; 32],
                 &epoch_data_hash,
                 &settlement_record_bytes,
                 0,
@@ -418,6 +428,7 @@ mod tests {
             submitter_agent_id: vec![9; 48],
             epoch_number: 1,
             state_root_cidv1: vec![7; 36],
+            spectral_hash: vec![13; 32],
             epoch_data_hash,
             settlement_record_bytes,
             idempotency_key,
@@ -432,6 +443,7 @@ mod tests {
         epoch_number: u64,
         submitter_agent_id: &[u8],
         state_root: &[u8],
+        spectral_hash: &[u8],
         epoch_data_hash: &[u8],
         settlement_record_bytes: &[u8],
         not_before_unix_ms: u64,
@@ -443,6 +455,7 @@ mod tests {
         hasher.update(epoch_number.to_be_bytes());
         hasher.update(submitter_agent_id);
         hasher.update(state_root);
+        hasher.update(spectral_hash);
         hasher.update(epoch_data_hash);
         hasher.update(settlement_hash);
         hasher.update(not_before_unix_ms.to_be_bytes());
@@ -654,6 +667,7 @@ mod tests {
             let r = EpochSettlementRecord {
                 epoch: EpochSeq(ep),
                 state_root: CIDv1Root::new([ep as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [ep as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(ep),
             };
@@ -705,6 +719,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
@@ -738,6 +753,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
@@ -777,6 +793,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
@@ -822,6 +839,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(i),
                 state_root: CIDv1Root::new([i as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [i as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(i),
             };
@@ -842,6 +860,7 @@ mod tests {
             .commit_epoch_record(EpochSettlementRecord {
                 epoch: EpochSeq(5),
                 state_root: CIDv1Root::new([5u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [5u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(5),
             })

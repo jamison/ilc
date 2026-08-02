@@ -26,6 +26,7 @@ message SubmitEpochProposalRequest {
     string idempotency_key         = 6; // lowercase 64-hex SHA-256 over canonical preimage
     uint64 not_before_unix_ms      = 7;
     string network_id              = 8;
+    bytes  spectral_hash           = 9; // CDL-104 S(t), exactly 32 bytes
 }
 
 message SubmitEpochProposalResponse {
@@ -62,6 +63,7 @@ message GetEpochRecordResponse {
     bytes  state_root = 2;
     bytes  agg_sig    = 3;
     bool   found      = 4;
+    bytes  spectral_hash = 5; // CDL-104 S(t), exactly 32 bytes when found=true
 }
 
 message GetEpochChainRequest {

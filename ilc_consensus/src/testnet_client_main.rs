@@ -587,12 +587,15 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             for i in 0..args.count {
                 let epoch = start_epoch + i;
                 let not_before_unix_ms = 0;
+                let spectral_hash = [0u8; 32];
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
                     state_root,
+                    spectral_hash,
                     proposal_commitment_sha256: testnet_direct_checkpoint_commitment(
                         epoch,
                         &state_root,
+                        &spectral_hash,
                         not_before_unix_ms,
                     ),
                     not_before_unix_ms,
@@ -971,6 +974,7 @@ fn cidv1_root_from_required_arg(
 fn testnet_direct_checkpoint_commitment(
     epoch: u64,
     state_root: &CIDv1Root,
+    spectral_hash: &[u8; 32],
     not_before_unix_ms: u64,
 ) -> [u8; 32] {
     let mut hasher = Sha256::new();
@@ -978,6 +982,7 @@ fn testnet_direct_checkpoint_commitment(
     hasher.update(epoch.to_be_bytes());
     hasher.update(state_root.p1);
     hasher.update(state_root.p2);
+    hasher.update(spectral_hash);
     hasher.update(not_before_unix_ms.to_be_bytes());
     hasher.finalize().into()
 }

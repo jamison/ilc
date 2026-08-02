@@ -68,6 +68,7 @@ pub struct EpochProposal {
     pub submitter_agent_id: Vec<u8>,
     pub epoch_number: u64,
     pub state_root: CIDv1Root,
+    pub spectral_hash: [u8; 32],
     pub epoch_data_hash: Vec<u8>,
     pub settlement_record_bytes: Vec<u8>,
     pub idempotency_key: String,
@@ -470,6 +471,7 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([7u8; 36]),
+            spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [7u8; 32],
             not_before_unix_ms: 0,
         };

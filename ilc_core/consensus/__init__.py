@@ -64,6 +64,7 @@ from .production_bridge import (
     build_secure_grpc_proposal_ingress_stub,
     build_secure_grpc_read_stub,
     quote_to_canonical_json,
+    spectral_hash_bytes_from_eigenvalues,
     submit_ecu_transfer_via_quic,
     verify_validator_cert_against_graph,
 )
@@ -107,6 +108,7 @@ __all__ = [
     "build_quic_ecu_transfer_submission_path",
     "build_secure_grpc_read_stub",
     "quote_to_canonical_json",
+    "spectral_hash_bytes_from_eigenvalues",
     "summarize_circuit_breaker_quorum_state",
     "submit_ecu_transfer_via_quic",
     "verify_validator_cert_against_graph",
