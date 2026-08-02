@@ -911,6 +911,7 @@ impl NodeRunner {
         let record = crate::types::EpochSettlementRecord {
             epoch: tx.epoch,
             state_root: tx.state_root,
+            spectral_hash: [0u8; 32],
             // Testnet fault-simulation transactions predate proposal ingress.
             // Production proposal ingress always binds the actual proposal commitment.
             proposal_commitment_sha256: [0u8; 32],
@@ -1497,6 +1498,7 @@ fn proposal_to_record(proposal: &EpochProposal) -> EpochSettlementRecord {
     EpochSettlementRecord {
         epoch: EpochSeq(proposal.epoch_number),
         state_root: proposal.state_root,
+        spectral_hash: proposal.spectral_hash,
         proposal_commitment_sha256: proposal_commitment_sha256(proposal),
         not_before_unix_ms: proposal.not_before_unix_ms,
     }
@@ -1526,6 +1528,7 @@ fn proposal_commitment_sha256(proposal: &EpochProposal) -> [u8; 32] {
     hasher.update(proposal.epoch_number.to_be_bytes());
     hasher.update(&proposal.submitter_agent_id);
     hasher.update(cid_root_bytes(&proposal.state_root));
+    hasher.update(proposal.spectral_hash);
     hasher.update(&proposal.epoch_data_hash);
     hasher.update(settlement_hash);
     hasher.update(proposal.not_before_unix_ms.to_be_bytes());
@@ -1734,6 +1737,7 @@ mod tests {
             submitter_agent_id: vec![9; 48],
             epoch_number,
             state_root: CIDv1Root::new([7; 36]),
+            spectral_hash: [13u8; 32],
             epoch_data_hash,
             settlement_record_bytes,
             idempotency_key: String::new(),
@@ -2263,6 +2267,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [epoch as u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(epoch),
             };
@@ -2390,12 +2395,14 @@ mod tests {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
         let wrong_record = EpochSettlementRecord {
             epoch: EpochSeq(99),
             state_root: CIDv1Root::new([99u8; 36]),
+            spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [99u8; 32],
             not_before_unix_ms: 0,
         };
@@ -2429,6 +2436,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [1u8; 32],
                 not_before_unix_ms: 0,
             },
@@ -2453,6 +2461,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(1),
                 state_root: CIDv1Root::new([1u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [1u8; 32],
                 not_before_unix_ms: 0,
             },
@@ -2484,6 +2493,7 @@ mod tests {
         let record_e1 = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
+            spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [1u8; 32],
             not_before_unix_ms: 0,
         };
@@ -2505,6 +2515,7 @@ mod tests {
             record: EpochSettlementRecord {
                 epoch: EpochSeq(2),
                 state_root: CIDv1Root::new([2u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [2u8; 32],
                 not_before_unix_ms: test_epoch_not_before_unix_ms(2),
             },

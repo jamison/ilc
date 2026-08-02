@@ -25,6 +25,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     load_from_atlas,
     verify_bls_signature,
 )
+from ilc_core.analysis.spectral_utils import spectral_hash_fixed_point_int64_le
 
 
 ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION = (
@@ -196,6 +197,7 @@ class EpochRecordQuote:
     epoch: int
     found: bool
     state_root: bytes
+    spectral_hash: bytes
     agg_sig: bytes
 
     def to_dict(self) -> dict[str, Any]:
@@ -203,6 +205,7 @@ class EpochRecordQuote:
             "agg_sig_hex": self.agg_sig.hex(),
             "epoch": self.epoch,
             "found": self.found,
+            "spectral_hash_hex": self.spectral_hash.hex(),
             "state_root_hex": self.state_root.hex(),
         }
 
@@ -252,6 +255,7 @@ class EpochSettlementProposalSubmission:
     submitter_agent_id: bytes
     epoch_number: int
     state_root_cidv1: bytes
+    spectral_hash: bytes
     epoch_data_hash: bytes
     settlement_record_bytes: bytes
     idempotency_key: str
@@ -272,6 +276,7 @@ class EpochSettlementProposalSubmission:
             "settlement_record_bytes_sha256": hashlib.sha256(
                 self.settlement_record_bytes
             ).hexdigest(),
+            "spectral_hash_hex": self.spectral_hash.hex(),
             "state_root_cidv1_hex": self.state_root_cidv1.hex(),
             "submitter_agent_id_hex": self.submitter_agent_id.hex(),
         }
@@ -424,12 +429,18 @@ def _sha256_bytes(value: bytes) -> bytes:
     return hashlib.sha256(value).digest()
 
 
+def spectral_hash_bytes_from_eigenvalues(eigenvalues: list[float] | tuple[float, ...]) -> bytes:
+    """Return CDL-104 S(t) bytes from normalized Laplacian eigenvalues."""
+    return bytes.fromhex(spectral_hash_fixed_point_int64_le(eigenvalues, k=20))
+
+
 def _build_epoch_proposal_preimage(
     *,
     network_id: str,
     epoch_number: int,
     submitter_agent_id: bytes,
     state_root_cidv1: bytes,
+    spectral_hash: bytes,
     epoch_data_hash: bytes,
     settlement_record_bytes: bytes,
     not_before_unix_ms: int,
@@ -441,6 +452,7 @@ def _build_epoch_proposal_preimage(
             epoch_number.to_bytes(8, "big"),
             submitter_agent_id,
             state_root_cidv1,
+            spectral_hash,
             epoch_data_hash,
             _sha256_bytes(settlement_record_bytes),
             not_before_unix_ms.to_bytes(8, "big"),
@@ -454,6 +466,7 @@ def _epoch_proposal_idempotency_key(
     epoch_number: int,
     submitter_agent_id: bytes,
     state_root_cidv1: bytes,
+    spectral_hash: bytes,
     epoch_data_hash: bytes,
     settlement_record_bytes: bytes,
     not_before_unix_ms: int,
@@ -464,6 +477,7 @@ def _epoch_proposal_idempotency_key(
             epoch_number=epoch_number,
             submitter_agent_id=submitter_agent_id,
             state_root_cidv1=state_root_cidv1,
+            spectral_hash=spectral_hash,
             epoch_data_hash=epoch_data_hash,
             settlement_record_bytes=settlement_record_bytes,
             not_before_unix_ms=not_before_unix_ms,
@@ -479,6 +493,7 @@ def _expected_epoch_proposal_idempotency_key(
         epoch_number=submission.epoch_number,
         submitter_agent_id=submission.submitter_agent_id,
         state_root_cidv1=submission.state_root_cidv1,
+        spectral_hash=submission.spectral_hash,
         epoch_data_hash=submission.epoch_data_hash,
         settlement_record_bytes=submission.settlement_record_bytes,
         not_before_unix_ms=submission.not_before_unix_ms,
@@ -497,6 +512,11 @@ def _validate_epoch_settlement_proposal_submission(
         submission.state_root_cidv1,
         CIDV1_ROOT_LENGTH_BYTES,
         "submit_epoch_proposal_state_root_invalid_phase_1587",
+    )
+    _require_exact_bytes(
+        submission.spectral_hash,
+        SHA256_LENGTH_BYTES,
+        "submit_epoch_proposal_spectral_hash_invalid_phase_1582",
     )
     _require_exact_bytes(
         submission.epoch_data_hash,
@@ -600,6 +620,7 @@ def _build_message_types() -> _MessageTypes:
             ("state_root", 2, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
             ("agg_sig", 3, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
             ("found", 4, descriptor_pb2.FieldDescriptorProto.TYPE_BOOL),
+            ("spectral_hash", 5, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
         ),
     )
     chain_request = _add_message(file_proto, "GetEpochChainRequest", ())
@@ -652,6 +673,7 @@ def _build_message_types() -> _MessageTypes:
             ("idempotency_key", 6, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
             ("not_before_unix_ms", 7, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
             ("network_id", 8, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("spectral_hash", 9, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
         ),
     )
     _add_message(
@@ -988,6 +1010,13 @@ def _normalize_epoch_record_response(response: Any, token: str) -> EpochRecordQu
         epoch=_require_uint64_int(getattr(response, "epoch", None), token),
         found=_require_bool(getattr(response, "found", None), token),
         state_root=_require_bytes(getattr(response, "state_root", None), token),
+        spectral_hash=_require_exact_bytes(
+            getattr(response, "spectral_hash", None),
+            SHA256_LENGTH_BYTES,
+            token,
+        )
+        if getattr(response, "found", None) is True
+        else _require_bytes(getattr(response, "spectral_hash", None), token),
         agg_sig=_require_bytes(getattr(response, "agg_sig", None), token),
     )
 
@@ -1083,6 +1112,7 @@ def build_epoch_settlement_proposal_submission(
     submitter_agent_id: bytes | bytearray | memoryview,
     epoch_number: int,
     state_root_cidv1: bytes | bytearray | memoryview,
+    spectral_hash: bytes | bytearray | memoryview,
     settlement_record_bytes: bytes | bytearray | memoryview,
     not_before_unix_ms: int,
     network_id: str,
@@ -1097,6 +1127,11 @@ def build_epoch_settlement_proposal_submission(
         state_root_cidv1,
         CIDV1_ROOT_LENGTH_BYTES,
         "submit_epoch_proposal_state_root_invalid_phase_1587",
+    )
+    normalized_spectral_hash = _require_exact_bytes(
+        spectral_hash,
+        SHA256_LENGTH_BYTES,
+        "submit_epoch_proposal_spectral_hash_invalid_phase_1582",
     )
     normalized_record = _require_bytes(
         settlement_record_bytes,
@@ -1118,6 +1153,7 @@ def build_epoch_settlement_proposal_submission(
         epoch_number=normalized_epoch,
         submitter_agent_id=normalized_submitter,
         state_root_cidv1=normalized_root,
+        spectral_hash=normalized_spectral_hash,
         epoch_data_hash=epoch_data_hash,
         settlement_record_bytes=normalized_record,
         not_before_unix_ms=normalized_not_before,
@@ -1136,6 +1172,7 @@ def build_epoch_settlement_proposal_submission(
         submitter_agent_id=normalized_submitter,
         epoch_number=normalized_epoch,
         state_root_cidv1=normalized_root,
+        spectral_hash=normalized_spectral_hash,
         epoch_data_hash=epoch_data_hash,
         settlement_record_bytes=normalized_record,
         idempotency_key=normalized_key,
@@ -1169,6 +1206,7 @@ def submit_ecu_transfer_via_quic(
         submitter_agent_id=submission_path.submitter_agent_id,
         epoch_number=submission_path.epoch_number,
         state_root_cidv1=submission_path.state_root_cidv1,
+        spectral_hash=submission_path.spectral_hash,
         epoch_data_hash=submission_path.epoch_data_hash,
         settlement_record_bytes=submission_path.settlement_record_bytes,
         idempotency_key=submission_path.idempotency_key,

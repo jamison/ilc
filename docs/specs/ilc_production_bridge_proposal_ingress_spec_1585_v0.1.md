@@ -63,6 +63,7 @@ message SubmitEpochProposalRequest {
   string idempotency_key = 6;           // lowercase hex SHA-256 over canonical request preimage
   uint64 not_before_unix_ms = 7;        // lower-bound timestamp for epoch validity
   string network_id = 8;                // non-empty network discriminator
+  bytes  spectral_hash = 9;             // CDL-104 S(t), exactly 32 bytes
 }
 ```
 
@@ -85,6 +86,7 @@ Field validation:
 | `submitter_agent_id` | Exactly 48 bytes; maps to an enrolled agent/operator identity before Phase 1586 accepts live requests. |
 | `epoch_number` | Must equal the Rust store sentinel plus 1 after consensus acceptance. |
 | `state_root_cidv1` | Exactly 36 bytes; Rust constructs `CIDv1Root` from these bytes. |
+| `spectral_hash` | Exactly 32 bytes; CDL-104 structural commitment `S(t)`. |
 | `epoch_data_hash` | Exactly 32 bytes; SHA-256 over `settlement_record_bytes`. |
 | `settlement_record_bytes` | Bounded byte array containing canonical Python economic evidence; not a pre-signed checkpoint. |
 | `idempotency_key` | Lowercase 64-hex SHA-256 over the canonical request preimage. |
@@ -95,7 +97,7 @@ Canonical request preimage:
 
 ```text
 ILC_SUBMIT_EPOCH_PROPOSAL_V1 || network_id || epoch_number ||
-submitter_agent_id || state_root_cidv1 || epoch_data_hash ||
+submitter_agent_id || state_root_cidv1 || spectral_hash || epoch_data_hash ||
 sha256(settlement_record_bytes) || not_before_unix_ms
 ```
 
@@ -118,6 +120,7 @@ Signing chain:
 5. Validators construct `EpochSettlementRecord` locally from:
    - `epoch = EpochSeq(epoch_number)`
    - `state_root = CIDv1Root(state_root_cidv1)`
+   - `spectral_hash = request.spectral_hash`
    - `not_before_unix_ms = request.not_before_unix_ms`
 6. Validators BLS-sign the Rust-native serialized `EpochSettlementRecord` only after
    BFT acceptance.

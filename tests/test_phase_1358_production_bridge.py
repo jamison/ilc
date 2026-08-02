@@ -41,6 +41,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
 GRAPH_BINDING_AGENT_ID = "a" * 96
 GRAPH_BINDING_BLS_KEY = "b" * 96
 GRAPH_BINDING_CERT_DER = b"phase-1358-test-validator-cert"
+SPECTRAL_HASH = bytes(range(32))
 GRAPH_BINDING_ASSERTION = {
     "asserted_at_epoch": 0,
     "bls_public_key_hex": GRAPH_BINDING_BLS_KEY,
@@ -77,6 +78,7 @@ class FakeReadStub:
                 epoch=3,
                 found=True,
                 state_root=b"r" * 36,
+                spectral_hash=SPECTRAL_HASH,
                 agg_sig=b"s" * 96,
             )
         )
@@ -88,12 +90,14 @@ class FakeReadStub:
                         epoch=1,
                         found=True,
                         state_root=b"a" * 36,
+                        spectral_hash=bytes([1]) * 32,
                         agg_sig=b"b" * 96,
                     ),
                     SimpleNamespace(
                         epoch=2,
                         found=True,
                         state_root=b"c" * 36,
+                        spectral_hash=bytes([2]) * 32,
                         agg_sig=b"d" * 96,
                     ),
                 ],
@@ -200,6 +204,7 @@ def test_epoch_record_and_epoch_chain_are_bounded_and_timeout_explicit() -> None
     assert record.epoch == 3
     assert record.found is True
     assert record.state_root == b"r" * 36
+    assert record.spectral_hash == SPECTRAL_HASH
     assert record.agg_sig == b"s" * 96
 
     chain = adapter.get_epoch_chain(1, 2)
@@ -252,6 +257,7 @@ def test_phase_1587_epoch_proposal_submission_calls_grpc_write_endpoint() -> Non
         submitter_agent_id=submitter,
         epoch_number=1,
         state_root_cidv1=state_root,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=settlement_record,
         not_before_unix_ms=123456789,
         network_id="ilc-mainnet-rc01",
@@ -278,6 +284,7 @@ def test_phase_1587_epoch_proposal_submission_calls_grpc_write_endpoint() -> Non
     assert request.submitter_agent_id == submitter
     assert request.epoch_number == 1
     assert request.state_root_cidv1 == state_root
+    assert request.spectral_hash == SPECTRAL_HASH
     assert request.epoch_data_hash == hashlib.sha256(settlement_record).digest()
     assert request.settlement_record_bytes == settlement_record
     assert request.idempotency_key == submission.idempotency_key
@@ -321,6 +328,7 @@ def test_phase_1587_submission_rejects_bad_config_and_payloads() -> None:
             submitter_agent_id=bytes([1]) * 48,
             epoch_number=1,
             state_root_cidv1=b"short",
+            spectral_hash=SPECTRAL_HASH,
             settlement_record_bytes=b"{}",
             not_before_unix_ms=1,
             network_id="ilc-mainnet-rc01",
@@ -332,6 +340,7 @@ def test_phase_1587_submission_handles_rust_error_responses() -> None:
         submitter_agent_id=bytes([1]) * 48,
         epoch_number=2,
         state_root_cidv1=bytes([2]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b'{"epoch":2}',
         not_before_unix_ms=2,
         network_id="ilc-mainnet-rc01",
@@ -381,6 +390,7 @@ def test_phase_1587_submission_retries_transport_with_same_idempotency_key() -> 
         submitter_agent_id=bytes([3]) * 48,
         epoch_number=3,
         state_root_cidv1=bytes([3]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b'{"epoch":3}',
         not_before_unix_ms=3,
         network_id="ilc-mainnet-rc01",
@@ -409,6 +419,7 @@ def test_phase_1587_submission_revalidates_direct_dataclass_before_network() -> 
         submitter_agent_id=bytes([4]) * 48,
         epoch_number=4,
         state_root_cidv1=bytes([4]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b'{"epoch":4}',
         not_before_unix_ms=4,
         network_id="ilc-mainnet-rc01",
@@ -417,6 +428,7 @@ def test_phase_1587_submission_revalidates_direct_dataclass_before_network() -> 
         submitter_agent_id=valid.submitter_agent_id,
         epoch_number=valid.epoch_number,
         state_root_cidv1=valid.state_root_cidv1,
+        spectral_hash=valid.spectral_hash,
         epoch_data_hash=bytes([9]) * 32,
         settlement_record_bytes=valid.settlement_record_bytes,
         idempotency_key=valid.idempotency_key,
@@ -444,6 +456,7 @@ def test_phase_1587_submission_rejects_oversized_body_before_network() -> None:
         submitter_agent_id=bytes([5]) * 48,
         epoch_number=5,
         state_root_cidv1=bytes([5]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b"x" * (MAX_PROPOSAL_BODY_BYTES + 1),
         not_before_unix_ms=5,
         network_id="ilc-mainnet-rc01",
@@ -464,6 +477,7 @@ def test_phase_1587_submission_rejects_response_proposal_id_mismatch() -> None:
         submitter_agent_id=bytes([6]) * 48,
         epoch_number=6,
         state_root_cidv1=bytes([6]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b'{"epoch":6}',
         not_before_unix_ms=6,
         network_id="ilc-mainnet-rc01",
@@ -494,6 +508,7 @@ def test_phase_1587_submission_golden_vector_hash_and_idempotency() -> None:
         submitter_agent_id=bytes([3]) * 48,
         epoch_number=1,
         state_root_cidv1=bytes([7]) * 36,
+        spectral_hash=SPECTRAL_HASH,
         settlement_record_bytes=b'{"epoch":1,"root":"canonical"}',
         not_before_unix_ms=123456789,
         network_id="ilc-mainnet-rc01",
@@ -505,7 +520,7 @@ def test_phase_1587_submission_golden_vector_hash_and_idempotency() -> None:
     )
     assert (
         submission.idempotency_key
-        == "5f3a074b70b96f257ab73f2facefb503fc32fc7b79e9b89b869c0aaa9dfe6e3a"
+        == "22133479c10086745f1dc90e159906696541a4720a8c604c6b472f8a71f95be7"
     )
 
 

@@ -58,12 +58,16 @@ def test_legacy_float_hash_is_not_candidate_epoch_commitment_recipe() -> None:
     assert "not acceptable for the epoch commitment" in text
 
 
-def test_rust_epoch_settlement_record_still_has_no_spectral_field_in_01a() -> None:
+def test_rust_epoch_settlement_record_boundary_tracks_ratified_successor() -> None:
     body = _rust_epoch_settlement_record_block()
+    status = STATUS.read_text(encoding="utf-8")
     assert "proposal_commitment_sha256" in body
     assert "not_before_unix_ms" in body
-    assert "spectral_hash" not in body
-    assert "spectral" not in body.lower()
+    if "cdl_104_ratified_phase_1582" in status:
+        assert "pub spectral_hash: [u8; 32]," in body
+    else:
+        assert "spectral_hash" not in body
+        assert "spectral" not in body.lower()
 
 
 def test_cdl_register_and_status_record_opening_tokens() -> None:

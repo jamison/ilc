@@ -500,6 +500,7 @@ mod tests {
             let record = EpochSettlementRecord {
                 epoch: EpochSeq(epoch),
                 state_root: CIDv1Root::new([epoch as u8; 36]),
+                spectral_hash: [0u8; 32],
                 proposal_commitment_sha256: [epoch as u8; 32],
                 not_before_unix_ms: 1_000_000u64.saturating_add(
                     epoch
