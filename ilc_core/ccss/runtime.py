@@ -16,6 +16,7 @@ import socket
 import socketserver
 import struct
 import tempfile
+import threading
 import time
 import unicodedata
 import importlib
@@ -55,6 +56,7 @@ _HKDF_INFO_OUTER = b"ccss-003-outer-v1"
 _MAX_HTTP_RESPONSE_BYTES = 64 * 1024
 _MAX_DIRECT_RECEIPT_BYTES = 8192
 _INBOX_CAP = 1024
+_INBOX_WRITE_LOCK = threading.Lock()
 _PRIVATE_FILE_MODE = 0o600
 _DIR_MODE = 0o700
 _LEGACY_X25519_PUBLIC_KEY_BYTES = 32
@@ -995,12 +997,13 @@ def _tor_send(envelope: bytes, onion: str) -> dict[str, Any]:
         raise CCSSRuntimeError("tor_endpoint_too_long")
     with socket.create_connection(("127.0.0.1", 9050), timeout=30) as sock:
         sock.sendall(b"\x05\x01\x00")
-        if sock.recv(2) != b"\x05\x00":
+        if _recv_exact(sock, 2) != b"\x05\x00":
             raise CCSSRuntimeError("socks5_auth_failed")
         sock.sendall(b"\x05\x01\x00\x03" + bytes([len(host_b)]) + host_b + b"\x00\x50")
-        resp = sock.recv(10)
-        if len(resp) < 2 or resp[1] != 0:
+        resp = _recv_exact(sock, 4)
+        if resp[1] != 0:
             raise CCSSRuntimeError("socks5_connect_failed")
+        _consume_socks5_reply_address(sock, resp[3])
         req = (
             f"POST /submit HTTP/1.0\r\nHost: {onion}\r\n"
             f"Content-Type: application/octet-stream\r\n"
@@ -1018,7 +1021,36 @@ def _tor_send(envelope: bytes, onion: str) -> dict[str, Any]:
     _, _, body = raw.partition(b"\r\n\r\n")
     if not body:
         raise CCSSRuntimeError("tor_http_response_invalid")
-    return json.loads(body)
+    try:
+        return json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise CCSSRuntimeError("tor_receipt_json_invalid") from exc
+
+
+def _recv_exact(sock: socket.socket, size: int) -> bytes:
+    chunks: list[bytes] = []
+    remaining = size
+    while remaining > 0:
+        chunk = sock.recv(remaining)
+        if not chunk:
+            raise CCSSRuntimeError("socks5_response_truncated")
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(chunks)
+
+
+def _consume_socks5_reply_address(sock: socket.socket, atyp: int) -> None:
+    if atyp == 0x01:
+        _recv_exact(sock, 4 + 2)
+        return
+    if atyp == 0x03:
+        length = _recv_exact(sock, 1)[0]
+        _recv_exact(sock, length + 2)
+        return
+    if atyp == 0x04:
+        _recv_exact(sock, 16 + 2)
+        return
+    raise CCSSRuntimeError("socks5_connect_failed")
 
 
 def _select_contact(contact_id: str, *, home: str | Path | None = None) -> dict[str, Any]:
@@ -1157,25 +1189,30 @@ class _PeerHandler(socketserver.BaseRequestHandler):
         if len(envelope) != _OUTER_ENVELOPE:
             self._reply({"error": "invalid_envelope_size", "status": "error"})
             return
-        _ensure_private_dir(self.inbox)
-        if len([item for item in self.inbox.iterdir() if item.suffix == ".envelope"]) >= _INBOX_CAP:
-            self._reply({"error": "inbox_full", "status": "error"})
-            return
         receipt = hashlib.sha256(envelope).hexdigest()
         out = self.inbox / f"{receipt}.envelope"
-        if not out.exists():
-            fd, tmp = tempfile.mkstemp(dir=self.inbox)
-            try:
-                with os.fdopen(fd, "wb") as fh:
-                    fh.write(envelope)
-                os.replace(tmp, out)
-            except Exception:
-                try:
-                    os.unlink(tmp)
-                except OSError:
-                    pass
-                self._reply({"error": "write_error", "status": "error"})
+        _ensure_private_dir(self.inbox)
+        with _INBOX_WRITE_LOCK:
+            if (
+                not out.exists()
+                and len([item for item in self.inbox.iterdir() if item.suffix == ".envelope"])
+                >= _INBOX_CAP
+            ):
+                self._reply({"error": "inbox_full", "status": "error"})
                 return
+            if not out.exists():
+                fd, tmp = tempfile.mkstemp(dir=self.inbox)
+                try:
+                    with os.fdopen(fd, "wb") as fh:
+                        fh.write(envelope)
+                    os.replace(tmp, out)
+                except Exception:
+                    try:
+                        os.unlink(tmp)
+                    except OSError:
+                        pass
+                    self._reply({"error": "write_error", "status": "error"})
+                    return
         self._reply({"receipt_token": receipt, "status": "accepted"})
 
     def _reply(self, payload: dict[str, Any]) -> None:

@@ -55,6 +55,7 @@ TRANSPORT_KIND_QUIC = "quic"
 TRANSPORT_KIND_HTTP = "http"
 MAX_INBOUND_PAYLOAD_BYTES = 1_048_576
 MAX_INBOUND_READ_CHUNK_BYTES = 64 * 1024
+MAX_SIGNED_CONTEXT_ID_HEADER_BYTES = 256
 PAYLOAD_TOO_LARGE_TOKEN = "gossip_payload_too_large"
 PAYLOAD_READ_TIMEOUT_TOKEN = "gossip_payload_read_timeout"
 PAYLOAD_INCOMPLETE_TOKEN = "gossip_payload_incomplete"
@@ -202,9 +203,15 @@ def _build_gossip_signed_context(headers: dict[str, str], payload: bytes) -> byt
         "epoch": int(str(headers["ILC-Epoch"]).strip()),
         "gossip_type": str(headers["ILC-Gossip-Type"]).strip(),
         "hop_count": int(str(headers["ILC-Hop-Count"]).strip()),
-        "key_id": str(headers["ILC-Key-Id"]).strip(),
+        "key_id": _bounded_signed_context_id_header(
+            headers["ILC-Key-Id"],
+            "gossip_key_id_too_long",
+        ),
         "payload_sha256": hashlib.sha256(payload).hexdigest(),
-        "peer_id": str(headers["ILC-Sender-Peer-Id"]).strip(),
+        "peer_id": _bounded_signed_context_id_header(
+            headers["ILC-Sender-Peer-Id"],
+            "gossip_sender_peer_id_too_long",
+        ),
         "signature_alg": GOSSIP_SIGNATURE_ALG_MLDSA65,
     }
     if frozenset(context) != GOSSIP_SIGNED_CONTEXT_KEYS:
@@ -217,6 +224,13 @@ def _build_gossip_signed_context(headers: dict[str, str], payload: bytes) -> byt
         separators=(",", ":"),
         allow_nan=False,
     ).encode("utf-8")
+
+
+def _bounded_signed_context_id_header(value: object, token: str) -> str:
+    text = str(value).strip()
+    if len(text.encode("utf-8")) > MAX_SIGNED_CONTEXT_ID_HEADER_BYTES:
+        raise ValueError(token)
+    return text
 
 
 def _extract_claimed_actor(payload: bytes) -> str | None:
@@ -649,7 +663,12 @@ class HttpGossipTransportRuntime:
                     self.state["last_status_code"] = gossip_transport.HTTP_STATUS_EPOCH_CONFLICT
                     return gossip_transport.HTTP_STATUS_EPOCH_CONFLICT
 
-                signed_context = _build_gossip_signed_context(normalized_headers, payload)
+                try:
+                    signed_context = _build_gossip_signed_context(normalized_headers, payload)
+                except ValueError as exc:
+                    self._record("incoming_envelope_rejected", token=str(exc))
+                    self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                    return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
                 if not verify_mldsa65_signature(signed_context, sig_hex, peer_pubkey):
                     self._record(
                         "incoming_envelope_rejected",

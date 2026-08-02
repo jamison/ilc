@@ -229,6 +229,26 @@ def test_content_hash_scoped_revision_edge_does_not_supersede_new_assertion() ->
     )
 
 
+def test_iter_node_scan_selects_unsuperseded_current_head_for_same_epoch_revision() -> None:
+    old_assertion = _assertion(tls_cert_sha256_fingerprint="1" * 64)
+    new_assertion = _assertion(tls_cert_sha256_fingerprint="2" * 64)
+    revision_edge = {
+        "edge_type": "REVISED_BY",
+        "source_assertion_sha256": assertion_content_sha256(old_assertion),
+        "source_candidate_id": validator_assertion_candidate_id(AGENT),
+        "target_assertion_sha256": assertion_content_sha256(new_assertion),
+        "target_candidate_id": validator_assertion_candidate_id(AGENT),
+    }
+
+    class IterNodeEdgeAtlas(IterNodeAtlas):
+        def iter_edges(self) -> list[dict[str, object]]:
+            return [revision_edge]
+
+    for nodes in ([old_assertion.to_dict(), new_assertion.to_dict()], [new_assertion.to_dict(), old_assertion.to_dict()]):
+        selected = load_from_atlas(IterNodeEdgeAtlas(nodes), AGENT)
+        assert assertion_content_sha256(selected) == assertion_content_sha256(new_assertion)
+
+
 def test_verify_expired_assertion_fails() -> None:
     with pytest.raises(ValueError, match="validator_cert_assertion_expired"):
         verify_validator_cert_against_graph(

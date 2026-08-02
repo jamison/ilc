@@ -226,7 +226,7 @@ def load_from_atlas(atlas_reader: Any, validator_agent_id: str) -> ValidatorEndp
             ):
                 matches.append(ValidatorEndpointAssertion.from_dict(node))
         if matches:
-            return sorted(matches, key=lambda assertion: assertion.asserted_at_epoch)[-1]
+            return _select_current_assertion(atlas_reader, matches)
 
     raise ValueError("validator_cert_assertion_not_found")
 
@@ -299,12 +299,16 @@ def validator_assertion_candidate_id(validator_agent_id: str) -> str:
     return f"{VALIDATOR_ENDPOINT_ASSERTION_CANDIDATE_PREFIX}{normalized}"
 
 
-def assertion_to_atlas_node(assertion: ValidatorEndpointAssertion) -> dict[str, Any]:
+def assertion_to_atlas_node(
+    assertion: ValidatorEndpointAssertion,
+    *,
+    source_phase: str = "1577b",
+) -> dict[str, Any]:
     payload = assertion.to_dict()
     payload["candidate_id"] = validator_assertion_candidate_id(assertion.validator_agent_id)
     payload["content_sha256"] = assertion_content_sha256(assertion)
     payload["tier"] = "support"
-    payload["source_phase"] = "1577b"
+    payload["source_phase"] = _require_source_phase(source_phase)
     return payload
 
 
@@ -399,9 +403,34 @@ def _edge_supersedes_assertion(
     return False
 
 
+def _select_current_assertion(
+    atlas_reader: Any,
+    matches: list[ValidatorEndpointAssertion],
+) -> ValidatorEndpointAssertion:
+    current = [
+        assertion
+        for assertion in matches
+        if not assertion_is_superseded(atlas_reader, assertion)
+    ]
+    candidates = current if current else matches
+    return sorted(
+        candidates,
+        key=lambda assertion: (
+            assertion.asserted_at_epoch,
+            assertion_content_sha256(assertion),
+        ),
+    )[-1]
+
+
 def _require_network_id(value: Any) -> str:
     if not isinstance(value, str) or not value or any(char.isspace() for char in value):
         raise ValueError("validator_assertion_network_id_invalid_phase_1577b")
+    return value
+
+
+def _require_source_phase(value: Any) -> str:
+    if not isinstance(value, str) or not value or any(char.isspace() for char in value):
+        raise ValueError("validator_assertion_source_phase_invalid_phase_1577f_fix1")
     return value
 
 
