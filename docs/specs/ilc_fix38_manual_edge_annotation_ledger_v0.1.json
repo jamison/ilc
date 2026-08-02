@@ -69080,12 +69080,11 @@
       "annotation_batch": "manual_batch_234_phase_gap_werner_02a_stub",
       "chronology_note": "2026-08-01 phase GAP-WERNER-02a: research-complete stub for Werner CDL deliberation phase \u2014 records all scoping findings pending CDL-093 amendment decision, runtime_policy_cap ratification, and attribution path scope deliberation.",
       "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02a Werner CDL deliberation; documents open governance questions blocking Werner guard clearance without executing any CDL mutation or runtime change.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate_role_specific_authority_trace"
+          "review_status": "candidate_role_specific_authority_trace",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -69098,18 +69097,18 @@
         "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md"
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02a_g10_werner_cdl_deliberation.md"
     },
     {
       "annotation_batch": "manual_batch_235_phase_gap_werner_02b_stub",
       "chronology_note": "2026-08-01 phase GAP-WERNER-02b: research-complete stub for Werner guard clearance and implementation phase \u2014 documents wiring plan and integration point (attribution_batch_bridge.py) pending GAP-WERNER-02a CDL outputs.",
       "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02b Werner guard clearance; documents implementation plan for clearing WERNER_CREDIT_WIRING_NOT_ACTIVATED and wiring werner_runtime.py as a dimensionless reweighting factor, pending GAP-WERNER-02a completion.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate_role_specific_authority_trace"
+          "review_status": "candidate_role_specific_authority_trace",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -69122,18 +69121,18 @@
         "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md"
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_02b_g10_werner_guard_clearance.md"
     },
     {
       "annotation_batch": "manual_batch_236_phase_1577f_validator_cert_renewal_stub",
       "chronology_note": "2026-08-02 phase 1577f: research-complete prompt for GAP-VALIDATOR-CERT-01 M009 testbed certificate renewal \u2014 regenerate expired CA and leaf certs, re-sign BLS assertions, deploy to VPS, TLS probe, commit new manifest; unblocks guard clearance phase 1577g.",
       "manual_read_summary": "Phase prompt for Phase 1577f GAP-VALIDATOR-CERT-01: operationally renews the M009 testbed TLS certs and BLS-signed ValidatorEndpointAssertion objects that expired 2026-05-01/05-20 per the Phase 1577b-Fix1 cert blocker record; does not clear the VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED guard.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
-          "review_status": "candidate_role_specific_authority_trace"
+          "review_status": "candidate_role_specific_authority_trace",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -69146,7 +69145,8 @@
         "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
     }
   ],
   "boundary": {
@@ -75907,6 +75907,325 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_validator_ident_01_validator_operational_surface_cdl_opening_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_validator_ident_01_validator_operational_surface_cdl_opening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_205_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Prompt hardened to validator schema and corrected safe revision/deployment semantics for Phase 1577f.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:phase_1577f_prompt_hardened",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
+    },
+    {
+      "annotation_batch": "manual_batch_206_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Validator endpoint assertion runtime hardened with content-hash-scoped supersession edges.",
+      "node_kind": "runtime_source_file_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed:ilc_core/consensus/validator_endpoint_assertion.py -> cdl:CDL-105",
+      "repo_path": "ilc_core/consensus/validator_endpoint_assertion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_207_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Assertion generator extended for Phase 1577f manifests, content-hash revision edges, and phase-specific metadata.",
+      "node_kind": "tooling_source_file_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tools/testbed/generate_validator_endpoint_assertions.py -> phase_1577f",
+      "repo_path": "tools/testbed/generate_validator_endpoint_assertions.py"
+    },
+    {
+      "annotation_batch": "manual_batch_208_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Dedicated M009 validator-numbered TLS renewal tool for CA and leaf PEM/DER files.",
+      "node_kind": "tooling_source_file_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tools/testbed/renew_m009_validator_tls.py -> phase_1577f",
+      "repo_path": "tools/testbed/renew_m009_validator_tls.py"
+    },
+    {
+      "annotation_batch": "manual_batch_209_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Fresh Phase 1577f ValidatorEndpointAssertion manifest with renewed cert fingerprints and content-hash revision lineage.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_validator_endpoint_assertions_manifest_1577f_v0.1.json -> cdl:CDL-105",
+      "repo_path": "docs/specs/ilc_validator_endpoint_assertions_manifest_1577f_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_210_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Focused tests for 1577f manifest loading, cert expiry, revision edges, guard status, and renewal script presence.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_tests_added:tests/test_phase_1577f_m009_cert_renewal.py -> docs/specs/ilc_validator_endpoint_assertions_manifest_1577f_v0.1.json",
+      "repo_path": "tests/test_phase_1577f_m009_cert_renewal.py"
+    },
+    {
+      "annotation_batch": "manual_batch_211_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Regression test added for content-hash-scoped revision edge not superseding refreshed assertion content.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_tests_changed:tests/test_validator_endpoint_assertion_1577b.py -> ilc_core/consensus/validator_endpoint_assertion.py",
+      "repo_path": "tests/test_validator_endpoint_assertion_1577b.py"
+    },
+    {
+      "annotation_batch": "manual_batch_212_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Phase 1577f walkthrough recording cert generation, manifest, staging, live TLS probe, tests, tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1577f_m009_cert_renewal_walkthrough.md -> phase:validator_cert_renewal_complete_phase_1577f",
+      "repo_path": "docs/phases/phase_1577f_m009_cert_renewal_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_213_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "STATUS updated with Phase 1577f tokens, evidence, guard state, and non-claims.",
+      "node_kind": "status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md -> phase:validator_cert_renewal_complete_phase_1577f",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_214_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Planning index updated to mark Phase 1577f complete and Phase 1577g pending.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md -> planning:pre_rc_sequence",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_phase_1577f_m009_cert_renewal",
+      "chronology_note": "2026-08-02 Phase 1577f GAP-VALIDATOR-CERT-01 M009 certificate renewal",
+      "manual_read_summary": "Comprehensive forward plan updated for Phase 1577f completion and remaining cert guard-clearance phase.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-105"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:validator_cert_renewal_complete_phase_1577f"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md -> planning:pre_rc_sequence",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "nodes": [

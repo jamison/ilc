@@ -231,6 +231,10 @@ def load_from_atlas(atlas_reader: Any, validator_agent_id: str) -> ValidatorEndp
     raise ValueError("validator_cert_assertion_not_found")
 
 
+def assertion_content_sha256(assertion: ValidatorEndpointAssertion) -> str:
+    return hashlib.sha256(canonical_assertion_payload(assertion)).hexdigest()
+
+
 def assertion_is_superseded(atlas_reader: Any, assertion: ValidatorEndpointAssertion) -> bool:
     """Return true when an inline marker or Atlas revision edge supersedes an assertion."""
 
@@ -238,6 +242,7 @@ def assertion_is_superseded(atlas_reader: Any, assertion: ValidatorEndpointAsser
         return True
 
     candidate_id = validator_assertion_candidate_id(assertion.validator_agent_id)
+    content_sha256 = assertion_content_sha256(assertion)
     iter_edges = getattr(atlas_reader, "iter_edges", None)
     if not callable(iter_edges):
         return False
@@ -247,7 +252,11 @@ def assertion_is_superseded(atlas_reader: Any, assertion: ValidatorEndpointAsser
             raise ValueError(
                 "validator_cert_assertion_edge_scan_limit_exceeded_phase_1577b_fix1"
             )
-        if isinstance(edge, Mapping) and _edge_supersedes_assertion(edge, candidate_id):
+        if isinstance(edge, Mapping) and _edge_supersedes_assertion(
+            edge,
+            candidate_id,
+            content_sha256,
+        ):
             return True
     return False
 
@@ -293,7 +302,7 @@ def validator_assertion_candidate_id(validator_agent_id: str) -> str:
 def assertion_to_atlas_node(assertion: ValidatorEndpointAssertion) -> dict[str, Any]:
     payload = assertion.to_dict()
     payload["candidate_id"] = validator_assertion_candidate_id(assertion.validator_agent_id)
-    payload["content_sha256"] = hashlib.sha256(canonical_assertion_payload(assertion)).hexdigest()
+    payload["content_sha256"] = assertion_content_sha256(assertion)
     payload["tier"] = "support"
     payload["source_phase"] = "1577b"
     return payload
@@ -354,7 +363,20 @@ def _parse_iso_utc(value: str, token: str) -> datetime:
         raise ValueError(token) from exc
 
 
-def _edge_supersedes_assertion(edge: Mapping[str, Any], candidate_id: str) -> bool:
+def _edge_supersedes_assertion(
+    edge: Mapping[str, Any],
+    candidate_id: str,
+    content_sha256: str,
+) -> bool:
+    source_assertion_sha256 = edge.get("source_assertion_sha256")
+    target_assertion_sha256 = edge.get("target_assertion_sha256")
+    if source_assertion_sha256 is not None:
+        if source_assertion_sha256 != content_sha256:
+            return False
+    if target_assertion_sha256 is not None:
+        if target_assertion_sha256 == content_sha256:
+            return False
+
     edge_type = str(edge.get("edge_type") or edge.get("type") or "").lower()
     source = (
         edge.get("source_candidate_id")
@@ -392,6 +414,7 @@ __all__ = [
     "VALIDATOR_ENDPOINT_ASSERTION_RUNTIME_VERSION",
     "VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION",
     "ValidatorEndpointAssertion",
+    "assertion_content_sha256",
     "assertion_is_superseded",
     "assertion_to_atlas_node",
     "assertion_valid_at",
