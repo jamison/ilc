@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import sys
+from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
@@ -30,6 +31,29 @@ from ilc_core.consensus import (
     quote_to_canonical_json,
     submit_ecu_transfer_via_quic,
 )
+from ilc_core.consensus.validator_endpoint_assertion import (
+    VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+    VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+    validator_assertion_candidate_id,
+)
+
+
+GRAPH_BINDING_AGENT_ID = "a" * 96
+GRAPH_BINDING_BLS_KEY = "b" * 96
+GRAPH_BINDING_CERT_DER = b"phase-1358-test-validator-cert"
+GRAPH_BINDING_ASSERTION = {
+    "asserted_at_epoch": 0,
+    "bls_public_key_hex": GRAPH_BINDING_BLS_KEY,
+    "bls_signature_hex": "c" * 192,
+    "genesis_witness": True,
+    "grpc_endpoint": "validator.example:443",
+    "node_kind": VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+    "schema_version": VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+    "tls_cert_not_after_utc": "2036-01-01T00:00:00Z",
+    "tls_cert_not_before_utc": "2026-01-01T00:00:00Z",
+    "tls_cert_sha256_fingerprint": hashlib.sha256(GRAPH_BINDING_CERT_DER).hexdigest(),
+    "validator_agent_id": GRAPH_BINDING_AGENT_ID,
+}
 
 
 class RecordingRpc:
@@ -88,8 +112,17 @@ def _adapter(stub: FakeReadStub, *, timeout: int = 7) -> ILCConsensusGrpcReadAda
             target="validator.example:443",
             grpc_timeout_seconds=timeout,
             max_epoch_chain_records=4,
+            graph_binding_validator_agent_id=GRAPH_BINDING_AGENT_ID,
+            graph_binding_expected_bls_public_key_hex=GRAPH_BINDING_BLS_KEY,
+            graph_binding_network_id="ilc-testnet",
         ),
         stub=stub,
+        validator_graph_binding_atlas_reader={
+            validator_assertion_candidate_id(GRAPH_BINDING_AGENT_ID): GRAPH_BINDING_ASSERTION
+        },
+        validator_graph_binding_cert_der_provider=lambda: GRAPH_BINDING_CERT_DER,
+        validator_graph_binding_bls_verifier=lambda *_args: True,
+        validator_graph_binding_now_utc=datetime(2026, 6, 1, tzinfo=timezone.utc),
     )
 
 

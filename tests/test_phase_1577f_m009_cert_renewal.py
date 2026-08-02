@@ -92,8 +92,8 @@ def test_revision_edges_are_content_hash_scoped() -> None:
         assert edge["source_assertion_sha256"] != edge["target_assertion_sha256"]
 
 
-def test_guard_still_active() -> None:
-    assert production_bridge.VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED is True
+def test_guard_clearance_followup_has_run() -> None:
+    assert production_bridge.VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED is False
 
 
 def test_manifest_guard_status() -> None:

@@ -42,7 +42,7 @@ ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN = "adr_0028_production_bridge_partial_p
 PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN = "production_bridge_activated_phase_1587"
 
 PRODUCTION_BRIDGE_ACTIVE = True
-VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED = True
+VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED = False
 DEFAULT_GRPC_TIMEOUT_SECONDS = 5
 MAX_EPOCH_CHAIN_RECORDS = 1024
 MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
@@ -1005,10 +1005,9 @@ def verify_validator_cert_against_graph(
 ) -> bool:
     """Verify TLS certificate identity against the Atlas assertion graph.
 
-    The live Phase 1577b guard remains closed. While
-    ``VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED`` is true, this function is a
-    no-op and preserves the current TLS-only bridge behavior. Tests pass an
-    explicit false guard to exercise the fail-closed CDL-105 branches.
+    The Phase 1577g guard clearance activates CDL-105 graph binding by default.
+    Tests may pass an explicit true guard only when documenting the historical
+    TLS-only compatibility branch.
     """
 
     guard = (
