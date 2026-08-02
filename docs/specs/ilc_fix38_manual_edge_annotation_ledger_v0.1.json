@@ -69467,6 +69467,59 @@
       "manual_edges_best_effort_subject_to_later_agent_review"
     ]
   },
+  "candidate_nodes": [
+    {
+      "annotation_batch": "manual_batch_001_phase_GAP_AGENT_HARNESS_00_agent_harness_ontology",
+      "chronology_note": "2026-08-02 GAP-AGENT-HARNESS-00 \u2014 agent-native harness ontology and boundary spec prompt",
+      "manual_read_summary": "Phase prompt defining agent harness as a first-class ILC concept distinct from wallet/sidecar/CLI, mapping existing modules to harness workflow, proposing AgentActionEnvelope, recording MCP out-of-scope.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_harness_00_g10_agent_native_harness_ontology.md"
+    },
+    {
+      "annotation_batch": "manual_batch_002_phase_GAP_AGENT_HARNESS_01a_signing_provider_boundary",
+      "chronology_note": "2026-08-02 GAP-AGENT-HARNESS-01a \u2014 signing provider boundary spec and Ed25519 audit prompt",
+      "manual_read_summary": "Phase prompt auditing existing Ed25519 COSE Sign1 runtime against ADM-003 provider interface contract, defining --key URI resolution contract, explicitly deferring secp256k1/hardware providers.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_harness_01a_g10_signing_provider_boundary.md"
+    },
+    {
+      "annotation_batch": "manual_batch_003_phase_GAP_VALUE_ACTION_00_intent_taxonomy",
+      "chronology_note": "2026-08-02 GAP-VALUE-ACTION-00 \u2014 agent-native value-action intent taxonomy (non-activating) prompt",
+      "manual_read_summary": "Phase prompt defining transfer/spend/delegation-fee/protocol-fee intent schemas with Decimal fields, nonce semantics, and double-entry conservation; supersedes Phase 1579a; zero runtime activation.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_value_action_00_g10_value_action_intent_taxonomy.md"
+    }
+  ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
   "manual_annotations": [
     {
