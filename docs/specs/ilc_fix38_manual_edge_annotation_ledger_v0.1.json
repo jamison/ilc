@@ -69147,6 +69147,40 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
+    },
+    {
+      "annotation_batch": "manual_batch_237_phase_1577g_gap_validator_cert_02_guard_clearance",
+      "chronology_note": "2026-08-02 Phase 1577g \u2014 GAP-VALIDATOR-CERT-02 guard clearance phase prompt",
+      "manual_read_summary": "SENSITIVE phase prompt for clearing VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED guard in production_bridge.py; activates CDL-105 cert-graph binding enforcement on ILCConsensusGrpcReadAdapter; includes integration test plan using M009 1577f manifest data.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "candidate",
+          "target": "cdl:cdl_105_validator_grpc_endpoint_assertion"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PHASE_PROMPT_FOR",
+          "target": "phase:1577g"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1577f_g10_gap_validator_cert_01_m009_cert_renewal.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNED_BY",
+        "PHASE_PROMPT_FOR",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1577g_g10_gap_validator_cert_02_guard_clearance.md"
     }
   ],
   "boundary": {
