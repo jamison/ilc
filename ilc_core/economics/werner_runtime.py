@@ -18,8 +18,9 @@ Ratified constants (CDL-096 §2):
   flow_budget = min(runtime_policy_cap, candidate_priority)
   output_unit = dimensionless (not ECU, not ILC)
 
-GAP-WERNER-02 is a separate SENSITIVE phase that must receive explicit human GO
-before the guard can be cleared and this module wired into any production path.
+GAP-WERNER-02b cleared the guard only for CDL-109 bounded reweighting of
+CDL-108 backward attribution raw path scores. This module still exposes no
+amount-producing or balance-mutating API.
 """
 
 from __future__ import annotations
@@ -29,9 +30,9 @@ from typing import Mapping, Sequence
 
 # ---------------------------------------------------------------------------
 # Production activation guard
-# MUST remain True; cleared only by GAP-WERNER-02 (SENSITIVE, requires human GO)
+# Cleared by GAP-WERNER-02b for CDL-109 bounded bridge scope only.
 # ---------------------------------------------------------------------------
-WERNER_CREDIT_WIRING_NOT_ACTIVATED = True
+WERNER_CREDIT_WIRING_NOT_ACTIVATED = False
 
 WERNER_RUNTIME_VERSION = "werner_credit_pressure_signal_gap_werner_01.v0.1"
 

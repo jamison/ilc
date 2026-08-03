@@ -12,6 +12,12 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, localcontext
 from typing import Mapping
 
+from ilc_core.economics.werner_attribution_bridge import (
+    WERNER_CONTEXT_ABSENT_TOKEN,
+    WernerAttributionContext,
+    apply_werner_to_raw_score,
+)
+
 
 BACKWARD_ATTRIBUTION_CDL_VERSION = (
     "cdl_108_backward_attribution_ratification_GAP_ECU_03.v0.1"
@@ -104,6 +110,10 @@ class BackwardAttributionPathScore:
     novelty_weight: Decimal
     edge_confidence_weight: Decimal
     path_edge_confidences: tuple[Decimal, ...]
+    werner_flow_budget: Decimal = Decimal("0")
+    werner_multiplier: Decimal = Decimal("1")
+    werner_context_present: bool = False
+    werner_disposition_token: str | None = None
 
 
 @dataclass(frozen=True)
@@ -120,6 +130,9 @@ class BackwardAttributionCreditQuote:
     depth: int
     raw_path_score: Decimal
     pre_cap_credit_ecu: Decimal
+    werner_flow_budget: Decimal = Decimal("0")
+    werner_multiplier: Decimal = Decimal("1")
+    werner_context_present: bool = False
 
 
 @dataclass(frozen=True)
@@ -142,6 +155,9 @@ class BackwardAttributionFinalCredit:
     agent_cap_applied: bool
     cluster_cap_applied: bool
     cluster_id: str
+    werner_flow_budget: Decimal = Decimal("0")
+    werner_multiplier: Decimal = Decimal("1")
+    werner_context_present: bool = False
 
 
 @dataclass(frozen=True)
@@ -472,6 +488,7 @@ class BackwardAttributionTraversal:
         event_epoch: int,
         event_ids: tuple[str, ...] | list[str] | None = None,
         apply_antigaming_caps: bool = False,
+        werner_context_by_agent_id: Mapping[str, WernerAttributionContext] | None = None,
     ) -> BackwardAttributionResult:
         """Traverse upstream graph paths and quote event-local backward credit."""
         source_id = _require_non_empty_string(
@@ -504,7 +521,12 @@ class BackwardAttributionTraversal:
             repeated_count,
             traversed_nodes,
             traversed_edges,
-        ) = self._collect_raw_scores(source_id, all_event_ids[0], normalized_epoch)
+        ) = self._collect_raw_scores(
+            source_id,
+            all_event_ids[0],
+            normalized_epoch,
+            self._normalize_werner_contexts(werner_context_by_agent_id),
+        )
         collapsed_scores = self._collapse_scores(raw_scores)
         positive_scores = tuple(
             score for score in collapsed_scores if score.raw_path_score > ZERO
@@ -530,6 +552,9 @@ class BackwardAttributionTraversal:
                         depth=score.depth,
                         raw_path_score=score.raw_path_score,
                         pre_cap_credit_ecu=pre_cap_credit,
+                        werner_flow_budget=score.werner_flow_budget,
+                        werner_multiplier=score.werner_multiplier,
+                        werner_context_present=score.werner_context_present,
                     )
                 )
             last_score = positive_scores[-1]
@@ -544,6 +569,9 @@ class BackwardAttributionTraversal:
                     depth=last_score.depth,
                     raw_path_score=last_score.raw_path_score,
                     pre_cap_credit_ecu=last_credit,
+                    werner_flow_budget=last_score.werner_flow_budget,
+                    werner_multiplier=last_score.werner_multiplier,
+                    werner_context_present=last_score.werner_context_present,
                 )
             )
         issued = sum((credit.pre_cap_credit_ecu for credit in credits), ZERO)
@@ -660,10 +688,34 @@ class BackwardAttributionTraversal:
                     cluster_cap_applied=apply_caps
                     and credit.pre_cap_credit_ecu > max(cluster_remaining, ZERO),
                     cluster_id=cluster_id,
+                    werner_flow_budget=credit.werner_flow_budget,
+                    werner_multiplier=credit.werner_multiplier,
+                    werner_context_present=credit.werner_context_present,
                 )
             )
 
         return tuple(final_credits), total_final
+
+    @staticmethod
+    def _normalize_werner_contexts(
+        contexts: Mapping[str, WernerAttributionContext] | None,
+    ) -> dict[str, WernerAttributionContext]:
+        if contexts is None:
+            return {}
+        if not isinstance(contexts, Mapping):
+            raise ValueError("werner_context_by_agent_id_must_be_mapping")
+        normalized: dict[str, WernerAttributionContext] = {}
+        for agent_id, context in contexts.items():
+            normalized_agent_id = _require_non_empty_string(
+                agent_id,
+                "werner_context_agent_id_required",
+            )
+            if not isinstance(context, WernerAttributionContext):
+                raise ValueError("werner_context_must_be_prepared_context")
+            if context.agent_id != normalized_agent_id:
+                raise ValueError("werner_context_agent_id_mismatch")
+            normalized[normalized_agent_id] = context
+        return normalized
 
     def _compute_mutual_citation_cluster_ids(self) -> dict[str, str]:
         parent: dict[str, str] = {node_id: node_id for node_id in self._nodes}
@@ -713,6 +765,7 @@ class BackwardAttributionTraversal:
         source_node_id: str,
         event_id: str,
         event_epoch: int,
+        werner_context_by_agent_id: Mapping[str, WernerAttributionContext],
     ) -> tuple[list[BackwardAttributionPathScore], int, int, int, int]:
         scores: list[BackwardAttributionPathScore] = []
         cycle_count = 0
@@ -766,6 +819,12 @@ class BackwardAttributionTraversal:
                     event_epoch,
                     next_confidence,
                 )
+                adjusted_score, werner_multiplier = apply_werner_to_raw_score(
+                    raw_score,
+                    werner_context_by_agent_id.get(upstream_node.recipient_agent_id),
+                    recipient_agent_id=upstream_node.recipient_agent_id,
+                    event_epoch=event_epoch,
+                )
                 if raw_score > ZERO:
                     scores.append(
                         BackwardAttributionPathScore(
@@ -775,7 +834,7 @@ class BackwardAttributionTraversal:
                             depth=next_depth,
                             path_node_ids=next_path_nodes,
                             path_edge_types=next_edge_types,
-                            raw_path_score=raw_score,
+                            raw_path_score=adjusted_score,
                             age_weight=_age_weight(
                                 upstream_node.created_epoch,
                                 event_epoch,
@@ -786,6 +845,14 @@ class BackwardAttributionTraversal:
                             novelty_weight=_novelty_weight(upstream_node),
                             edge_confidence_weight=next_confidence,
                             path_edge_confidences=next_edge_confidences,
+                            werner_flow_budget=werner_multiplier.flow_budget,
+                            werner_multiplier=werner_multiplier.multiplier,
+                            werner_context_present=werner_multiplier.context_present,
+                            werner_disposition_token=(
+                                None
+                                if werner_multiplier.context_present
+                                else WERNER_CONTEXT_ABSENT_TOKEN
+                            ),
                         )
                     )
                 # CDL-108 scores each upstream artifact as a terminal. A node
