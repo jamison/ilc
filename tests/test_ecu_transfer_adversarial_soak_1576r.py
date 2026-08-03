@@ -28,11 +28,32 @@ class _GraphReader:
 
 class _RecordingBridge:
     def __init__(self) -> None:
-        self.payloads: list[dict[str, object]] = []
+        self.bridge_payloads: list[dict[str, object]] = []
+        self.rust_payloads: list[dict[str, object]] = []
 
-    def submit(self, payload: dict[str, object], *, sender_key_material: object) -> str:
-        self.payloads.append(payload)
-        return f"transfer-ref-{len(self.payloads)}"
+    def build_ecu_transfer(
+        self,
+        payload: dict[str, object],
+        *,
+        sender_key_material: object,
+    ) -> dict[str, object]:
+        self.bridge_payloads.append(payload)
+        rust_payload = {
+            "object_ref": {
+                "agent": payload["sender_agent_id"],
+                "version": len(self.bridge_payloads) - 1,
+            },
+            "to": payload["to"],
+            "amount_micro_ecu": payload["amount_micro_ecu"],
+            "transfer_class": payload["transfer_class"],
+            "sender_sig": "b" * 192,
+        }
+        self.rust_payloads.append(rust_payload)
+        return rust_payload
+
+    def submit(self, payload: dict[str, object]) -> str:
+        assert payload == self.rust_payloads[-1]
+        return f"transfer-ref-{len(self.rust_payloads)}"
 
 
 def _intent(**overrides: object) -> ECUFastPathIntent:
@@ -56,7 +77,9 @@ def _raises_value_token(intent: ECUFastPathIntent, token: str) -> None:
 
 
 def test_double_submit_same_nonce_gap_documented() -> None:
-    intent = _intent()
+    # This documents a Python defense-in-depth gap only. Rust replay safety is
+    # enforced by ObjectRef version locking, not by this Python nonce string.
+    intent = _intent(transfer_class=TransferClass.PAYMENT, graph_context_anchor=None)
     bridge = _RecordingBridge()
     adapter = ECUTransferAdapter(bridge)
 
@@ -68,7 +91,8 @@ def test_double_submit_same_nonce_gap_documented() -> None:
         assert adapter.submit(intent, b"sender-key") == "transfer-ref-2"
 
     assert intent.nonce
-    assert [payload["nonce"] for payload in bridge.payloads] == [intent.nonce, intent.nonce]
+    assert [payload["nonce"] for payload in bridge.bridge_payloads] == [intent.nonce, intent.nonce]
+    assert [payload["object_ref"]["version"] for payload in bridge.rust_payloads] == [0, 1]
 
 
 def test_non_finite_decimal_nan_rejected() -> None:
@@ -95,7 +119,7 @@ def test_contribution_without_anchor_rejected_by_verifier() -> None:
     with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         with pytest.raises(
             ECUContextVerificationError,
-            match="^contribution_class_requires_graph_context_anchor_verifier$",
+            match="^contribution_class_requires_graph_context_anchor$",
         ):
             ECUTransferContextVerifier().verify(intent)
 
@@ -138,7 +162,13 @@ def test_payment_express_consent_preserved() -> None:
     payload = ECUTransferAdapter(_RecordingBridge())._build_transfer_payload(intent)
 
     assert intent.express_consent == "USER_CONSENTS_TO_PUBLIC_PAYMENT_LANE"
-    assert payload["express_consent"] == "USER_CONSENTS_TO_PUBLIC_PAYMENT_LANE"
+    assert payload["transfer_class"] == {
+        "type": "Payment",
+        "express": {
+            "agent_acknowledged_timing_disclosure": True,
+            "consent_epoch": 0,
+        },
+    }
 
 
 def test_activation_guard_blocks_adapter_submit() -> None:
@@ -148,7 +178,7 @@ def test_activation_guard_blocks_adapter_submit() -> None:
     with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
         adapter.submit(_intent(), b"sender-key")
 
-    assert bridge.payloads == []
+    assert bridge.bridge_payloads == []
 
 
 def test_per_transfer_cap_enforced() -> None:

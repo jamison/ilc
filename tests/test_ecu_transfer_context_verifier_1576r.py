@@ -42,9 +42,21 @@ def _raises_token(token: str, verifier: ECUTransferContextVerifier, intent: ECUF
         verifier.verify(intent)
 
 
-def test_happy_path_contribution_with_anchor_stub_mode() -> None:
+def test_contribution_with_anchor_requires_graph_reader() -> None:
     with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
-        ECUTransferContextVerifier().verify(_intent())
+        _raises_token(
+            "graph_reader_required_for_graph_context_anchor",
+            ECUTransferContextVerifier(),
+            _intent(),
+        )
+
+
+def test_happy_path_contribution_with_anchor_and_graph_reader() -> None:
+    verifier = ECUTransferContextVerifier(
+        graph_reader=_GraphReader({"node:artifact:abc123": object()})
+    )
+    with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
+        verifier.verify(_intent())
 
 
 def test_happy_path_payment_no_anchor_stub_mode() -> None:
@@ -62,6 +74,16 @@ def test_happy_path_payment_with_anchor_and_graph_reader() -> None:
         verifier.verify(intent)
 
 
+def test_payment_with_anchor_requires_graph_reader() -> None:
+    intent = _intent(transfer_class=TransferClass.PAYMENT)
+    with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
+        _raises_token(
+            "graph_reader_required_for_graph_context_anchor",
+            ECUTransferContextVerifier(),
+            intent,
+        )
+
+
 def test_payment_with_anchor_and_missing_graph_node_fails_closed() -> None:
     intent = _intent(transfer_class=TransferClass.PAYMENT)
     verifier = ECUTransferContextVerifier(graph_reader=_GraphReader({}))
@@ -72,7 +94,7 @@ def test_payment_with_anchor_and_missing_graph_node_fails_closed() -> None:
 def test_contribution_without_anchor_raises_in_verifier() -> None:
     with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         _raises_token(
-            "contribution_class_requires_graph_context_anchor_verifier",
+            "contribution_class_requires_graph_context_anchor",
             ECUTransferContextVerifier(),
             _intent(graph_context_anchor=None),
         )

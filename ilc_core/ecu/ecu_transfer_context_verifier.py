@@ -50,15 +50,14 @@ class ECUTransferContextVerifier:
         if ECU_FAST_PATH_TRANSFER_ENABLED is False:
             raise ECUContextVerificationError("transfer_not_enabled_activation_guard_blocks_submission")
 
-        if intent.transfer_class is TransferClass.CONTRIBUTION and not _present(intent.graph_context_anchor):
-            raise ECUContextVerificationError("contribution_class_requires_graph_context_anchor_verifier")
-
         try:
             validate_intent(intent)
         except ValueError as exc:
             raise ECUContextVerificationError(str(exc)) from exc
 
-        if self._graph_reader is not None and _present(intent.graph_context_anchor):
+        if _present(intent.graph_context_anchor):
+            if self._graph_reader is None:
+                raise ECUContextVerificationError("graph_reader_required_for_graph_context_anchor")
             get_node = getattr(self._graph_reader, "get_node", None)
             if not callable(get_node):
                 raise ECUContextVerificationError("graph_reader_missing_get_node")
