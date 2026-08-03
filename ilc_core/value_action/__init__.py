@@ -9,6 +9,11 @@ from ilc_core.value_action.ilc_transfer_intent import (
     ILCTransferIntent,
     validate_envelope,
 )
+from ilc_core.value_action.local_signing_provider import (
+    LOCAL_SIGNING_PROVIDER_VERSION,
+    LocalEd25519SigningProvider,
+    UnsupportedKeyProviderError,
+)
 
 __all__ = [
     "ActionType",
@@ -16,5 +21,8 @@ __all__ = [
     "ILCTransferIntent",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
+    "LOCAL_SIGNING_PROVIDER_VERSION",
+    "LocalEd25519SigningProvider",
+    "UnsupportedKeyProviderError",
     "validate_envelope",
 ]
