@@ -78640,6 +78640,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1598_g10_gap_werner_05_werner_production_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_259_phase_GAP_VALUE_ACTION_LIVE_RC_07_adversarial_soak_execution",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-07 \u2014 adversarial soak test file covering settled-ILC transfer replay, double-spend, non-finite Decimal, float injection, conservation, signature, and signer-authority cases.",
+      "manual_read_summary": "Adversarial pytest suite for live-RC ILC settled-transfer lane; includes required 15 vectors plus audit-added unsigned, unbound signer, tampered signed envelope, and custody-boundary checks.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ilc_transfer_adversarial_soak_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_259_phase_GAP_VALUE_ACTION_LIVE_RC_07_adversarial_soak_execution",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-07 \u2014 phase walkthrough records adversarial soak verification and audit-driven ledger signature/signer-authority hardening.",
+      "manual_read_summary": "Walkthrough for RC-07 execution, including test output, focused regression, taboo check, graph coverage, and non-activation disposition.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_07_adversarial_soak_walkthrough.md"
     }
   ],
   "nodes": [

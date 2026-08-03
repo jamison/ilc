@@ -6,7 +6,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any
+from typing import Any, Protocol
 
 from ilc_core.ledger.exact_numeric import (
     decimal_to_canonical_string,
@@ -24,6 +24,32 @@ _TRANSFERS_DB = b"ilc_transfer_records"
 
 class InsufficientBalanceError(ValueError):
     """Raised when sender balance cannot fund a settled ILC transfer."""
+
+
+class EnvelopeSignatureVerifier(Protocol):
+    """Minimal verifier interface accepted by the value-moving ledger boundary."""
+
+    def verify_envelope_signature(
+        self,
+        env: AgentActionEnvelope,
+        public_key_bytes: bytes,
+        *,
+        external_aad: bytes = b"",
+    ) -> bool:
+        """Return True only when env's COSE signature verifies for public_key_bytes."""
+
+
+class EnvelopeSignerAuthority(Protocol):
+    """Minimal authority interface for AgentID-to-signing-key authorization."""
+
+    def is_signer_authorized(
+        self,
+        agent_id: str,
+        public_key_bytes: bytes,
+        *,
+        action_scope: str,
+    ) -> bool:
+        """Return True only when public_key_bytes may authorize agent_id actions."""
 
 
 @dataclass(frozen=True)
@@ -61,11 +87,23 @@ class ILCTransferLedger:
         self,
         env: AgentActionEnvelope,
         nonce_store: ActionNonceStore,
+        *,
+        signature_verifier: EnvelopeSignatureVerifier | None = None,
+        signer_authority: EnvelopeSignerAuthority | None = None,
+        sender_public_key_bytes: bytes | None = None,
+        external_aad: bytes = b"",
     ) -> ILCTransferLedgerEntry:
         """Atomically debit sender, credit recipient, consume nonce, and record."""
         if transfer_intent.ILC_TRANSFER_ENABLED is not True:
             raise ValueError("transfer_not_enabled")
         validate_envelope(env)
+        _verify_transfer_signature(
+            env,
+            signature_verifier=signature_verifier,
+            signer_authority=signer_authority,
+            sender_public_key_bytes=sender_public_key_bytes,
+            external_aad=external_aad,
+        )
         if getattr(nonce_store, "_env", None) is not self._env:
             raise ValueError("transfer_nonce_store_env_mismatch")
 
@@ -131,6 +169,46 @@ class ILCTransferLedger:
 
 def _key(value: str) -> bytes:
     return value.encode("ascii")
+
+
+def _verify_transfer_signature(
+    env: AgentActionEnvelope,
+    *,
+    signature_verifier: EnvelopeSignatureVerifier | None,
+    signer_authority: EnvelopeSignerAuthority | None,
+    sender_public_key_bytes: bytes | None,
+    external_aad: bytes,
+) -> None:
+    if signature_verifier is None:
+        raise ValueError("transfer_signature_verifier_required")
+    if signer_authority is None:
+        raise ValueError("transfer_signer_authority_required")
+    if env.cose_signature is None:
+        raise ValueError("transfer_signature_required")
+    if not isinstance(sender_public_key_bytes, bytes) or len(sender_public_key_bytes) != 32:
+        raise ValueError("invalid_sender_public_key_bytes")
+    if not isinstance(external_aad, bytes):
+        raise ValueError("invalid_transfer_external_aad")
+    try:
+        authorized = signer_authority.is_signer_authorized(
+            env.sender_agent_id,
+            sender_public_key_bytes,
+            action_scope="ILC_TRANSFER",
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError("transfer_signer_authority_invalid") from exc
+    if authorized is not True:
+        raise ValueError("transfer_signer_not_authorized")
+    try:
+        verified = signature_verifier.verify_envelope_signature(
+            env,
+            sender_public_key_bytes,
+            external_aad=external_aad,
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError("transfer_signature_invalid") from exc
+    if verified is not True:
+        raise ValueError("transfer_signature_invalid")
 
 
 def _encode_balance(value: Decimal) -> bytes:
@@ -249,6 +327,8 @@ def _verify_record_sha256(record: dict[str, Any]) -> None:
 
 __all__ = [
     "ILC_TRANSFER_LEDGER_VERSION",
+    "EnvelopeSignerAuthority",
+    "EnvelopeSignatureVerifier",
     "ILCTransferLedger",
     "ILCTransferLedgerEntry",
     "InsufficientBalanceError",
