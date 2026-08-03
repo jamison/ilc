@@ -86,7 +86,7 @@ def _rust_payload(**overrides: object) -> dict[str, object]:
         "object_ref": {"agent": "agent_sender", "version": 0},
         "to": "agent_recipient",
         "amount_micro_ecu": 1_500_000,
-        "transfer_class": {"type": "Contribution"},
+        "transfer_class": "Contribution",
         "sender_sig": "b" * 192,
     }
     payload.update(overrides)
@@ -127,7 +127,7 @@ def test_contribution_class_maps_to_correct_wire_tag() -> None:
     payload = ECUTransferAdapter(_Bridge([]))._build_transfer_payload(_intent())
 
     assert payload["transfer_class"] == {"type": "Contribution"}
-    assert "express_consent" not in payload
+    assert payload["express_consent"] is None
 
 
 def test_payment_class_maps_to_correct_wire_tag() -> None:
@@ -146,7 +146,7 @@ def test_payment_class_maps_to_correct_wire_tag() -> None:
             "consent_epoch": 0,
         },
     }
-    assert "express_consent" not in payload
+    assert payload["express_consent"] == "express-consent:test"
 
 
 def test_verifier_failure_prevents_bridge_call() -> None:
@@ -253,12 +253,55 @@ def test_rust_payload_sender_sig_required() -> None:
         validate_rust_transfer_payload(bad_payload, intent)
 
 
+def test_rust_payload_transfer_class_uses_rust_serde_shape() -> None:
+    default_payment_intent = _intent(
+        transfer_class=TransferClass.PAYMENT,
+        graph_context_anchor=None,
+    )
+    validate_rust_transfer_payload(
+        _rust_payload(transfer_class={"Payment": {"express": None}}),
+        default_payment_intent,
+    )
+
+    payment_intent = _intent(
+        transfer_class=TransferClass.PAYMENT,
+        graph_context_anchor=None,
+        express_consent="express-consent:test",
+    )
+    validate_rust_transfer_payload(
+        _rust_payload(
+            transfer_class={
+                "Payment": {
+                    "express": {
+                        "agent_acknowledged_timing_disclosure": True,
+                        "consent_epoch": 0,
+                    }
+                }
+            }
+        ),
+        payment_intent,
+    )
+
+    bad_payload = _rust_payload(
+        transfer_class={
+            "type": "Payment",
+            "express": {
+                "agent_acknowledged_timing_disclosure": True,
+                "consent_epoch": 0,
+            },
+        }
+    )
+    with pytest.raises(ValueError, match="^rust_ecu_transfer_class_mismatch$"):
+        validate_rust_transfer_payload(bad_payload, payment_intent)
+
+
 def test_bridge_payload_is_intermediate_not_rust_struct() -> None:
     payload = ECUTransferAdapter(_Bridge([]))._build_transfer_payload(_intent())
 
     assert set(payload) == {
         "amount_micro_ecu",
         "bridge_payload_version",
+        "express_consent",
         "graph_context_anchor",
         "nonce",
         "sender_agent_id",

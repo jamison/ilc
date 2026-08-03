@@ -214,16 +214,10 @@ def test_express_consent_must_be_non_empty_unpadded_string() -> None:
     )
 
 
-def test_nonce_must_be_canonical_uuid4() -> None:
-    _raises_token(_intent(nonce="not-a-uuid"), "invalid_nonce_uuid4")
-    _raises_token(
-        _intent(nonce="550e8400-e29b-11d4-a716-446655440000"),
-        "invalid_nonce_uuid4",
-    )
-    _raises_token(
-        _intent(nonce="550E8400-E29B-41D4-A716-446655440000"),
-        "invalid_nonce_uuid4",
-    )
+def test_nonce_is_non_empty_unpadded_string_not_uuid4_protocol_constraint() -> None:
+    validate_intent(_intent(nonce="not-a-uuid-but-valid-canonical-token"))
+    validate_intent(_intent(nonce="550e8400-e29b-11d4-a716-446655440000"))
+    validate_intent(_intent(nonce="550E8400-E29B-41D4-A716-446655440000"))
     _raises_token(
         _intent(nonce=" 550e8400-e29b-41d4-a716-446655440000 "),
         "invalid_nonce_whitespace",

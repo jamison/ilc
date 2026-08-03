@@ -77,6 +77,7 @@ class ECUTransferAdapter:
         return {
             "bridge_payload_version": ECU_TRANSFER_ADAPTER_VERSION,
             "amount_micro_ecu": amount_micro_ecu,
+            "express_consent": intent.express_consent,
             "graph_context_anchor": intent.graph_context_anchor,
             "nonce": intent.nonce,
             "sender_agent_id": intent.sender_agent_id,
@@ -106,6 +107,20 @@ def _bridge_transfer_class(intent: ECUFastPathIntent) -> dict[str, Any]:
     raise ValueError("unknown_transfer_class")
 
 
+def _rust_serde_transfer_class(intent: ECUFastPathIntent) -> Any:
+    if intent.transfer_class is TransferClass.CONTRIBUTION:
+        return "Contribution"
+    if intent.transfer_class is TransferClass.PAYMENT:
+        express = None
+        if intent.express_consent is not None:
+            express = {
+                "agent_acknowledged_timing_disclosure": True,
+                "consent_epoch": intent.created_epoch,
+            }
+        return {"Payment": {"express": express}}
+    raise ValueError("unknown_transfer_class")
+
+
 def validate_rust_transfer_payload(payload: Any, intent: ECUFastPathIntent) -> None:
     if not isinstance(payload, dict):
         raise ValueError("rust_ecu_transfer_payload_invalid_type")
@@ -125,7 +140,7 @@ def validate_rust_transfer_payload(payload: Any, intent: ECUFastPathIntent) -> N
         raise ValueError("rust_ecu_transfer_recipient_mismatch")
     if payload["amount_micro_ecu"] != _intent_to_micro_ecu(intent.amount_ecu):
         raise ValueError("rust_ecu_transfer_amount_mismatch")
-    if payload["transfer_class"] != _bridge_transfer_class(intent):
+    if payload["transfer_class"] != _rust_serde_transfer_class(intent):
         raise ValueError("rust_ecu_transfer_class_mismatch")
 
     sender_sig = payload["sender_sig"]
