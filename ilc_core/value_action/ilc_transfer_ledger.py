@@ -125,6 +125,7 @@ class ILCTransferLedger:
         decoded = json.loads(raw.decode("utf-8"))
         if not isinstance(decoded, dict):
             raise ValueError("invalid_transfer_record_payload")
+        _verify_record_sha256(decoded)
         return _entry_from_record(decoded)
 
 
@@ -234,6 +235,16 @@ def _json_bytes(payload: dict[str, Any]) -> bytes:
 
 def _sha256_hex(payload: dict[str, Any]) -> str:
     return hashlib.sha256(_json_bytes(payload)).hexdigest()
+
+
+def _verify_record_sha256(record: dict[str, Any]) -> None:
+    expected = _require_sha256_hex(
+        record.get("record_sha256"),
+        "invalid_transfer_record_sha256",
+    )
+    body = {key: value for key, value in record.items() if key != "record_sha256"}
+    if _sha256_hex(body) != expected:
+        raise ValueError("transfer_record_sha256_mismatch")
 
 
 __all__ = [
