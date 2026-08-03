@@ -37,21 +37,16 @@ class ECUTransferAdapter:
         self._bridge = consensus_bridge
         self._verifier = verifier or ECUTransferContextVerifier()
 
-    def submit(self, intent: ECUFastPathIntent, sender_key_material: Any) -> str:
+    def submit(self, intent: ECUFastPathIntent) -> str:
         if ECU_FAST_PATH_TRANSFER_ENABLED is False:
             raise ValueError("transfer_not_enabled_activation_guard_blocks_submit")
-        if sender_key_material is None:
-            raise ValueError("sender_key_material_required")
 
         self._verifier.verify(intent)
         bridge_payload = self._build_transfer_payload(intent)
         build_ecu_transfer = getattr(self._bridge, "build_ecu_transfer", None)
         if not callable(build_ecu_transfer):
             raise ValueError("consensus_bridge_missing_build_ecu_transfer")
-        rust_payload = build_ecu_transfer(
-            bridge_payload,
-            sender_key_material=sender_key_material,
-        )
+        rust_payload = build_ecu_transfer(bridge_payload)
         self._validate_rust_transfer_payload(rust_payload, intent)
 
         submit = getattr(self._bridge, "submit", None)
@@ -70,7 +65,7 @@ class ECUTransferAdapter:
         raise ValueError("consensus_bridge_submit_reference_invalid")
 
     def _build_transfer_payload(self, intent: ECUFastPathIntent) -> dict[str, Any]:
-        """Build the pre-Rust bridge command; the bridge must add ObjectRef/signature."""
+        """Build the command; the Rust bridge adds ObjectRef/signature locally."""
         validate_intent(intent)
         amount_micro_ecu = _intent_to_micro_ecu(intent.amount_ecu)
         transfer_class = _bridge_transfer_class(intent)
