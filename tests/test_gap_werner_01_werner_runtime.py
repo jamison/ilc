@@ -46,9 +46,9 @@ from ilc_core.economics.werner_runtime import (
 # ---------------------------------------------------------------------------
 
 class TestGuardAndVersion:
-    def test_guard_is_true(self):
-        """WERNER_CREDIT_WIRING_NOT_ACTIVATED must be True in this phase."""
-        assert WERNER_CREDIT_WIRING_NOT_ACTIVATED is True
+    def test_guard_cleared_by_gap_werner_02b(self):
+        """Phase GAP-WERNER-02b clears the guard for CDL-109 bridge scope."""
+        assert WERNER_CREDIT_WIRING_NOT_ACTIVATED is False
 
     def test_version_token(self):
         assert WERNER_RUNTIME_VERSION == "werner_credit_pressure_signal_gap_werner_01.v0.1"

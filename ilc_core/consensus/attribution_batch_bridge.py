@@ -29,6 +29,12 @@ from ilc_core.economics.backward_attribution_traversal import (
     BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP,
     BackwardAttributionTraversal,
 )
+from ilc_core.economics.werner_attribution_bridge import (
+    WERNER_APPLICATION_STAGE,
+    WERNER_BRIDGE_SCOPE,
+    WERNER_CDL_109_VERSION,
+    WernerAttributionContext,
+)
 
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
@@ -115,6 +121,34 @@ def _require_decimal_amount(value: Any) -> Decimal:
     return amount
 
 
+def _require_werner_pressure(value: Any) -> Decimal | None:
+    if value is None:
+        return None
+    if isinstance(value, (bool, float)):
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_exact_decimal",
+            "Werner pressure must be exact",
+        )
+    if not isinstance(value, (Decimal, int, str)):
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_exact_decimal",
+            "Werner pressure must be exact",
+        )
+    try:
+        pressure = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_exact_decimal",
+            "Werner pressure must be exact",
+        ) from exc
+    if not pressure.is_finite() or pressure < Decimal("0"):
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_non_negative_finite",
+            "Werner pressure must be non-negative and finite",
+        )
+    return pressure
+
+
 def _amount_to_micro_ecu(amount: Decimal) -> tuple[int, Decimal]:
     scaled = amount * MICRO_ECU_PER_ECU
     floored = scaled.to_integral_value(rounding=ROUND_FLOOR)
@@ -180,6 +214,36 @@ def _require_backward_graph_context(value: Any) -> dict[str, Any]:
             "backward attribution graph context contains too many events",
         )
     return context
+
+
+def _require_werner_context_by_agent_id(
+    value: Any,
+) -> dict[str, WernerAttributionContext]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise AttributionBatchBridgeError(
+            "werner_context_by_agent_id_must_be_object",
+            "Werner context must be keyed by agent id",
+        )
+    contexts: dict[str, WernerAttributionContext] = {}
+    for raw_agent_id, raw_context in value.items():
+        agent_id = _require_agent_id(raw_agent_id)
+        context = _require_dict("werner_context", raw_context)
+        declared_agent_id = context.get("agent_id")
+        if declared_agent_id is not None and _require_agent_id(declared_agent_id) != agent_id:
+            raise AttributionBatchBridgeError(
+                "werner_context_agent_id_mismatch",
+                "Werner context agent_id must match its map key",
+            )
+        contexts[agent_id] = WernerAttributionContext(
+            agent_id=agent_id,
+            epoch=_require_epoch(context.get("epoch")),
+            raw_werner_pressure=_require_werner_pressure(
+                context.get("raw_werner_pressure"),
+            ),
+        )
+    return contexts
 
 
 def _require_backward_event(value: Any) -> dict[str, Any]:
@@ -337,6 +401,9 @@ def build_attribution_batch_from_claims(
     if backward_attribution_graph_context is not None:
         context = _require_backward_graph_context(backward_attribution_graph_context)
         traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
+        werner_contexts = _require_werner_context_by_agent_id(
+            context.get("werner_context_by_agent_id"),
+        )
         settled_ids = frozenset(cdl084_settled_event_ids or ())
         seen_backward_event_ids: set[str] = set()
         for ordinal, raw_event in enumerate(context["events"]):
@@ -384,6 +451,7 @@ def build_attribution_batch_from_claims(
                 event_budget_ecu=event_budget,
                 event_epoch=event_epoch,
                 apply_antigaming_caps=True,
+                werner_context_by_agent_id=werner_contexts,
             )
             total_backward_unissued += result.unissued_backward_pool_ecu
             for final_credit in result.final_credits:
@@ -428,6 +496,13 @@ def build_attribution_batch_from_claims(
                     "recipient_agent_id": final_credit.recipient_agent_id,
                     "source_node_cid": source_node_id,
                     "upstream_artifact_id": final_credit.upstream_artifact_id,
+                    "werner_context_present": final_credit.werner_context_present,
+                    "werner_flow_budget": decimal_to_canonical_string(
+                        final_credit.werner_flow_budget
+                    ),
+                    "werner_multiplier": decimal_to_canonical_string(
+                        final_credit.werner_multiplier
+                    ),
                 }
                 _require_agent_id(final_credit.recipient_agent_id)
                 attribution_event_log.append(entry)
@@ -522,6 +597,10 @@ def build_attribution_batch_from_claims(
                 "sybil_diversity_guard_cdl_gap": (
                     BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP
                 ),
+                "werner_application_stage": WERNER_APPLICATION_STAGE,
+                "werner_attribution_bridge_scope": WERNER_BRIDGE_SCOPE,
+                "werner_attribution_bridge_version": WERNER_CDL_109_VERSION,
+                "werner_context_count": len(werner_contexts),
             }
         )
     if normalized_agent_reputation_root is not None:
