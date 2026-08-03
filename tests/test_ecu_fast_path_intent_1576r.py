@@ -152,6 +152,84 @@ def test_empty_identity_and_nonce_tokens() -> None:
     _raises_token(_intent(nonce=""), "invalid_nonce_empty")
 
 
+def test_padded_agent_ids_rejected() -> None:
+    _raises_token(
+        _intent(sender_agent_id=" agent_sender"),
+        "invalid_sender_agent_id_whitespace",
+    )
+    _raises_token(
+        _intent(recipient_agent_id="agent_recipient "),
+        "invalid_recipient_agent_id_whitespace",
+    )
+
+
+def test_padded_agent_id_cannot_bypass_self_transfer() -> None:
+    _raises_token(
+        _intent(sender_agent_id="agent_same", recipient_agent_id=" agent_same "),
+        "invalid_recipient_agent_id_whitespace",
+    )
+
+
+def test_payment_empty_graph_context_anchor_rejected() -> None:
+    _raises_token(
+        _intent(
+            transfer_class=TransferClass.PAYMENT,
+            graph_context_anchor="",
+        ),
+        "invalid_graph_context_anchor_whitespace",
+    )
+
+
+def test_contribution_express_consent_rejected() -> None:
+    _raises_token(
+        _intent(express_consent="USER_CONSENTS_TO_PUBLIC_PAYMENT_LANE"),
+        "contribution_class_forbids_express_consent",
+    )
+
+
+def test_express_consent_must_be_non_empty_unpadded_string() -> None:
+    _raises_token(
+        _intent(
+            transfer_class=TransferClass.PAYMENT,
+            graph_context_anchor=None,
+            express_consent="",
+        ),
+        "invalid_express_consent_whitespace",
+    )
+    _raises_token(
+        _intent(
+            transfer_class=TransferClass.PAYMENT,
+            graph_context_anchor=None,
+            express_consent=" consent ",
+        ),
+        "invalid_express_consent_whitespace",
+    )
+    _raises_token(
+        _intent(
+            transfer_class=TransferClass.PAYMENT,
+            graph_context_anchor=None,
+            express_consent=123,
+        ),
+        "invalid_express_consent_type",
+    )
+
+
+def test_nonce_must_be_canonical_uuid4() -> None:
+    _raises_token(_intent(nonce="not-a-uuid"), "invalid_nonce_uuid4")
+    _raises_token(
+        _intent(nonce="550e8400-e29b-11d4-a716-446655440000"),
+        "invalid_nonce_uuid4",
+    )
+    _raises_token(
+        _intent(nonce="550E8400-E29B-41D4-A716-446655440000"),
+        "invalid_nonce_uuid4",
+    )
+    _raises_token(
+        _intent(nonce=" 550e8400-e29b-41d4-a716-446655440000 "),
+        "invalid_nonce_whitespace",
+    )
+
+
 def test_invalid_epoch_raises() -> None:
     _raises_token(_intent(created_epoch=-1), "invalid_created_epoch")
     _raises_token(_intent(created_epoch=True), "invalid_created_epoch")

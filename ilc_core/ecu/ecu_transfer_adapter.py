@@ -16,10 +16,15 @@ from ilc_core.ecu.ecu_transfer_context_verifier import (
 )
 
 ECU_TRANSFER_ADAPTER_VERSION = "ecu_transfer_adapter_03.v0.1"
+_RUST_ECU_TRANSFER_KEYS = frozenset(
+    {"object_ref", "to", "amount_micro_ecu", "transfer_class", "sender_sig"}
+)
+_OBJECT_REF_KEYS = frozenset({"agent", "version"})
+_U64_MAX = 18446744073709551615
 
 
 class ECUTransferAdapter:
-    """Default-off Python adapter for Rust-compatible ECUTransfer payloads."""
+    """Default-off adapter requiring bridge-built Rust ECUTransfer payloads."""
 
     def __init__(
         self,
@@ -35,14 +40,25 @@ class ECUTransferAdapter:
     def submit(self, intent: ECUFastPathIntent, sender_key_material: Any) -> str:
         if ECU_FAST_PATH_TRANSFER_ENABLED is False:
             raise ValueError("transfer_not_enabled_activation_guard_blocks_submit")
+        if sender_key_material is None:
+            raise ValueError("sender_key_material_required")
 
         self._verifier.verify(intent)
-        payload = self._build_transfer_payload(intent)
+        bridge_payload = self._build_transfer_payload(intent)
+        build_ecu_transfer = getattr(self._bridge, "build_ecu_transfer", None)
+        if not callable(build_ecu_transfer):
+            raise ValueError("consensus_bridge_missing_build_ecu_transfer")
+        rust_payload = build_ecu_transfer(
+            bridge_payload,
+            sender_key_material=sender_key_material,
+        )
+        self._validate_rust_transfer_payload(rust_payload, intent)
+
         submit = getattr(self._bridge, "submit", None)
         if not callable(submit):
             raise ValueError("consensus_bridge_missing_submit")
 
-        result = submit(payload, sender_key_material=sender_key_material)
+        result = submit(rust_payload)
         if isinstance(result, str) and result:
             return result
         transfer_reference = getattr(result, "transfer_reference", None)
@@ -54,25 +70,78 @@ class ECUTransferAdapter:
         raise ValueError("consensus_bridge_submit_reference_invalid")
 
     def _build_transfer_payload(self, intent: ECUFastPathIntent) -> dict[str, Any]:
+        """Build the pre-Rust bridge command; the bridge must add ObjectRef/signature."""
         validate_intent(intent)
         amount_micro_ecu = _intent_to_micro_ecu(intent.amount_ecu)
-        transfer_class = (
-            "Contribution"
-            if intent.transfer_class is TransferClass.CONTRIBUTION
-            else "Payment"
-        )
+        transfer_class = _bridge_transfer_class(intent)
         return {
-            "to": intent.recipient_agent_id,
+            "bridge_payload_version": ECU_TRANSFER_ADAPTER_VERSION,
             "amount_micro_ecu": amount_micro_ecu,
-            "transfer_class": transfer_class,
-            "express_consent": intent.express_consent,
+            "graph_context_anchor": intent.graph_context_anchor,
             "nonce": intent.nonce,
             "sender_agent_id": intent.sender_agent_id,
+            "to": intent.recipient_agent_id,
+            "transfer_class": transfer_class,
         }
+
+    def _validate_rust_transfer_payload(
+        self,
+        payload: Any,
+        intent: ECUFastPathIntent,
+    ) -> None:
+        validate_rust_transfer_payload(payload, intent)
+
+
+def _bridge_transfer_class(intent: ECUFastPathIntent) -> dict[str, Any]:
+    if intent.transfer_class is TransferClass.CONTRIBUTION:
+        return {"type": "Contribution"}
+    if intent.transfer_class is TransferClass.PAYMENT:
+        express = None
+        if intent.express_consent is not None:
+            express = {
+                "agent_acknowledged_timing_disclosure": True,
+                "consent_epoch": intent.created_epoch,
+            }
+        return {"type": "Payment", "express": express}
+    raise ValueError("unknown_transfer_class")
+
+
+def validate_rust_transfer_payload(payload: Any, intent: ECUFastPathIntent) -> None:
+    if not isinstance(payload, dict):
+        raise ValueError("rust_ecu_transfer_payload_invalid_type")
+    if set(payload) != _RUST_ECU_TRANSFER_KEYS:
+        raise ValueError("rust_ecu_transfer_payload_field_set_invalid")
+
+    object_ref = payload["object_ref"]
+    if not isinstance(object_ref, dict) or set(object_ref) != _OBJECT_REF_KEYS:
+        raise ValueError("rust_ecu_transfer_object_ref_invalid")
+    if object_ref["agent"] != intent.sender_agent_id:
+        raise ValueError("rust_ecu_transfer_object_ref_agent_mismatch")
+    version = object_ref["version"]
+    if isinstance(version, bool) or not isinstance(version, int) or version < 0 or version > _U64_MAX:
+        raise ValueError("rust_ecu_transfer_object_ref_version_invalid")
+
+    if payload["to"] != intent.recipient_agent_id:
+        raise ValueError("rust_ecu_transfer_recipient_mismatch")
+    if payload["amount_micro_ecu"] != _intent_to_micro_ecu(intent.amount_ecu):
+        raise ValueError("rust_ecu_transfer_amount_mismatch")
+    if payload["transfer_class"] != _bridge_transfer_class(intent):
+        raise ValueError("rust_ecu_transfer_class_mismatch")
+
+    sender_sig = payload["sender_sig"]
+    if isinstance(sender_sig, bytes):
+        if not sender_sig:
+            raise ValueError("rust_ecu_transfer_sender_sig_invalid")
+    elif isinstance(sender_sig, str):
+        if not sender_sig or sender_sig != sender_sig.strip():
+            raise ValueError("rust_ecu_transfer_sender_sig_invalid")
+    else:
+        raise ValueError("rust_ecu_transfer_sender_sig_invalid")
 
 
 __all__ = [
     "ECU_TRANSFER_ADAPTER_VERSION",
     "ECUTransferAdapter",
     "ECUContextVerificationError",
+    "validate_rust_transfer_payload",
 ]

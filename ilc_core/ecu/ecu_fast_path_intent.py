@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
+from uuid import UUID
 
 ECU_FAST_PATH_TRANSFER_ENABLED = False
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
@@ -34,6 +35,10 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
         raise ValueError("invalid_sender_agent_id_empty")
     if not isinstance(intent.recipient_agent_id, str) or not intent.recipient_agent_id.strip():
         raise ValueError("invalid_recipient_agent_id_empty")
+    if intent.sender_agent_id != intent.sender_agent_id.strip():
+        raise ValueError("invalid_sender_agent_id_whitespace")
+    if intent.recipient_agent_id != intent.recipient_agent_id.strip():
+        raise ValueError("invalid_recipient_agent_id_whitespace")
     if intent.sender_agent_id == intent.recipient_agent_id:
         raise ValueError("self_transfer_prohibited")
     if not isinstance(intent.amount_ecu, Decimal):
@@ -49,12 +54,23 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
     if intent.graph_context_anchor is not None:
         if not isinstance(intent.graph_context_anchor, str):
             raise ValueError("invalid_graph_context_anchor_type")
-        if intent.graph_context_anchor and intent.graph_context_anchor != intent.graph_context_anchor.strip():
+        if (
+            not intent.graph_context_anchor
+            or intent.graph_context_anchor != intent.graph_context_anchor.strip()
+        ):
             raise ValueError("invalid_graph_context_anchor_whitespace")
     if intent.transfer_class is TransferClass.CONTRIBUTION and not _present(intent.graph_context_anchor):
         raise ValueError("contribution_class_requires_graph_context_anchor")
+    if intent.transfer_class is TransferClass.CONTRIBUTION and intent.express_consent is not None:
+        raise ValueError("contribution_class_forbids_express_consent")
+    if intent.express_consent is not None:
+        if not isinstance(intent.express_consent, str):
+            raise ValueError("invalid_express_consent_type")
+        if not intent.express_consent or intent.express_consent != intent.express_consent.strip():
+            raise ValueError("invalid_express_consent_whitespace")
     if not isinstance(intent.nonce, str) or not intent.nonce.strip():
         raise ValueError("invalid_nonce_empty")
+    _validate_uuid4_nonce(intent.nonce)
     if (
         not isinstance(intent.created_epoch, int)
         or isinstance(intent.created_epoch, bool)
@@ -65,6 +81,17 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
 
 def _present(value: Optional[str]) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _validate_uuid4_nonce(nonce: str) -> None:
+    if nonce != nonce.strip():
+        raise ValueError("invalid_nonce_whitespace")
+    try:
+        parsed = UUID(nonce)
+    except ValueError as exc:
+        raise ValueError("invalid_nonce_uuid4") from exc
+    if parsed.version != 4 or str(parsed) != nonce:
+        raise ValueError("invalid_nonce_uuid4")
 
 
 __all__ = [

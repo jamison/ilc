@@ -70405,6 +70405,51 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_adversarial_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_ECU_TRANSFER_RC_04_FIX1_audit_hardening",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-04-Fix1 — RC-03/RC-04 audit hardening for ECU transfer adapter, intent schema, verifier, and adversarial tests before RC-05 activation.",
+      "manual_read_summary": "Walkthrough documenting combined Codex/Sonnet audit findings, hardened canonical intent validation, graph-reader enforcement for anchored intents, bridge-built exact Rust ECUTransfer payload validation, duplicate nonce disposition, verification outputs, output token, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_gap_ecu_transfer_rc_03_python_rust_adapter_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_gap_ecu_transfer_rc_04_adversarial_soak_walkthrough.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_transfer_rc03_rc04_audit_hardening_committed_phase_gap_ecu_transfer_rc_04_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_adapter.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_fix1_audit_hardening_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
@@ -78452,6 +78497,51 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_00_g10_ecu_transfer_canon_reconciliation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_ECU_TRANSFER_RC_04_FIX1_audit_hardening",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-04-Fix1 — RC-03/RC-04 audit hardening for ECU transfer adapter, intent schema, verifier, and adversarial tests before RC-05 activation.",
+      "manual_read_summary": "Walkthrough documenting combined Codex/Sonnet audit findings, hardened canonical intent validation, graph-reader enforcement for anchored intents, bridge-built exact Rust ECUTransfer payload validation, duplicate nonce disposition, verification outputs, output token, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_gap_ecu_transfer_rc_03_python_rust_adapter_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_gap_ecu_transfer_rc_04_adversarial_soak_walkthrough.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_transfer_rc03_rc04_audit_hardening_committed_phase_gap_ecu_transfer_rc_04_fix1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_adapter.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_fix1_audit_hardening_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

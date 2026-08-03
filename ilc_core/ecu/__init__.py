@@ -9,7 +9,11 @@ from .ecu_fast_path_intent import (
     TransferClass,
     validate_intent,
 )
-from .ecu_transfer_adapter import ECU_TRANSFER_ADAPTER_VERSION, ECUTransferAdapter
+from .ecu_transfer_adapter import (
+    ECU_TRANSFER_ADAPTER_VERSION,
+    ECUTransferAdapter,
+    validate_rust_transfer_payload,
+)
 from .ecu_transfer_context_verifier import (
     ECU_TRANSFER_CONTEXT_VERIFIER_VERSION,
     ECUContextVerificationError,
@@ -27,5 +31,6 @@ __all__ = [
     "ECUTransferAdapter",
     "ECUTransferContextVerifier",
     "TransferClass",
+    "validate_rust_transfer_payload",
     "validate_intent",
 ]
