@@ -48,22 +48,26 @@ class ActionNonceStore:
 
     def consume_nonce(self, agent_id: str, nonce: str) -> None:
         """Atomically mark nonce consumed, rejecting replay and gaps."""
+        with self._env.begin(write=True) as txn:
+            self.consume_nonce_in_txn(txn, agent_id, nonce)
+
+    def consume_nonce_in_txn(self, txn: object, agent_id: str, nonce: str) -> None:
+        """Mark nonce consumed inside a caller-owned LMDB write transaction."""
         _require_agent_id(agent_id)
         counter = _parse_nonce(agent_id, nonce)
         nonce_key = nonce.encode("ascii")
         consumed_key = _counter_key(agent_id, _CONSUMED_COUNTER_SUFFIX)
-        with self._env.begin(write=True) as txn:
-            if txn.get(nonce_key, db=self._consumed_db) is not None:
-                raise NonceReplayError("nonce_replay_rejected")
-            consumed = _decode_counter(txn.get(consumed_key, db=self._consumed_db))
-            if counter != consumed + 1:
-                raise NonceReplayError("nonce_out_of_sequence_rejected")
-            txn.put(nonce_key, b"1", db=self._consumed_db)
-            txn.put(
-                consumed_key,
-                _encode_counter(counter),
-                db=self._consumed_db,
-            )
+        if txn.get(nonce_key, db=self._consumed_db) is not None:
+            raise NonceReplayError("nonce_replay_rejected")
+        consumed = _decode_counter(txn.get(consumed_key, db=self._consumed_db))
+        if counter != consumed + 1:
+            raise NonceReplayError("nonce_out_of_sequence_rejected")
+        txn.put(nonce_key, b"1", db=self._consumed_db)
+        txn.put(
+            consumed_key,
+            _encode_counter(counter),
+            db=self._consumed_db,
+        )
 
     def peek_counter(self, agent_id: str) -> int:
         """Return max issued-or-consumed counter without mutation."""
