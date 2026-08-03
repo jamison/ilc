@@ -70450,6 +70450,134 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_fix1_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GENESIS_VALUE_01_genesis_value_guard_cdl",
+      "chronology_note": "2026-08-03 GAP-GENESIS-VALUE-01 - CDL-110 Genesis Value-Path Spend Guard Authority opening/prelock/ratification document.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Ratified CDL-110 authority defining GenesisValueActionPolicyCertificate, 2-of-3 dedicated Ed25519 COSE_Sign1 guardian policy, Plate 3 recovery-only boundary, graph-context-required recipient policy, unit-separated ECU/ILC caps, finite policy window, and runtime deferral to GAP-GENESIS-VALUE-02.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-002"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-063"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-066"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-069"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_value_guard_audit_complete_GAP_GENESIS_VALUE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_value_action_policy_cdl_ratified_GAP_GENESIS_VALUE_01"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_110_genesis_value_spend_guard_ratified"
+        },
+        {
+          "edge_type": "PRESERVES_BOUNDARY",
+          "target": "policy:plate_3_recovery_only_not_spend_key"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "PRESERVES_BOUNDARY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GENESIS_VALUE_01_genesis_value_guard_cdl",
+      "chronology_note": "2026-08-03 GAP-GENESIS-VALUE-01 - CDL-110 Genesis Value-Path Spend Guard Authority ratification evidence.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Ratification evidence for CDL-110, recording GO phrase authority, dependency chain, ratified public-RC certificate profile, custody boundary, activation boundary, non-claims, and output tokens.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        },
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-110"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_value_action_policy_cdl_ratified_GAP_GENESIS_VALUE_01"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_110_genesis_value_spend_guard_ratified"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "RATIFIES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_110_genesis_value_spend_guard_ratification_evidence_GAP_GENESIS_VALUE_01_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_ratification_evidence_GAP_GENESIS_VALUE_01_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GENESIS_VALUE_01_genesis_value_guard_cdl",
+      "chronology_note": "2026-08-03 GAP-GENESIS-VALUE-01 - phase walkthrough for CDL-110 Genesis value guard ratification.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records GO verification, MemPalace and repo reads, CDL-110 deliberation closure, gate outputs, coverage audit, activation guard checks, non-claims, and carry-forward to GAP-GENESIS-VALUE-02 runtime guard wiring.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_ratification_evidence_GAP_GENESIS_VALUE_01_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_value_action_policy_cdl_ratified_GAP_GENESIS_VALUE_01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_genesis_value_01_genesis_value_guard_cdl_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_genesis_value_01_genesis_value_guard_cdl_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
