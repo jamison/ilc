@@ -15,6 +15,8 @@ from ilc_core.value_action.ilc_transfer_intent import (
     validate_envelope,
 )
 from ilc_core.value_action.ilc_transfer_ledger import (
+    EnvelopeSignerAuthority,
+    EnvelopeSignatureVerifier,
     ILC_TRANSFER_LEDGER_VERSION,
     ILCTransferLedger,
     ILCTransferLedgerEntry,
@@ -43,6 +45,8 @@ __all__ = [
     "ActionType",
     "ActionNonceStore",
     "AgentActionEnvelope",
+    "EnvelopeSignerAuthority",
+    "EnvelopeSignatureVerifier",
     "ILCTransferIntent",
     "ILCTransferLedger",
     "ILCTransferLedgerEntry",
