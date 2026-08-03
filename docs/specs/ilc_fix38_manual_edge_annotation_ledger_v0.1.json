@@ -70033,6 +70033,122 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_02_python_context_verifier_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_WERNER_02a_werner_cdl_deliberation",
+      "chronology_note": "2026-08-03 GAP-WERNER-02a - CDL-109 Werner Flow-Governor Economic Bridge Authority opening document.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Ratified CDL-109 opening/prelock scope for bounded Werner flow-governor reweighting of CDL-108 backward attribution only, with runtime_policy_cap Decimal(\"0.10\"), direct heat-to-ECU prohibitions preserved, and runtime guard clearance deferred to GAP-WERNER-02b.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_053_werner_local_productive_credit_ratification_evidence_1407_fix2_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_096_ratification_evidence_1553p_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_108_backward_attribution_ratification_GAP_ECU_03_v0.1.md"
+        },
+        {
+          "edge_type": "PRESERVES_BOUNDARY",
+          "target": "phase:direct_werner_ecu_creation_rejected_phase_1263"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:werner_cdl_109_opened_GAP_WERNER_02a"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:werner_cdl_109_prelocked_GAP_WERNER_02a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "PRESERVES_BOUNDARY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_opening_GAP_WERNER_02a_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_opening_GAP_WERNER_02a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_WERNER_02a_werner_cdl_deliberation",
+      "chronology_note": "2026-08-03 GAP-WERNER-02a - CDL-109 Werner Flow-Governor Economic Bridge Authority ratification evidence.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Ratification evidence for CDL-109, recording the governing chain CDL-053 -> CDL-096 -> CDL-108 -> CDL-109, supersession table, non-claim inventory, and output tokens for bounded Werner bridge authority.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_opening_GAP_WERNER_02a_v0.1.md"
+        },
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-109"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:werner_cdl_109_ratified_GAP_WERNER_02a"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:werner_cdl_deliberation_complete_GAP_WERNER_02a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "RATIFIES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_ratification_GAP_WERNER_02a_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_ratification_GAP_WERNER_02a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_WERNER_02a_werner_cdl_deliberation",
+      "chronology_note": "2026-08-03 GAP-WERNER-02a - phase walkthrough for Werner CDL-109 deliberation and ratification.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records verification outputs, non-runtime boundary, no public mirror push, and carry-forward to GAP-WERNER-02b guard clearance and implementation.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_109_werner_flow_governor_economic_bridge_ratification_GAP_WERNER_02a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:werner_cdl_deliberation_complete_GAP_WERNER_02a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_werner_02a_werner_cdl_deliberation_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_werner_02a_werner_cdl_deliberation_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
