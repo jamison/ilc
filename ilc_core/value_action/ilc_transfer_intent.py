@@ -1,0 +1,144 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+"""Schema-only ILC transfer intent envelope.
+
+This module defines the Python value-action shape used by the LIVE-RC lane.
+It does not sign, submit, settle, or activate transfer capability.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from decimal import Decimal
+from enum import Enum
+
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
+
+ILC_TRANSFER_INTENT_VERSION = "ilc_transfer_intent_01.v0.1"
+ILC_TRANSFER_ENABLED = False  # Activates via TRANSFER-ENABLED ILC GATE - Phase GAP-VALUE-ACTION-LIVE-RC-08
+
+_AGENT_ID_HEX_LENGTH = 96
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+_MEMO_MAX_CHARS = 256
+
+
+class ActionType(str, Enum):
+    """Agent action discriminator values."""
+
+    ILC_TRANSFER = "ILC_TRANSFER"
+
+
+@dataclass(frozen=True)
+class AgentActionEnvelope:
+    """Canonical schema for a value-action submitted by an AgentID."""
+
+    action_type: ActionType
+    sender_agent_id: str
+    recipient_agent_id: str
+    amount_ilc: Decimal
+    nonce: str
+    epoch: int
+    memo: str | None = None
+    graph_context_anchor: str | None = None
+    cose_signature: bytes | None = None
+    signed_at_epoch: int | None = None
+
+
+def _require_agent_id(value: str, token: str) -> None:
+    if not isinstance(value, str):
+        raise ValueError(token)
+    if len(value) != _AGENT_ID_HEX_LENGTH:
+        raise ValueError(token)
+    if _AGENT_ID_RE.fullmatch(value) is None:
+        raise ValueError(token)
+
+
+def _require_epoch(value: int, token: str) -> None:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError(token)
+    if value < 0:
+        raise ValueError(token)
+
+
+def _require_canonical_non_empty_string(value: str | None, token: str) -> None:
+    if not isinstance(value, str):
+        raise ValueError(token)
+    if not value:
+        raise ValueError(token)
+    if value != value.strip():
+        raise ValueError(token)
+
+
+def validate_envelope(env: AgentActionEnvelope) -> None:
+    """Validate an AgentActionEnvelope and fail closed with stable tokens."""
+    if not isinstance(env, AgentActionEnvelope):
+        raise TypeError("invalid_envelope_type")
+    if env.action_type != ActionType.ILC_TRANSFER:
+        raise ValueError("invalid_envelope_action_type")
+
+    _require_agent_id(env.sender_agent_id, "invalid_envelope_sender_agent_id")
+    _require_agent_id(env.recipient_agent_id, "invalid_envelope_recipient_agent_id")
+    if env.sender_agent_id == env.recipient_agent_id:
+        raise ValueError("invalid_envelope_self_transfer")
+
+    if not isinstance(env.amount_ilc, Decimal):
+        raise TypeError("invalid_envelope_amount_not_decimal")
+    if not env.amount_ilc.is_finite():
+        raise ValueError("invalid_amount_non_finite")
+    if env.amount_ilc <= Decimal("0"):
+        raise ValueError("invalid_envelope_amount_not_positive")
+    decimal_to_canonical_string(env.amount_ilc)
+
+    _require_canonical_non_empty_string(env.nonce, "invalid_envelope_empty_nonce")
+    _require_epoch(env.epoch, "invalid_envelope_epoch")
+    if env.signed_at_epoch is not None:
+        _require_epoch(env.signed_at_epoch, "invalid_envelope_signed_at_epoch")
+    if env.memo is not None:
+        if not isinstance(env.memo, str):
+            raise ValueError("invalid_envelope_memo")
+        if len(env.memo) > _MEMO_MAX_CHARS:
+            raise ValueError("invalid_envelope_memo_too_long")
+    if env.graph_context_anchor is not None:
+        _require_canonical_non_empty_string(
+            env.graph_context_anchor,
+            "invalid_envelope_graph_context_anchor",
+        )
+    if env.cose_signature is not None:
+        if not isinstance(env.cose_signature, bytes) or len(env.cose_signature) == 0:
+            raise ValueError("invalid_envelope_cose_signature")
+
+
+class ILCTransferIntent:
+    """Factory and validator for ILC_TRANSFER AgentActionEnvelope instances."""
+
+    @staticmethod
+    def create(
+        sender_agent_id: str,
+        recipient_agent_id: str,
+        amount_ilc: Decimal,
+        nonce: str,
+        epoch: int,
+        memo: str | None = None,
+        graph_context_anchor: str | None = None,
+    ) -> AgentActionEnvelope:
+        env = AgentActionEnvelope(
+            action_type=ActionType.ILC_TRANSFER,
+            sender_agent_id=sender_agent_id,
+            recipient_agent_id=recipient_agent_id,
+            amount_ilc=amount_ilc,
+            nonce=nonce,
+            epoch=epoch,
+            memo=memo,
+            graph_context_anchor=graph_context_anchor,
+        )
+        validate_envelope(env)
+        return env
+
+
+__all__ = [
+    "ActionType",
+    "AgentActionEnvelope",
+    "ILCTransferIntent",
+    "ILC_TRANSFER_ENABLED",
+    "ILC_TRANSFER_INTENT_VERSION",
+    "validate_envelope",
+]

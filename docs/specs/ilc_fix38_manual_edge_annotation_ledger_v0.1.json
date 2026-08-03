@@ -70664,6 +70664,114 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_value_action_live_rc_00_supersession_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_value_action_live_rc_00_supersession_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_01_schema_runtime",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-01 - schema-only value_action package export surface",
+      "manual_read_summary": "Runtime package initializer exporting the schema-only AgentActionEnvelope, ILCTransferIntent, ActionType, and ILC_TRANSFER_ENABLED=False guard for the ILC live transfer lane.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_value_action_intent_taxonomy_GAP_VALUE_ACTION_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_SPEC",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_value_action_live_rc_01_g10_agent_action_envelope_schema.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_SPEC"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/value_action/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_01_schema_runtime",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-01 - AgentActionEnvelope and ILCTransferIntent schema",
+      "manual_read_summary": "Schema-only ILC transfer intent runtime defining AgentActionEnvelope, ActionType.ILC_TRANSFER, Decimal amount validation, canonical AgentID validation, non-empty nonce validation, optional graph_context_anchor, and ILC_TRANSFER_ENABLED=False.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_value_action_intent_taxonomy_GAP_VALUE_ACTION_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_SPEC",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_value_action_live_rc_01_g10_agent_action_envelope_schema.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_SPEC"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/value_action/ilc_transfer_intent.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_01_schema_tests",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-01 - schema validation tests",
+      "manual_read_summary": "Focused tests covering happy path, self-transfer rejection, finite positive Decimal requirements, float rejection, nonce canonicality, epoch validation, AgentID validation, graph context validation, signature validation, guard false, and no signing/consensus imports.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ilc_transfer_intent_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_01_schema_walkthrough",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-01 - phase walkthrough and verification evidence",
+      "manual_read_summary": "Walkthrough recording RC-01 claim verification, prompt hardening, produced schema files, test output, graph delta, mirror disposition, and output token.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "ilc_core/value_action/ilc_transfer_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_01_schema_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
