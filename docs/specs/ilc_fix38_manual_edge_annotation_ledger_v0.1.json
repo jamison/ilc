@@ -69831,6 +69831,121 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_GAP_AGENT_HARNESS_00_agent_native_harness_ontology_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_ECU_TRANSFER_RC_01_ecu_fast_path_intent_schema",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-01 \u2014 ECU fast-path intent runtime schema committed with ECU_FAST_PATH_TRANSFER_ENABLED=False.",
+      "manual_read_summary": "Runtime module defining default-off ECUFastPathIntent schema, TransferClass enum, Decimal amount cap, and validate_intent() fail-closed machine-readable tokens for the pre-submit ECU fast-path lane.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_066_agent_sender_authorization_ratification_evidence_708_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_RUNTIME_FOR",
+          "target": "GAP-ECU-TRANSFER-RC-01"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_RUNTIME_FOR"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/ecu/ecu_fast_path_intent.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_ECU_TRANSFER_RC_01_ecu_fast_path_intent_schema",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-01 \u2014 ECU package initialized for the fast-path intent module.",
+      "manual_read_summary": "Package export surface for ECU fast-path intent constants, schema, enum, and validator.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EXPORTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EXPORTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/ecu/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_ECU_TRANSFER_RC_01_ecu_fast_path_intent_schema",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-01 \u2014 ECU fast-path intent schema tests committed.",
+      "manual_read_summary": "Focused pytest suite for ECUFastPathIntent happy paths, graph-anchor requirement, self-transfer rejection, non-finite/non-positive/cap validation, identity/nonce validation, epoch validation, immutability, and default-off guard.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_01_g10_ecu_fast_path_intent_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ecu_fast_path_intent_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_ECU_TRANSFER_RC_01_ecu_fast_path_intent_schema",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-01 \u2014 phase walkthrough records source reads, tests, taboo checks, ledger update, non-claims, and output token.",
+      "manual_read_summary": "Walkthrough and verification record for GAP-ECU-TRANSFER-RC-01 ECU fast-path intent schema phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_01_g10_ecu_fast_path_intent_schema.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_01_ecu_fast_path_intent_schema_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
