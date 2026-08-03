@@ -34,8 +34,6 @@ class _RecordingBridge:
     def build_ecu_transfer(
         self,
         payload: dict[str, object],
-        *,
-        sender_key_material: object,
     ) -> dict[str, object]:
         self.bridge_payloads.append(payload)
         rust_payload = {
@@ -96,8 +94,8 @@ def test_double_submit_same_nonce_gap_documented() -> None:
         patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True),
         patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True),
     ):
-        assert adapter.submit(intent, b"sender-key") == "transfer-ref-1"
-        assert adapter.submit(intent, b"sender-key") == "transfer-ref-2"
+        assert adapter.submit(intent) == "transfer-ref-1"
+        assert adapter.submit(intent) == "transfer-ref-2"
 
     assert intent.nonce
     assert [payload["nonce"] for payload in bridge.bridge_payloads] == [intent.nonce, intent.nonce]
@@ -186,7 +184,7 @@ def test_activation_guard_blocks_adapter_submit() -> None:
     adapter = ECUTransferAdapter(bridge)
 
     with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
-        adapter.submit(_intent(), b"sender-key")
+        adapter.submit(_intent())
 
     assert bridge.bridge_payloads == []
 

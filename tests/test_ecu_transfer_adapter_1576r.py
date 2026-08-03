@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
+import inspect
 from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
@@ -23,12 +24,9 @@ class _Bridge:
     def build_ecu_transfer(
         self,
         payload: dict[str, object],
-        *,
-        sender_key_material: object,
     ) -> dict[str, object]:
         self.calls.append("builder")
         self.bridge_payloads.append(payload)
-        assert sender_key_material == b"sender-key"
         rust_payload = _rust_payload()
         self.rust_payloads.append(rust_payload)
         return rust_payload
@@ -57,12 +55,9 @@ class _BuildOnlyBridge:
     def build_ecu_transfer(
         self,
         payload: dict[str, object],
-        *,
-        sender_key_material: object,
     ) -> dict[str, object]:
         self.calls.append("builder")
         assert payload["bridge_payload_version"] == ECU_TRANSFER_ADAPTER_VERSION
-        assert sender_key_material == b"sender-key"
         return _rust_payload()
 
 
@@ -98,7 +93,7 @@ def test_adapter_calls_verifier_before_bridge() -> None:
     adapter = ECUTransferAdapter(_Bridge(calls), verifier=_Verifier(calls))
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
-        assert adapter.submit(_intent(), b"sender-key") == "transfer-ref-001"
+        assert adapter.submit(_intent()) == "transfer-ref-001"
 
     assert calls == ["verifier", "builder", "bridge"]
 
@@ -110,7 +105,7 @@ def test_activation_guard_blocks_submission_before_verifier_or_bridge() -> None:
     adapter = ECUTransferAdapter(bridge, verifier=verifier)
 
     with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
-        adapter.submit(_intent(), b"sender-key")
+        adapter.submit(_intent())
 
     assert calls == []
     assert bridge.bridge_payloads == []
@@ -156,7 +151,7 @@ def test_verifier_failure_prevents_bridge_call() -> None:
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         with pytest.raises(ECUContextVerificationError, match="^verifier_failed_for_test$"):
-            adapter.submit(_intent(), b"sender-key")
+            adapter.submit(_intent())
 
     assert calls == ["verifier"]
     assert bridge.bridge_payloads == []
@@ -168,7 +163,7 @@ def test_missing_bridge_builder_fails_after_verifier() -> None:
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         with pytest.raises(ValueError, match="^consensus_bridge_missing_build_ecu_transfer$"):
-            adapter.submit(_intent(), b"sender-key")
+            adapter.submit(_intent())
 
     assert calls == ["verifier"]
 
@@ -180,7 +175,7 @@ def test_bridge_object_result_transfer_reference_is_accepted() -> None:
     adapter = ECUTransferAdapter(bridge, verifier=_Verifier([]))
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
-        assert adapter.submit(_intent(), b"sender-key") == "transfer-ref-obj"
+        assert adapter.submit(_intent()) == "transfer-ref-obj"
 
 
 def test_bridge_object_result_proposal_id_is_accepted() -> None:
@@ -190,7 +185,7 @@ def test_bridge_object_result_proposal_id_is_accepted() -> None:
     adapter = ECUTransferAdapter(bridge, verifier=_Verifier([]))
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
-        assert adapter.submit(_intent(), b"sender-key") == "proposal-ref-obj"
+        assert adapter.submit(_intent()) == "proposal-ref-obj"
 
 
 @pytest.mark.parametrize("bridge_result", [None, ""])
@@ -202,18 +197,35 @@ def test_bridge_empty_result_fails_closed(bridge_result: object) -> None:
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         with pytest.raises(ValueError, match="^consensus_bridge_submit_reference_invalid$"):
-            adapter.submit(_intent(), b"sender-key")
+            adapter.submit(_intent())
 
 
-def test_sender_key_material_none_rejected_before_verifier() -> None:
-    calls: list[str] = []
-    adapter = ECUTransferAdapter(_Bridge(calls), verifier=_Verifier(calls))
+def test_no_key_material_parameter_on_submit() -> None:
+    sig = inspect.signature(ECUTransferAdapter.submit)
 
+    assert "sender_key_material" not in sig.parameters
+
+
+def test_bridge_build_call_passes_no_key_material() -> None:
+    received_kwargs: list[dict[str, object]] = []
+
+    class _CapturingBridge:
+        def build_ecu_transfer(
+            self,
+            payload: dict[str, object],
+            **kwargs: object,
+        ) -> dict[str, object]:
+            received_kwargs.append(kwargs)
+            return _rust_payload()
+
+        def submit(self, payload: dict[str, object]) -> str:
+            return "transfer-ref-001"
+
+    adapter = ECUTransferAdapter(_CapturingBridge(), verifier=_Verifier([]))
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
-        with pytest.raises(ValueError, match="^sender_key_material_required$"):
-            adapter.submit(_intent(), None)
+        assert adapter.submit(_intent()) == "transfer-ref-001"
 
-    assert calls == []
+    assert received_kwargs == [{}]
 
 
 def test_missing_bridge_submit_fails_after_rust_payload_build() -> None:
@@ -223,7 +235,7 @@ def test_missing_bridge_submit_fails_after_rust_payload_build() -> None:
 
     with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         with pytest.raises(ValueError, match="^consensus_bridge_missing_submit$"):
-            adapter.submit(_intent(), b"sender-key")
+            adapter.submit(_intent())
 
     assert calls == ["verifier", "builder"]
 
