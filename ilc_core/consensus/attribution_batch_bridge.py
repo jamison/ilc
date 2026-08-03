@@ -26,12 +26,14 @@ from typing import Any
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.economics.backward_attribution_traversal import (
     BACKWARD_ATTRIBUTION_CDL_VERSION,
+    BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES,
     BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP,
     BackwardAttributionTraversal,
 )
 from ilc_core.economics.werner_attribution_bridge import (
     WERNER_APPLICATION_STAGE,
     WERNER_BRIDGE_SCOPE,
+    WERNER_BRIDGE_VERSION,
     WERNER_CDL_109_VERSION,
     WernerAttributionContext,
 )
@@ -40,6 +42,7 @@ ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
 MAX_CLAIMS_PER_BATCH = 10_000
 MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH = 1_000
+MAX_WERNER_CONTEXTS_PER_BATCH = BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES
 MAX_U64 = 18_446_744_073_709_551_615
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -142,10 +145,7 @@ def _require_werner_pressure(value: Any) -> Decimal | None:
             "Werner pressure must be exact",
         ) from exc
     if not pressure.is_finite() or pressure < Decimal("0"):
-        raise AttributionBatchBridgeError(
-            "werner_raw_pressure_must_be_non_negative_finite",
-            "Werner pressure must be non-negative and finite",
-        )
+        return None
     return pressure
 
 
@@ -226,6 +226,11 @@ def _require_werner_context_by_agent_id(
             "werner_context_by_agent_id_must_be_object",
             "Werner context must be keyed by agent id",
         )
+    if len(value) > MAX_WERNER_CONTEXTS_PER_BATCH:
+        raise AttributionBatchBridgeError(
+            "werner_context_count_exceeds_maximum",
+            "Werner context map contains too many agent entries",
+        )
     contexts: dict[str, WernerAttributionContext] = {}
     for raw_agent_id, raw_context in value.items():
         agent_id = _require_agent_id(raw_agent_id)
@@ -267,8 +272,8 @@ def _require_non_empty_bridge_string(value: Any, token: str) -> str:
 def _attribution_event_log_key(epoch: int, ordinal: int) -> str:
     key = (
         ATTRIBUTION_EVENT_LOG_KEY_PREFIX
-        + epoch.to_bytes(8, "little", signed=False)
-        + ordinal.to_bytes(8, "little", signed=False)
+        + epoch.to_bytes(8, "big", signed=False)
+        + ordinal.to_bytes(8, "big", signed=False)
     )
     return key.hex()
 
@@ -323,12 +328,15 @@ def _backward_entry_sort_key(item: dict[str, Any]) -> tuple[object, object, obje
 def _require_sorted_backward_entries(
     backward_entries: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    sorted_entries = sorted(backward_entries, key=_backward_entry_sort_key)
-    if backward_entries != sorted_entries:
-        raise AttributionBatchBridgeError(
-            "backward_attribution_entries_must_be_canonical_sorted",
-            "backward attribution entries must be sorted before hashing",
-        )
+    previous_key: tuple[object, object, object] | None = None
+    for item in backward_entries:
+        current_key = _backward_entry_sort_key(item)
+        if previous_key is not None and current_key < previous_key:
+            raise AttributionBatchBridgeError(
+                "backward_attribution_entries_must_be_canonical_sorted",
+                "backward attribution entries must be sorted before hashing",
+            )
+        previous_key = current_key
     return backward_entries
 
 
@@ -467,13 +475,23 @@ def build_attribution_batch_from_claims(
                     applied_cap_values.append(result.agent_cap_amount_ecu)
                 if final_credit.cluster_cap_applied:
                     applied_cap_values.append(result.cluster_cap_amount_ecu)
-                cap_value = min(applied_cap_values) if applied_cap_values else None
+                cap_limit_value = min(applied_cap_values) if applied_cap_values else None
+                cap_value = (
+                    final_credit.final_credit_ecu
+                    if final_credit.clipped_residual_ecu > Decimal("0")
+                    else None
+                )
                 entry = {
                     "agent_cap_applied": final_credit.agent_cap_applied,
                     "anti_gaming_cap_applied": cap_applied,
                     "cap_value": (
                         decimal_to_canonical_string(cap_value)
                         if cap_value is not None
+                        else None
+                    ),
+                    "cap_limit_value": (
+                        decimal_to_canonical_string(cap_limit_value)
+                        if cap_limit_value is not None
                         else None
                     ),
                     "clipped_residual_ecu": decimal_to_canonical_string(
@@ -492,6 +510,9 @@ def build_attribution_batch_from_claims(
                     "node_cap_applied": final_credit.node_cap_applied,
                     "pre_cap_credit_ecu": decimal_to_canonical_string(
                         final_credit.pre_cap_credit_ecu
+                    ),
+                    "pre_werner_raw_path_score": decimal_to_canonical_string(
+                        final_credit.pre_werner_raw_path_score
                     ),
                     "recipient_agent_id": final_credit.recipient_agent_id,
                     "source_node_cid": source_node_id,
@@ -599,7 +620,8 @@ def build_attribution_batch_from_claims(
                 ),
                 "werner_application_stage": WERNER_APPLICATION_STAGE,
                 "werner_attribution_bridge_scope": WERNER_BRIDGE_SCOPE,
-                "werner_attribution_bridge_version": WERNER_CDL_109_VERSION,
+                "werner_attribution_bridge_version": WERNER_BRIDGE_VERSION,
+                "werner_cdl_authority_version": WERNER_CDL_109_VERSION,
                 "werner_context_count": len(werner_contexts),
             }
         )

@@ -122,6 +122,18 @@ def _simple_backward_context() -> dict[str, object]:
     }
 
 
+def _simple_werner_backward_context() -> dict[str, object]:
+    context = _simple_backward_context()
+    context["werner_context_by_agent_id"] = {
+        AGENT_A: {
+            "agent_id": AGENT_A,
+            "epoch": 7,
+            "raw_werner_pressure": "0.10",
+        }
+    }
+    return context
+
+
 def test_claim_payload_converts_to_consensus_attribution_batch_with_dust_accounting() -> None:
     claim_payload = _passing_claim_payload()
 
@@ -399,6 +411,28 @@ def test_rust_ingest_applies_batch_and_rejects_same_epoch_replay(
         )
     assert excinfo.value.token == "rust_attribution_batch_ingest_failed"
     assert "Invalid epoch reference" in str(excinfo.value)
+
+
+def test_rust_ingest_accepts_werner_context_backward_batch(
+    attribution_binary: Path,
+    tmp_path: Path,
+) -> None:
+    batch = build_attribution_batch_from_claims(
+        _simple_claim_payload(),
+        backward_attribution_graph_context=_simple_werner_backward_context(),
+    )
+
+    assert batch["werner_context_count"] == 1
+    assert batch["backward_attribution_batch_root"] is not None
+    dry_run = apply_attribution_batch_with_rust(
+        batch,
+        consensus_lmdb=tmp_path / "werner-context.lmdb",
+        rust_binary=attribution_binary,
+        dry_run=True,
+    )
+
+    assert dry_run["marker"] == "attribution_batch_ingest_ok"
+    assert dry_run["dry_run"] is True
 
 
 def test_agent_loop_cli_apply_attribution_batch(

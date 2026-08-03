@@ -113,7 +113,7 @@ def _require_unit_interval(d: Decimal, name: str) -> Decimal:
 def compute_degree_centrality(
     adjacency: Mapping[str, Sequence[str]],
 ) -> dict[str, Decimal]:
-    """Compute normalized degree centrality for all nodes in an adjacency map.
+    """Compute normalized out-degree centrality for all nodes in an adjacency map.
 
     Parameters
     ----------
@@ -124,7 +124,7 @@ def compute_degree_centrality(
     Returns
     -------
     dict[str, Decimal]:
-        Mapping from node_id to normalized degree centrality in [0, 1].
+        Mapping from node_id to normalized out-degree centrality in [0, 1].
         For a single-node graph, centrality is Decimal("0") (no edges possible).
         For empty graphs, returns empty dict.
 
@@ -218,9 +218,9 @@ def compute_smoothed_pressure(
     if not values:
         raise ValueError("werner_raw_pressure_sequence_must_be_non_empty")
 
-    one_minus_alpha = Decimal("1") - alpha
     with localcontext() as ctx:
         ctx.prec = 28
+        one_minus_alpha = Decimal("1") - alpha
         smoothed = _coerce_decimal(values[0], "raw_pressure[0]")
         _require_non_negative(smoothed, "raw_pressure[0]")
         for i, val in enumerate(values[1:], start=1):
@@ -309,6 +309,8 @@ def is_spectral_trust_eligible(
 
     beta_floor = _coerce_decimal(beta_floor, "beta_floor")
     pulse_floor = _coerce_decimal(pulse_floor, "pulse_floor")
+    _require_unit_interval(beta_floor, "beta_floor")
+    _require_unit_interval(pulse_floor, "pulse_floor")
 
     beta_vals = list(beta_signal_history)
     pulse_vals = list(pulse_pressure_history)
@@ -408,6 +410,8 @@ def compute_werner_pressure_signal(
     # Empty topology: return 0
     if len(adjacency) == 0:
         return Decimal("0")
+    if node_id not in adjacency:
+        raise ValueError("werner_node_id_not_in_adjacency")
 
     # Resolve centrality for node_id
     if isinstance(centrality, Mapping) and node_id in centrality:
@@ -415,7 +419,6 @@ def compute_werner_pressure_signal(
         c = _coerce_decimal(raw_c, "centrality")
         _require_unit_interval(c, "centrality")
     elif isinstance(centrality, Mapping) and len(centrality) > 0:
-        # node_id not in provided centrality — compute from adjacency
         computed = compute_degree_centrality(adjacency)
         c = computed.get(node_id, Decimal("0"))
     else:
@@ -423,8 +426,8 @@ def compute_werner_pressure_signal(
         computed = compute_degree_centrality(adjacency)
         c = computed.get(node_id, Decimal("0"))
 
-    # All centrality zero or node not in graph → return 0
-    if c == Decimal("0") or node_id not in adjacency:
+    # All centrality zero → return 0
+    if c == Decimal("0"):
         return Decimal("0")
 
     # candidate_priority = centrality * beta_signal (single-epoch)
@@ -478,6 +481,8 @@ def compute_werner_smoothed_candidate_priority(
         raise ValueError("werner_adjacency_must_be_mapping")
     if len(adjacency) == 0:
         return Decimal("0")
+    if node_id not in adjacency:
+        raise ValueError("werner_node_id_not_in_adjacency")
 
     alpha = _coerce_decimal(alpha, "alpha")
     if alpha <= Decimal("0") or alpha > Decimal("1"):
@@ -496,7 +501,7 @@ def compute_werner_smoothed_candidate_priority(
         computed = compute_degree_centrality(adjacency)
         c = computed.get(node_id, Decimal("0"))
 
-    if c == Decimal("0") or node_id not in adjacency:
+    if c == Decimal("0"):
         return Decimal("0")
 
     # Build raw pressure sequence: pressure_t = centrality * beta_t

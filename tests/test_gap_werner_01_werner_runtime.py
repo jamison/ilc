@@ -151,6 +151,26 @@ class TestMalformedTopologyRejected:
         with pytest.raises(ValueError, match="werner_adjacency_neighbor_not_in_graph"):
             compute_degree_centrality({"a": ["b", "ghost"], "b": ["a"]})
 
+    def test_unknown_node_id_rejected_when_topology_non_empty(self):
+        with pytest.raises(ValueError, match="werner_node_id_not_in_adjacency"):
+            compute_werner_pressure_signal(
+                node_id="ghost",
+                adjacency={"a": ["b"], "b": ["a"]},
+                centrality={"ghost": Decimal("1")},
+                alpha=Decimal("0.5"),
+                beta_signal=Decimal("0.7"),
+            )
+
+    def test_smoothed_priority_unknown_node_id_rejected_when_topology_non_empty(self):
+        with pytest.raises(ValueError, match="werner_node_id_not_in_adjacency"):
+            compute_werner_smoothed_candidate_priority(
+                node_id="ghost",
+                adjacency={"a": ["b"], "b": ["a"]},
+                centrality={"ghost": Decimal("1")},
+                beta_signal_sequence=[Decimal("0.7")],
+                alpha=Decimal("0.5"),
+            )
+
 
 # ---------------------------------------------------------------------------
 # Test 4: Full clique — uniform pressure
@@ -524,6 +544,26 @@ class TestSpectralTrustEligibility:
         pulses = [Decimal("0.8"), Decimal("0.8"), Decimal("0.8")]
         with pytest.raises(ValueError, match="non_finite_decimal"):
             is_spectral_trust_eligible(betas, pulses)
+
+    def test_beta_floor_out_of_unit_interval_raises(self):
+        betas = [Decimal("0.8"), Decimal("0.9"), Decimal("0.8")]
+        pulses = [Decimal("0.8"), Decimal("0.8"), Decimal("0.8")]
+        with pytest.raises(ValueError, match="decimal_out_of_unit_interval_beta_floor"):
+            is_spectral_trust_eligible(
+                betas,
+                pulses,
+                beta_floor=Decimal("-0.01"),
+            )
+
+    def test_pulse_floor_out_of_unit_interval_raises(self):
+        betas = [Decimal("0.8"), Decimal("0.9"), Decimal("0.8")]
+        pulses = [Decimal("0.8"), Decimal("0.8"), Decimal("0.8")]
+        with pytest.raises(ValueError, match="decimal_out_of_unit_interval_pulse_floor"):
+            is_spectral_trust_eligible(
+                betas,
+                pulses,
+                pulse_floor=Decimal("1.01"),
+            )
 
 
 # ---------------------------------------------------------------------------

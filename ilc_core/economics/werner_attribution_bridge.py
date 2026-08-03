@@ -132,9 +132,9 @@ def compute_werner_multiplier(
         raise ValueError("werner_context_epoch_must_match_event_epoch")
     if context.raw_werner_pressure is None:
         return _absent_multiplier(agent_id=agent_id, event_epoch=normalized_epoch)
-    if (
-        isinstance(context.raw_werner_pressure, Decimal)
-        and not context.raw_werner_pressure.is_finite()
+    if isinstance(context.raw_werner_pressure, Decimal) and (
+        not context.raw_werner_pressure.is_finite()
+        or context.raw_werner_pressure < ZERO
     ):
         return _absent_multiplier(agent_id=agent_id, event_epoch=normalized_epoch)
 
