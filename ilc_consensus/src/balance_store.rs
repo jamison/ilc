@@ -155,6 +155,9 @@ impl BalanceStore {
         if sender_bal.amount_micro_ecu < amount {
             return Err(ILCConsensusError::BalanceInsufficient);
         }
+        if cert.epoch < sender_bal.epoch {
+            return Err(ILCConsensusError::InvalidEpoch);
+        }
 
         // 4. Fetch recipient balance object
         let mut recipient_bal = match txn.get(self.db, &recipient_id.0) {
@@ -163,7 +166,7 @@ impl BalanceStore {
             Err(lmdb_rkv::Error::NotFound) => ECUBalance {
                 agent: *recipient_id,
                 amount_micro_ecu: 0,
-                epoch: sender_bal.epoch,
+                epoch: cert.epoch,
                 version: 0,
             },
             Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
@@ -180,11 +183,15 @@ impl BalanceStore {
             .ok_or(ILCConsensusError::Other(
                 "ObjectRef version overflow".to_string(),
             ))?;
+        sender_bal.epoch = cert.epoch;
 
         recipient_bal.amount_micro_ecu = recipient_bal
             .amount_micro_ecu
             .checked_add(amount)
             .ok_or(ILCConsensusError::Other("ECU amount overflow".to_string()))?;
+        if cert.epoch > recipient_bal.epoch {
+            recipient_bal.epoch = cert.epoch;
+        }
         // Notice: Recipient version does not increment here because the transfer lock is purely on the sender's owned-object.
 
         // 6. Write back safely bound within the single `txn`
@@ -406,6 +413,82 @@ mod tests {
         };
         let res2 = store.apply_transfer(cert2);
         assert_eq!(res2.unwrap_err(), ILCConsensusError::ConflictingTransfer);
+    }
+
+    #[test]
+    fn test_apply_transfer_uses_certificate_epoch_for_mutated_balances() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+
+        let agent1 = AgentID([3; 48]);
+        let agent2 = AgentID([4; 48]);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(1),
+                attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: None,
+            })
+            .unwrap();
+
+        let cert = TransferCertificate {
+            transfer: ECUTransfer {
+                object_ref: ObjectRef {
+                    agent: agent1,
+                    version: 0,
+                },
+                to: agent2,
+                amount_micro_ecu: 400_000,
+                transfer_class: crate::types::TransferClass::Contribution,
+                sender_sig: dummy_agent_sig(),
+            },
+            sigs: Vec::new(),
+            epoch: EpochSeq(2),
+        };
+
+        store.apply_transfer(cert).unwrap();
+
+        assert_eq!(store.get_balance(&agent1).unwrap().epoch, EpochSeq(2));
+        assert_eq!(store.get_balance(&agent2).unwrap().epoch, EpochSeq(2));
+    }
+
+    #[test]
+    fn test_apply_transfer_rejects_stale_certificate_epoch() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+
+        let agent1 = AgentID([5; 48]);
+        let agent2 = AgentID([6; 48]);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(5),
+                attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: None,
+            })
+            .unwrap();
+
+        let cert = TransferCertificate {
+            transfer: ECUTransfer {
+                object_ref: ObjectRef {
+                    agent: agent1,
+                    version: 0,
+                },
+                to: agent2,
+                amount_micro_ecu: 400_000,
+                transfer_class: crate::types::TransferClass::Contribution,
+                sender_sig: dummy_agent_sig(),
+            },
+            sigs: Vec::new(),
+            epoch: EpochSeq(4),
+        };
+
+        assert_eq!(
+            store.apply_transfer(cert).unwrap_err(),
+            ILCConsensusError::InvalidEpoch
+        );
     }
 
     // SEC-FIX-02: apply_attribution same-epoch replay must not double-mint

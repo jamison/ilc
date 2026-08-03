@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from ilc_core.ecu.ecu_fast_path_intent import ECUFastPathIntent, TransferClass
+from ilc_core.ecu import ecu_fast_path_intent
 from ilc_core.ecu.ecu_transfer_context_verifier import (
     ECU_TRANSFER_CONTEXT_VERIFIER_VERSION,
     ECUContextVerificationError,
@@ -52,6 +53,22 @@ def test_happy_path_payment_no_anchor_stub_mode() -> None:
         ECUTransferContextVerifier().verify(intent)
 
 
+def test_happy_path_payment_with_anchor_and_graph_reader() -> None:
+    intent = _intent(transfer_class=TransferClass.PAYMENT)
+    verifier = ECUTransferContextVerifier(
+        graph_reader=_GraphReader({"node:artifact:abc123": object()})
+    )
+    with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
+        verifier.verify(intent)
+
+
+def test_payment_with_anchor_and_missing_graph_node_fails_closed() -> None:
+    intent = _intent(transfer_class=TransferClass.PAYMENT)
+    verifier = ECUTransferContextVerifier(graph_reader=_GraphReader({}))
+    with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
+        _raises_token("graph_context_anchor_not_found", verifier, intent)
+
+
 def test_contribution_without_anchor_raises_in_verifier() -> None:
     with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", True):
         _raises_token(
@@ -62,6 +79,18 @@ def test_contribution_without_anchor_raises_in_verifier() -> None:
 
 
 def test_activation_guard_blocks_when_disabled() -> None:
+    _raises_token(
+        "transfer_not_enabled_activation_guard_blocks_submission",
+        ECUTransferContextVerifier(),
+        _intent(),
+    )
+
+
+def test_source_module_activation_assignment_does_not_mutate_verifier_binding(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(ecu_fast_path_intent, "ECU_FAST_PATH_TRANSFER_ENABLED", True)
+
     _raises_token(
         "transfer_not_enabled_activation_guard_blocks_submission",
         ECUTransferContextVerifier(),
@@ -90,6 +119,14 @@ def test_non_finite_decimal_to_micro_ecu_raises() -> None:
         match="^invalid_amount_non_finite_in_micro_ecu_conversion$",
     ):
         _intent_to_micro_ecu(Decimal("NaN"))
+
+
+def test_infinite_decimal_to_micro_ecu_raises() -> None:
+    with pytest.raises(
+        ECUContextVerificationError,
+        match="^invalid_amount_non_finite_in_micro_ecu_conversion$",
+    ):
+        _intent_to_micro_ecu(Decimal("Infinity"))
 
 
 def test_fractional_micro_ecu_rejected_without_truncation() -> None:

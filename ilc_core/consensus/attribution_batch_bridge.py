@@ -33,6 +33,8 @@ from ilc_core.economics.backward_attribution_traversal import (
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
 MAX_CLAIMS_PER_BATCH = 10_000
+MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH = 1_000
+MAX_U64 = 18_446_744_073_709_551_615
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 ATTRIBUTION_EVENT_LOG_KEY_PREFIX = b"attr_event:"
@@ -121,6 +123,11 @@ def _amount_to_micro_ecu(amount: Decimal) -> tuple[int, Decimal]:
             "claim_amount_below_one_micro_ecu",
             "claim amount floors to zero micro-ECU",
         )
+    if floored > MAX_U64:
+        raise AttributionBatchBridgeError(
+            "claim_amount_micro_ecu_exceeds_u64",
+            "claim amount exceeds Rust u64 micro-ECU boundary",
+        )
     dust = (scaled - floored) / MICRO_ECU_PER_ECU
     return int(floored), dust
 
@@ -166,6 +173,11 @@ def _require_backward_graph_context(value: Any) -> dict[str, Any]:
         raise AttributionBatchBridgeError(
             "backward_attribution_events_required",
             "backward attribution graph context requires events",
+        )
+    if len(context["events"]) > MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH:
+        raise AttributionBatchBridgeError(
+            "backward_attribution_event_count_exceeds_maximum",
+            "backward attribution graph context contains too many events",
         )
     return context
 
@@ -326,12 +338,19 @@ def build_attribution_batch_from_claims(
         context = _require_backward_graph_context(backward_attribution_graph_context)
         traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
         settled_ids = frozenset(cdl084_settled_event_ids or ())
+        seen_backward_event_ids: set[str] = set()
         for ordinal, raw_event in enumerate(context["events"]):
             event = _require_backward_event(raw_event)
             event_id = _require_non_empty_bridge_string(
                 event["event_id"],
                 "backward_event_id_required",
             )
+            if event_id in seen_backward_event_ids:
+                raise AttributionBatchBridgeError(
+                    "backward_event_id_duplicate_in_batch",
+                    "backward attribution event IDs must be unique in a batch",
+                )
+            seen_backward_event_ids.add(event_id)
             event_epoch = _require_epoch(event["event_epoch"])
             if selected_epoch is not None and event_epoch != selected_epoch:
                 raise AttributionBatchBridgeError(
@@ -461,6 +480,11 @@ def build_attribution_batch_from_claims(
         "total_dust_ecu": decimal_to_canonical_string(total_dust),
         "attributions": attributions,
     }
+    if batch["total_micro_ecu"] > MAX_U64:
+        raise AttributionBatchBridgeError(
+            "attribution_batch_total_micro_ecu_exceeds_u64",
+            "attribution batch total exceeds Rust u64 micro-ECU boundary",
+        )
     if backward_attribution_graph_context is not None:
         sorted_backward_entries = sorted(
             backward_entries,
