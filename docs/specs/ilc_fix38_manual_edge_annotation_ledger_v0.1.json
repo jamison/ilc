@@ -70243,6 +70243,97 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_werner_02b_werner_guard_clearance_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_werner_02b_werner_guard_clearance_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1606_phase_GAP_ECU_TRANSFER_RC_03_python_rust_adapter",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-03 \u2014 Python to Rust ECUTransfer adapter committed under explicit adapter-wiring GO; transfer guard remains default-off.",
+      "manual_read_summary": "Runtime adapter builds Rust-compatible ECUTransfer payload dictionaries from verified ECUFastPathIntent records, enforces guard-first submit behavior, calls ECUTransferContextVerifier before bridge submit, and keeps ECU_FAST_PATH_TRANSFER_ENABLED=False.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_consensus/src/types.rs"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_RUNTIME_FOR",
+          "target": "GAP-ECU-TRANSFER-RC-03"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_RUNTIME_FOR"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/ecu/ecu_transfer_adapter.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1606_phase_GAP_ECU_TRANSFER_RC_03_python_rust_adapter",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-03 \u2014 ECU transfer adapter tests committed.",
+      "manual_read_summary": "Focused pytest suite for ECUTransferAdapter guard-first behavior, verifier-before-bridge ordering, payload conversion, wire class tags, bridge failure boundaries, and version token.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_03_g10_python_rust_adapter.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_adapter.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ecu_transfer_adapter_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1606_phase_GAP_ECU_TRANSFER_RC_03_python_rust_adapter",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-03 \u2014 phase walkthrough records GO phrase, implementation, verification, graph intake, non-claims, and output token.",
+      "manual_read_summary": "Walkthrough and verification record for GAP-ECU-TRANSFER-RC-03 Python to Rust ECUTransfer adapter phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_03_g10_python_rust_adapter.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_03_python_rust_adapter_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
