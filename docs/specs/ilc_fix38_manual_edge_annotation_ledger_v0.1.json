@@ -70334,6 +70334,77 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_03_python_rust_adapter_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_ECU_TRANSFER_RC_04_adversarial_soak",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-04 \u2014 ECU transfer adversarial soak tests committed; test-only phase with activation guard retained.",
+      "manual_read_summary": "Adversarial pytest suite covering duplicate nonce gap documentation, non-finite Decimal rejection, self-transfer, graph-anchor enforcement, u64 conversion overflow, cap boundaries, unknown anchors, payment consent preservation, activation guard blocking, and Decimal precision discipline.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_04_g10_adversarial_soak.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/ecu/ecu_transfer_adapter.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_adapter.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ecu_transfer_adversarial_soak_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_ECU_TRANSFER_RC_04_adversarial_soak",
+      "chronology_note": "2026-08-03 GAP-ECU-TRANSFER-RC-04 \u2014 phase walkthrough records adversarial soak execution, verification outputs, gap dispositions, non-claims, and output token.",
+      "manual_read_summary": "Walkthrough and verification record for GAP-ECU-TRANSFER-RC-04 ECU transfer adversarial soak phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_transfer_rc_04_g10_adversarial_soak.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_fast_path_transfer_canon_reconciliation_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_adversarial_soak_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
