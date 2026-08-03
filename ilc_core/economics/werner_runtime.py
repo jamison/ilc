@@ -52,6 +52,8 @@ DEFAULT_SMOOTHING_ALPHA = Decimal("0.50")
 
 # Precision context
 _TWELVE_PLACES = Decimal("0.000000000001")
+MAX_WERNER_ADJACENCY_NODES = 10_000
+MAX_WERNER_ADJACENCY_EDGES = 50_000
 
 # Non-activation token — embedded in runtime output to assert guard state
 WERNER_WIRING_NOT_ACTIVATED_TOKEN = "werner_credit_wiring_not_activated_gap_werner_01"
@@ -136,11 +138,15 @@ def compute_degree_centrality(
     n = len(adjacency)
     if n == 0:
         return {}
+    if n > MAX_WERNER_ADJACENCY_NODES:
+        raise ValueError("werner_adjacency_node_count_exceeds_maximum")
 
     # Validate all keys and neighbor node ids are strings.
+    node_ids: set[str] = set()
     for node in adjacency:
         if not isinstance(node, str):
             raise ValueError("werner_adjacency_keys_must_be_strings")
+        node_ids.add(node)
 
     # Denominator for normalization: max possible degree = n - 1
     if n == 1:
@@ -148,12 +154,23 @@ def compute_degree_centrality(
 
     max_degree = Decimal(str(n - 1))
     centrality: dict[str, Decimal] = {}
+    edge_count = 0
     for node, neighbors in adjacency.items():
         if isinstance(neighbors, (str, bytes)) or not isinstance(neighbors, Sequence):
             raise ValueError("werner_adjacency_neighbors_must_be_sequence")
         neighbor_list = list(neighbors)
         if any(not isinstance(neighbor, str) for neighbor in neighbor_list):
             raise ValueError("werner_adjacency_neighbor_values_must_be_strings")
+        neighbor_set = set(neighbor_list)
+        if len(neighbor_set) != len(neighbor_list):
+            raise ValueError("werner_adjacency_duplicate_neighbor")
+        if node in neighbor_set:
+            raise ValueError("werner_adjacency_self_neighbor")
+        if not neighbor_set.issubset(node_ids):
+            raise ValueError("werner_adjacency_neighbor_not_in_graph")
+        edge_count += len(neighbor_list)
+        if edge_count > MAX_WERNER_ADJACENCY_EDGES:
+            raise ValueError("werner_adjacency_edge_count_exceeds_maximum")
         degree = Decimal(str(len(neighbor_list)))
         centrality[node] = degree / max_degree
 
@@ -385,7 +402,7 @@ def compute_werner_pressure_signal(
 
     # Validate beta_signal
     beta_signal = _coerce_decimal(beta_signal, "beta_signal")
-    _require_non_negative(beta_signal, "beta_signal")
+    _require_unit_interval(beta_signal, "beta_signal")
 
     # Empty topology: return 0
     if len(adjacency) == 0:
@@ -395,7 +412,7 @@ def compute_werner_pressure_signal(
     if isinstance(centrality, Mapping) and node_id in centrality:
         raw_c = centrality[node_id]
         c = _coerce_decimal(raw_c, "centrality")
-        _require_non_negative(c, "centrality")
+        _require_unit_interval(c, "centrality")
     elif isinstance(centrality, Mapping) and len(centrality) > 0:
         # node_id not in provided centrality — compute from adjacency
         computed = compute_degree_centrality(adjacency)
@@ -473,7 +490,7 @@ def compute_werner_smoothed_candidate_priority(
     if isinstance(centrality, Mapping) and node_id in centrality:
         raw_c = centrality[node_id]
         c = _coerce_decimal(raw_c, "centrality")
-        _require_non_negative(c, "centrality")
+        _require_unit_interval(c, "centrality")
     else:
         computed = compute_degree_centrality(adjacency)
         c = computed.get(node_id, Decimal("0"))
@@ -487,13 +504,14 @@ def compute_werner_smoothed_candidate_priority(
         ctx.prec = 28
         for i, b_raw in enumerate(betas):
             b = _coerce_decimal(b_raw, f"beta_signal[{i}]")
-            _require_non_negative(b, f"beta_signal[{i}]")
+            _require_unit_interval(b, f"beta_signal[{i}]")
             raw_pressures.append((c * b).quantize(_TWELVE_PLACES))
 
     smoothed = compute_smoothed_pressure(raw_pressures, alpha)
 
     # candidate_priority = smoothed_pressure * beta_signal[-1]
     last_beta = _coerce_decimal(betas[-1], "beta_signal_last")
+    _require_unit_interval(last_beta, "beta_signal_last")
     with localcontext() as ctx:
         ctx.prec = 28
         priority = smoothed * last_beta

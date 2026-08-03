@@ -196,6 +196,24 @@ def test_age_weight_half_life_boundaries_are_exact() -> None:
     assert weights == {"B": Decimal("1"), "C": Decimal("0.5"), "D": Decimal("0.25")}
 
 
+def test_future_created_upstream_artifact_rejected() -> None:
+    engine = _engine(
+        {
+            "A": _node(agent="agent-a", epoch=0),
+            "B": _node(agent="agent-b", epoch=33),
+        },
+        [_edge("A", "B")],
+    )
+
+    with pytest.raises(ValueError, match="backward_attribution_node_created_after_event_epoch"):
+        engine.traverse(
+            "A",
+            event_id="event-1",
+            event_budget_ecu=Decimal("100"),
+            event_epoch=32,
+        )
+
+
 def test_path_scoring_ignores_caller_decimal_context_precision() -> None:
     engine = _engine(
         {
@@ -594,6 +612,38 @@ def test_duplicate_artifact_paths_collapse_to_highest_score() -> None:
     assert len(b_scores) == 1
     assert b_scores[0].depth == 1
     assert b_scores[0].raw_path_score == BACKWARD_ATTRIBUTION_DECAY_ALPHA * Decimal("0.50")
+
+
+def test_antigaming_caps_allocate_headroom_by_pre_cap_credit_not_artifact_id() -> None:
+    engine = _engine(
+        {
+            "source": _node(agent="agent-source"),
+            "a-low": _node(agent="agent-same", status="0.10"),
+            "m-mid": _node(agent="agent-same", status="0.80"),
+            "z-high": _node(agent="agent-same", status="1"),
+        },
+        [
+            _edge("source", "a-low"),
+            _edge("source", "m-mid"),
+            _edge("source", "z-high"),
+        ],
+    )
+
+    result = engine.traverse(
+        "source",
+        event_id="event-1",
+        event_budget_ecu=Decimal("100"),
+        event_epoch=0,
+        apply_antigaming_caps=True,
+    )
+
+    by_artifact = {
+        credit.upstream_artifact_id: credit.final_credit_ecu
+        for credit in result.final_credits
+    }
+    assert by_artifact["z-high"] == result.node_cap_amount_ecu
+    assert by_artifact["m-mid"] == result.node_cap_amount_ecu
+    assert by_artifact["a-low"] == Decimal("0")
 
 
 def test_cluster_cap_clips_multiple_agents_in_same_mutual_citation_cluster() -> None:

@@ -78,6 +78,25 @@ def test_non_finite_decimal_nan_raises() -> None:
     )
 
 
+def test_non_finite_decimal_infinity_raises() -> None:
+    _raises_token(
+        _intent(amount_ecu=Decimal("Infinity")),
+        "invalid_amount_non_finite",
+    )
+
+
+def test_amount_exactly_at_pre_rc_cap_is_accepted() -> None:
+    validate_intent(_intent(amount_ecu=PRE_RC_TRANSFER_CAP_ECU))
+
+
+@pytest.mark.parametrize("bad_amount", [5, 5.0])
+def test_invalid_amount_type_raises(bad_amount: object) -> None:
+    _raises_token(
+        _intent(amount_ecu=bad_amount),
+        "invalid_amount_type",
+    )
+
+
 def test_negative_amount_raises() -> None:
     _raises_token(
         _intent(amount_ecu=Decimal("-1")),
@@ -96,6 +115,34 @@ def test_amount_above_pre_rc_cap_raises() -> None:
     _raises_token(
         _intent(amount_ecu=PRE_RC_TRANSFER_CAP_ECU + Decimal("0.000001")),
         "invalid_amount_exceeds_pre_rc_cap",
+    )
+
+
+def test_whitespace_only_contribution_anchor_raises_required_anchor() -> None:
+    _raises_token(
+        _intent(graph_context_anchor=" "),
+        "invalid_graph_context_anchor_whitespace",
+    )
+
+
+def test_padded_graph_context_anchor_raises() -> None:
+    _raises_token(
+        _intent(graph_context_anchor=" node:artifact:abc123 "),
+        "invalid_graph_context_anchor_whitespace",
+    )
+
+
+def test_non_string_graph_context_anchor_raises() -> None:
+    _raises_token(
+        _intent(graph_context_anchor=123),
+        "invalid_graph_context_anchor_type",
+    )
+
+
+def test_string_transfer_class_raises() -> None:
+    _raises_token(
+        _intent(transfer_class="CONTRIBUTION"),
+        "invalid_transfer_class",
     )
 
 

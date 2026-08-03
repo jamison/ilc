@@ -620,7 +620,8 @@ gate (per the wallet gate prompt spec).
    `_RC_AUTHORIZED_FLAGS` block that allows `public_claimability_activated=True` and
    `ilc_settlement_authorized=True` while keeping transfer/withdrawal/spend blocked
 
-3. Update `run_wallet_action_semantics_preflight()` to:
+3. Update `build_wallet_action_semantics_preflight_packet()` and
+   `validate_wallet_action_semantics_preflight_packet()` to:
    - Accept `public_claimability_activated=True` as valid
    - Accept `ilc_settlement_authorized=True` as valid
    - Continue to enforce `wallet_transfer_enabled=False`, `wallet_withdrawal_enabled=False`,

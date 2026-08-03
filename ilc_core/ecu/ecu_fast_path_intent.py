@@ -46,6 +46,11 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
         raise ValueError("invalid_amount_exceeds_pre_rc_cap")
     if not isinstance(intent.transfer_class, TransferClass):
         raise ValueError("invalid_transfer_class")
+    if intent.graph_context_anchor is not None:
+        if not isinstance(intent.graph_context_anchor, str):
+            raise ValueError("invalid_graph_context_anchor_type")
+        if intent.graph_context_anchor and intent.graph_context_anchor != intent.graph_context_anchor.strip():
+            raise ValueError("invalid_graph_context_anchor_whitespace")
     if intent.transfer_class is TransferClass.CONTRIBUTION and not _present(intent.graph_context_anchor):
         raise ValueError("contribution_class_requires_graph_context_anchor")
     if not isinstance(intent.nonce, str) or not intent.nonce.strip():

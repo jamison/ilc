@@ -386,6 +386,8 @@ def _edge_from_mapping(value: object) -> BackwardAttributionEdge:
 
 
 def _age_weight(created_epoch: int, event_epoch: int) -> Decimal:
+    if created_epoch > event_epoch:
+        raise ValueError("backward_attribution_node_created_after_event_epoch")
     age_epochs = max(0, event_epoch - created_epoch)
     with localcontext() as ctx:
         ctx.prec = 50
@@ -593,7 +595,19 @@ class BackwardAttributionTraversal:
         final_credits: list[BackwardAttributionFinalCredit] = []
         total_final = ZERO
 
-        for credit in credits:
+        cap_ordered_credits = tuple(
+            sorted(
+                credits,
+                key=lambda item: (
+                    -item.pre_cap_credit_ecu,
+                    item.upstream_artifact_id,
+                    item.recipient_agent_id,
+                    item.event_id,
+                ),
+            )
+        )
+
+        for credit in cap_ordered_credits:
             cluster_id = self._cluster_ids.get(
                 credit.upstream_artifact_id,
                 f"singleton:{credit.upstream_artifact_id}",

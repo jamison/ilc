@@ -138,6 +138,20 @@ class TestTwoNodeSymmetric:
         assert isinstance(pa, Decimal)
 
 
+class TestMalformedTopologyRejected:
+    def test_duplicate_neighbors_rejected(self):
+        with pytest.raises(ValueError, match="werner_adjacency_duplicate_neighbor"):
+            compute_degree_centrality({"a": ["b", "b"], "b": ["a"]})
+
+    def test_self_neighbor_rejected(self):
+        with pytest.raises(ValueError, match="werner_adjacency_self_neighbor"):
+            compute_degree_centrality({"a": ["a"], "b": ["a"]})
+
+    def test_unknown_neighbor_rejected(self):
+        with pytest.raises(ValueError, match="werner_adjacency_neighbor_not_in_graph"):
+            compute_degree_centrality({"a": ["b", "ghost"], "b": ["a"]})
+
+
 # ---------------------------------------------------------------------------
 # Test 4: Full clique — uniform pressure
 # ---------------------------------------------------------------------------
@@ -337,6 +351,24 @@ class TestNoFloatInOutput:
                 beta_signal=Decimal("0.75"),
             )
 
+    def test_beta_above_one_raises(self):
+        adj = {"a": ["b"], "b": ["a"]}
+        centrality = {"a": Decimal("1"), "b": Decimal("1")}
+        with pytest.raises(ValueError, match="decimal_out_of_unit_interval_beta_signal"):
+            compute_werner_pressure_signal(
+                node_id="a", adjacency=adj, centrality=centrality,
+                alpha=Decimal("0.5"), beta_signal=Decimal("1.000000000001"),
+            )
+
+    def test_centrality_above_one_raises(self):
+        adj = {"a": ["b"], "b": ["a"]}
+        centrality = {"a": Decimal("1.000000000001"), "b": Decimal("1")}
+        with pytest.raises(ValueError, match="decimal_out_of_unit_interval_centrality"):
+            compute_werner_pressure_signal(
+                node_id="a", adjacency=adj, centrality=centrality,
+                alpha=Decimal("0.5"), beta_signal=Decimal("0.75"),
+            )
+
     def test_smoothed_pressure_output_is_decimal(self):
         """compute_smoothed_pressure always returns Decimal."""
         sequence = [Decimal("10"), Decimal("20"), Decimal("15")]
@@ -529,6 +561,16 @@ class TestMultiEpochSmoothedPriority:
             beta_signal_sequence=[Decimal("0.8")], alpha=Decimal("0.5"),
         )
         assert result == Decimal("0")
+
+    def test_beta_sequence_above_one_rejected(self):
+        adj = {"a": ["b"], "b": ["a"]}
+        centrality = {"a": Decimal("1"), "b": Decimal("1")}
+        with pytest.raises(ValueError, match=r"decimal_out_of_unit_interval_beta_signal\[1\]"):
+            compute_werner_smoothed_candidate_priority(
+                node_id="a", adjacency=adj, centrality=centrality,
+                beta_signal_sequence=[Decimal("0.5"), Decimal("1.1")],
+                alpha=Decimal("0.5"),
+            )
 
 
 # ---------------------------------------------------------------------------

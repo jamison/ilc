@@ -9,6 +9,7 @@ import pytest
 
 from ilc_core.consensus.attribution_batch_bridge import (
     AttributionBatchBridgeError,
+    MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH,
     _backward_attribution_batch_root,
     apply_attribution_batch_with_rust,
     build_attribution_batch_from_claims,
@@ -170,6 +171,50 @@ def test_bridge_rejects_claim_count_above_maximum() -> None:
     assert excinfo.value.token == "claim_count_exceeds_maximum"
 
 
+def test_bridge_rejects_single_attribution_amount_above_rust_u64() -> None:
+    claim_payload = {
+        "claims": [
+            {
+                "agent_id": AGENT_A,
+                "amount": "18446744073709.551616",
+                "claim_id": "claim-over-u64",
+                "epoch": 7,
+            }
+        ],
+        "marker": "agent_loop_claims_ok",
+    }
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "claim_amount_micro_ecu_exceeds_u64"
+
+
+def test_bridge_rejects_total_attribution_amount_above_rust_u64() -> None:
+    claim_payload = {
+        "claims": [
+            {
+                "agent_id": AGENT_A,
+                "amount": "9223372036854.775808",
+                "claim_id": "claim-half-a",
+                "epoch": 7,
+            },
+            {
+                "agent_id": AGENT_B,
+                "amount": "9223372036854.775808",
+                "claim_id": "claim-half-b",
+                "epoch": 7,
+            },
+        ],
+        "marker": "agent_loop_claims_ok",
+    }
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "attribution_batch_total_micro_ecu_exceeds_u64"
+
+
 def test_backward_root_requires_canonical_sorted_entries() -> None:
     sorted_entries = [
         {"event_id": "a", "recipient_agent_id": AGENT_A, "upstream_artifact_id": "node-a"},
@@ -199,6 +244,39 @@ def test_attribution_event_log_retry_does_not_silently_overwrite(tmp_path: Path)
         )
 
     assert excinfo.value.token == "attribution_event_log_file_exists"
+
+
+def test_bridge_rejects_duplicate_backward_event_id_in_same_batch() -> None:
+    context = _simple_backward_context()
+    context["events"].append(dict(context["events"][0]))
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _simple_claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "backward_event_id_duplicate_in_batch"
+
+
+def test_bridge_rejects_backward_event_count_above_maximum() -> None:
+    context = _simple_backward_context()
+    template = context["events"][0]
+    context["events"] = [
+        {
+            **template,
+            "event_id": f"event-{index}",
+        }
+        for index in range(MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH + 1)
+    ]
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _simple_claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "backward_attribution_event_count_exceeds_maximum"
 
 
 def test_zero_credit_backward_recipient_agent_id_is_still_validated() -> None:
