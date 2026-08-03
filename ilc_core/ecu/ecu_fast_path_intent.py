@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
-from uuid import UUID
 
 ECU_FAST_PATH_TRANSFER_ENABLED = False
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
@@ -70,7 +69,8 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
             raise ValueError("invalid_express_consent_whitespace")
     if not isinstance(intent.nonce, str) or not intent.nonce.strip():
         raise ValueError("invalid_nonce_empty")
-    _validate_uuid4_nonce(intent.nonce)
+    if intent.nonce != intent.nonce.strip():
+        raise ValueError("invalid_nonce_whitespace")
     if (
         not isinstance(intent.created_epoch, int)
         or isinstance(intent.created_epoch, bool)
@@ -81,17 +81,6 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
 
 def _present(value: Optional[str]) -> bool:
     return isinstance(value, str) and bool(value.strip())
-
-
-def _validate_uuid4_nonce(nonce: str) -> None:
-    if nonce != nonce.strip():
-        raise ValueError("invalid_nonce_whitespace")
-    try:
-        parsed = UUID(nonce)
-    except ValueError as exc:
-        raise ValueError("invalid_nonce_uuid4") from exc
-    if parsed.version != 4 or str(parsed) != nonce:
-        raise ValueError("invalid_nonce_uuid4")
 
 
 __all__ = [

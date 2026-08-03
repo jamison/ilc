@@ -45,7 +45,7 @@ class _RecordingBridge:
             },
             "to": payload["to"],
             "amount_micro_ecu": payload["amount_micro_ecu"],
-            "transfer_class": payload["transfer_class"],
+            "transfer_class": _rust_transfer_class(payload),
             "sender_sig": "b" * 192,
         }
         self.rust_payloads.append(rust_payload)
@@ -69,6 +69,15 @@ def _intent(**overrides: object) -> ECUFastPathIntent:
     }
     fields.update(overrides)
     return ECUFastPathIntent(**fields)
+
+
+def _rust_transfer_class(payload: dict[str, object]) -> object:
+    transfer_class = payload["transfer_class"]
+    if transfer_class == {"type": "Contribution"}:
+        return "Contribution"
+    if isinstance(transfer_class, dict) and transfer_class.get("type") == "Payment":
+        return {"Payment": {"express": transfer_class.get("express")}}
+    raise AssertionError(f"unexpected transfer_class: {transfer_class!r}")
 
 
 def _raises_value_token(intent: ECUFastPathIntent, token: str) -> None:
@@ -162,6 +171,7 @@ def test_payment_express_consent_preserved() -> None:
     payload = ECUTransferAdapter(_RecordingBridge())._build_transfer_payload(intent)
 
     assert intent.express_consent == "USER_CONSENTS_TO_PUBLIC_PAYMENT_LANE"
+    assert payload["express_consent"] == "USER_CONSENTS_TO_PUBLIC_PAYMENT_LANE"
     assert payload["transfer_class"] == {
         "type": "Payment",
         "express": {
