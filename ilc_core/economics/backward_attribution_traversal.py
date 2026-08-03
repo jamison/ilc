@@ -38,7 +38,9 @@ BACKWARD_ATTRIBUTION_ARTIFACT_MASK = frozenset(
 BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES = frozenset(
     {"PROVENANCE", "REUSE", "VALIDATE", "REVISION"}
 )
-BACKWARD_ATTRIBUTION_SCORE_FORMULA = "status_quality_weighted_distance"
+BACKWARD_ATTRIBUTION_SCORE_FORMULA = (
+    "status_quality_weighted_distance_cdl109_werner_pre_normalization"
+)
 BACKWARD_ATTRIBUTION_DECAY_ALPHA = Decimal("0.45")
 BACKWARD_ATTRIBUTION_MAX_DEPTH = 3
 BACKWARD_ATTRIBUTION_AGE_HALF_LIFE_EPOCHS = 16
@@ -103,6 +105,7 @@ class BackwardAttributionPathScore:
     path_node_ids: tuple[str, ...]
     path_edge_types: tuple[str, ...]
     raw_path_score: Decimal
+    pre_werner_raw_path_score: Decimal
     age_weight: Decimal
     typed_path_weight: Decimal
     artifact_weight: Decimal
@@ -129,6 +132,7 @@ class BackwardAttributionCreditQuote:
     recipient_agent_id: str
     depth: int
     raw_path_score: Decimal
+    pre_werner_raw_path_score: Decimal
     pre_cap_credit_ecu: Decimal
     werner_flow_budget: Decimal = Decimal("0")
     werner_multiplier: Decimal = Decimal("1")
@@ -148,6 +152,7 @@ class BackwardAttributionFinalCredit:
     recipient_agent_id: str
     depth: int
     raw_path_score: Decimal
+    pre_werner_raw_path_score: Decimal
     pre_cap_credit_ecu: Decimal
     final_credit_ecu: Decimal
     clipped_residual_ecu: Decimal
@@ -551,6 +556,7 @@ class BackwardAttributionTraversal:
                         recipient_agent_id=score.recipient_agent_id,
                         depth=score.depth,
                         raw_path_score=score.raw_path_score,
+                        pre_werner_raw_path_score=score.pre_werner_raw_path_score,
                         pre_cap_credit_ecu=pre_cap_credit,
                         werner_flow_budget=score.werner_flow_budget,
                         werner_multiplier=score.werner_multiplier,
@@ -568,6 +574,7 @@ class BackwardAttributionTraversal:
                     recipient_agent_id=last_score.recipient_agent_id,
                     depth=last_score.depth,
                     raw_path_score=last_score.raw_path_score,
+                    pre_werner_raw_path_score=last_score.pre_werner_raw_path_score,
                     pre_cap_credit_ecu=last_credit,
                     werner_flow_budget=last_score.werner_flow_budget,
                     werner_multiplier=last_score.werner_multiplier,
@@ -678,6 +685,7 @@ class BackwardAttributionTraversal:
                     recipient_agent_id=credit.recipient_agent_id,
                     depth=credit.depth,
                     raw_path_score=credit.raw_path_score,
+                    pre_werner_raw_path_score=credit.pre_werner_raw_path_score,
                     pre_cap_credit_ecu=credit.pre_cap_credit_ecu,
                     final_credit_ecu=final_credit,
                     clipped_residual_ecu=clipped_residual,
@@ -819,13 +827,13 @@ class BackwardAttributionTraversal:
                     event_epoch,
                     next_confidence,
                 )
-                adjusted_score, werner_multiplier = apply_werner_to_raw_score(
-                    raw_score,
-                    werner_context_by_agent_id.get(upstream_node.recipient_agent_id),
-                    recipient_agent_id=upstream_node.recipient_agent_id,
-                    event_epoch=event_epoch,
-                )
                 if raw_score > ZERO:
+                    adjusted_score, werner_multiplier = apply_werner_to_raw_score(
+                        raw_score,
+                        werner_context_by_agent_id.get(upstream_node.recipient_agent_id),
+                        recipient_agent_id=upstream_node.recipient_agent_id,
+                        event_epoch=event_epoch,
+                    )
                     scores.append(
                         BackwardAttributionPathScore(
                             event_id=event_id,
@@ -835,6 +843,7 @@ class BackwardAttributionTraversal:
                             path_node_ids=next_path_nodes,
                             path_edge_types=next_edge_types,
                             raw_path_score=adjusted_score,
+                            pre_werner_raw_path_score=raw_score,
                             age_weight=_age_weight(
                                 upstream_node.created_epoch,
                                 event_epoch,
