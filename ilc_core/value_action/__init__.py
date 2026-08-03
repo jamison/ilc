@@ -20,6 +20,14 @@ from ilc_core.value_action.ilc_transfer_ledger import (
     ILCTransferLedgerEntry,
     InsufficientBalanceError,
 )
+from ilc_core.value_action.ilc_transfer_receipt import (
+    ILC_TRANSFER_RECEIPT_VERSION,
+    ILCTransferBatchRoot,
+    ILCTransferReceipt,
+    build_transfer_receipt,
+    compute_transfer_batch_root,
+    verify_receipt,
+)
 from ilc_core.value_action.local_signing_provider import (
     LOCAL_SIGNING_PROVIDER_VERSION,
     LocalEd25519SigningProvider,
@@ -33,8 +41,11 @@ __all__ = [
     "ILCTransferIntent",
     "ILCTransferLedger",
     "ILCTransferLedgerEntry",
+    "ILCTransferBatchRoot",
+    "ILCTransferReceipt",
     "ACTION_NONCE_STORE_VERSION",
     "ILC_TRANSFER_LEDGER_VERSION",
+    "ILC_TRANSFER_RECEIPT_VERSION",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
     "LOCAL_SIGNING_PROVIDER_VERSION",
@@ -42,5 +53,8 @@ __all__ = [
     "NonceReplayError",
     "InsufficientBalanceError",
     "UnsupportedKeyProviderError",
+    "build_transfer_receipt",
+    "compute_transfer_batch_root",
     "validate_envelope",
+    "verify_receipt",
 ]

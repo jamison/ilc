@@ -71034,6 +71034,90 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_value_action_live_rc_04_ledger_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_05_receipt_runtime",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-05 - deterministic ILC transfer receipt and batch root runtime",
+      "manual_read_summary": "Runtime module implementing deterministic transfer receipts over RC-04 ledger entries, full receipt verification, order-independent batch roots, duplicate rejection, malformed hash rejection, and mixed-epoch rejection.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_value_action_intent_taxonomy_GAP_VALUE_ACTION_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_SPEC",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_value_action_live_rc_05_g10_transfer_receipt_verifier.md"
+        },
+        {
+          "edge_type": "USES_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_ledger.py"
+        },
+        {
+          "edge_type": "USES_RUNTIME_SURFACE",
+          "target": "ilc_core/ledger/exact_numeric.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_SPEC",
+        "USES_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/value_action/ilc_transfer_receipt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_05_receipt_tests",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-05 - transfer receipt tests",
+      "manual_read_summary": "Focused tests covering deterministic receipt hashing, entry tamper rejection, receipt metadata tamper rejection, order-independent batch root, empty batch root, duplicate rejection, mixed-epoch rejection, malformed hash rejection, and no nondeterministic runtime patterns.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_receipt.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_ledger.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_ilc_transfer_receipt_1576r.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_05_receipt_walkthrough",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-05 - receipt walkthrough and verification evidence",
+      "manual_read_summary": "Walkthrough recording RC-05 prompt hardening, deterministic receipt/root implementation, focused test output, static checks, graph delta, mirror disposition, and output token.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "ilc_core/value_action/ilc_transfer_receipt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_05_receipt_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
