@@ -70578,6 +70578,92 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_genesis_value_01_genesis_value_guard_cdl_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_genesis_value_01_genesis_value_guard_cdl_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_00_transfer_enabled_supersession",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-00 - transfer-enabled public RC scope supersession record.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Governance supersession record preserving Phase 1578h as historically correct while recording human authorization to add agent-id ILC settled transfer and bounded graph-contextual ECU fast-path transfer to public-RC launch scope, with no runtime activation.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_1578h_public_rc_wallet_gate_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:transfer_enabled_rc_scope_supersedes_1578h_default_block_GAP_VALUE_ACTION_LIVE_RC_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPERSEDES_SCOPE",
+          "target": "phase:wallet_transfer_spend_withdrawal_blocked_through_public_rc_phase_1578h"
+        },
+        {
+          "edge_type": "PRESERVES_BOUNDARY",
+          "target": "cdl:CDL-063"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-066"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-110"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPERSEDES_SCOPE",
+        "PRESERVES_BOUNDARY"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_value_action_live_rc_transfer_enabled_supersession_v0.1.md",
+      "repo_path": "docs/specs/ilc_value_action_live_rc_transfer_enabled_supersession_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_00_transfer_enabled_supersession",
+      "chronology_note": "2026-08-03 GAP-VALUE-ACTION-LIVE-RC-00 - phase walkthrough for transfer-enabled supersession record.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough records GO phrase status, 1578h default-scope evidence, MemPalace/repo source reads, output token, graph-intake coverage, taboo check, no-runtime-change boundary, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_value_action_live_rc_transfer_enabled_supersession_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_value_action_live_rc_00_g10_transfer_enabled_supersession.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:transfer_enabled_rc_scope_supersedes_1578h_default_block_GAP_VALUE_ACTION_LIVE_RC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_value_action_live_rc_00_supersession_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_00_supersession_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
