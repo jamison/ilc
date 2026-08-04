@@ -50,6 +50,7 @@ def _ns(**kwargs: object) -> argparse.Namespace:
         "agent_id": None,
         "epoch": None,
         "sig": "UNSIGNED",
+        "signing_key": None,
     }
     defaults.update(kwargs)
     return argparse.Namespace(**defaults)
@@ -169,7 +170,7 @@ _REVISE_ASSERT_PAYLOAD = json.dumps({
 
 def test_d2e_submit_cli_module_exists_and_version_constant_correct() -> None:
     assert CLI_MODULE_PATH.exists()
-    assert D2E_SUBMIT_CLI_VERSION == "d2e_submit_cli_874.v0.1"
+    assert D2E_SUBMIT_CLI_VERSION == "d2e_submit_cli_874_GAP_GRAPH_SIGN_00.v0.1"
 
 
 # ---------------------------------------------------------------------------

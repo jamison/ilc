@@ -71465,6 +71465,210 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_agent_keygen_00_agent_hotkey_cli_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Optional Ed25519 hotkey signing for ilc submit.",
+      "manual_read_summary": "Submit CLI update adding --signing-key file:// support, D2E_SUBMIT_CLI_VERSION bump, validated-envelope signing with local Ed25519 key loading, and unsigned backward compatibility.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "USES_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/local_signing_provider.py"
+        },
+        {
+          "edge_type": "USES_RUNTIME_SURFACE",
+          "target": "ilc_core/epistemic/truth_primitive_sig_verifier.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "USES_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/d2e_submit_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Submit parser --signing-key flag.",
+      "manual_read_summary": "Top-level CLI parser update exposing --signing-key for truth primitive submission while preserving --sig and payload flags.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Signed node and edge LMDB record metadata.",
+      "manual_read_summary": "Truth primitive graph store update preserving unsigned record compatibility while attaching self-contained signature verification fields to signed node and edge records.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PERSISTS_RUNTIME_SURFACE",
+          "target": "ilc_core/epistemic/truth_primitive_sig_verifier.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "PERSISTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epistemic/truth_primitive_graph_store.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Self-contained truth primitive signature verifier.",
+      "manual_read_summary": "Pure verifier helper for Ed25519 signed truth primitive node or edge records using only local record fields: raw signature hex, raw public key hex, fingerprint, scheme, and deterministic content-field JSON.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epistemic/truth_primitive_sig_verifier.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Signed graph submission tests.",
+      "manual_read_summary": "Focused tests covering unsigned compatibility, signed node and edge records, public-key hex, fingerprint, scheme, KEYGEN fingerprint consistency, wrong-key rejection, tamper rejection, unsigned verifier None, valid verifier True, no registry argument, ambiguity rejection, parser flag, and ActionType non-expansion.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/epistemic/truth_primitive_sig_verifier.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/epistemic/truth_primitive_graph_store.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_signed_graph_submission_GAP_GRAPH_SIGN_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Historical submit CLI regression updated for version bump.",
+      "manual_read_summary": "Existing Phase 874 submit CLI tests preserved and updated for the intentional GRAPH-SIGN-00 version token bump, confirming legacy submit behavior still passes.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_874_d2e_submit_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GRAPH_SIGN_00_signed_graph_submission",
+      "chronology_note": "2026-08-04 GAP-GRAPH-SIGN-00 - Phase walkthrough and verification evidence.",
+      "manual_read_summary": "Walkthrough recording token audit, direct reads, MemPalace result, signed node/edge implementation, verification command output, graph coverage, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:signed_graph_submission_committed_GAP_GRAPH_SIGN_00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:unsigned_submission_backward_compat_verified_GAP_GRAPH_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_graph_sign_00_signed_graph_submission_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
