@@ -7,7 +7,6 @@ from typing import Any
 from ilc_core.ecu.ecu_fast_path_intent import (
     ECU_FAST_PATH_TRANSFER_ENABLED,
     ECUFastPathIntent,
-    TransferClass,
     validate_intent,
 )
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
@@ -56,6 +55,8 @@ class ECUTransferContextVerifier:
     ) -> None:
         if genesis_value_certificate is not None and current_epoch is None:
             raise ValueError("current_epoch_required_with_genesis_value_certificate")
+        if genesis_value_certificate is not None and genesis_epoch_spent_micro_ecu is None:
+            raise ValueError("genesis_epoch_spent_required_with_genesis_value_certificate")
         self._graph_reader = graph_reader
         self._genesis_value_certificate = genesis_value_certificate
         self._current_epoch = current_epoch

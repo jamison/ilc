@@ -7,6 +7,11 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric import ed25519
+
+from ilc_core.crypto.cose_sign1 import cose_sign1_verify
+from ilc_core.encoding.dag_cbor import encode_dag_cbor
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 
 GENESIS_VALUE_GUARD_VERSION = "genesis_value_action_guard_GAP_GENESIS_VALUE_02_v0_1"
@@ -18,6 +23,7 @@ GENESIS_VALUE_ALLOWED_RECIPIENT_POLICY = "graph_context_required"
 GENESIS_VALUE_GUARDIAN_THRESHOLD = 2
 GENESIS_VALUE_GUARDIAN_KEY_COUNT = 3
 GENESIS_VALUE_GUARDIAN_SIGNATURE_SCHEME = "Ed25519-COSE-Sign1"
+GENESIS_VALUE_MAX_COSE_SIGN1_BYTES = 4096
 GENESIS_VALUE_MAX_POLICY_WINDOW_EPOCHS = 4
 GENESIS_VALUE_MAX_PER_TRANSFER_MICRO_ECU = 1_000_000_000
 GENESIS_VALUE_MAX_PER_EPOCH_MICRO_ECU = 5_000_000_000
@@ -119,20 +125,25 @@ def validate_genesis_value_certificate(
     )
     if compute_certificate_payload_sha256(cert) != cert.certificate_payload_sha256:
         raise GenesisValueGuardError("genesis_value_certificate_payload_sha256_mismatch")
-    _validate_certificate_sig(cert.certificate_sig)
+    _validate_certificate_sig(cert.certificate_sig, cert)
 
 
 def compute_certificate_payload_sha256(
     cert: GenesisValueActionPolicyCertificate,
 ) -> str:
-    """Return SHA-256 over the canonical CDL-110 certificate payload."""
+    """Return SHA-256 over the self-reference-free CDL-110 payload."""
     return hashlib.sha256(_json_bytes(canonical_certificate_payload(cert))).hexdigest()
 
 
 def canonical_certificate_payload(
     cert: GenesisValueActionPolicyCertificate,
 ) -> dict[str, object]:
-    """Return the certificate payload covered by guardian signatures."""
+    """Return the certificate payload covered by guardian signatures.
+
+    The payload necessarily excludes both the signature bundle and this
+    payload's own SHA-256 field; including either would make the certificate
+    self-referential and unverifiable by independent implementations.
+    """
     return {
         "allowed_action_classes": sorted(cert.allowed_action_classes),
         "allowed_recipient_policy": cert.allowed_recipient_policy,
@@ -195,12 +206,17 @@ def enforce_genesis_value_guard(
         "genesis_value_epoch_spend_required",
     )
 
-    if not isinstance(recipient_agent_id, str) or not recipient_agent_id:
-        raise GenesisValueGuardError("genesis_value_recipient_agent_id_invalid")
-    if not _present(graph_context_anchor):
+    _require_canonical_string(
+        recipient_agent_id,
+        "genesis_value_recipient_agent_id_invalid",
+    )
+    if not _canonical_present(graph_context_anchor):
         raise GenesisValueGuardError("genesis_value_graph_context_required")
-    if action_class == "PAYMENT" and not _present(consent_or_agreement_reference):
-        raise GenesisValueGuardError("genesis_value_payment_consent_required")
+    if action_class == "PAYMENT":
+        _require_canonical_string(
+            consent_or_agreement_reference,
+            "genesis_value_payment_consent_required",
+        )
     if unit not in _UNITS:
         raise GenesisValueGuardError("genesis_value_unit_invalid")
 
@@ -253,19 +269,122 @@ def _caps_for_unit(
     raise GenesisValueGuardError("genesis_value_unit_invalid")
 
 
-def _validate_certificate_sig(value: Mapping[str, object]) -> None:
+def _validate_certificate_sig(
+    value: Mapping[str, object],
+    cert: GenesisValueActionPolicyCertificate,
+) -> None:
     if not isinstance(value, Mapping):
         raise GenesisValueGuardError("genesis_value_certificate_signature_bundle_invalid")
     if value.get("threshold") != GENESIS_VALUE_GUARDIAN_THRESHOLD:
         raise GenesisValueGuardError("genesis_value_certificate_signature_threshold_invalid")
+    guardian_public_keys = value.get("guardian_public_keys")
+    if not isinstance(guardian_public_keys, Sequence) or isinstance(
+        guardian_public_keys, (str, bytes)
+    ):
+        raise GenesisValueGuardError("genesis_value_certificate_guardian_keys_invalid")
+    if len(guardian_public_keys) != GENESIS_VALUE_GUARDIAN_KEY_COUNT:
+        raise GenesisValueGuardError("genesis_value_certificate_guardian_key_count_invalid")
+    public_keys_by_guardian = _parse_guardian_public_keys(guardian_public_keys)
+    if _guardian_public_key_root(guardian_public_keys) != cert.guardian_public_key_root:
+        raise GenesisValueGuardError("genesis_value_certificate_guardian_root_mismatch")
+
     signatures = value.get("signatures")
     if not isinstance(signatures, Sequence) or isinstance(signatures, (str, bytes)):
         raise GenesisValueGuardError("genesis_value_certificate_signatures_invalid")
     if len(signatures) < GENESIS_VALUE_GUARDIAN_THRESHOLD:
         raise GenesisValueGuardError("genesis_value_certificate_signatures_insufficient")
+    if len(signatures) > GENESIS_VALUE_GUARDIAN_KEY_COUNT:
+        raise GenesisValueGuardError("genesis_value_certificate_signatures_too_many")
+    signed_guardians: set[str] = set()
+    payload = encode_dag_cbor(canonical_certificate_payload(cert))
     for signature in signatures:
         if not isinstance(signature, Mapping) or not signature:
             raise GenesisValueGuardError("genesis_value_certificate_signature_entry_invalid")
+        guardian_id = _require_canonical_string(
+            signature.get("guardian_id"),
+            "genesis_value_certificate_signature_guardian_invalid",
+        )
+        if guardian_id in signed_guardians:
+            raise GenesisValueGuardError("genesis_value_certificate_signature_guardian_duplicate")
+        public_key_bytes = public_keys_by_guardian.get(guardian_id)
+        if public_key_bytes is None:
+            raise GenesisValueGuardError("genesis_value_certificate_signature_guardian_unknown")
+        cose_sign1_hex = _require_hex_even_bytes(
+            signature.get("cose_sign1_hex"),
+            "genesis_value_certificate_signature_cose_invalid",
+            max_bytes=GENESIS_VALUE_MAX_COSE_SIGN1_BYTES,
+        )
+        try:
+            public_key = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
+            decoded = cose_sign1_verify(
+                bytes.fromhex(cose_sign1_hex),
+                public_key,
+                external_aad=_certificate_external_aad(cert),
+            )
+        except (InvalidSignature, TypeError, ValueError) as exc:
+            raise GenesisValueGuardError("genesis_value_certificate_signature_invalid") from exc
+        if decoded.get("payload") != payload:
+            raise GenesisValueGuardError("genesis_value_certificate_signature_payload_mismatch")
+        signed_guardians.add(guardian_id)
+    if len(signed_guardians) < GENESIS_VALUE_GUARDIAN_THRESHOLD:
+        raise GenesisValueGuardError("genesis_value_certificate_signatures_insufficient")
+
+
+def _parse_guardian_public_keys(
+    descriptors: Sequence[object],
+) -> dict[str, bytes]:
+    public_keys_by_guardian: dict[str, bytes] = {}
+    for descriptor in descriptors:
+        if not isinstance(descriptor, Mapping):
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
+        guardian_id = _require_canonical_string(
+            descriptor.get("guardian_id"),
+            "genesis_value_certificate_guardian_id_invalid",
+        )
+        if guardian_id in public_keys_by_guardian:
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_id_duplicate")
+        public_key_hex = _require_hex_even_bytes(
+            descriptor.get("public_key_hex"),
+            "genesis_value_certificate_guardian_public_key_invalid",
+            max_bytes=32,
+        )
+        public_key_bytes = bytes.fromhex(public_key_hex)
+        if len(public_key_bytes) != 32:
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_public_key_invalid")
+        public_keys_by_guardian[guardian_id] = public_key_bytes
+    return public_keys_by_guardian
+
+
+def _guardian_public_key_root(descriptors: Sequence[object]) -> str:
+    normalized = []
+    for descriptor in descriptors:
+        if not isinstance(descriptor, Mapping):
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
+        normalized.append(
+            {
+                "guardian_id": _require_canonical_string(
+                    descriptor.get("guardian_id"),
+                    "genesis_value_certificate_guardian_id_invalid",
+                ),
+                "public_key_hex": _require_hex_even_bytes(
+                    descriptor.get("public_key_hex"),
+                    "genesis_value_certificate_guardian_public_key_invalid",
+                    max_bytes=32,
+                ),
+            }
+        )
+    normalized.sort(key=lambda entry: entry["guardian_id"])
+    return hashlib.sha256(_json_bytes({"guardian_public_keys": normalized})).hexdigest()
+
+
+def _certificate_external_aad(cert: GenesisValueActionPolicyCertificate) -> bytes:
+    return _json_bytes(
+        {
+            "certificate_id": cert.certificate_id,
+            "nonce_domain": cert.nonce_domain,
+            "signature_scheme": cert.guardian_signature_scheme,
+        }
+    )
 
 
 def _require_u64(value: object, token: str) -> int:
@@ -294,8 +413,22 @@ def _require_sha256_hex(value: object, token: str) -> str:
     return value
 
 
-def _present(value: str | None) -> bool:
-    return isinstance(value, str) and bool(value.strip())
+def _require_hex_even_bytes(value: object, token: str, *, max_bytes: int | None = None) -> str:
+    if not isinstance(value, str) or not value or len(value) % 2 != 0:
+        raise GenesisValueGuardError(token)
+    if max_bytes is not None and len(value) > max_bytes * 2:
+        raise GenesisValueGuardError(token)
+    try:
+        bytes.fromhex(value)
+    except ValueError as exc:
+        raise GenesisValueGuardError(token) from exc
+    if value.lower() != value:
+        raise GenesisValueGuardError(token)
+    return value
+
+
+def _canonical_present(value: str | None) -> bool:
+    return isinstance(value, str) and bool(value) and value == value.strip()
 
 
 def _json_bytes(payload: dict[str, Any]) -> bytes:
