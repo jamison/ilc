@@ -3,7 +3,9 @@
 
 The bridge exposes the read-only ILCAppReadService gRPC surface plus the Phase
 1587 SubmitEpochProposal ingress client. The historical QUIC transfer path name
-is retained for compatibility, but end-user ECU transfer remains unauthorized.
+is retained for compatibility. Bounded ECU fast-path transfer is command-backed:
+the Python bridge never receives sender key material and fails closed unless the
+operator configures local Rust builder/submit commands.
 """
 
 from __future__ import annotations
@@ -11,6 +13,9 @@ from __future__ import annotations
 import importlib
 import hashlib
 import json
+import os
+import shlex
+import subprocess
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -49,6 +54,7 @@ MAX_EPOCH_CHAIN_RECORDS = 1024
 MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
 MAX_PROPOSAL_BODY_BYTES = 256 * 1024
 MAX_PROPOSAL_GRPC_OVERHEAD_BYTES = 4096
+MAX_ECU_TRANSFER_COMMAND_BYTES = 64 * 1024
 MICRO_ECU_PER_ECU = Decimal("1000000")
 UINT64_MAX = Decimal("18446744073709551615")
 AGENT_ID_LENGTH_BYTES = 48
@@ -56,6 +62,8 @@ CIDV1_ROOT_LENGTH_BYTES = 36
 SHA256_LENGTH_BYTES = 32
 SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN = "submit_epoch_proposal_accepted_phase_1586"
 EPOCH_PROPOSAL_PREIMAGE_DOMAIN = b"ILC_SUBMIT_EPOCH_PROPOSAL_V1"
+ECU_TRANSFER_BUILDER_COMMAND_ENV = "ILC_ECU_TRANSFER_BUILDER_COMMAND"
+ECU_TRANSFER_SUBMIT_COMMAND_ENV = "ILC_ECU_TRANSFER_SUBMIT_COMMAND"
 
 
 class UnaryUnaryRpc(Protocol):
@@ -327,6 +335,49 @@ def _decimal_to_string(value: Decimal) -> str:
 
 def _canonical_json(value: Mapping[str, Any]) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def _reject_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant is not allowed: {value}")
+
+
+def _run_json_command(
+    *,
+    command: str | None,
+    payload: Mapping[str, Any],
+    missing_token: str,
+    failed_token: str,
+    timeout_seconds: int,
+) -> Any:
+    if command is None or not isinstance(command, str) or not command.strip():
+        raise ValueError(missing_token)
+    if not isinstance(payload, Mapping):
+        raise ValueError(failed_token)
+    input_bytes = _canonical_json(payload).encode("utf-8")
+    if len(input_bytes) > MAX_ECU_TRANSFER_COMMAND_BYTES:
+        raise ValueError(failed_token)
+    try:
+        completed = subprocess.run(
+            shlex.split(command),
+            input=input_bytes,
+            capture_output=True,
+            check=False,
+            timeout=timeout_seconds,
+        )
+    except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
+        raise ValueError(failed_token) from exc
+    if completed.returncode != 0:
+        raise ValueError(failed_token)
+    stdout = completed.stdout
+    if not stdout or len(stdout) > MAX_ECU_TRANSFER_COMMAND_BYTES:
+        raise ValueError(failed_token)
+    try:
+        return json.loads(
+            stdout.decode("utf-8"),
+            parse_constant=_reject_non_finite_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ValueError(failed_token) from exc
 
 
 def quote_to_canonical_json(quote: Any) -> str:
@@ -938,6 +989,71 @@ class ILCConsensusGrpcReadAdapter:
             production_bridge_active=PRODUCTION_BRIDGE_ACTIVE,
         )
 
+    def build_ecu_transfer(self, bridge_payload: Mapping[str, Any]) -> dict[str, Any]:
+        """Build a signed Rust ECUTransfer payload via a local Rust command.
+
+        Python validates and supplies transfer intent context only. The configured
+        command must look up the sender key locally and return exact Rust payload
+        fields; no sender key material crosses this Python boundary.
+        """
+
+        if not PRODUCTION_BRIDGE_ACTIVE:
+            raise ValueError(LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN)
+        if not isinstance(bridge_payload, Mapping):
+            raise ValueError("ecu_transfer_bridge_payload_invalid_phase_rc05_fix1")
+        sender_agent_id = _require_lower_sha384_hex(
+            bridge_payload.get("sender_agent_id"),
+            "ecu_transfer_sender_agent_id_invalid_phase_rc05_fix1",
+        )
+        builder_command = os.environ.get(ECU_TRANSFER_BUILDER_COMMAND_ENV)
+        if builder_command is None or not builder_command.strip():
+            raise ValueError("ecu_transfer_rust_builder_command_missing_phase_rc05_fix1")
+        # Bind ObjectRef.version to the consensus read surface immediately before
+        # signing so the Rust builder cannot accidentally reuse a stale version.
+        balance_quote = self.get_balance(bytes.fromhex(sender_agent_id))
+        command_payload: dict[str, Any] = dict(bridge_payload)
+        command_payload["object_ref_version"] = balance_quote.version
+        command_payload["sender_balance_epoch"] = balance_quote.epoch
+        command_payload["production_bridge_active"] = PRODUCTION_BRIDGE_ACTIVE
+        result = _run_json_command(
+            command=builder_command,
+            payload=command_payload,
+            missing_token="ecu_transfer_rust_builder_command_missing_phase_rc05_fix1",
+            failed_token="ecu_transfer_rust_builder_command_failed_phase_rc05_fix1",
+            timeout_seconds=self.config.grpc_timeout_seconds,
+        )
+        if not isinstance(result, dict):
+            raise ValueError("ecu_transfer_rust_builder_command_failed_phase_rc05_fix1")
+        return result
+
+    def submit(self, rust_payload: Mapping[str, Any]) -> Any:
+        """Submit a Rust-built ECUTransfer via a configured local command."""
+
+        if not PRODUCTION_BRIDGE_ACTIVE:
+            raise ValueError(LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN)
+        if not isinstance(rust_payload, Mapping):
+            raise ValueError("ecu_transfer_rust_payload_invalid_phase_rc05_fix1")
+        submit_command = os.environ.get(ECU_TRANSFER_SUBMIT_COMMAND_ENV)
+        if submit_command is None or not submit_command.strip():
+            raise ValueError("ecu_transfer_rust_submit_command_missing_phase_rc05_fix1")
+        result = _run_json_command(
+            command=submit_command,
+            payload=rust_payload,
+            missing_token="ecu_transfer_rust_submit_command_missing_phase_rc05_fix1",
+            failed_token="ecu_transfer_rust_submit_command_failed_phase_rc05_fix1",
+            timeout_seconds=self.config.grpc_timeout_seconds,
+        )
+        if isinstance(result, str) and result:
+            return result
+        if isinstance(result, Mapping):
+            transfer_reference = result.get("transfer_reference")
+            if isinstance(transfer_reference, str) and transfer_reference:
+                return transfer_reference
+            proposal_id = result.get("proposal_id")
+            if isinstance(proposal_id, str) and proposal_id:
+                return proposal_id
+        raise ValueError("ecu_transfer_rust_submit_command_failed_phase_rc05_fix1")
+
     def get_epoch_record(self, epoch: int) -> EpochRecordQuote:
         normalized_epoch = _require_uint64_int(
             epoch,
@@ -1272,6 +1388,8 @@ __all__ = [
     "ConsensusBridgeConfig",
     "DEFAULT_GRPC_TIMEOUT_SECONDS",
     "EPOCH_PROPOSAL_PREIMAGE_DOMAIN",
+    "ECU_TRANSFER_BUILDER_COMMAND_ENV",
+    "ECU_TRANSFER_SUBMIT_COMMAND_ENV",
     "EpochChainQuote",
     "EpochProposalSubmissionResult",
     "EpochRecordQuote",

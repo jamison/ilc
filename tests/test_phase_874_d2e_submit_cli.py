@@ -346,6 +346,41 @@ def test_handle_submit_payload_file_valid_path(tmp_path: Path) -> None:
     assert result["creates_node"] is False
 
 
+def test_handle_submit_rejects_non_finite_json_constants() -> None:
+    ns = _ns(
+        primitive="assert.truth",
+        payload_json=(
+            '{"content":{"body":NaN},"epistemic_type":"objective",'
+            '"parent_node_ids":[],"primitive_type":"observation"}'
+        ),
+        agent_id="agent-abc",
+        epoch=1,
+    )
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+    assert exc_info.value.token == "submit_payload_invalid_json"
+
+
+def test_handle_submit_rejects_oversized_payload() -> None:
+    oversized_body = "x" * (256 * 1024)
+    ns = _ns(
+        primitive="assert.truth",
+        payload_json=json.dumps(
+            {
+                "content": {"body": oversized_body},
+                "epistemic_type": "objective",
+                "parent_node_ids": [],
+                "primitive_type": "observation",
+            }
+        ),
+        agent_id="agent-abc",
+        epoch=1,
+    )
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+    assert exc_info.value.token == "submit_payload_too_large"
+
+
 # ---------------------------------------------------------------------------
 # 11. main.py structural checks
 # ---------------------------------------------------------------------------

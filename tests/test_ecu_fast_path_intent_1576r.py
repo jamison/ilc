@@ -7,6 +7,9 @@ import pytest
 from ilc_core.ecu.ecu_fast_path_intent import (
     ECU_FAST_PATH_INTENT_VERSION,
     ECU_FAST_PATH_TRANSFER_ENABLED,
+    MAX_EXPRESS_CONSENT_BYTES,
+    MAX_GRAPH_CONTEXT_ANCHOR_BYTES,
+    MAX_NONCE_BYTES,
     PRE_RC_TRANSFER_CAP_ECU,
     ECUFastPathIntent,
     TransferClass,
@@ -137,6 +140,13 @@ def test_padded_graph_context_anchor_raises() -> None:
     )
 
 
+def test_graph_context_anchor_size_cap_raises() -> None:
+    _raises_token(
+        _intent(graph_context_anchor="g" * (MAX_GRAPH_CONTEXT_ANCHOR_BYTES + 1)),
+        "invalid_graph_context_anchor_too_large",
+    )
+
+
 def test_non_string_graph_context_anchor_raises() -> None:
     _raises_token(
         _intent(graph_context_anchor=123),
@@ -231,6 +241,17 @@ def test_express_consent_must_be_non_empty_unpadded_string() -> None:
     )
 
 
+def test_express_consent_size_cap_raises() -> None:
+    _raises_token(
+        _intent(
+            transfer_class=TransferClass.PAYMENT,
+            graph_context_anchor=None,
+            express_consent="c" * (MAX_EXPRESS_CONSENT_BYTES + 1),
+        ),
+        "invalid_express_consent_too_large",
+    )
+
+
 def test_nonce_is_non_empty_unpadded_string_not_uuid4_protocol_constraint() -> None:
     validate_intent(_intent(nonce="not-a-uuid-but-valid-canonical-token"))
     validate_intent(_intent(nonce="550e8400-e29b-11d4-a716-446655440000"))
@@ -238,6 +259,13 @@ def test_nonce_is_non_empty_unpadded_string_not_uuid4_protocol_constraint() -> N
     _raises_token(
         _intent(nonce=" 550e8400-e29b-41d4-a716-446655440000 "),
         "invalid_nonce_whitespace",
+    )
+
+
+def test_nonce_size_cap_raises() -> None:
+    _raises_token(
+        _intent(nonce="n" * (MAX_NONCE_BYTES + 1)),
+        "invalid_nonce_too_large",
     )
 
 

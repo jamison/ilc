@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sys
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -14,6 +15,8 @@ from ilc_core.consensus import (
     GET_EPOCH_GET_BALANCE_GET_EPOCH_RECORD_GET_EPOCH_CHAIN_TOKEN,
     ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION,
     LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN,
+    ECU_TRANSFER_BUILDER_COMMAND_ENV,
+    ECU_TRANSFER_SUBMIT_COMMAND_ENV,
     MAX_PROPOSAL_BODY_BYTES,
     MAX_PROPOSAL_GRPC_OVERHEAD_BYTES,
     PRODUCTION_BRIDGE_ACTIVE,
@@ -130,6 +133,18 @@ def _adapter(stub: FakeReadStub, *, timeout: int = 7) -> ILCConsensusGrpcReadAda
     )
 
 
+def _json_command(tmp_path: Path, name: str, body: str) -> str:
+    script = tmp_path / name
+    script.write_text(
+        "import json, sys\n"
+        "payload = json.loads(sys.stdin.read())\n"
+        + body
+        + "\n",
+        encoding="utf-8",
+    )
+    return f"{sys.executable} {script}"
+
+
 def test_phase_1358_tokens_and_phase_1587_activation_exported() -> None:
     assert (
         ILC_CORE_CONSENSUS_GRPC_ADAPTER_VERSION
@@ -154,6 +169,8 @@ def test_phase_1358_tokens_and_phase_1587_activation_exported() -> None:
         PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN
         == "production_bridge_activated_phase_1587"
     )
+    assert ECU_TRANSFER_BUILDER_COMMAND_ENV == "ILC_ECU_TRANSFER_BUILDER_COMMAND"
+    assert ECU_TRANSFER_SUBMIT_COMMAND_ENV == "ILC_ECU_TRANSFER_SUBMIT_COMMAND"
 
 
 def test_get_epoch_and_balance_use_explicit_timeout_and_decimal_amounts() -> None:
@@ -193,6 +210,95 @@ def test_get_balance_rejects_bad_agent_id_and_nonfinite_amount() -> None:
     )
     with pytest.raises(ValueError, match="invalid_amount_non_finite"):
         adapter.get_balance(bytes([2]) * 48)
+
+
+def test_ecu_transfer_builder_command_missing_fails_before_balance(monkeypatch: pytest.MonkeyPatch) -> None:
+    stub = FakeReadStub()
+    adapter = _adapter(stub)
+    monkeypatch.delenv(ECU_TRANSFER_BUILDER_COMMAND_ENV, raising=False)
+    with pytest.raises(
+        ValueError,
+        match="^ecu_transfer_rust_builder_command_missing_phase_rc05_fix1$",
+    ):
+        adapter.build_ecu_transfer({"sender_agent_id": "a" * 96})
+    assert stub.GetBalance.calls == []
+
+
+def test_ecu_transfer_builder_command_gets_current_object_ref_version(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    command = _json_command(
+        tmp_path,
+        "builder.py",
+        """
+assert payload["sender_agent_id"] == "a" * 96
+assert payload["object_ref_version"] == 4
+assert payload["sender_balance_epoch"] == 8
+json.dump({
+    "amount_micro_ecu": payload["amount_micro_ecu"],
+    "object_ref": {"agent": payload["sender_agent_id"], "version": payload["object_ref_version"]},
+    "sender_sig": "b" * 192,
+    "to": payload["to"],
+    "transfer_class": "Contribution",
+}, sys.stdout, sort_keys=True)
+""",
+    )
+    monkeypatch.setenv(ECU_TRANSFER_BUILDER_COMMAND_ENV, command)
+    stub = FakeReadStub()
+    adapter = _adapter(stub)
+
+    result = adapter.build_ecu_transfer(
+        {
+            "amount_micro_ecu": 1_500_000,
+            "bridge_payload_version": "ecu_transfer_adapter_03.v0.1",
+            "graph_context_anchor": "node:artifact:abc123",
+            "nonce": "nonce-1",
+            "sender_agent_id": "a" * 96,
+            "to": "b" * 96,
+            "transfer_class": {"type": "Contribution"},
+        }
+    )
+
+    assert result["object_ref"] == {"agent": "a" * 96, "version": 4}
+    assert result["to"] == "b" * 96
+    assert stub.GetBalance.calls[0][0].agent_id == bytes.fromhex("a" * 96)
+
+
+def test_ecu_transfer_submit_command_returns_reference(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    command = _json_command(
+        tmp_path,
+        "submit.py",
+        """
+assert payload["object_ref"]["agent"] == "a" * 96
+json.dump({"transfer_reference": "ecu-transfer-ref-001"}, sys.stdout, sort_keys=True)
+""",
+    )
+    monkeypatch.setenv(ECU_TRANSFER_SUBMIT_COMMAND_ENV, command)
+    adapter = _adapter(FakeReadStub())
+
+    assert adapter.submit(
+        {
+            "amount_micro_ecu": 1_500_000,
+            "object_ref": {"agent": "a" * 96, "version": 4},
+            "sender_sig": "b" * 192,
+            "to": "b" * 96,
+            "transfer_class": "Contribution",
+        }
+    ) == "ecu-transfer-ref-001"
+
+
+def test_ecu_transfer_submit_command_missing_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    adapter = _adapter(FakeReadStub())
+    monkeypatch.delenv(ECU_TRANSFER_SUBMIT_COMMAND_ENV, raising=False)
+    with pytest.raises(
+        ValueError,
+        match="^ecu_transfer_rust_submit_command_missing_phase_rc05_fix1$",
+    ):
+        adapter.submit({"object_ref": {"agent": "a" * 96, "version": 4}})
 
 
 def test_epoch_record_and_epoch_chain_are_bounded_and_timeout_explicit() -> None:

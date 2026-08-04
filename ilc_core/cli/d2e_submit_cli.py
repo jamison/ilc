@@ -36,6 +36,7 @@ D2E_SUBMIT_CLI_VERSION = "d2e_submit_cli_874_GAP_GRAPH_SIGN_00.v0.1"
 CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
+_MAX_SUBMIT_PAYLOAD_BYTES = 256 * 1024
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -48,6 +49,10 @@ class SubmitCommandError(Exception):
         super().__init__(message)
         self.token = token
         self.message = message
+
+
+def _reject_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant is not allowed: {value}")
 
 
 def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
@@ -82,9 +87,25 @@ def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
                 f"could not read payload file: {exc}",
             ) from exc
 
+    if not isinstance(raw, str):
+        raise SubmitCommandError(
+            "submit_payload_invalid_type",
+            "payload source must produce text JSON",
+        )
+    if len(raw.encode("utf-8")) > _MAX_SUBMIT_PAYLOAD_BYTES:
+        raise SubmitCommandError(
+            "submit_payload_too_large",
+            "payload exceeds maximum submit payload size",
+        )
+
     try:
-        payload = json.loads(raw)
+        payload = json.loads(raw, parse_constant=_reject_non_finite_json_constant)
     except json.JSONDecodeError as exc:
+        raise SubmitCommandError(
+            "submit_payload_invalid_json",
+            f"payload is not valid JSON: {exc}",
+        ) from exc
+    except ValueError as exc:
         raise SubmitCommandError(
             "submit_payload_invalid_json",
             f"payload is not valid JSON: {exc}",
