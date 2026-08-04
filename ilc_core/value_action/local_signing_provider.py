@@ -145,7 +145,10 @@ class LocalEd25519SigningProvider:
             raise UnsupportedKeyProviderError("unsupported_key_provider_authority")
         if not parsed.path:
             raise ValueError("invalid_file_key_uri")
-        return Path(unquote(parsed.path))
+        path = Path(unquote(parsed.path))
+        if not path.is_absolute():
+            raise ValueError("invalid_file_key_uri_not_absolute")
+        return path
 
 
 __all__ = [

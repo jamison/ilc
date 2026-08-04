@@ -61,10 +61,14 @@ class _BuildOnlyBridge:
         return _rust_payload()
 
 
+_SENDER_ID = "a" * 96
+_RECIPIENT_ID = "b" * 96
+
+
 def _intent(**overrides: object) -> ECUFastPathIntent:
     fields = {
-        "sender_agent_id": "agent_sender",
-        "recipient_agent_id": "agent_recipient",
+        "sender_agent_id": _SENDER_ID,
+        "recipient_agent_id": _RECIPIENT_ID,
         "amount_ecu": Decimal("1.5"),
         "transfer_class": TransferClass.CONTRIBUTION,
         "graph_context_anchor": "node:artifact:abc123",
@@ -78,8 +82,8 @@ def _intent(**overrides: object) -> ECUFastPathIntent:
 
 def _rust_payload(**overrides: object) -> dict[str, object]:
     payload: dict[str, object] = {
-        "object_ref": {"agent": "agent_sender", "version": 0},
-        "to": "agent_recipient",
+        "object_ref": {"agent": _SENDER_ID, "version": 0},
+        "to": _RECIPIENT_ID,
         "amount_micro_ecu": 1_500_000,
         "transfer_class": "Contribution",
         "sender_sig": "b" * 192,

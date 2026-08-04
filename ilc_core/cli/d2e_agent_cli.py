@@ -99,9 +99,17 @@ def _write_private_key_pem_atomic(final_path: Path, key_bytes: bytes) -> None:
             handle.write(key_bytes)
             handle.flush()
             os.fsync(handle.fileno())
-        if final_path.exists():
+        # Atomic exclusive create: os.link fails with FileExistsError if
+        # final_path already exists, closing the TOCTOU between the initial
+        # existence check (line 80) and the write.  os.replace would silently
+        # overwrite a concurrently created key file; os.link does not.
+        try:
+            os.link(tmp_path, str(final_path))
+        except FileExistsError:
             raise ValueError("agent_keygen_output_exists")
-        os.replace(tmp_path, final_path)
+        except OSError as exc:
+            raise ValueError("agent_keygen_output_write_failed") from exc
+        os.unlink(tmp_path)
         tmp_path = None
         os.chmod(final_path, 0o600)
     finally:

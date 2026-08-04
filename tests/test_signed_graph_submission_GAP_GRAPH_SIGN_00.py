@@ -172,6 +172,23 @@ def test_tampered_content_fails_verification(tmp_path: Path, monkeypatch: pytest
         verify_truth_primitive_sig(record)
 
 
+def test_tampered_sig_bytes_fails_verification(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Flipping a byte inside the sig field must fail Ed25519 verification.
+
+    This is distinct from wrong-key and wrong-payload tests: the public key
+    and payload are untouched; only the signature bytes are mutated.
+    """
+    _, record = _submitted_record(tmp_path, monkeypatch, signing_key=_key_uri(tmp_path))
+    sig_bytes = bytes.fromhex(str(record["sig"]))
+    # Flip the last byte — produces a syntactically valid 64-byte Ed25519 sig
+    # that doesn't match the signing key's output over the canonical payload.
+    flipped = sig_bytes[:-1] + bytes([sig_bytes[-1] ^ 0xFF])
+    record["sig"] = flipped.hex()
+
+    with pytest.raises(ValueError, match="invalid_truth_primitive_signature"):
+        verify_truth_primitive_sig(record)
+
+
 def test_verifier_returns_none_for_unsigned() -> None:
     assert verify_truth_primitive_sig({"sig": "UNSIGNED"}) is None
     assert verify_truth_primitive_sig({}) is None

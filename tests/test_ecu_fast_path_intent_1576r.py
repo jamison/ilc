@@ -14,10 +14,15 @@ from ilc_core.ecu.ecu_fast_path_intent import (
 )
 
 
+# Valid 96-char lowercase hex AgentIDs (SHA-384 of ML-DSA-65 root key format).
+_SENDER_ID = "a" * 96
+_RECIPIENT_ID = "b" * 96
+
+
 def _intent(**overrides: object) -> ECUFastPathIntent:
     fields = {
-        "sender_agent_id": "agent_sender",
-        "recipient_agent_id": "agent_recipient",
+        "sender_agent_id": _SENDER_ID,
+        "recipient_agent_id": _RECIPIENT_ID,
         "amount_ecu": Decimal("12.5"),
         "transfer_class": TransferClass.CONTRIBUTION,
         "graph_context_anchor": "node:artifact:abc123",
@@ -66,7 +71,7 @@ def test_contribution_without_anchor_raises() -> None:
 
 def test_self_transfer_raises() -> None:
     _raises_token(
-        _intent(recipient_agent_id="agent_sender"),
+        _intent(recipient_agent_id=_SENDER_ID),
         "self_transfer_prohibited",
     )
 
@@ -154,20 +159,32 @@ def test_empty_identity_and_nonce_tokens() -> None:
 
 def test_padded_agent_ids_rejected() -> None:
     _raises_token(
-        _intent(sender_agent_id=" agent_sender"),
+        _intent(sender_agent_id=" " + _SENDER_ID),
         "invalid_sender_agent_id_whitespace",
     )
     _raises_token(
-        _intent(recipient_agent_id="agent_recipient "),
+        _intent(recipient_agent_id=_RECIPIENT_ID + " "),
         "invalid_recipient_agent_id_whitespace",
     )
 
 
 def test_padded_agent_id_cannot_bypass_self_transfer() -> None:
+    _same = "c" * 96
     _raises_token(
-        _intent(sender_agent_id="agent_same", recipient_agent_id=" agent_same "),
+        _intent(sender_agent_id=_same, recipient_agent_id=" " + _same),
         "invalid_recipient_agent_id_whitespace",
     )
+
+
+def test_invalid_agent_id_format_raises() -> None:
+    """AgentID must be exactly 96 lowercase hex chars (SHA-384 of ML-DSA-65 root key)."""
+    _raises_token(_intent(sender_agent_id="agent_sender"), "invalid_sender_agent_id_format")
+    _raises_token(_intent(recipient_agent_id="agent_recipient"), "invalid_recipient_agent_id_format")
+    # Wrong length
+    _raises_token(_intent(sender_agent_id="a" * 95), "invalid_sender_agent_id_format")
+    _raises_token(_intent(sender_agent_id="a" * 97), "invalid_sender_agent_id_format")
+    # Uppercase hex not accepted
+    _raises_token(_intent(sender_agent_id="A" * 96), "invalid_sender_agent_id_format")
 
 
 def test_payment_empty_graph_context_anchor_rejected() -> None:
