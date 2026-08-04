@@ -333,6 +333,8 @@ def _verify_record_sha256(record: dict[str, Any]) -> None:
         record.get("record_sha256"),
         "invalid_transfer_record_sha256",
     )
+    # Stored records use two hash layers: transfer_id is SHA-256(body), while
+    # record_sha256 is SHA-256(body + transfer_id). Rebuild the second layer.
     body = {key: value for key, value in record.items() if key != "record_sha256"}
     if _sha256_hex(body) != expected:
         raise ValueError("transfer_record_sha256_mismatch")
