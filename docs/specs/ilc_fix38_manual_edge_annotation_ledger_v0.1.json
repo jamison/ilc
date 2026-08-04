@@ -69455,6 +69455,173 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_constitutional_decision_log_v0.1.md",
       "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_286_phase_1583_gap_discov_03_cdl103_ratification_testnet_activation",
+      "chronology_note": "2026-08-04 Phase 1583 / GAP-DISCOV-03 \u2014 CDL-103 ratification and bounded testnet dynamic peer discovery activation.",
+      "manual_read_summary": "CDL-103 ratification document locking PeerAdvertisement testnet activation constants, open-question dispositions, anti-eclipse mitigation non-claim, static-bootstrap fallback, DHT rejection, and production sidecar public-path non-activation boundary.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_dynamic_peer_discovery_spec_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_103_dynamic_peer_discovery_draft_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_103_ratified_phase_1583"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:dynamic_peer_discovery_testnet_activated_phase_1583"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "AUTHORIZES_TESTNET_RUNTIME",
+          "target": "ilc_core/network/d2d/gossip_peer_registry.py"
+        },
+        {
+          "edge_type": "AUTHORIZES_TESTNET_RUNTIME",
+          "target": "ilc_core/network/d2d/peer_discovery_manager.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "AUTHORIZES_TESTNET_RUNTIME"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_cdl_103_dynamic_peer_discovery_ratification_1583_v0.1.md -> genesis:genesis_root_v0.4",
+      "repo_path": "docs/specs/ilc_cdl_103_dynamic_peer_discovery_ratification_1583_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_286_phase_1583_gap_discov_03_cdl103_ratification_testnet_activation",
+      "chronology_note": "2026-08-04 Phase 1583 / GAP-DISCOV-03 \u2014 focused regression tests for CDL-103 ratification and testnet dynamic discovery activation.",
+      "manual_read_summary": "Tests ratification artifact presence, production sidecar defaults, actual Phase 1579 token consumption, D2D runtime guard clearance, anti-eclipse non-claim, output tokens, valid advertisement acceptance, TTL cap, and future-epoch skew rejection.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_cdl_103_dynamic_peer_discovery_ratification_1583_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/gossip_peer_registry.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/peer_discovery_manager.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/peer_advertisement.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_discov_03_cdl103_ratification_1583.py",
+      "repo_path": "tests/test_gap_discov_03_cdl103_ratification_1583.py"
+    },
+    {
+      "annotation_batch": "manual_batch_286_phase_1583_gap_discov_03_cdl103_ratification_testnet_activation",
+      "chronology_note": "2026-08-04 Phase 1583 / GAP-DISCOV-03 \u2014 walkthrough evidence for CDL-103 ratification and testnet activation.",
+      "manual_read_summary": "Walkthrough recording MemPalace and direct reads, stale prompt token disposition, activation surface inventory, production sidecar defaults, ratified opening-question dispositions, verification outputs, ledger entries, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_103_ratified_phase_1583"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:dynamic_peer_discovery_testnet_activated_phase_1583"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1583_gap_discov_03_cdl103_ratification_testnet_activation_walkthrough.md",
+      "repo_path": "docs/phases/phase_1583_gap_discov_03_cdl103_ratification_testnet_activation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_286_phase_1583_gap_discov_03_cdl103_ratification_testnet_activation",
+      "chronology_note": "2026-08-04 Phase 1583 / GAP-DISCOV-03 \u2014 prompt hardening after execution-time direct-read reconciliation.",
+      "manual_read_summary": "Execution prompt updated to replace stale Phase 1579 token spelling, correct the sidecar_public_path_preflight path to ilc_core/graph, state the testnet D2D runtime activation mechanism, and satisfy the no-ellipses prompt validator rule.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:1583_gap_discov_03"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cdl_103_ratified_phase_1583"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_1583_g10_gap_discov_03_cdl103_ratification_testnet_activation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1583_g10_gap_discov_03_cdl103_ratification_testnet_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_286_phase_1583_gap_discov_03_cdl103_ratification_testnet_activation",
+      "chronology_note": "2026-08-04 Phase 1583 / GAP-DISCOV-03 \u2014 legacy Phase 562 registry tests reconciled to CDL-103 ratified testnet mode.",
+      "manual_read_summary": "Updates historical peer-registry tests from static_v1 expectations to static_plus_dynamic_testnet_v1 while preserving the CDL-039 topology privacy sentinel check.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/gossip_peer_registry.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:cdl_039_topology_privacy"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:cdl_103_static_plus_dynamic_testnet_v1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_phase_562_gossip_peer_registry.py",
+      "repo_path": "tests/test_phase_562_gossip_peer_registry.py"
     }
   ],
   "boundary": {

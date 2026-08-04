@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Default-off dynamic peer discovery manager for GAP-DISCOV-02.
+"""Testnet-enabled dynamic peer discovery manager for GAP-DISCOV-03.
 
 The manager coordinates local advertisement construction, incoming advertisement
 validation, and deterministic introduction sampling. It performs no network I/O
-and ships behind ``DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = True``.
+and does not activate public sidecar serving or production listener surfaces.
 """
 
 from __future__ import annotations
@@ -19,10 +19,11 @@ from ilc_core.network.d2d.peer_advertisement import (
 )
 
 
-DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = True
-PEER_DISCOVERY_RUNTIME_VERSION = "dynamic_peer_discovery_gap_discov_02.v0.1"
+DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = False
+PEER_DISCOVERY_RUNTIME_VERSION = "dynamic_peer_discovery_gap_discov_03.v0.1"
 DEFAULT_AD_BROADCAST_INTERVAL_EPOCHS = 1
 DEFAULT_INTRODUCTION_SET_SIZE = 8
+MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS = 1
 
 _SHA384_EMPTY_SLICE_DIGEST = hashlib.sha384(b"").hexdigest()
 
@@ -96,6 +97,7 @@ class PeerDiscoveryManager:
         _require_guard_cleared()
         if not isinstance(ad, PeerAdvertisement):
             raise ValueError("peer_advertisement_invalid")
+        _reject_future_skew(ad, current_epoch)
         if ad.is_expired(current_epoch):
             return False
         pubkey_hex = self._resolve_pubkey(ad)
@@ -171,6 +173,13 @@ def _require_guard_cleared() -> None:
         raise RuntimeError("dynamic_peer_discovery_not_activated")
 
 
+def _reject_future_skew(ad: PeerAdvertisement, current_epoch: int) -> None:
+    if isinstance(current_epoch, bool) or not isinstance(current_epoch, int) or current_epoch < 0:
+        raise ValueError("peer_discovery_current_epoch_invalid")
+    if ad.peer_timestamp_epoch > current_epoch + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
+        raise ValueError("peer_advertisement_timestamp_future_skew")
+
+
 def _coerce_endpoint(
     value: Mapping[str, Any] | TransportEndpoint | None,
 ) -> TransportEndpoint:
@@ -199,4 +208,3 @@ def _sign(ml_dsa_key_pair: Any, payload: bytes) -> str:
     if not isinstance(signature, str):
         raise ValueError("peer_discovery_mldsa_signature_invalid")
     return signature
-

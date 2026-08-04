@@ -86,7 +86,7 @@ def _assert_phase_562_runtime_mutation_scope(commit_ref: str) -> None:
 def test_module_imports_without_error_and_exposes_required_constants() -> None:
     module = importlib.import_module('ilc_core.network.d2d.gossip_peer_registry')
     assert module.GOSSIP_PEER_REGISTRY_VERSION == 'gossip_peer_registry_1571.v0.1'
-    assert module.PEER_DISCOVERY_MODE == 'static_v1'
+    assert module.PEER_DISCOVERY_MODE == 'static_plus_dynamic_testnet_v1'
 
 
 def test_all_constants_have_exact_expected_values() -> None:
@@ -94,7 +94,7 @@ def test_all_constants_have_exact_expected_values() -> None:
     assert gossip_peer_registry.CDL_061_DEPENDENCY == 'cdl_061_ratified_561.v0.1'
     assert gossip_peer_registry.CDL_039_DEPENDENCY == 'cdl_039_ratified_379.v0.1'
     assert gossip_peer_registry.GOSSIP_TRANSPORT_DEPENDENCY == 'gossip_transport_runtime_1572.v0.1'
-    assert gossip_peer_registry.PEER_DISCOVERY_MODE == 'static_v1'
+    assert gossip_peer_registry.PEER_DISCOVERY_MODE == 'static_plus_dynamic_testnet_v1'
     assert gossip_peer_registry.MAX_PEERS == 16
 
 
