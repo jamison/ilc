@@ -71322,6 +71322,149 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_genesis_value_02_genesis_value_guard_runtime_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_AGENT_KEYGEN_00_agent_hotkey_cli",
+      "chronology_note": "2026-08-04 GAP-AGENT-KEYGEN-00 - Agent action hotkey CLI runtime wiring.",
+      "manual_read_summary": "Runtime module update adding AGENT_KEYGEN_CLI_VERSION, raw Ed25519 public-key fingerprinting, atomic PKCS8 PEM hotkey write, no-overwrite behavior, and run_agent_command dispatch for ilc agent keygen.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_AGENT_KEYGEN_00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_signing_provider_boundary_spec_GAP_AGENT_HARNESS_01a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/local_signing_provider.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/d2e_agent_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_AGENT_KEYGEN_00_agent_hotkey_cli",
+      "chronology_note": "2026-08-04 GAP-AGENT-KEYGEN-00 - Top-level CLI parser wiring for ilc agent keygen.",
+      "manual_read_summary": "CLI parser update adding the agent keygen subcommand and optional --output path while preserving existing derive and inspect subcommands.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_AGENT_KEYGEN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_AGENT_KEYGEN_00_agent_hotkey_cli",
+      "chronology_note": "2026-08-04 GAP-AGENT-KEYGEN-00 - User hotkey lifecycle documentation.",
+      "manual_read_summary": "User documentation explaining root AgentID key versus Ed25519 action hotkey separation, file:// URI usage, fingerprint definition, custody rules, non-claims, and lost-key recovery behavior.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_AGENT_KEYGEN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/user/action_signing_keys.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_AGENT_KEYGEN_00_agent_hotkey_cli",
+      "chronology_note": "2026-08-04 GAP-AGENT-KEYGEN-00 - Agent keygen focused regression tests.",
+      "manual_read_summary": "Focused tests covering valid PKCS8 output, default and explicit paths, 0600 permissions, file URI and raw-public-key fingerprint output, no overwrite, signing-provider round trip, private-key non-disclosure, atomic write, and run_agent_command dispatch.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_AGENT_KEYGEN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/d2e_agent_cli.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/local_signing_provider.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_agent_keygen_cli_GAP_AGENT_KEYGEN_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_AGENT_KEYGEN_00_agent_hotkey_cli",
+      "chronology_note": "2026-08-04 GAP-AGENT-KEYGEN-00 - Phase walkthrough and verification evidence.",
+      "manual_read_summary": "Walkthrough recording direct reads, MemPalace query result, implementation choices, verification command output, graph coverage, output tokens, and non-claims for the agent hotkey CLI phase.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:agent_keygen_cli_committed_GAP_AGENT_KEYGEN_00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:action_signing_keys_doc_committed_GAP_AGENT_KEYGEN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_keygen_00_agent_hotkey_cli_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
