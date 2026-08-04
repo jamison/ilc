@@ -104,8 +104,9 @@ def test_activation_guard_blocks_submission_before_verifier_or_bridge() -> None:
     verifier = _Verifier(calls)
     adapter = ECUTransferAdapter(bridge, verifier=verifier)
 
-    with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
-        adapter.submit(_intent())
+    with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", False):
+        with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
+            adapter.submit(_intent())
 
     assert calls == []
     assert bridge.bridge_payloads == []

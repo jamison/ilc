@@ -229,9 +229,9 @@ def test_invalid_epoch_raises() -> None:
     _raises_token(_intent(created_epoch=True), "invalid_created_epoch")
 
 
-def test_intent_is_frozen_and_guard_is_default_off() -> None:
+def test_intent_is_frozen_and_guard_is_activated_by_rc05() -> None:
     intent = _intent()
-    assert ECU_FAST_PATH_TRANSFER_ENABLED is False
+    assert ECU_FAST_PATH_TRANSFER_ENABLED is True
     assert ECU_FAST_PATH_INTENT_VERSION == "ecu_fast_path_intent_01.v0.1"
     with pytest.raises(FrozenInstanceError):
         intent.amount_ecu = Decimal("2")

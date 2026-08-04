@@ -71669,6 +71669,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_graph_sign_00_signed_graph_submission_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_ECU_TRANSFER_RC_05_public_rc_gate",
+      "chronology_note": "2026-08-04 GAP-ECU-TRANSFER-RC-05 - ECU fast-path public-RC activation gate walkthrough.",
+      "manual_read_summary": "Walkthrough recording GO phrase, input-token audit, direct reads, activation flag change, focused verification, taboo check, ledger coverage, non-claims, and output token for bounded graph-contextual ECU fast-path transfer activation.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_ECU_TRANSFER_RC_05"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_transfer_public_rc_gate_committed_phase_gap_ecu_transfer_rc_05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_fast_path_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "EVIDENCES",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_05_public_rc_gate_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
@@ -79119,6 +79153,29 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_value_action_live_rc_07_adversarial_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_ECU_TRANSFER_RC_05_public_rc_gate",
+      "chronology_note": "2026-08-04 GAP-ECU-TRANSFER-RC-05 - phase walkthrough records bounded ECU fast-path activation evidence.",
+      "manual_read_summary": "Registers the RC-05 walkthrough as support-only evidence for the ECU fast-path public-RC gate output token.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_transfer_public_rc_gate_committed_phase_gap_ecu_transfer_rc_05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_05_public_rc_gate_walkthrough.md"
     }
   ],
   "nodes": [
@@ -79959,7 +80016,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — sidecar registry import-health gate and harness-sidecar module registry.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 sidecar registry import-health gate and harness-sidecar module registry.",
       "manual_read_summary": "Records dependency-light CDL-060 constant extraction used to close the sidecar registry circular import without activating public serving or weakening passive ECU and centrality gossip runtime contracts.",
       "proposed_authority_trace_edges": [
         {
@@ -79996,7 +80053,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — centrality runtime now re-exports dependency-light constants.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 centrality runtime now re-exports dependency-light constants.",
       "manual_read_summary": "Preserves CDL_060_GOSSIP_RUNTIME_VERSION and CENTRALITY_QUANTUM values while avoiding downstream constant-only imports of the full centrality runtime.",
       "proposed_authority_trace_edges": [
         {
@@ -80025,7 +80082,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — passive ECU dependency check imports CDL-060 version from constants.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 passive ECU dependency check imports CDL-060 version from constants.",
       "manual_read_summary": "Maintains import-time passive ECU runtime contract validation while removing the full centrality runtime import from the passive ECU module.",
       "proposed_authority_trace_edges": [
         {
@@ -80058,7 +80115,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — epoch attribution centrality quantum import hardened.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 epoch attribution centrality quantum import hardened.",
       "manual_read_summary": "Changes epoch attribution settlement to import CENTRALITY_QUANTUM from the dependency-light constants module rather than the full centrality gossip runtime.",
       "proposed_authority_trace_edges": [
         {
@@ -80087,7 +80144,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — harness-sidecar module registry committed.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 harness-sidecar module registry committed.",
       "manual_read_summary": "Advisory registry note reconciles sidecar registry records, private harness modules, CLI/action anchors, non-claims, and follow-on GAP-HARNESS-SIDECAR gaps.",
       "proposed_authority_trace_edges": [
         {
@@ -80124,7 +80181,7 @@
     },
     {
       "annotation_batch": "manual_batch_phase_GAP_HARNESS_SIDECAR_00_source_reconciliation",
-      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 — sidecar registry import-health regression tests.",
+      "chronology_note": "2026-08-04 GAP-HARNESS-SIDECAR-00 \u2014 sidecar registry import-health regression tests.",
       "manual_read_summary": "Tests import health, 14 sidecar records, default-off public serving posture, non-authorization boundary, and equality of dependency-light CDL-060 constants.",
       "proposed_authority_trace_edges": [
         {

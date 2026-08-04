@@ -101,20 +101,21 @@ def test_contribution_without_anchor_raises_in_verifier() -> None:
 
 
 def test_activation_guard_blocks_when_disabled() -> None:
-    _raises_token(
-        "transfer_not_enabled_activation_guard_blocks_submission",
-        ECUTransferContextVerifier(),
-        _intent(),
-    )
+    with patch("ilc_core.ecu.ecu_transfer_context_verifier.ECU_FAST_PATH_TRANSFER_ENABLED", False):
+        _raises_token(
+            "transfer_not_enabled_activation_guard_blocks_submission",
+            ECUTransferContextVerifier(),
+            _intent(),
+        )
 
 
 def test_source_module_activation_assignment_does_not_mutate_verifier_binding(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(ecu_fast_path_intent, "ECU_FAST_PATH_TRANSFER_ENABLED", True)
+    monkeypatch.setattr(ecu_fast_path_intent, "ECU_FAST_PATH_TRANSFER_ENABLED", False)
 
     _raises_token(
-        "transfer_not_enabled_activation_guard_blocks_submission",
+        "graph_reader_required_for_graph_context_anchor",
         ECUTransferContextVerifier(),
         _intent(),
     )
