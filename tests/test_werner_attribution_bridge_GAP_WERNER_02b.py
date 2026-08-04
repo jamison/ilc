@@ -139,6 +139,36 @@ def test_present_context_clamps_to_cdl109_policy_cap() -> None:
     assert multiplier.application_stage == WERNER_APPLICATION_STAGE
 
 
+def test_present_context_at_exact_policy_cap_is_exact() -> None:
+    multiplier = compute_werner_multiplier(
+        WernerAttributionContext(
+            agent_id=AGENT_A,
+            epoch=7,
+            raw_werner_pressure=RUNTIME_POLICY_CAP,
+        ),
+        recipient_agent_id=AGENT_A,
+        event_epoch=7,
+    )
+
+    assert multiplier.flow_budget == Decimal("0.100000000000")
+    assert multiplier.multiplier == Decimal("1.100000000000")
+    assert multiplier.context_present is True
+
+
+def test_degree_centrality_quantized_and_zero_for_no_outgoing_edges() -> None:
+    centrality = werner_runtime.compute_degree_centrality(
+        {
+            "node-a": [],
+            "node-b": ["node-a"],
+            "node-c": ["node-a", "node-b"],
+        }
+    )
+
+    assert centrality["node-a"] == Decimal("0E-12")
+    assert centrality["node-b"] == Decimal("0.500000000000")
+    assert centrality["node-c"] == Decimal("1.000000000000")
+
+
 def test_apply_werner_to_raw_score_is_decimal_exact() -> None:
     adjusted, multiplier = apply_werner_to_raw_score(
         Decimal("0.45"),
