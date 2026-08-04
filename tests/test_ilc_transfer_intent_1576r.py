@@ -9,6 +9,8 @@ import pytest
 from ilc_core.value_action.ilc_transfer_intent import (
     ILC_TRANSFER_ENABLED,
     ILC_TRANSFER_INTENT_VERSION,
+    MAX_GRAPH_CONTEXT_ANCHOR_CHARS,
+    MAX_NONCE_CHARS,
     ActionType,
     AgentActionEnvelope,
     ILCTransferIntent,
@@ -121,6 +123,47 @@ def test_validate_rejects_invalid_signature_field() -> None:
     )
     with pytest.raises(ValueError, match="invalid_envelope_cose_signature"):
         validate_envelope(env)
+
+
+def test_nonce_too_long_rejected() -> None:
+    """Nonce exceeding MAX_NONCE_CHARS must be rejected before COSE payload construction."""
+    with pytest.raises(ValueError, match="invalid_envelope_nonce_too_long"):
+        _create(nonce="x" * (MAX_NONCE_CHARS + 1))
+
+
+def test_nonce_at_max_length_accepted() -> None:
+    validate_envelope(_create(nonce="a" * MAX_NONCE_CHARS))
+
+
+def test_graph_context_anchor_too_long_rejected() -> None:
+    """Anchor exceeding MAX_GRAPH_CONTEXT_ANCHOR_CHARS must be rejected before signing."""
+    with pytest.raises(ValueError, match="invalid_envelope_graph_context_anchor_too_long"):
+        _create(graph_context_anchor="g" * (MAX_GRAPH_CONTEXT_ANCHOR_CHARS + 1))
+
+
+def test_graph_context_anchor_at_max_length_accepted() -> None:
+    validate_envelope(_create(graph_context_anchor="g" * MAX_GRAPH_CONTEXT_ANCHOR_CHARS))
+
+
+def test_amount_exceeding_u64_ceiling_rejected_for_non_genesis_agent() -> None:
+    """The u64 micro-ILC ceiling must apply to all agents, not only Genesis.
+
+    Without this check, an envelope with amount_ilc = 1e30 passes validate_envelope
+    and enters the COSE signing path before any overflow guard fires.
+    """
+    _U64_MAX = 18_446_744_073_709_551_615
+    micro_ilc_factor = 1_000_000
+    # Smallest Decimal that exceeds u64 when scaled to micro-ILC.
+    one_over = Decimal(_U64_MAX + 1) / Decimal(micro_ilc_factor)
+    with pytest.raises(ValueError, match="amount_micro_ilc_exceeds_u64_max"):
+        _create(amount_ilc=one_over)
+
+
+def test_amount_at_u64_ceiling_accepted() -> None:
+    _U64_MAX = 18_446_744_073_709_551_615
+    micro_ilc_factor = 1_000_000
+    at_cap = Decimal(_U64_MAX) / Decimal(micro_ilc_factor)
+    validate_envelope(_create(amount_ilc=at_cap))
 
 
 def test_ilc_transfer_enabled_is_true_after_rc08_gate() -> None:

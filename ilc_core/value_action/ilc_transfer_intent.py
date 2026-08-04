@@ -24,6 +24,8 @@ ILC_TRANSFER_ENABLED = True  # Activated: Phase GAP-VALUE-ACTION-LIVE-RC-08
 _AGENT_ID_HEX_LENGTH = 96
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MEMO_MAX_CHARS = 256
+_NONCE_MAX_CHARS = 256         # generous ceiling; valid nonce is ~123 chars
+_GRAPH_CONTEXT_ANCHOR_MAX_CHARS = 512
 _MICRO_ILC_FACTOR = Decimal("1000000")
 _U64_MAX = 18_446_744_073_709_551_615
 GENESIS_ILC_ACTION_CLASS = "PAYMENT"
@@ -95,8 +97,17 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
     if env.amount_ilc <= Decimal("0"):
         raise ValueError("invalid_envelope_amount_not_positive")
     decimal_to_canonical_string(env.amount_ilc)
+    # Apply the u64 micro-ILC ceiling to ALL agents, not only Genesis.
+    # _amount_ilc_to_micro_ilc enforces this inside the Genesis guard, but
+    # without this check here a non-Genesis envelope with an astronomically
+    # large Decimal amount passes validate_envelope and enters the COSE
+    # payload construction and ledger paths before being caught.
+    if env.amount_ilc * _MICRO_ILC_FACTOR > _U64_MAX:
+        raise ValueError("amount_micro_ilc_exceeds_u64_max")
 
     _require_canonical_non_empty_string(env.nonce, "invalid_envelope_empty_nonce")
+    if len(env.nonce) > _NONCE_MAX_CHARS:
+        raise ValueError("invalid_envelope_nonce_too_long")
     _require_epoch(env.epoch, "invalid_envelope_epoch")
     if env.signed_at_epoch is not None:
         _require_epoch(env.signed_at_epoch, "invalid_envelope_signed_at_epoch")
@@ -110,6 +121,8 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
             env.graph_context_anchor,
             "invalid_envelope_graph_context_anchor",
         )
+        if len(env.graph_context_anchor) > _GRAPH_CONTEXT_ANCHOR_MAX_CHARS:
+            raise ValueError("invalid_envelope_graph_context_anchor_too_long")
     if env.cose_signature is not None:
         if not isinstance(env.cose_signature, bytes) or len(env.cose_signature) == 0:
             raise ValueError("invalid_envelope_cose_signature")
@@ -193,6 +206,12 @@ __all__ = [
     "ILCTransferIntent",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
+    "MAX_GRAPH_CONTEXT_ANCHOR_CHARS",
+    "MAX_NONCE_CHARS",
     "enforce_genesis_envelope_guard",
     "validate_envelope",
 ]
+
+# Public aliases for the size caps so tests can import them symbolically.
+MAX_NONCE_CHARS = _NONCE_MAX_CHARS
+MAX_GRAPH_CONTEXT_ANCHOR_CHARS = _GRAPH_CONTEXT_ANCHOR_MAX_CHARS

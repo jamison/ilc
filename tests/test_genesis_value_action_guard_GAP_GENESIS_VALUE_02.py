@@ -109,6 +109,7 @@ def key_uri(tmp_path: Path, private_key: ed25519.Ed25519PrivateKey) -> str:
             NoEncryption(),
         )
     )
+    key_path.chmod(0o600)
     return key_path.as_uri()
 
 
@@ -406,6 +407,69 @@ def test_guardian_public_key_root_mismatch_rejected() -> None:
         match="genesis_value_certificate_guardian_root_mismatch",
     ):
         validate_genesis_value_certificate(_cert(guardian_public_key_root="d" * 64))
+
+
+def test_duplicate_guardian_public_key_bytes_collapses_threshold_rejected() -> None:
+    """A single private key registered under two guardian IDs must not satisfy a 2-of-3 threshold.
+
+    Without the duplicate-pubkey check, both guardian-1 and guardian-4 descriptors
+    carry the same raw Ed25519 bytes, meaning one private key can produce two valid
+    COSE-Sign1 signatures and collapse the 2-of-3 guardian threshold.
+    """
+    key_hex = _GUARDIAN_PRIVATE_KEYS[0].public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
+    # Build descriptors where guardian-4 reuses guardian-1's public key (different ID, same bytes).
+    dup_descriptors = [
+        {"guardian_id": "guardian-1", "public_key_hex": key_hex},
+        {"guardian_id": "guardian-2", "public_key_hex": key_hex},  # duplicate bytes
+        {"guardian_id": "guardian-3", "public_key_hex": _GUARDIAN_PRIVATE_KEYS[2].public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()},
+    ]
+    dup_root = _guardian_public_key_root(dup_descriptors)
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_guardian_public_key_duplicate",
+    ):
+        validate_genesis_value_certificate(
+            _cert(
+                guardian_public_key_root=dup_root,
+                certificate_sig={
+                    "threshold": 2,
+                    "guardian_public_keys": dup_descriptors,
+                    "signatures": [],
+                },
+            )
+        )
+
+
+def test_certificate_sig_extra_fields_rejected() -> None:
+    """Extra unsigned fields on the certificate sig bundle must be rejected."""
+    cert = _cert()
+    sig_bundle = dict(cert.certificate_sig)  # type: ignore[arg-type]
+    sig_bundle["extra_unsigned_field"] = "injected"
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_signature_bundle_extra_fields",
+    ):
+        validate_genesis_value_certificate(_cert(certificate_sig=sig_bundle))
+
+
+def test_guardian_descriptor_extra_fields_rejected() -> None:
+    """Extra fields on a guardian public key descriptor must be rejected."""
+    guardian_public_keys = _guardian_public_key_descriptors()
+    guardian_public_keys[0] = dict(guardian_public_keys[0])
+    guardian_public_keys[0]["extra"] = "injected"
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_guardian_key_entry_invalid",
+    ):
+        validate_genesis_value_certificate(
+            _cert(
+                certificate_sig={
+                    "threshold": 2,
+                    "guardian_public_keys": guardian_public_keys,
+                    "signatures": [],
+                }
+            )
+        )
 
 
 def test_certificate_requires_genesis_agent_id() -> None:

@@ -158,6 +158,25 @@ def test_invalid_agent_id_rejected(lmdb_env) -> None:
         store.next_nonce("A" * 96)
 
 
+def test_corrupted_nonce_counter_bytes_raise_stable_token(lmdb_env) -> None:
+    """Wrong-length bytes in the counter DB must raise a stable error token, not crash.
+
+    _decode_counter uses struct.unpack with >Q (8-byte big-endian uint64). A counter
+    record with the wrong byte length (e.g. 3 bytes or 9 bytes) should raise
+    invalid_action_nonce_counter_bytes before any arithmetic occurs.
+    """
+    store = ActionNonceStore(lmdb_env)
+    # Write a 3-byte (too short) counter value directly into the issued-counter DB.
+    # The key format is agent_id + b":issued_counter" (matches _counter_key() internals).
+    issued_db = lmdb_env.open_db(b"action_nonce_issued", create=True)
+    counter_key = AGENT_A.encode("ascii") + b":issued_counter"
+    with lmdb_env.begin(write=True, db=issued_db) as txn:
+        txn.put(counter_key, b"\x00\x00\x00")  # 3 bytes, not 8
+
+    with pytest.raises(ValueError, match="invalid_action_nonce_counter_bytes"):
+        store.next_nonce(AGENT_A)
+
+
 def test_no_prng_or_float_or_production_asserts() -> None:
     source = MODULE_PATH.read_text(encoding="utf-8")
 
