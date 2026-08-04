@@ -22,7 +22,6 @@ from ilc_core.value_action.ilc_transfer_ledger import (
     ILC_TRANSFER_LEDGER_VERSION,
     ILCTransferLedger,
     InsufficientBalanceError,
-    _encode_balance,
 )
 
 SENDER_AGENT_ID = "a" * 96
@@ -61,6 +60,7 @@ def lmdb_env(tmp_path: Path):
 @pytest.fixture(autouse=True)
 def transfer_enabled(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(ilc_transfer_intent, "ILC_TRANSFER_ENABLED", True)
+    monkeypatch.setenv("ILC_TEST_BALANCE_SEED_AUTHORIZED", "1")
 
 
 @pytest.fixture
@@ -124,8 +124,7 @@ def _execute(
 
 
 def _seed_balance(ledger: ILCTransferLedger, agent_id: str, amount: Decimal) -> None:
-    with ledger._env.begin(write=True, db=ledger._balances_db) as txn:
-        txn.put(agent_id.encode("ascii"), _encode_balance(amount))
+    ledger.seed_balance_for_test(agent_id, amount)
 
 
 def test_happy_path_debit_credit_record(lmdb_env, key_uri: str, private_key) -> None:
@@ -233,6 +232,17 @@ def test_transaction_is_atomic_on_balance_corruption(lmdb_env, key_uri: str, pri
         _execute(ledger, nonce_store, _signed_intent(key_uri), private_key)
 
     assert nonce_store.peek_counter(SENDER_AGENT_ID) == 0
+
+
+def test_seed_balance_for_test_requires_explicit_authorization(
+    lmdb_env,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ILC_TEST_BALANCE_SEED_AUTHORIZED", raising=False)
+    ledger = ILCTransferLedger(lmdb_env)
+
+    with pytest.raises(ValueError, match="test_balance_seed_not_authorized"):
+        ledger.seed_balance_for_test(SENDER_AGENT_ID, Decimal("1"))
 
 
 def test_nonce_store_must_share_lmdb_env(

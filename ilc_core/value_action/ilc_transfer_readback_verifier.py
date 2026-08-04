@@ -29,7 +29,11 @@ class ILCTransferReadbackVerifier:
         ledger: ILCTransferLedger,
         transfer_id: str,
     ) -> bool:
-        """Return true when a transfer record is present and integrity-valid."""
+        """Return true when a transfer record is present and integrity-valid.
+
+        Corrupt or tampered records raise the ledger's stable ValueError token
+        rather than being coerced into a missing-record false negative.
+        """
         return ledger.get_transfer_record(transfer_id) is not None
 
 

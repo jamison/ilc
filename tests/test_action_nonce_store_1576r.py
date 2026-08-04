@@ -10,6 +10,7 @@ from ilc_core.value_action.action_nonce_store import (
     ACTION_NONCE_STORE_VERSION,
     ActionNonceStore,
     NonceReplayError,
+    _encode_counter,
 )
 
 AGENT_A = "a" * 96
@@ -84,6 +85,19 @@ def test_consume_out_of_sequence_rejected(lmdb_env) -> None:
         store.consume_nonce(AGENT_A, _nonce(AGENT_A, 2))
 
 
+def test_skipped_issued_nonce_cannot_be_consumed_out_of_order(lmdb_env) -> None:
+    store = ActionNonceStore(lmdb_env)
+    store.next_nonce(AGENT_A)
+    store.next_nonce(AGENT_A)
+
+    with pytest.raises(NonceReplayError, match="nonce_out_of_sequence_rejected"):
+        store.consume_nonce(AGENT_A, _nonce(AGENT_A, 2))
+
+    store.consume_nonce(AGENT_A, _nonce(AGENT_A, 1))
+    store.consume_nonce(AGENT_A, _nonce(AGENT_A, 2))
+    assert store.peek_counter(AGENT_A) == 2
+
+
 def test_counter_increments_atomically(lmdb_env) -> None:
     store = ActionNonceStore(lmdb_env)
     issued = [store.next_nonce(AGENT_A) for _ in range(5)]
@@ -106,6 +120,21 @@ def test_next_after_external_consume_skips_consumed_nonce(lmdb_env) -> None:
     store.consume_nonce(AGENT_A, _nonce(AGENT_A, 1))
 
     assert store.next_nonce(AGENT_A) == _nonce(AGENT_A, 2)
+
+
+def test_next_nonce_counter_exhaustion_has_stable_token(lmdb_env) -> None:
+    store = ActionNonceStore(lmdb_env)
+    issued_key = AGENT_A.encode("ascii") + b":issued_counter"
+    with store.lmdb_env.begin(write=True) as txn:
+        txn.put(issued_key, _encode_counter(2**64 - 1), db=store._issued_db)
+
+    with pytest.raises(NonceReplayError, match="action_nonce_counter_exhausted"):
+        store.next_nonce(AGENT_A)
+
+
+def test_nonce_counter_above_u64_rejected(lmdb_env) -> None:
+    with pytest.raises(ValueError, match="invalid_action_nonce_counter_overflow"):
+        ActionNonceStore(lmdb_env).consume_nonce(AGENT_A, _nonce(AGENT_A, 2**64))
 
 
 @pytest.mark.parametrize(

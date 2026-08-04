@@ -17,7 +17,7 @@ from cryptography.hazmat.primitives.serialization import (
 from ilc_core.value_action import ilc_transfer_intent
 from ilc_core.value_action.action_nonce_store import ActionNonceStore
 from ilc_core.value_action.ilc_transfer_intent import ILCTransferIntent
-from ilc_core.value_action.ilc_transfer_ledger import ILCTransferLedger, _encode_balance
+from ilc_core.value_action.ilc_transfer_ledger import ILCTransferLedger
 from ilc_core.value_action.local_signing_provider import LocalEd25519SigningProvider
 from ilc_core.value_action.ilc_transfer_readback_verifier import (
     ILC_TRANSFER_READBACK_VERSION,
@@ -61,6 +61,7 @@ def lmdb_env(tmp_path: Path):
 @pytest.fixture(autouse=True)
 def transfer_enabled(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(ilc_transfer_intent, "ILC_TRANSFER_ENABLED", True)
+    monkeypatch.setenv("ILC_TEST_BALANCE_SEED_AUTHORIZED", "1")
 
 
 @pytest.fixture
@@ -97,8 +98,7 @@ def _intent():
 
 
 def _seed_balance(ledger: ILCTransferLedger, agent_id: str, amount: Decimal) -> None:
-    with ledger._env.begin(write=True, db=ledger._balances_db) as txn:
-        txn.put(agent_id.encode("ascii"), _encode_balance(amount))
+    ledger.seed_balance_for_test(agent_id, amount)
 
 
 def _execute_transfer(lmdb_env, key_uri: str, private_key: ed25519.Ed25519PrivateKey):
