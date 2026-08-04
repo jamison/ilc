@@ -22,7 +22,8 @@ from ilc_core.crypto.pq_signature_verify import (
 
 
 PEER_ADVERTISEMENT_SCHEMA_VERSION = "peer_advertisement_cdl103.v0.1"
-PEER_ADVERTISEMENT_RUNTIME_VERSION = "peer_advertisement_gap_discov_02.v0.1"
+PEER_ADVERTISEMENT_RUNTIME_VERSION = "peer_advertisement_gap_discov_03.v0.1"
+MAX_TTL_EPOCHS = 4
 
 _SHA384_HEX_RE = re.compile(r"^[0-9a-f]{96}$")
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
@@ -261,6 +262,7 @@ class PeerAdvertisement:
                 body.get("ttl_epochs"),
                 "peer_advertisement_ttl_epochs_invalid",
                 min_value=1,
+                max_value=MAX_TTL_EPOCHS,
             ),
             ml_dsa_signature=_require_lower_hex_exact(
                 value.get("ml_dsa_signature"),

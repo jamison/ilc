@@ -1,10 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Phase 562 static gossip peer registry with GAP-DISCOV-02 hybrid scaffold.
+"""Phase 562 static gossip peer registry with GAP-DISCOV-03 testnet discovery.
 
-This module provides local static peer configuration only. Dynamic discovery is
-intentionally deferred because CDL-039 topology privacy requires explicit
-constitutional authorization for any discovery mechanism beyond static v1. The
-GAP-DISCOV-02 dynamic table remains behind a default-on NOT_ACTIVATED guard.
+This module keeps the static peer list as authoritative fallback while allowing
+the CDL-103 PeerAdvertisement dynamic table in testnet scope. It does not create
+a listener, enable public sidecar serving, or authorize DHT discovery.
 """
 
 from __future__ import annotations
@@ -29,8 +28,8 @@ GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
 CDL_061_DEPENDENCY = "cdl_061_ratified_561.v0.1"
 CDL_039_DEPENDENCY = "cdl_039_ratified_379.v0.1"
 GOSSIP_TRANSPORT_DEPENDENCY = "gossip_transport_runtime_1572.v0.1"
-PEER_DISCOVERY_MODE = "static_v1"
-DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = True
+PEER_DISCOVERY_MODE = "static_plus_dynamic_testnet_v1"
+DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = False
 LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
     "lexicographic_gossip_fanout_rotation_deferred_pending_cdl_103_phase_1575h_fix2"
 )
@@ -59,12 +58,12 @@ if _GOSSIP_TRANSPORT_CHECK != GOSSIP_TRANSPORT_DEPENDENCY:
     _sys.stdout.flush()
     raise RuntimeError("gossip_peer_registry_gossip_transport_dependency_mismatch")
 
-# PEER_DISCOVERY_MODE is a constitutional invariant: CDL-039 prohibits dynamic
-# discovery without explicit authorization. Checked at runtime, not as an assert,
-# so that python -O does not silently bypass the guard.
-if PEER_DISCOVERY_MODE != "static_v1":
+# PEER_DISCOVERY_MODE is a constitutional invariant. CDL-103 Phase 1583 permits
+# advertisement-based dynamic discovery only in the bounded testnet runtime.
+# CDL-039 topology privacy remains in force: cdl_039_topology_privacy.
+if PEER_DISCOVERY_MODE != "static_plus_dynamic_testnet_v1":
     raise RuntimeError(
-        f"cdl_039_topology_privacy: dynamic peer discovery requires explicit CDL authorization, "
+        f"cdl_103_dynamic_peer_discovery: unsupported peer discovery mode, "
         f"got: {PEER_DISCOVERY_MODE}"
     )
 
