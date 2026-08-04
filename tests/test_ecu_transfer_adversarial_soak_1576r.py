@@ -183,8 +183,9 @@ def test_activation_guard_blocks_adapter_submit() -> None:
     bridge = _RecordingBridge()
     adapter = ECUTransferAdapter(bridge)
 
-    with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
-        adapter.submit(_intent())
+    with patch("ilc_core.ecu.ecu_transfer_adapter.ECU_FAST_PATH_TRANSFER_ENABLED", False):
+        with pytest.raises(ValueError, match="^transfer_not_enabled_activation_guard_blocks_submit$"):
+            adapter.submit(_intent())
 
     assert bridge.bridge_payloads == []
 

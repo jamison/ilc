@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
 
-ECU_FAST_PATH_TRANSFER_ENABLED = False
+ECU_FAST_PATH_TRANSFER_ENABLED = True
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
 PRE_RC_TRANSFER_CAP_ECU = Decimal("1000")
 _ZERO_ECU = Decimal("0")
