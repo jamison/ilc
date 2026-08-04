@@ -4498,7 +4498,7 @@ The fourteen core modules, with their type signatures and implementation status:
   │                     │              │  budget headroom, and layer-4  │
   │                     │              │  independence flag. Normalizes  │
   │                     │              │  OpenAI-compatible, Anthropic, │
-  │                     │              │  HuggingFace, Ollama, MCP.     │
+  │                     │              │  HuggingFace, and Ollama.      │
   ├─────────────────────┼──────────────┼────────────────────────────────┤
   │  idle-scheduler     │  Π → task   │  IdleCapacityScheduler:        │
   │                     │              │  routes maintenance-lottery    │
@@ -4712,7 +4712,6 @@ Supported endpoint classes (at public RC):
                                                        adapter
   huggingface-inference    HF Inference Endpoints      hf-adapter
   ollama-native            Ollama /api/generate        ollama-adapter
-  mcp-tool                 Any MCP tool server         mcp-adapter
   gaia-x-sovereign         GAIA-X certified EU         gaia-x-adapter
                            sovereign AI endpoints
 ```
@@ -4721,6 +4720,13 @@ The `gaia-x-sovereign` endpoint class is specifically designed for EU national s
 participation: it reads GAIA-X attestation metadata alongside standard inference headers, records
 the national consortium operator identifier, and feeds that into the `pool_custody` attestation
 required by the four-layer independence framework (E.11.9.3).
+
+**MCP boundary note:** Model Context Protocol (MCP) is not an ILC protocol dependency and is not
+a supported endpoint class in this registry. The model-router normalizes LLM inference APIs
+(OpenAI-compatible, Anthropic, HuggingFace, Ollama, GAIA-X sovereign). MCP is a separate
+tool-invocation protocol operating at the harness product layer; a future product harness may
+optionally wrap MCP tool servers as sidecar adapters without any ILC protocol dependency on MCP
+discovery, tool schemas, or MCP server infrastructure.
 
 #### E.12.6  Three Named Recipes
 
