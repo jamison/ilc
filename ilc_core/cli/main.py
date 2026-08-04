@@ -1371,6 +1371,16 @@ def _build_parser() -> JsonArgumentParser:
                 required=True,
                 help="Path to agent record JSON file",
             )
+
+            p_keygen = agent_subparsers.add_parser(
+                "keygen",
+                help="Generate a local Ed25519 action-signing hotkey",
+            )
+            p_keygen.add_argument(
+                "--output",
+                default=None,
+                help="Optional output path for the PKCS8 PEM hotkey",
+            )
             continue
 
         if command == "agent-bootstrap":
