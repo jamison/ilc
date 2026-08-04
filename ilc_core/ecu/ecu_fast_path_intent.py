@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
+
+# SHA-384 of ML-DSA-65 root public key — 48 bytes = 96 lowercase hex chars.
+# Same pattern as ilc_transfer_intent._AGENT_ID_RE and action_nonce_store._AGENT_ID_RE.
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 
 ECU_FAST_PATH_TRANSFER_ENABLED = True
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
@@ -37,6 +42,10 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
         raise ValueError("invalid_sender_agent_id_whitespace")
     if intent.recipient_agent_id != intent.recipient_agent_id.strip():
         raise ValueError("invalid_recipient_agent_id_whitespace")
+    if _AGENT_ID_RE.fullmatch(intent.sender_agent_id) is None:
+        raise ValueError("invalid_sender_agent_id_format")
+    if _AGENT_ID_RE.fullmatch(intent.recipient_agent_id) is None:
+        raise ValueError("invalid_recipient_agent_id_format")
     if intent.sender_agent_id == intent.recipient_agent_id:
         raise ValueError("self_transfer_prohibited")
     if not isinstance(intent.amount_ecu, Decimal):

@@ -54,10 +54,14 @@ class _RecordingBridge:
         return f"transfer-ref-{len(self.rust_payloads)}"
 
 
+_SENDER_ID = "a" * 96
+_RECIPIENT_ID = "b" * 96
+
+
 def _intent(**overrides: object) -> ECUFastPathIntent:
     fields = {
-        "sender_agent_id": "agent_sender",
-        "recipient_agent_id": "agent_recipient",
+        "sender_agent_id": _SENDER_ID,
+        "recipient_agent_id": _RECIPIENT_ID,
         "amount_ecu": Decimal("3.25"),
         "transfer_class": TransferClass.CONTRIBUTION,
         "graph_context_anchor": "node:artifact:abc123",
@@ -111,7 +115,7 @@ def test_non_finite_decimal_inf_rejected() -> None:
 
 
 def test_self_transfer_rejected_by_intent() -> None:
-    _raises_value_token(_intent(recipient_agent_id="agent_sender"), "self_transfer_prohibited")
+    _raises_value_token(_intent(recipient_agent_id=_SENDER_ID), "self_transfer_prohibited")
 
 
 def test_contribution_without_anchor_rejected_by_intent() -> None:

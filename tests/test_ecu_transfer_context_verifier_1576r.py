@@ -22,10 +22,14 @@ class _GraphReader:
         return self._nodes.get(anchor)
 
 
+_SENDER_ID = "a" * 96
+_RECIPIENT_ID = "b" * 96
+
+
 def _intent(**overrides: object) -> ECUFastPathIntent:
     fields = {
-        "sender_agent_id": "agent_sender",
-        "recipient_agent_id": "agent_recipient",
+        "sender_agent_id": _SENDER_ID,
+        "recipient_agent_id": _RECIPIENT_ID,
         "amount_ecu": Decimal("7.25"),
         "transfer_class": TransferClass.CONTRIBUTION,
         "graph_context_anchor": "node:artifact:abc123",
