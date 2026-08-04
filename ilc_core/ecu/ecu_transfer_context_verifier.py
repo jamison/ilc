@@ -10,6 +10,12 @@ from ilc_core.ecu.ecu_fast_path_intent import (
     TransferClass,
     validate_intent,
 )
+from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+from ilc_core.genesis.genesis_value_action_guard import (
+    GenesisValueActionPolicyCertificate,
+    GenesisValueGuardError,
+    enforce_genesis_value_guard,
+)
 
 ECU_TRANSFER_CONTEXT_VERIFIER_VERSION = "ecu_transfer_context_verifier_02.v0.1"
 _U64_MAX = 18446744073709551615
@@ -40,8 +46,20 @@ def _intent_to_micro_ecu(amount_ecu: Decimal) -> int:
 
 
 class ECUTransferContextVerifier:
-    def __init__(self, graph_reader: Any = None) -> None:
+    def __init__(
+        self,
+        graph_reader: Any = None,
+        *,
+        genesis_value_certificate: GenesisValueActionPolicyCertificate | None = None,
+        current_epoch: int | None = None,
+        genesis_epoch_spent_micro_ecu: int | None = None,
+    ) -> None:
+        if genesis_value_certificate is not None and current_epoch is None:
+            raise ValueError("current_epoch_required_with_genesis_value_certificate")
         self._graph_reader = graph_reader
+        self._genesis_value_certificate = genesis_value_certificate
+        self._current_epoch = current_epoch
+        self._genesis_epoch_spent_micro_ecu = genesis_epoch_spent_micro_ecu
 
     def verify(self, intent: ECUFastPathIntent) -> None:
         # Activation is intentionally source-controlled for RC gates. Tests that
@@ -54,6 +72,23 @@ class ECUTransferContextVerifier:
             validate_intent(intent)
         except ValueError as exc:
             raise ECUContextVerificationError(str(exc)) from exc
+
+        if intent.sender_agent_id == GENESIS_AGENT1_AGENT_ID:
+            try:
+                enforce_genesis_value_guard(
+                    source_agent_id=intent.sender_agent_id,
+                    certificate=self._genesis_value_certificate,
+                    action_class=intent.transfer_class.value,
+                    amount_micro_unit=_intent_to_micro_ecu(intent.amount_ecu),
+                    current_epoch=self._current_epoch,
+                    recipient_agent_id=intent.recipient_agent_id,
+                    graph_context_anchor=intent.graph_context_anchor,
+                    consent_or_agreement_reference=intent.express_consent,
+                    unit="ECU",
+                    current_epoch_spent_micro_unit=self._genesis_epoch_spent_micro_ecu,
+                )
+            except GenesisValueGuardError as exc:
+                raise ECUContextVerificationError(exc.token) from exc
 
         if _present(intent.graph_context_anchor):
             if self._graph_reader is None:
