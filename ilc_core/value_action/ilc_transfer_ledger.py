@@ -118,6 +118,9 @@ class ILCTransferLedger:
         if transfer_intent.ILC_TRANSFER_ENABLED is not True:
             raise ValueError("transfer_not_enabled")
         validate_envelope(env)
+        # Fast fail before signature work. For Genesis this only catches a
+        # single transfer above the epoch cap; the authoritative cumulative
+        # epoch-spend check is repeated inside the write transaction below.
         enforce_genesis_envelope_guard(
             env,
             genesis_value_certificate=self._genesis_value_certificate,
@@ -292,6 +295,13 @@ def _record_payload(
 
 
 def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int) -> int:
+    """Return same-epoch Genesis settled-ILC spend from stored transfer records.
+
+    This pre-RC implementation deliberately recomputes from authenticated LMDB
+    transfer records inside the write transaction. That is fail-closed and
+    deterministic, but linear in transfer-record count until a future indexed
+    per-epoch aggregate is introduced.
+    """
     spent = 0
     with txn.cursor(db=transfers_db) as cursor:
         for _key_bytes, raw in cursor:

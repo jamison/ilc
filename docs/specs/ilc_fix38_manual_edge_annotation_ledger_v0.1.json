@@ -79555,6 +79555,60 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_04_fix1_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_GENESIS_VALUE_02_FIX1_signature_hardening",
+      "chronology_note": "2026-08-04 GAP-GENESIS-VALUE-02-Fix1 \u2014 Genesis value guard signature and transfer semantics audit hardening before ECU/ILC activation gates.",
+      "manual_read_summary": "Combined Codex and Sonnet audit fixes for GenesisValueActionPolicyCertificate cryptographic guardian signature verification, guardian key-root binding, distinct signer threshold enforcement, ECU epoch-spend constructor fail-closed behavior, settled-ILC PAYMENT action-class pinning, and pre-RC Genesis ILC cap-scan documentation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_gap_genesis_value_02_genesis_value_guard_runtime_walkthrough.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:genesis_value_guard_signature_hardened_GAP_GENESIS_VALUE_02_FIX1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/genesis/genesis_value_action_guard.py"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/ecu/ecu_transfer_context_verifier.py"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_intent.py"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_ledger.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_genesis_value_action_guard_GAP_GENESIS_VALUE_02.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS_RUNTIME_SURFACE",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_genesis_value_02_fix1_signature_and_transfer_semantics_hardening_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

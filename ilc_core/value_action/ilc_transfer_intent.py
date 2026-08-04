@@ -26,6 +26,7 @@ _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MEMO_MAX_CHARS = 256
 _MICRO_ILC_FACTOR = Decimal("1000000")
 _U64_MAX = 18_446_744_073_709_551_615
+GENESIS_ILC_ACTION_CLASS = "PAYMENT"
 
 
 class ActionType(str, Enum):
@@ -120,13 +121,18 @@ def enforce_genesis_envelope_guard(
     genesis_value_certificate: GenesisValueActionPolicyCertificate | None,
     current_epoch_spent_micro_ilc: int | None,
 ) -> None:
-    """Apply the CDL-110 Genesis source-agent guard to ILC transfer envelopes."""
+    """Apply the CDL-110 Genesis source-agent guard to ILC transfer envelopes.
+
+    Settled ILC transfers are classified as CDL-110 PAYMENT actions. The
+    pre-RC path reads the effective epoch from the signed envelope; a later
+    consensus-bound path should inject the current protocol epoch instead.
+    """
     if env.sender_agent_id != GENESIS_AGENT1_AGENT_ID:
         return
     enforce_genesis_value_guard(
         source_agent_id=env.sender_agent_id,
         certificate=genesis_value_certificate,
-        action_class="PAYMENT",
+        action_class=GENESIS_ILC_ACTION_CLASS,
         amount_micro_unit=_amount_ilc_to_micro_ilc(env.amount_ilc),
         current_epoch=env.epoch,
         recipient_agent_id=env.recipient_agent_id,
@@ -183,6 +189,7 @@ class ILCTransferIntent:
 __all__ = [
     "ActionType",
     "AgentActionEnvelope",
+    "GENESIS_ILC_ACTION_CLASS",
     "ILCTransferIntent",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
