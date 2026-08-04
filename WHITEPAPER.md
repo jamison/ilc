@@ -4726,10 +4726,10 @@ a supported endpoint class in this registry. The model-router normalizes LLM inf
 (OpenAI-compatible, Anthropic, HuggingFace, Ollama, GAIA-X sovereign). MCP is a separate
 tool-invocation protocol operating at the harness product layer.
 
-ILC's relationship with MCP has a deliberate history. ADR-0001 (January 2026) originally
-designated MCP as the planned agent control-plane, and a complete implementation was built at
-`ilc_core/mcp/` with four MVP tools (`ilc.capabilities.get`, `ilc.task.get`, `ilc.block.get`,
-`ilc.bundle.submit`). That implementation was moved to dormant `PUBLIC_RC_EXCLUDE` status at
+ILC's relationship with MCP has a deliberate history. ADR-0001 (January 2026) — primarily a
+canonical-encoding, NodeID, and agent-interface decision — included MCP as one component of the
+MVP agent interface surface, with four tool slots (`ilc.capabilities.get`, `ilc.task.get`,
+`ilc.block.get`, `ilc.bundle.submit`). A complete implementation was built at `ilc_core/mcp/`. That implementation was moved to dormant `PUBLIC_RC_EXCLUDE` status at
 Phase 1573aw — not abandoned — in favour of a CLI-first public RC surface. The reasons were
 practical: empirical harness evaluation (including the February 2026 OpenClaw experiments)
 demonstrated that agents interact more naturally with structured CLI surfaces than with MCP
