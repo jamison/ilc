@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
 
+from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+from ilc_core.genesis.genesis_value_action_guard import (
+    GenesisValueActionPolicyCertificate,
+    enforce_genesis_value_guard,
+)
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 ILC_TRANSFER_INTENT_VERSION = "ilc_transfer_intent_01.v0.1"
@@ -19,6 +24,8 @@ ILC_TRANSFER_ENABLED = False  # Activates via TRANSFER-ENABLED ILC GATE - Phase 
 _AGENT_ID_HEX_LENGTH = 96
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MEMO_MAX_CHARS = 256
+_MICRO_ILC_FACTOR = Decimal("1000000")
+_U64_MAX = 18_446_744_073_709_551_615
 
 
 class ActionType(str, Enum):
@@ -107,6 +114,45 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
             raise ValueError("invalid_envelope_cose_signature")
 
 
+def enforce_genesis_envelope_guard(
+    env: AgentActionEnvelope,
+    *,
+    genesis_value_certificate: GenesisValueActionPolicyCertificate | None,
+    current_epoch_spent_micro_ilc: int | None,
+) -> None:
+    """Apply the CDL-110 Genesis source-agent guard to ILC transfer envelopes."""
+    if env.sender_agent_id != GENESIS_AGENT1_AGENT_ID:
+        return
+    enforce_genesis_value_guard(
+        source_agent_id=env.sender_agent_id,
+        certificate=genesis_value_certificate,
+        action_class="PAYMENT",
+        amount_micro_unit=_amount_ilc_to_micro_ilc(env.amount_ilc),
+        current_epoch=env.epoch,
+        recipient_agent_id=env.recipient_agent_id,
+        graph_context_anchor=env.graph_context_anchor,
+        consent_or_agreement_reference=env.memo,
+        unit="ILC",
+        current_epoch_spent_micro_unit=current_epoch_spent_micro_ilc,
+    )
+
+
+def _amount_ilc_to_micro_ilc(amount_ilc: Decimal) -> int:
+    if not isinstance(amount_ilc, Decimal):
+        raise TypeError("invalid_envelope_amount_not_decimal")
+    if not amount_ilc.is_finite():
+        raise ValueError("invalid_amount_non_finite")
+    scaled_amount = amount_ilc * _MICRO_ILC_FACTOR
+    if scaled_amount != scaled_amount.to_integral_value():
+        raise ValueError("invalid_envelope_amount_fractional_micro_ilc")
+    amount_micro_ilc = int(scaled_amount)
+    if amount_micro_ilc <= 0:
+        raise ValueError("invalid_envelope_amount_not_positive")
+    if amount_micro_ilc > _U64_MAX:
+        raise ValueError("amount_micro_ilc_exceeds_u64_max")
+    return amount_micro_ilc
+
+
 class ILCTransferIntent:
     """Factory and validator for ILC_TRANSFER AgentActionEnvelope instances."""
 
@@ -140,5 +186,6 @@ __all__ = [
     "ILCTransferIntent",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
+    "enforce_genesis_envelope_guard",
     "validate_envelope",
 ]

@@ -15,7 +15,13 @@ from ilc_core.ledger.exact_numeric import (
 )
 import ilc_core.value_action.ilc_transfer_intent as transfer_intent
 from ilc_core.value_action.action_nonce_store import ActionNonceStore
-from ilc_core.value_action.ilc_transfer_intent import AgentActionEnvelope, validate_envelope
+from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+from ilc_core.genesis.genesis_value_action_guard import GenesisValueActionPolicyCertificate
+from ilc_core.value_action.ilc_transfer_intent import (
+    AgentActionEnvelope,
+    enforce_genesis_envelope_guard,
+    validate_envelope,
+)
 
 ILC_TRANSFER_LEDGER_VERSION = "ilc_transfer_ledger_04.v0.1"
 
@@ -73,10 +79,16 @@ class ILCTransferLedgerEntry:
 class ILCTransferLedger:
     """Caller-env LMDB ledger for atomic agent-id settled ILC transfers."""
 
-    def __init__(self, lmdb_env: object) -> None:
+    def __init__(
+        self,
+        lmdb_env: object,
+        *,
+        genesis_value_certificate: GenesisValueActionPolicyCertificate | None = None,
+    ) -> None:
         self._env = lmdb_env
         self._balances_db = self._env.open_db(_BALANCES_DB, create=True)
         self._transfers_db = self._env.open_db(_TRANSFERS_DB, create=True)
+        self._genesis_value_certificate = genesis_value_certificate
 
     def get_balance(self, agent_id: str) -> Decimal:
         """Return current settled transfer balance for an AgentID."""
@@ -106,6 +118,11 @@ class ILCTransferLedger:
         if transfer_intent.ILC_TRANSFER_ENABLED is not True:
             raise ValueError("transfer_not_enabled")
         validate_envelope(env)
+        enforce_genesis_envelope_guard(
+            env,
+            genesis_value_certificate=self._genesis_value_certificate,
+            current_epoch_spent_micro_ilc=0,
+        )
         _verify_transfer_signature(
             env,
             signature_verifier=signature_verifier,
@@ -119,6 +136,16 @@ class ILCTransferLedger:
         sender_key = _key(env.sender_agent_id)
         recipient_key = _key(env.recipient_agent_id)
         with self._env.begin(write=True) as txn:
+            if env.sender_agent_id == GENESIS_AGENT1_AGENT_ID:
+                enforce_genesis_envelope_guard(
+                    env,
+                    genesis_value_certificate=self._genesis_value_certificate,
+                    current_epoch_spent_micro_ilc=_genesis_epoch_spent_micro_ilc(
+                        txn,
+                        self._transfers_db,
+                        env.epoch,
+                    ),
+                )
             sender_before = _decode_balance(txn.get(sender_key, db=self._balances_db))
             recipient_before = _decode_balance(
                 txn.get(recipient_key, db=self._balances_db)
@@ -262,6 +289,20 @@ def _record_payload(
         "sender_balance_after_ilc": decimal_to_canonical_string(sender_after),
         "sender_balance_before_ilc": decimal_to_canonical_string(sender_before),
     }
+
+
+def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int) -> int:
+    spent = 0
+    with txn.cursor(db=transfers_db) as cursor:
+        for _key_bytes, raw in cursor:
+            record = json.loads(raw.decode("utf-8"))
+            if not isinstance(record, dict):
+                raise ValueError("invalid_transfer_record_payload")
+            _verify_record_sha256(record)
+            entry = _entry_from_record(record)
+            if entry.sender_agent_id == GENESIS_AGENT1_AGENT_ID and entry.epoch == epoch:
+                spent += transfer_intent._amount_ilc_to_micro_ilc(entry.amount_ilc)
+    return spent
 
 
 def _entry_from_record(record: dict[str, Any]) -> ILCTransferLedgerEntry:
