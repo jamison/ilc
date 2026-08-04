@@ -21,7 +21,6 @@ from ilc_core.value_action.ilc_transfer_ledger import (
     ILCTransferLedger,
     ILCTransferLedgerEntry,
     InsufficientBalanceError,
-    _encode_balance,
 )
 from ilc_core.value_action.ilc_transfer_receipt import (
     build_transfer_receipt,
@@ -94,6 +93,7 @@ def key_uri(tmp_path: Path, private_key: ed25519.Ed25519PrivateKey) -> str:
 @pytest.fixture(autouse=True)
 def transfer_enabled(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(ilc_transfer_intent, "ILC_TRANSFER_ENABLED", True)
+    monkeypatch.setenv("ILC_TEST_BALANCE_SEED_AUTHORIZED", "1")
 
 
 def _nonce(agent_id: str, counter: int) -> str:
@@ -120,8 +120,7 @@ def _intent(
 
 
 def _seed_balance(ledger: ILCTransferLedger, agent_id: str, amount: Decimal) -> None:
-    with ledger._env.begin(write=True, db=ledger._balances_db) as txn:
-        txn.put(agent_id.encode("ascii"), _encode_balance(amount))
+    ledger.seed_balance_for_test(agent_id, amount)
 
 
 def _execute(
@@ -172,6 +171,10 @@ def test_double_spend_insufficient_balance(lmdb_env, provider, key_uri: str, pri
     _execute(ledger, nonce_store, first, provider=provider, private_key=private_key)
     with pytest.raises(InsufficientBalanceError, match="insufficient_balance"):
         _execute(ledger, nonce_store, second, provider=provider, private_key=private_key)
+
+    assert nonce_store.peek_counter(SENDER_AGENT_ID) == 1
+    assert ledger.get_balance(SENDER_AGENT_ID) == Decimal("0")
+    assert ledger.get_balance(RECIPIENT_AGENT_ID) == Decimal("100")
 
 
 def test_non_finite_decimal_nan_rejected() -> None:

@@ -98,6 +98,18 @@ def test_tampered_envelope_fails_verify(
     assert provider.verify_envelope_signature(tampered, public_bytes) is False
 
 
+def test_tampered_signed_at_epoch_fails_verify(
+    key_uri: str,
+    private_key: ed25519.Ed25519PrivateKey,
+) -> None:
+    provider = LocalEd25519SigningProvider()
+    signed = provider.sign_envelope(_intent(), key_uri)
+    tampered = replace(signed, signed_at_epoch=1)
+    public_bytes = private_key.public_key().public_bytes_raw()
+
+    assert provider.verify_envelope_signature(tampered, public_bytes) is False
+
+
 def test_no_signature_verify_raises(private_key: ed25519.Ed25519PrivateKey) -> None:
     public_bytes = private_key.public_key().public_bytes_raw()
 
@@ -131,6 +143,35 @@ def test_amount_uses_canonical_decimal_string() -> None:
 
     payload = LocalEd25519SigningProvider().canonical_payload_dict(env)
     assert payload["amount_ilc"] == "1.23"
+    assert payload["signed_at_epoch"] is None
+
+
+def test_invalid_public_key_type_returns_false(key_uri: str) -> None:
+    provider = LocalEd25519SigningProvider()
+    signed = provider.sign_envelope(_intent(), key_uri)
+
+    assert provider.verify_envelope_signature(signed, "not-bytes") is False  # type: ignore[arg-type]
+
+
+def test_key_file_size_cap_has_stable_token(tmp_path: Path) -> None:
+    key_path = tmp_path / "oversized.pem"
+    key_path.write_bytes(b"x" * (16 * 1024 + 1))
+
+    with pytest.raises(ValueError, match="invalid_file_key_uri_too_large"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), key_path.as_uri())
+
+
+def test_key_uri_directory_rejected_with_stable_token(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="invalid_file_key_uri_not_file"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), tmp_path.as_uri())
+
+
+def test_malformed_key_file_rejected_with_stable_token(tmp_path: Path) -> None:
+    key_path = tmp_path / "malformed.pem"
+    key_path.write_text("not a private key", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="invalid_private_key_pem"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), key_path.as_uri())
 
 
 def test_resolve_public_key_returns_raw_ed25519_bytes(

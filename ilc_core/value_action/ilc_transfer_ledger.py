@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Protocol
@@ -83,6 +84,14 @@ class ILCTransferLedger:
         with self._env.begin(db=self._balances_db) as txn:
             return _decode_balance(txn.get(_key(agent_id)))
 
+    def seed_balance_for_test(self, agent_id: str, amount_ilc: Decimal) -> None:
+        """Seed LMDB balance for deterministic tests only, never production flow."""
+        if os.environ.get("ILC_TEST_BALANCE_SEED_AUTHORIZED") != "1":
+            raise ValueError("test_balance_seed_not_authorized")
+        transfer_intent._require_agent_id(agent_id, "invalid_ilc_transfer_agent_id")
+        with self._env.begin(write=True, db=self._balances_db) as txn:
+            txn.put(_key(agent_id), _encode_balance(amount_ilc))
+
     def execute_transfer(
         self,
         env: AgentActionEnvelope,
@@ -104,7 +113,7 @@ class ILCTransferLedger:
             sender_public_key_bytes=sender_public_key_bytes,
             external_aad=external_aad,
         )
-        if getattr(nonce_store, "_env", None) is not self._env:
+        if nonce_store.lmdb_env is not self._env:
             raise ValueError("transfer_nonce_store_env_mismatch")
 
         sender_key = _key(env.sender_agent_id)
@@ -139,6 +148,8 @@ class ILCTransferLedger:
                 recipient_before=recipient_before,
                 recipient_after=recipient_after,
             )
+            # transfer_id identifies the balance-effect body. record_sha256
+            # authenticates the stored envelope that carries that id.
             transfer_id = _sha256_hex(record)
             if txn.get(transfer_id.encode("ascii"), db=self._transfers_db) is not None:
                 raise ValueError("transfer_record_duplicate")
@@ -212,6 +223,8 @@ def _verify_transfer_signature(
 
 
 def _encode_balance(value: Decimal) -> bytes:
+    if not isinstance(value, Decimal):
+        raise TypeError("invalid_ilc_balance_type")
     if value < Decimal("0"):
         raise ValueError("invalid_ilc_balance_negative")
     return decimal_to_canonical_string(value).encode("ascii")

@@ -13,6 +13,7 @@ _ISSUED_COUNTER_SUFFIX = b":issued_counter"
 _CONSUMED_COUNTER_SUFFIX = b":consumed_counter"
 _PACKING_FMT = ">Q"
 _PACKING_SIZE = struct.calcsize(_PACKING_FMT)
+_MAX_COUNTER = 2**64 - 1
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _NONCE_COUNTER_DIGITS = 20
 _NONCE_SEPARATOR = ":nonce:"
@@ -39,6 +40,8 @@ class ActionNonceStore:
             issued = _decode_counter(txn.get(issued_key, db=self._issued_db))
             consumed = _decode_counter(txn.get(consumed_key, db=self._consumed_db))
             next_counter = max(issued, consumed) + 1
+            if next_counter > _MAX_COUNTER:
+                raise NonceReplayError("action_nonce_counter_exhausted")
             txn.put(
                 issued_key,
                 _encode_counter(next_counter),
@@ -52,7 +55,12 @@ class ActionNonceStore:
             self.consume_nonce_in_txn(txn, agent_id, nonce)
 
     def consume_nonce_in_txn(self, txn: object, agent_id: str, nonce: str) -> None:
-        """Mark nonce consumed inside a caller-owned LMDB write transaction."""
+        """Mark nonce consumed inside a caller-owned LMDB write transaction.
+
+        Consumption is intentionally strict-sequential: nonce N+1 is rejected
+        until nonce N is consumed, so failed/skipped value actions cannot leave
+        an accepted gap in the per-agent action stream.
+        """
         _require_agent_id(agent_id)
         counter = _parse_nonce(agent_id, nonce)
         nonce_key = nonce.encode("ascii")
@@ -79,6 +87,11 @@ class ActionNonceStore:
             consumed = _decode_counter(txn.get(consumed_key, db=self._consumed_db))
         return max(issued, consumed)
 
+    @property
+    def lmdb_env(self) -> object:
+        """Return the caller-owned LMDB environment bound to this store."""
+        return self._env
+
 
 def _require_agent_id(agent_id: str) -> None:
     if not isinstance(agent_id, str) or _AGENT_ID_RE.fullmatch(agent_id) is None:
@@ -101,6 +114,8 @@ def _parse_nonce(agent_id: str, nonce: str) -> int:
     counter = int(raw_counter)
     if counter <= 0:
         raise ValueError("invalid_action_nonce_zero")
+    if counter > _MAX_COUNTER:
+        raise ValueError("invalid_action_nonce_counter_overflow")
     if nonce != _format_nonce(agent_id, counter):
         raise ValueError("invalid_action_nonce_format")
     return counter
@@ -111,6 +126,10 @@ def _counter_key(agent_id: str, suffix: bytes) -> bytes:
 
 
 def _encode_counter(counter: int) -> bytes:
+    if not isinstance(counter, int) or isinstance(counter, bool) or counter < 0:
+        raise ValueError("invalid_action_nonce_counter")
+    if counter > _MAX_COUNTER:
+        raise ValueError("invalid_action_nonce_counter_overflow")
     return struct.pack(_PACKING_FMT, counter)
 
 

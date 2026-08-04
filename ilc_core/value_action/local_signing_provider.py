@@ -16,6 +16,7 @@ from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.value_action.ilc_transfer_intent import AgentActionEnvelope, validate_envelope
 
 LOCAL_SIGNING_PROVIDER_VERSION = "local_signing_provider_02.v0.1"
+_MAX_PRIVATE_KEY_PEM_BYTES = 16 * 1024
 
 
 class UnsupportedKeyProviderError(ValueError):
@@ -35,6 +36,10 @@ class LocalEd25519SigningProvider:
     ) -> AgentActionEnvelope:
         """Return a copy of env with a COSE_Sign1 signature over its payload."""
         validate_envelope(env)
+        if kid is not None and not isinstance(kid, bytes):
+            raise ValueError("invalid_signing_provider_kid")
+        if not isinstance(external_aad, bytes):
+            raise ValueError("invalid_signing_provider_external_aad")
         private_key = self._load_private_key(key_uri)
         payload = self.canonical_payload_dag_cbor(env)
         cose_bytes = cose_sign1_sign(
@@ -56,9 +61,11 @@ class LocalEd25519SigningProvider:
         validate_envelope(env)
         if env.cose_signature is None:
             raise ValueError("invalid_envelope_no_signature")
+        if not isinstance(external_aad, bytes):
+            raise ValueError("invalid_signing_provider_external_aad")
         try:
             public_key = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
-        except ValueError:
+        except (TypeError, ValueError):
             return False
         try:
             decoded = cose_sign1_verify(
@@ -95,6 +102,7 @@ class LocalEd25519SigningProvider:
             "nonce": env.nonce,
             "recipient_agent_id": env.recipient_agent_id,
             "sender_agent_id": env.sender_agent_id,
+            "signed_at_epoch": env.signed_at_epoch,
             "version": "agent_action_envelope.ilc_transfer.v0.1",
         }
         if env.graph_context_anchor is not None:
@@ -109,7 +117,20 @@ class LocalEd25519SigningProvider:
 
     def _load_private_key(self, key_uri: str) -> ed25519.Ed25519PrivateKey:
         key_path = self._parse_file_uri(key_uri)
-        key = load_pem_private_key(key_path.read_bytes(), password=None)
+        try:
+            if not key_path.is_file():
+                raise ValueError("invalid_file_key_uri_not_file")
+            if key_path.stat().st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
+                raise ValueError("invalid_file_key_uri_too_large")
+            key_bytes = key_path.read_bytes()
+        except ValueError:
+            raise
+        except OSError as exc:
+            raise ValueError("invalid_file_key_uri_unreadable") from exc
+        try:
+            key = load_pem_private_key(key_bytes, password=None)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("invalid_private_key_pem") from exc
         if not isinstance(key, ed25519.Ed25519PrivateKey):
             raise ValueError("invalid_key_type_not_ed25519")
         return key
