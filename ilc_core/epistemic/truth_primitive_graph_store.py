@@ -85,7 +85,7 @@ def node_record_from_submission(
 
     # Canonical field order is fixed by CDL-075 §2.1.
     # Keys are sorted strings to satisfy node_id_from_obj invariants.
-    return {
+    record = {
         "agent_id": str(envelope.get("agent_id", "")),
         "cdl_version": _CDL_075_VERSION_TAG,
         "epoch": int(envelope.get("epoch", 0)),
@@ -93,6 +93,14 @@ def node_record_from_submission(
         "primitive": primitive,
         "primitive_type": result.node_primitive_type,
     }
+    sig = envelope.get("sig")
+    if isinstance(sig, str) and sig not in {"", "UNSIGNED"}:
+        record["v"] = int(envelope.get("v", 1))
+        record["sig"] = sig
+        record["sig_pubkey_hex"] = str(envelope.get("sig_pubkey_hex", ""))
+        record["sig_pubkey_fingerprint"] = str(envelope.get("sig_pubkey_fingerprint", ""))
+        record["sig_scheme"] = str(envelope.get("sig_scheme", ""))
+    return record
 
 
 def node_id_from_submission(
@@ -180,6 +188,7 @@ def _resolve_edges(
     """
     agent_id = str(envelope.get("agent_id", ""))
     epoch = int(envelope.get("epoch", 0))
+    primitive = str(envelope.get("primitive", ""))
     payload = dict(envelope.get("payload", {}))
 
     parent_iter = iter(list(payload.get("parent_node_ids", [])))
@@ -213,6 +222,15 @@ def _resolve_edges(
             "source": source,
             "target": target,
         })
+        sig = envelope.get("sig")
+        if isinstance(sig, str) and sig not in {"", "UNSIGNED"}:
+            records[-1]["payload"] = payload
+            records[-1]["primitive"] = primitive
+            records[-1]["sig"] = sig
+            records[-1]["sig_pubkey_hex"] = str(envelope.get("sig_pubkey_hex", ""))
+            records[-1]["sig_pubkey_fingerprint"] = str(envelope.get("sig_pubkey_fingerprint", ""))
+            records[-1]["sig_scheme"] = str(envelope.get("sig_scheme", ""))
+            records[-1]["v"] = int(envelope.get("v", 1))
 
     return records
 

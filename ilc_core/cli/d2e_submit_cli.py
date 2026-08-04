@@ -29,8 +29,10 @@ from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
 from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
+from ilc_core.epistemic.truth_primitive_sig_verifier import attach_truth_primitive_signature
+from ilc_core.value_action.local_signing_provider import LocalEd25519SigningProvider
 
-D2E_SUBMIT_CLI_VERSION = "d2e_submit_cli_874.v0.1"
+D2E_SUBMIT_CLI_VERSION = "d2e_submit_cli_874_GAP_GRAPH_SIGN_00.v0.1"
 CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
@@ -96,6 +98,25 @@ def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
     return payload
 
 
+def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | None) -> dict[str, Any]:
+    """Attach optional Ed25519 hotkey signature metadata to a submission envelope."""
+
+    if not signing_key_uri:
+        return envelope
+    if envelope.get("sig") not in {None, "", "UNSIGNED"}:
+        raise SubmitCommandError(
+            "submit_signature_ambiguous",
+            "provide --sig or --signing-key, not both",
+        )
+    try:
+        private_key = LocalEd25519SigningProvider()._load_private_key(signing_key_uri)
+        return attach_truth_primitive_signature(envelope, private_key)
+    except SubmitCommandError:
+        raise
+    except ValueError as exc:
+        raise SubmitCommandError("submit_signing_key_invalid", str(exc)) from exc
+
+
 def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     """Execute the submit command.
 
@@ -132,6 +153,8 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         result = validate_truth_primitive_submission(envelope)
     except EpistemicSubmissionError as exc:
         raise SubmitCommandError(exc.token, str(exc)) from exc
+
+    envelope = _sign_submission_envelope(envelope, getattr(args, "signing_key", None))
 
     edges_out = [
         {"edge_type": e.edge_type, "source": e.source, "target": e.target}

@@ -2220,6 +2220,12 @@ def _build_parser() -> JsonArgumentParser:
                 default="UNSIGNED",
                 help="COSE Sign1 signature (hex or placeholder). Default: UNSIGNED",
             )
+            submit_parser.add_argument(
+                "--signing-key",
+                dest="signing_key",
+                default=None,
+                help="Optional file:// Ed25519 hotkey URI for signing the truth primitive payload",
+            )
             continue
 
         if command != "identity":
