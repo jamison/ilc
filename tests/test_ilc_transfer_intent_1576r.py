@@ -9,7 +9,10 @@ import pytest
 from ilc_core.value_action.ilc_transfer_intent import (
     ILC_TRANSFER_ENABLED,
     ILC_TRANSFER_INTENT_VERSION,
+    MAX_GRAPH_CONTEXT_ANCHOR_BYTES,
     MAX_GRAPH_CONTEXT_ANCHOR_CHARS,
+    MAX_MEMO_BYTES,
+    MAX_NONCE_BYTES,
     MAX_NONCE_CHARS,
     ActionType,
     AgentActionEnvelope,
@@ -84,6 +87,14 @@ def test_memo_too_long_rejected() -> None:
         _create(memo="x" * 257)
 
 
+def test_memo_utf8_byte_cap_rejected() -> None:
+    memo = "é" * ((MAX_MEMO_BYTES // 2) + 1)
+    assert len(memo) <= 256
+    assert len(memo.encode("utf-8")) > MAX_MEMO_BYTES
+    with pytest.raises(ValueError, match="invalid_envelope_memo_too_long"):
+        _create(memo=memo)
+
+
 @pytest.mark.parametrize("nonce", ["", " padded", "padded "])
 def test_empty_or_noncanonical_nonce_rejected(nonce: str) -> None:
     with pytest.raises(ValueError, match="invalid_envelope_empty_nonce"):
@@ -131,6 +142,14 @@ def test_nonce_too_long_rejected() -> None:
         _create(nonce="x" * (MAX_NONCE_CHARS + 1))
 
 
+def test_nonce_utf8_byte_cap_rejected() -> None:
+    nonce = "é" * ((MAX_NONCE_BYTES // 2) + 1)
+    assert len(nonce) <= MAX_NONCE_BYTES
+    assert len(nonce.encode("utf-8")) > MAX_NONCE_BYTES
+    with pytest.raises(ValueError, match="invalid_envelope_nonce_too_long"):
+        _create(nonce=nonce)
+
+
 def test_nonce_at_max_length_accepted() -> None:
     validate_envelope(_create(nonce="a" * MAX_NONCE_CHARS))
 
@@ -139,6 +158,14 @@ def test_graph_context_anchor_too_long_rejected() -> None:
     """Anchor exceeding MAX_GRAPH_CONTEXT_ANCHOR_CHARS must be rejected before signing."""
     with pytest.raises(ValueError, match="invalid_envelope_graph_context_anchor_too_long"):
         _create(graph_context_anchor="g" * (MAX_GRAPH_CONTEXT_ANCHOR_CHARS + 1))
+
+
+def test_graph_context_anchor_utf8_byte_cap_rejected() -> None:
+    anchor = "é" * ((MAX_GRAPH_CONTEXT_ANCHOR_BYTES // 2) + 1)
+    assert len(anchor) <= MAX_GRAPH_CONTEXT_ANCHOR_BYTES
+    assert len(anchor.encode("utf-8")) > MAX_GRAPH_CONTEXT_ANCHOR_BYTES
+    with pytest.raises(ValueError, match="invalid_envelope_graph_context_anchor_too_long"):
+        _create(graph_context_anchor=anchor)
 
 
 def test_graph_context_anchor_at_max_length_accepted() -> None:

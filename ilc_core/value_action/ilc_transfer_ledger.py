@@ -204,7 +204,7 @@ class ILCTransferLedger:
         decoded = json.loads(raw.decode("utf-8"))
         if not isinstance(decoded, dict):
             raise ValueError("invalid_transfer_record_payload")
-        _verify_record_sha256(decoded)
+        _verify_record_sha256(decoded, expected_transfer_id=transfer_id)
         entry = _entry_from_record(decoded)
         _verify_transfer_record_semantics(entry)
         return entry
@@ -306,11 +306,15 @@ def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int
     """
     spent = 0
     with txn.cursor(db=transfers_db) as cursor:
-        for _key_bytes, raw in cursor:
+        for key_bytes, raw in cursor:
             record = json.loads(raw.decode("utf-8"))
             if not isinstance(record, dict):
                 raise ValueError("invalid_transfer_record_payload")
-            _verify_record_sha256(record)
+            try:
+                expected_transfer_id = key_bytes.decode("ascii")
+            except UnicodeDecodeError as exc:
+                raise ValueError("invalid_transfer_record_key_encoding") from exc
+            _verify_record_sha256(record, expected_transfer_id=expected_transfer_id)
             entry = _entry_from_record(record)
             _verify_transfer_record_semantics(entry)
             if entry.sender_agent_id == GENESIS_AGENT1_AGENT_ID and entry.epoch == epoch:
@@ -408,7 +412,22 @@ def _verify_transfer_record_semantics(entry: ILCTransferLedgerEntry) -> None:
         raise ValueError("transfer_record_balance_equation_mismatch")
 
 
-def _verify_record_sha256(record: dict[str, Any]) -> None:
+def _verify_record_sha256(
+    record: dict[str, Any],
+    *,
+    expected_transfer_id: str | None = None,
+) -> None:
+    transfer_id = _require_sha256_hex(record.get("transfer_id"), "invalid_transfer_id")
+    if expected_transfer_id is not None:
+        if _require_sha256_hex(expected_transfer_id, "invalid_transfer_id") != transfer_id:
+            raise ValueError("transfer_record_lookup_key_mismatch")
+    transfer_body = {
+        key: value
+        for key, value in record.items()
+        if key not in {"record_sha256", "transfer_id"}
+    }
+    if _sha256_hex(transfer_body) != transfer_id:
+        raise ValueError("transfer_record_transfer_id_mismatch")
     expected = _require_sha256_hex(
         record.get("record_sha256"),
         "invalid_transfer_record_sha256",
