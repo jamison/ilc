@@ -282,6 +282,39 @@ def test_deterministic_transfer_id_for_same_payload_different_store(
     assert ids[0] == ids[1]
 
 
+def test_duplicate_transfer_id_collision_rolls_back_state(
+    lmdb_env,
+    key_uri: str,
+    private_key,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    ledger = ILCTransferLedger(lmdb_env)
+    nonce_store = ActionNonceStore(lmdb_env)
+    _seed_balance(ledger, SENDER_AGENT_ID, Decimal("10"))
+    forced_transfer_id = "1" * 64
+    forced_record_hash = "2" * 64
+    hash_calls: list[dict[str, object]] = []
+
+    def _forced_hash(_payload: dict[str, object]) -> str:
+        hash_calls.append(_payload)
+        return forced_transfer_id if len(hash_calls) in {1, 3} else forced_record_hash
+
+    monkeypatch.setattr("ilc_core.value_action.ilc_transfer_ledger._sha256_hex", _forced_hash)
+    _execute(ledger, nonce_store, _signed_intent(key_uri, nonce=_nonce(SENDER_AGENT_ID, 1)), private_key)
+
+    with pytest.raises(ValueError, match="transfer_record_duplicate"):
+        _execute(
+            ledger,
+            nonce_store,
+            _signed_intent(key_uri, nonce=_nonce(SENDER_AGENT_ID, 2)),
+            private_key,
+        )
+
+    assert nonce_store.peek_counter(SENDER_AGENT_ID) == 1
+    assert ledger.get_balance(SENDER_AGENT_ID) == Decimal("6.5")
+    assert ledger.get_balance(RECIPIENT_AGENT_ID) == Decimal("3.5")
+
+
 def test_unsigned_transfer_rejected_before_nonce_or_balance_mutation(lmdb_env) -> None:
     ledger = ILCTransferLedger(lmdb_env)
     nonce_store = ActionNonceStore(lmdb_env)
