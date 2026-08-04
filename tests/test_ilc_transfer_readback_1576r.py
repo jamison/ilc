@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
+import hashlib
 import json
 from decimal import Decimal
 from pathlib import Path
@@ -118,6 +119,12 @@ def _execute_transfer(lmdb_env, key_uri: str, private_key: ed25519.Ed25519Privat
     return ledger, entry
 
 
+def _json_hash(payload: dict[str, object]) -> str:
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    ).hexdigest()
+
+
 def test_post_transfer_balance_matches(lmdb_env, key_uri: str, private_key) -> None:
     ledger, _entry = _execute_transfer(lmdb_env, key_uri, private_key)
     verifier = ILCTransferReadbackVerifier()
@@ -180,7 +187,7 @@ def test_tampered_transfer_record_fails_closed(lmdb_env, key_uri: str, private_k
             ),
         )
 
-    with pytest.raises(ValueError, match="transfer_record_sha256_mismatch"):
+    with pytest.raises(ValueError, match="transfer_record_transfer_id_mismatch"):
         ledger.get_transfer_record(entry.transfer_id)
 
 
@@ -195,18 +202,13 @@ def test_readback_rejects_record_with_broken_balance_equation(lmdb_env, key_uri:
         payload = json.loads(raw.decode("utf-8"))
         # Inflate recipient_balance_after_ilc by 1 ILC to break the balance equation,
         # then recompute transfer_id and record_sha256 so the hash check passes.
-        import hashlib
         original_after = Decimal(payload["recipient_balance_after_ilc"])
         payload["recipient_balance_after_ilc"] = str(original_after + Decimal("1"))
         body = {k: v for k, v in payload.items() if k not in ("transfer_id", "record_sha256")}
-        new_transfer_id = hashlib.sha256(
-            json.dumps(body, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
-        ).hexdigest()
+        new_transfer_id = _json_hash(body)
         payload["transfer_id"] = new_transfer_id
         body_with_id = {k: v for k, v in payload.items() if k != "record_sha256"}
-        payload["record_sha256"] = hashlib.sha256(
-            json.dumps(body_with_id, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
-        ).hexdigest()
+        payload["record_sha256"] = _json_hash(body_with_id)
         txn.put(
             new_transfer_id.encode("ascii"),
             json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8"),
@@ -214,6 +216,39 @@ def test_readback_rejects_record_with_broken_balance_equation(lmdb_env, key_uri:
 
     with pytest.raises(ValueError, match="transfer_record_balance_equation_mismatch"):
         ledger.get_transfer_record(new_transfer_id)
+
+
+def test_readback_rejects_transfer_id_lookup_key_mismatch(lmdb_env, key_uri: str, private_key) -> None:
+    ledger, entry = _execute_transfer(lmdb_env, key_uri, private_key)
+    alternate_key = "f" * 64
+    assert alternate_key != entry.transfer_id
+    with ledger._env.begin(write=True, db=ledger._transfers_db) as txn:
+        raw = txn.get(entry.transfer_id.encode("ascii"))
+        assert raw is not None
+        txn.put(alternate_key.encode("ascii"), raw)
+
+    with pytest.raises(ValueError, match="transfer_record_lookup_key_mismatch"):
+        ledger.get_transfer_record(alternate_key)
+
+
+def test_readback_rejects_transfer_id_body_hash_mismatch(lmdb_env, key_uri: str, private_key) -> None:
+    ledger, entry = _execute_transfer(lmdb_env, key_uri, private_key)
+    forged_transfer_id = "e" * 64
+    assert forged_transfer_id != entry.transfer_id
+    with ledger._env.begin(write=True, db=ledger._transfers_db) as txn:
+        raw = txn.get(entry.transfer_id.encode("ascii"))
+        assert raw is not None
+        payload = json.loads(raw.decode("utf-8"))
+        payload["transfer_id"] = forged_transfer_id
+        body_with_id = {k: v for k, v in payload.items() if k != "record_sha256"}
+        payload["record_sha256"] = _json_hash(body_with_id)
+        txn.put(
+            forged_transfer_id.encode("ascii"),
+            json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8"),
+        )
+
+    with pytest.raises(ValueError, match="transfer_record_transfer_id_mismatch"):
+        ledger.get_transfer_record(forged_transfer_id)
 
 
 def test_module_has_no_disallowed_runtime_patterns() -> None:
