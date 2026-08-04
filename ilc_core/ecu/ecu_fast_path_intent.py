@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 ECU_FAST_PATH_TRANSFER_ENABLED = False
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
@@ -23,8 +22,8 @@ class ECUFastPathIntent:
     recipient_agent_id: str
     amount_ecu: Decimal
     transfer_class: TransferClass
-    graph_context_anchor: Optional[str]
-    express_consent: Optional[str]
+    graph_context_anchor: str | None
+    express_consent: str | None
     nonce: str
     created_epoch: int
 
@@ -79,7 +78,7 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
         raise ValueError("invalid_created_epoch")
 
 
-def _present(value: Optional[str]) -> bool:
+def _present(value: str | None) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 

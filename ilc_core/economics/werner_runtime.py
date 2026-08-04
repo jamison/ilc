@@ -173,7 +173,7 @@ def compute_degree_centrality(
         if edge_count > MAX_WERNER_ADJACENCY_EDGES:
             raise ValueError("werner_adjacency_edge_count_exceeds_maximum")
         degree = Decimal(str(len(neighbor_list)))
-        centrality[node] = degree / max_degree
+        centrality[node] = (degree / max_degree).quantize(_TWELVE_PLACES)
 
     return centrality
 
@@ -376,7 +376,9 @@ def compute_werner_pressure_signal(
         If node_id is absent, falls back to degree centrality computation.
     alpha:
         Smoothing parameter (used in caller context; passed here for
-        validation and downstream multi-epoch use).
+        validation and downstream multi-epoch use). This single-epoch
+        snapshot validates alpha for API symmetry but does not apply EMA;
+        alpha affects output only in compute_werner_smoothed_candidate_priority().
     beta_signal:
         Productive-fraction signal in [0, 1] (Decimal, finite).
 
