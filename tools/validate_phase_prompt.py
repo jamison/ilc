@@ -16,9 +16,23 @@ from pathlib import Path
 
 
 FILENAME_RE = re.compile(
-    r"^antigravity_prompt__phase_(?P<phase>\d+[a-z]{0,2}(?:_fix\d+[a-z]{0,2})?)_g(?P<group>\d+)_(?P<slug>[a-z0-9_]+)\.md$"
+    r"^antigravity_prompt__phase_"
+    r"(?P<phase>"
+    r"(?:\d+[a-z]{0,2}(?:_fix\d+[a-z]{0,2})?)"              # numeric: 1234, 1234a, 1234_fix1
+    r"|(?:gap_[a-z][a-z0-9]*(?:_[a-z][a-z0-9]*)*_\d+[a-z]{0,2})"  # GAP with terminal slot: gap_agent_harness_00, gap_werner_02a
+    r")"
+    r"(?:_g(?P<group>\d+))?"       # optional _g<N> group (Type A has it; Type B does not)
+    r"_(?P<slug>[a-z0-9_]+)\.md$"
 )
-H1_RE = re.compile(r"^#\s+Phase\s+(?P<phase>\d+[a-z]{0,2}(?:[_-]Fix\d+[a-z]{0,2})?)-G(?P<group>\d+)\b", re.IGNORECASE)
+H1_RE = re.compile(
+    r"^#\s+Phase\s+"
+    r"(?P<phase>"
+    r"(?:\d+[a-z]{0,2}(?:[_-]Fix\d+[a-z]{0,2})?)"        # numeric: 1234, 1234a, 1234-Fix1
+    r"|(?:GAP-[A-Z0-9](?:[A-Z0-9_]|-(?![Gg]\d))*)"        # GAP-series: stops before -G<digit> suffix
+    r")"
+    r"(?:-G(?P<group>\d+))?\b",
+    re.IGNORECASE,
+)
 HEADING_RE = re.compile(r"^#{2,3}\s+(.+?)\s*$")
 UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR = 1249
 UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS = (
@@ -99,7 +113,9 @@ def validate(path: Path) -> list[str]:
                 errors.append(
                     f"h1_phase_mismatch: expected={expected_phase} got={h1_m.group('phase')}"
                 )
-            if h1_m.group("group") != expected_group:
+            # Group is optional in both filename and H1; only flag mismatch when
+            # the filename has an explicit group and the H1 group differs.
+            if expected_group is not None and h1_m.group("group") != expected_group:
                 errors.append(
                     f"h1_group_mismatch: expected={expected_group} got={h1_m.group('group')}"
                 )
@@ -138,13 +154,24 @@ def validate(path: Path) -> list[str]:
     if "STATUS.md" not in text:
         errors.append("missing_reference:STATUS.md")
 
-    expected_phase_number = int(re.match(r"\d+", expected_phase).group(0))
-    if expected_phase_number >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
+    # GAP-series phases use non-numeric identifiers; phase-floor checks use
+    # the numeric phase number when available. GAP-series phases above the
+    # LMDB floor must still declare graph nodes — enforce by text check.
+    numeric_m = re.match(r"\d+", expected_phase)
+    expected_phase_number = int(numeric_m.group(0)) if numeric_m else None
+    is_gap_series = expected_phase.startswith("gap_")
+
+    if expected_phase_number is not None and expected_phase_number >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
+        for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
+            if section not in text:
+                errors.append(f"missing_unknown_unknown_discovery_section:{section}")
+    elif is_gap_series:
+        # GAP-series prompts must always include §0 discovery sections.
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             if section not in text:
                 errors.append(f"missing_unknown_unknown_discovery_section:{section}")
 
-    if expected_phase_number >= LMDB_NODE_REGISTRATION_PHASE_FLOOR:
+    if (expected_phase_number is not None and expected_phase_number >= LMDB_NODE_REGISTRATION_PHASE_FLOOR) or is_gap_series:
         # Require a dedicated LMDB node registration section.
         # This enforces the Graph Intake Protocol: every new file in
         # docs/specs/, docs/antigravity_tasks/, ilc_core/, tools/, tests/
@@ -152,7 +179,7 @@ def validate(path: Path) -> list[str]:
         if "lmdb node registration" not in headings:
             errors.append("missing_section:lmdb_node_registration")
 
-    if expected_phase_number >= PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR:
+    if (expected_phase_number is not None and expected_phase_number >= PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR) or is_gap_series:
         # Require explicit sanitized public mirror disposition. This prevents
         # phases from silently making the generated private mirror stale or
         # implying public mirror publication authority.
