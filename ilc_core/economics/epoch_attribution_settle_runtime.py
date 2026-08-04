@@ -19,7 +19,7 @@ from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from typing import TYPE_CHECKING, Any, Optional
 
 from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
-from ilc_core.network.d2d.centrality_delta_gossip_runtime import CENTRALITY_QUANTUM
+from ilc_core.network.d2d.centrality_delta_gossip_constants import CENTRALITY_QUANTUM
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
     EdgeType,

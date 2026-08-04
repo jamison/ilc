@@ -19,11 +19,14 @@ from typing import Any
 
 from ilc_core.epistemic.reuse_centrality_runtime import CDL_052_DEPENDENCY as _CDL_052_CHECK
 
+from .centrality_delta_gossip_constants import (
+    CDL_060_GOSSIP_RUNTIME_VERSION,
+    CENTRALITY_QUANTUM,
+)
 from .gossip import D2D_GOSSIP_DEPENDENCY as _D2D_GOSSIP_CHECK
 from .gossip import validate_gossip_channel
 
 
-CDL_060_GOSSIP_RUNTIME_VERSION = "centrality_delta_gossip_runtime_GAP_CDL060.v0.2"
 CDL_060_DEPENDENCY = "cdl_060_ratified_541.v0.1"
 D2D_GOSSIP_DEPENDENCY = "d2d_gossip_382.v0.1"
 CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
@@ -31,7 +34,6 @@ ACCUMULATION_MODEL = "epoch_boundary_atomic"
 MAX_FANOUT = 3
 U_FLOOR = Decimal("0.05")
 CENTRALITY_SCORE_CAP = Decimal("1.000000000000")
-CENTRALITY_QUANTUM = Decimal("0.000000000001")
 MAX_CENTRALITY_NODE_ID_CHARS = 256
 MAX_CENTRALITY_MESSAGE_TEXT_CHARS = 512
 MAX_CENTRALITY_SIGNATURE_CHARS = 8192

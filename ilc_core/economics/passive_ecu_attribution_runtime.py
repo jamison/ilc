@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation, localcontext
 
-from ilc_core.network.d2d.centrality_delta_gossip_runtime import (
+from ilc_core.network.d2d.centrality_delta_gossip_constants import (
     CDL_060_GOSSIP_RUNTIME_VERSION as _CDL_060_GOSSIP_RUNTIME_CHECK,
 )
 
