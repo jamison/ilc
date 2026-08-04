@@ -77,6 +77,7 @@ def validate_genesis_value_certificate(
     _require_canonical_string(
         cert.certificate_id,
         "genesis_value_certificate_id_invalid",
+        max_chars=256,
     )
     if cert.genesis_agent_id != GENESIS_AGENT1_AGENT_ID:
         raise GenesisValueGuardError("genesis_value_certificate_agent_mismatch")
@@ -209,6 +210,7 @@ def enforce_genesis_value_guard(
     _require_canonical_string(
         recipient_agent_id,
         "genesis_value_recipient_agent_id_invalid",
+        max_chars=96,
     )
     if not _canonical_present(graph_context_anchor):
         raise GenesisValueGuardError("genesis_value_graph_context_required")
@@ -216,6 +218,7 @@ def enforce_genesis_value_guard(
         _require_canonical_string(
             consent_or_agreement_reference,
             "genesis_value_payment_consent_required",
+            max_chars=256,
         )
     if unit not in _UNITS:
         raise GenesisValueGuardError("genesis_value_unit_invalid")
@@ -269,12 +272,18 @@ def _caps_for_unit(
     raise GenesisValueGuardError("genesis_value_unit_invalid")
 
 
+_EXPECTED_CERT_SIG_KEYS = frozenset({"threshold", "guardian_public_keys", "signatures"})
+_EXPECTED_GUARDIAN_DESCRIPTOR_KEYS = frozenset({"guardian_id", "public_key_hex"})
+
+
 def _validate_certificate_sig(
     value: Mapping[str, object],
     cert: GenesisValueActionPolicyCertificate,
 ) -> None:
     if not isinstance(value, Mapping):
         raise GenesisValueGuardError("genesis_value_certificate_signature_bundle_invalid")
+    if set(value.keys()) != _EXPECTED_CERT_SIG_KEYS:
+        raise GenesisValueGuardError("genesis_value_certificate_signature_bundle_extra_fields")
     if value.get("threshold") != GENESIS_VALUE_GUARDIAN_THRESHOLD:
         raise GenesisValueGuardError("genesis_value_certificate_signature_threshold_invalid")
     guardian_public_keys = value.get("guardian_public_keys")
@@ -303,6 +312,7 @@ def _validate_certificate_sig(
         guardian_id = _require_canonical_string(
             signature.get("guardian_id"),
             "genesis_value_certificate_signature_guardian_invalid",
+            max_chars=256,
         )
         if guardian_id in signed_guardians:
             raise GenesisValueGuardError("genesis_value_certificate_signature_guardian_duplicate")
@@ -334,12 +344,16 @@ def _parse_guardian_public_keys(
     descriptors: Sequence[object],
 ) -> dict[str, bytes]:
     public_keys_by_guardian: dict[str, bytes] = {}
+    seen_pubkey_bytes: set[bytes] = set()
     for descriptor in descriptors:
         if not isinstance(descriptor, Mapping):
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
+        if set(descriptor.keys()) != _EXPECTED_GUARDIAN_DESCRIPTOR_KEYS:
             raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
         guardian_id = _require_canonical_string(
             descriptor.get("guardian_id"),
             "genesis_value_certificate_guardian_id_invalid",
+            max_chars=256,
         )
         if guardian_id in public_keys_by_guardian:
             raise GenesisValueGuardError("genesis_value_certificate_guardian_id_duplicate")
@@ -351,6 +365,9 @@ def _parse_guardian_public_keys(
         public_key_bytes = bytes.fromhex(public_key_hex)
         if len(public_key_bytes) != 32:
             raise GenesisValueGuardError("genesis_value_certificate_guardian_public_key_invalid")
+        if public_key_bytes in seen_pubkey_bytes:
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_public_key_duplicate")
+        seen_pubkey_bytes.add(public_key_bytes)
         public_keys_by_guardian[guardian_id] = public_key_bytes
     return public_keys_by_guardian
 
@@ -360,11 +377,14 @@ def _guardian_public_key_root(descriptors: Sequence[object]) -> str:
     for descriptor in descriptors:
         if not isinstance(descriptor, Mapping):
             raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
+        if set(descriptor.keys()) != _EXPECTED_GUARDIAN_DESCRIPTOR_KEYS:
+            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
         normalized.append(
             {
                 "guardian_id": _require_canonical_string(
                     descriptor.get("guardian_id"),
                     "genesis_value_certificate_guardian_id_invalid",
+                    max_chars=256,
                 ),
                 "public_key_hex": _require_hex_even_bytes(
                     descriptor.get("public_key_hex"),
@@ -395,8 +415,10 @@ def _require_u64(value: object, token: str) -> int:
     return value
 
 
-def _require_canonical_string(value: object, token: str) -> str:
+def _require_canonical_string(value: object, token: str, *, max_chars: int | None = None) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
+        raise GenesisValueGuardError(token)
+    if max_chars is not None and len(value) > max_chars:
         raise GenesisValueGuardError(token)
     return value
 

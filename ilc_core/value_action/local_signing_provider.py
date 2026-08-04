@@ -120,8 +120,11 @@ class LocalEd25519SigningProvider:
         try:
             if not key_path.is_file():
                 raise ValueError("invalid_file_key_uri_not_file")
-            if key_path.stat().st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
+            stat = key_path.stat()
+            if stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
                 raise ValueError("invalid_file_key_uri_too_large")
+            if stat.st_mode & 0o077:
+                raise ValueError("invalid_file_key_uri_permissions")
             key_bytes = key_path.read_bytes()
         except ValueError:
             raise

@@ -205,7 +205,9 @@ class ILCTransferLedger:
         if not isinstance(decoded, dict):
             raise ValueError("invalid_transfer_record_payload")
         _verify_record_sha256(decoded)
-        return _entry_from_record(decoded)
+        entry = _entry_from_record(decoded)
+        _verify_transfer_record_semantics(entry)
+        return entry
 
 
 def _key(value: str) -> bytes:
@@ -310,6 +312,7 @@ def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int
                 raise ValueError("invalid_transfer_record_payload")
             _verify_record_sha256(record)
             entry = _entry_from_record(record)
+            _verify_transfer_record_semantics(entry)
             if entry.sender_agent_id == GENESIS_AGENT1_AGENT_ID and entry.epoch == epoch:
                 spent += transfer_intent._amount_ilc_to_micro_ilc(entry.amount_ilc)
     return spent
@@ -377,6 +380,32 @@ def _json_bytes(payload: dict[str, Any]) -> bytes:
 
 def _sha256_hex(payload: dict[str, Any]) -> str:
     return hashlib.sha256(_json_bytes(payload)).hexdigest()
+
+
+def _verify_transfer_record_semantics(entry: ILCTransferLedgerEntry) -> None:
+    """Verify semantic invariants on a readback transfer record.
+
+    The SHA-256 check only guarantees self-consistency; a tampered record with
+    a recomputed hash could still carry invalid agent IDs, a self-transfer, or
+    a broken balance equation. This guard catches those cases on the readback path.
+    """
+    try:
+        transfer_intent._require_agent_id(
+            entry.sender_agent_id, "invalid_transfer_record_sender_id"
+        )
+        transfer_intent._require_agent_id(
+            entry.recipient_agent_id, "invalid_transfer_record_recipient_id"
+        )
+    except ValueError as exc:
+        raise ValueError("invalid_transfer_record_agent_id") from exc
+    if entry.sender_agent_id == entry.recipient_agent_id:
+        raise ValueError("transfer_record_self_transfer")
+    if entry.amount_ilc <= Decimal("0"):
+        raise ValueError("invalid_transfer_record_amount")
+    if entry.sender_balance_before_ilc - entry.amount_ilc != entry.sender_balance_after_ilc:
+        raise ValueError("transfer_record_balance_equation_mismatch")
+    if entry.recipient_balance_before_ilc + entry.amount_ilc != entry.recipient_balance_after_ilc:
+        raise ValueError("transfer_record_balance_equation_mismatch")
 
 
 def _verify_record_sha256(record: dict[str, Any]) -> None:

@@ -42,6 +42,7 @@ def key_uri(tmp_path: Path, private_key: ed25519.Ed25519PrivateKey) -> str:
             NoEncryption(),
         )
     )
+    key_path.chmod(0o600)
     return key_path.as_uri()
 
 
@@ -169,8 +170,25 @@ def test_key_uri_directory_rejected_with_stable_token(tmp_path: Path) -> None:
 def test_malformed_key_file_rejected_with_stable_token(tmp_path: Path) -> None:
     key_path = tmp_path / "malformed.pem"
     key_path.write_text("not a private key", encoding="utf-8")
+    key_path.chmod(0o600)
 
     with pytest.raises(ValueError, match="invalid_private_key_pem"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), key_path.as_uri())
+
+
+@pytest.mark.parametrize("bad_mode", [0o644, 0o640, 0o604, 0o060, 0o006])
+def test_key_file_group_or_world_readable_rejected(
+    tmp_path: Path,
+    private_key: ed25519.Ed25519PrivateKey,
+    bad_mode: int,
+) -> None:
+    key_path = tmp_path / "exposed.pem"
+    key_path.write_bytes(
+        private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+    )
+    key_path.chmod(bad_mode)
+
+    with pytest.raises(ValueError, match="invalid_file_key_uri_permissions"):
         LocalEd25519SigningProvider().sign_envelope(_intent(), key_path.as_uri())
 
 

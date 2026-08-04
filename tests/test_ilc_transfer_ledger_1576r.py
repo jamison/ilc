@@ -78,6 +78,7 @@ def key_uri(tmp_path: Path, private_key: ed25519.Ed25519PrivateKey) -> str:
             NoEncryption(),
         )
     )
+    key_path.chmod(0o600)
     return key_path.as_uri()
 
 
