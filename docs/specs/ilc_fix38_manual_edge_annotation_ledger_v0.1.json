@@ -71703,6 +71703,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_05_public_rc_gate_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_08_ilc_transfer_gate",
+      "chronology_note": "2026-08-04 GAP-VALUE-ACTION-LIVE-RC-08 - ILC transfer public-RC activation gate walkthrough.",
+      "manual_read_summary": "Walkthrough recording GO phrase, input-token audit, direct reads, activation flag change, focused verification, taboo check, graph coverage, non-claims, and output token for bounded agent-id ILC transfer activation.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP_VALUE_ACTION_LIVE_RC_08"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:transfer_enabled_ilc_transfer_gate_committed_GAP_VALUE_ACTION_LIVE_RC_08"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/value_action/ilc_transfer_intent.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPT_AUTHORITY",
+        "EVIDENCES",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_08_ilc_transfer_gate_walkthrough.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
@@ -79176,6 +79210,29 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_transfer_rc_05_public_rc_gate_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_GAP_VALUE_ACTION_LIVE_RC_08_ilc_transfer_gate",
+      "chronology_note": "2026-08-04 GAP-VALUE-ACTION-LIVE-RC-08 - phase walkthrough records bounded agent-id ILC transfer activation evidence.",
+      "manual_read_summary": "Registers the RC-08 walkthrough as support-only evidence for the ILC transfer activation gate output token.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:transfer_enabled_ilc_transfer_gate_committed_GAP_VALUE_ACTION_LIVE_RC_08"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_value_action_live_rc_08_ilc_transfer_gate_walkthrough.md"
     }
   ],
   "nodes": [

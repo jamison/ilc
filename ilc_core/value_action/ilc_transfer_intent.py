@@ -19,7 +19,7 @@ from ilc_core.genesis.genesis_value_action_guard import (
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 ILC_TRANSFER_INTENT_VERSION = "ilc_transfer_intent_01.v0.1"
-ILC_TRANSFER_ENABLED = False  # Activates via TRANSFER-ENABLED ILC GATE - Phase GAP-VALUE-ACTION-LIVE-RC-08
+ILC_TRANSFER_ENABLED = True  # Activated: Phase GAP-VALUE-ACTION-LIVE-RC-08
 
 _AGENT_ID_HEX_LENGTH = 96
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")

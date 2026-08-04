@@ -123,8 +123,8 @@ def test_validate_rejects_invalid_signature_field() -> None:
         validate_envelope(env)
 
 
-def test_ilc_transfer_enabled_is_false() -> None:
-    assert ILC_TRANSFER_ENABLED is False
+def test_ilc_transfer_enabled_is_true_after_rc08_gate() -> None:
+    assert ILC_TRANSFER_ENABLED is True
 
 
 def test_schema_module_has_no_signing_or_consensus_imports() -> None:
