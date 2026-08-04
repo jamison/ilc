@@ -4724,9 +4724,26 @@ required by the four-layer independence framework (E.11.9.3).
 **MCP boundary note:** Model Context Protocol (MCP) is not an ILC protocol dependency and is not
 a supported endpoint class in this registry. The model-router normalizes LLM inference APIs
 (OpenAI-compatible, Anthropic, HuggingFace, Ollama, GAIA-X sovereign). MCP is a separate
-tool-invocation protocol operating at the harness product layer; a future product harness may
-optionally wrap MCP tool servers as sidecar adapters without any ILC protocol dependency on MCP
-discovery, tool schemas, or MCP server infrastructure.
+tool-invocation protocol operating at the harness product layer.
+
+ILC's relationship with MCP has a deliberate history. ADR-0001 (January 2026) originally
+designated MCP as the planned agent control-plane, and a complete implementation was built at
+`ilc_core/mcp/` with four MVP tools (`ilc.capabilities.get`, `ilc.task.get`, `ilc.block.get`,
+`ilc.bundle.submit`). That implementation was moved to dormant `PUBLIC_RC_EXCLUDE` status at
+Phase 1573aw — not abandoned — in favour of a CLI-first public RC surface. The reasons were
+practical: empirical harness evaluation (including the February 2026 OpenClaw experiments)
+demonstrated that agents interact more naturally with structured CLI surfaces than with MCP
+tool schemas; the CLI is faster, requires no server infrastructure, and carries no dependency on
+external governance (MCP transferred from Anthropic to the Linux Foundation). ILC-native
+capability advertisement through graph `CapabilityNode` records provides richer, attribution-bearing
+discovery than MCP service discovery for inter-agent coordination.
+
+The dormant `ilc_core/mcp/` implementation is retained for future reactivation. The documented
+reactivation path (Phase 1573aw disposition spec) requires: classifying MCP as an active surface,
+wiring it into `main.py`, adding public-RC tests, and recording the change in `STATUS.md`. Until
+then, MCP remains an operator-layer option: agents may access external MCP tool servers at the
+harness product layer as a local adapter without any ILC protocol dependency on MCP discovery,
+tool schemas, or MCP server infrastructure.
 
 #### E.12.6  Three Named Recipes
 
