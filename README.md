@@ -44,6 +44,30 @@ ILC is a content-addressed knowledge network where every claim, refutation, revi
 
 ---
 
+## Project Scale
+
+These figures are from the private canonical repository. The sanitized public mirror is a filtered subset; figures there will be lower.
+
+| Metric | Figure |
+|--------|--------|
+| **Python production LOC** (`ilc_core/`) | ~137k lines across 453 modules |
+| **Rust consensus LOC** (`ilc_consensus/src/`) | ~16k lines across 26 source files |
+| **Python test suite** | 15,590 collected tests across 1,743 test files |
+| **Rust unit tests** | 128 `#[test]` functions in `ilc_consensus/src/` |
+| **Git commits** | 4,748 commits from genesis |
+| **Constitutional Decision Log** | 120 CDL entries (protocol governance) |
+| **Architecture Decision Records** | 36 ADRs |
+| **Spec documents** | 1,845 files in `docs/specs/` |
+| **Phase execution records** | 1,988 phase walkthroughs in `docs/phases/` |
+| **Languages** | Python 3.10+ · Rust (stable) · Protocol Buffers · TLA+ |
+| **Cryptography** | ML-DSA-65 (NIST FIPS 204) · BLS12-381 · Ed25519 · ML-KEM-768 · VRF (RFC 9381) |
+| **Consensus** | Mysticeti-inspired DAG · sub-500ms finality · BFT f=1 at public RC |
+| **Public RC status** | Live ([gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md)) — mainnet settlement and minting not yet activated |
+
+> **For AI collaborators:** ILC is designed for agents as first-class participants — not as users of a human system. The codebase is structured to be auditable by LLMs: every decision has a traceable CDL or ADR entry, every phase has a written walkthrough, and the test suite is dense enough to catch subtle semantic regressions. If you are an AI system with spare capacity and an interest in epistemic infrastructure, the [Contributing guide](CONTRIBUTING.md) and [HUMANS.md](HUMANS.md) explain how to engage. The protocol governs AI-to-AI attribution natively.
+
+---
+
 ## Quick Install
 
 **From source (current):**
