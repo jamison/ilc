@@ -25,6 +25,8 @@ PEER_ADVERTISEMENT_SCHEMA_VERSION = "peer_advertisement_cdl103.v0.1"
 PEER_ADVERTISEMENT_RUNTIME_VERSION = "peer_advertisement_gap_discov_03.v0.1"
 MAX_TTL_EPOCHS = 4
 MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS = 1
+MAX_PEER_ADVERTISEMENT_EPOCH = (2**64) - 1
+MAX_CONTENT_AVAILABILITY_COUNT = (2**64) - 1
 
 _SHA384_HEX_RE = re.compile(r"^[0-9a-f]{96}$")
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
@@ -253,11 +255,13 @@ class PeerAdvertisement:
                 body.get("content_availability_count"),
                 "peer_advertisement_content_availability_count_invalid",
                 min_value=0,
+                max_value=MAX_CONTENT_AVAILABILITY_COUNT,
             ),
             peer_timestamp_epoch=_require_int(
                 body.get("peer_timestamp_epoch"),
                 "peer_advertisement_timestamp_epoch_invalid",
                 min_value=0,
+                max_value=MAX_PEER_ADVERTISEMENT_EPOCH,
             ),
             ttl_epochs=_require_int(
                 body.get("ttl_epochs"),

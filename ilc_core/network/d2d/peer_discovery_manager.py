@@ -9,14 +9,19 @@ and does not activate public sidecar serving or production listener surfaces.
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping
 
 from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
 from ilc_core.network.d2d.peer_advertisement import (
+    MAX_PEER_ADVERTISEMENT_EPOCH,
     MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS,
     PEER_ADVERTISEMENT_SCHEMA_VERSION,
     PeerAdvertisement,
     TransportEndpoint,
+)
+from ilc_core.network.d2d.gossip_peer_registry import (
+    MAX_INTRODUCTION_CANDIDATES,
+    VerifiedPeerAdvertisement,
 )
 
 
@@ -47,7 +52,11 @@ class PeerDiscoveryManager:
         self.local_agent_id = local_agent_id
         self.vrf_key = _require_bytes(vrf_key, "peer_discovery_vrf_key_invalid")
         self.ml_dsa_key_pair = ml_dsa_key_pair
-        self.transport_endpoint = _coerce_endpoint(transport_endpoint)
+        self.transport_endpoint = (
+            _coerce_endpoint(transport_endpoint)
+            if transport_endpoint is not None
+            else None
+        )
         self.protocol_version = protocol_version
         self.installed_slices_digest = installed_slices_digest
         self.content_availability_count = content_availability_count
@@ -59,6 +68,8 @@ class PeerDiscoveryManager:
         """Create and locally record a signed PeerAdvertisement."""
 
         _require_guard_cleared()
+        if self.transport_endpoint is None:
+            raise ValueError("peer_discovery_transport_endpoint_required")
         unsigned = PeerAdvertisement.from_dict(
             {
                 "body": {
@@ -105,7 +116,12 @@ class PeerDiscoveryManager:
             return False
         if not ad.verify(verify_mldsa65_signature, pubkey_hex=pubkey_hex):
             return False
-        return bool(self.registry.add_peer_advertisement(ad, current_epoch))
+        return bool(
+            self.registry.add_peer_advertisement(
+                VerifiedPeerAdvertisement(ad),
+                current_epoch,
+            )
+        )
 
     def request_introduction(
         self,
@@ -116,9 +132,11 @@ class PeerDiscoveryManager:
 
         _require_guard_cleared()
         if hasattr(bootstrap_peer, "provide_introduction_ads"):
-            candidate_ads = list(bootstrap_peer.provide_introduction_ads(current_epoch))
-        elif isinstance(bootstrap_peer, Sequence) and not isinstance(bootstrap_peer, (str, bytes)):
-            candidate_ads = list(bootstrap_peer)
+            candidate_ads = _bounded_candidate_ads(
+                bootstrap_peer.provide_introduction_ads(current_epoch)
+            )
+        elif isinstance(bootstrap_peer, Iterable) and not isinstance(bootstrap_peer, (str, bytes)):
+            candidate_ads = _bounded_candidate_ads(bootstrap_peer)
         else:
             raise ValueError("peer_introduction_bootstrap_invalid")
         sample = self.sample_introduction_set(candidate_ads, self.vrf_key)
@@ -127,7 +145,7 @@ class PeerDiscoveryManager:
 
     def sample_introduction_set(
         self,
-        candidate_ads: Sequence[PeerAdvertisement],
+        candidate_ads: Iterable[PeerAdvertisement],
         vrf_public_key: bytes,
         k: int = DEFAULT_INTRODUCTION_SET_SIZE,
     ) -> list[PeerAdvertisement]:
@@ -142,7 +160,9 @@ class PeerDiscoveryManager:
         if isinstance(k, bool) or not isinstance(k, int) or k < 0:
             raise ValueError("peer_introduction_k_invalid")
         normalized: dict[str, PeerAdvertisement] = {}
-        for ad in candidate_ads:
+        for index, ad in enumerate(candidate_ads):
+            if index >= MAX_INTRODUCTION_CANDIDATES:
+                raise ValueError("peer_introduction_candidates_exceed_n_max")
             if not isinstance(ad, PeerAdvertisement):
                 raise ValueError("peer_introduction_candidate_invalid")
             normalized[ad.agent_id] = ad
@@ -174,20 +194,36 @@ def _require_guard_cleared() -> None:
 
 
 def _reject_future_skew(ad: PeerAdvertisement, current_epoch: int) -> None:
-    if isinstance(current_epoch, bool) or not isinstance(current_epoch, int) or current_epoch < 0:
+    if (
+        isinstance(current_epoch, bool)
+        or not isinstance(current_epoch, int)
+        or current_epoch < 0
+        or current_epoch > MAX_PEER_ADVERTISEMENT_EPOCH
+    ):
         raise ValueError("peer_discovery_current_epoch_invalid")
     if ad.peer_timestamp_epoch > current_epoch + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
         raise ValueError("peer_advertisement_timestamp_future_skew")
 
 
 def _coerce_endpoint(
-    value: Mapping[str, Any] | TransportEndpoint | None,
+    value: Mapping[str, Any] | TransportEndpoint,
 ) -> TransportEndpoint:
-    if value is None:
-        value = {"scheme": "https", "host": "peer.example.com", "port": 443}
     if isinstance(value, TransportEndpoint):
         return value
     return TransportEndpoint.from_mapping(value)
+
+
+def _bounded_candidate_ads(candidate_ads: Iterable[PeerAdvertisement]) -> list[PeerAdvertisement]:
+    if isinstance(candidate_ads, (str, bytes)) or not isinstance(candidate_ads, Iterable):
+        raise ValueError("peer_introduction_candidates_invalid")
+    bounded: list[PeerAdvertisement] = []
+    for index, ad in enumerate(candidate_ads):
+        if index >= MAX_INTRODUCTION_CANDIDATES:
+            raise ValueError("peer_introduction_candidates_exceed_n_max")
+        if not isinstance(ad, PeerAdvertisement):
+            raise ValueError("peer_introduction_candidate_invalid")
+        bounded.append(ad)
+    return bounded
 
 
 def _require_bytes(value: Any, token: str) -> bytes:

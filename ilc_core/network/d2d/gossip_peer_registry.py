@@ -11,7 +11,7 @@ from __future__ import annotations
 import ipaddress
 import socket
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence
 from urllib.parse import urlsplit
 
 from ilc_core.crypto.pq_signature_verify import (
@@ -23,6 +23,7 @@ from ilc_core.network.d2d.gossip_transport import (
 )
 from ilc_core.network.d2d.peer_advertisement import (
     MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS,
+    MAX_PEER_ADVERTISEMENT_EPOCH,
     PeerAdvertisement,
 )
 
@@ -38,6 +39,7 @@ LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
 )
 MAX_PEERS = 16
 N_MAX = 1000
+MAX_INTRODUCTION_CANDIDATES = N_MAX
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
 _LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
 _NONSTANDARD_IPV4_LITERAL_CHARS = frozenset("0123456789abcdefABCDEFxX.")
@@ -144,6 +146,14 @@ class _PeerEntry:
     valid_until_epoch: int | None = None
 
 
+@dataclass(frozen=True)
+class VerifiedPeerAdvertisement:
+    """Manager-verified advertisement envelope required for registry insertion."""
+
+    advertisement: PeerAdvertisement
+    verification_context: str = "mldsa65_signature_verified_cdl103"
+
+
 def _require_peer_string(value: Any, token: str, max_chars: int) -> str:
     if not isinstance(value, str):
         raise ValueError(token)
@@ -154,7 +164,12 @@ def _require_peer_string(value: Any, token: str, max_chars: int) -> str:
 
 
 def _require_epoch(value: Any, token: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, int)
+        or value < 0
+        or value > MAX_PEER_ADVERTISEMENT_EPOCH
+    ):
         raise ValueError(token)
     return value
 
@@ -269,14 +284,23 @@ class GossipPeerRegistry:
         ]
         return list(self._peers) + dynamic_endpoints
 
-    def add_peer_advertisement(self, ad: PeerAdvertisement, current_epoch: int) -> bool:
-        """Add or replace a dynamic peer advertisement when the guard is cleared."""
+    def add_peer_advertisement(
+        self,
+        verified_ad: VerifiedPeerAdvertisement,
+        current_epoch: int,
+    ) -> bool:
+        """Add or replace a manager-verified dynamic advertisement."""
 
         if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
             raise RuntimeError("dynamic_peer_discovery_not_activated")
         current = _require_epoch(current_epoch, "peer_advertisement_current_epoch_invalid")
+        if not isinstance(verified_ad, VerifiedPeerAdvertisement):
+            raise ValueError("peer_advertisement_requires_verified_envelope")
+        ad = verified_ad.advertisement
         if not isinstance(ad, PeerAdvertisement):
             raise ValueError("peer_advertisement_invalid")
+        if verified_ad.verification_context != "mldsa65_signature_verified_cdl103":
+            raise ValueError("peer_advertisement_verification_context_invalid")
         if ad.peer_timestamp_epoch > current + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
             raise ValueError("peer_advertisement_timestamp_future_skew")
         if ad.is_expired(current):
@@ -285,6 +309,11 @@ class GossipPeerRegistry:
             return False
         existing = self._dynamic_ad_table.get(ad.agent_id)
         if existing is None and len(self._dynamic_ad_table) >= N_MAX:
+            return False
+        if any(
+            agent_id != ad.agent_id and existing_ad.endpoint_url == ad.endpoint_url
+            for agent_id, existing_ad in self._dynamic_ad_table.items()
+        ):
             return False
         if existing is not None and ad.peer_timestamp_epoch < existing.peer_timestamp_epoch:
             return False
@@ -310,17 +339,21 @@ class GossipPeerRegistry:
             self.expire_ads(current_epoch)
         return sorted(self._dynamic_ad_table.values(), key=lambda item: item.agent_id)
 
-    def add_introduction_entries(self, ads: Sequence[PeerAdvertisement]) -> None:
+    def add_introduction_entries(self, ads: Iterable[PeerAdvertisement]) -> None:
         if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
             raise RuntimeError("dynamic_peer_discovery_not_activated")
-        if not isinstance(ads, Sequence):
+        if isinstance(ads, (str, bytes)) or not isinstance(ads, Iterable):
             raise ValueError("peer_introduction_entries_invalid")
-        for ad in ads:
+        bounded_ads: list[PeerAdvertisement] = []
+        for index, ad in enumerate(ads):
+            if index >= MAX_INTRODUCTION_CANDIDATES:
+                raise ValueError("peer_introduction_entries_exceed_n_max")
             if not isinstance(ad, PeerAdvertisement):
                 raise ValueError("peer_introduction_entry_invalid")
+            bounded_ads.append(ad)
         self._vrf_introduction_table = {
             ad.agent_id: ad
-            for ad in sorted(ads, key=lambda item: item.agent_id)
+            for ad in sorted(bounded_ads, key=lambda item: item.agent_id)
         }
 
     def get_introduction_entries(self) -> list[PeerAdvertisement]:

@@ -69622,6 +69622,56 @@
       ],
       "recommended_graph_action": "support_only:tests/test_phase_562_gossip_peer_registry.py",
       "repo_path": "tests/test_phase_562_gossip_peer_registry.py"
+    },
+    {
+      "annotation_batch": "manual_batch_287_phase_1583_fix2_dynamic_peer_discovery_audit_hardening",
+      "chronology_note": "2026-08-05 Phase 1583-Fix2 \u2014 dynamic peer discovery runtime audit hardening after CDL-103 testnet activation.",
+      "manual_read_summary": "Walkthrough documenting VerifiedPeerAdvertisement registry insertion boundary, dynamic endpoint uniqueness, bounded introduction candidate and storage paths, u64 advertisement field caps, explicit broadcast endpoint requirement, verification outputs, output token, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_103_dynamic_peer_discovery_ratification_1583_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:dynamic_peer_discovery_runtime_hardened_phase_1583_fix2"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/network/d2d/gossip_peer_registry.py"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/network/d2d/peer_discovery_manager.py"
+        },
+        {
+          "edge_type": "HARDENS_RUNTIME_SURFACE",
+          "target": "ilc_core/network/d2d/peer_advertisement.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_gap_discov_03_cdl103_ratification_1583.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_gap_discov_02_peer_discovery_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "HARDENS_RUNTIME_SURFACE",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_1583_fix2_dynamic_peer_discovery_audit_hardening_walkthrough.md",
+      "repo_path": "docs/phases/phase_1583_fix2_dynamic_peer_discovery_audit_hardening_walkthrough.md"
     }
   ],
   "boundary": {

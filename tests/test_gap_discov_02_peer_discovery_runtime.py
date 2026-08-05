@@ -7,6 +7,7 @@ import pytest
 import ilc_core.network.d2d.gossip_peer_registry as registry_module
 import ilc_core.network.d2d.peer_discovery_manager as manager_module
 from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
+from ilc_core.network.d2d.gossip_peer_registry import VerifiedPeerAdvertisement
 from ilc_core.network.d2d.peer_advertisement import (
     PEER_ADVERTISEMENT_SCHEMA_VERSION,
     PeerAdvertisement,
@@ -56,6 +57,10 @@ def _ad_dict(
 
 def _ad(**kwargs: object) -> PeerAdvertisement:
     return PeerAdvertisement.from_dict(_ad_dict(**kwargs))
+
+
+def _verified(ad: PeerAdvertisement) -> VerifiedPeerAdvertisement:
+    return VerifiedPeerAdvertisement(ad)
 
 
 def _clear_dynamic_guard(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -135,7 +140,7 @@ def test_expired_ad_rejected() -> None:
 def test_ttl_expiry_removes_ad(monkeypatch: pytest.MonkeyPatch) -> None:
     _clear_dynamic_guard(monkeypatch)
     registry = GossipPeerRegistry(["https://static.example.com"])
-    assert registry.add_peer_advertisement(_ad(timestamp=1, ttl=2), 1) is True
+    assert registry.add_peer_advertisement(_verified(_ad(timestamp=1, ttl=2)), 1) is True
 
     assert registry.expire_ads(3) == 1
     assert registry.get_dynamic_peers(3) == []
@@ -146,8 +151,8 @@ def test_n_max_cap_enforced(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(registry_module, "N_MAX", 1)
     registry = GossipPeerRegistry([])
 
-    assert registry.add_peer_advertisement(_ad(agent_id=AGENT_A), 10) is True
-    assert registry.add_peer_advertisement(_ad(agent_id=AGENT_B, host="peer-b.example.com"), 10) is False
+    assert registry.add_peer_advertisement(_verified(_ad(agent_id=AGENT_A)), 10) is True
+    assert registry.add_peer_advertisement(_verified(_ad(agent_id=AGENT_B, host="peer-b.example.com")), 10) is False
 
 
 def test_n_max_cap_replacement_allowed(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -155,8 +160,8 @@ def test_n_max_cap_replacement_allowed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(registry_module, "N_MAX", 1)
     registry = GossipPeerRegistry([])
 
-    assert registry.add_peer_advertisement(_ad(timestamp=10), 10) is True
-    assert registry.add_peer_advertisement(_ad(host="peer-a-new.example.com", timestamp=11), 11) is True
+    assert registry.add_peer_advertisement(_verified(_ad(timestamp=10)), 10) is True
+    assert registry.add_peer_advertisement(_verified(_ad(host="peer-a-new.example.com", timestamp=11)), 11) is True
     assert registry.get_dynamic_peers()[0].endpoint_url == "https://peer-a-new.example.com:443"
 
 
@@ -164,8 +169,8 @@ def test_deduplication_second_ad_replaces_first(monkeypatch: pytest.MonkeyPatch)
     _clear_dynamic_guard(monkeypatch)
     registry = GossipPeerRegistry([])
 
-    registry.add_peer_advertisement(_ad(host="peer-a.example.com", timestamp=10), 10)
-    registry.add_peer_advertisement(_ad(host="peer-a-new.example.com", timestamp=12), 12)
+    registry.add_peer_advertisement(_verified(_ad(host="peer-a.example.com", timestamp=10)), 10)
+    registry.add_peer_advertisement(_verified(_ad(host="peer-a-new.example.com", timestamp=12)), 12)
 
     assert len(registry.get_dynamic_peers()) == 1
     assert registry.get_dynamic_peers()[0].endpoint_url == "https://peer-a-new.example.com:443"
@@ -175,8 +180,8 @@ def test_older_duplicate_ad_does_not_replace_newer(monkeypatch: pytest.MonkeyPat
     _clear_dynamic_guard(monkeypatch)
     registry = GossipPeerRegistry([])
 
-    registry.add_peer_advertisement(_ad(host="new.example.com", timestamp=12), 12)
-    assert registry.add_peer_advertisement(_ad(host="old.example.com", timestamp=10), 12) is False
+    registry.add_peer_advertisement(_verified(_ad(host="new.example.com", timestamp=12)), 12)
+    assert registry.add_peer_advertisement(_verified(_ad(host="old.example.com", timestamp=10)), 12) is False
     assert registry.get_dynamic_peers()[0].endpoint_url == "https://new.example.com:443"
 
 
@@ -189,12 +194,12 @@ def test_static_fallback_when_dynamic_empty() -> None:
 def test_static_fallback_when_guard_active(monkeypatch: pytest.MonkeyPatch) -> None:
     _clear_dynamic_guard(monkeypatch)
     registry = GossipPeerRegistry(["https://static.example.com"])
-    registry.add_peer_advertisement(_ad(), 10)
+    registry.add_peer_advertisement(_verified(_ad()), 10)
     monkeypatch.setattr(registry_module, "DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED", True)
 
     assert registry.get_peers() == ["https://static.example.com"]
     with pytest.raises(RuntimeError, match="dynamic_peer_discovery_not_activated"):
-        registry.add_peer_advertisement(_ad(host="peer-new.example.com"), 10)
+        registry.add_peer_advertisement(_verified(_ad(host="peer-new.example.com")), 10)
 
 
 def test_valid_ad_accepted(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -306,5 +311,4 @@ def test_static_seed_endpoint_conflict_rejected(monkeypatch: pytest.MonkeyPatch)
     _clear_dynamic_guard(monkeypatch)
     registry = GossipPeerRegistry(["https://peer-a.example.com:443"])
 
-    assert registry.add_peer_advertisement(_ad(), 10) is False
-
+    assert registry.add_peer_advertisement(_verified(_ad()), 10) is False
