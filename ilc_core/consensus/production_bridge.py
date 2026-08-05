@@ -88,6 +88,8 @@ class ConsensusBridgeConfig:
     max_epoch_chain_records: int = MAX_EPOCH_CHAIN_RECORDS
     max_epoch_chain_receive_bytes: int = MAX_EPOCH_CHAIN_RECEIVE_BYTES
     tls_root_certificates: bytes | None = None
+    grpc_client_private_key: bytes | None = None
+    grpc_client_certificate_chain: bytes | None = None
     proposal_ingress_endpoint: str | None = None
     proposal_timeout_seconds: int = DEFAULT_GRPC_TIMEOUT_SECONDS
     max_proposal_body_bytes: int = MAX_PROPOSAL_BODY_BYTES
@@ -124,6 +126,18 @@ class ConsensusBridgeConfig:
             self.tls_root_certificates, bytes
         ):
             raise ValueError("consensus_bridge_tls_roots_invalid_phase_1358")
+        if self.grpc_client_private_key is not None and not isinstance(
+            self.grpc_client_private_key, bytes
+        ):
+            raise ValueError("grpc_client_private_key_invalid_phase_1591_fix1")
+        if self.grpc_client_certificate_chain is not None and not isinstance(
+            self.grpc_client_certificate_chain, bytes
+        ):
+            raise ValueError("grpc_client_certificate_chain_invalid_phase_1591_fix1")
+        if (self.grpc_client_private_key is None) != (
+            self.grpc_client_certificate_chain is None
+        ):
+            raise ValueError("grpc_client_certificate_pair_invalid_phase_1591_fix1")
         if self.proposal_ingress_endpoint is not None and (
             not isinstance(self.proposal_ingress_endpoint, str)
             or not self.proposal_ingress_endpoint.strip()
@@ -826,7 +840,9 @@ def build_secure_grpc_read_stub(
 ) -> ILCAppReadServiceStubProtocol:
     grpc_module = importlib.import_module("grpc")
     credentials = grpc_module.ssl_channel_credentials(
-        root_certificates=config.tls_root_certificates
+        root_certificates=config.tls_root_certificates,
+        private_key=config.grpc_client_private_key,
+        certificate_chain=config.grpc_client_certificate_chain,
     )
     channel = grpc_module.secure_channel(
         config.target,
