@@ -27,6 +27,8 @@ PUBKEY_HEX = "a" * 3328
 SIG_HEX = "b" * 6618
 AGENT_A = "1" * 96
 DIGEST_A = "3" * 96
+AGENT_B = "2" * 96
+DIGEST_B = "4" * 96
 
 
 def _ad_dict(*, timestamp: int = 10, ttl: int = 4) -> dict[str, object]:
@@ -52,6 +54,29 @@ def _ad_dict(*, timestamp: int = 10, ttl: int = 4) -> dict[str, object]:
 
 def _ad(*, timestamp: int = 10, ttl: int = 4) -> PeerAdvertisement:
     return PeerAdvertisement.from_dict(_ad_dict(timestamp=timestamp, ttl=ttl))
+
+
+def _ad_b(*, timestamp: int = 10, ttl: int = 4) -> PeerAdvertisement:
+    return PeerAdvertisement.from_dict(
+        {
+            "body": {
+                "agent_id": AGENT_B,
+                "content_availability_count": 3,
+                "installed_slices_digest": DIGEST_B,
+                "peer_timestamp_epoch": timestamp,
+                "protocol_version": "ilc-d2d-gossip.v1",
+                "transport_endpoint": {
+                    "host": "peer-b.example.com",
+                    "port": 443,
+                    "scheme": "https",
+                },
+                "ttl_epochs": ttl,
+            },
+            "key_binding_ref": "key-binding-b",
+            "ml_dsa_signature": SIG_HEX,
+            "schema_version": "peer_advertisement_cdl103.v0.1",
+        }
+    )
 
 
 def test_cdl_103_ratification_doc_exists() -> None:
@@ -131,3 +156,78 @@ def test_ratified_ttl_and_future_skew_bounds_enforced(monkeypatch: pytest.Monkey
     )
     with pytest.raises(ValueError, match="peer_advertisement_timestamp_future_skew"):
         manager.handle_incoming_advertisement(_ad(timestamp=12), 10)
+
+
+def test_registry_rejects_future_skew_advertisement_directly() -> None:
+    """MEDIUM: registry.add_peer_advertisement() must enforce future-skew bound
+    independently of the manager path so direct callers cannot inject ads with
+    timestamps beyond current_epoch + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS."""
+    registry = GossipPeerRegistry([])
+    # timestamp=12, current=10: skew=2 > MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS(1)
+    with pytest.raises(ValueError, match="peer_advertisement_timestamp_future_skew"):
+        registry.add_peer_advertisement(_ad(timestamp=12), 10)
+    # timestamp=11, current=10: skew=1 == limit, must be accepted
+    ad_at_limit = _ad(timestamp=11, ttl=4)
+    result = registry.add_peer_advertisement(ad_at_limit, 10)
+    assert result is True
+
+
+def test_select_fanout_peers_includes_dynamic_peers_after_cdl103_ratification(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """LOW: After CDL-103 ratification (Phase 1583), select_fanout_peers() must
+    include dynamic advertisement endpoints alongside static peers."""
+    registry = GossipPeerRegistry([])
+    monkeypatch.setattr(manager_module, "verify_mldsa65_signature", lambda *_args: True)
+    manager = PeerDiscoveryManager(
+        registry,
+        "2" * 96,
+        b"vrf-key",
+        lambda payload: SIG_HEX if payload else "0",
+        key_binding_resolver={"key-binding-a": PUBKEY_HEX},
+    )
+    manager.handle_incoming_advertisement(_ad(timestamp=10), 10)
+    fanout = registry.select_fanout_peers(10)
+    assert "https://peer-a.example.com:443" in fanout
+
+
+def test_select_fanout_peers_static_only_when_no_dynamic_ads() -> None:
+    """Baseline: when dynamic table is empty, fanout returns static peers only."""
+    from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
+    registry = GossipPeerRegistry([])
+    # No dynamic ads added — fanout should be empty for empty registry
+    assert registry.select_fanout_peers(5) == []
+
+
+def test_get_peers_deduplicates_dynamic_ad_matching_static_endpoint() -> None:
+    """add_peer_advertisement() returns False and static endpoint is not duplicated
+    when a dynamic ad's endpoint matches a static peer's endpoint."""
+    static_peer = {
+        "endpoint": "https://peer-a.example.com:443",
+        "peer_id": "a" * 64,
+        "mldsa_pubkey_hex": PUBKEY_HEX,
+        "key_id": "key-a",
+        "valid_from_epoch": 0,
+        "authorized_actor_ids": ["actor-a"],
+    }
+    registry = GossipPeerRegistry([static_peer])
+    ad = _ad(timestamp=10)
+    result = registry.add_peer_advertisement(ad, 10)
+    assert result is False
+    peers = registry.get_peers()
+    assert peers.count("https://peer-a.example.com:443") == 1
+
+
+def test_add_introduction_entries_replaces_previous_table() -> None:
+    """add_introduction_entries() replaces the full introduction table atomically;
+    entries from a prior call must not persist."""
+    registry = GossipPeerRegistry([])
+    registry.add_introduction_entries([_ad(timestamp=10)])
+    assert len(registry.get_introduction_entries()) == 1
+    assert registry.get_introduction_entries()[0].agent_id == AGENT_A
+
+    # Replace with a different ad — Agent A entry must be gone
+    registry.add_introduction_entries([_ad_b(timestamp=10)])
+    entries = registry.get_introduction_entries()
+    assert len(entries) == 1
+    assert entries[0].agent_id == AGENT_B
