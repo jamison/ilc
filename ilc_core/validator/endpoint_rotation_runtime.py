@@ -58,9 +58,10 @@ def rotate_validator_endpoint_assertion(
     if old_assertion_path.resolve() == output_path.resolve():
         raise ValueError("validator_endpoint_rotation_output_must_not_equal_old_assertion")
     old_raw = _read_bounded_text(old_assertion_path, MAX_ASSERTION_JSON_BYTES)
+    old_file_sha256_before_rotation = hashlib.sha256(old_assertion_path.read_bytes()).hexdigest()
     try:
-        old_payload = json.loads(old_raw)
-    except json.JSONDecodeError as exc:
+        old_payload = _loads_json_no_constants(old_raw)
+    except (json.JSONDecodeError, ValueError) as exc:
         raise ValueError("validator_endpoint_rotation_old_assertion_invalid_json") from exc
     old_assertion = ValidatorEndpointAssertion.from_dict(_require_mapping(old_payload))
     if old_assertion.revised_by is not None:
@@ -132,7 +133,7 @@ def rotate_validator_endpoint_assertion(
         "old_assertion_id": old_assertion_sha256,
         "old_candidate_id": old_candidate_id,
         "old_endpoint": old_assertion.grpc_endpoint,
-        "old_file_sha256_after": hashlib.sha256(old_assertion_path.read_bytes()).hexdigest(),
+        "old_file_sha256_before_rotation": old_file_sha256_before_rotation,
         "output_path": str(output_path),
         "revised_by_edge": revision_edge,
         "runtime_version": ENDPOINT_ROTATION_RUNTIME_VERSION,
@@ -287,6 +288,13 @@ def _require_mapping(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError("validator_endpoint_rotation_old_assertion_not_object")
     return value
+
+
+def _loads_json_no_constants(raw: str) -> Any:
+    def _reject_constant(value: str) -> None:
+        raise ValueError(f"json_non_finite_constant_not_allowed:{value}")
+
+    return json.loads(raw, parse_constant=_reject_constant)
 
 
 def _require_network_id(value: Any) -> str:

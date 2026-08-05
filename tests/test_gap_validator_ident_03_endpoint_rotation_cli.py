@@ -25,6 +25,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     assertion_is_superseded,
     validator_assertion_candidate_id,
 )
+from ilc_core.validator import endpoint_rotation_runtime
 from ilc_core.validator.endpoint_rotation_runtime import (
     atomic_write_json,
     rotate_validator_endpoint_assertion,
@@ -45,7 +46,7 @@ class EdgeAtlas:
         return self.edges
 
 
-def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
+def _run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, "-m", "ilc_core.cli", *args],
         stdout=subprocess.PIPE,
@@ -53,6 +54,7 @@ def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
         text=True,
         check=False,
         timeout=30,
+        cwd=cwd,
     )
 
 
@@ -185,6 +187,24 @@ def test_rotate_endpoint_new_assertion_has_new_endpoint(tmp_path: Path) -> None:
     assert result["old_endpoint"] == "old-validator.example:7101"
 
 
+def test_rotate_endpoint_reports_pre_rotation_old_file_hash(tmp_path: Path) -> None:
+    old_path = _write_old_assertion(tmp_path)
+    before_bytes = old_path.read_bytes()
+    before_hash = hashlib.sha256(old_path.read_bytes()).hexdigest()
+
+    result = rotate_validator_endpoint_assertion(
+        old_assertion_path=old_path,
+        new_endpoint="new-validator.example:50151",
+        network_id="ilc-rc01",
+        key_path=_write_key(tmp_path),
+        output_path=tmp_path / "new.json",
+        allow_test_stub_signature=True,
+    )
+
+    assert result["old_file_sha256_before_rotation"] == before_hash
+    assert old_path.read_bytes() == before_bytes
+
+
 def test_rotate_endpoint_output_is_atomic_write(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[tuple[str, str]] = []
 
@@ -228,6 +248,28 @@ def test_rotate_endpoint_output_json_has_required_fields(tmp_path: Path) -> None
     ValidatorEndpointAssertion.from_dict(json.loads(output.read_text(encoding="utf-8")))
 
 
+def test_rotate_endpoint_default_output_path_is_under_cwd(tmp_path: Path) -> None:
+    old_path = _write_old_assertion(tmp_path)
+    key = _write_key(tmp_path)
+    result = _run_cli(
+        "validator",
+        "rotate-endpoint",
+        "--old-assertion",
+        str(old_path),
+        "--new-endpoint",
+        "new-validator.example:7101",
+        "--network-id",
+        "ilc-rc01",
+        "--key",
+        str(key),
+        "--allow-test-stub-signature",
+        cwd=tmp_path,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert (tmp_path / "out" / "validator_endpoint_rotation" / "new_assertion.json").is_file()
+
+
 def test_rotate_endpoint_old_assertion_not_modified(tmp_path: Path) -> None:
     old_path = _write_old_assertion(tmp_path)
     before = old_path.read_bytes()
@@ -240,6 +282,28 @@ def test_rotate_endpoint_old_assertion_not_modified(tmp_path: Path) -> None:
         allow_test_stub_signature=True,
     )
     assert old_path.read_bytes() == before
+
+
+def test_rotate_endpoint_rejects_same_endpoint_when_content_unchanged(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    old_path = _write_old_assertion(tmp_path)
+    monkeypatch.setattr(
+        endpoint_rotation_runtime,
+        "_sign_assertion_payload",
+        lambda **_kwargs: (SIGNATURE, "test_stub_not_production_valid"),
+    )
+
+    with pytest.raises(ValueError, match="validator_endpoint_rotation_no_content_change"):
+        rotate_validator_endpoint_assertion(
+            old_assertion_path=old_path,
+            new_endpoint="old-validator.example:7101",
+            network_id="ilc-rc01",
+            key_path=_write_key(tmp_path),
+            output_path=tmp_path / "new.json",
+            allow_test_stub_signature=True,
+        )
 
 
 def test_rotate_endpoint_rejects_output_equal_to_old_assertion(tmp_path: Path) -> None:

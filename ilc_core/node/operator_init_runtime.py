@@ -530,10 +530,7 @@ def _generate_bls_keypair(
     allow_test_stub_crypto: bool,
 ) -> tuple[str, str]:
     if allow_test_stub_crypto:
-        secret_hex = secrets.token_hex(BLS_SECRET_KEY_HEX_LENGTH // 2)
-        public_hex = secrets.token_hex(BLS_PUBLIC_KEY_HEX_LENGTH // 2)
-        atomic_write_text(secret_path, secret_hex + "\n", mode=0o600)
-        return public_hex, "test_stub"
+        return _generate_bls_keypair_stub(secret_path)
 
     command = os.environ.get(OPERATOR_INIT_BLS_KEYGEN_COMMAND_ENV)
     if command is not None and command.strip():
@@ -548,7 +545,15 @@ def _generate_bls_keypair(
         except ValueError:
             if not allow_test_stub_crypto:
                 raise
+            return _generate_bls_keypair_stub(secret_path)
     raise ValueError("operator_init_bls_keygen_unavailable")
+
+
+def _generate_bls_keypair_stub(secret_path: Path) -> tuple[str, str]:
+    secret_hex = secrets.token_hex(BLS_SECRET_KEY_HEX_LENGTH // 2)
+    public_hex = secrets.token_hex(BLS_PUBLIC_KEY_HEX_LENGTH // 2)
+    atomic_write_text(secret_path, secret_hex + "\n", mode=0o600)
+    return public_hex, "test_stub"
 
 
 def _generate_bls_keypair_external(
@@ -558,6 +563,9 @@ def _generate_bls_keypair_external(
 ) -> tuple[str, str]:
     if not command:
         raise ValueError("operator_init_bls_keygen_command_missing")
+    secret_path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(str(secret_path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    os.close(fd)
     try:
         result = subprocess.run(
             command + ("--out", str(secret_path)),
@@ -571,11 +579,11 @@ def _generate_bls_keypair_external(
         raise ValueError("operator_init_bls_keygen_failed") from exc
     if result.returncode != 0:
         raise ValueError("operator_init_bls_keygen_failed")
+    os.chmod(secret_path, 0o600)
     public_hex = result.stdout.strip().splitlines()[-1].strip().lower()
     _require_lower_hex_exact(public_hex, BLS_PUBLIC_KEY_HEX_LENGTH, "operator_init_bls_public_key_invalid")
     secret_hex = secret_path.read_text(encoding="utf-8").strip().lower()
     _require_lower_hex_exact(secret_hex, BLS_SECRET_KEY_HEX_LENGTH, "operator_init_bls_secret_key_invalid")
-    os.chmod(secret_path, 0o600)
     return public_hex, "external_command"
 
 
@@ -587,7 +595,8 @@ def _sign_endpoint_assertion(
     allow_test_stub_crypto: bool,
 ) -> tuple[str, str]:
     if allow_test_stub_crypto:
-        digest = hashlib.sha384(payload + network_id.encode("utf-8") + secret_key_path.read_bytes()).hexdigest()
+        secret = secret_key_path.read_text(encoding="utf-8").strip().encode("ascii")
+        digest = hashlib.sha384(payload + network_id.encode("utf-8") + secret).hexdigest()
         signature = (digest + hashlib.sha384(digest.encode("ascii")).hexdigest())[:BLS_SIGNATURE_HEX_LENGTH]
         _require_lower_hex_exact(signature, BLS_SIGNATURE_HEX_LENGTH, "operator_init_bls_signature_invalid")
         return signature, "test_stub_not_production_valid"
@@ -694,11 +703,11 @@ def _render_node_config(
     mldsa_public_key_path: Path,
     mldsa_secret_key_path: Path,
 ) -> str:
-    peers = ", ".join(json.dumps(seed) for seed in peer_seeds)
+    peers = ", ".join(_toml_string(seed) for seed in peer_seeds)
     return "\n".join(
         (
             "[network]",
-            f'network_id = "{network_id}"',
+            f"network_id = {_toml_string(network_id)}",
             'settlement_path = "mysticeti_fast_path"',
             f"peer_seeds = [{peers}]",
             "",
@@ -707,25 +716,29 @@ def _render_node_config(
             "",
             "[p2p]",
             f'p2p_listen_addr = "0.0.0.0:{quic_port}"',
-            f'public_endpoint = "{host}:{quic_port}"',
+            f"public_endpoint = {_toml_string(f'{host}:{quic_port}')}",
             "",
             "[tls]",
-            f'tls_cert_path = "{tls_cert_path}"',
-            f'tls_key_path = "{tls_key_path}"',
-            f'peer_ca_cert_path = "{tls_cert_path}"',
+            f"tls_cert_path = {_toml_string(str(tls_cert_path))}",
+            f"tls_key_path = {_toml_string(str(tls_key_path))}",
+            f"peer_ca_cert_path = {_toml_string(str(tls_cert_path))}",
             "",
             "[validator]",
-            f'validator_agent_id = "{bls_public_key_hex}"',
-            f'grpc_endpoint = "{grpc_endpoint}"',
-            f'bls_public_key_hex = "{bls_public_key_hex}"',
-            f'bls_secret_key_path = "{bls_secret_key_path}"',
-            f'mldsa65_public_key_hex = "{mldsa_public_key_hex}"',
-            f'mldsa65_public_key_path = "{mldsa_public_key_path}"',
-            f'mldsa65_secret_key_path = "{mldsa_secret_key_path}"',
-            f'endpoint_assertion_path = "{endpoint_assertion_path}"',
+            f"validator_agent_id = {_toml_string(bls_public_key_hex)}",
+            f"grpc_endpoint = {_toml_string(grpc_endpoint)}",
+            f"bls_public_key_hex = {_toml_string(bls_public_key_hex)}",
+            f"bls_secret_key_path = {_toml_string(str(bls_secret_key_path))}",
+            f"mldsa65_public_key_hex = {_toml_string(mldsa_public_key_hex)}",
+            f"mldsa65_public_key_path = {_toml_string(str(mldsa_public_key_path))}",
+            f"mldsa65_secret_key_path = {_toml_string(str(mldsa_secret_key_path))}",
+            f"endpoint_assertion_path = {_toml_string(str(endpoint_assertion_path))}",
             "",
         )
     )
+
+
+def _toml_string(value: str) -> str:
+    return json.dumps(value, ensure_ascii=True, allow_nan=False)
 
 
 def _require_section(config: dict[str, Any], name: str) -> dict[str, Any]:
@@ -739,17 +752,24 @@ def _resolve_config_path(config_path: Path, value: str) -> Path:
     path = Path(value)
     if path.is_absolute():
         return path
-    return (config_path.parent / path).resolve() if not path.exists() else path
+    return (config_path.parent / path).resolve()
 
 
 def _load_json_object(path: Path) -> dict[str, Any]:
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        payload = _loads_json_no_constants(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
         raise ValueError("node_check_json_invalid") from exc
     if not isinstance(payload, dict):
         raise ValueError("node_check_json_not_object")
     return payload
+
+
+def _loads_json_no_constants(raw: str) -> Any:
+    def _reject_constant(value: str) -> None:
+        raise ValueError(f"json_non_finite_constant_not_allowed:{value}")
+
+    return json.loads(raw, parse_constant=_reject_constant)
 
 
 def _require_safe_root(path: Path) -> None:
