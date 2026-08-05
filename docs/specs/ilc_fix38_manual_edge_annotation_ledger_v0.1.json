@@ -69672,6 +69672,173 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_1583_fix2_dynamic_peer_discovery_audit_hardening_walkthrough.md",
       "repo_path": "docs/phases/phase_1583_fix2_dynamic_peer_discovery_audit_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_homoiconic_prompt_drafts_2026_08_05",
+      "chronology_note": "2026-08-05 GAP-HOMOICONIC-INSTALL-00/GENESIS-00/LMDB-SIGN-00 phase prompts drafted by Sonnet architectural review",
+      "manual_read_summary": "Phase prompt for CLI ilc install --from-invite orchestration (GAP-HOMOICONIC-INSTALL-00): wires verify_invite_bootstrap -> verify_portable_manifest_witness -> materialize_starmap_manifest -> build_install_receipt into a single CLI command, NON-SENSITIVE.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_install_00_g10_cli_install_from_invite_orchestration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_homoiconic_prompt_drafts_2026_08_05",
+      "chronology_note": "2026-08-05 GAP-HOMOICONIC-GENESIS-00 phase prompt drafted by Sonnet architectural review",
+      "manual_read_summary": "Phase prompt for genesis truth-primitive assertion schema (HB-001/HB-003): opens CDL for genesis-authority assert.truth object schema and Layer 0 bundle truth-primitive schema extension, targeting RC1 window, SENSITIVE.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_bootstrap_forward_obligations_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_genesis_00_g10_genesis_truth_primitive_schema.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_homoiconic_prompt_drafts_2026_08_05",
+      "chronology_note": "2026-08-05 GAP-HOMOICONIC-LMDB-SIGN-00 phase prompt drafted by Sonnet architectural review",
+      "manual_read_summary": "Phase prompt for LMDB-native __signed_slices__ canonical signing surface: implements SliceSigningRecord, Merkle recipe (SHA-384, R1-R6 from forward plan), and portable manifest derivation; SENSITIVE, blocked on Fix59b.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_signed_atlas_slice_manifest_executable_map_forward_plan_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_lmdb_sign_00_g10_lmdb_native_signed_slices.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 Phase 1591-Fix2 public-routable harness soak prompt",
+      "manual_read_summary": "SENSITIVE phase prompt for proving four-validator consensus on public VPS IPs without Tailscale overlay, with verified mTLS probes and bad-cert rejection.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix2_g10_public_routable_harness_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 GAP-OPERATOR-INIT-00 node init CLI phase prompt",
+      "manual_read_summary": "NON-SENSITIVE phase prompt implementing ilc node init + ilc node check CLI commands; generates TLS cert, ML-DSA-65 and BLS12-381 keypairs, ValidatorEndpointAssertion, and node_config.toml for fresh installs.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_operator_init_00_g10_node_init_cli.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 GAP-VALIDATOR-IDENT-03 endpoint assertion rotation CLI phase prompt",
+      "manual_read_summary": "NON-SENSITIVE phase prompt for ilc validator rotate-endpoint CLI command using existing revised_by field in ValidatorEndpointAssertion; runs post-Phase 1577g under live cert-graph binding enforcement.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_ident_03_g10_endpoint_assertion_rotation_cli.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 GAP-HYDRATION-STATE-00 hydration gap inventory audit phase prompt",
+      "manual_read_summary": "NON-SENSITIVE read-only audit phase prompt mapping existing hydration/fetch/bootstrap/discovery capability against claimed gaps; produces ilc_graph_hydration_gap_inventory spec before any implementation phases.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_hydration_state_00_g10_hydration_gap_inventory.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 Phase 1591-Fix4 live adversarial network soak phase prompt",
+      "manual_read_summary": "SENSITIVE phase prompt for adversarial fault-injection soak against four-validator harness: restart, delayed validator, duplicate replay, bad cert, stale assertion, and SIGKILL+rejoin.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix4_g10_live_adversarial_network_soak.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_strike_force_hydration_prompts_2026_08_05",
+      "chronology_note": "2026-08-05 \u2014 Phase 1591-Fix5 mixed economic graph action soak phase prompt",
+      "manual_read_summary": "SENSITIVE phase prompt for capstone economic soak: bounded ILC+ECU transfers, concurrent graph submissions, double-spend nonce rejection, and backward attribution readback; requires Phase 1592 and LIVE-RC-08 and ECU-RC-05 tokens.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix5_g10_mixed_economic_graph_action_soak.md"
     }
   ],
   "boundary": {
