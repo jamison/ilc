@@ -21,7 +21,10 @@ from ilc_core.crypto.pq_signature_verify import (
 from ilc_core.network.d2d.gossip_transport import (
     GOSSIP_TRANSPORT_RUNTIME_VERSION as _GOSSIP_TRANSPORT_CHECK,
 )
-from ilc_core.network.d2d.peer_advertisement import PeerAdvertisement
+from ilc_core.network.d2d.peer_advertisement import (
+    MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS,
+    PeerAdvertisement,
+)
 
 
 GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
@@ -274,6 +277,8 @@ class GossipPeerRegistry:
         current = _require_epoch(current_epoch, "peer_advertisement_current_epoch_invalid")
         if not isinstance(ad, PeerAdvertisement):
             raise ValueError("peer_advertisement_invalid")
+        if ad.peer_timestamp_epoch > current + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
+            raise ValueError("peer_advertisement_timestamp_future_skew")
         if ad.is_expired(current):
             return False
         if ad.endpoint_url in self._peers:
@@ -360,12 +365,12 @@ class GossipPeerRegistry:
         return entry.valid_until_epoch is None or epoch <= entry.valid_until_epoch
 
     def select_fanout_peers(self, fanout: int, exclude: list[str] | None = None) -> list[str]:
-        """Return static-v1 deterministic fanout.
+        """Return deterministic lexicographic fanout over static and dynamic peers.
 
-        The current lexicographic prefix selection is retained to avoid a
-        silent network-behavior change in a security cleanup phase. Rotating or
-        hash-derived fanout should be introduced under CDL-103/dynamic
-        discovery, where anti-eclipse tradeoffs are reviewed explicitly.
+        CDL-103 (ratified Phase 1583) activates dynamic discovery; fanout now
+        includes dynamic advertisement endpoints via get_peers(). The lexicographic
+        selection order is retained. Hash-derived rotation remains deferred per
+        LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN pending explicit eclipse-resistance review.
         """
         if isinstance(fanout, bool) or not isinstance(fanout, int) or fanout < 1:
             raise ValueError('fanout_must_be_positive')
@@ -378,5 +383,5 @@ class GossipPeerRegistry:
                 )
                 for peer in exclude
             }
-        available = sorted(peer for peer in self._peers if peer not in excluded)
+        available = sorted(peer for peer in self.get_peers() if peer not in excluded)
         return available[:fanout]

@@ -24,6 +24,7 @@ from ilc_core.crypto.pq_signature_verify import (
 PEER_ADVERTISEMENT_SCHEMA_VERSION = "peer_advertisement_cdl103.v0.1"
 PEER_ADVERTISEMENT_RUNTIME_VERSION = "peer_advertisement_gap_discov_03.v0.1"
 MAX_TTL_EPOCHS = 4
+MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS = 1
 
 _SHA384_HEX_RE = re.compile(r"^[0-9a-f]{96}$")
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")

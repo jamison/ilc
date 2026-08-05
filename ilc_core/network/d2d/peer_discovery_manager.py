@@ -13,6 +13,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
 from ilc_core.network.d2d.peer_advertisement import (
+    MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS,
     PEER_ADVERTISEMENT_SCHEMA_VERSION,
     PeerAdvertisement,
     TransportEndpoint,
@@ -23,7 +24,6 @@ DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED = False
 PEER_DISCOVERY_RUNTIME_VERSION = "dynamic_peer_discovery_gap_discov_03.v0.1"
 DEFAULT_AD_BROADCAST_INTERVAL_EPOCHS = 1
 DEFAULT_INTRODUCTION_SET_SIZE = 8
-MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS = 1
 
 _SHA384_EMPTY_SLICE_DIGEST = hashlib.sha384(b"").hexdigest()
 
