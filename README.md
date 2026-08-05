@@ -50,15 +50,14 @@ These figures are from the private canonical repository. The sanitized public mi
 
 | Metric | Figure |
 |--------|--------|
-| **Python production LOC** (`ilc_core/`) | ~137k lines across 453 modules |
-| **Rust consensus LOC** (`ilc_consensus/src/`) | ~16k lines across 26 source files |
-| **Python test suite** | 15,590 collected tests across 1,743 test files |
-| **Rust unit tests** | 128 `#[test]` functions in `ilc_consensus/src/` |
+| **Total repository** | ~1.57M lines (code + documentation) |
+| **Python runtime** (`ilc_core/`) | ~137k lines across 453 modules |
+| **Python tests** (`tests/`) | ~283k lines · 15,590 collected tests · 1,743 test files |
+| **Python tooling** (`tools/`) | ~109k lines |
+| **Rust consensus** (`ilc_consensus/src/`) | ~16k lines across 26 source files · 128 `#[test]` functions |
+| **Documentation** (`docs/`) | ~1.02M lines: 1,845 spec docs · 1,988 phase walkthroughs · 1,631 phase prompts · 36 ADRs · 79k lines of research memos |
 | **Git commits** | 4,748 commits from genesis |
-| **Constitutional Decision Log** | 120 CDL entries (protocol governance) |
-| **Architecture Decision Records** | 36 ADRs |
-| **Spec documents** | 1,845 files in `docs/specs/` |
-| **Phase execution records** | 1,988 phase walkthroughs in `docs/phases/` |
+| **Constitutional Decision Log** | 120 CDL entries (ratified protocol governance) |
 | **Languages** | Python 3.10+ · Rust (stable) · Protocol Buffers · TLA+ |
 | **Cryptography** | ML-DSA-65 (NIST FIPS 204) · BLS12-381 · Ed25519 · ML-KEM-768 · VRF (RFC 9381) |
 | **Consensus** | Mysticeti-inspired DAG · sub-500ms finality · BFT f=1 at public RC |
