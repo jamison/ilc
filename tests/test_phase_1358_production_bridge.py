@@ -642,8 +642,14 @@ def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeyp
 
     class FakeGrpcModule:
         @staticmethod
-        def ssl_channel_credentials(root_certificates: bytes | None = None) -> str:
+        def ssl_channel_credentials(
+            root_certificates: bytes | None = None,
+            private_key: bytes | None = None,
+            certificate_chain: bytes | None = None,
+        ) -> str:
             calls["roots"] = root_certificates
+            calls["private_key"] = private_key
+            calls["certificate_chain"] = certificate_chain
             return "tls-creds"
 
         @staticmethod
@@ -667,6 +673,8 @@ def test_secure_grpc_constructor_uses_secure_channel_and_tls_credentials(monkeyp
 
     assert stub.GetEpoch is not None
     assert calls["roots"] == b"root-ca"
+    assert calls["private_key"] is None
+    assert calls["certificate_chain"] is None
     assert calls["target"] == "validator.example:443"
     assert calls["credentials"] == "tls-creds"
     assert ("grpc.max_receive_message_length", 1_048_576) in calls["options"]

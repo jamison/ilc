@@ -116,8 +116,14 @@ def test_secure_stub_uses_tls_roots_and_channel_receive_limit(monkeypatch: pytes
 
     class FakeGrpc:
         @staticmethod
-        def ssl_channel_credentials(root_certificates: bytes | None = None) -> str:
+        def ssl_channel_credentials(
+            root_certificates: bytes | None = None,
+            private_key: bytes | None = None,
+            certificate_chain: bytes | None = None,
+        ) -> str:
             calls["roots"] = root_certificates
+            calls["private_key"] = private_key
+            calls["certificate_chain"] = certificate_chain
             return "tls-creds"
 
         @staticmethod
@@ -142,11 +148,58 @@ def test_secure_stub_uses_tls_roots_and_channel_receive_limit(monkeypatch: pytes
 
     assert stub.GetEpoch is not None
     assert calls["roots"] == b"test-root-ca"
+    assert calls["private_key"] is None
+    assert calls["certificate_chain"] is None
     assert calls["target"] == "validator.testnet.invalid:50162"
     assert calls["credentials"] == "tls-creds"
     assert ("grpc.max_receive_message_length", 123_456) in calls["options"]
     assert "/ilc_app.ILCAppReadService/GetEpochChain" in channel.paths
     assert not hasattr(FakeGrpc, "insecure_channel")
+
+
+def test_secure_read_stub_can_send_client_certificate_chain(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: dict[str, object] = {}
+    channel = _RecordingChannel()
+
+    class FakeGrpc:
+        @staticmethod
+        def ssl_channel_credentials(
+            root_certificates: bytes | None = None,
+            private_key: bytes | None = None,
+            certificate_chain: bytes | None = None,
+        ) -> str:
+            calls["roots"] = root_certificates
+            calls["private_key"] = private_key
+            calls["certificate_chain"] = certificate_chain
+            return "mtls-creds"
+
+        @staticmethod
+        def secure_channel(
+            target: str,
+            credentials: str,
+            options: tuple[tuple[str, int], ...] = (),
+        ) -> _RecordingChannel:
+            calls["target"] = target
+            calls["credentials"] = credentials
+            calls["options"] = options
+            return channel
+
+    monkeypatch.setitem(sys.modules, "grpc", FakeGrpc)
+
+    stub = build_secure_grpc_read_stub(
+        ConsensusBridgeConfig(
+            target="validator.testnet.invalid:50162",
+            tls_root_certificates=b"test-root-ca",
+            grpc_client_private_key=b"read-client-key",
+            grpc_client_certificate_chain=b"read-client-cert",
+        )
+    )
+
+    assert stub.GetEpoch is not None
+    assert calls["roots"] == b"test-root-ca"
+    assert calls["private_key"] == b"read-client-key"
+    assert calls["certificate_chain"] == b"read-client-cert"
+    assert calls["credentials"] == "mtls-creds"
 
 
 def test_epoch_chain_receive_limit_config_validation() -> None:
@@ -161,6 +214,32 @@ def test_epoch_chain_receive_limit_config_validation() -> None:
             target="validator.testnet.invalid:50162",
             max_epoch_chain_receive_bytes=True,
         )
+    with pytest.raises(ValueError, match="grpc_client_certificate_pair_invalid_phase_1591_fix1"):
+        ConsensusBridgeConfig(
+            target="validator.testnet.invalid:50162",
+            grpc_client_private_key=b"read-client-key",
+        )
+    with pytest.raises(ValueError, match="grpc_client_certificate_pair_invalid_phase_1591_fix1"):
+        ConsensusBridgeConfig(
+            target="validator.testnet.invalid:50162",
+            grpc_client_certificate_chain=b"read-client-cert",
+        )
+    with pytest.raises(ValueError, match="grpc_client_private_key_invalid_phase_1591_fix1"):
+        ConsensusBridgeConfig(
+            target="validator.testnet.invalid:50162",
+            grpc_client_private_key="read-client-key",  # type: ignore[arg-type]
+            grpc_client_certificate_chain=b"read-client-cert",
+        )
+    with pytest.raises(
+        ValueError,
+        match="grpc_client_certificate_chain_invalid_phase_1591_fix1",
+    ):
+        ConsensusBridgeConfig(
+            target="validator.testnet.invalid:50162",
+            grpc_client_private_key=b"read-client-key",
+            grpc_client_certificate_chain="read-client-cert",  # type: ignore[arg-type]
+        )
+
 
 
 def test_epoch_chain_response_records_are_bounded_before_materialization() -> None:
