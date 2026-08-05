@@ -1465,6 +1465,54 @@ def _build_parser() -> JsonArgumentParser:
             node_parser = subparsers.add_parser("node", help="D2e node lifecycle commands")
             node_subparsers = node_parser.add_subparsers(dest="node_subcommand", required=True)
 
+            p_node_init = node_subparsers.add_parser(
+                "init",
+                help="Generate local validator node operator material",
+            )
+            p_node_init.add_argument(
+                "--root",
+                required=True,
+                help="Output root for generated config, keys, certs, and init receipt",
+            )
+            p_node_init.add_argument("--network-id", required=True, help="Network identifier, e.g. ilc-rc01")
+            p_node_init.add_argument("--host", required=True, help="Public DNS name or IP for endpoint assertion")
+            p_node_init.add_argument("--grpc-port", type=int, required=True, help="gRPC listen/advertised port")
+            p_node_init.add_argument("--quic-port", type=int, required=True, help="QUIC/P2P listen/advertised port")
+            p_node_init.add_argument(
+                "--peer-seed",
+                action="append",
+                default=[],
+                help="Peer seed endpoint host:port; may be repeated",
+            )
+            p_node_init.add_argument(
+                "--valid-days",
+                type=int,
+                default=365,
+                help="TLS certificate validity in days",
+            )
+            p_node_init.add_argument(
+                "--asserted-at-epoch",
+                type=int,
+                default=0,
+                help="Endpoint assertion epoch",
+            )
+            p_node_init.add_argument(
+                "--genesis-witness",
+                action="store_true",
+                help="Mark endpoint assertion as a genesis witness",
+            )
+            p_node_init.add_argument(
+                "--allow-test-stub-crypto",
+                action="store_true",
+                help="Allow test-only stub ML-DSA/BLS material if real keygen/signing is unavailable",
+            )
+
+            p_node_check = node_subparsers.add_parser(
+                "check",
+                help="Validate generated node config and TLS certificate freshness",
+            )
+            p_node_check.add_argument("--config", required=True, help="Path to generated node_config.toml")
+
             node_subparsers.add_parser("constants", help="Show ratified timed-out lifecycle constants")
 
             p_node_inspect = node_subparsers.add_parser("timed-out-inspect", help="Inspect timed-out lifecycle status from a record")
@@ -2430,6 +2478,9 @@ def _run_top_level_command(
         data = _run_install_subcommand(args)
         return _success_payload(command, data)
     if command == "node":
+        if getattr(args, "node_subcommand", None) in {"init", "check"}:
+            data = _run_node_operator_subcommand(args)
+            return _success_payload(command, data)
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
         data = run_node_command(args)
@@ -2555,6 +2606,32 @@ def _run_top_level_command(
 
     data = _prototype_data_for_command(command)
     return _success_payload(command, data)
+
+
+def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    from ilc_core.node.operator_init_runtime import (
+        check_node_config,
+        generate_node_init_material,
+    )
+
+    subcommand = getattr(args, "node_subcommand", None)
+    if subcommand == "init":
+        result = generate_node_init_material(
+            root=Path(args.root),
+            network_id=str(args.network_id),
+            host=str(args.host),
+            grpc_port=int(args.grpc_port),
+            quic_port=int(args.quic_port),
+            peer_seeds=list(args.peer_seed or []),
+            valid_days=int(args.valid_days),
+            allow_test_stub_crypto=bool(args.allow_test_stub_crypto),
+            genesis_witness=bool(args.genesis_witness),
+            asserted_at_epoch=int(args.asserted_at_epoch),
+        )
+        return {"action": "node-init", **result.to_dict()}
+    if subcommand == "check":
+        return {"action": "node-check", **check_node_config(Path(args.config))}
+    raise ValueError("node_operator_subcommand_missing")
 
 
 def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
