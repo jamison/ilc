@@ -80485,6 +80485,106 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_sidecar_registry_import_health_GAP_HARNESS_SIDECAR_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_gap_integration_soak",
+      "chronology_note": "2026-08-05 Phase 1591 GAP-INTEGRATION-SOAK \u2014 deterministic Python to Rust substrate integration soak harness committed.",
+      "manual_read_summary": "Internal soak harness builds a canonical Python epoch settlement proposal, submits it through the Phase 1587 production bridge API, verifies Rust-shaped BFT/process_epoch_checkpoint/LMDB log tokens, and reads back through ILCConsensusGrpcReadAdapter with validator certificate graph binding active.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_g10_gap_substrate_integration_soak_e2e.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:e2e_python_rust_substrate_integration_soak_committed_phase_1591"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_phase_1591_integration_soak.py"
+        },
+        {
+          "edge_type": "HARDENS_IMPORT_BOUNDARY",
+          "target": "ilc_core/consensus/production_bridge.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE",
+        "HARDENS_IMPORT_BOUNDARY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tools/phase1591_integration_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_gap_integration_soak",
+      "chronology_note": "2026-08-05 Phase 1591 GAP-INTEGRATION-SOAK \u2014 focused integration tests committed.",
+      "manual_read_summary": "Tests Python proposal submission, Rust-shaped BFT/BLS/process checkpoint evidence, gRPC readback matching Python-side balance, duplicate epoch rejection, and active validator certificate graph binding on readback.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_g10_gap_substrate_integration_soak_e2e.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tools/phase1591_integration_soak.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_end_to_end_verified_phase_1591"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1591_integration_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_gap_integration_soak",
+      "chronology_note": "2026-08-05 Phase 1591 GAP-INTEGRATION-SOAK \u2014 walkthrough committed.",
+      "manual_read_summary": "Walkthrough records token audit, deterministic harness lifecycle, BFT/process checkpoint log tokens, gRPC readback values, verification commands, output tokens, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_g10_gap_substrate_integration_soak_e2e.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:e2e_python_rust_substrate_integration_soak_committed_phase_1591"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:production_bridge_end_to_end_verified_phase_1591"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_phase_1591_integration_soak.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1591_gap_integration_soak_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
