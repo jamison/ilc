@@ -69893,6 +69893,36 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_gap_public_install_02_2026_08_06",
+      "chronology_note": "2026-08-06: GAP-PUBLIC-INSTALL-02 install.sh software-delivery installer phase prompt",
+      "manual_read_summary": "Phase prompt for GAP-PUBLIC-INSTALL-02: implements tools/install.sh POSIX bash installer that downloads ilc-core 0.2.0 wheel from PyPI, verifies SHA-256 shell-natively, installs with pip, and checks ilc --help; adds install_sh_manifest_sync.py to enforce that embedded script values match the committed instance manifest; two-layer constraint (no graph hydration in install.sh) enforced by static test.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_02_g10_install_sh.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded",
+          "review_status": "candidate"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-086",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
