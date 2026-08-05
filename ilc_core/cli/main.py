@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ SCHEMA_VERSION = "254.v0.1"
 QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
 BUNDLE_SCHEMA_VERSION = "303.v0.1"
+INSTALL_INVITE_MAX_BYTES = 1_048_576
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -37,6 +39,7 @@ OPERATIONAL_COMMANDS = (
     "verify",
     "balance",
     "identity",
+    "install",
     "bundle",
     "shard",
     "capproof",
@@ -1433,6 +1436,31 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "install":
+            install_parser = subparsers.add_parser(
+                "install",
+                help="Install a verified local graph slice from an invite bundle",
+                description="Install a verified local graph slice from an invite bundle",
+            )
+            install_parser.add_argument(
+                "--from-invite",
+                dest="from_invite",
+                required=True,
+                metavar="INVITE",
+                help="Path, file:// URI, '-' stdin, or raw JSON invite bundle",
+            )
+            install_parser.add_argument(
+                "--target-dir",
+                default="",
+                help="Directory for materialized slice files; defaults to out/installed_slices/<slice_id>",
+            )
+            install_parser.add_argument(
+                "--output-receipt",
+                default="",
+                help="Path for atomic install receipt JSON; defaults to <target-dir>/install_receipt.json",
+            )
+            continue
+
         if command == "node":
             node_parser = subparsers.add_parser("node", help="D2e node lifecycle commands")
             node_subparsers = node_parser.add_subparsers(dest="node_subcommand", required=True)
@@ -2344,6 +2372,7 @@ def _run_top_level_command(
         "bundle",
         "ccss",
         "doctor",
+        "install",
         "node",
         "query",
         "sidecar",
@@ -2396,6 +2425,9 @@ def _run_top_level_command(
             data = {**data, "plan_path": str(plan_path)}
         except AgentBootstrapError as exc:
             raise ValueError(str(exc)) from exc
+        return _success_payload(command, data)
+    if command == "install":
+        data = _run_install_subcommand(args)
         return _success_payload(command, data)
     if command == "node":
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
@@ -2523,6 +2555,232 @@ def _run_top_level_command(
 
     data = _prototype_data_for_command(command)
     return _success_payload(command, data)
+
+
+def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    invite_bundle = _load_install_invite_bundle(str(args.from_invite))
+    expected_profile = _install_expected_profile(invite_bundle)
+    current_epoch = _install_current_epoch(invite_bundle)
+
+    from ilc_core.sidecars.openclaw_invite_bootstrap import (
+        InviteNullifierStore,
+        verify_invite_bootstrap,
+    )
+
+    with tempfile.TemporaryDirectory(prefix="ilc-install-nullifier-check-") as tmpdir:
+        decision = verify_invite_bootstrap(
+            _invite_bootstrap_payload(invite_bundle),
+            expected_profile=expected_profile,
+            current_epoch=current_epoch,
+            nullifier_store=InviteNullifierStore(Path(tmpdir) / "invite_nullifiers.json"),
+            persist_nullifier=False,
+            production_required=False,
+        )
+    if not decision.bootstrap_allowed:
+        raise ValueError(f"invite_verification_failed:{decision.defect_token or 'not_allowed'}")
+
+    witness = _required_mapping(
+        invite_bundle.get("atlas_slice_manifest_witness"),
+        "invite_bundle_missing_atlas_slice_manifest_witness",
+    )
+    from ilc_core.bundle.atlas_slice_verifier import (
+        AtlasSliceVerifierError,
+        verify_portable_manifest_witness,
+    )
+
+    try:
+        manifest_verification = verify_portable_manifest_witness(witness)
+    except AtlasSliceVerifierError as exc:
+        raise ValueError(f"manifest_verification_failed:{exc}") from exc
+    if not (
+        manifest_verification.get("verified") is True
+        or manifest_verification.get("valid") is True
+    ):
+        token = manifest_verification.get("error") or "not_verified"
+        raise ValueError(f"manifest_verification_failed:{token}")
+
+    materialization_payload = _install_materialization_payload(invite_bundle, witness)
+    target_dir = _install_target_dir(args, materialization_payload, witness)
+    output_receipt = _install_receipt_path(args, target_dir)
+
+    from ilc_core.sidecars.starmap_installer import (
+        StarMapInstallerError,
+        build_install_receipt,
+        materialize_starmap_manifest,
+    )
+
+    try:
+        materialization = materialize_starmap_manifest(
+            materialization_payload,
+            target=target_dir,
+            dry_run=False,
+        )
+        receipt = build_install_receipt(materialization_payload)
+    except StarMapInstallerError as exc:
+        raise ValueError(f"install_materialization_failed:{exc}") from exc
+
+    _write_install_receipt_atomic(output_receipt, receipt)
+    return {
+        "invite_verification": decision.to_dict(),
+        "manifest_verification": manifest_verification,
+        "materialization": materialization,
+        "receipt_path": str(output_receipt),
+        "slice_id": str(materialization.get("slice_id", _install_slice_id(materialization_payload, witness))),
+        "status": "ok",
+        "subcommand": "from-invite",
+        "target_dir": str(target_dir),
+    }
+
+
+def _load_install_invite_bundle(source: str) -> dict[str, Any]:
+    if not source:
+        raise ValueError("install_invite_source_missing")
+    if source.startswith(("http://", "https://")):
+        raise ValueError("install_invite_url_fetch_not_supported")
+    if source == "-":
+        raw = sys.stdin.buffer.read(INSTALL_INVITE_MAX_BYTES + 1)
+    elif source.lstrip().startswith("{"):
+        raw = source.encode("utf-8")
+    else:
+        path = _install_source_path(source)
+        try:
+            if path.stat().st_size > INSTALL_INVITE_MAX_BYTES:
+                raise ValueError("install_invite_bundle_too_large")
+            raw = path.read_bytes()
+        except OSError as exc:
+            raise ValueError("install_invite_bundle_unreadable") from exc
+    if len(raw) > INSTALL_INVITE_MAX_BYTES:
+        raise ValueError("install_invite_bundle_too_large")
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("install_invite_bundle_json_invalid") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("install_invite_bundle_not_object")
+    _reject_float(payload, "install_invite_float_not_allowed")
+    return payload
+
+
+def _install_source_path(source: str) -> Path:
+    if source.startswith("file://"):
+        path = Path(source.removeprefix("file://"))
+        if not path.is_absolute():
+            raise ValueError("install_invite_file_uri_must_be_absolute")
+        return path
+    return Path(source).expanduser()
+
+
+def _install_expected_profile(invite_bundle: dict[str, Any]) -> str:
+    value = invite_bundle.get("intended_profile")
+    if not isinstance(value, str) or not value:
+        raise ValueError("install_invite_intended_profile_invalid")
+    return value
+
+
+def _invite_bootstrap_payload(invite_bundle: dict[str, Any]) -> dict[str, Any]:
+    invite_keys = {
+        "intended_epoch",
+        "intended_profile",
+        "invite_batch_record",
+        "nonce_membership_proof",
+        "private_invite_nonce",
+        "redeemer_agent_id",
+        "redeemer_pubkey",
+        "intended_redeemer_pubkey",
+    }
+    return {
+        key: invite_bundle[key]
+        for key in sorted(invite_keys)
+        if key in invite_bundle
+    }
+
+
+def _install_current_epoch(invite_bundle: dict[str, Any]) -> int:
+    value = invite_bundle.get("intended_epoch")
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError("install_invite_intended_epoch_invalid")
+    return value
+
+
+def _required_mapping(value: object, token: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError(token)
+    _reject_float(value, f"{token}:float_not_allowed")
+    return value
+
+
+def _install_materialization_payload(
+    invite_bundle: dict[str, Any],
+    witness: dict[str, Any],
+) -> dict[str, Any]:
+    payload = invite_bundle.get("starmap_manifest_payload")
+    if payload is None:
+        payload = invite_bundle.get("atlas_slice_manifest_payload", witness)
+    return _required_mapping(payload, "invite_bundle_materialization_payload_invalid")
+
+
+def _install_slice_id(materialization_payload: dict[str, Any], witness: dict[str, Any]) -> str:
+    for payload in (materialization_payload, witness):
+        value = payload.get("slice_id")
+        if isinstance(value, str) and value:
+            return value
+    return "unknown_slice"
+
+
+def _install_target_dir(
+    args: argparse.Namespace,
+    materialization_payload: dict[str, Any],
+    witness: dict[str, Any],
+) -> Path:
+    requested = str(getattr(args, "target_dir", "") or "")
+    if requested:
+        return Path(requested).expanduser().resolve()
+    slice_id = _safe_path_segment(_install_slice_id(materialization_payload, witness))
+    return (Path("out") / "installed_slices" / slice_id).resolve()
+
+
+def _install_receipt_path(args: argparse.Namespace, target_dir: Path) -> Path:
+    requested = str(getattr(args, "output_receipt", "") or "")
+    if requested:
+        return Path(requested).expanduser().resolve()
+    return target_dir / "install_receipt.json"
+
+
+def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
+    _reject_float(receipt, "install_receipt_float_not_allowed")
+    payload = (
+        json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        + b"\n"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_name, path)
+    finally:
+        if os.path.exists(temp_name):
+            os.unlink(temp_name)
+    return path
+
+
+def _safe_path_segment(value: str) -> str:
+    safe = "".join(char if char.isalnum() or char in {"-", "_", "."} else "_" for char in value)
+    return safe.strip("._") or "unknown_slice"
+
+
+def _reject_float(value: object, token: str) -> None:
+    if isinstance(value, float):
+        raise ValueError(token)
+    if isinstance(value, dict):
+        for key, item in value.items():
+            _reject_float(key, token)
+            _reject_float(item, token)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _reject_float(item, token)
 
 
 def _query_error_result(
