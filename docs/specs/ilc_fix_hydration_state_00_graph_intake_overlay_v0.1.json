@@ -1,0 +1,32 @@
+{
+  "artifact": "ilc_fix_hydration_state_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-HYDRATION-STATE-00 read-only hydration gap inventory artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_hydration_state_00_overlay_record",
+      "annotation_phase": "GAP-HYDRATION-STATE-00",
+      "edge_role": "HYDRATION_GAP_INVENTORY",
+      "repo_path": "docs/specs/ilc_graph_hydration_gap_inventory_GAP_HYDRATION_STATE_00_v0.1.md",
+      "target": "phase:GAP-HYDRATION-STATE-00"
+    },
+    {
+      "annotation_method": "gap_hydration_state_00_overlay_record",
+      "annotation_phase": "GAP-HYDRATION-STATE-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_hydration_state_00_hydration_gap_inventory_walkthrough.md",
+      "target": "phase:GAP-HYDRATION-STATE-00"
+    },
+    {
+      "annotation_method": "gap_hydration_state_00_overlay_record",
+      "annotation_phase": "GAP-HYDRATION-STATE-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_hydration_state_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}
