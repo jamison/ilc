@@ -8,7 +8,13 @@ import pytest
 import ilc_core.network.d2d.gossip_peer_registry as registry_module
 import ilc_core.network.d2d.peer_discovery_manager as manager_module
 from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
-from ilc_core.network.d2d.peer_advertisement import MAX_TTL_EPOCHS, PeerAdvertisement
+from ilc_core.network.d2d.gossip_peer_registry import VerifiedPeerAdvertisement
+from ilc_core.network.d2d.peer_advertisement import (
+    MAX_CONTENT_AVAILABILITY_COUNT,
+    MAX_PEER_ADVERTISEMENT_EPOCH,
+    MAX_TTL_EPOCHS,
+    PeerAdvertisement,
+)
 from ilc_core.network.d2d.peer_discovery_manager import PeerDiscoveryManager
 
 
@@ -31,22 +37,31 @@ AGENT_B = "2" * 96
 DIGEST_B = "4" * 96
 
 
-def _ad_dict(*, timestamp: int = 10, ttl: int = 4) -> dict[str, object]:
+def _ad_dict(
+    *,
+    agent_id: str = AGENT_A,
+    content_availability_count: int = 7,
+    digest: str = DIGEST_A,
+    host: str = "peer-a.example.com",
+    key_binding_ref: str = "key-binding-a",
+    timestamp: int = 10,
+    ttl: int = 4,
+) -> dict[str, object]:
     return {
         "body": {
-            "agent_id": AGENT_A,
-            "content_availability_count": 7,
-            "installed_slices_digest": DIGEST_A,
+            "agent_id": agent_id,
+            "content_availability_count": content_availability_count,
+            "installed_slices_digest": digest,
             "peer_timestamp_epoch": timestamp,
             "protocol_version": "ilc-d2d-gossip.v1",
             "transport_endpoint": {
-                "host": "peer-a.example.com",
+                "host": host,
                 "port": 443,
                 "scheme": "https",
             },
             "ttl_epochs": ttl,
         },
-        "key_binding_ref": "key-binding-a",
+        "key_binding_ref": key_binding_ref,
         "ml_dsa_signature": SIG_HEX,
         "schema_version": "peer_advertisement_cdl103.v0.1",
     }
@@ -54,6 +69,24 @@ def _ad_dict(*, timestamp: int = 10, ttl: int = 4) -> dict[str, object]:
 
 def _ad(*, timestamp: int = 10, ttl: int = 4) -> PeerAdvertisement:
     return PeerAdvertisement.from_dict(_ad_dict(timestamp=timestamp, ttl=ttl))
+
+
+def _ad_for(
+    *,
+    agent_id: str,
+    host: str,
+    key_binding_ref: str,
+    timestamp: int = 10,
+) -> PeerAdvertisement:
+    return PeerAdvertisement.from_dict(
+        _ad_dict(
+            agent_id=agent_id,
+            digest=DIGEST_B if agent_id == AGENT_B else DIGEST_A,
+            host=host,
+            key_binding_ref=key_binding_ref,
+            timestamp=timestamp,
+        )
+    )
 
 
 def _ad_b(*, timestamp: int = 10, ttl: int = 4) -> PeerAdvertisement:
@@ -77,6 +110,10 @@ def _ad_b(*, timestamp: int = 10, ttl: int = 4) -> PeerAdvertisement:
             "schema_version": "peer_advertisement_cdl103.v0.1",
         }
     )
+
+
+def _verified(ad: PeerAdvertisement) -> VerifiedPeerAdvertisement:
+    return VerifiedPeerAdvertisement(ad)
 
 
 def test_cdl_103_ratification_doc_exists() -> None:
@@ -165,11 +202,18 @@ def test_registry_rejects_future_skew_advertisement_directly() -> None:
     registry = GossipPeerRegistry([])
     # timestamp=12, current=10: skew=2 > MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS(1)
     with pytest.raises(ValueError, match="peer_advertisement_timestamp_future_skew"):
-        registry.add_peer_advertisement(_ad(timestamp=12), 10)
+        registry.add_peer_advertisement(_verified(_ad(timestamp=12)), 10)
     # timestamp=11, current=10: skew=1 == limit, must be accepted
     ad_at_limit = _ad(timestamp=11, ttl=4)
-    result = registry.add_peer_advertisement(ad_at_limit, 10)
+    result = registry.add_peer_advertisement(_verified(ad_at_limit), 10)
     assert result is True
+
+
+def test_registry_rejects_raw_unverified_advertisement_directly() -> None:
+    registry = GossipPeerRegistry([])
+
+    with pytest.raises(ValueError, match="peer_advertisement_requires_verified_envelope"):
+        registry.add_peer_advertisement(_ad(timestamp=10), 10)  # type: ignore[arg-type]
 
 
 def test_select_fanout_peers_includes_dynamic_peers_after_cdl103_ratification(
@@ -212,10 +256,28 @@ def test_get_peers_deduplicates_dynamic_ad_matching_static_endpoint() -> None:
     }
     registry = GossipPeerRegistry([static_peer])
     ad = _ad(timestamp=10)
-    result = registry.add_peer_advertisement(ad, 10)
+    result = registry.add_peer_advertisement(_verified(ad), 10)
     assert result is False
     peers = registry.get_peers()
     assert peers.count("https://peer-a.example.com:443") == 1
+
+
+def test_dynamic_endpoint_duplicate_rejected_across_agent_ids() -> None:
+    registry = GossipPeerRegistry([])
+    first = _ad_for(
+        agent_id=AGENT_A,
+        host="same-dynamic.example.com",
+        key_binding_ref="key-binding-a",
+    )
+    second = _ad_for(
+        agent_id=AGENT_B,
+        host="same-dynamic.example.com",
+        key_binding_ref="key-binding-b",
+    )
+
+    assert registry.add_peer_advertisement(_verified(first), 10) is True
+    assert registry.add_peer_advertisement(_verified(second), 10) is False
+    assert registry.get_peers().count("https://same-dynamic.example.com:443") == 1
 
 
 def test_add_introduction_entries_replaces_previous_table() -> None:
@@ -231,3 +293,50 @@ def test_add_introduction_entries_replaces_previous_table() -> None:
     entries = registry.get_introduction_entries()
     assert len(entries) == 1
     assert entries[0].agent_id == AGENT_B
+
+
+def test_introduction_entries_reject_over_n_max_storage() -> None:
+    registry = GossipPeerRegistry([])
+    ads = (
+        _ad_for(
+            agent_id=f"{index:096x}",
+            host=f"intro-{index}.example.com",
+            key_binding_ref=f"key-{index}",
+        )
+        for index in range(registry_module.MAX_INTRODUCTION_CANDIDATES + 1)
+    )
+
+    with pytest.raises(ValueError, match="peer_introduction_entries_exceed_n_max"):
+        registry.add_introduction_entries(ads)
+
+
+def test_introduction_sampling_rejects_over_n_max_candidates() -> None:
+    manager = PeerDiscoveryManager(GossipPeerRegistry([]), AGENT_A, b"vrf-key", lambda _payload: SIG_HEX)
+    ads = (
+        _ad_for(
+            agent_id=f"{index:096x}",
+            host=f"candidate-{index}.example.com",
+            key_binding_ref=f"key-{index}",
+        )
+        for index in range(registry_module.MAX_INTRODUCTION_CANDIDATES + 1)
+    )
+
+    with pytest.raises(ValueError, match="peer_introduction_candidates_exceed_n_max"):
+        manager.sample_introduction_set(ads, b"vrf-key")
+
+
+def test_peer_advertisement_rejects_unbounded_u64_fields() -> None:
+    oversized_count = _ad_dict(content_availability_count=MAX_CONTENT_AVAILABILITY_COUNT + 1)
+    with pytest.raises(ValueError, match="peer_advertisement_content_availability_count_invalid"):
+        PeerAdvertisement.from_dict(oversized_count)
+
+    oversized_epoch = _ad_dict(timestamp=MAX_PEER_ADVERTISEMENT_EPOCH + 1)
+    with pytest.raises(ValueError, match="peer_advertisement_timestamp_epoch_invalid"):
+        PeerAdvertisement.from_dict(oversized_epoch)
+
+
+def test_broadcast_requires_explicit_transport_endpoint() -> None:
+    manager = PeerDiscoveryManager(GossipPeerRegistry([]), AGENT_A, b"vrf-key", lambda _payload: SIG_HEX)
+
+    with pytest.raises(ValueError, match="peer_discovery_transport_endpoint_required"):
+        manager.broadcast_advertisement(10)
