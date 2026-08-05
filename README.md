@@ -54,7 +54,7 @@ These figures are from the private canonical repository. The sanitized public mi
 | **Python runtime** (`ilc_core/`) | ~137k lines across 453 modules |
 | **Python tests** (`tests/`) | ~283k lines · 15,590 collected tests · 1,743 test files |
 | **Python tooling** (`tools/`) | ~109k lines |
-| **Rust consensus** (`ilc_consensus/src/`) | ~16k lines across 26 source files · 128 `#[test]` functions |
+| **Rust consensus** (`ilc_consensus/`) | ~16k lines across 26 source files · 373 `#[test]` functions |
 | **Documentation** (`docs/`) | ~1.02M lines: 1,845 spec docs · 1,988 phase walkthroughs · 1,631 phase prompts · 36 ADRs · 79k lines of research memos |
 | **Git commits** | 4,748 commits from genesis |
 | **Constitutional Decision Log** | 120 CDL entries (ratified protocol governance) |
