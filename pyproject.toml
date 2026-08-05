@@ -178,6 +178,7 @@ include = [
     "ilc_core.protocol",
     "ilc_core.protocol.schemas",
     "ilc_core.rc",
+    "ilc_core.release",
     "ilc_core.reputation",
     "ilc_core.schema",
     "ilc_core.security",
