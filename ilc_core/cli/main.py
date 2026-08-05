@@ -364,7 +364,7 @@ def _default_balance_state_path() -> Path:
 def _ensure_local_graph_state(path: Path, command: str) -> None:
     if path.exists():
         raw = path.read_text(encoding="utf-8")
-        obj = json.loads(raw)
+        obj = _loads_json_no_constants(raw)
         if not isinstance(obj, dict):
             raise ValueError("graph_state_not_object")
     else:
@@ -379,7 +379,7 @@ def _ensure_local_graph_state(path: Path, command: str) -> None:
     obj["updated_at"] = _now_rfc3339_utc()
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    _write_json_file_atomic(path, obj, indent=2, mode=0o644)
 
 
 def _identity_state_path(graph_state_path: Path) -> Path:
@@ -401,26 +401,67 @@ def _load_identity_state(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     raw = path.read_text(encoding="utf-8")
-    data = json.loads(raw)
+    data = _loads_json_no_constants(raw)
     if not isinstance(data, dict):
         raise ValueError("identity_state_not_object")
     return data
 
 
 def _write_identity_state(path: Path, state: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    _write_json_file_atomic(path, state, indent=2, mode=0o600)
 
 
 def _write_local_json_file(path: str, payload: dict[str, Any]) -> str:
     target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(payload, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    _write_json_file_atomic(target, payload, indent=2, mode=0o644)
     return str(target)
 
 
+def _write_json_file_atomic(
+    path: Path,
+    payload: dict[str, Any],
+    *,
+    indent: int | None = None,
+    mode: int = 0o600,
+) -> None:
+    data = json.dumps(
+        payload,
+        sort_keys=True,
+        indent=indent,
+        separators=None if indent is not None else (",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        os.chmod(temp_name, mode)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            fd = -1
+            handle.write(data)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_name, path)
+    except BaseException:
+        if fd != -1:
+            os.close(fd)
+        try:
+            os.unlink(temp_name)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def _loads_json_no_constants(raw: str) -> Any:
+    def _reject_constant(value: str) -> None:
+        raise ValueError(f"json_non_finite_constant_not_allowed:{value}")
+
+    return json.loads(raw, parse_constant=_reject_constant)
+
+
 def _read_local_json_file(path: str) -> dict[str, Any]:
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    data = _loads_json_no_constants(Path(path).read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("json_payload_not_object")
     return data
@@ -430,8 +471,8 @@ def _read_json_object(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+        data = _loads_json_no_constants(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError):
         return None
     return data if isinstance(data, dict) else None
 
@@ -668,7 +709,7 @@ def _load_balance_state(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     raw = path.read_text(encoding="utf-8")
-    data = json.loads(raw)
+    data = _loads_json_no_constants(raw)
     if not isinstance(data, dict):
         raise ValueError("balance_state_not_object")
     return data
@@ -777,9 +818,10 @@ def _read_graph_state(path: Path) -> dict[str, Any]:
     except OSError as exc:
         raise ValueError(f"graph_state_read_failed:{exc}") from exc
     try:
-        data = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"graph_state_invalid_json:{exc.msg}") from exc
+        data = _loads_json_no_constants(raw)
+    except (json.JSONDecodeError, ValueError) as exc:
+        detail = exc.msg if isinstance(exc, json.JSONDecodeError) else str(exc)
+        raise ValueError(f"graph_state_invalid_json:{detail}") from exc
     if not isinstance(data, dict):
         raise ValueError("graph_state_not_object")
     return data
@@ -2755,10 +2797,7 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         manifest_verification = verify_portable_manifest_witness(witness)
     except AtlasSliceVerifierError as exc:
         raise ValueError(f"manifest_verification_failed:{exc}") from exc
-    if not (
-        manifest_verification.get("verified") is True
-        or manifest_verification.get("valid") is True
-    ):
+    if manifest_verification.get("verified") is not True:
         token = manifest_verification.get("error") or "not_verified"
         raise ValueError(f"manifest_verification_failed:{token}")
 
@@ -2815,8 +2854,8 @@ def _load_install_invite_bundle(source: str) -> dict[str, Any]:
     if len(raw) > INSTALL_INVITE_MAX_BYTES:
         raise ValueError("install_invite_bundle_too_large")
     try:
-        payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        payload = _loads_json_no_constants(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise ValueError("install_invite_bundle_json_invalid") from exc
     if not isinstance(payload, dict):
         raise ValueError("install_invite_bundle_not_object")
@@ -2911,21 +2950,26 @@ def _install_receipt_path(args: argparse.Namespace, target_dir: Path) -> Path:
 
 def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
     _reject_float(receipt, "install_receipt_float_not_allowed")
-    payload = (
-        json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
-        + b"\n"
-    )
+    payload = json.dumps(receipt, sort_keys=True, separators=(",", ":"), allow_nan=False)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     try:
-        with os.fdopen(fd, "wb") as handle:
+        os.chmod(temp_name, 0o644)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            fd = -1
             handle.write(payload)
+            handle.write("\n")
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temp_name, path)
-    finally:
-        if os.path.exists(temp_name):
+    except BaseException:
+        if fd != -1:
+            os.close(fd)
+        try:
             os.unlink(temp_name)
+        except FileNotFoundError:
+            pass
+        raise
     return path
 
 

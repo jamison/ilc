@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import os
 import subprocess
@@ -161,7 +162,7 @@ def test_install_from_invite_successful_path_writes_receipt(
     monkeypatch.setattr(
         verifier,
         "verify_portable_manifest_witness",
-        lambda witness: {"valid": True, "slice_id": witness["slice_id"]},
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
     )
     invite_path = _write_bundle(tmp_path / "invite.json")
     receipt_path = tmp_path / "receipt.json"
@@ -174,6 +175,75 @@ def test_install_from_invite_successful_path_writes_receipt(
     assert receipt_path.exists()
     assert json.loads(receipt_path.read_text(encoding="utf-8"))["receipt_sha256"]
     assert len(list((tmp_path / "target").rglob("*.node.json"))) == 5
+
+
+def test_install_from_invite_rejects_legacy_valid_without_verified(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"valid": True, "slice_id": witness["slice_id"]},
+    )
+    invite_path = _write_bundle(tmp_path / "invite.json")
+
+    with pytest.raises(ValueError, match="manifest_verification_failed:not_verified"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
+        )
+
+
+def test_install_from_invite_accepts_raw_json_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    raw = json.dumps(_bundle(), sort_keys=True, allow_nan=False)
+
+    result = cli_main._run_install_subcommand(
+        _args(raw, tmp_path / "target", tmp_path / "receipt.json")
+    )
+
+    assert result["status"] == "ok"
+    assert len(list((tmp_path / "target").rglob("*.node.json"))) == 5
+
+
+def test_install_from_invite_accepts_stdin_json_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    stdin = argparse.Namespace(
+        buffer=io.BytesIO(json.dumps(_bundle(), sort_keys=True, allow_nan=False).encode("utf-8"))
+    )
+    monkeypatch.setattr(cli_main.sys, "stdin", stdin)
+
+    result = cli_main._run_install_subcommand(
+        _args("-", tmp_path / "target", tmp_path / "receipt.json")
+    )
+
+    assert result["status"] == "ok"
+    assert len(list((tmp_path / "target").rglob("*.node.json"))) == 5
+
+
+def test_install_from_invite_rejects_nonfinite_json_constant() -> None:
+    with pytest.raises(ValueError, match="install_invite_bundle_json_invalid"):
+        cli_main._load_install_invite_bundle('{"intended_epoch": NaN}')
 
 
 def test_install_from_invite_receipt_is_atomic_write(
@@ -217,7 +287,7 @@ def test_install_from_invite_does_not_create_graph_state(
     monkeypatch.setattr(
         verifier,
         "verify_portable_manifest_witness",
-        lambda witness: {"valid": True, "slice_id": witness["slice_id"]},
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
     )
     graph_state = tmp_path / "graph.json"
     invite_path = _write_bundle(tmp_path / "invite.json")

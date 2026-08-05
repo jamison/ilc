@@ -9,6 +9,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tomllib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -151,6 +152,24 @@ def test_node_init_generates_node_config_toml(tmp_path: Path) -> None:
     assert "validator-two.example:7101" in config
 
 
+def test_node_init_toml_escapes_generated_paths(tmp_path: Path) -> None:
+    result = generate_node_init_material(
+        root=tmp_path / 'node "quoted"',
+        network_id="ilc-rc01",
+        host="validator.example",
+        grpc_port=50151,
+        quic_port=7101,
+        allow_test_stub_crypto=True,
+    )
+
+    parsed = tomllib.loads(result.config_path.read_text(encoding="utf-8"))
+
+    assert parsed["tls"]["tls_cert_path"].endswith('node "quoted"/certs/validator_tls_cert.pem')
+    assert parsed["validator"]["endpoint_assertion_path"].endswith(
+        'node "quoted"/out/node_init/validator_endpoint_assertion.json'
+    )
+
+
 def test_node_init_writes_receipt_atomically(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[tuple[str, str]] = []
 
@@ -202,6 +221,70 @@ def test_node_check_fails_on_expired_cert(tmp_path: Path) -> None:
     future = datetime.now(timezone.utc) + timedelta(days=400)
     with pytest.raises(ValueError, match="node_check_tls_cert_expired"):
         check_node_config(generated.config_path, now=future)
+
+
+def test_node_check_fails_on_not_yet_valid_cert(tmp_path: Path) -> None:
+    generated = generate_node_init_material(
+        root=tmp_path / "node",
+        network_id="ilc-rc01",
+        host="validator.example",
+        grpc_port=50151,
+        quic_port=7101,
+        allow_test_stub_crypto=True,
+    )
+    key_path = generated.root / "certs" / "validator_tls_key.pem"
+    private_key = serialization.load_pem_private_key(key_path.read_bytes(), password=None)
+    subject = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "validator.example")])
+    now = datetime.now(timezone.utc)
+    future_cert = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(subject)
+        .public_key(private_key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now + timedelta(days=1))
+        .not_valid_after(now + timedelta(days=30))
+        .sign(private_key, hashes.SHA256())
+    )
+    (generated.root / "certs" / "validator_tls_cert.pem").write_bytes(
+        future_cert.public_bytes(serialization.Encoding.PEM)
+    )
+
+    with pytest.raises(ValueError, match="node_check_tls_cert_not_yet_valid"):
+        check_node_config(generated.config_path, now=now)
+
+
+def test_node_check_resolves_relative_paths_from_config_dir(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    generated = generate_node_init_material(
+        root=tmp_path / "node",
+        network_id="ilc-rc01",
+        host="127.0.0.1",
+        grpc_port=50151,
+        quic_port=7101,
+        allow_test_stub_crypto=True,
+    )
+    config = generated.config_path.read_text(encoding="utf-8")
+    replacements = {
+        str(generated.root / "certs" / "validator_tls_cert.pem"): "../certs/validator_tls_cert.pem",
+        str(generated.root / "certs" / "validator_tls_key.pem"): "../certs/validator_tls_key.pem",
+        str(generated.root / "keys" / "validator_bls_secret.hex"): "../keys/validator_bls_secret.hex",
+        str(generated.root / "keys" / "validator_mldsa65_public.hex"): "../keys/validator_mldsa65_public.hex",
+        str(generated.root / "keys" / "validator_mldsa65_secret.hex"): "../keys/validator_mldsa65_secret.hex",
+        str(generated.root / "out" / "node_init" / "validator_endpoint_assertion.json"): "../out/node_init/validator_endpoint_assertion.json",
+    }
+    for absolute, relative in replacements.items():
+        config = config.replace(absolute, relative)
+    generated.config_path.write_text(config, encoding="utf-8")
+
+    shadow = tmp_path / "shadow"
+    (shadow / "certs").mkdir(parents=True)
+    (shadow / "certs" / "validator_tls_cert.pem").write_text("not-a-cert", encoding="utf-8")
+    monkeypatch.chdir(shadow)
+
+    assert check_node_config(generated.config_path)["verdict"] == "pass"
 
 
 def test_node_init_rejects_invalid_peer_seed(tmp_path: Path) -> None:
