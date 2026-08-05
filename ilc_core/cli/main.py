@@ -57,6 +57,7 @@ OPERATIONAL_COMMANDS = (
     "bootstrap-census",
     "bootstrap-receipt",
     "submit",
+    "validator",
     "version",
 )
 
@@ -1461,6 +1462,61 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "validator":
+            validator_parser = subparsers.add_parser(
+                "validator",
+                help="Validator identity and endpoint assertion commands",
+            )
+            validator_subparsers = validator_parser.add_subparsers(
+                dest="validator_subcommand",
+                required=True,
+            )
+            p_rotate_endpoint = validator_subparsers.add_parser(
+                "rotate-endpoint",
+                help="Generate a new ValidatorEndpointAssertion and revised_by edge",
+            )
+            p_rotate_endpoint.add_argument(
+                "--old-assertion",
+                required=True,
+                help="Path to the current ValidatorEndpointAssertion JSON",
+            )
+            p_rotate_endpoint.add_argument(
+                "--new-endpoint",
+                required=True,
+                help="New validator gRPC endpoint in host:port form",
+            )
+            p_rotate_endpoint.add_argument(
+                "--network-id",
+                required=True,
+                help="Network identifier for BLS signing domain separation",
+            )
+            p_rotate_endpoint.add_argument(
+                "--key",
+                required=True,
+                help="Path to validator BLS secret key hex file",
+            )
+            p_rotate_endpoint.add_argument(
+                "--tls-cert",
+                default="",
+                help="Optional replacement TLS cert PEM/DER; omitted preserves old cert metadata",
+            )
+            p_rotate_endpoint.add_argument(
+                "--asserted-at-epoch",
+                type=int,
+                help="Assertion epoch; omitted preserves the old assertion epoch",
+            )
+            p_rotate_endpoint.add_argument(
+                "--output",
+                default="",
+                help="Output path for the new assertion JSON",
+            )
+            p_rotate_endpoint.add_argument(
+                "--allow-test-stub-signature",
+                action="store_true",
+                help="Allow test-only BLS-shaped signature without Rust signing",
+            )
+            continue
+
         if command == "node":
             node_parser = subparsers.add_parser("node", help="D2e node lifecycle commands")
             node_subparsers = node_parser.add_subparsers(dest="node_subcommand", required=True)
@@ -2426,6 +2482,7 @@ def _run_top_level_command(
         "sidecar",
         "skills",
         "verify",
+        "validator",
         "wallet",
     }
     if command not in stateless_commands:
@@ -2484,6 +2541,9 @@ def _run_top_level_command(
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
         data = run_node_command(args)
+        return _success_payload(command, data)
+    if command == "validator":
+        data = _run_validator_subcommand(args)
         return _success_payload(command, data)
     if command in {"sidecar", "skills"}:
         from ilc_core.cli.sidecar_cli import run_sidecar_command
@@ -2632,6 +2692,32 @@ def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     if subcommand == "check":
         return {"action": "node-check", **check_node_config(Path(args.config))}
     raise ValueError("node_operator_subcommand_missing")
+
+
+def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    from ilc_core.validator.endpoint_rotation_runtime import (
+        rotate_validator_endpoint_assertion,
+    )
+
+    subcommand = getattr(args, "validator_subcommand", None)
+    if subcommand == "rotate-endpoint":
+        output_path = Path(args.output) if args.output else Path("out/validator_endpoint_rotation/new_assertion.json")
+        return {
+            "action": "validator-rotate-endpoint",
+            **rotate_validator_endpoint_assertion(
+                old_assertion_path=Path(args.old_assertion),
+                new_endpoint=str(args.new_endpoint),
+                network_id=str(args.network_id),
+                key_path=Path(args.key),
+                output_path=output_path,
+                tls_cert_path=Path(args.tls_cert) if args.tls_cert else None,
+                asserted_at_epoch=int(args.asserted_at_epoch)
+                if args.asserted_at_epoch is not None
+                else None,
+                allow_test_stub_signature=bool(args.allow_test_stub_signature),
+            ),
+        }
+    raise ValueError("validator_subcommand_missing")
 
 
 def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
