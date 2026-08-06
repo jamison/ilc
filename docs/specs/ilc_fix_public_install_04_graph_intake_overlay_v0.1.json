@@ -1,0 +1,60 @@
+{
+  "artifact": "ilc_fix_public_install_04_graph_intake_overlay.v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-PUBLIC-INSTALL-04 installer hardening and E2E harness artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-04",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_04_g10_e2e_install_test.md",
+      "target": "phase:GAP-PUBLIC-INSTALL-04"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-05",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_05_g10_docker_packaging.md",
+      "target": "phase:GAP-PUBLIC-INSTALL-05"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-04",
+      "edge_role": "TEST_TOOL",
+      "repo_path": "tools/test_install_e2e.sh",
+      "target": "phase:GAP-PUBLIC-INSTALL-04"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-04",
+      "edge_role": "REGRESSION_TEST",
+      "repo_path": "tests/test_gap_public_install_04_e2e.py",
+      "target": "phase:GAP-PUBLIC-INSTALL-04"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-04",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_public_install_04_install_sh_hardening_walkthrough.md",
+      "target": "phase:GAP-PUBLIC-INSTALL-04"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-05",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_public_install_05_docker_packaging_deferral_walkthrough.md",
+      "target": "phase:GAP-PUBLIC-INSTALL-05"
+    },
+    {
+      "annotation_method": "gap_public_install_04_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-INSTALL-04",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_public_install_04_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}

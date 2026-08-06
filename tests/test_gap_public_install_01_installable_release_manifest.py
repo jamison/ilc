@@ -190,6 +190,13 @@ def test_load_instance_manifest_validates_successfully() -> None:
     assert hashes["python_sdist"] == EXPECTED_SDIST_SHA256
 
 
+def test_manifest_validator_has_no_expected_self_assignment() -> None:
+    source = (
+        ROOT / "ilc_core/release/installable_release_manifest.py"
+    ).read_text(encoding="utf-8")
+    assert "expected = expected" not in source
+
+
 def test_instance_manifest_uses_actual_pypi_urls_and_sizes() -> None:
     manifest = _manifest()
     by_type = {artifact["artifact_type"]: artifact for artifact in manifest["artifacts"]}
