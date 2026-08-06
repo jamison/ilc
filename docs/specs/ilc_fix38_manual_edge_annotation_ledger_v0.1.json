@@ -69953,6 +69953,77 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_blocked",
+      "chronology_note": "2026-08-06 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS blocked on public data-plane reachability before mTLS/proposal/readback.",
+      "manual_read_summary": "Walkthrough records the public-IP, Tailscale-free harness attempt, validator startup, controller and cross-VPS gRPC reachability timeouts, temporary UFW control test, cleanup, blocked token, absent completion tokens, and required cloud-provider firewall remediation.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix2_g10_public_routable_harness_soak.md"
+        },
+        {
+          "edge_type": "REFERENCES_EVIDENCE",
+          "target": "out/phase_1591_fix2_public_harness_soak/soak_evidence.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_routable_harness_soak_blocked_provider_firewall_phase_1591_fix2"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:phase_1591_fix2_completion_tokens_absent_when_public_reachability_fails"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1591_fix2_public_routable_harness_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_blocked",
+      "chronology_note": "2026-08-06 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS blocked regression tests committed.",
+      "manual_read_summary": "Tests enforce blocked evidence semantics, absence of emitted success-token claims in STATUS.md, Tailscale-free tested config evidence, cleanup evidence, provider-firewall blocker language, and no public-routable success overclaim.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix2_g10_public_routable_harness_soak.md"
+        },
+        {
+          "edge_type": "REFERENCES_EVIDENCE",
+          "target": "docs/phases/phase_1591_fix2_public_routable_harness_soak_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "out/phase_1591_fix2_public_harness_soak/soak_evidence.json"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:phase_1591_fix2_completion_tokens_absent_when_public_reachability_fails"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_routable_harness_soak_blocked_provider_firewall_phase_1591_fix2"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1591_fix2_public_routable_harness_blocked.py"
     }
   ],
   "boundary": {
