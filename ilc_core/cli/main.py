@@ -11,11 +11,14 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 
 SCHEMA_VERSION = "254.v0.1"
@@ -23,6 +26,9 @@ QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
 BUNDLE_SCHEMA_VERSION = "303.v0.1"
 INSTALL_INVITE_MAX_BYTES = 1_048_576
+UPDATE_MANIFEST_MAX_BYTES = 1_048_576
+UPDATE_HTTP_CHUNK_BYTES = 64 * 1024
+DEFAULT_UPDATE_MANIFEST_URL = "https://ilc.network/release/manifest.json"
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -40,6 +46,7 @@ OPERATIONAL_COMMANDS = (
     "balance",
     "identity",
     "install",
+    "update",
     "bundle",
     "shard",
     "capproof",
@@ -1504,6 +1511,44 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "update":
+            update_parser = subparsers.add_parser(
+                "update",
+                help="Update the installed ilc-core wheel from a verified release manifest",
+                description=(
+                    "Software update only: fetch a release manifest, verify the "
+                    "selected wheel hash, then install it. Does not perform graph onboarding."
+                ),
+            )
+            update_parser.add_argument(
+                "--channel",
+                choices=("stable", "rc", "dev"),
+                default="rc",
+                help="Release channel to select from the manifest",
+            )
+            manifest_group = update_parser.add_mutually_exclusive_group()
+            manifest_group.add_argument(
+                "--manifest-url",
+                default="",
+                help="HTTPS release manifest URL; defaults to the public RC manifest URL",
+            )
+            manifest_group.add_argument(
+                "--manifest-path",
+                default="",
+                help="Bare local filesystem path to an installable release manifest JSON",
+            )
+            update_parser.add_argument(
+                "--dry-run",
+                action="store_true",
+                help="Validate and report the selected artifact without download or install",
+            )
+            update_parser.add_argument(
+                "--yes",
+                action="store_true",
+                help="Skip interactive confirmation before installing",
+            )
+            continue
+
         if command == "validator":
             validator_parser = subparsers.add_parser(
                 "validator",
@@ -2523,6 +2568,7 @@ def _run_top_level_command(
         "query",
         "sidecar",
         "skills",
+        "update",
         "verify",
         "validator",
         "wallet",
@@ -2575,6 +2621,9 @@ def _run_top_level_command(
         return _success_payload(command, data)
     if command == "install":
         data = _run_install_subcommand(args)
+        return _success_payload(command, data)
+    if command == "update":
+        data = _run_update_subcommand(args)
         return _success_payload(command, data)
     if command == "node":
         if getattr(args, "node_subcommand", None) in {"init", "check"}:
@@ -2760,6 +2809,224 @@ def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             ),
         }
     raise ValueError("validator_subcommand_missing")
+
+
+def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    from ilc_core.release.update_runtime import (
+        artifact_version,
+        enforce_download_size,
+        installed_ilc_core_version,
+        is_already_current,
+        select_update_artifact,
+        verify_download_hash,
+    )
+
+    manifest = _load_update_manifest(args)
+    artifact = select_update_artifact(manifest, str(args.channel))
+    artifact_id = _require_update_artifact_string(artifact, "artifact_id")
+    download_url = _require_update_https_url(artifact.get("download_url"), "download_url")
+    canonical_hash = _require_update_artifact_string(artifact, "canonical_hash")
+    size_bytes = _require_update_positive_int(artifact.get("size_bytes"), "size_bytes")
+    version = artifact_version(artifact)
+    installed_version = installed_ilc_core_version()
+    advisory_current = is_already_current(artifact)
+
+    result: dict[str, Any] = {
+        "artifact_id": artifact_id,
+        "canonical_hash": canonical_hash,
+        "channel": str(args.channel),
+        "download_url": download_url,
+        "installed_version": installed_version,
+        "selected_version": version,
+        "status": "dry_run" if bool(args.dry_run) else "pending",
+        "subcommand": "software-update",
+    }
+    if advisory_current:
+        result["already_current_advisory"] = True
+        result["already_current_token"] = "ilc_update_already_current"
+
+    if bool(args.dry_run):
+        result["event_token"] = f"ilc_update_would_install:{artifact_id}"
+        return result
+
+    if not bool(args.yes) and sys.stdin.isatty():
+        answer = input(f"Install ilc-core from {download_url}? [y/N] ")
+        if answer.strip().lower() not in {"y", "yes"}:
+            result["status"] = "cancelled"
+            result["_exit_code"] = 1
+            result["event_token"] = "ilc_update_cancelled"
+            return result
+
+    fd, temp_name = tempfile.mkstemp(prefix="ilc-update-", suffix=".whl")
+    os.close(fd)
+    temp_path = Path(temp_name)
+    try:
+        _download_update_wheel(download_url, temp_path, size_bytes)
+        verify_download_hash(temp_path, canonical_hash)
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--quiet", str(temp_path)],
+            check=True,
+            timeout=600,
+        )
+        post_install = subprocess.run(
+            [sys.executable, "-m", "ilc_core.cli.main", "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if post_install.returncode != 0:
+            raise ValueError("ilc_update_post_install_check_failed")
+    finally:
+        try:
+            temp_path.unlink()
+        except FileNotFoundError:
+            pass
+
+    result["status"] = "updated"
+    result["event_token"] = f"ilc_update_success:{artifact_id}"
+    return result
+
+
+def _load_update_manifest(args: argparse.Namespace) -> dict[str, Any]:
+    manifest_path = str(getattr(args, "manifest_path", "") or "")
+    manifest_url = str(getattr(args, "manifest_url", "") or "")
+    if manifest_path:
+        return _load_update_manifest_from_path(manifest_path)
+    return _load_update_manifest_from_url(manifest_url or DEFAULT_UPDATE_MANIFEST_URL)
+
+
+def _load_update_manifest_from_path(manifest_path: str) -> dict[str, Any]:
+    if "://" in manifest_path:
+        raise ValueError("ilc_update_manifest_path_must_be_bare_path")
+    from ilc_core.release.installable_release_manifest import (
+        InstallableReleaseManifestError,
+        load_installable_release_manifest,
+    )
+
+    try:
+        return load_installable_release_manifest(Path(manifest_path).expanduser())
+    except InstallableReleaseManifestError as exc:
+        raise ValueError(str(exc)) from exc
+
+
+def _load_update_manifest_from_url(manifest_url: str) -> dict[str, Any]:
+    url = _require_update_https_url(manifest_url, "manifest_url")
+    request = Request(url, headers={"User-Agent": "ilc-update/GAP-PUBLIC-INSTALL-03"})
+    try:
+        with urlopen(request, timeout=30) as response:
+            status = int(getattr(response, "status", 200))
+            if status != 200:
+                raise ValueError(f"ilc_update_manifest_fetch_failed:{status}")
+            content_length = response.headers.get("Content-Length")
+            if content_length:
+                try:
+                    declared_size = int(content_length)
+                except ValueError as exc:
+                    raise ValueError("ilc_update_manifest_content_length_invalid") from exc
+                if declared_size > UPDATE_MANIFEST_MAX_BYTES:
+                    raise ValueError("ilc_update_manifest_too_large")
+            body = _read_bounded_http_body(response, UPDATE_MANIFEST_MAX_BYTES)
+    except HTTPError as exc:
+        raise ValueError(f"ilc_update_manifest_fetch_failed:{exc.code}") from exc
+    except URLError as exc:
+        raise ValueError("ilc_update_manifest_fetch_failed:network") from exc
+    except TimeoutError as exc:
+        raise ValueError("ilc_update_manifest_fetch_failed:timeout") from exc
+
+    try:
+        manifest = json.loads(
+            body.decode("utf-8"),
+            parse_constant=_reject_update_non_finite_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ValueError("ilc_update_manifest_json_invalid") from exc
+    if not isinstance(manifest, dict):
+        raise ValueError("ilc_update_manifest_not_object")
+
+    from ilc_core.release.installable_release_manifest import (
+        InstallableReleaseManifestError,
+        validate_installable_release_manifest,
+    )
+
+    try:
+        validate_installable_release_manifest(manifest)
+    except InstallableReleaseManifestError as exc:
+        raise ValueError(str(exc)) from exc
+    return manifest
+
+
+def _read_bounded_http_body(response: Any, max_bytes: int) -> bytes:
+    chunks: list[bytes] = []
+    total = 0
+    while True:
+        chunk = response.read(UPDATE_HTTP_CHUNK_BYTES)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > max_bytes:
+            raise ValueError("ilc_update_manifest_too_large")
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
+def _download_update_wheel(download_url: str, destination: Path, expected_size_bytes: int) -> None:
+    url = _require_update_https_url(download_url, "download_url")
+    request = Request(url, headers={"User-Agent": "ilc-update/GAP-PUBLIC-INSTALL-03"})
+    try:
+        with urlopen(request, timeout=120) as response:
+            status = int(getattr(response, "status", 200))
+            if status != 200:
+                raise ValueError(f"ilc_update_download_failed:{status}")
+            declared = response.headers.get("Content-Length")
+            if declared:
+                try:
+                    declared_size = int(declared)
+                except ValueError as exc:
+                    raise ValueError("ilc_update_download_content_length_invalid") from exc
+                enforce_download_size(declared_size, expected_size_bytes)
+            downloaded = 0
+            with destination.open("wb") as handle:
+                while True:
+                    chunk = response.read(UPDATE_HTTP_CHUNK_BYTES)
+                    if not chunk:
+                        break
+                    downloaded += len(chunk)
+                    enforce_download_size(downloaded, expected_size_bytes)
+                    handle.write(chunk)
+    except HTTPError as exc:
+        raise ValueError(f"ilc_update_download_failed:{exc.code}") from exc
+    except URLError as exc:
+        raise ValueError("ilc_update_download_failed:network") from exc
+    except TimeoutError as exc:
+        raise ValueError("ilc_update_download_failed:timeout") from exc
+
+
+def _reject_update_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"ilc_update_manifest_non_finite_json_constant:{value}")
+
+
+def _require_update_artifact_string(artifact: dict[str, Any], field: str) -> str:
+    value = artifact.get(field)
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"ilc_update_artifact_invalid_string:{field}")
+    return value
+
+
+def _require_update_positive_int(value: Any, field: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise ValueError(f"ilc_update_artifact_invalid_integer:{field}")
+    return value
+
+
+def _require_update_https_url(value: Any, field: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"ilc_update_{field}_missing")
+    if value.startswith("http://"):
+        raise ValueError(f"ilc_update_{field}_not_https")
+    if not value.startswith("https://"):
+        raise ValueError(f"ilc_update_{field}_not_https")
+    return value
 
 
 def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
