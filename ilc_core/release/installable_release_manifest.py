@@ -143,12 +143,9 @@ def _validate_artifact(record: Any, *, index: int, manifest_channel: str) -> Non
     required = REQUIRED_1213_FIELDS | REQUIRED_INSTALLABLE_FIELDS
     if record.get("artifact_type") in {"python_wheel", "python_sdist"}:
         required = required | frozenset({"min_python_version"})
-    expected = required
-    if record.get("artifact_type") not in {"python_wheel", "python_sdist"}:
-        expected = expected
     _require_exact_keys(
         record,
-        expected_keys=expected,
+        expected_keys=required,
         token_prefix=f"installable_manifest_artifact_{index}",
     )
 

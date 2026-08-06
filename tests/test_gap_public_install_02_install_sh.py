@@ -144,6 +144,16 @@ def test_install_sh_manifest_sync_rejects_oversized_script(tmp_path: Path) -> No
         verify_install_sh_manifest_sync(path, MANIFEST)
 
 
+def test_install_sh_manifest_sync_rejects_duplicate_assignments(tmp_path: Path) -> None:
+    duplicate = f'RC_WHEEL_URL="{EXPECTED_URL}"\n'
+    path = _copy_script(
+        tmp_path,
+        replacements={"#!/usr/bin/env bash\n": f"#!/usr/bin/env bash\n{duplicate}"},
+    )
+    with pytest.raises(ValueError, match="duplicate_assignment:RC_WHEEL_URL"):
+        verify_install_sh_manifest_sync(path, MANIFEST)
+
+
 def test_install_sh_no_graph_onboarding_calls() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
     forbidden = ("ilc install", "from-invite", "lmdb", "graph")
@@ -161,6 +171,23 @@ def test_install_sh_verifies_hash_before_pip_install() -> None:
     hash_check = text.index('if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]')
     pip_install = text.index("pip install")
     assert hash_check < pip_install
+
+
+def test_install_sh_uses_private_temp_directory_for_wheel() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    assert 'TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"' in text
+    assert 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.2.0.whl"' in text
+    assert "XXXXXX.whl" not in text
+
+
+def test_install_sh_post_install_check_is_path_independent() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    assert (
+        '"${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1'
+        in text
+    )
+    assert "python3 -m ilc_core.cli.main --help >/dev/null 2>&1" in text
+    assert "ilc --help >/dev/null" not in text
 
 
 def test_install_sh_does_not_disable_tls_verification() -> None:

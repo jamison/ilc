@@ -10,6 +10,14 @@ from ilc_core.release.installable_release_manifest import load_installable_relea
 
 
 _ASSIGNMENT_RE = re.compile(r'^(?P<name>[A-Z0-9_]+)="(?P<value>[^"]*)"$', re.MULTILINE)
+_SYNCED_ASSIGNMENT_NAMES = frozenset(
+    {
+        "RC_WHEEL_URL",
+        "RC_WHEEL_SHA256",
+        "RC_WHEEL_SIZE",
+        "RC_MIN_PYTHON_MINOR",
+    }
+)
 _MAX_INSTALL_SH_BYTES = 1_048_576
 
 
@@ -17,7 +25,15 @@ def _load_shell_assignments(path: Path) -> dict[str, str]:
     if path.stat().st_size > _MAX_INSTALL_SH_BYTES:
         raise ValueError("install_sh_manifest_sync_failed:install_sh_too_large")
     text = path.read_text(encoding="utf-8")
-    return {match.group("name"): match.group("value") for match in _ASSIGNMENT_RE.finditer(text)}
+    assignments: dict[str, str] = {}
+    for match in _ASSIGNMENT_RE.finditer(text):
+        name = match.group("name")
+        if name in _SYNCED_ASSIGNMENT_NAMES and name in assignments:
+            raise ValueError(
+                f"install_sh_manifest_sync_failed:duplicate_assignment:{name}"
+            )
+        assignments[name] = match.group("value")
+    return assignments
 
 
 def _wheel_record(manifest: dict[str, Any]) -> dict[str, Any]:

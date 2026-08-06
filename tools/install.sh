@@ -11,10 +11,13 @@ CHANNEL="rc"
 NO_ONBOARD="0"
 TARGET_DIR=""
 DRY_RUN="0"
+TMP_DIR=""
 TMP_WHEEL=""
 
 cleanup() {
-  if [[ -n "${TMP_WHEEL}" && -f "${TMP_WHEEL}" ]]; then
+  if [[ -n "${TMP_DIR}" && -d "${TMP_DIR}" ]]; then
+    rm -rf "${TMP_DIR}"
+  elif [[ -n "${TMP_WHEEL}" && -f "${TMP_WHEEL}" ]]; then
     rm -f "${TMP_WHEEL}"
   fi
 }
@@ -127,7 +130,8 @@ else
   die 1 "install_sh_downloader_missing"
 fi
 
-TMP_WHEEL="$(mktemp "${TMPDIR:-/tmp}/ilc-core-0.2.0.XXXXXX.whl")"
+TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"
+TMP_WHEEL="${TMP_DIR}/ilc-core-0.2.0.whl"
 
 if [[ "${DOWNLOADER}" == "curl" ]]; then
   curl -fsSL --progress-bar --max-time 120 -o "${TMP_WHEEL}" "${RC_WHEEL_URL}"
@@ -153,10 +157,10 @@ fi
 if [[ -n "${TARGET_DIR}" ]]; then
   python3 -m venv "${TARGET_DIR}"
   "${TARGET_DIR}/bin/python" -m pip install --quiet "${TMP_WHEEL}"
-  "${TARGET_DIR}/bin/ilc" --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+  "${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
 else
   python3 -m pip install --quiet "${TMP_WHEEL}"
-  ilc --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+  python3 -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
 fi
 
 printf 'install_sh_success version=%s channel=%s\n' "${INSTALLER_VERSION}" "${CHANNEL}"
