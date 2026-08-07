@@ -1656,6 +1656,22 @@ def _build_parser() -> JsonArgumentParser:
             )
             p_node_check.add_argument("--config", required=True, help="Path to generated node_config.toml")
 
+            p_node_readiness = node_subparsers.add_parser(
+                "readiness",
+                help="Run operator node readiness diagnostics",
+            )
+            p_node_readiness.add_argument("--config", required=True, help="Path to generated node_config.toml")
+            p_node_readiness.add_argument(
+                "--network",
+                action="store_true",
+                help="Enable bounded outbound TCP/UDP reachability probes",
+            )
+            p_node_readiness.add_argument(
+                "--peer",
+                default=None,
+                help="Optional peer host:port for UDP/QUIC layer diagnostic",
+            )
+
             node_subparsers.add_parser("constants", help="Show ratified timed-out lifecycle constants")
 
             p_node_inspect = node_subparsers.add_parser("timed-out-inspect", help="Inspect timed-out lifecycle status from a record")
@@ -2626,9 +2642,10 @@ def _run_top_level_command(
         data = _run_update_subcommand(args)
         return _success_payload(command, data)
     if command == "node":
-        if getattr(args, "node_subcommand", None) in {"init", "check"}:
+        if getattr(args, "node_subcommand", None) in {"init", "check", "readiness"}:
             data = _run_node_operator_subcommand(args)
-            return _success_payload(command, data)
+            payload_command = "node readiness" if getattr(args, "node_subcommand", None) == "readiness" else command
+            return _success_payload(payload_command, data)
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
         data = run_node_command(args)
@@ -2764,6 +2781,7 @@ def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         check_node_config,
         generate_node_init_material,
     )
+    from ilc_core.node.readiness_runtime import build_readiness_report
 
     subcommand = getattr(args, "node_subcommand", None)
     if subcommand == "init":
@@ -2782,6 +2800,15 @@ def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         return {"action": "node-init", **result.to_dict()}
     if subcommand == "check":
         return {"action": "node-check", **check_node_config(Path(args.config))}
+    if subcommand == "readiness":
+        return {
+            "action": "node-readiness",
+            **build_readiness_report(
+                config_path=Path(args.config),
+                network=bool(args.network),
+                peer=str(args.peer) if args.peer else None,
+            ),
+        }
     raise ValueError("node_operator_subcommand_missing")
 
 
