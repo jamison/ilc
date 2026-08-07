@@ -31,6 +31,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     ValidatorEndpointAssertion,
     canonical_assertion_payload,
 )
+from ilc_core.node.readiness_runtime import extended_local_check_fields
 
 
 OPERATOR_INIT_RUNTIME_VERSION = "operator_init_runtime_gap_operator_init_00.v0.1"
@@ -372,9 +373,16 @@ def check_node_config(config_path: Path, *, now: datetime | None = None) -> dict
     ).hexdigest():
         raise ValueError("node_check_endpoint_assertion_cert_mismatch")
 
+    readiness_fields = extended_local_check_fields(
+        grpc_listen_addr=grpc_listen_addr,
+        endpoint_assertion_grpc_endpoint=assertion.grpc_endpoint,
+        tls_cert_not_after_utc=not_after,
+        now=current,
+    )
     return {
         "config_path": str(config_path),
         "endpoint_assertion_path": str(assertion_path),
+        "grpc_endpoint": assertion.grpc_endpoint,
         "grpc_listen_addr": grpc_listen_addr,
         "network_id": network_id,
         "runtime_version": OPERATOR_INIT_RUNTIME_VERSION,
@@ -382,6 +390,7 @@ def check_node_config(config_path: Path, *, now: datetime | None = None) -> dict
         "tls_cert_sha256_fingerprint": assertion.tls_cert_sha256_fingerprint,
         "validator_agent_id": assertion.validator_agent_id,
         "verdict": "pass",
+        **readiness_fields,
     }
 
 
