@@ -69955,9 +69955,9 @@
       "recommended_graph_action": "support_only"
     },
     {
-      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_blocked",
-      "chronology_note": "2026-08-06 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS blocked on public data-plane reachability before mTLS/proposal/readback.",
-      "manual_read_summary": "Walkthrough records the public-IP, Tailscale-free harness attempt, validator startup, controller and cross-VPS gRPC reachability timeouts, temporary UFW control test, cleanup, blocked token, absent completion tokens, and required cloud-provider firewall remediation.",
+      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_complete",
+      "chronology_note": "2026-08-07 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS rerun completed after cloud-provider firewall remediation.",
+      "manual_read_summary": "Walkthrough records the historical provider-firewall blocker, scoped DigitalOcean firewall remediation, Tailscale-free public endpoint config, public mTLS readback with validator cert graph binding, peer-authenticated proposal ingress, duplicate replay rejection, bad client rejection, all-validator epoch 1 readback, offline LMDB extractor BLS verification, cleanup, completion tokens, and non-claims.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -69974,8 +69974,16 @@
           "target": "phase:public_routable_harness_soak_blocked_provider_firewall_phase_1591_fix2"
         },
         {
-          "edge_type": "REGRESSES",
-          "target": "invariant:phase_1591_fix2_completion_tokens_absent_when_public_reachability_fails"
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_routable_harness_soak_complete_phase_1591_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:tailscale_overlay_not_required_for_consensus_phase_1591_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_mtls_readback_verified_phase_1591_fix2"
         }
       ],
       "proposed_trace_roles": [
@@ -69988,9 +69996,9 @@
       "repo_path": "docs/phases/phase_1591_fix2_public_routable_harness_soak_walkthrough.md"
     },
     {
-      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_blocked",
-      "chronology_note": "2026-08-06 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS blocked regression tests committed.",
-      "manual_read_summary": "Tests enforce blocked evidence semantics, absence of emitted success-token claims in STATUS.md, Tailscale-free tested config evidence, cleanup evidence, provider-firewall blocker language, and no public-routable success overclaim.",
+      "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_complete",
+      "chronology_note": "2026-08-07 Phase 1591-Fix2 PUBLIC-ROUTABLE-HARNESS success regression tests committed.",
+      "manual_read_summary": "Tests enforce completion-token presence, historical blocker retention, Tailscale-free public config evidence, cleanup evidence, all-validator public readback matches, proposal ingress acceptance, duplicate replay rejection, bad client rejection, offline LMDB extractor BLS verification, and no public-RC overclaim.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70008,11 +70016,15 @@
         },
         {
           "edge_type": "REGRESSES",
-          "target": "invariant:phase_1591_fix2_completion_tokens_absent_when_public_reachability_fails"
+          "target": "invariant:phase_1591_fix2_public_harness_completion_requires_all_validator_readback"
         },
         {
           "edge_type": "EVIDENCES",
-          "target": "phase:public_routable_harness_soak_blocked_provider_firewall_phase_1591_fix2"
+          "target": "phase:public_routable_harness_soak_complete_phase_1591_fix2"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:public_mtls_readback_verified_phase_1591_fix2"
         }
       ],
       "proposed_trace_roles": [
@@ -70023,7 +70035,7 @@
         "REGRESSES"
       ],
       "recommended_graph_action": "support_only",
-      "repo_path": "tests/test_phase_1591_fix2_public_routable_harness_blocked.py"
+      "repo_path": "tests/test_phase_1591_fix2_public_routable_harness_soak.py"
     }
   ],
   "boundary": {
