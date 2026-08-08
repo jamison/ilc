@@ -35,6 +35,7 @@ def parse_endpoint(endpoint: str) -> tuple[str, int]:
     if not isinstance(endpoint, str) or not endpoint.strip() or ":" not in endpoint:
         raise ValueError("node_readiness_endpoint_invalid")
     host, port_text = endpoint.rsplit(":", maxsplit=1)
+    host = _normalize_endpoint_host(host)
     if not host or not port_text:
         raise ValueError("node_readiness_endpoint_invalid")
     try:
@@ -139,7 +140,8 @@ def udp_quic_probe(
         return {"network_quic_udp_probe": "skipped_no_peer"}
     host, port = parse_endpoint(peer_endpoint)
     started = time.monotonic()
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    family = _socket_family_for_host(host)
+    sock = socket.socket(family, socket.SOCK_DGRAM)
     try:
         sock.settimeout(timeout_seconds)
         sock.sendto(UDP_PROBE_PAYLOAD, (host, port))
@@ -191,8 +193,6 @@ def build_readiness_report(
         }
 
     warnings.extend(str(value) for value in local_checks.get("warnings", []))
-    if local_checks.get("endpoint_host_is_tailscale_cidr") is True:
-        warnings.append("endpoint_assertion_host_in_tailscale_cidr")
 
     if network:
         endpoint = str(local_checks["grpc_endpoint"])
@@ -235,3 +235,21 @@ def build_readiness_report(
         "runtime_version": NODE_READINESS_RUNTIME_VERSION,
         "warnings": warning_set,
     }
+
+
+def _normalize_endpoint_host(host: str) -> str:
+    if host.startswith("[") or host.endswith("]"):
+        if not (host.startswith("[") and host.endswith("]")):
+            raise ValueError("node_readiness_endpoint_invalid")
+        host = host[1:-1]
+    if not host:
+        raise ValueError("node_readiness_endpoint_invalid")
+    return host
+
+
+def _socket_family_for_host(host: str) -> socket.AddressFamily:
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return socket.AF_INET
+    return socket.AF_INET6 if ip.version == 6 else socket.AF_INET

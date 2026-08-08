@@ -23,6 +23,7 @@ except ModuleNotFoundError:  # pragma: no cover - exercised by system Python 3.9
 
 
 FIREWALL_PLAN_RUNTIME_VERSION = "firewall_plan_runtime_gap_public_node_firewall_00.v0.1"
+MAX_NODE_CONFIG_BYTES = 1_048_576
 PROPOSAL_IDENTITY_NOTE = (
     "Peer-authenticated proposal ingress: submit to validator X using a PEER "
     "validator cert, not your own."
@@ -182,6 +183,7 @@ def parse_endpoint(endpoint: str) -> tuple[str, int]:
     if not isinstance(endpoint, str) or not endpoint.strip() or ":" not in endpoint:
         raise ValueError("node_firewall_endpoint_invalid")
     host, port_text = endpoint.rsplit(":", maxsplit=1)
+    host = _normalize_endpoint_host(host)
     if not host or not port_text:
         raise ValueError("node_firewall_endpoint_invalid")
     try:
@@ -197,6 +199,8 @@ def _load_node_config(config_path: Path) -> dict[str, Any]:
     if not config_path.is_file():
         raise ValueError("node_firewall_config_missing")
     try:
+        if config_path.stat().st_size > MAX_NODE_CONFIG_BYTES:
+            raise ValueError("node_firewall_config_too_large")
         text = config_path.read_text(encoding="utf-8")
         payload = tomllib.loads(text) if tomllib is not None else _parse_generated_node_toml(text)
     except OSError as exc:
@@ -241,12 +245,15 @@ def _parse_generated_node_toml(text: str) -> dict[str, Any]:
 
 def _parse_generated_node_toml_value(raw_value: str) -> Any:
     if raw_value.startswith("[") and raw_value.endswith("]"):
-        inner = raw_value[1:-1].strip()
-        if not inner:
-            return []
-        return [json.loads(part.strip()) for part in inner.split(",") if part.strip()]
+        try:
+            return json.loads(raw_value)
+        except json.JSONDecodeError as exc:
+            raise ValueError("node_firewall_config_invalid_toml") from exc
     if raw_value.startswith('"') and raw_value.endswith('"'):
-        return json.loads(raw_value)
+        try:
+            return json.loads(raw_value)
+        except json.JSONDecodeError as exc:
+            raise ValueError("node_firewall_config_invalid_toml") from exc
     raise ValueError("node_firewall_config_invalid_toml")
 
 
@@ -272,8 +279,13 @@ def _extract_firewall_inputs(config: dict[str, Any]) -> dict[str, Any]:
         "endpoint_host": endpoint_host,
         "endpoint_grpc_port": endpoint_grpc_port,
         "grpc_port": grpc_port,
+        "warnings": (
+            ["node_firewall_grpc_endpoint_port_differs_from_listen_port"]
+            if endpoint_grpc_port != grpc_port
+            else []
+        ),
         "network_id": network_id,
-        "ports": [FirewallPort("ilc-node gRPC ingress", "tcp", grpc_port), *udp_ports],
+        "ports": [FirewallPort("ilc-node gRPC ingress", "tcp", endpoint_grpc_port), *udp_ports],
     }
 
 
@@ -298,7 +310,8 @@ def _common_payload(
         "runtime_version": FIREWALL_PLAN_RUNTIME_VERSION,
         "source_mode": source_mode,
         "validator_ips": validator_ips,
-        "verification_hint": f"nc -z -w 3 {extracted['endpoint_host']} {extracted['grpc_port']}",
+        "verification_hint": f"nc -z -w 3 {extracted['endpoint_host']} {extracted['endpoint_grpc_port']}",
+        "warnings": extracted["warnings"],
     }
 
 
@@ -315,6 +328,7 @@ def _digitalocean_payload(common: dict[str, Any]) -> dict[str, Any]:
         "runtime_version": common["runtime_version"],
         "source_mode": common["source_mode"],
         "verification_hint": common["verification_hint"],
+        "warnings": common["warnings"],
     }
 
 
@@ -329,6 +343,7 @@ def _generic_payload(common: dict[str, Any]) -> dict[str, Any]:
         "runtime_version": common["runtime_version"],
         "source_mode": common["source_mode"],
         "verification_hint": common["verification_hint"],
+        "warnings": common["warnings"],
     }
 
 
@@ -383,6 +398,9 @@ def _render_ufw(common: dict[str, Any]) -> str:
             f"# {common['verification_hint']} && echo PASS || echo FAIL",
         ]
     )
+    if common["warnings"]:
+        lines.extend(["", "# Warnings:"])
+        lines.extend(f"# {warning}" for warning in common["warnings"])
     return "\n".join(lines) + "\n"
 
 
@@ -447,6 +465,16 @@ def _parse_optional_ip(value: str | None, token: str) -> str | None:
         return str(ipaddress.ip_address(value))
     except ValueError as exc:
         raise ValueError(token) from exc
+
+
+def _normalize_endpoint_host(host: str) -> str:
+    if host.startswith("[") or host.endswith("]"):
+        if not (host.startswith("[") and host.endswith("]")):
+            raise ValueError("node_firewall_endpoint_invalid")
+        host = host[1:-1]
+    if not host:
+        raise ValueError("node_firewall_endpoint_invalid")
+    return host
 
 
 def _validate_source_mode_requirements(
