@@ -1,0 +1,31 @@
+{
+  "annotation_batch": "manual_batch_gap_public_node_firewall_01_partial_blocked",
+  "entries": [
+    {
+      "repo_path": "tools/testbed/phase_gap_public_node_firewall_01_apply_do_rules.py",
+      "category": "support_artifact",
+      "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+      "summary": "Live DigitalOcean firewall application helper with PUBLIC_RC_EXCLUDE boundary and token redaction."
+    },
+    {
+      "repo_path": "tests/test_gap_public_node_firewall_01_apply_do_rules.py",
+      "category": "test",
+      "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+      "summary": "Regression tests for firewall rule coverage, rollback scope, and blocked listener evidence semantics."
+    },
+    {
+      "repo_path": "out/phase_gap_public_node_firewall_01/firewall_application_evidence.json",
+      "category": "evidence",
+      "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+      "summary": "Redacted live firewall evidence showing rules already covered and gRPC listener currently absent."
+    },
+    {
+      "repo_path": "docs/phases/phase_gap_public_node_firewall_01_live_firewall_application_walkthrough.md",
+      "category": "phase_walkthrough",
+      "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+      "summary": "Walkthrough recording idempotent firewall application and withheld gRPC reachability token."
+    }
+  ],
+  "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+  "schema_version": "ilc.manual_edge_annotation_overlay.v0.1"
+}
