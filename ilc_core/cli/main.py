@@ -1672,6 +1672,39 @@ def _build_parser() -> JsonArgumentParser:
                 help="Optional peer host:port for UDP/QUIC layer diagnostic",
             )
 
+            p_node_firewall_plan = node_subparsers.add_parser(
+                "firewall-plan",
+                help="Generate provider-specific operator firewall rule artifacts",
+            )
+            p_node_firewall_plan.add_argument("--config", required=True, help="Path to generated node_config.toml")
+            p_node_firewall_plan.add_argument(
+                "--provider",
+                choices=("digitalocean", "generic", "ufw"),
+                default="generic",
+                help="Firewall output format",
+            )
+            p_node_firewall_plan.add_argument(
+                "--source-mode",
+                choices=("public-testnet", "validator-set", "controller-only"),
+                default="public-testnet",
+                help="Source restriction policy for generated inbound rules",
+            )
+            p_node_firewall_plan.add_argument(
+                "--controller-ip",
+                default=None,
+                help="Controller source IP for controller-only mode",
+            )
+            p_node_firewall_plan.add_argument(
+                "--validator-ips",
+                default=None,
+                help="Comma-separated validator source IPs for validator-set/controller-only modes",
+            )
+            p_node_firewall_plan.add_argument(
+                "--output",
+                default=None,
+                help="Optional path for atomic artifact write",
+            )
+
             node_subparsers.add_parser("constants", help="Show ratified timed-out lifecycle constants")
 
             p_node_inspect = node_subparsers.add_parser("timed-out-inspect", help="Inspect timed-out lifecycle status from a record")
@@ -2642,9 +2675,13 @@ def _run_top_level_command(
         data = _run_update_subcommand(args)
         return _success_payload(command, data)
     if command == "node":
-        if getattr(args, "node_subcommand", None) in {"init", "check", "readiness"}:
+        if getattr(args, "node_subcommand", None) in {"init", "check", "readiness", "firewall-plan"}:
             data = _run_node_operator_subcommand(args)
-            payload_command = "node readiness" if getattr(args, "node_subcommand", None) == "readiness" else command
+            payload_command = (
+                f"node {args.node_subcommand}"
+                if getattr(args, "node_subcommand", None) in {"readiness", "firewall-plan"}
+                else command
+            )
             return _success_payload(payload_command, data)
         from ilc_core.cli.d2e_lifecycle_cli import run_node_command
 
@@ -2777,13 +2814,34 @@ def _run_top_level_command(
 
 
 def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    subcommand = getattr(args, "node_subcommand", None)
+    if subcommand == "firewall-plan":
+        import importlib.util
+        import sys
+
+        module_path = Path(__file__).resolve().parents[1] / "node" / "firewall_plan_runtime.py"
+        spec = importlib.util.spec_from_file_location("_ilc_firewall_plan_runtime", module_path)
+        if spec is None or spec.loader is None:
+            raise ValueError("node_firewall_plan_runtime_import_failed")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        plan = module.build_and_optionally_write_firewall_plan(
+            config_path=Path(args.config),
+            provider=str(args.provider),
+            source_mode=str(args.source_mode),
+            controller_ip=str(args.controller_ip) if args.controller_ip else None,
+            validator_ips=str(args.validator_ips) if args.validator_ips else None,
+            output_path=Path(args.output) if args.output else None,
+        )
+        return {"action": "node-firewall-plan", **plan.to_dict()}
+
     from ilc_core.node.operator_init_runtime import (
         check_node_config,
         generate_node_init_material,
     )
     from ilc_core.node.readiness_runtime import build_readiness_report
 
-    subcommand = getattr(args, "node_subcommand", None)
     if subcommand == "init":
         result = generate_node_init_material(
             root=Path(args.root),
