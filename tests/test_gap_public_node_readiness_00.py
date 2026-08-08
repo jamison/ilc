@@ -163,6 +163,7 @@ def test_readiness_udp_probe_skipped_without_peer(tmp_path: Path) -> None:
 
 def test_readiness_udp_probe_sets_socket_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     calls: list[float] = []
+    families: list[int] = []
 
     class FakeSocket:
         def settimeout(self, value: float) -> None:
@@ -177,10 +178,41 @@ def test_readiness_udp_probe_sets_socket_timeout(monkeypatch: pytest.MonkeyPatch
         def close(self) -> None:
             return None
 
-    monkeypatch.setattr(socket, "socket", lambda *_args, **_kwargs: FakeSocket())
+    def fake_socket(family: int, *_args, **_kwargs):
+        families.append(family)
+        return FakeSocket()
+
+    monkeypatch.setattr(socket, "socket", fake_socket)
 
     assert udp_quic_probe("127.0.0.1:7101")["network_quic_udp_probe"] == "timeout"
     assert calls == [3.0]
+    assert families == [socket.AF_INET]
+
+
+def test_readiness_udp_probe_uses_ipv6_socket_family(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[int, tuple[str, int]]] = []
+
+    class FakeSocket:
+        def __init__(self, family: int) -> None:
+            self.family = family
+
+        def settimeout(self, _value: float) -> None:
+            return None
+
+        def sendto(self, _payload: bytes, addr: tuple[str, int]) -> int:
+            calls.append((self.family, addr))
+            return 1
+
+        def recvfrom(self, _size: int) -> tuple[bytes, tuple[str, int]]:
+            raise TimeoutError
+
+        def close(self) -> None:
+            return None
+
+    monkeypatch.setattr(socket, "socket", lambda family, *_args, **_kwargs: FakeSocket(family))
+
+    assert udp_quic_probe("[::1]:7101")["network_quic_udp_probe"] == "timeout"
+    assert calls == [(socket.AF_INET6, ("::1", 7101))]
 
 
 def test_readiness_udp_probe_any_response_counts_reachable(

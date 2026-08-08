@@ -38,6 +38,30 @@ def _generated_config(tmp_path: Path) -> Path:
     return result.config_path
 
 
+def _write_config(path: Path, *, grpc_endpoint: str = "203.0.113.10:50151", grpc_listen: str = "0.0.0.0:50151", p2p_listen: str = "0.0.0.0:7101", public_endpoint: str = "203.0.113.10:7101") -> Path:
+    path.write_text(
+        "\n".join(
+            [
+                "[network]",
+                'network_id = "ilc-rc01"',
+                "",
+                "[grpc]",
+                f'grpc_listen_addr = "{grpc_listen}"',
+                "",
+                "[p2p]",
+                f'p2p_listen_addr = "{p2p_listen}"',
+                f'public_endpoint = "{public_endpoint}"',
+                "",
+                "[validator]",
+                f'grpc_endpoint = "{grpc_endpoint}"',
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
 def _cli_payload(result: subprocess.CompletedProcess[str]) -> dict[str, object]:
     assert result.returncode == 0, result.stderr
     payload = json.loads(result.stdout)
@@ -108,6 +132,24 @@ def test_firewall_plan_do_output_udp_port_matches_config(tmp_path: Path) -> None
     } in payload["inbound_rules"]
 
 
+def test_firewall_plan_uses_public_grpc_endpoint_port_when_mapped(tmp_path: Path) -> None:
+    config_path = _write_config(
+        tmp_path / "node_config.toml",
+        grpc_endpoint="203.0.113.10:443",
+        grpc_listen="0.0.0.0:50151",
+    )
+
+    payload = json.loads(build_firewall_plan(config_path=config_path, provider="digitalocean").output)
+
+    assert {
+        "ports": "443",
+        "protocol": "tcp",
+        "sources": {"addresses": ["0.0.0.0/0", "::/0"]},
+    } in payload["inbound_rules"]
+    assert "nc -z -w 3 203.0.113.10 443" == payload["verification_hint"]
+    assert payload["warnings"] == ["node_firewall_grpc_endpoint_port_differs_from_listen_port"]
+
+
 def test_firewall_plan_ufw_output_contains_ufw_allow(tmp_path: Path) -> None:
     config_path = _generated_config(tmp_path)
 
@@ -117,6 +159,48 @@ def test_firewall_plan_ufw_output_contains_ufw_allow(tmp_path: Path) -> None:
     assert "sudo ufw allow 7101/udp comment 'ilc-node QUIC/P2P'" in output
     assert output.count("sudo ufw allow 50151/tcp") == 1
     assert output.count("sudo ufw allow 7101/udp") == 1
+
+
+def test_firewall_plan_ufw_validator_set_restricts_sources(tmp_path: Path) -> None:
+    config_path = _generated_config(tmp_path)
+
+    output = build_firewall_plan(
+        config_path=config_path,
+        provider="ufw",
+        source_mode="validator-set",
+        validator_ips="1.2.3.4,5.6.7.8",
+    ).output
+
+    assert "sudo ufw allow from 1.2.3.4 to any port 50151 proto tcp" in output
+    assert "sudo ufw allow from 5.6.7.8 to any port 7101 proto udp" in output
+
+
+def test_firewall_plan_ufw_controller_only_splits_sources(tmp_path: Path) -> None:
+    config_path = _generated_config(tmp_path)
+
+    output = build_firewall_plan(
+        config_path=config_path,
+        provider="ufw",
+        source_mode="controller-only",
+        controller_ip="9.9.9.9",
+        validator_ips="1.2.3.4",
+    ).output
+
+    assert "sudo ufw allow from 9.9.9.9 to any port 50151 proto tcp" in output
+    assert "sudo ufw allow from 1.2.3.4 to any port 7101 proto udp" in output
+
+
+def test_firewall_plan_includes_public_endpoint_extra_udp_port(tmp_path: Path) -> None:
+    config_path = _write_config(
+        tmp_path / "node_config.toml",
+        p2p_listen="0.0.0.0:7101",
+        public_endpoint="203.0.113.10:7201",
+    )
+
+    payload = json.loads(build_firewall_plan(config_path=config_path, provider="generic").output)
+
+    assert {"port": 7101, "protocol": "udp", "direction": "inbound", "purpose": "ilc-node QUIC/P2P"} in payload["port_table"]
+    assert {"port": 7201, "protocol": "udp", "direction": "inbound", "purpose": "ilc-node QUIC/P2P public endpoint"} in payload["port_table"]
 
 
 def test_firewall_plan_source_mode_validator_set_restricts_ips(tmp_path: Path) -> None:
@@ -161,6 +245,36 @@ def test_firewall_plan_source_modes_require_ips(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="node_firewall_controller_ip_required"):
         build_firewall_plan(config_path=config_path, source_mode="controller-only", validator_ips="1.2.3.4")
+
+
+def test_firewall_plan_missing_config_and_sections_fail(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="node_firewall_config_missing"):
+        build_firewall_plan(config_path=tmp_path / "missing.toml")
+
+    config_path = tmp_path / "node_config.toml"
+    config_path.write_text('[network]\nnetwork_id = "ilc-rc01"\n', encoding="utf-8")
+    with pytest.raises(ValueError, match="node_firewall_grpc_section_missing"):
+        build_firewall_plan(config_path=config_path)
+
+
+def test_firewall_plan_rejects_oversized_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "node_config.toml"
+    config_path.write_text("#" * (firewall_plan_runtime.MAX_NODE_CONFIG_BYTES + 1), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="node_firewall_config_too_large"):
+        build_firewall_plan(config_path=config_path)
+
+
+def test_firewall_plan_ipv6_hint_uses_unbracketed_host(tmp_path: Path) -> None:
+    config_path = _write_config(
+        tmp_path / "node_config.toml",
+        grpc_endpoint="[2001:db8::1]:50151",
+        public_endpoint="[2001:db8::1]:7101",
+    )
+
+    payload = json.loads(build_firewall_plan(config_path=config_path, provider="generic").output)
+
+    assert payload["verification_hint"] == "nc -z -w 3 2001:db8::1 50151"
 
 
 def test_firewall_plan_advisory_present_in_all_formats(tmp_path: Path) -> None:
@@ -222,6 +336,18 @@ def test_firewall_plan_tomllib_fallback_parses_generated_config(
 
     assert payload["network_id"] == "ilc-rc01"
     assert {"port": 50151, "protocol": "tcp", "direction": "inbound", "purpose": "ilc-node gRPC ingress"} in payload["port_table"]
+
+
+def test_firewall_plan_tomllib_fallback_rejects_malformed_value(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config_path = tmp_path / "node_config.toml"
+    config_path.write_text('[network]\nnetwork_id = "unterminated\n', encoding="utf-8")
+    monkeypatch.setattr(firewall_plan_runtime, "tomllib", None)
+
+    with pytest.raises(ValueError, match="node_firewall_config_invalid_toml"):
+        build_firewall_plan(config_path=config_path, provider="generic")
 
 
 def test_firewall_plan_no_network_or_subprocess_imports() -> None:

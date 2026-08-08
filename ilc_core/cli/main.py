@@ -2816,17 +2816,8 @@ def _run_top_level_command(
 def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     subcommand = getattr(args, "node_subcommand", None)
     if subcommand == "firewall-plan":
-        import importlib.util
-        import sys
-
-        module_path = Path(__file__).resolve().parents[1] / "node" / "firewall_plan_runtime.py"
-        spec = importlib.util.spec_from_file_location("_ilc_firewall_plan_runtime", module_path)
-        if spec is None or spec.loader is None:
-            raise ValueError("node_firewall_plan_runtime_import_failed")
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[spec.name] = module
-        spec.loader.exec_module(module)
-        plan = module.build_and_optionally_write_firewall_plan(
+        firewall_runtime = _load_firewall_plan_runtime_module()
+        plan = firewall_runtime.build_and_optionally_write_firewall_plan(
             config_path=Path(args.config),
             provider=str(args.provider),
             source_mode=str(args.source_mode),
@@ -2868,6 +2859,30 @@ def _run_node_operator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             ),
         }
     raise ValueError("node_operator_subcommand_missing")
+
+
+def _load_firewall_plan_runtime_module() -> Any:
+    """Load the firewall planner without importing heavy node package exports.
+
+    `ilc_core.node.__init__` still exports historical protocol modules that may
+    require optional crypto packages. The firewall planner is intentionally
+    dependency-light so a public install can render operator firewall guidance
+    on system Python before optional validator dependencies are installed.
+    """
+
+    import importlib.util
+
+    module_name = "_ilc_firewall_plan_runtime"
+    if module_name in sys.modules:
+        return sys.modules[module_name]
+    module_path = Path(__file__).resolve().parents[1] / "node" / "firewall_plan_runtime.py"
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    if spec is None or spec.loader is None:
+        raise ValueError("node_firewall_plan_runtime_import_failed")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
