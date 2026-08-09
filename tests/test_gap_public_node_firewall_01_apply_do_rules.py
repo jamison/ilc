@@ -15,6 +15,8 @@ from tools.testbed.phase_gap_public_node_firewall_01_apply_do_rules import (
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "out/phase_gap_public_node_firewall_01/firewall_application_evidence.json"
+COMPLETION_EVIDENCE = ROOT / "out/phase_gap_public_node_firewall_01/firewall_application_completion_evidence.json"
+STATUS = ROOT / "docs/phases/STATUS.md"
 
 
 def test_do_firewall_range_rule_covers_single_port_with_same_sources() -> None:
@@ -132,3 +134,19 @@ def test_live_evidence_does_not_claim_grpc_reachability_when_listener_absent() -
     assert probes["grpc_tcp_reachable"] is False
     assert probes["grpc_tcp_error"] == "network_grpc_tcp_connection_refused"
     assert "listener absence" in probes["active_listener_diagnosis"]
+
+
+def test_completion_evidence_emits_withheld_grpc_reachability_token() -> None:
+    evidence = json.loads(COMPLETION_EVIDENCE.read_text(encoding="utf-8"))
+    status = STATUS.read_text(encoding="utf-8")
+    token = "external_grpc_tcp_reachable_verified_GAP_PUBLIC_NODE_FIREWALL_01"
+
+    assert evidence["completion_status"] == "COMPLETE"
+    assert evidence["external_grpc_tcp_reachable_verified"] is True
+    assert evidence["probe_results"]["readiness"]["network_grpc_tcp_reachable"] is True
+    assert all(
+        probe["exit_code"] == 0
+        for probe in evidence["probe_results"]["all_public_grpc_tcp_socket_probes"]
+    )
+    assert evidence["token_emitted"] == token
+    assert token in status
