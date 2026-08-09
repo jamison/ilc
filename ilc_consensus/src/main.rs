@@ -203,7 +203,16 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // 4. Construct stores and protocols
     // -----------------------------------------------------------------------
     let balance_store = Arc::new(BalanceStore::new(Arc::clone(&lmdb_env))?);
-    let epoch_store = Arc::new(EpochStore::new(Arc::clone(&lmdb_env))?);
+    if let Some(testnet_min_epoch_duration_ms) = cfg.testnet_min_epoch_duration_ms {
+        eprintln!(
+            "[m010_harness][testnet] testnet_min_epoch_duration_ms={} active for harness-only adversarial soak",
+            testnet_min_epoch_duration_ms
+        );
+    }
+    let epoch_store = Arc::new(EpochStore::new_with_min_epoch_duration_ms(
+        Arc::clone(&lmdb_env),
+        cfg.testnet_min_epoch_duration_ms,
+    )?);
 
     let fast_path = Arc::new(FastPathProtocol::new(
         validator_set,

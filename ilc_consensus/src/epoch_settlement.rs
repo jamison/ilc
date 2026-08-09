@@ -31,6 +31,10 @@ fn effective_min_epoch_duration_ms() -> u64 {
     MIN_EPOCH_DURATION_MS
 }
 
+fn min_epoch_duration_ms_override_or_default(override_ms: Option<u64>) -> u64 {
+    override_ms.unwrap_or_else(effective_min_epoch_duration_ms)
+}
+
 #[cfg(test)]
 pub fn test_epoch_not_before_unix_ms(epoch: u64) -> u64 {
     TEST_EPOCH_NOT_BEFORE_BASE_MS.saturating_add(
@@ -60,6 +64,7 @@ const EPOCH_PROPOSAL_SEEN_PREFIX: &[u8] = b"seen_epoch_proposal:";
 pub struct EpochStore {
     env: Arc<Environment>,
     db: Database,
+    min_epoch_duration_ms_override: Option<u64>,
 }
 
 fn epoch_proposal_seen_key(idempotency_key: &str) -> Vec<u8> {
@@ -71,12 +76,27 @@ fn epoch_proposal_seen_key(idempotency_key: &str) -> Vec<u8> {
 
 impl EpochStore {
     pub fn new(env: Arc<Environment>) -> Result<Self, ILCConsensusError> {
+        Self::new_with_min_epoch_duration_ms(env, None)
+    }
+
+    pub fn new_with_min_epoch_duration_ms(
+        env: Arc<Environment>,
+        min_epoch_duration_ms_override: Option<u64>,
+    ) -> Result<Self, ILCConsensusError> {
         let db = env
             .create_db(Some("epoch_records"), DatabaseFlags::empty())
             .map_err(|e| {
                 ILCConsensusError::Other(format!("Failed to create epoch_records DB: {}", e))
             })?;
-        Ok(Self { env, db })
+        Ok(Self {
+            env,
+            db,
+            min_epoch_duration_ms_override,
+        })
+    }
+
+    fn effective_min_epoch_duration_ms(&self) -> u64 {
+        min_epoch_duration_ms_override_or_default(self.min_epoch_duration_ms_override)
     }
 
     pub fn has_seen_epoch_proposal(
@@ -425,9 +445,9 @@ impl EpochSettlementProtocol {
                             ILCConsensusError::Other(format!("Prev epoch deserialize error: {}", e))
                         })?;
                     let prev_not_before = prev_stored.record.not_before_unix_ms;
-                    if checkpoint.record.not_before_unix_ms
-                        < prev_not_before.saturating_add(effective_min_epoch_duration_ms())
-                    {
+                    if checkpoint.record.not_before_unix_ms < prev_not_before.saturating_add(
+                        self.epoch_store.effective_min_epoch_duration_ms(),
+                    ) {
                         return Err(ILCConsensusError::Other(
                             "epoch_checkpoint_min_duration_not_elapsed".to_string(),
                         ));
@@ -1415,5 +1435,52 @@ mod tests {
             "back-to-back epochs must be rejected without a testnet bypass: {:?}",
             err
         );
+    }
+
+    #[test]
+    fn test_testnet_epoch_duration_override_allows_back_to_back_checkpoint_soak() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new_with_min_epoch_duration_ms(env, Some(0)).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_validators();
+
+        let record1 = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+            spectral_hash: [0u8; 32],
+            proposal_commitment_sha256: [1u8; 32],
+            not_before_unix_ms: 0,
+        };
+        let (sigs1, signers1) = agg_sig_all(&record1, &entries);
+        protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record: record1,
+                    sigs: sigs1,
+                    signers: signers1,
+                },
+                &vset,
+            )
+            .unwrap();
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(2),
+            state_root: CIDv1Root::new([2u8; 36]),
+            spectral_hash: [0u8; 32],
+            proposal_commitment_sha256: [2u8; 32],
+            not_before_unix_ms: 0,
+        };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
+
+        protocol
+            .process_epoch_checkpoint(
+                EpochCheckpoint {
+                    record,
+                    sigs,
+                    signers,
+                },
+                &vset,
+            )
+            .unwrap();
     }
 }
