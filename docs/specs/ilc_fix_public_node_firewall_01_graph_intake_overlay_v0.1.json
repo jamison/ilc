@@ -20,6 +20,12 @@
       "summary": "Redacted live firewall evidence showing rules already covered and gRPC listener currently absent."
     },
     {
+      "repo_path": "out/phase_gap_public_node_firewall_01/firewall_application_completion_evidence.json",
+      "category": "evidence",
+      "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
+      "summary": "Completion evidence showing public gRPC TCP listener reachability after public harness restart."
+    },
+    {
       "repo_path": "docs/phases/phase_gap_public_node_firewall_01_live_firewall_application_walkthrough.md",
       "category": "phase_walkthrough",
       "phase": "GAP-PUBLIC-NODE-FIREWALL-01",
