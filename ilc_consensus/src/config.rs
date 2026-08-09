@@ -72,6 +72,12 @@ struct RawNodeConfig {
     validator_consensus_key_path: String,
     grpc_listen_addr: Option<String>,
     endpoint_projection_path: Option<String>,
+    /// Testnet harness-only override for BLS epoch checkpoint duration.
+    ///
+    /// This must remain absent in production/mainnet configs. It exists so
+    /// adversarial public harness soaks can commit multiple BLS-verified epochs
+    /// without waiting for the production 30-day epoch window.
+    testnet_min_epoch_duration_ms: Option<u64>,
     /// settlement_path — controls live ECU settlement routing.
     /// Omitting or setting "none" preserves the current non-activation posture.
     /// Set to "mysticeti_fast_path" only after separate human authorization
@@ -153,6 +159,8 @@ pub struct NodeConfig {
     pub settlement_path: SettlementPath,
     /// Optional ADR-0039 endpoint projection file. Required for production activation path.
     pub endpoint_projection_path: Option<PathBuf>,
+    /// Testnet harness-only minimum epoch duration override.
+    pub testnet_min_epoch_duration_ms: Option<u64>,
 }
 
 // ---------------------------------------------------------------------------
@@ -262,6 +270,15 @@ pub fn load_node_config(
         }
     };
 
+    if cfg.testnet_min_epoch_duration_ms.is_some() {
+        let role = cfg.role.as_deref().unwrap_or("");
+        if !cfg.network_id.contains("testnet") || !role.contains("harness") {
+            return Err(ILCConsensusError::Other(
+                "testnet_min_epoch_duration_ms_requires_explicit_testnet_harness_role".into(),
+            ));
+        }
+    }
+
     let bind_addr = format!("{}:{}", cfg.bind_host, cfg.bind_port)
         .parse()
         .map_err(|e| ILCConsensusError::Other(format!("Invalid bind addr: {}", e)))?;
@@ -346,6 +363,7 @@ pub fn load_node_config(
         grpc_listen_addr,
         settlement_path,
         endpoint_projection_path: cfg.endpoint_projection_path.map(PathBuf::from),
+        testnet_min_epoch_duration_ms: cfg.testnet_min_epoch_duration_ms,
     })
 }
 
@@ -980,6 +998,44 @@ mod tests {
         assert!(
             msg.contains("legacy_substrate"),
             "error must name the rejected value, got: {}",
+            msg
+        );
+    }
+
+    #[test]
+    fn test_testnet_epoch_duration_override_requires_testnet_harness_role() {
+        use std::io::Write;
+        use tempfile::NamedTempFile;
+
+        let mut cfg_file = NamedTempFile::new().unwrap();
+        write!(
+            cfg_file,
+            r#"{{
+            "validator_id": 1,
+            "network_id": "ilc-mainnet-rc01",
+            "bind_host": "127.0.0.1",
+            "bind_port": 9001,
+            "tailscale_advertise_ip": "100.0.0.1",
+            "peers": [],
+            "lmdb_balance_map_size_bytes": 67108864,
+            "lmdb_epoch_map_size_bytes": 67108864,
+            "tls_cert_path": "/nonexistent/cert.pem",
+            "tls_key_path": "/nonexistent/key.pem",
+            "validator_consensus_key_path": "/nonexistent/key.hex",
+            "peer_cert_dir": "/nonexistent/certs",
+            "lmdb_path": "/tmp/test_lmdb",
+            "role": "public_routable_harness_testnet_only",
+            "testnet_min_epoch_duration_ms": 0
+        }}"#
+        )
+        .unwrap();
+
+        let result = load_node_config(cfg_file.path(), "ilc-mainnet-rc01");
+        assert!(result.is_err(), "mainnet override must be rejected");
+        let msg = format!("{:?}", result.unwrap_err());
+        assert!(
+            msg.contains("testnet_min_epoch_duration_ms_requires_explicit_testnet_harness_role"),
+            "error must name the rejected testnet override, got: {}",
             msg
         );
     }
