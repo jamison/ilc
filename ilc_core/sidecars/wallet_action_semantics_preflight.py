@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Phase 1314 wallet-facing value-action semantics preflight.
+"""Wallet-facing value-action semantics preflight.
 
 This module records the boundary where any wallet provider could request
 withdrawal, transfer, spend, signing, or ledger-write behavior. It does not
 create those methods, signature payloads, ledger writes, claim endpoints, ECU
-minting, ILC settlement, release artifacts, or public serving surfaces. The
-ledger/graph/receipt substrate remains the truth object; wallets are adapters.
+minting, release artifacts, or public serving surfaces. Phase 1592 authorizes
+public claimability visibility and ILC settlement state while keeping wallet
+actions blocked. The ledger/graph/receipt substrate remains the truth object;
+wallets are adapters.
 """
 
 from __future__ import annotations
@@ -34,6 +36,10 @@ WALLET_SIGNING_LEDGER_WRITE_NOT_AUTHORIZED_TOKEN = (
 PUBLIC_CLAIMABILITY_USER_ACTION_BOUNDARY_RECORDED_TOKEN = (
     "public_claimability_user_action_boundary_recorded_phase_1314"
 )
+PUBLIC_CLAIMABILITY_AUTHORIZED_PHASE_1592_TOKEN = (
+    "public_claimability_authorized_phase_1592"
+)
+ILC_SETTLEMENT_AUTHORIZED_PHASE_1592_TOKEN = "ilc_settlement_authorized_phase_1592"
 PHASE_1315_NEXT_TOKEN = "phase_1315_ecu_minting_ilc_settlement_boundary_preflight_next"
 PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1314_TOKEN = (
     "public_rc_remains_blocked_after_phase_1314"
@@ -42,7 +48,9 @@ WALLET_PROVIDER_AGNOSTIC_LEDGER_TRUTH_BOUNDARY_TOKEN = (
     "wallet_provider_agnostic_not_ledger_truth_agnostic_phase_1314"
 )
 
-PREFLIGHT_STATE = "wallet_action_semantics_preflight_no_activation_phase_1314"
+PREFLIGHT_STATE = (
+    "wallet_action_semantics_preflight_rc_claimability_authorized_phase_1592"
+)
 PREFLIGHT_REF_PREFIX = "wallet_action_semantics_preflight_sha256"
 
 _MAX_PAYLOAD_DEPTH = 32
@@ -51,7 +59,7 @@ _MAX_TEXT_LENGTH = 4096
 _MAX_EPOCH = 1_000_000_000_000
 _HEX_DIGEST_LENGTH = 64
 _HEX = frozenset("0123456789abcdef")
-_FALSE_AUTHORIZATION_FLAGS = (
+_AUTHORIZATION_FLAGS = (
     "wallet_withdrawal_enabled",
     "wallet_transfer_enabled",
     "wallet_spend_enabled",
@@ -68,6 +76,13 @@ _FALSE_AUTHORIZATION_FLAGS = (
     "ilc_settlement_authorized",
     "release_artifact_authorized",
     "cdl088_opened",
+)
+_RC_AUTHORIZED_FLAGS = (
+    "public_claimability_activated",
+    "ilc_settlement_authorized",
+)
+_FALSE_AUTHORIZATION_FLAGS = tuple(
+    name for name in _AUTHORIZATION_FLAGS if name not in _RC_AUTHORIZED_FLAGS
 )
 _PERMITTED_WALLET_QUERY_OPERATIONS = (
     "wallet_status",
@@ -130,6 +145,8 @@ def wallet_action_semantics_preflight_required_tokens() -> list[str]:
         WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
         WALLET_SIGNING_LEDGER_WRITE_NOT_AUTHORIZED_TOKEN,
         PUBLIC_CLAIMABILITY_USER_ACTION_BOUNDARY_RECORDED_TOKEN,
+        PUBLIC_CLAIMABILITY_AUTHORIZED_PHASE_1592_TOKEN,
+        ILC_SETTLEMENT_AUTHORIZED_PHASE_1592_TOKEN,
         PHASE_1315_NEXT_TOKEN,
         PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1314_TOKEN,
     ]
@@ -143,7 +160,8 @@ def wallet_action_semantics_preflight_manifest() -> dict[str, Any]:
         "local_only": True,
         "preflight_only": True,
         "public_claim_endpoint_enabled": False,
-        "public_claimability_activated": False,
+        "public_claimability_activated": True,
+        "ilc_settlement_authorized": True,
         "tokens": wallet_action_semantics_preflight_required_tokens(),
         "wallet_ledger_write_authorized": False,
         "wallet_signing_authorized": False,
@@ -163,7 +181,7 @@ def build_wallet_action_semantics_preflight_packet(
     wallet_spend_enabled: bool = False,
     wallet_signing_authorized: bool = False,
     wallet_ledger_write_authorized: bool = False,
-    public_claimability_activated: bool = False,
+    public_claimability_activated: bool = True,
     public_claim_endpoint_enabled: bool = False,
     withdrawal_endpoint_enabled: bool = False,
     transfer_endpoint_enabled: bool = False,
@@ -171,7 +189,7 @@ def build_wallet_action_semantics_preflight_packet(
     external_chain_bridge_enabled: bool = False,
     withdrawal_runtime_enabled: bool = False,
     ecu_mint_authorized: bool = False,
-    ilc_settlement_authorized: bool = False,
+    ilc_settlement_authorized: bool = True,
     release_artifact_authorized: bool = False,
     cdl088_opened: bool = False,
 ) -> dict[str, Any]:
@@ -196,8 +214,9 @@ def build_wallet_action_semantics_preflight_packet(
         "release_artifact_authorized": release_artifact_authorized,
         "cdl088_opened": cdl088_opened,
     }
+    _require_rc_authorized_flags(flags)
     _require_all_false(
-        flags,
+        _blocked_authorization_flags(flags),
         token_by_name={
             "wallet_withdrawal_enabled": WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
             "wallet_transfer_enabled": WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
@@ -209,14 +228,14 @@ def build_wallet_action_semantics_preflight_packet(
     )
 
     packet: dict[str, Any] = {
-        "authorization_flags": {name: False for name in _FALSE_AUTHORIZATION_FLAGS},
+        "authorization_flags": {name: flags[name] for name in _AUTHORIZATION_FLAGS},
         "current_epoch": current,
         "local_only": True,
         "next_phase": PHASE_1315_NEXT_TOKEN,
         "permitted_wallet_query_operations": list(_PERMITTED_WALLET_QUERY_OPERATIONS),
         "preflight_only": True,
         "prohibited_user_value_actions": list(_BLOCKED_USER_VALUE_ACTIONS),
-        "readiness_verdict": "preflight_recorded_wallet_actions_blocked",
+        "readiness_verdict": "rc_claimability_and_ilc_settlement_authorized_wallet_actions_blocked",
         "required_before_wallet_action_activation": list(
             _REQUIRED_BEFORE_WALLET_ACTION_ACTIVATION
         ),
@@ -277,13 +296,14 @@ def validate_wallet_action_semantics_preflight_packet(
         packet.get("authorization_flags"),
         token="wallet_action_semantics_authorization_flags_invalid_phase_1314",
     )
-    if set(flags) != set(_FALSE_AUTHORIZATION_FLAGS):
+    if set(flags) != set(_AUTHORIZATION_FLAGS):
         raise WalletActionSemanticsPreflightError(
             "wallet_action_semantics_authorization_flags_invalid_phase_1314",
-            "Phase 1314 authorization flags are invalid",
+            "wallet action preflight authorization flags are invalid",
         )
+    _require_rc_authorized_flags(flags)
     _require_all_false(
-        flags,
+        _blocked_authorization_flags(flags),
         token_by_name={
             "wallet_withdrawal_enabled": WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
             "wallet_transfer_enabled": WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
@@ -322,10 +342,12 @@ def validate_wallet_action_semantics_preflight_packet(
             "wallet_action_semantics_source_evidence_invalid_phase_1314",
             "Phase 1314 source evidence is invalid",
         )
-    if packet.get("readiness_verdict") != "preflight_recorded_wallet_actions_blocked":
+    if packet.get("readiness_verdict") != (
+        "rc_claimability_and_ilc_settlement_authorized_wallet_actions_blocked"
+    ):
         raise WalletActionSemanticsPreflightError(
-            "wallet_action_semantics_readiness_verdict_invalid_phase_1314",
-            "Phase 1314 readiness verdict is invalid",
+            "wallet_action_semantics_readiness_verdict_invalid_phase_1592",
+            "Phase 1592 readiness verdict is invalid",
         )
     candidate_sha256 = _require_hex_digest(packet.get("candidate_sha256"))
     if candidate_sha256 != _packet_sha256(packet):
@@ -368,7 +390,8 @@ def _source_evidence() -> dict[str, str]:
         "phase_576_wallet_boundary": "wallet_visibility_and_accounting_only",
         "phase_615_lifecycle_contract": "no_spend_transfer_withdrawal_signing_authority",
         "phase_617_public_wallet_surface": "read_only_query_operations_only",
-        "phase_1314_scope": "wallet_action_semantics_preflight_no_activation",
+        "phase_1314_scope": "wallet_action_semantics_preflight_no_wallet_actions",
+        "phase_1592_scope": "public_claimability_and_ilc_settlement_authorized",
         "public_wallet_runtime": PUBLIC_WALLET_RUNTIME_VERSION,
     }
 
@@ -382,7 +405,7 @@ def _user_action_boundary() -> dict[str, Any]:
         "ledger_truth_boundary_token": (
             WALLET_PROVIDER_AGNOSTIC_LEDGER_TRUTH_BOUNDARY_TOKEN
         ),
-        "public_claimability_user_action_authorized": False,
+        "public_claimability_user_action_authorized": True,
         "signature_payload_constructed": False,
         "user_visible_allowed_queries": list(_PERMITTED_WALLET_QUERY_OPERATIONS),
         "wallet_action_methods_added": False,
@@ -519,6 +542,19 @@ def _require_mapping(value: object, *, token: str) -> Mapping[str, Any]:
     return value
 
 
+def _blocked_authorization_flags(flags: Mapping[str, Any]) -> dict[str, Any]:
+    return {name: flags[name] for name in _FALSE_AUTHORIZATION_FLAGS}
+
+
+def _require_rc_authorized_flags(flags: Mapping[str, Any]) -> None:
+    for name in _RC_AUTHORIZED_FLAGS:
+        if _require_bool(name, flags.get(name)) is not True:
+            raise WalletActionSemanticsPreflightError(
+                f"wallet_action_semantics_{name}_required_phase_1592",
+                f"Phase 1592 requires {name}",
+            )
+
+
 def _require_bool(name: str, value: object) -> bool:
     if type(value) is not bool:
         raise WalletActionSemanticsPreflightError(
@@ -555,8 +591,10 @@ def _require_hex_digest(value: object) -> str:
 
 
 __all__ = [
+    "ILC_SETTLEMENT_AUTHORIZED_PHASE_1592_TOKEN",
     "PHASE_1315_NEXT_TOKEN",
     "PREFLIGHT_REF_PREFIX",
+    "PUBLIC_CLAIMABILITY_AUTHORIZED_PHASE_1592_TOKEN",
     "PUBLIC_CLAIMABILITY_USER_ACTION_BOUNDARY_RECORDED_TOKEN",
     "PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1314_TOKEN",
     "WALLET_ACTION_SEMANTICS_PREFLIGHT_VERSION",
