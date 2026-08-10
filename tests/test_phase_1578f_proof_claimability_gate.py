@@ -76,8 +76,9 @@ def test_transfer_spend_withdrawal_guards_remain_false() -> None:
     assert manifest["wallet_transfer_enabled"] is False
     assert manifest["wallet_withdrawal_enabled"] is False
     assert manifest["wallet_spend_enabled"] is False
-    assert manifest["public_claimability_activated"] is False
-    assert "public_claimability_activated" in wallet_action_semantics_preflight._FALSE_AUTHORIZATION_FLAGS
+    assert manifest["public_claimability_activated"] is True
+    assert manifest["ilc_settlement_authorized"] is True
+    assert "public_claimability_activated" not in wallet_action_semantics_preflight._FALSE_AUTHORIZATION_FLAGS
 
 
 @pytest.mark.parametrize(
@@ -86,7 +87,6 @@ def test_transfer_spend_withdrawal_guards_remain_false() -> None:
         ("wallet_transfer_enabled", {"wallet_transfer_enabled": True}),
         ("wallet_withdrawal_enabled", {"wallet_withdrawal_enabled": True}),
         ("wallet_spend_enabled", {"wallet_spend_enabled": True}),
-        ("public_claimability_activated", {"public_claimability_activated": True}),
     ],
 )
 def test_wallet_action_preflight_still_rejects_activation_flags(

@@ -11,8 +11,10 @@ from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime
 from ilc_core.rc.package_profiles import PROFILE_OPENCLAW_SKILL_CLAIMABLE, profile_manifest
 from ilc_core.sidecars.registry_manifest import build_sidecar_registry_manifest
 from ilc_core.sidecars.wallet_action_semantics_preflight import (
+    ILC_SETTLEMENT_AUTHORIZED_PHASE_1592_TOKEN,
     PHASE_1315_NEXT_TOKEN,
     PREFLIGHT_REF_PREFIX,
+    PUBLIC_CLAIMABILITY_AUTHORIZED_PHASE_1592_TOKEN,
     PUBLIC_CLAIMABILITY_USER_ACTION_BOUNDARY_RECORDED_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1314_TOKEN,
     WALLET_ACTION_SEMANTICS_PREFLIGHT_VERSION,
@@ -57,6 +59,8 @@ REQUIRED_TOKENS = [
     WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN,
     WALLET_SIGNING_LEDGER_WRITE_NOT_AUTHORIZED_TOKEN,
     PUBLIC_CLAIMABILITY_USER_ACTION_BOUNDARY_RECORDED_TOKEN,
+    PUBLIC_CLAIMABILITY_AUTHORIZED_PHASE_1592_TOKEN,
+    ILC_SETTLEMENT_AUTHORIZED_PHASE_1592_TOKEN,
     PHASE_1315_NEXT_TOKEN,
     PUBLIC_RC_REMAINS_BLOCKED_AFTER_PHASE_1314_TOKEN,
 ]
@@ -76,7 +80,9 @@ def test_phase_1314_wallet_action_preflight_packet_is_deterministic() -> None:
     assert packet["tokens"] == REQUIRED_TOKENS
     assert packet["local_only"] is True
     assert packet["preflight_only"] is True
-    assert packet["readiness_verdict"] == "preflight_recorded_wallet_actions_blocked"
+    assert packet["readiness_verdict"] == (
+        "rc_claimability_and_ilc_settlement_authorized_wallet_actions_blocked"
+    )
     assert packet["next_phase"] == PHASE_1315_NEXT_TOKEN
     assert packet["permitted_wallet_query_operations"] == [
         "wallet_status",
@@ -93,7 +99,13 @@ def test_phase_1314_wallet_action_preflight_packet_is_deterministic() -> None:
     assert packet["user_action_boundary"]["wallet_provider_role"] == (
         "adapter_or_sidecar_not_truth_source"
     )
-    assert all(value is False for value in packet["authorization_flags"].values())
+    assert packet["authorization_flags"]["public_claimability_activated"] is True
+    assert packet["authorization_flags"]["ilc_settlement_authorized"] is True
+    assert all(
+        value is False
+        for key, value in packet["authorization_flags"].items()
+        if key not in {"public_claimability_activated", "ilc_settlement_authorized"}
+    )
     assert exported_once == exported_twice
     assert exported_once == json.dumps(
         json.loads(exported_once),
@@ -113,7 +125,6 @@ def test_phase_1314_wallet_activation_flags_fail_closed() -> None:
         ("wallet_spend_enabled", WALLET_WITHDRAWAL_TRANSFER_SPEND_NOT_ACTIVATED_TOKEN),
         ("wallet_signing_authorized", WALLET_SIGNING_LEDGER_WRITE_NOT_AUTHORIZED_TOKEN),
         ("wallet_ledger_write_authorized", WALLET_SIGNING_LEDGER_WRITE_NOT_AUTHORIZED_TOKEN),
-        ("public_claimability_activated", "wallet_action_semantics_activation_forbidden_phase_1314"),
         ("public_claim_endpoint_enabled", "wallet_action_semantics_activation_forbidden_phase_1314"),
         ("withdrawal_endpoint_enabled", "wallet_action_semantics_activation_forbidden_phase_1314"),
         ("transfer_endpoint_enabled", "wallet_action_semantics_activation_forbidden_phase_1314"),
@@ -121,7 +132,6 @@ def test_phase_1314_wallet_activation_flags_fail_closed() -> None:
         ("external_chain_bridge_enabled", "wallet_action_semantics_activation_forbidden_phase_1314"),
         ("withdrawal_runtime_enabled", "wallet_action_semantics_activation_forbidden_phase_1314"),
         ("ecu_mint_authorized", "wallet_action_semantics_activation_forbidden_phase_1314"),
-        ("ilc_settlement_authorized", "wallet_action_semantics_activation_forbidden_phase_1314"),
     ]
     for field, token in cases:
         with pytest.raises(WalletActionSemanticsPreflightError) as exc:
@@ -232,7 +242,11 @@ def test_phase_1314_registry_and_package_profiles_record_wallet_action_boundary(
     assert manifest["wallet_spend_enabled"] is False
     assert manifest["wallet_signing_authorized"] is False
     assert manifest["wallet_ledger_write_authorized"] is False
-    assert wallet_actions["authority_gate"] == "phase_1314_preflight_only_wallet_actions_blocked"
+    assert manifest["public_claimability_activated"] is True
+    assert manifest["ilc_settlement_authorized"] is True
+    assert wallet_actions["authority_gate"] == (
+        "phase_1592_wallet_claimability_ilc_settlement_authorized_actions_blocked"
+    )
     assert wallet_actions["public_serving_enabled"] is False
     for token in REQUIRED_TOKENS[1:]:
         assert token in wallet_actions["required_capabilities"]
