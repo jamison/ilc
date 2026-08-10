@@ -1,0 +1,120 @@
+{
+  "PUBLIC_RC_EXCLUDE": true,
+  "PUBLIC_RC_EXCLUDE_REASON": "Internal graph-intake overlay for Phase 1591-Fix5 mixed economic graph-action soak evidence.",
+  "manual_edge_annotations": [
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix5_mixed_economic_graph_action_soak",
+      "chronology_note": "2026-08-10 Phase 1591-Fix5 mixed economic graph-action soak harness committed.",
+      "manual_read_summary": "Phase-local harness composes activated ILC transfer ledger, ECU transfer adapter, CDL-108 attribution bridge, and deterministic 1591 substrate readback without ilc_core runtime changes.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix5_g10_mixed_economic_graph_action_soak.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mixed_economic_graph_action_soak_complete_phase_1591_fix5"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ilc_transfer_live_roundtrip_proven_phase_1591_fix5"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:ecu_fast_path_live_roundtrip_proven_phase_1591_fix5"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:double_spend_rejected_live_phase_1591_fix5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/phase1591_fix5_mixed_economic_graph_action_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix5_mixed_economic_graph_action_soak",
+      "chronology_note": "2026-08-10 Phase 1591-Fix5 focused regression tests committed.",
+      "manual_read_summary": "Verifies evidence scenarios, ILC double-entry transfer readback, ECU debit-credit bridge record, double-spend rejection, attribution readback, activation boundary, and output tokens.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix5_g10_mixed_economic_graph_action_soak.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "out/phase_1591_fix5_mixed_economic_soak/mixed_economic_evidence.json"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tools/testbed/phase1591_fix5_mixed_economic_graph_action_soak.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1591_fix5_mixed_economic_graph_action_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix5_mixed_economic_graph_action_soak",
+      "chronology_note": "2026-08-10 Phase 1591-Fix5 walkthrough committed.",
+      "manual_read_summary": "Records prerequisite token audit, runtime flag state, prompt script gap, five scenario outputs, non-claims, and verification commands.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix5_g10_mixed_economic_graph_action_soak.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mixed_economic_graph_action_soak_complete_phase_1591_fix5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1591_fix5_mixed_economic_graph_action_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix5_mixed_economic_graph_action_soak",
+      "chronology_note": "2026-08-10 Phase 1591-Fix5 graph-intake overlay committed.",
+      "manual_read_summary": "Registers newly committed covered files for the mixed economic graph-action soak phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1591_fix5_g10_mixed_economic_graph_action_soak.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:mixed_economic_graph_action_soak_complete_phase_1591_fix5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_fix1591_fix5_graph_intake_overlay_v0.1.json"
+    }
+  ],
+  "phase": "1591-Fix5",
+  "schema_version": "ilc.fix1591_fix5.graph_intake_overlay.v0.1"
+}
