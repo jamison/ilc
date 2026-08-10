@@ -61,7 +61,9 @@ AGENT_ID_LENGTH_BYTES = 48
 CIDV1_ROOT_LENGTH_BYTES = 36
 SHA256_LENGTH_BYTES = 32
 SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN = "submit_epoch_proposal_accepted_phase_1586"
+SUBMIT_ATTRIBUTION_BATCH_ACCEPTED_TOKEN = "attribution_batch_accepted"
 EPOCH_PROPOSAL_PREIMAGE_DOMAIN = b"ILC_SUBMIT_EPOCH_PROPOSAL_V1"
+ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN = "attribution"
 ECU_TRANSFER_BUILDER_COMMAND_ENV = "ILC_ECU_TRANSFER_BUILDER_COMMAND"
 ECU_TRANSFER_SUBMIT_COMMAND_ENV = "ILC_ECU_TRANSFER_SUBMIT_COMMAND"
 
@@ -81,6 +83,10 @@ class ILCAppProposalIngressServiceStubProtocol(Protocol):
     SubmitEpochProposal: UnaryUnaryRpc
 
 
+class ILCAppAttributionIngressServiceStubProtocol(Protocol):
+    SubmitAttributionBatch: UnaryUnaryRpc
+
+
 @dataclass(frozen=True)
 class ConsensusBridgeConfig:
     target: str
@@ -97,6 +103,7 @@ class ConsensusBridgeConfig:
     proposal_tls_root_certificates: bytes | None = None
     proposal_client_private_key: bytes | None = None
     proposal_client_certificate_chain: bytes | None = None
+    attribution_ingress_endpoint: str | None = None
     graph_binding_validator_agent_id: str | None = None
     graph_binding_expected_bls_public_key_hex: str | None = None
     graph_binding_network_id: str | None = None
@@ -177,6 +184,11 @@ class ConsensusBridgeConfig:
             self.proposal_client_certificate_chain is None
         ):
             raise ValueError("proposal_client_certificate_pair_invalid_phase_1587_fix1")
+        if self.attribution_ingress_endpoint is not None and (
+            not isinstance(self.attribution_ingress_endpoint, str)
+            or not self.attribution_ingress_endpoint.strip()
+        ):
+            raise ValueError("attribution_ingress_endpoint_invalid_phase_1594")
         if self.graph_binding_validator_agent_id is not None:
             _require_lower_sha384_hex(
                 self.graph_binding_validator_agent_id,
@@ -323,6 +335,48 @@ class EpochProposalSubmissionResult:
 
 
 @dataclass(frozen=True)
+class AttributionBatchSubmission:
+    submitter_agent_id: bytes
+    epoch_number: int
+    backward_attribution_batch_root: str
+    attribution_entries_hash: bytes
+    idempotency_key: str
+    not_before_unix_ms: int
+    network_id: str
+    production_bridge_active: bool
+    activation_token: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "activation_token": self.activation_token,
+            "attribution_entries_hash_hex": self.attribution_entries_hash.hex(),
+            "backward_attribution_batch_root": self.backward_attribution_batch_root,
+            "epoch_number": self.epoch_number,
+            "idempotency_key": self.idempotency_key,
+            "network_id": self.network_id,
+            "not_before_unix_ms": self.not_before_unix_ms,
+            "production_bridge_active": self.production_bridge_active,
+            "submitter_agent_id_hex": self.submitter_agent_id.hex(),
+        }
+
+
+@dataclass(frozen=True)
+class AttributionBatchSubmissionResult:
+    status_token: str
+    accepted_epoch_number: int
+    accepted_backward_root: str
+    production_bridge_active: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "accepted_backward_root": self.accepted_backward_root,
+            "accepted_epoch_number": self.accepted_epoch_number,
+            "production_bridge_active": self.production_bridge_active,
+            "status_token": self.status_token,
+        }
+
+
+@dataclass(frozen=True)
 class _MessageTypes:
     GetBalanceRequest: type[Any]
     GetBalanceResponse: type[Any]
@@ -334,6 +388,8 @@ class _MessageTypes:
     GetEpochChainResponse: type[Any]
     SubmitEpochProposalRequest: type[Any]
     SubmitEpochProposalResponse: type[Any]
+    SubmitAttributionBatchRequest: type[Any]
+    SubmitAttributionBatchResponse: type[Any]
 
 
 def _decimal_to_string(value: Decimal) -> str:
@@ -565,6 +621,79 @@ def _expected_epoch_proposal_idempotency_key(
     )
 
 
+def _attribution_entries_hash(batch_payload: Mapping[str, Any]) -> bytes:
+    entries = batch_payload.get("backward_attribution_entries")
+    if entries is None:
+        entries = batch_payload.get("attributions")
+    if not isinstance(entries, list):
+        raise ValueError("submit_attribution_batch_entries_invalid_phase_1594")
+    canonical = _canonical_json({"entries": entries}).encode("utf-8")
+    return _sha256_bytes(canonical)
+
+
+def _attribution_batch_idempotency_key(
+    *,
+    epoch_number: int,
+    network_id: str,
+    backward_attribution_batch_root: str,
+) -> str:
+    preimage = (
+        f"{ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN}:"
+        f"{epoch_number}:{network_id}:{backward_attribution_batch_root}"
+    )
+    return hashlib.sha256(preimage.encode("utf-8")).hexdigest()
+
+
+def _expected_attribution_batch_idempotency_key(
+    submission: AttributionBatchSubmission,
+) -> str:
+    return _attribution_batch_idempotency_key(
+        epoch_number=submission.epoch_number,
+        network_id=submission.network_id,
+        backward_attribution_batch_root=submission.backward_attribution_batch_root,
+    )
+
+
+def _validate_attribution_batch_submission(
+    submission: AttributionBatchSubmission,
+) -> None:
+    _normalize_agent_id(submission.submitter_agent_id)
+    _require_uint64_int(
+        submission.epoch_number,
+        "submit_attribution_batch_epoch_number_invalid_phase_1594",
+    )
+    if submission.backward_attribution_batch_root:
+        _require_lower_sha256_hex(
+            submission.backward_attribution_batch_root,
+            "submit_attribution_batch_backward_root_invalid_phase_1594",
+        )
+    _require_exact_bytes(
+        submission.attribution_entries_hash,
+        SHA256_LENGTH_BYTES,
+        "submit_attribution_batch_entries_hash_invalid_phase_1594",
+    )
+    _require_lower_sha256_hex(
+        submission.idempotency_key,
+        "submit_attribution_batch_idempotency_key_invalid_phase_1594",
+    )
+    _require_uint64_int(
+        submission.not_before_unix_ms,
+        "submit_attribution_batch_not_before_invalid_phase_1594",
+    )
+    _require_non_empty_str(
+        submission.network_id,
+        "submit_attribution_batch_network_id_invalid_phase_1594",
+    )
+    if submission.idempotency_key != _expected_attribution_batch_idempotency_key(
+        submission,
+    ):
+        raise ValueError("submit_attribution_batch_idempotency_preimage_mismatch_phase_1594")
+    if submission.production_bridge_active is not PRODUCTION_BRIDGE_ACTIVE:
+        raise ValueError("submit_attribution_batch_bridge_active_flag_mismatch_phase_1594")
+    if submission.activation_token != PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN:
+        raise ValueError("submit_attribution_batch_activation_token_invalid_phase_1594")
+
+
 def _validate_epoch_settlement_proposal_submission(
     submission: EpochSettlementProposalSubmission,
 ) -> None:
@@ -760,6 +889,45 @@ def _build_message_types() -> _MessageTypes:
             ("proposal_id", 5, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
         ),
     )
+    _add_message(
+        file_proto,
+        "SubmitAttributionBatchRequest",
+        (
+            ("epoch_number", 1, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+            ("submitter_agent_id", 2, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
+            (
+                "backward_attribution_batch_root",
+                3,
+                descriptor_pb2.FieldDescriptorProto.TYPE_STRING,
+            ),
+            ("idempotency_key", 4, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("network_id", 5, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("not_before_unix_ms", 6, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
+            (
+                "attribution_entries_hash",
+                7,
+                descriptor_pb2.FieldDescriptorProto.TYPE_BYTES,
+            ),
+        ),
+    )
+    _add_message(
+        file_proto,
+        "SubmitAttributionBatchResponse",
+        (
+            ("status_token", 1, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            ("error_code", 2, descriptor_pb2.FieldDescriptorProto.TYPE_STRING),
+            (
+                "accepted_epoch_number",
+                3,
+                descriptor_pb2.FieldDescriptorProto.TYPE_UINT64,
+            ),
+            (
+                "accepted_backward_root",
+                4,
+                descriptor_pb2.FieldDescriptorProto.TYPE_STRING,
+            ),
+        ),
+    )
 
     pool = descriptor_pool.DescriptorPool()
     pool.Add(file_proto)
@@ -779,6 +947,8 @@ def _build_message_types() -> _MessageTypes:
         GetEpochChainResponse=message_class("GetEpochChainResponse"),
         SubmitEpochProposalRequest=message_class("SubmitEpochProposalRequest"),
         SubmitEpochProposalResponse=message_class("SubmitEpochProposalResponse"),
+        SubmitAttributionBatchRequest=message_class("SubmitAttributionBatchRequest"),
+        SubmitAttributionBatchResponse=message_class("SubmitAttributionBatchResponse"),
     )
 
 
@@ -817,6 +987,16 @@ class _DynamicILCAppProposalIngressServiceStub:
             "/ilc_app.ILCAppProposalIngressService/SubmitEpochProposal",
             messages.SubmitEpochProposalRequest.SerializeToString,
             messages.SubmitEpochProposalResponse.FromString,
+        )
+
+
+class _DynamicILCAppAttributionIngressServiceStub:
+    def __init__(self, channel: Any, messages: _MessageTypes) -> None:
+        self.SubmitAttributionBatch = _unary_unary(
+            channel,
+            "/ilc_app.ILCAppAttributionIngressService/SubmitAttributionBatch",
+            messages.SubmitAttributionBatchRequest.SerializeToString,
+            messages.SubmitAttributionBatchResponse.FromString,
         )
 
 
@@ -890,6 +1070,43 @@ def build_secure_grpc_proposal_ingress_stub(
         ),
     )
     return _DynamicILCAppProposalIngressServiceStub(
+        channel,
+        messages or _build_message_types(),
+    )
+
+
+def build_secure_grpc_attribution_ingress_stub(
+    config: ConsensusBridgeConfig,
+    *,
+    messages: _MessageTypes | None = None,
+) -> ILCAppAttributionIngressServiceStubProtocol:
+    if (
+        config.proposal_client_private_key is None
+        or config.proposal_client_certificate_chain is None
+    ):
+        raise ValueError("proposal_client_certificate_pair_required_phase_1587_fix1")
+    grpc_module = importlib.import_module("grpc")
+    credentials = grpc_module.ssl_channel_credentials(
+        root_certificates=(
+            config.proposal_tls_root_certificates or config.tls_root_certificates
+        ),
+        private_key=config.proposal_client_private_key,
+        certificate_chain=config.proposal_client_certificate_chain,
+    )
+    channel = grpc_module.secure_channel(
+        config.attribution_ingress_endpoint
+        or config.proposal_ingress_endpoint
+        or config.target,
+        credentials,
+        options=(
+            ("grpc.max_send_message_length", MAX_PROPOSAL_GRPC_OVERHEAD_BYTES + 1024),
+            (
+                "grpc.max_receive_message_length",
+                config.max_epoch_chain_receive_bytes,
+            ),
+        ),
+    )
+    return _DynamicILCAppAttributionIngressServiceStub(
         channel,
         messages or _build_message_types(),
     )
@@ -1315,6 +1532,132 @@ def build_epoch_settlement_proposal_submission(
     )
 
 
+def build_attribution_batch_submission(
+    batch_payload: Mapping[str, Any],
+    *,
+    submitter_agent_id: bytes | bytearray | memoryview,
+    not_before_unix_ms: int,
+    network_id: str,
+    idempotency_key: str | None = None,
+) -> AttributionBatchSubmission:
+    if not isinstance(batch_payload, Mapping):
+        raise ValueError("submit_attribution_batch_payload_invalid_phase_1594")
+    epoch_number = _require_uint64_int(
+        batch_payload.get("epoch"),
+        "submit_attribution_batch_epoch_number_invalid_phase_1594",
+    )
+    root_value = batch_payload.get("backward_attribution_batch_root")
+    backward_root = "" if root_value is None else str(root_value)
+    if backward_root:
+        backward_root = _require_lower_sha256_hex(
+            backward_root,
+            "submit_attribution_batch_backward_root_invalid_phase_1594",
+        )
+    normalized_network_id = _require_non_empty_str(
+        network_id,
+        "submit_attribution_batch_network_id_invalid_phase_1594",
+    )
+    normalized_not_before = _require_uint64_int(
+        not_before_unix_ms,
+        "submit_attribution_batch_not_before_invalid_phase_1594",
+    )
+    expected_key = _attribution_batch_idempotency_key(
+        epoch_number=epoch_number,
+        network_id=normalized_network_id,
+        backward_attribution_batch_root=backward_root,
+    )
+    normalized_key = (
+        expected_key
+        if idempotency_key is None
+        else _require_lower_sha256_hex(
+            idempotency_key,
+            "submit_attribution_batch_idempotency_key_invalid_phase_1594",
+        )
+    )
+    if normalized_key != expected_key:
+        raise ValueError("submit_attribution_batch_idempotency_preimage_mismatch_phase_1594")
+    submission = AttributionBatchSubmission(
+        submitter_agent_id=_normalize_agent_id(submitter_agent_id),
+        epoch_number=epoch_number,
+        backward_attribution_batch_root=backward_root,
+        attribution_entries_hash=_attribution_entries_hash(batch_payload),
+        idempotency_key=normalized_key,
+        not_before_unix_ms=normalized_not_before,
+        network_id=normalized_network_id,
+        production_bridge_active=PRODUCTION_BRIDGE_ACTIVE,
+        activation_token=PRODUCTION_BRIDGE_ACTIVATED_PHASE_1587_TOKEN,
+    )
+    _validate_attribution_batch_submission(submission)
+    return submission
+
+
+def submit_attribution_batch_via_grpc(
+    submission: AttributionBatchSubmission,
+    *,
+    config: ConsensusBridgeConfig,
+    stub: ILCAppAttributionIngressServiceStubProtocol | None = None,
+    messages: _MessageTypes | None = None,
+) -> AttributionBatchSubmissionResult:
+    if not isinstance(submission, AttributionBatchSubmission):
+        raise ValueError("attribution_batch_submission_invalid_phase_1594")
+    _validate_attribution_batch_submission(submission)
+    if not PRODUCTION_BRIDGE_ACTIVE:
+        raise ValueError(LIVE_ECU_TRANSFER_NOT_ACTIVATED_TOKEN)
+    message_types = messages or _build_message_types()
+    attribution_stub = stub or build_secure_grpc_attribution_ingress_stub(
+        config,
+        messages=message_types,
+    )
+    request = message_types.SubmitAttributionBatchRequest(
+        epoch_number=submission.epoch_number,
+        submitter_agent_id=submission.submitter_agent_id,
+        backward_attribution_batch_root=submission.backward_attribution_batch_root,
+        idempotency_key=submission.idempotency_key,
+        network_id=submission.network_id,
+        not_before_unix_ms=submission.not_before_unix_ms,
+        attribution_entries_hash=submission.attribution_entries_hash,
+    )
+    try:
+        response = attribution_stub.SubmitAttributionBatch(
+            request,
+            timeout=config.grpc_timeout_seconds,
+        )
+    except Exception as exc:
+        raise ValueError("submit_attribution_batch_transport_failed_phase_1594") from exc
+
+    error_code = getattr(response, "error_code", "")
+    if error_code:
+        raise ValueError(error_code)
+    status_token = _require_non_empty_str(
+        getattr(response, "status_token", None),
+        "submit_attribution_batch_status_token_invalid_phase_1594",
+    )
+    if status_token != SUBMIT_ATTRIBUTION_BATCH_ACCEPTED_TOKEN:
+        raise ValueError("submit_attribution_batch_unexpected_status_phase_1594")
+    accepted_epoch = _require_uint64_int(
+        getattr(response, "accepted_epoch_number", None),
+        "submit_attribution_batch_accepted_epoch_invalid_phase_1594",
+    )
+    accepted_root = getattr(response, "accepted_backward_root", None)
+    if not isinstance(accepted_root, str):
+        raise ValueError("submit_attribution_batch_accepted_root_invalid_phase_1594")
+    if accepted_root and _require_lower_sha256_hex(
+        accepted_root,
+        "submit_attribution_batch_accepted_root_invalid_phase_1594",
+    ) != accepted_root:
+        raise ValueError("submit_attribution_batch_accepted_root_invalid_phase_1594")
+    if accepted_epoch != submission.epoch_number:
+        raise ValueError("submit_attribution_batch_accepted_epoch_mismatch_phase_1594")
+    if accepted_root != submission.backward_attribution_batch_root:
+        raise ValueError("submit_attribution_batch_accepted_root_mismatch_phase_1594")
+    return AttributionBatchSubmissionResult(
+        status_token=status_token,
+        accepted_epoch_number=accepted_epoch,
+        accepted_backward_root=accepted_root,
+        production_bridge_active=PRODUCTION_BRIDGE_ACTIVE,
+    )
+
+
 def submit_ecu_transfer_via_quic(
     submission_path: EpochSettlementProposalSubmission,
     *,
@@ -1400,6 +1743,8 @@ def submit_ecu_transfer_via_quic(
 __all__ = [
     "ADR_0028_PRODUCTION_BRIDGE_PARTIAL_TOKEN",
     "AGENT_ID_LENGTH_BYTES",
+    "AttributionBatchSubmission",
+    "AttributionBatchSubmissionResult",
     "BalanceQuote",
     "ConsensusBridgeConfig",
     "DEFAULT_GRPC_TIMEOUT_SECONDS",
@@ -1426,10 +1771,13 @@ __all__ = [
     "TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN",
     "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED",
     "build_epoch_settlement_proposal_submission",
+    "build_attribution_batch_submission",
     "build_quic_ecu_transfer_submission_path",
+    "build_secure_grpc_attribution_ingress_stub",
     "build_secure_grpc_proposal_ingress_stub",
     "build_secure_grpc_read_stub",
     "quote_to_canonical_json",
+    "submit_attribution_batch_via_grpc",
     "submit_ecu_transfer_via_quic",
     "verify_validator_cert_against_graph",
 ]

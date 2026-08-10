@@ -17,6 +17,13 @@ service ILCAppProposalIngressService {
     rpc SubmitEpochProposal (SubmitEpochProposalRequest) returns (SubmitEpochProposalResponse) {}
 }
 
+// Authenticated attribution ingress. Python submits a root/hash commitment for
+// attribution evidence; Rust stores the epoch-keyed root metadata and does not
+// recompute graph attribution.
+service ILCAppAttributionIngressService {
+    rpc SubmitAttributionBatch (SubmitAttributionBatchRequest) returns (SubmitAttributionBatchResponse) {}
+}
+
 message SubmitEpochProposalRequest {
     bytes  submitter_agent_id      = 1; // exactly 48 bytes
     uint64 epoch_number            = 2;
@@ -35,6 +42,23 @@ message SubmitEpochProposalResponse {
     uint64 accepted_epoch_number     = 3;
     bytes  accepted_state_root_cidv1 = 4;
     string proposal_id               = 5;
+}
+
+message SubmitAttributionBatchRequest {
+    uint64 epoch_number                    = 1;
+    bytes  submitter_agent_id              = 2; // exactly 48 bytes
+    string backward_attribution_batch_root = 3; // lowercase 64-hex SHA-256; empty if no backward attribution this epoch
+    string idempotency_key                 = 4; // lowercase 64-hex SHA-256 over canonical preimage
+    string network_id                      = 5;
+    uint64 not_before_unix_ms              = 6;
+    bytes  attribution_entries_hash        = 7; // SHA-256 over sorted attribution entries JSON; exactly 32 bytes
+}
+
+message SubmitAttributionBatchResponse {
+    string status_token                   = 1;
+    string error_code                     = 2;
+    uint64 accepted_epoch_number          = 3;
+    string accepted_backward_root         = 4; // echoed back; empty if not present
 }
 
 message GetBalanceRequest {

@@ -106,6 +106,35 @@ impl BalanceStore {
         }
     }
 
+    pub fn store_backward_attribution_batch_root(
+        &self,
+        epoch: EpochSeq,
+        root: [u8; 32],
+    ) -> Result<(), ILCConsensusError> {
+        let mut txn = self
+            .env
+            .begin_rw_txn()
+            .map_err(|e| ILCConsensusError::Other(format!("Failed to begin RW txn: {}", e)))?;
+        let key = backward_attribution_batch_root_key(epoch);
+        match txn.get(self.db, &key) {
+            Ok(existing) => {
+                if existing == root {
+                    return Ok(());
+                }
+                return Err(ILCConsensusError::Other(
+                    "backward_attribution_batch_root_conflict_phase_1594".to_string(),
+                ));
+            }
+            Err(lmdb_rkv::Error::NotFound) => {}
+            Err(e) => return Err(ILCConsensusError::Other(format!("LMDB get error: {}", e))),
+        }
+        txn.put(self.db, &key, &root.to_vec(), WriteFlags::empty())
+            .map_err(|e| ILCConsensusError::Other(format!("LMDB Put error: {}", e)))?;
+        txn.commit()
+            .map_err(|e| ILCConsensusError::Other(format!("Txn Commit error: {}", e)))?;
+        Ok(())
+    }
+
     /// Primary execution boundary for the Byzantine Consistent Broadcast fast-path.
     /// Locks on `cert.transfer.object_ref` to enforce SafetyNoDualCert.
     /// Note: Assumes `cert` signatures have already been aggregated and checked

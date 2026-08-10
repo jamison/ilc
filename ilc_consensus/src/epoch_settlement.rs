@@ -445,9 +445,10 @@ impl EpochSettlementProtocol {
                             ILCConsensusError::Other(format!("Prev epoch deserialize error: {}", e))
                         })?;
                     let prev_not_before = prev_stored.record.not_before_unix_ms;
-                    if checkpoint.record.not_before_unix_ms < prev_not_before.saturating_add(
-                        self.epoch_store.effective_min_epoch_duration_ms(),
-                    ) {
+                    if checkpoint.record.not_before_unix_ms
+                        < prev_not_before
+                            .saturating_add(self.epoch_store.effective_min_epoch_duration_ms())
+                    {
                         return Err(ILCConsensusError::Other(
                             "epoch_checkpoint_min_duration_not_elapsed".to_string(),
                         ));
