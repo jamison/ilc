@@ -10,16 +10,19 @@ use crate::balance_store::BalanceStore;
 use crate::epoch_settlement::EpochStore;
 use crate::network::EpochProposal;
 use crate::node::{EpochProposalOutcome, NodeRunner};
-use crate::types::{AgentID, CIDv1Root, ILCConsensusError};
+use crate::types::{AgentID, CIDv1Root, EpochSeq, ILCConsensusError};
+use ilc_app::ilc_app_attribution_ingress_service_server::IlcAppAttributionIngressService;
 use ilc_app::ilc_app_proposal_ingress_service_server::IlcAppProposalIngressService;
 use ilc_app::ilc_app_read_service_server::IlcAppReadService;
 use ilc_app::{
     GetBalanceRequest, GetBalanceResponse, GetEpochChainRequest, GetEpochChainResponse,
     GetEpochRecordRequest, GetEpochRecordResponse, GetEpochRequest, GetEpochResponse,
-    SubmitEpochProposalRequest, SubmitEpochProposalResponse,
+    SubmitAttributionBatchRequest, SubmitAttributionBatchResponse, SubmitEpochProposalRequest,
+    SubmitEpochProposalResponse,
 };
 
 pub const MAX_EPOCH_CHAIN_BATCH: u64 = 128;
+const ATTRIBUTION_BATCH_ACCEPTED_TOKEN: &str = "attribution_batch_accepted";
 
 /// The singular external interface allowed for the Python Epistemic layer.
 /// Inherently bans writes by omitting any mutation capabilities, strictly decoupling
@@ -222,6 +225,162 @@ impl IlcAppProposalIngressService for ProposalIngressService {
             Ok(outcome) => Ok(Response::new(outcome_response(outcome))),
             Err(e) => Ok(Response::new(error_response(error_code_for(e).as_str()))),
         }
+    }
+}
+
+pub struct AttributionIngressService {
+    balance_store: Arc<BalanceStore>,
+    require_tls_client_cert: bool,
+    allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
+}
+
+impl AttributionIngressService {
+    pub fn new(
+        balance_store: Arc<BalanceStore>,
+        allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
+    ) -> Self {
+        Self {
+            balance_store,
+            require_tls_client_cert: true,
+            allowed_client_cert_sha256_fingerprints,
+        }
+    }
+
+    #[cfg(test)]
+    fn new_for_tests_without_tls(balance_store: Arc<BalanceStore>) -> Self {
+        Self {
+            balance_store,
+            require_tls_client_cert: false,
+            allowed_client_cert_sha256_fingerprints: vec![],
+        }
+    }
+}
+
+#[tonic::async_trait]
+impl IlcAppAttributionIngressService for AttributionIngressService {
+    async fn submit_attribution_batch(
+        &self,
+        request: Request<SubmitAttributionBatchRequest>,
+    ) -> Result<Response<SubmitAttributionBatchResponse>, Status> {
+        if self.require_tls_client_cert
+            && !has_allowed_tls_peer_certificate(
+                &request,
+                &self.allowed_client_cert_sha256_fingerprints,
+            )
+        {
+            return Ok(Response::new(attribution_error_response(
+                "submit_attribution_batch_unauthenticated_phase_1594",
+            )));
+        }
+
+        let req = request.into_inner();
+        let normalized = match validate_attribution_request(req) {
+            Ok(normalized) => normalized,
+            Err(code) => return Ok(Response::new(attribution_error_response(code))),
+        };
+        if let Some(root) = normalized.backward_root {
+            if let Err(err) = self
+                .balance_store
+                .store_backward_attribution_batch_root(EpochSeq(normalized.epoch), root)
+            {
+                return Ok(Response::new(attribution_error_response(
+                    attribution_error_code_for(err).as_str(),
+                )));
+            }
+        }
+        Ok(Response::new(SubmitAttributionBatchResponse {
+            status_token: ATTRIBUTION_BATCH_ACCEPTED_TOKEN.to_string(),
+            error_code: String::new(),
+            accepted_epoch_number: normalized.epoch,
+            accepted_backward_root: normalized.backward_root_hex,
+        }))
+    }
+}
+
+struct NormalizedAttributionRequest {
+    epoch: u64,
+    backward_root: Option<[u8; 32]>,
+    backward_root_hex: String,
+}
+
+fn validate_attribution_request(
+    req: SubmitAttributionBatchRequest,
+) -> Result<NormalizedAttributionRequest, &'static str> {
+    if req.submitter_agent_id.len() != 48 {
+        return Err("submit_attribution_batch_invalid_submitter_agent_id_phase_1594");
+    }
+    if req.attribution_entries_hash.len() != 32 {
+        return Err("submit_attribution_batch_invalid_entries_hash_phase_1594");
+    }
+    if req.network_id.trim().is_empty() {
+        return Err("submit_attribution_batch_invalid_network_id_phase_1594");
+    }
+    if !is_lower_sha256_hex(&req.idempotency_key) {
+        return Err("submit_attribution_batch_invalid_idempotency_key_phase_1594");
+    }
+    let backward_root = if req.backward_attribution_batch_root.is_empty() {
+        None
+    } else {
+        Some(parse_lower_sha256_hex(
+            &req.backward_attribution_batch_root,
+        )?)
+    };
+    Ok(NormalizedAttributionRequest {
+        epoch: req.epoch_number,
+        backward_root,
+        backward_root_hex: req.backward_attribution_batch_root,
+    })
+}
+
+fn parse_lower_sha256_hex(value: &str) -> Result<[u8; 32], &'static str> {
+    if !is_lower_sha256_hex(value) {
+        return Err("submit_attribution_batch_invalid_backward_root_phase_1594");
+    }
+    let mut out = [0u8; 32];
+    for index in 0..32 {
+        let hi = hex_nibble(value.as_bytes()[index * 2])?;
+        let lo = hex_nibble(value.as_bytes()[index * 2 + 1])?;
+        out[index] = (hi << 4) | lo;
+    }
+    Ok(out)
+}
+
+fn is_lower_sha256_hex(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .as_bytes()
+            .iter()
+            .all(|byte| byte.is_ascii_digit() || (*byte >= b'a' && *byte <= b'f'))
+}
+
+fn hex_nibble(byte: u8) -> Result<u8, &'static str> {
+    match byte {
+        b'0'..=b'9' => Ok(byte - b'0'),
+        b'a'..=b'f' => Ok(byte - b'a' + 10),
+        _ => Err("submit_attribution_batch_invalid_backward_root_phase_1594"),
+    }
+}
+
+fn attribution_error_response(code: &str) -> SubmitAttributionBatchResponse {
+    SubmitAttributionBatchResponse {
+        status_token: String::new(),
+        error_code: code.to_string(),
+        accepted_epoch_number: 0,
+        accepted_backward_root: String::new(),
+    }
+}
+
+fn attribution_error_code_for(err: ILCConsensusError) -> String {
+    match err {
+        ILCConsensusError::Other(msg)
+            if msg.contains("backward_attribution_batch_root_conflict") =>
+        {
+            "submit_attribution_batch_backward_root_conflict_phase_1594".into()
+        }
+        ILCConsensusError::Other(msg) if msg.contains("LMDB") => {
+            "submit_attribution_batch_lmdb_write_failed_phase_1594".into()
+        }
+        _ => "submit_attribution_batch_rejected_phase_1594".into(),
     }
 }
 
@@ -437,6 +596,18 @@ mod tests {
         }
     }
 
+    fn attribution_request(root: &str) -> SubmitAttributionBatchRequest {
+        SubmitAttributionBatchRequest {
+            epoch_number: 7,
+            submitter_agent_id: vec![8; 48],
+            backward_attribution_batch_root: root.to_string(),
+            idempotency_key: "a".repeat(64),
+            network_id: "ilc-rc01".to_string(),
+            not_before_unix_ms: 0,
+            attribution_entries_hash: vec![9; 32],
+        }
+    }
+
     fn proposal_idempotency_key(
         domain: &[u8],
         network_id: &str,
@@ -502,6 +673,15 @@ mod tests {
             .with_proposal_ingress_enabled(true),
         );
         ProposalIngressService::new_for_tests_without_tls(runner)
+    }
+
+    fn setup_attribution_service() -> (AttributionIngressService, Arc<BalanceStore>) {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env).unwrap());
+        (
+            AttributionIngressService::new_for_tests_without_tls(Arc::clone(&balance_store)),
+            balance_store,
+        )
     }
 
     fn agg_sig_all(
@@ -604,6 +784,90 @@ mod tests {
         assert_eq!(
             resp.error_code,
             "submit_epoch_proposal_unauthenticated_phase_1586"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_stores_backward_root() {
+        let (service, store) = setup_attribution_service();
+        let root = "b".repeat(64);
+        let resp = service
+            .submit_attribution_batch(Request::new(attribution_request(&root)))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(resp.status_token, "attribution_batch_accepted");
+        assert_eq!(resp.error_code, "");
+        assert_eq!(resp.accepted_epoch_number, 7);
+        assert_eq!(resp.accepted_backward_root, root);
+        let stored = store
+            .get_backward_attribution_batch_root(EpochSeq(7))
+            .unwrap()
+            .unwrap();
+        assert_eq!(bytes_to_lower_hex(&stored), root);
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_rejects_bad_root_and_hash() {
+        let (service, _store) = setup_attribution_service();
+        let mut bad_root = attribution_request(&"B".repeat(64));
+        let resp = service
+            .submit_attribution_batch(Request::new(bad_root))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_invalid_backward_root_phase_1594"
+        );
+
+        bad_root = attribution_request("");
+        bad_root.attribution_entries_hash = vec![1; 31];
+        let resp = service
+            .submit_attribution_batch(Request::new(bad_root))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_invalid_entries_hash_phase_1594"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_rejects_epoch_root_conflict() {
+        let (service, _store) = setup_attribution_service();
+        let first = service
+            .submit_attribution_batch(Request::new(attribution_request(&"b".repeat(64))))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(first.status_token, "attribution_batch_accepted");
+
+        let second = service
+            .submit_attribution_batch(Request::new(attribution_request(&"c".repeat(64))))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            second.error_code,
+            "submit_attribution_batch_backward_root_conflict_phase_1594"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_requires_tls_client_cert() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env).unwrap());
+        let service = AttributionIngressService::new(balance_store, vec![]);
+        let resp = service
+            .submit_attribution_batch(Request::new(attribution_request("")))
+            .await
+            .unwrap()
+            .into_inner();
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_unauthenticated_phase_1594"
         );
     }
 

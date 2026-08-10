@@ -34,6 +34,23 @@ def to_decimal(value: ExactNumberish, *, token: str = "invalid_exact_numeric_val
 
 
 def decimal_to_canonical_string(value: Decimal) -> str:
+    """Canonical decimal serialization for protocol artifacts.
+
+    PROTOCOL INVARIANT: The output format of this function is a consensus
+    commitment. Changing this function's output for any previously-valid input
+    changes the SHA-256 root of any backward attribution batch or reputation
+    root that includes that value in its preimage. Any change requires a CDL
+    amendment and a versioned migration.
+
+    Format contract:
+    - Zero -> "0" (not "0.0", not "0E+0")
+    - Trailing fractional zeros stripped: Decimal("1.50") -> "1.5"
+    - Leading integer zeros stripped: Decimal("001.5") -> "1.5"
+    - No scientific notation: Decimal("1E+2") -> "100"
+    - Negative zero -> "0"
+    - Non-finite -> raises ValueError("invalid_exact_numeric_value")
+    """
+
     if not value.is_finite():
         raise ValueError("invalid_exact_numeric_value")
     if value == ZERO:

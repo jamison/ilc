@@ -18,9 +18,12 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use ilc_consensus::app_interface::ilc_app::{
-    ilc_app_proposal_ingress_service_server, ilc_app_read_service_server,
+    ilc_app_attribution_ingress_service_server, ilc_app_proposal_ingress_service_server,
+    ilc_app_read_service_server,
 };
-use ilc_consensus::app_interface::{ApplicationInterface, ProposalIngressService};
+use ilc_consensus::app_interface::{
+    ApplicationInterface, AttributionIngressService, ProposalIngressService,
+};
 use ilc_consensus::{
     balance_store::BalanceStore,
     config::{load_genesis, load_node_config, SettlementPath},
@@ -329,6 +332,13 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
                     cfg.peer_cert_sha256_fingerprints.clone(),
                 ),
             );
+        let attribution_svc =
+            ilc_app_attribution_ingress_service_server::IlcAppAttributionIngressServiceServer::new(
+                AttributionIngressService::new(
+                    Arc::clone(&balance_store),
+                    cfg.peer_cert_sha256_fingerprints.clone(),
+                ),
+            );
         let grpc_tls_identity = Identity::from_pem(cfg.my_cert_pem.clone(), cfg.my_key_pem.clone());
         let peer_ca_pem = cfg.peer_cert_pem_bundle.clone();
         tokio::spawn(async move {
@@ -345,6 +355,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
                 .expect("[m018] TLS gRPC server config failed")
                 .add_service(read_svc)
                 .add_service(proposal_svc)
+                .add_service(attribution_svc)
                 .serve(grpc_addr)
                 .await
                 .expect("[m018] gRPC server failed");

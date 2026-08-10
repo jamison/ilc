@@ -347,6 +347,7 @@ def build_attribution_batch_from_claims(
     backward_attribution_graph_context: dict[str, Any] | None = None,
     agent_reputation_root: str | None = None,
     attribution_event_log_dir: str | Path | None = None,
+    attribution_audit_store: Any | None = None,
     cdl084_settled_event_ids: set[str] | frozenset[str] | None = None,
 ) -> dict[str, Any]:
     """Build a Rust `AttributionBatch` JSON payload from accepted claims.
@@ -357,6 +358,14 @@ def build_attribution_batch_from_claims(
     """
 
     payload = _require_dict("claim_payload", claim_payload)
+    if attribution_event_log_dir is not None and attribution_audit_store is not None:
+        raise AttributionBatchBridgeError(
+            "attribution_audit_dual_backend_not_permitted",
+            (
+                "attribution_audit_dual_backend_not_permitted: choose either file "
+                "attribution logging or LMDB audit logging, not both"
+            ),
+        )
     if payload.get("marker") not in {None, "agent_loop_claims_ok"}:
         raise AttributionBatchBridgeError(
             "accepted_claim_payload_required",
@@ -544,10 +553,14 @@ def build_attribution_batch_from_claims(
                     log_dir / f"attr_event_{selected_epoch}_{index:04d}.json",
                     record,
                 )
+        if attribution_audit_store is not None:
+            attribution_audit_store.write_epoch_events(selected_epoch, attribution_event_log)
         total_source += total_backward_final
 
     if selected_epoch is None:
         raise AttributionBatchBridgeError("attribution_epoch_required", "attribution epoch is required")
+    if backward_attribution_graph_context is None and attribution_audit_store is not None:
+        attribution_audit_store.write_epoch_events(selected_epoch, [])
 
     attributions: list[dict[str, Any]] = []
     for agent_id in sorted(aggregated):
