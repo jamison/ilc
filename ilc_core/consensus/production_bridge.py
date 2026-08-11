@@ -55,6 +55,8 @@ MAX_EPOCH_CHAIN_RECEIVE_BYTES = 1_048_576
 MAX_PROPOSAL_BODY_BYTES = 256 * 1024
 MAX_PROPOSAL_GRPC_OVERHEAD_BYTES = 4096
 MAX_ECU_TRANSFER_COMMAND_BYTES = 64 * 1024
+MAX_ATTRIBUTION_ENTRIES_HASH_BYTES = 1024 * 1024
+MAX_ATTRIBUTION_ENTRY_COUNT = 4096
 MICRO_ECU_PER_ECU = Decimal("1000000")
 UINT64_MAX = Decimal("18446744073709551615")
 AGENT_ID_LENGTH_BYTES = 48
@@ -63,7 +65,7 @@ SHA256_LENGTH_BYTES = 32
 SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN = "submit_epoch_proposal_accepted_phase_1586"
 SUBMIT_ATTRIBUTION_BATCH_ACCEPTED_TOKEN = "attribution_batch_accepted"
 EPOCH_PROPOSAL_PREIMAGE_DOMAIN = b"ILC_SUBMIT_EPOCH_PROPOSAL_V1"
-ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN = "attribution"
+ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN = b"ILC_SUBMIT_ATTRIBUTION_BATCH_V1"
 ECU_TRANSFER_BUILDER_COMMAND_ENV = "ILC_ECU_TRANSFER_BUILDER_COMMAND"
 ECU_TRANSFER_SUBMIT_COMMAND_ENV = "ILC_ECU_TRANSFER_SUBMIT_COMMAND"
 
@@ -627,7 +629,11 @@ def _attribution_entries_hash(batch_payload: Mapping[str, Any]) -> bytes:
         entries = batch_payload.get("attributions")
     if not isinstance(entries, list):
         raise ValueError("submit_attribution_batch_entries_invalid_phase_1594")
+    if len(entries) > MAX_ATTRIBUTION_ENTRY_COUNT:
+        raise ValueError("submit_attribution_batch_entries_too_many_phase_1594_fix1")
     canonical = _canonical_json({"entries": entries}).encode("utf-8")
+    if len(canonical) > MAX_ATTRIBUTION_ENTRIES_HASH_BYTES:
+        raise ValueError("submit_attribution_batch_entries_too_large_phase_1594_fix1")
     return _sha256_bytes(canonical)
 
 
@@ -636,12 +642,22 @@ def _attribution_batch_idempotency_key(
     epoch_number: int,
     network_id: str,
     backward_attribution_batch_root: str,
+    submitter_agent_id: bytes,
+    attribution_entries_hash: bytes,
+    not_before_unix_ms: int,
 ) -> str:
-    preimage = (
-        f"{ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN}:"
-        f"{epoch_number}:{network_id}:{backward_attribution_batch_root}"
+    preimage = b"".join(
+        (
+            ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN,
+            network_id.encode("utf-8"),
+            epoch_number.to_bytes(8, "big", signed=False),
+            submitter_agent_id,
+            backward_attribution_batch_root.encode("utf-8"),
+            attribution_entries_hash,
+            not_before_unix_ms.to_bytes(8, "big", signed=False),
+        ),
     )
-    return hashlib.sha256(preimage.encode("utf-8")).hexdigest()
+    return hashlib.sha256(preimage).hexdigest()
 
 
 def _expected_attribution_batch_idempotency_key(
@@ -651,6 +667,9 @@ def _expected_attribution_batch_idempotency_key(
         epoch_number=submission.epoch_number,
         network_id=submission.network_id,
         backward_attribution_batch_root=submission.backward_attribution_batch_root,
+        submitter_agent_id=submission.submitter_agent_id,
+        attribution_entries_hash=submission.attribution_entries_hash,
+        not_before_unix_ms=submission.not_before_unix_ms,
     )
 
 
@@ -1561,10 +1580,15 @@ def build_attribution_batch_submission(
         not_before_unix_ms,
         "submit_attribution_batch_not_before_invalid_phase_1594",
     )
+    normalized_submitter = _normalize_agent_id(submitter_agent_id)
+    entries_hash = _attribution_entries_hash(batch_payload)
     expected_key = _attribution_batch_idempotency_key(
         epoch_number=epoch_number,
         network_id=normalized_network_id,
         backward_attribution_batch_root=backward_root,
+        submitter_agent_id=normalized_submitter,
+        attribution_entries_hash=entries_hash,
+        not_before_unix_ms=normalized_not_before,
     )
     normalized_key = (
         expected_key
@@ -1577,10 +1601,10 @@ def build_attribution_batch_submission(
     if normalized_key != expected_key:
         raise ValueError("submit_attribution_batch_idempotency_preimage_mismatch_phase_1594")
     submission = AttributionBatchSubmission(
-        submitter_agent_id=_normalize_agent_id(submitter_agent_id),
+        submitter_agent_id=normalized_submitter,
         epoch_number=epoch_number,
         backward_attribution_batch_root=backward_root,
-        attribution_entries_hash=_attribution_entries_hash(batch_payload),
+        attribution_entries_hash=entries_hash,
         idempotency_key=normalized_key,
         not_before_unix_ms=normalized_not_before,
         network_id=normalized_network_id,

@@ -74,10 +74,7 @@ def decimal_to_canonical_string(value: Decimal) -> str:
     else:
         body = body.lstrip("0") or "0"
 
-    normalized = f"{sign}{body}"
-    if normalized in {"-0", "-0.0", ""}:
-        return "0"
-    return normalized
+    return f"{sign}{body}"
 
 
 def exact_to_canonical_string(

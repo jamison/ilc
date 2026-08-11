@@ -298,6 +298,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
             .collect(),
     };
 
+    let network_id_for_services = genesis_network_id.clone();
     let mut runner = NodeRunner::new(
         ValidatorID(cfg.validator_id),
         genesis_network_id,
@@ -336,6 +337,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
             ilc_app_attribution_ingress_service_server::IlcAppAttributionIngressServiceServer::new(
                 AttributionIngressService::new(
                     Arc::clone(&balance_store),
+                    network_id_for_services,
                     cfg.peer_cert_sha256_fingerprints.clone(),
                 ),
             );
