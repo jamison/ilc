@@ -119,6 +119,7 @@ impl BalanceStore {
         match txn.get(self.db, &key) {
             Ok(existing) => {
                 if existing == root {
+                    drop(txn);
                     return Ok(());
                 }
                 return Err(ILCConsensusError::Other(

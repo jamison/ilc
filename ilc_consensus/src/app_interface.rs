@@ -23,6 +23,7 @@ use ilc_app::{
 
 pub const MAX_EPOCH_CHAIN_BATCH: u64 = 128;
 const ATTRIBUTION_BATCH_ACCEPTED_TOKEN: &str = "attribution_batch_accepted";
+const ATTRIBUTION_BATCH_PREIMAGE_DOMAIN: &[u8] = b"ILC_SUBMIT_ATTRIBUTION_BATCH_V1";
 
 /// The singular external interface allowed for the Python Epistemic layer.
 /// Inherently bans writes by omitting any mutation capabilities, strictly decoupling
@@ -230,6 +231,7 @@ impl IlcAppProposalIngressService for ProposalIngressService {
 
 pub struct AttributionIngressService {
     balance_store: Arc<BalanceStore>,
+    network_id: String,
     require_tls_client_cert: bool,
     allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
 }
@@ -237,10 +239,12 @@ pub struct AttributionIngressService {
 impl AttributionIngressService {
     pub fn new(
         balance_store: Arc<BalanceStore>,
+        network_id: String,
         allowed_client_cert_sha256_fingerprints: Vec<[u8; 32]>,
     ) -> Self {
         Self {
             balance_store,
+            network_id,
             require_tls_client_cert: true,
             allowed_client_cert_sha256_fingerprints,
         }
@@ -250,6 +254,7 @@ impl AttributionIngressService {
     fn new_for_tests_without_tls(balance_store: Arc<BalanceStore>) -> Self {
         Self {
             balance_store,
+            network_id: "ilc-rc01".to_string(),
             require_tls_client_cert: false,
             allowed_client_cert_sha256_fingerprints: vec![],
         }
@@ -274,7 +279,7 @@ impl IlcAppAttributionIngressService for AttributionIngressService {
         }
 
         let req = request.into_inner();
-        let normalized = match validate_attribution_request(req) {
+        let normalized = match validate_attribution_request(req, &self.network_id) {
             Ok(normalized) => normalized,
             Err(code) => return Ok(Response::new(attribution_error_response(code))),
         };
@@ -305,6 +310,7 @@ struct NormalizedAttributionRequest {
 
 fn validate_attribution_request(
     req: SubmitAttributionBatchRequest,
+    expected_network_id: &str,
 ) -> Result<NormalizedAttributionRequest, &'static str> {
     if req.submitter_agent_id.len() != 48 {
         return Err("submit_attribution_batch_invalid_submitter_agent_id_phase_1594");
@@ -315,8 +321,20 @@ fn validate_attribution_request(
     if req.network_id.trim().is_empty() {
         return Err("submit_attribution_batch_invalid_network_id_phase_1594");
     }
+    if req.network_id != expected_network_id {
+        return Err("submit_attribution_batch_wrong_network_phase_1594_fix1");
+    }
     if !is_lower_sha256_hex(&req.idempotency_key) {
         return Err("submit_attribution_batch_invalid_idempotency_key_phase_1594");
+    }
+    let now_ms = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0);
+    if req.not_before_unix_ms
+        > now_ms.saturating_add(crate::epoch_settlement::CLOCK_SKEW_TOLERANCE_MS)
+    {
+        return Err("submit_attribution_batch_not_before_too_far_future_phase_1594_fix1");
     }
     let backward_root = if req.backward_attribution_batch_root.is_empty() {
         None
@@ -325,6 +343,10 @@ fn validate_attribution_request(
             &req.backward_attribution_batch_root,
         )?)
     };
+    let expected_key = attribution_batch_idempotency_key(&req);
+    if req.idempotency_key != expected_key {
+        return Err("submit_attribution_batch_idempotency_preimage_mismatch_phase_1594_fix1");
+    }
     Ok(NormalizedAttributionRequest {
         epoch: req.epoch_number,
         backward_root,
@@ -351,6 +373,28 @@ fn is_lower_sha256_hex(value: &str) -> bool {
             .as_bytes()
             .iter()
             .all(|byte| byte.is_ascii_digit() || (*byte >= b'a' && *byte <= b'f'))
+}
+
+fn attribution_batch_idempotency_key(req: &SubmitAttributionBatchRequest) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(ATTRIBUTION_BATCH_PREIMAGE_DOMAIN);
+    hasher.update(req.network_id.as_bytes());
+    hasher.update(req.epoch_number.to_be_bytes());
+    hasher.update(&req.submitter_agent_id);
+    hasher.update(req.backward_attribution_batch_root.as_bytes());
+    hasher.update(&req.attribution_entries_hash);
+    hasher.update(req.not_before_unix_ms.to_be_bytes());
+    lower_hex(&hasher.finalize())
+}
+
+fn lower_hex(bytes: &[u8]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut out = String::with_capacity(bytes.len() * 2);
+    for &byte in bytes {
+        out.push(HEX[(byte >> 4) as usize] as char);
+        out.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    out
 }
 
 fn hex_nibble(byte: u8) -> Result<u8, &'static str> {
@@ -597,15 +641,17 @@ mod tests {
     }
 
     fn attribution_request(root: &str) -> SubmitAttributionBatchRequest {
-        SubmitAttributionBatchRequest {
+        let mut req = SubmitAttributionBatchRequest {
             epoch_number: 7,
             submitter_agent_id: vec![8; 48],
             backward_attribution_batch_root: root.to_string(),
-            idempotency_key: "a".repeat(64),
+            idempotency_key: String::new(),
             network_id: "ilc-rc01".to_string(),
             not_before_unix_ms: 0,
             attribution_entries_hash: vec![9; 32],
-        }
+        };
+        req.idempotency_key = attribution_batch_idempotency_key(&req);
+        req
     }
 
     fn proposal_idempotency_key(
@@ -856,10 +902,72 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_submit_attribution_batch_rejects_wrong_network() {
+        let (service, _store) = setup_attribution_service();
+        let mut req = attribution_request(&"b".repeat(64));
+        req.network_id = "wrong-network".to_string();
+        req.idempotency_key = attribution_batch_idempotency_key(&req);
+
+        let resp = service
+            .submit_attribution_batch(Request::new(req))
+            .await
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_wrong_network_phase_1594_fix1"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_rejects_not_before_too_far_future() {
+        let (service, _store) = setup_attribution_service();
+        let now_ms = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_millis() as u64)
+            .unwrap_or(0);
+        let mut req = attribution_request(&"b".repeat(64));
+        req.not_before_unix_ms = now_ms
+            .saturating_add(crate::epoch_settlement::CLOCK_SKEW_TOLERANCE_MS)
+            .saturating_add(60_000);
+        req.idempotency_key = attribution_batch_idempotency_key(&req);
+
+        let resp = service
+            .submit_attribution_batch(Request::new(req))
+            .await
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_not_before_too_far_future_phase_1594_fix1"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submit_attribution_batch_rejects_idempotency_preimage_mismatch() {
+        let (service, _store) = setup_attribution_service();
+        let mut req = attribution_request(&"b".repeat(64));
+        req.attribution_entries_hash = vec![7; 32];
+
+        let resp = service
+            .submit_attribution_batch(Request::new(req))
+            .await
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(
+            resp.error_code,
+            "submit_attribution_batch_idempotency_preimage_mismatch_phase_1594_fix1"
+        );
+    }
+
+    #[tokio::test]
     async fn test_submit_attribution_batch_requires_tls_client_cert() {
         let (env, _dir) = setup_env();
         let balance_store = Arc::new(BalanceStore::new(env).unwrap());
-        let service = AttributionIngressService::new(balance_store, vec![]);
+        let service = AttributionIngressService::new(balance_store, "ilc-rc01".to_string(), vec![]);
         let resp = service
             .submit_attribution_batch(Request::new(attribution_request("")))
             .await

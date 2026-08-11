@@ -12,6 +12,8 @@ import lmdb
 
 ATTRIBUTION_AUDIT_LMDB_VERSION = "attribution_audit_lmdb_phase_1594.v0.1"
 DEFAULT_ATTRIBUTION_AUDIT_MAP_SIZE_BYTES = 128 * 1024 * 1024
+MAX_ATTRIBUTION_AUDIT_EVENT_COUNT = 4096
+MAX_ATTRIBUTION_AUDIT_EVENT_BYTES = 256 * 1024
 ATTR_EVENTS_DB_NAME = b"attr_events"
 EPOCH_INDEX_DB_NAME = b"epoch_index"
 ATTR_EVENT_KEY_PREFIX = b"attr_event:"
@@ -45,14 +47,20 @@ def _encode_json(payload: object) -> bytes:
 def _decode_list(payload: bytes | None) -> list[Any]:
     if payload is None:
         return []
-    decoded = json.loads(payload.decode("utf-8"))
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("attribution_audit_epoch_index_corrupted") from exc
     if not isinstance(decoded, list):
         raise ValueError("attribution_audit_epoch_index_invalid")
     return decoded
 
 
 def _decode_dict(payload: bytes) -> dict[str, Any]:
-    decoded = json.loads(payload.decode("utf-8"))
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("attribution_audit_event_corrupted") from exc
     if not isinstance(decoded, dict):
         raise ValueError("attribution_audit_event_invalid")
     return cast(dict[str, Any], decoded)
@@ -88,6 +96,8 @@ class AttributionAuditLmdbStore:
         normalized_epoch = _require_epoch(epoch)
         if not isinstance(events, list):
             raise ValueError("attribution_audit_events_invalid")
+        if len(events) > MAX_ATTRIBUTION_AUDIT_EVENT_COUNT:
+            raise ValueError("attribution_audit_events_too_many")
         normalized_events: list[dict[str, Any]] = []
         for event in events:
             if not isinstance(event, dict):
@@ -102,7 +112,10 @@ class AttributionAuditLmdbStore:
                 key = _event_key(normalized_epoch, ordinal)
                 if txn.get(key, db=self._attr_events_db) is not None:
                     raise ValueError("attribution_audit_epoch_already_written")
-                txn.put(key, _encode_json(event), db=self._attr_events_db)
+                encoded_event = _encode_json(event)
+                if len(encoded_event) > MAX_ATTRIBUTION_AUDIT_EVENT_BYTES:
+                    raise ValueError("attribution_audit_event_too_large")
+                txn.put(key, encoded_event, db=self._attr_events_db)
                 ordinal_keys.append(key.hex())
             txn.put(index_key, _encode_json(ordinal_keys), db=self._epoch_index_db)
 
@@ -145,4 +158,6 @@ __all__ = [
     "ATTR_EVENTS_DB_NAME",
     "AttributionAuditLmdbStore",
     "EPOCH_INDEX_DB_NAME",
+    "MAX_ATTRIBUTION_AUDIT_EVENT_BYTES",
+    "MAX_ATTRIBUTION_AUDIT_EVENT_COUNT",
 ]

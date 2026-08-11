@@ -19,6 +19,7 @@ def test_decimal_to_canonical_string_protocol_contract_vectors() -> None:
         (Decimal("1E+2"), "100"),
         (Decimal("1.23456789012345678901234567890"), "1.2345678901234567890123456789"),
         (Decimal("-0"), "0"),
+        (Decimal("-0.5"), "-0.5"),
     ]
     for value, expected in cases:
         assert decimal_to_canonical_string(value) == expected

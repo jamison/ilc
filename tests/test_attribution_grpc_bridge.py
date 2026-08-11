@@ -9,7 +9,10 @@ import pytest
 
 from ilc_core.consensus.production_bridge import (
     MAX_PROPOSAL_GRPC_OVERHEAD_BYTES,
+    MAX_ATTRIBUTION_ENTRY_COUNT,
+    MAX_ATTRIBUTION_ENTRIES_HASH_BYTES,
     SUBMIT_ATTRIBUTION_BATCH_ACCEPTED_TOKEN,
+    ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN,
     AttributionBatchSubmission,
     ConsensusBridgeConfig,
     build_attribution_batch_submission,
@@ -98,7 +101,17 @@ def test_build_attribution_batch_submission_hashes_canonical_entries() -> None:
         ).encode("utf-8"),
     ).digest()
     expected_key = hashlib.sha256(
-        f"attribution:7:ilc-rc01:{BACKWARD_ROOT}".encode("utf-8"),
+        b"".join(
+            (
+                ATTRIBUTION_BATCH_SUBMISSION_PREIMAGE_DOMAIN,
+                b"ilc-rc01",
+                (7).to_bytes(8, "big", signed=False),
+                AGENT_ID_BYTES,
+                BACKWARD_ROOT.encode("utf-8"),
+                expected_entries_hash,
+                (123).to_bytes(8, "big", signed=False),
+            ),
+        ),
     ).hexdigest()
     assert submission == AttributionBatchSubmission(
         submitter_agent_id=AGENT_ID_BYTES,
@@ -135,6 +148,62 @@ def test_build_attribution_batch_submission_rejects_bad_payloads() -> None:
             not_before_unix_ms=0,
             network_id="ilc-rc01",
             idempotency_key="d" * 64,
+        )
+
+
+def test_build_attribution_batch_submission_hashes_attributions_fallback() -> None:
+    batch = {
+        "attributions": [
+            {
+                "agent_id_hex": "c" * 96,
+                "amount_micro_ecu": 1,
+            },
+        ],
+        "backward_attribution_batch_root": None,
+        "epoch": 8,
+    }
+
+    submission = build_attribution_batch_submission(
+        batch,
+        submitter_agent_id=AGENT_ID_BYTES,
+        not_before_unix_ms=0,
+        network_id="ilc-rc01",
+    )
+
+    assert submission.backward_attribution_batch_root == ""
+    assert submission.attribution_entries_hash == hashlib.sha256(
+        json.dumps(
+            {"entries": batch["attributions"]},
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8"),
+    ).digest()
+
+
+def test_build_attribution_batch_submission_rejects_oversized_entries() -> None:
+    too_many = {
+        "attributions": [{} for _ in range(MAX_ATTRIBUTION_ENTRY_COUNT + 1)],
+        "epoch": 1,
+    }
+    with pytest.raises(ValueError, match="submit_attribution_batch_entries_too_many"):
+        build_attribution_batch_submission(
+            too_many,
+            submitter_agent_id=AGENT_ID_BYTES,
+            not_before_unix_ms=0,
+            network_id="ilc-rc01",
+        )
+
+    too_large = {
+        "attributions": [{"payload": "x" * (MAX_ATTRIBUTION_ENTRIES_HASH_BYTES + 1)}],
+        "epoch": 1,
+    }
+    with pytest.raises(ValueError, match="submit_attribution_batch_entries_too_large"):
+        build_attribution_batch_submission(
+            too_large,
+            submitter_agent_id=AGENT_ID_BYTES,
+            not_before_unix_ms=0,
+            network_id="ilc-rc01",
         )
 
 
@@ -260,3 +329,40 @@ def test_secure_grpc_attribution_stub_uses_mtls_and_attribution_endpoint(
     assert ("grpc.max_receive_message_length", 1_048_576) in calls["options"]
     assert calls["path"] == "/ilc_app.ILCAppAttributionIngressService/SubmitAttributionBatch"
     assert not hasattr(FakeGrpcModule, "insecure_channel")
+
+
+def test_secure_grpc_attribution_stub_endpoint_fallbacks(monkeypatch: pytest.MonkeyPatch) -> None:
+    targets: list[str] = []
+
+    class FakeChannel:
+        def unary_unary(self, path: str, **kwargs: object) -> RecordingRpc:
+            return RecordingRpc(SimpleNamespace())
+
+    class FakeGrpcModule:
+        @staticmethod
+        def ssl_channel_credentials(
+            root_certificates: bytes | None = None,
+            private_key: bytes | None = None,
+            certificate_chain: bytes | None = None,
+        ) -> str:
+            return "attribution-tls-creds"
+
+        @staticmethod
+        def secure_channel(
+            target: str,
+            credentials: str,
+            options: tuple[tuple[str, int], ...] = (),
+        ) -> FakeChannel:
+            targets.append(target)
+            return FakeChannel()
+
+    monkeypatch.setitem(sys.modules, "grpc", FakeGrpcModule)
+
+    build_secure_grpc_attribution_ingress_stub(
+        _config(attribution_ingress_endpoint=None, proposal_ingress_endpoint="proposal.example:443"),
+    )
+    build_secure_grpc_attribution_ingress_stub(
+        _config(attribution_ingress_endpoint=None, proposal_ingress_endpoint=None),
+    )
+
+    assert targets == ["proposal.example:443", "read.example:443"]
