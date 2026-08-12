@@ -1,0 +1,35 @@
+{
+  "artifact": "ilc_fix1591_fix6_public_endpoint_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for the Phase 1591-Fix6 public endpoint rerun artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "phase1591_fix6_public_endpoint_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_1591_fix6_public_endpoint_rerun_walkthrough.md",
+      "target": "phase:1591_fix6_public_endpoint_rerun"
+    },
+    {
+      "annotation_method": "phase1591_fix6_public_endpoint_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix1591_fix6_public_endpoint_graph_intake_overlay_v0.1.json",
+      "target": "phase:1591_fix6_public_endpoint_rerun"
+    },
+    {
+      "annotation_method": "phase1591_fix6_public_endpoint_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_1591_fix6_public_epoch_roll.py",
+      "target": "tools/testbed/phase1591_fix6_public_epoch_roll.py"
+    },
+    {
+      "annotation_method": "phase1591_fix6_public_endpoint_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/testbed/phase1591_fix6_public_epoch_roll.py",
+      "target": "phase:1591_fix6_public_endpoint_rerun"
+    }
+  ],
+  "status": "review_queue_support_only"
+}
