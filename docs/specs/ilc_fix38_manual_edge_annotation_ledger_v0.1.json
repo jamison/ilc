@@ -69844,12 +69844,11 @@
       "annotation_batch": "manual_batch_NNN_phase_gap_public_install_00_2026_08_05",
       "chronology_note": "2026-08-05: GAP-PUBLIC-INSTALL-00 release distribution reconciliation phase prompt",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-INSTALL-00: reconciles pyproject.toml version mismatch (0.1.0 vs PyPI 0.2.0), documents two-layer install separation (software delivery vs graph onboarding), and produces distribution inventory for downstream install phases.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_00_g10_release_distribution_reconciliation.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "CLASSIFIED_BY",
-          "target": "policy:public_rc_excluded",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "policy:public_rc_excluded"
         }
       ],
       "proposed_semantic_edges": [
@@ -69862,23 +69861,23 @@
         "SOURCE_TREE_MEMBER",
         "CLASSIFIED_BY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_00_g10_release_distribution_reconciliation.md"
     },
     {
       "annotation_batch": "manual_batch_NNN_phase_gap_public_install_01_2026_08_06",
       "chronology_note": "2026-08-06: GAP-PUBLIC-INSTALL-01 installable release manifest hardening phase prompt",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-INSTALL-01: extends Phase 1213 release artifact schema with installer-required fields (platform, arch, channel, size_bytes, download_url, min_python_version) and new artifact types (python_wheel, python_sdist, install_script); produces instance manifest for ilc-core 0.2.0 with actual PyPI URLs and adds validator module ilc_core/release/installable_release_manifest.py.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_01_g10_installable_release_manifest.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "CLASSIFIED_BY",
-          "target": "policy:public_rc_excluded",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "policy:public_rc_excluded"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-086",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "cdl:CDL-086"
         }
       ],
       "proposed_semantic_edges": [
@@ -69892,23 +69891,23 @@
         "CLASSIFIED_BY",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_01_g10_installable_release_manifest.md"
     },
     {
       "annotation_batch": "manual_batch_NNN_phase_gap_public_install_02_2026_08_06",
       "chronology_note": "2026-08-06: GAP-PUBLIC-INSTALL-02 install.sh software-delivery installer phase prompt",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-INSTALL-02: implements tools/install.sh POSIX bash installer that downloads ilc-core 0.2.0 wheel from PyPI, verifies SHA-256 shell-natively, installs with pip, and checks ilc --help; adds install_sh_manifest_sync.py to enforce that embedded script values match the committed instance manifest; two-layer constraint (no graph hydration in install.sh) enforced by static test.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_02_g10_install_sh.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "CLASSIFIED_BY",
-          "target": "policy:public_rc_excluded",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "policy:public_rc_excluded"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-086",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "cdl:CDL-086"
         }
       ],
       "proposed_semantic_edges": [
@@ -69922,23 +69921,23 @@
         "CLASSIFIED_BY",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_02_g10_install_sh.md"
     },
     {
       "annotation_batch": "manual_batch_NNN_phase_gap_public_install_03_2026_08_06",
       "chronology_note": "2026-08-06: GAP-PUBLIC-INSTALL-03 ilc update software-update CLI command phase prompt",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-INSTALL-03: implements 'ilc update' CLI subcommand that fetches the installable release manifest (--manifest-path for local/test or --manifest-url for live HTTPS), validates it against the GAP-PUBLIC-INSTALL-01 schema, selects wheel by channel, verifies SHA-256 before pip install, enforces size cap, and extracts unit-testable logic into ilc_core/release/update_runtime.py; two-layer constraint enforced by static test.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_03_g10_ilc_update.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "CLASSIFIED_BY",
-          "target": "policy:public_rc_excluded",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "policy:public_rc_excluded"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-086",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "cdl:CDL-086"
         }
       ],
       "proposed_semantic_edges": [
@@ -69952,7 +69951,8 @@
         "CLASSIFIED_BY",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_03_g10_ilc_update.md"
     },
     {
       "annotation_batch": "manual_batch_phase_1591_fix2_public_routable_harness_complete",
@@ -70036,6 +70036,126 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_phase_1591_fix2_public_routable_harness_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_06_value_action_tooling_2026_08_12",
+      "chronology_note": "Phase GAP-HARNESS-SIDECAR-06 value-action sidecar operator tooling.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "operator-local signed ILC transfer CLI for controlled soak runs",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:1591-Fix6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/ilc_transfer_submit.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_06_value_action_tooling_2026_08_12",
+      "chronology_note": "Phase GAP-HARNESS-SIDECAR-06 value-action sidecar operator tooling.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "operator-local ECU fast-path payload CLI for controlled soak runs",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:1591-Fix6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/ecu_transfer_submit.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_06_value_action_tooling_2026_08_12",
+      "chronology_note": "Phase GAP-HARNESS-SIDECAR-06 value-action sidecar operator tooling.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "operator-local attribution audit readback CLI",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:1591-Fix6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/attribution_readback.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_06_value_action_tooling_2026_08_12",
+      "chronology_note": "Phase GAP-HARNESS-SIDECAR-06 value-action sidecar operator tooling.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "focused regression tests for GAP-HARNESS-SIDECAR-06 operator tooling",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:1591-Fix6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_06_operator_tooling.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_06_value_action_tooling_2026_08_12",
+      "chronology_note": "Phase GAP-HARNESS-SIDECAR-06 value-action sidecar operator tooling.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "execution walkthrough and verification evidence for GAP-HARNESS-SIDECAR-06",
+      "node_kind": "phase_walkthrough",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:1591-Fix6"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_06_value_action_sidecar_operator_tooling_walkthrough.md"
     }
   ],
   "boundary": {
