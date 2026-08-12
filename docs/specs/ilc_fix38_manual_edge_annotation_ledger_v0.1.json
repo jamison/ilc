@@ -70156,6 +70156,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_06_value_action_sidecar_operator_tooling_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix6_mixed_economic_epoch_soak_2026_08_12",
+      "chronology_note": "Phase 1591-Fix6 rolling mixed economic epoch soak local/stub orchestrator.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "rolling mixed economic epoch soak orchestrator for local/stub execution",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1591-Fix6"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/mixed_economic_epoch_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix6_mixed_economic_epoch_soak_2026_08_12",
+      "chronology_note": "Phase 1591-Fix6 rolling mixed economic epoch soak local/stub orchestrator.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "focused regression tests for Phase 1591-Fix6 rolling orchestrator",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1591-Fix6"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_1591_fix6_mixed_economic_epoch_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_phase_1591_fix6_mixed_economic_epoch_soak_2026_08_12",
+      "chronology_note": "Phase 1591-Fix6 rolling mixed economic epoch soak local/stub orchestrator.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "execution walkthrough and verification evidence for Phase 1591-Fix6",
+      "node_kind": "phase_walkthrough",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1591-Fix6"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-HARNESS-SIDECAR-06"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1591_fix6_mixed_economic_epoch_soak_walkthrough.md"
     }
   ],
   "boundary": {
