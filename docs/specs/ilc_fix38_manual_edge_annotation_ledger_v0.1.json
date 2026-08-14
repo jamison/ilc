@@ -72603,6 +72603,100 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_07_root_skills_pack_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_09_market_commissioning_recipes",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-09 - advisory research memo committed.",
+      "manual_read_summary": "Advisory market and commissioning research memo defining task discovery, commission offer, bid/accept, result receipt, manual payment trigger sketches, market extensions, open questions, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_09_g10_market_commissioning_recipes.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/research/ilc_web2_service_primitive_trust_recipe_mapping_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_root_skills_pack_spec_GAP_HARNESS_SIDECAR_07_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_sidecar_execution_receipt_schema_GAP_HARNESS_SIDECAR_05_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:market_commissioning_recipes_committed_GAP_HARNESS_SIDECAR_09"
+        },
+        {
+          "edge_type": "DESCRIBES",
+          "target": "harness:market_commissioning_advisory_recipes"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "DESCRIBES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/research/ilc_market_commissioning_recipes_GAP_HARNESS_SIDECAR_09_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_09_market_commissioning_recipes",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-09 - focused tests committed.",
+      "manual_read_summary": "Focused tests verify advisory banner, memo structure, open questions, CDL requirement for automated payment triggers, task namespace non-ratification, CLI mappings, backing file references, receipt/root-skill linkage, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/research/ilc_market_commissioning_recipes_GAP_HARNESS_SIDECAR_09_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "docs/research/ilc_market_commissioning_recipes_GAP_HARNESS_SIDECAR_09_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_09_market_recipes.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_09_market_commissioning_recipes",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-09 - walkthrough committed.",
+      "manual_read_summary": "Walkthrough records direct reads, findings, first open questions, artifacts, verification output, and non-claims for the advisory market/commissioning memo.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_09_g10_market_commissioning_recipes.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:market_commissioning_recipes_committed_GAP_HARNESS_SIDECAR_09"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_gap_harness_sidecar_09_market_recipes.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_09_market_commissioning_recipes_walkthrough.md"
     }
   ],
   "manual_annotations": [
