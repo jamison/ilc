@@ -20,8 +20,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     CDL_074_DEPENDENCY as RUNTIME_CDL_074_DEPENDENCY,
@@ -37,9 +41,24 @@ CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
 _MAX_SUBMIT_PAYLOAD_BYTES = 256 * 1024
+_GRAPH_SUBMIT_AGENT_ID_RE = re.compile(r"^[0-9a-f]{64}$")
+_MAX_REFUTATION_CRITERION_BYTES = 500
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
+
+
+@dataclass(frozen=True)
+class GraphSubmitAdvisoryEnvelope:
+    """Graph-native advisory wrapper for signed CDL-073 submissions."""
+
+    agent_id_hex: str
+    epoch: int
+    truth_primitive: dict[str, Any]
+    sig: str
+    sig_pubkey_hex: str
+    sig_pubkey_fingerprint: str
+    sig_scheme: str
 
 
 class SubmitCommandError(Exception):
@@ -53,6 +72,109 @@ class SubmitCommandError(Exception):
 
 def _reject_non_finite_json_constant(value: str) -> None:
     raise ValueError(f"non-finite JSON constant is not allowed: {value}")
+
+
+def _require_graph_submit_agent_id(agent_id_hex: str) -> None:
+    if not isinstance(agent_id_hex, str):
+        raise ValueError("invalid_agent_id_hex")
+    if _GRAPH_SUBMIT_AGENT_ID_RE.fullmatch(agent_id_hex) is None:
+        raise ValueError("invalid_agent_id_hex")
+
+
+def _require_graph_submit_epoch(epoch: int) -> None:
+    if isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0:
+        raise ValueError("invalid_epoch")
+
+
+def build_graph_submit_envelope(
+    truth_primitive: dict[str, Any],
+    agent_id_hex: str,
+    epoch: int,
+    private_key: ed25519.Ed25519PrivateKey,
+) -> GraphSubmitAdvisoryEnvelope:
+    """Return a graph-specific advisory envelope signed over CDL-073 fields."""
+
+    _require_graph_submit_agent_id(agent_id_hex)
+    _require_graph_submit_epoch(epoch)
+    if not isinstance(truth_primitive, dict):
+        raise ValueError("invalid_truth_primitive")
+    payload = truth_primitive.get("payload")
+    primitive = truth_primitive.get("primitive")
+    version = truth_primitive.get("v", 1)
+    if not isinstance(payload, dict) or not isinstance(primitive, str) or not primitive:
+        raise ValueError("invalid_truth_primitive")
+    if version != 1:
+        raise ValueError("invalid_truth_primitive")
+
+    # GRAPH_SUBMIT type is advisory pending CDL-111 ratification — do not wire to AgentActionEnvelope dispatch until ratified
+    envelope_dict: dict[str, Any] = {
+        "agent_id": agent_id_hex,
+        "epoch": epoch,
+        "payload": payload,
+        "primitive": primitive,
+        "v": 1,
+    }
+    signed = attach_truth_primitive_signature(envelope_dict, private_key)
+    return GraphSubmitAdvisoryEnvelope(
+        agent_id_hex=agent_id_hex,
+        epoch=epoch,
+        truth_primitive=dict(envelope_dict),
+        sig=str(signed["sig"]),
+        sig_pubkey_hex=str(signed["sig_pubkey_hex"]),
+        sig_pubkey_fingerprint=str(signed["sig_pubkey_fingerprint"]),
+        sig_scheme=str(signed["sig_scheme"]),
+    )
+
+
+def build_refutation_primitive(
+    target_node_id: str,
+    refutation_criterion_text: str,
+    evidence_node_ids: list[Any],
+    agent_id_hex: str,
+    epoch: int,
+) -> dict[str, Any]:
+    """Build a CDL-073 refute.claim submission dict accepted by CDL-074."""
+
+    _require_graph_submit_agent_id(agent_id_hex)
+    _require_graph_submit_epoch(epoch)
+    if not isinstance(target_node_id, str) or not target_node_id:
+        raise ValueError("invalid_refutation_target_empty")
+    if not isinstance(refutation_criterion_text, str):
+        raise ValueError("invalid_refutation_reason_too_long")
+    if len(refutation_criterion_text.encode("utf-8")) > _MAX_REFUTATION_CRITERION_BYTES:
+        raise ValueError("invalid_refutation_reason_too_long")
+    if not isinstance(evidence_node_ids, list):
+        raise ValueError("invalid_evidence_node_id")
+    for evidence_node_id in evidence_node_ids:
+        if not isinstance(evidence_node_id, str) or not evidence_node_id:
+            raise ValueError("invalid_evidence_node_id")
+
+    return {
+        "agent_id": agent_id_hex,
+        "epoch": epoch,
+        "payload": {
+            "evidence_node_ids": list(evidence_node_ids),
+            "refutation_criterion": {
+                "claim": refutation_criterion_text,
+                "claim_form": "singular",
+                "evidence_type": "logical",
+                "has_falsifiable_test": True,
+                "scope_boundary": f"target_node_id:{target_node_id}",
+            },
+            "target_node_id": target_node_id,
+        },
+        "primitive": "refute.claim",
+        "v": 1,
+    }
+
+
+def check_graph_mutation_allowed(public_path_guard_value: bool) -> None:
+    """Fail closed before graph mutation when the caller's guard remains set."""
+
+    if not isinstance(public_path_guard_value, bool):
+        raise TypeError("invalid_guard_value_not_bool")
+    if public_path_guard_value is True:
+        raise ValueError("graph_mutation_blocked_public_path_not_cleared")
 
 
 def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
@@ -153,7 +275,7 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         raise SubmitCommandError("submit_agent_id_missing", "--agent-id is required")
 
     epoch = getattr(args, "epoch", None)
-    if epoch is None or not isinstance(epoch, int) or epoch < 0:
+    if epoch is None or isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0:
         raise SubmitCommandError(
             "submit_epoch_invalid",
             "--epoch must be a non-negative integer",
@@ -188,6 +310,7 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     write_receipt: dict[str, Any] = {}
     store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
     if store_path:
+        check_graph_mutation_allowed(getattr(args, "public_path_guard_value", False))
         from ilc_core.epistemic.truth_primitive_graph_store import (
             write_truth_primitive_result,
         )

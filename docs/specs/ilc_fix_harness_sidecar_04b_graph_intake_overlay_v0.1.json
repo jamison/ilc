@@ -1,0 +1,44 @@
+{
+  "artifact": "ilc_fix_harness_sidecar_04b_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-HARNESS-SIDECAR-04b truth write-path hardening artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_harness_sidecar_04b_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/cli/d2e_submit_cli.py",
+      "target": "phase:GAP-HARNESS-SIDECAR-04b"
+    },
+    {
+      "annotation_method": "gap_harness_sidecar_04b_overlay_record",
+      "edge_role": "TESTS",
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "repo_path": "tests/test_gap_harness_sidecar_04b_truth_write_path_hardening.py",
+      "target": "phase:GAP-HARNESS-SIDECAR-04b"
+    },
+    {
+      "annotation_method": "gap_harness_sidecar_04b_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_04b_truth_write_path_hardening_walkthrough.md",
+      "target": "phase:GAP-HARNESS-SIDECAR-04b"
+    },
+    {
+      "annotation_method": "gap_harness_sidecar_04b_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_harness_sidecar_04b_graph_intake_overlay_v0.1.json",
+      "target": "phase:GAP-HARNESS-SIDECAR-04b"
+    }
+  ],
+  "status": "review_queue_support_only"
+}
