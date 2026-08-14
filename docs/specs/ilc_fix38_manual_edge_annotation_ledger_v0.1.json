@@ -80243,6 +80243,102 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_04a_graph_query_hardening_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_05_execution_receipt_schema",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-05 execution receipt runtime committed.",
+      "manual_read_summary": "Adds SidecarExecutionReceipt, canonical receipt-token derivation, strict field validation, and a local append-only LMDB receipt store with receipts and token_index sub-databases.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_05_g10_execution_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sidecar_execution_receipt_schema_committed_GAP_HARNESS_SIDECAR_05"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/sidecars/execution_receipt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_05_execution_receipt_schema",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-05 schema spec committed.",
+      "manual_read_summary": "Documents the sidecar execution receipt field contract, token derivation algorithm, local LMDB key layout, append-only semantics, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_05_g10_execution_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sidecar_execution_receipt_schema_committed_GAP_HARNESS_SIDECAR_05"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_sidecar_execution_receipt_schema_GAP_HARNESS_SIDECAR_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_05_execution_receipt_schema",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-05 execution receipt tests committed.",
+      "manual_read_summary": "Focused tests cover receipt-token determinism, validation failure tokens, LMDB append/read/lookup, duplicate rejection, corruption fail-closed paths, wall-clock absence, and JSON canonicalization arguments.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_05_g10_execution_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/sidecars/execution_receipt.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_05_execution_receipt.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_05_execution_receipt_schema",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-05 walkthrough committed.",
+      "manual_read_summary": "Walkthrough records direct source reads, actual verification output, graph coverage, STATUS token, and non-claims for the local execution receipt phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_05_g10_execution_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:sidecar_execution_receipt_schema_committed_GAP_HARNESS_SIDECAR_05"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_05_execution_receipt_schema_walkthrough.md"
     }
   ],
   "nodes": [
