@@ -81141,6 +81141,92 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1591_gap_integration_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_01_cli_json_conformance",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-01 \u2014 CLI/JSON conformance matrix committed.",
+      "manual_read_summary": "Documents actual JSON envelope shapes for identity, query, verify, bundle, epoch, balance, and submit CLI surfaces. Records that value-action submission is `ilc submit`, not a literal `ilc value-action` command, and that `python -m ilc_core` is not registered as a module entrypoint.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_01_g10_cli_json_conformance_matrix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cli_json_conformance_matrix_committed_GAP_HARNESS_SIDECAR_01"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_gap_harness_sidecar_01_cli_json_conformance.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_cli_json_conformance_matrix_GAP_HARNESS_SIDECAR_01_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_01_cli_json_conformance",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-01 \u2014 focused CLI subprocess conformance tests committed.",
+      "manual_read_summary": "Subprocess tests invoke `python -m ilc_core.cli` against local fixtures and assert actual JSON fields for identity, query, verify, bundle, epoch, balance, and submit surfaces. Includes a deviation test confirming `python -m ilc_core` is not currently a registered module entrypoint.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_01_g10_cli_json_conformance_matrix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_01_cli_json_conformance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_01_cli_json_conformance",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-01 \u2014 walkthrough committed.",
+      "manual_read_summary": "Walkthrough records direct source reads, actual command inventory, command verdicts, verification output, deviation notes, graph ledger registration, output token, and non-claims.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_01_g10_cli_json_conformance_matrix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:cli_json_conformance_matrix_committed_GAP_HARNESS_SIDECAR_01"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "tests/test_gap_harness_sidecar_01_cli_json_conformance.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_01_cli_json_conformance_matrix_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
