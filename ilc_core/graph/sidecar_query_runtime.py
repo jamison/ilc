@@ -7,9 +7,10 @@ Phase 1229 graph projection dictionaries.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import deque
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Mapping
@@ -29,6 +30,9 @@ SIDECAR_QUERY_COMPLETENESS_TOKEN = "adr_0031_sidecar_query_runtime_completeness_
 SIDECAR_PROJECTION_DEPENDENCY = AGENT_GRAPH_PROJECTION_RUNTIME_VERSION
 DEFAULT_SIDECAR_EXPORT_MAX_BYTES = 10_000_000
 DEFAULT_SIDECAR_EXPORT_MAX_RESULTS = 1_000
+DEFAULT_REUSE_CENTRALITY_TOP_N = 10
+MAX_REUSE_CENTRALITY_TOP_N = 1_000
+LOCAL_NOVELTY_UNKNOWN_SCORE = 0.5
 
 QUERY_TYPES = frozenset(
     {
@@ -207,6 +211,293 @@ def build_sidecar_query_bundle(
         "query_results": list(query_results),
         "wall_clock_time_included": False,
     }
+
+
+def compute_local_novelty_score(
+    candidate_fields: Mapping[str, Any],
+    graph_state: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Score candidate novelty against a local graph projection only.
+
+    This is advisory harness-sidecar state, not a consensus/protocol metric.
+    Malformed candidate payloads intentionally return an unknown score instead
+    of raising, so agent callers can fail soft on planning-time comparison.
+    """
+
+    if not isinstance(candidate_fields, Mapping) or len(candidate_fields) == 0:
+        return _novelty_unknown("novelty_candidate_fields_invalid_or_empty")
+
+    nodes = _graph_nodes(graph_state)
+    if not nodes:
+        return {
+            "advisory": True,
+            "exact_duplicate_found": False,
+            "near_duplicate_count": 0,
+            "novelty_score": 1.0,
+        }
+
+    try:
+        candidate_hash = _canonical_sha256(candidate_fields)
+        candidate_values = _canonical_top_level_values(candidate_fields)
+    except (TypeError, ValueError):
+        return _novelty_unknown("novelty_candidate_fields_not_canonical_json")
+
+    exact_duplicate_found = False
+    near_duplicate_count = 0
+    highest_overlap = 0.0
+
+    for node in nodes:
+        if candidate_hash in _node_declared_hashes(node):
+            exact_duplicate_found = True
+            break
+        node_payload = _node_comparable_payload(node)
+        if isinstance(node_payload, Mapping):
+            try:
+                if _canonical_sha256(node_payload) == candidate_hash:
+                    exact_duplicate_found = True
+                    break
+                overlap = _top_level_overlap(candidate_values, node_payload)
+            except (TypeError, ValueError):
+                continue
+            if overlap > 0.5:
+                near_duplicate_count += 1
+                highest_overlap = max(highest_overlap, overlap)
+
+    if exact_duplicate_found:
+        return {
+            "advisory": True,
+            "exact_duplicate_found": True,
+            "near_duplicate_count": near_duplicate_count,
+            "novelty_score": 0.0,
+        }
+
+    novelty_score = 1.0 - highest_overlap if near_duplicate_count else 1.0
+    return {
+        "advisory": True,
+        "exact_duplicate_found": False,
+        "near_duplicate_count": near_duplicate_count,
+        "novelty_score": max(0.0, min(1.0, novelty_score)),
+    }
+
+
+def rank_nodes_by_reuse_centrality(
+    graph_state: Mapping[str, Any],
+    top_n: int = DEFAULT_REUSE_CENTRALITY_TOP_N,
+) -> list[dict[str, Any]]:
+    """Rank local graph nodes by simple in-degree, descending."""
+
+    if type(top_n) is not int or top_n <= 0 or top_n > MAX_REUSE_CENTRALITY_TOP_N:
+        raise ValueError("reuse_centrality_top_n_invalid")
+
+    nodes = _graph_nodes(graph_state)
+    if not nodes:
+        return []
+
+    node_by_id: dict[str, Mapping[str, Any]] = {}
+    in_degree: dict[str, int] = {}
+    for node in nodes:
+        node_id = _node_identifier(node)
+        if node_id is None:
+            continue
+        node_by_id[node_id] = node
+        in_degree.setdefault(node_id, 0)
+
+    for edge in _graph_edges(graph_state):
+        target = _edge_target(edge)
+        if target in in_degree:
+            in_degree[target] += 1
+
+    ranked = sorted(in_degree.items(), key=lambda item: (-item[1], item[0]))[:top_n]
+    return [
+        {
+            "in_degree": degree,
+            "node_id": node_id,
+            "node_type": _node_type(node_by_id[node_id]),
+        }
+        for node_id, degree in ranked
+    ]
+
+
+def lookup_submission_receipt(
+    receipt_token: str,
+    graph_state: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Look up a prior local submission receipt in read-only graph state."""
+
+    if type(receipt_token) is not str or not receipt_token:
+        raise ValueError("invalid_receipt_token_empty")
+
+    for record in _receipt_records(graph_state):
+        if _record_has_receipt_token(record, receipt_token):
+            node_id = _record_identifier(record) or ""
+            status = _record_status(record)
+            return {
+                "fields": _stable_json_tree(record),
+                "found": True,
+                "node_id": node_id,
+                "status": status,
+            }
+
+    return {"found": False, "receipt_token": receipt_token}
+
+
+def _novelty_unknown(note: str) -> dict[str, Any]:
+    return {
+        "advisory": True,
+        "advisory_note": note,
+        "exact_duplicate_found": False,
+        "near_duplicate_count": 0,
+        "novelty_score": LOCAL_NOVELTY_UNKNOWN_SCORE,
+    }
+
+
+def _canonical_sha256(value: Mapping[str, Any]) -> str:
+    payload = json.dumps(
+        value,
+        allow_nan=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _canonical_top_level_values(value: Mapping[str, Any]) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for key, item in value.items():
+        _require_json_object_key(key)
+        values[key] = json.dumps(item, allow_nan=False, separators=(",", ":"), sort_keys=True)
+    return values
+
+
+def _top_level_overlap(
+    candidate_values: Mapping[str, str],
+    node_payload: Mapping[str, Any],
+) -> float:
+    if not candidate_values:
+        return 0.0
+    node_values = _canonical_top_level_values(node_payload)
+    matches = 0
+    for key, candidate_value in candidate_values.items():
+        if node_values.get(key) == candidate_value:
+            matches += 1
+    return matches / len(candidate_values)
+
+
+def _graph_nodes(graph_state: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    if not isinstance(graph_state, Mapping):
+        return []
+    return _mapping_rows(graph_state.get("nodes"))
+
+
+def _graph_edges(graph_state: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    if not isinstance(graph_state, Mapping):
+        return []
+    return _mapping_rows(graph_state.get("edges"))
+
+
+def _mapping_rows(value: Any) -> list[Mapping[str, Any]]:
+    if value is None:
+        return []
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
+        return []
+    return [item for item in value if isinstance(item, Mapping)]
+
+
+def _node_identifier(node: Mapping[str, Any]) -> str | None:
+    for key in ("canonical_id", "node_id", "id"):
+        value = node.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _edge_target(edge: Mapping[str, Any]) -> str | None:
+    for key in ("target", "target_id", "to", "dst"):
+        value = edge.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _node_type(node: Mapping[str, Any]) -> str | None:
+    for key in ("node_type", "primitive_type", "type"):
+        value = node.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _node_comparable_payload(node: Mapping[str, Any]) -> Mapping[str, Any]:
+    for key in ("candidate_fields", "fields", "payload", "content", "body"):
+        value = node.get(key)
+        if isinstance(value, Mapping):
+            return value
+    return node
+
+
+def _node_declared_hashes(node: Mapping[str, Any]) -> set[str]:
+    hashes: set[str] = set()
+    for key in (
+        "canonical_sha256",
+        "content_hash",
+        "content_sha256",
+        "payload_sha256",
+        "sha256",
+    ):
+        value = node.get(key)
+        if isinstance(value, str) and value:
+            hashes.add(value.removeprefix("sha256:"))
+    return hashes
+
+
+def _receipt_records(graph_state: Mapping[str, Any]) -> Iterable[Mapping[str, Any]]:
+    if not isinstance(graph_state, Mapping):
+        return
+    for collection_name in ("nodes", "records", "submissions", "receipts"):
+        yield from _mapping_rows(graph_state.get(collection_name))
+
+
+def _require_json_object_key(value: Any) -> None:
+    if type(value) is not str:
+        raise ValueError("local_query_json_object_key_must_be_string")
+
+
+def _record_has_receipt_token(record: Mapping[str, Any], receipt_token: str) -> bool:
+    for key in ("receipt_token", "submission_receipt_token", "receipt_id", "token"):
+        if record.get(key) == receipt_token:
+            return True
+    for key in ("receipt", "write_receipt", "submission_receipt"):
+        nested = record.get(key)
+        if isinstance(nested, Mapping) and _record_has_receipt_token(nested, receipt_token):
+            return True
+    return False
+
+
+def _record_identifier(record: Mapping[str, Any]) -> str | None:
+    for key in ("canonical_id", "node_id", "id", "record_id", "receipt_id"):
+        value = record.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
+
+
+def _record_status(record: Mapping[str, Any]) -> str:
+    for key in ("status", "graph_persistence", "state"):
+        value = record.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return "local_record_found"
+
+
+def _stable_json_tree(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {
+            str(key): _stable_json_tree(item)
+            for key, item in sorted(value.items(), key=lambda entry: str(entry[0]))
+        }
+    if isinstance(value, list):
+        return [_stable_json_tree(item) for item in value]
+    return value
 
 
 def _validate_export_max_bytes(max_bytes: int) -> None:

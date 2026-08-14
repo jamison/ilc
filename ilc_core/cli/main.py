@@ -946,6 +946,16 @@ def _query_claim(state: dict[str, Any], claim_id: str) -> dict[str, Any]:
     }
 
 
+def _query_receipt(state: dict[str, Any], receipt_token: str) -> dict[str, Any]:
+    from ilc_core.graph.sidecar_query_runtime import lookup_submission_receipt
+
+    try:
+        result = lookup_submission_receipt(receipt_token, state)
+    except ValueError as exc:
+        raise QueryCommandError("query_invalid_input", str(exc)) from exc
+    return {"query": "receipt", "receipt": _sorted_mapping(result)}
+
+
 def _query_command_token(args: argparse.Namespace) -> str:
     subcommand = getattr(args, "query_subcommand", None)
     if subcommand:
@@ -979,6 +989,8 @@ def _run_query_subcommand(args: argparse.Namespace, graph_state_path: Path) -> t
         return _query_command_token(args), _query_epoch(state, args.epoch)
     if subcommand == "claim":
         return _query_command_token(args), _query_claim(state, str(args.claim_id))
+    if subcommand == "receipt":
+        return _query_command_token(args), _query_receipt(state, str(args.receipt_token))
     raise QueryCommandError("query_invalid_input", "query_subcommand_missing")
 
 
@@ -1320,6 +1332,12 @@ def _build_parser() -> JsonArgumentParser:
 
             p_claim = query_subparsers.add_parser("claim", help="Query by claim identifier")
             p_claim.add_argument("--claim-id", required=True, help="Claim identifier")
+
+            p_receipt = query_subparsers.add_parser(
+                "receipt",
+                help="Look up a local graph submission receipt token",
+            )
+            p_receipt.add_argument("receipt_token", help="Local submission receipt token")
 
             p_truth_node = query_subparsers.add_parser(
                 "truth-node",
