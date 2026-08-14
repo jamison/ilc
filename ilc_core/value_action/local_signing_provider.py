@@ -73,7 +73,7 @@ class LocalEd25519SigningProvider:
                 public_key,
                 external_aad=external_aad,
             )
-        except (InvalidSignature, ValueError, TypeError):
+        except (InvalidSignature, ValueError):
             return False
         return decoded.get("payload") == self.canonical_payload_dag_cbor(env)
 
