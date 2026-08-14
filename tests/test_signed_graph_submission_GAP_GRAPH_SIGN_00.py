@@ -189,6 +189,24 @@ def test_tampered_sig_bytes_fails_verification(tmp_path: Path, monkeypatch: pyte
         verify_truth_primitive_sig(record)
 
 
+def test_verifier_propagates_canonical_payload_type_error(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _, record = _submitted_record(tmp_path, monkeypatch, signing_key=_key_uri(tmp_path))
+
+    def _raise_type_error(_record: dict[str, object]) -> bytes:
+        raise TypeError("programmer error")
+
+    monkeypatch.setattr(
+        "ilc_core.epistemic.truth_primitive_sig_verifier.canonical_truth_primitive_sig_payload",
+        _raise_type_error,
+    )
+
+    with pytest.raises(TypeError, match="programmer error"):
+        verify_truth_primitive_sig(record)
+
+
 def test_verifier_returns_none_for_unsigned() -> None:
     assert verify_truth_primitive_sig({"sig": "UNSIGNED"}) is None
     assert verify_truth_primitive_sig({}) is None

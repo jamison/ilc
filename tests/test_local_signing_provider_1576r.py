@@ -154,6 +154,27 @@ def test_invalid_public_key_type_returns_false(key_uri: str) -> None:
     assert provider.verify_envelope_signature(signed, "not-bytes") is False  # type: ignore[arg-type]
 
 
+def test_verify_envelope_signature_propagates_cose_type_error(
+    key_uri: str,
+    private_key: ed25519.Ed25519PrivateKey,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    provider = LocalEd25519SigningProvider()
+    signed = provider.sign_envelope(_intent(), key_uri)
+    public_bytes = private_key.public_key().public_bytes_raw()
+
+    def _raise_type_error(*_args: object, **_kwargs: object) -> dict[str, object]:
+        raise TypeError("programmer error")
+
+    monkeypatch.setattr(
+        "ilc_core.value_action.local_signing_provider.cose_sign1_verify",
+        _raise_type_error,
+    )
+
+    with pytest.raises(TypeError, match="programmer error"):
+        provider.verify_envelope_signature(signed, public_bytes)
+
+
 def test_key_file_size_cap_has_stable_token(tmp_path: Path) -> None:
     key_path = tmp_path / "oversized.pem"
     key_path.write_bytes(b"x" * (16 * 1024 + 1))

@@ -108,7 +108,7 @@ def verify_truth_primitive_sig(record: dict[str, Any]) -> bool | None:
     public_key = ed25519.Ed25519PublicKey.from_public_bytes(pubkey_bytes)
     try:
         public_key.verify(sig_bytes, canonical_truth_primitive_sig_payload(record))
-    except (InvalidSignature, ValueError, TypeError) as exc:
+    except (InvalidSignature, ValueError) as exc:
         raise ValueError("invalid_truth_primitive_signature") from exc
     return True
 
