@@ -80143,6 +80143,106 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_02_g10_agent_onboarding_guide.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_04a_graph_query_hardening",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-04a read-only graph sidecar query hardening runtime additions.",
+      "manual_read_summary": "Adds standalone local-only read/query helpers for novelty scoring, reuse-centrality ranking, and submission receipt lookup. The existing Phase 1379 dispatcher query type set remains unchanged; no LMDB, network, or mutation authority is introduced.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_04a_g10_graph_sidecar_query_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:graph_sidecar_query_hardening_committed_GAP_HARNESS_SIDECAR_04a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/graph/sidecar_query_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_04a_graph_query_hardening",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-04a CLI receipt lookup surface added.",
+      "manual_read_summary": "Extends the existing JSON-first query subparser with local `ilc query receipt <token>` dispatch to the read-only receipt lookup helper.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_04a_g10_graph_sidecar_query_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:graph_sidecar_query_hardening_committed_GAP_HARNESS_SIDECAR_04a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_04a_graph_query_hardening",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-04a focused query hardening tests committed.",
+      "manual_read_summary": "Focused tests cover exact and near novelty scoring, malformed candidate soft-fail, reuse-centrality sorting and bounds, receipt lookup found/not-found/error paths, CLI JSON output, and mutation/network surface absence.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_04a_g10_graph_sidecar_query_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/graph/sidecar_query_runtime.py"
+        },
+        {
+          "edge_type": "TESTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "TESTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_04a_graph_query_hardening.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_04a_graph_query_hardening",
+      "chronology_note": "2026-08-14 GAP-HARNESS-SIDECAR-04a walkthrough committed.",
+      "manual_read_summary": "Walkthrough records direct source reads, token drift disposition, actual verification output, graph coverage, output token, and non-claims for the read-only query phase.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_harness_sidecar_04a_g10_graph_sidecar_query_hardening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:graph_sidecar_query_hardening_committed_GAP_HARNESS_SIDECAR_04a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_04a_graph_query_hardening_walkthrough.md"
     }
   ],
   "nodes": [
