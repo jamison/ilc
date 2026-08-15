@@ -2,6 +2,10 @@
 """Local Ed25519/COSE Sign1 provider for value-action envelopes."""
 from __future__ import annotations
 
+import base64
+import binascii
+import os
+from abc import ABC, abstractmethod
 from dataclasses import replace
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -17,13 +21,108 @@ from ilc_core.value_action.ilc_transfer_intent import AgentActionEnvelope, valid
 
 LOCAL_SIGNING_PROVIDER_VERSION = "local_signing_provider_02.v0.1"
 _MAX_PRIVATE_KEY_PEM_BYTES = 16 * 1024
+_MAX_PRIVATE_KEY_PEM_B64_BYTES = ((_MAX_PRIVATE_KEY_PEM_BYTES + 2) // 3) * 4 + 4
+_MAX_SIGNING_PROVIDER_KID_BYTES = 256
 
 
 class UnsupportedKeyProviderError(ValueError):
     """Raised when a key URI scheme is outside this provider's RC scope."""
 
 
-class LocalEd25519SigningProvider:
+class ILCSigningProvider(ABC):
+    """Abstract signing provider interface for AgentActionEnvelope signatures."""
+
+    @abstractmethod
+    def sign_envelope(
+        self,
+        env: AgentActionEnvelope,
+        *args: object,
+        kid: bytes | None = None,
+        external_aad: bytes = b"",
+    ) -> AgentActionEnvelope:
+        """Return a copy of env with a COSE_Sign1 signature over its payload."""
+
+    @abstractmethod
+    def verify_envelope_signature(
+        self,
+        env: AgentActionEnvelope,
+        public_key_bytes: bytes,
+        *,
+        external_aad: bytes = b"",
+    ) -> bool:
+        """Return True only when env's signature verifies for public_key_bytes."""
+
+
+def resolve_signing_key(kid: str, key_store_path: Path | None = None) -> bytes:
+    """Resolve local signing key material by key ID without exposing secrets."""
+    if not isinstance(kid, str):
+        raise ValueError("signing_provider_kid_invalid_type")
+    if not kid:
+        raise ValueError("signing_provider_kid_empty")
+    try:
+        kid_bytes = kid.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError("signing_provider_kid_invalid_characters") from exc
+    if len(kid_bytes) > _MAX_SIGNING_PROVIDER_KID_BYTES:
+        raise ValueError("signing_provider_kid_too_long")
+    if kid.startswith("env://"):
+        envvar = kid[len("env://") :]
+        if not envvar or ".." in envvar or "/" in envvar or "\\" in envvar:
+            raise ValueError("signing_provider_kid_invalid_characters")
+        raw_value = os.environ.get(envvar)
+        if raw_value is None:
+            raise ValueError(f"signing_provider_env_var_not_set:{envvar}")
+        try:
+            encoded_value = raw_value.encode("ascii")
+        except UnicodeEncodeError as exc:
+            raise ValueError("signing_provider_env_var_invalid_base64") from exc
+        if len(encoded_value) > _MAX_PRIVATE_KEY_PEM_B64_BYTES:
+            raise ValueError("signing_provider_env_var_too_large")
+        try:
+            decoded = base64.b64decode(encoded_value, validate=True)
+        except binascii.Error as exc:
+            raise ValueError("signing_provider_env_var_invalid_base64") from exc
+        if not decoded:
+            raise ValueError("signing_provider_env_var_invalid_base64")
+        if len(decoded) > _MAX_PRIVATE_KEY_PEM_BYTES:
+            raise ValueError("signing_provider_env_var_too_large")
+        return decoded
+    if ".." in kid or "/" in kid or "\\" in kid:
+        raise ValueError("signing_provider_kid_invalid_characters")
+    if key_store_path is not None:
+        root = Path(key_store_path)
+        for suffix in (".pem", ".key"):
+            candidate = root / f"{kid}{suffix}"
+            try:
+                if candidate.is_file():
+                    if candidate.is_symlink():
+                        raise ValueError("signing_provider_key_file_symlink_rejected")
+                    stat = candidate.stat()
+                    if stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
+                        raise ValueError("signing_provider_key_file_too_large")
+                    if stat.st_mode & 0o077:
+                        raise ValueError("signing_provider_key_file_permissions")
+                    return candidate.read_bytes()
+            except ValueError:
+                raise
+            except OSError as exc:
+                raise ValueError("signing_provider_key_file_unreadable") from exc
+    raise ValueError(f"signing_provider_kid_not_found:{kid}")
+
+
+def _load_ed25519_private_key_from_pem(
+    key_bytes: bytes,
+) -> ed25519.Ed25519PrivateKey:
+    try:
+        key = load_pem_private_key(key_bytes, password=None)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("invalid_private_key_pem") from exc
+    if not isinstance(key, ed25519.Ed25519PrivateKey):
+        raise ValueError("invalid_key_type_not_ed25519")
+    return key
+
+
+class LocalEd25519SigningProvider(ILCSigningProvider):
     """File-backed Ed25519 provider for AgentActionEnvelope COSE signatures."""
 
     def sign_envelope(
@@ -130,13 +229,7 @@ class LocalEd25519SigningProvider:
             raise
         except OSError as exc:
             raise ValueError("invalid_file_key_uri_unreadable") from exc
-        try:
-            key = load_pem_private_key(key_bytes, password=None)
-        except (TypeError, ValueError) as exc:
-            raise ValueError("invalid_private_key_pem") from exc
-        if not isinstance(key, ed25519.Ed25519PrivateKey):
-            raise ValueError("invalid_key_type_not_ed25519")
-        return key
+        return _load_ed25519_private_key_from_pem(key_bytes)
 
     def _parse_file_uri(self, key_uri: str) -> Path:
         if not isinstance(key_uri, str):
@@ -154,8 +247,60 @@ class LocalEd25519SigningProvider:
         return path
 
 
+class GuardedLocalEd25519SigningProvider(LocalEd25519SigningProvider):
+    """Kid-resolved local provider with an action-type allowlist."""
+
+    def __init__(
+        self,
+        kid: str,
+        key_store_path: Path | None = None,
+        allowed_action_types: frozenset[str] = frozenset({"ILC_TRANSFER"}),
+    ) -> None:
+        if not isinstance(allowed_action_types, frozenset):
+            raise ValueError("signing_provider_allowed_action_types_invalid")
+        self.kid = kid
+        self.allowed_action_types = allowed_action_types
+        self._private_key = _load_ed25519_private_key_from_pem(
+            resolve_signing_key(kid, key_store_path)
+        )
+
+    def sign_envelope(
+        self,
+        env: AgentActionEnvelope,
+        *,
+        kid: bytes | None = None,
+        external_aad: bytes = b"",
+    ) -> AgentActionEnvelope:
+        """Sign env after checking the configured action-type allowlist."""
+        validate_envelope(env)
+        action_type = env.action_type.value
+        if action_type not in self.allowed_action_types:
+            raise ValueError(f"signing_provider_action_type_not_authorized:{action_type}")
+        if kid is not None and not isinstance(kid, bytes):
+            raise ValueError("invalid_signing_provider_kid")
+        if not isinstance(external_aad, bytes):
+            raise ValueError("invalid_signing_provider_external_aad")
+        cose_kid = kid if kid is not None else self.kid.encode("utf-8")
+        cose_bytes = cose_sign1_sign(
+            self.canonical_payload_dag_cbor(env),
+            self._private_key,
+            kid=cose_kid,
+            external_aad=external_aad,
+        )
+        return replace(env, cose_signature=cose_bytes)
+
+    def resolve_public_key(self, key_uri: str | None = None) -> bytes:  # type: ignore[override]
+        """Return raw 32-byte public key bytes for the resolved key."""
+        if key_uri is not None:
+            return super().resolve_public_key(key_uri)
+        return self._private_key.public_key().public_bytes_raw()
+
+
 __all__ = [
+    "GuardedLocalEd25519SigningProvider",
+    "ILCSigningProvider",
     "LOCAL_SIGNING_PROVIDER_VERSION",
     "LocalEd25519SigningProvider",
     "UnsupportedKeyProviderError",
+    "resolve_signing_key",
 ]

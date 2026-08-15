@@ -36,9 +36,12 @@ from ilc_core.value_action.ilc_transfer_readback_verifier import (
     ILCTransferReadbackVerifier,
 )
 from ilc_core.value_action.local_signing_provider import (
+    GuardedLocalEd25519SigningProvider,
+    ILCSigningProvider,
     LOCAL_SIGNING_PROVIDER_VERSION,
     LocalEd25519SigningProvider,
     UnsupportedKeyProviderError,
+    resolve_signing_key,
 )
 
 __all__ = [
@@ -47,6 +50,8 @@ __all__ = [
     "AgentActionEnvelope",
     "EnvelopeSignerAuthority",
     "EnvelopeSignatureVerifier",
+    "GuardedLocalEd25519SigningProvider",
+    "ILCSigningProvider",
     "ILCTransferIntent",
     "ILCTransferLedger",
     "ILCTransferLedgerEntry",
@@ -67,6 +72,7 @@ __all__ = [
     "UnsupportedKeyProviderError",
     "build_transfer_receipt",
     "compute_transfer_batch_root",
+    "resolve_signing_key",
     "validate_envelope",
     "verify_receipt",
 ]
