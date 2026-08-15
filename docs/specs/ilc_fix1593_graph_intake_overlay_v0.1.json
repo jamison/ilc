@@ -1,0 +1,38 @@
+{
+  "artifact": "ilc_fix1593_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": false,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for Phase 1593 Window 1584-1593 closure verdict and handoff artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "phase_1593_overlay_record",
+      "edge_role": "PHASE_CLOSURE_VERDICT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_verdict",
+      "repo_path": "docs/phases/phase_1593_window_1584_1593_closure_gate_verdict.md",
+      "target": "phase:1593"
+    },
+    {
+      "annotation_method": "phase_1593_overlay_record",
+      "edge_role": "WINDOW_HANDOFF",
+      "graph_delta": "support_only",
+      "node_kind": "window_handoff",
+      "repo_path": "docs/specs/ilc_window_1584_1593_handoff_1593_v0.1.md",
+      "target": "window:1584-1593"
+    },
+    {
+      "annotation_method": "phase_1593_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix1593_graph_intake_overlay_v0.1.json",
+      "target": "phase:1593"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
