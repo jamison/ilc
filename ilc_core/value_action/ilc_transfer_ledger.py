@@ -27,6 +27,28 @@ ILC_TRANSFER_LEDGER_VERSION = "ilc_transfer_ledger_04.v0.1"
 
 _BALANCES_DB = b"ilc_transfer_balances"
 _TRANSFERS_DB = b"ilc_transfer_records"
+_TRANSFER_RECORD_BODY_KEYS = frozenset(
+    {
+        "amount_ilc",
+        "epoch",
+        "graph_context_anchor",
+        "memo",
+        "nonce",
+        "recipient_agent_id",
+        "recipient_balance_after_ilc",
+        "recipient_balance_before_ilc",
+        "schema_version",
+        "sender_agent_id",
+        "sender_balance_after_ilc",
+        "sender_balance_before_ilc",
+    }
+)
+_TRANSFER_RECORD_KEYS = _TRANSFER_RECORD_BODY_KEYS | frozenset(
+    {
+        "record_sha256",
+        "transfer_id",
+    }
+)
 
 
 class InsufficientBalanceError(ValueError):
@@ -201,9 +223,7 @@ class ILCTransferLedger:
             raw = txn.get(transfer_id.encode("ascii"))
         if raw is None:
             return None
-        decoded = json.loads(raw.decode("utf-8"))
-        if not isinstance(decoded, dict):
-            raise ValueError("invalid_transfer_record_payload")
+        decoded = _decode_transfer_record(raw)
         _verify_record_sha256(decoded, expected_transfer_id=transfer_id)
         entry = _entry_from_record(decoded)
         _verify_transfer_record_semantics(entry)
@@ -307,9 +327,7 @@ def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int
     spent = 0
     with txn.cursor(db=transfers_db) as cursor:
         for key_bytes, raw in cursor:
-            record = json.loads(raw.decode("utf-8"))
-            if not isinstance(record, dict):
-                raise ValueError("invalid_transfer_record_payload")
+            record = _decode_transfer_record(raw)
             try:
                 expected_transfer_id = key_bytes.decode("ascii")
             except UnicodeDecodeError as exc:
@@ -323,15 +341,18 @@ def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int
 
 
 def _entry_from_record(record: dict[str, Any]) -> ILCTransferLedgerEntry:
+    _require_transfer_record_field_set(record)
+    if record.get("schema_version") != ILC_TRANSFER_LEDGER_VERSION:
+        raise ValueError("invalid_transfer_record_schema_version")
     return ILCTransferLedgerEntry(
         transfer_id=_require_sha256_hex(record.get("transfer_id"), "invalid_transfer_id"),
-        sender_agent_id=str(record["sender_agent_id"]),
-        recipient_agent_id=str(record["recipient_agent_id"]),
+        sender_agent_id=_require_record_str(record, "sender_agent_id"),
+        recipient_agent_id=_require_record_str(record, "recipient_agent_id"),
         amount_ilc=parse_non_negative_decimal(
             record["amount_ilc"],
             token="invalid_transfer_record_amount",
         ),
-        nonce=str(record["nonce"]),
+        nonce=_require_record_str(record, "nonce"),
         epoch=_require_epoch(record["epoch"]),
         sender_balance_before_ilc=parse_non_negative_decimal(
             record["sender_balance_before_ilc"],
@@ -353,9 +374,62 @@ def _entry_from_record(record: dict[str, Any]) -> ILCTransferLedgerEntry:
             record.get("record_sha256"),
             "invalid_transfer_record_sha256",
         ),
-        memo=record.get("memo"),
-        graph_context_anchor=record.get("graph_context_anchor"),
+        memo=_require_optional_record_text(
+            record,
+            "memo",
+            "invalid_transfer_record_memo",
+            max_bytes=transfer_intent.MAX_MEMO_BYTES,
+            require_non_empty=False,
+        ),
+        graph_context_anchor=_require_optional_record_text(
+            record,
+            "graph_context_anchor",
+            "invalid_transfer_record_graph_context_anchor",
+            max_bytes=transfer_intent.MAX_GRAPH_CONTEXT_ANCHOR_BYTES,
+            require_non_empty=True,
+        ),
     )
+
+
+def _decode_transfer_record(raw: bytes) -> dict[str, Any]:
+    try:
+        decoded = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("invalid_transfer_record_corrupted") from exc
+    if not isinstance(decoded, dict):
+        raise ValueError("invalid_transfer_record_payload")
+    return decoded
+
+
+def _require_transfer_record_field_set(record: dict[str, Any]) -> None:
+    if set(record) != _TRANSFER_RECORD_KEYS:
+        raise ValueError("invalid_transfer_record_field_set")
+
+
+def _require_record_str(record: dict[str, Any], field_name: str) -> str:
+    value = record.get(field_name)
+    if not isinstance(value, str):
+        raise ValueError(f"invalid_transfer_record_{field_name}")
+    return value
+
+
+def _require_optional_record_text(
+    record: dict[str, Any],
+    field_name: str,
+    token: str,
+    *,
+    max_bytes: int,
+    require_non_empty: bool,
+) -> str | None:
+    value = record.get(field_name)
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ValueError(token)
+    if require_non_empty:
+        transfer_intent._require_canonical_non_empty_string(value, token)
+    transfer_intent._require_utf8_max_bytes(value, max_bytes, token)
+    return value
 
 
 def _require_epoch(value: object) -> int:
@@ -406,6 +480,7 @@ def _verify_transfer_record_semantics(entry: ILCTransferLedgerEntry) -> None:
         raise ValueError("transfer_record_self_transfer")
     if entry.amount_ilc <= Decimal("0"):
         raise ValueError("invalid_transfer_record_amount")
+    transfer_intent._amount_ilc_to_micro_ilc(entry.amount_ilc)
     if entry.sender_balance_before_ilc - entry.amount_ilc != entry.sender_balance_after_ilc:
         raise ValueError("transfer_record_balance_equation_mismatch")
     if entry.recipient_balance_before_ilc + entry.amount_ilc != entry.recipient_balance_after_ilc:
@@ -417,6 +492,7 @@ def _verify_record_sha256(
     *,
     expected_transfer_id: str | None = None,
 ) -> None:
+    _require_transfer_record_field_set(record)
     transfer_id = _require_sha256_hex(record.get("transfer_id"), "invalid_transfer_id")
     if expected_transfer_id is not None:
         if _require_sha256_hex(expected_transfer_id, "invalid_transfer_id") != transfer_id:

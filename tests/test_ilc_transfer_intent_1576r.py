@@ -9,6 +9,7 @@ import pytest
 from ilc_core.value_action.ilc_transfer_intent import (
     ILC_TRANSFER_ENABLED,
     ILC_TRANSFER_INTENT_VERSION,
+    MAX_COSE_SIGNATURE_BYTES,
     MAX_GRAPH_CONTEXT_ANCHOR_BYTES,
     MAX_GRAPH_CONTEXT_ANCHOR_CHARS,
     MAX_MEMO_BYTES,
@@ -82,6 +83,11 @@ def test_float_amount_rejected() -> None:
         _create(amount_ilc=1.0)
 
 
+def test_fractional_micro_ilc_amount_rejected_for_all_agents() -> None:
+    with pytest.raises(ValueError, match="invalid_envelope_amount_fractional_micro_ilc"):
+        _create(amount_ilc=Decimal("0.0000001"))
+
+
 def test_memo_too_long_rejected() -> None:
     with pytest.raises(ValueError, match="invalid_envelope_memo_too_long"):
         _create(memo="x" * 257)
@@ -133,6 +139,20 @@ def test_validate_rejects_invalid_signature_field() -> None:
         cose_signature=b"",
     )
     with pytest.raises(ValueError, match="invalid_envelope_cose_signature"):
+        validate_envelope(env)
+
+
+def test_validate_rejects_oversized_cose_signature_field() -> None:
+    env = AgentActionEnvelope(
+        action_type=ActionType.ILC_TRANSFER,
+        sender_agent_id=SENDER_AGENT_ID,
+        recipient_agent_id=RECIPIENT_AGENT_ID,
+        amount_ilc=Decimal("1"),
+        nonce="agent-a:oversized-cose",
+        epoch=0,
+        cose_signature=b"x" * (MAX_COSE_SIGNATURE_BYTES + 1),
+    )
+    with pytest.raises(ValueError, match="invalid_envelope_cose_signature_too_long"):
         validate_envelope(env)
 
 

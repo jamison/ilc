@@ -147,11 +147,12 @@ def test_amount_uses_canonical_decimal_string() -> None:
     assert payload["signed_at_epoch"] is None
 
 
-def test_invalid_public_key_type_returns_false(key_uri: str) -> None:
+def test_invalid_public_key_type_propagates_type_error(key_uri: str) -> None:
     provider = LocalEd25519SigningProvider()
     signed = provider.sign_envelope(_intent(), key_uri)
 
-    assert provider.verify_envelope_signature(signed, "not-bytes") is False  # type: ignore[arg-type]
+    with pytest.raises(TypeError):
+        provider.verify_envelope_signature(signed, "not-bytes")  # type: ignore[arg-type]
 
 
 def test_verify_envelope_signature_propagates_cose_type_error(

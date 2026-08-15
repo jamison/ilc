@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from __future__ import annotations
 
+import json
 from dataclasses import replace
 from decimal import Decimal
 from pathlib import Path
@@ -15,6 +16,7 @@ from cryptography.hazmat.primitives.serialization import (
 )
 
 from ilc_core.value_action import ilc_transfer_intent
+from ilc_core.value_action import ilc_transfer_ledger as transfer_ledger
 from ilc_core.value_action.action_nonce_store import ActionNonceStore, NonceReplayError
 from ilc_core.value_action.local_signing_provider import LocalEd25519SigningProvider
 from ilc_core.value_action.ilc_transfer_intent import ILCTransferIntent
@@ -213,6 +215,68 @@ def test_transfer_record_retrievable(lmdb_env, key_uri: str, private_key) -> Non
     assert readback.sender_balance_after_ilc == Decimal("6.5")
     assert readback.recipient_balance_after_ilc == Decimal("3.5")
     assert len(readback.record_sha256) == 64
+
+
+def test_transfer_record_readback_rejects_extra_fields_even_if_hash_recomputed(
+    lmdb_env,
+    key_uri: str,
+    private_key,
+) -> None:
+    ledger = ILCTransferLedger(lmdb_env)
+    nonce_store = ActionNonceStore(lmdb_env)
+    _seed_balance(ledger, SENDER_AGENT_ID, Decimal("10"))
+    entry = _execute(ledger, nonce_store, _signed_intent(key_uri), private_key)
+
+    with ledger._env.begin(write=True) as txn:
+        raw = txn.get(entry.transfer_id.encode("ascii"), db=ledger._transfers_db)
+        assert raw is not None
+        record = json.loads(raw.decode("utf-8"))
+        record["ignored_extra_field"] = "tamper"
+        body = {key: value for key, value in record.items() if key != "record_sha256"}
+        record["record_sha256"] = transfer_ledger._sha256_hex(body)  # noqa: SLF001
+        txn.put(
+            entry.transfer_id.encode("ascii"),
+            transfer_ledger._json_bytes(record),  # noqa: SLF001
+            db=ledger._transfers_db,
+        )
+
+    with pytest.raises(ValueError, match="invalid_transfer_record_field_set"):
+        ledger.get_transfer_record(entry.transfer_id)
+
+
+def test_transfer_record_readback_rejects_non_string_memo_with_valid_hashes(
+    lmdb_env,
+    key_uri: str,
+    private_key,
+) -> None:
+    ledger = ILCTransferLedger(lmdb_env)
+    nonce_store = ActionNonceStore(lmdb_env)
+    _seed_balance(ledger, SENDER_AGENT_ID, Decimal("10"))
+    entry = _execute(ledger, nonce_store, _signed_intent(key_uri), private_key)
+
+    with ledger._env.begin() as txn:
+        raw = txn.get(entry.transfer_id.encode("ascii"), db=ledger._transfers_db)
+        assert raw is not None
+        record = json.loads(raw.decode("utf-8"))
+    body = {
+        key: value
+        for key, value in record.items()
+        if key not in {"record_sha256", "transfer_id"}
+    }
+    body["memo"] = ["not", "a", "string"]
+    transfer_id = transfer_ledger._sha256_hex(body)  # noqa: SLF001
+    tampered = dict(body)
+    tampered["transfer_id"] = transfer_id
+    tampered["record_sha256"] = transfer_ledger._sha256_hex(tampered)  # noqa: SLF001
+    with ledger._env.begin(write=True) as txn:
+        txn.put(
+            transfer_id.encode("ascii"),
+            transfer_ledger._json_bytes(tampered),  # noqa: SLF001
+            db=ledger._transfers_db,
+        )
+
+    with pytest.raises(ValueError, match="invalid_transfer_record_memo"):
+        ledger.get_transfer_record(transfer_id)
 
 
 def test_zero_amount_transfer_raises(lmdb_env, key_uri: str, private_key) -> None:

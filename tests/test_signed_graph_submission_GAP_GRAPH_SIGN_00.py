@@ -8,11 +8,13 @@ import os
 from pathlib import Path
 
 import pytest
+from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.cli.d2e_agent_cli import agent_hotkey_fingerprint, handle_agent_keygen
 from ilc_core.cli.d2e_submit_cli import SubmitCommandError, handle_submit
 from ilc_core.epistemic.truth_primitive_sig_verifier import (
     TRUTH_PRIMITIVE_SIG_SCHEME,
+    attach_truth_primitive_signature,
     verify_truth_primitive_sig,
 )
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
@@ -108,6 +110,20 @@ def test_signed_submission_stores_scheme(tmp_path: Path, monkeypatch: pytest.Mon
     _, record = _submitted_record(tmp_path, monkeypatch, signing_key=_key_uri(tmp_path))
 
     assert record["sig_scheme"] == TRUTH_PRIMITIVE_SIG_SCHEME
+
+
+def test_attach_signature_deep_copies_nested_payload() -> None:
+    record = {
+        "agent_id": AGENT_ID,
+        "epoch": 1,
+        "payload": dict(ASSERT_TRUTH_PAYLOAD),
+        "primitive": "assert.truth",
+        "v": 1,
+    }
+    signed = attach_truth_primitive_signature(record, ed25519.Ed25519PrivateKey.generate())
+    signed["payload"]["content"]["body"] = "mutated through returned copy"  # type: ignore[index]
+
+    assert record["payload"]["content"]["body"] == "signed graph submission test"  # type: ignore[index]
 
 
 def test_signed_edge_only_submission_record_verifies(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

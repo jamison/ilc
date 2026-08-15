@@ -270,6 +270,15 @@ def test_rust_payload_sender_sig_required() -> None:
         validate_rust_transfer_payload(bad_payload, intent)
 
 
+@pytest.mark.parametrize("sender_sig", ["not-hex", "A" * 64, "abc"])
+def test_rust_payload_sender_sig_string_must_be_lower_even_hex(sender_sig: str) -> None:
+    intent = _intent()
+    bad_payload = _rust_payload(sender_sig=sender_sig)
+
+    with pytest.raises(ValueError, match="^rust_ecu_transfer_sender_sig_invalid$"):
+        validate_rust_transfer_payload(bad_payload, intent)
+
+
 def test_rust_payload_transfer_class_uses_rust_serde_shape() -> None:
     default_payment_intent = _intent(
         transfer_class=TransferClass.PAYMENT,

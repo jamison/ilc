@@ -34,6 +34,9 @@ def _event_key(epoch: int, ordinal: int) -> bytes:
     )
 
 
+_ATTR_EVENT_KEY_HEX_LENGTH = len(_event_key(0, 0).hex())
+
+
 def _epoch_index_key(epoch: int) -> bytes:
     return EPOCH_INDEX_KEY_PREFIX + epoch.to_bytes(8, "big", signed=False)
 
@@ -127,9 +130,10 @@ class AttributionAuditLmdbStore:
             )
             events: list[dict[str, Any]] = []
             for raw_key in raw_keys:
-                if not isinstance(raw_key, str):
-                    raise ValueError("attribution_audit_epoch_index_invalid")
-                value = txn.get(bytes.fromhex(raw_key), db=self._attr_events_db)
+                value = txn.get(
+                    _decode_event_key_hex(raw_key, expected_epoch=normalized_epoch),
+                    db=self._attr_events_db,
+                )
                 if value is None:
                     raise ValueError("attribution_audit_event_missing")
                 events.append(_decode_dict(value))
@@ -151,6 +155,24 @@ class AttributionAuditLmdbStore:
                         raise ValueError("attribution_audit_epoch_index_key_invalid")
                     epochs.append(int.from_bytes(epoch_bytes, "big", signed=False))
         return sorted(epochs)
+
+
+def _decode_event_key_hex(raw_key: Any, *, expected_epoch: int) -> bytes:
+    if not isinstance(raw_key, str):
+        raise ValueError("attribution_audit_epoch_index_invalid")
+    if len(raw_key) != _ATTR_EVENT_KEY_HEX_LENGTH:
+        raise ValueError("attribution_audit_epoch_index_invalid")
+    try:
+        key = bytes.fromhex(raw_key)
+    except ValueError as exc:
+        raise ValueError("attribution_audit_epoch_index_invalid") from exc
+    if not key.startswith(ATTR_EVENT_KEY_PREFIX):
+        raise ValueError("attribution_audit_epoch_index_invalid")
+    epoch_start = len(ATTR_EVENT_KEY_PREFIX)
+    epoch_end = epoch_start + 8
+    if int.from_bytes(key[epoch_start:epoch_end], "big", signed=False) != expected_epoch:
+        raise ValueError("attribution_audit_epoch_index_epoch_mismatch")
+    return key
 
 
 __all__ = [

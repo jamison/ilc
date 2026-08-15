@@ -78,6 +78,17 @@ def test_receipt_round_trips_from_dict_and_detects_token_tamper() -> None:
         SidecarExecutionReceipt.from_dict(tampered)
 
 
+def test_receipt_from_dict_rejects_extra_fields() -> None:
+    payload = _receipt().to_dict()
+    payload["future_field"] = "unexpected"
+
+    with pytest.raises(
+        SidecarExecutionReceiptError,
+        match="sidecar_execution_receipt_field_set_invalid",
+    ):
+        SidecarExecutionReceipt.from_dict(payload)
+
+
 def test_hash_receipt_component_rejects_non_canonical_float() -> None:
     with pytest.raises(ValueError):
         hash_receipt_component({"bad": float("nan")})
