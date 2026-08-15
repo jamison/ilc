@@ -31,10 +31,14 @@ TASK_COORDINATION_TRANSFER_ENABLED: bool = False
 DEFAULT_TASK_COORDINATION_MAP_SIZE_BYTES = 64 * 1024 * 1024
 DEFAULT_MAX_CONCURRENT_ACCEPTANCES_PER_AGENT = 10
 MAX_ACCEPTANCES_PER_AGENT = 10_000
-MAX_TASK_DESCRIPTION_CHARS = 1000
-MAX_RESULT_CRITERIA_CHARS = 500
-MAX_RESULT_SUMMARY_CHARS = 1000
-MAX_RESULT_HASH_CHARS = 128
+MAX_TASK_DESCRIPTION_BYTES = 1000
+MAX_RESULT_CRITERIA_BYTES = 500
+MAX_RESULT_SUMMARY_BYTES = 1000
+MAX_RESULT_HASH_BYTES = 128
+MAX_TASK_DESCRIPTION_CHARS = MAX_TASK_DESCRIPTION_BYTES
+MAX_RESULT_CRITERIA_CHARS = MAX_RESULT_CRITERIA_BYTES
+MAX_RESULT_SUMMARY_CHARS = MAX_RESULT_SUMMARY_BYTES
+MAX_RESULT_HASH_CHARS = MAX_RESULT_HASH_BYTES
 MAX_CAPS_MAX_CONCURRENT = 1000
 MAX_RESULT_RECORDS_PER_OFFER = 0xFFFFFFFF
 
@@ -43,6 +47,19 @@ ACCEPTANCES_DB_NAME = b"acceptances"
 RESULTS_DB_NAME = b"results"
 
 TASK_OFFER_STATUSES = frozenset({"open", "accepted", "completed", "expired", "cancelled"})
+_TASK_OFFER_KEYS = frozenset(
+    {
+        "caps_max_concurrent",
+        "commissioning_agent_id",
+        "expiry_epoch",
+        "offer_id",
+        "pre_committed_ilc_amount",
+        "result_criteria",
+        "schema_version",
+        "status",
+        "task_description",
+    }
+)
 _HEX = frozenset("0123456789abcdef")
 
 
@@ -115,6 +132,8 @@ class TaskOffer:
     def from_dict(cls, payload: Mapping[str, Any]) -> "TaskOffer":
         if not isinstance(payload, Mapping):
             raise TaskCoordinationError("task_offer_payload_invalid")
+        if set(payload) != _TASK_OFFER_KEYS:
+            raise TaskCoordinationError("task_offer_field_set_invalid")
         if payload.get("schema_version") != TASK_COORDINATION_SCHEMA_VERSION:
             raise TaskCoordinationError("task_offer_schema_version_invalid")
         amount = _decode_optional_decimal(payload.get("pre_committed_ilc_amount"))
@@ -275,12 +294,12 @@ class TaskCoordinationLmdbStore:
         normalized_result_hash = _require_text(
             result_hash,
             "task_result_hash_invalid",
-            max_chars=MAX_RESULT_HASH_CHARS,
+            max_bytes=MAX_RESULT_HASH_BYTES,
         )
         normalized_summary = _require_text(
             result_summary,
             "task_result_summary_invalid",
-            max_chars=MAX_RESULT_SUMMARY_CHARS,
+            max_bytes=MAX_RESULT_SUMMARY_BYTES,
         )
         normalized_epoch = _require_epoch(current_epoch, "task_current_epoch_invalid")
         with self.env.begin(write=True) as txn:
@@ -289,6 +308,8 @@ class TaskCoordinationLmdbStore:
                 raise TaskCoordinationError("task_offer_missing")
             if txn.get(_acceptance_key(normalized_offer_id, normalized_agent_id), db=self._acceptances_db) is None:
                 raise TaskCoordinationError("task_offer_not_accepted_by_agent")
+            if offer.status != "accepted":
+                raise TaskCoordinationError("task_offer_not_accepted")
             ordinal = _next_result_ordinal(txn, self._results_db, normalized_offer_id)
             result_record = {
                 "accepting_agent_id": normalized_agent_id,
@@ -418,13 +439,13 @@ def _offer_payload_without_id(
         "result_criteria": _require_text(
             result_criteria,
             "task_result_criteria_invalid",
-            max_chars=MAX_RESULT_CRITERIA_CHARS,
+            max_bytes=MAX_RESULT_CRITERIA_BYTES,
         ),
         "status": _require_status(status),
         "task_description": _require_text(
             task_description,
             "task_description_invalid",
-            max_chars=MAX_TASK_DESCRIPTION_CHARS,
+            max_bytes=MAX_TASK_DESCRIPTION_BYTES,
         ),
     }
 
@@ -597,10 +618,10 @@ def _require_epoch(value: Any, token: str) -> int:
     return value
 
 
-def _require_text(value: Any, token: str, *, max_chars: int) -> str:
+def _require_text(value: Any, token: str, *, max_bytes: int) -> str:
     if type(value) is not str or not value:
         raise TaskCoordinationError(token)
-    if len(value) > max_chars:
+    if len(value.encode("utf-8")) > max_bytes:
         raise TaskCoordinationError(token)
     return value
 

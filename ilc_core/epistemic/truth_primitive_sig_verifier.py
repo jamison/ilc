@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from typing import Any
 
 from cryptography.exceptions import InvalidSignature
@@ -55,7 +56,7 @@ def attach_truth_primitive_signature(
 
     if not isinstance(private_key, ed25519.Ed25519PrivateKey):
         raise ValueError("invalid_truth_primitive_sig_private_key_type")
-    signed = dict(envelope)
+    signed = deepcopy(envelope)
     payload = canonical_truth_primitive_sig_payload(signed)
     public_key_bytes = private_key.public_key().public_bytes_raw()
     sig_bytes = private_key.sign(payload)

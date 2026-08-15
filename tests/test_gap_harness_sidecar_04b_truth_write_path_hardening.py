@@ -135,6 +135,11 @@ def test_build_refutation_primitive_rejects_reason_over_500_utf8_bytes() -> None
         build_refutation_primitive(TARGET_NODE_ID, "é" * 251, [], AGENT_ID_HEX, 5)
 
 
+def test_build_refutation_primitive_rejects_non_string_reason_with_type_token() -> None:
+    with pytest.raises(ValueError, match="invalid_refutation_criterion_type"):
+        build_refutation_primitive(TARGET_NODE_ID, 123, [], AGENT_ID_HEX, 5)  # type: ignore[arg-type]
+
+
 def test_build_refutation_primitive_accepts_reason_exactly_500_utf8_bytes() -> None:
     submission = build_refutation_primitive(
         TARGET_NODE_ID,

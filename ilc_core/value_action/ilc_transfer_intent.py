@@ -26,6 +26,7 @@ _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MEMO_MAX_BYTES = 256
 _NONCE_MAX_BYTES = 256         # generous ceiling; valid nonce is ~123 ASCII bytes
 _GRAPH_CONTEXT_ANCHOR_MAX_BYTES = 512
+_COSE_SIGNATURE_MAX_BYTES = 16 * 1024
 _MICRO_ILC_FACTOR = Decimal("1000000")
 _U64_MAX = 18_446_744_073_709_551_615
 GENESIS_ILC_ACTION_CLASS = "PAYMENT"
@@ -102,13 +103,7 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
     if env.amount_ilc <= Decimal("0"):
         raise ValueError("invalid_envelope_amount_not_positive")
     decimal_to_canonical_string(env.amount_ilc)
-    # Apply the u64 micro-ILC ceiling to ALL agents, not only Genesis.
-    # _amount_ilc_to_micro_ilc enforces this inside the Genesis guard, but
-    # without this check here a non-Genesis envelope with an astronomically
-    # large Decimal amount passes validate_envelope and enters the COSE
-    # payload construction and ledger paths before being caught.
-    if env.amount_ilc * _MICRO_ILC_FACTOR > _U64_MAX:
-        raise ValueError("amount_micro_ilc_exceeds_u64_max")
+    _amount_ilc_to_micro_ilc(env.amount_ilc)
 
     _require_canonical_non_empty_string(env.nonce, "invalid_envelope_empty_nonce")
     _require_utf8_max_bytes(env.nonce, _NONCE_MAX_BYTES, "invalid_envelope_nonce_too_long")
@@ -132,6 +127,8 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
     if env.cose_signature is not None:
         if not isinstance(env.cose_signature, bytes) or len(env.cose_signature) == 0:
             raise ValueError("invalid_envelope_cose_signature")
+        if len(env.cose_signature) > _COSE_SIGNATURE_MAX_BYTES:
+            raise ValueError("invalid_envelope_cose_signature_too_long")
 
 
 def enforce_genesis_envelope_guard(
@@ -212,6 +209,7 @@ __all__ = [
     "ILCTransferIntent",
     "ILC_TRANSFER_ENABLED",
     "ILC_TRANSFER_INTENT_VERSION",
+    "MAX_COSE_SIGNATURE_BYTES",
     "MAX_GRAPH_CONTEXT_ANCHOR_BYTES",
     "MAX_GRAPH_CONTEXT_ANCHOR_CHARS",
     "MAX_MEMO_BYTES",
@@ -225,6 +223,7 @@ __all__ = [
 MAX_MEMO_BYTES = _MEMO_MAX_BYTES
 MAX_NONCE_BYTES = _NONCE_MAX_BYTES
 MAX_GRAPH_CONTEXT_ANCHOR_BYTES = _GRAPH_CONTEXT_ANCHOR_MAX_BYTES
+MAX_COSE_SIGNATURE_BYTES = _COSE_SIGNATURE_MAX_BYTES
 
 # Backward-compatible aliases retained for older tests; caps are byte-based.
 MAX_NONCE_CHARS = _NONCE_MAX_BYTES

@@ -22,6 +22,7 @@ _RUST_ECU_TRANSFER_KEYS = frozenset(
 _OBJECT_REF_KEYS = frozenset({"agent", "version"})
 _U64_MAX = 18446744073709551615
 _MAX_SENDER_SIG_BYTES = 4096
+_HEX = frozenset("0123456789abcdef")
 
 
 class ECUTransferAdapter:
@@ -144,7 +145,13 @@ def validate_rust_transfer_payload(payload: Any, intent: ECUFastPathIntent) -> N
         if not sender_sig or len(sender_sig) > _MAX_SENDER_SIG_BYTES:
             raise ValueError("rust_ecu_transfer_sender_sig_invalid")
     elif isinstance(sender_sig, str):
-        if not sender_sig or sender_sig != sender_sig.strip() or len(sender_sig) > _MAX_SENDER_SIG_BYTES * 2:
+        if (
+            not sender_sig
+            or sender_sig != sender_sig.strip()
+            or len(sender_sig) % 2 != 0
+            or len(sender_sig) > _MAX_SENDER_SIG_BYTES * 2
+            or any(char not in _HEX for char in sender_sig)
+        ):
             raise ValueError("rust_ecu_transfer_sender_sig_invalid")
     else:
         raise ValueError("rust_ecu_transfer_sender_sig_invalid")

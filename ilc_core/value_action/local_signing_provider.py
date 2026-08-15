@@ -65,7 +65,7 @@ class LocalEd25519SigningProvider:
             raise ValueError("invalid_signing_provider_external_aad")
         try:
             public_key = ed25519.Ed25519PublicKey.from_public_bytes(public_key_bytes)
-        except (TypeError, ValueError):
+        except ValueError:
             return False
         try:
             decoded = cose_sign1_verify(

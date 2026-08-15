@@ -50,6 +50,14 @@ def test_task_offer_id_is_deterministic_and_round_trips() -> None:
     assert first.with_status("expired").offer_id == first.offer_id
 
 
+def test_task_offer_from_dict_rejects_extra_fields() -> None:
+    payload = _offer().to_dict()
+    payload["future_field"] = "unexpected"
+
+    with pytest.raises(TaskCoordinationError, match="task_offer_field_set_invalid"):
+        TaskOffer.from_dict(payload)
+
+
 def test_task_offer_rejects_invalid_agent_id_uppercase() -> None:
     with pytest.raises(TaskCoordinationError, match="task_agent_id_invalid"):
         _offer(commissioning_agent_id="A" * 96)
@@ -74,6 +82,13 @@ def test_task_offer_rejects_non_positive_amount_and_excessive_text() -> None:
         _offer(task_description="x" * 1001)
     with pytest.raises(TaskCoordinationError, match="task_result_criteria_invalid"):
         _offer(result_criteria="x" * 501)
+
+
+def test_task_offer_text_limits_are_utf8_byte_based() -> None:
+    with pytest.raises(TaskCoordinationError, match="task_description_invalid"):
+        _offer(task_description="é" * 501)
+    with pytest.raises(TaskCoordinationError, match="task_result_criteria_invalid"):
+        _offer(result_criteria="é" * 251)
 
 
 def test_store_creates_offer_and_uses_required_lmdb_subdatabases(tmp_path: Path) -> None:
@@ -184,6 +199,19 @@ def test_submit_result_requires_acceptance_and_records_result(tmp_path: Path) ->
     assert completed.offer_id == offer.offer_id
     assert completed.status == "completed"
     assert store.list_results(offer.offer_id)[0]["ordinal"] == 0
+
+
+def test_submit_result_rejects_expired_offer_even_after_acceptance(tmp_path: Path) -> None:
+    store = TaskCoordinationLmdbStore(tmp_path / "tasks")
+    offer = _offer(expiry_epoch=3)
+    store.create_offer(offer)
+    store.accept_offer(offer.offer_id, AGENT_B, current_epoch=1)
+
+    assert store.expire_stale_offers(current_epoch=3) == [offer.offer_id]
+    with pytest.raises(TaskCoordinationError, match="task_offer_not_accepted"):
+        store.submit_result(offer.offer_id, AGENT_B, "abc123", "summary", current_epoch=4)
+    assert store.list_results(offer.offer_id) == []
+    assert store.get_offer(offer.offer_id).status == "expired"  # type: ignore[union-attr]
 
 
 def test_expire_stale_offers_marks_only_open_or_accepted_offers(tmp_path: Path) -> None:

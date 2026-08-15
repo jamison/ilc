@@ -140,7 +140,7 @@ def build_refutation_primitive(
     if not isinstance(target_node_id, str) or not target_node_id:
         raise ValueError("invalid_refutation_target_empty")
     if not isinstance(refutation_criterion_text, str):
-        raise ValueError("invalid_refutation_reason_too_long")
+        raise ValueError("invalid_refutation_criterion_type")
     if len(refutation_criterion_text.encode("utf-8")) > _MAX_REFUTATION_CRITERION_BYTES:
         raise ValueError("invalid_refutation_reason_too_long")
     if not isinstance(evidence_node_ids, list):
@@ -310,6 +310,8 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     write_receipt: dict[str, Any] = {}
     store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
     if store_path:
+        # Missing guard attribute means this caller is using the public-RC-cleared
+        # local write path. An explicit True still blocks before any LMDB write.
         check_graph_mutation_allowed(getattr(args, "public_path_guard_value", False))
         from ilc_core.epistemic.truth_primitive_graph_store import (
             write_truth_primitive_result,

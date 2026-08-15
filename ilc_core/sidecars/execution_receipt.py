@@ -33,6 +33,20 @@ ACTION_TYPES = frozenset(
 STATUSES = frozenset({"failure", "partial", "success"})
 _HEX = frozenset("0123456789abcdef")
 _RECEIPT_KEY_BYTES = 12
+_RECEIPT_PAYLOAD_KEYS = frozenset(
+    {
+        "action_type",
+        "agent_id_hex",
+        "epoch",
+        "error_token",
+        "inputs_hash",
+        "outputs_hash",
+        "receipt_token",
+        "schema_version",
+        "status",
+        "tool_id",
+    }
+)
 
 
 class SidecarExecutionReceiptError(ValueError):
@@ -98,6 +112,8 @@ class SidecarExecutionReceipt:
     def from_dict(cls, payload: Mapping[str, Any]) -> "SidecarExecutionReceipt":
         if not isinstance(payload, Mapping):
             raise SidecarExecutionReceiptError("sidecar_execution_receipt_payload_invalid")
+        if set(payload) != _RECEIPT_PAYLOAD_KEYS:
+            raise SidecarExecutionReceiptError("sidecar_execution_receipt_field_set_invalid")
         schema_version = payload.get("schema_version")
         if schema_version != SIDECAR_EXECUTION_RECEIPT_SCHEMA_VERSION:
             raise SidecarExecutionReceiptError("sidecar_execution_receipt_schema_version_invalid")

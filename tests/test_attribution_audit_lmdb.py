@@ -105,6 +105,54 @@ def test_corrupted_lmdb_event_and_index_raise_stable_tokens(tmp_path: Path) -> N
         store.read_epoch_events(3)
 
 
+def test_corrupted_epoch_index_event_key_hex_raises_stable_token(tmp_path: Path) -> None:
+    store = AttributionAuditLmdbStore(tmp_path / "audit")
+    store.write_epoch_events(3, [{"event_id": "event-1"}])
+
+    with store.env.begin(write=True) as txn:
+        txn.put(
+            audit_lmdb._epoch_index_key(3),  # noqa: SLF001
+            audit_lmdb._encode_json(["z" * len(audit_lmdb._event_key(3, 0).hex())]),  # noqa: SLF001
+            db=store._epoch_index_db,  # noqa: SLF001
+        )
+
+    with pytest.raises(ValueError, match="attribution_audit_epoch_index_invalid"):
+        store.read_epoch_events(3)
+
+
+def test_corrupted_epoch_index_wrong_event_key_prefix_raises_stable_token(tmp_path: Path) -> None:
+    store = AttributionAuditLmdbStore(tmp_path / "audit")
+    store.write_epoch_events(3, [{"event_id": "event-1"}])
+    wrong_key = b"bad_event:0" + (3).to_bytes(8, "big") + (0).to_bytes(8, "big")
+    assert len(wrong_key) == len(audit_lmdb._event_key(3, 0))  # noqa: SLF001
+
+    with store.env.begin(write=True) as txn:
+        txn.put(
+            audit_lmdb._epoch_index_key(3),  # noqa: SLF001
+            audit_lmdb._encode_json([wrong_key.hex()]),  # noqa: SLF001
+            db=store._epoch_index_db,  # noqa: SLF001
+        )
+
+    with pytest.raises(ValueError, match="attribution_audit_epoch_index_invalid"):
+        store.read_epoch_events(3)
+
+
+def test_corrupted_epoch_index_wrong_epoch_event_key_raises_stable_token(tmp_path: Path) -> None:
+    store = AttributionAuditLmdbStore(tmp_path / "audit")
+    store.write_epoch_events(3, [{"event_id": "event-3"}])
+    store.write_epoch_events(4, [{"event_id": "event-4"}])
+
+    with store.env.begin(write=True) as txn:
+        txn.put(
+            audit_lmdb._epoch_index_key(3),  # noqa: SLF001
+            audit_lmdb._encode_json([audit_lmdb._event_key(4, 0).hex()]),  # noqa: SLF001
+            db=store._epoch_index_db,  # noqa: SLF001
+        )
+
+    with pytest.raises(ValueError, match="attribution_audit_epoch_index_epoch_mismatch"):
+        store.read_epoch_events(3)
+
+
 def test_subdatabase_names_are_phase_1594_contract() -> None:
     assert ATTR_EVENTS_DB_NAME == b"attr_events"
     assert EPOCH_INDEX_DB_NAME == b"epoch_index"
