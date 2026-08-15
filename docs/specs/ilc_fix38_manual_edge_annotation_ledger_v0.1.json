@@ -70324,6 +70324,62 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_03_generalized_agent_action_envelope_cdl_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_harness_01b_signing_provider_runtime_2026_08_15",
+      "chronology_note": "GAP-AGENT-HARNESS-01b adds guarded local Ed25519 signing provider runtime with kid resolver and env URI support.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Focused tests for ILCSigningProvider abstract interface, kid resolver, env URI support, and guarded local Ed25519 provider.",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-AGENT-HARNESS-01b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-AGENT-HARNESS-01a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-HARNESS-SIDECAR-04b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_agent_harness_01b_signing_provider_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_harness_01b_signing_provider_runtime_2026_08_15",
+      "chronology_note": "GAP-AGENT-HARNESS-01b adds guarded local Ed25519 signing provider runtime with kid resolver and env URI support.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Execution walkthrough and verification evidence for GAP-AGENT-HARNESS-01b signing provider runtime.",
+      "node_kind": "phase_walkthrough",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-AGENT-HARNESS-01b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-AGENT-HARNESS-01a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-HARNESS-SIDECAR-04b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_harness_01b_signing_provider_runtime_walkthrough.md"
     }
   ],
   "boundary": {
