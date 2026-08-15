@@ -70228,6 +70228,102 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1591_fix6_mixed_economic_epoch_soak_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_03_agent_action_envelope_cdl_2026_08_15",
+      "chronology_note": "GAP-HARNESS-SIDECAR-03 opens CDL-111 for generalized AgentActionEnvelope scope without runtime activation.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "CDL-111 opening document governing future AgentActionEnvelope action-type expansion.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-03"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:111_generalized_agent_action_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/cdl/cdl_111_generalized_agent_action_envelope_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_03_agent_action_envelope_cdl_2026_08_15",
+      "chronology_note": "GAP-HARNESS-SIDECAR-03 opens CDL-111 for generalized AgentActionEnvelope scope without runtime activation.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Companion dispatch and guard contract for future generalized AgentActionEnvelope action types.",
+      "node_kind": "spec_doc",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-03"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:111_generalized_agent_action_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_generalized_agent_action_envelope_spec_GAP_HARNESS_SIDECAR_03_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_03_agent_action_envelope_cdl_2026_08_15",
+      "chronology_note": "GAP-HARNESS-SIDECAR-03 opens CDL-111 for generalized AgentActionEnvelope scope without runtime activation.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Artifact and runtime-boundary tests for CDL-111 opening and ActionType non-expansion.",
+      "node_kind": "test_file",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-03"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:111_generalized_agent_action_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_03_agent_action_envelope_cdl.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_harness_sidecar_03_agent_action_envelope_cdl_2026_08_15",
+      "chronology_note": "GAP-HARNESS-SIDECAR-03 opens CDL-111 for generalized AgentActionEnvelope scope without runtime activation.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Execution walkthrough and verification evidence for GAP-HARNESS-SIDECAR-03.",
+      "node_kind": "phase_walkthrough",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-HARNESS-SIDECAR-03"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:111_generalized_agent_action_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_harness_sidecar_03_generalized_agent_action_envelope_cdl_walkthrough.md"
     }
   ],
   "boundary": {
