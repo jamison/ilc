@@ -69078,8 +69078,10 @@
     },
     {
       "annotation_batch": "manual_batch_234_phase_gap_werner_02a_stub",
-      "chronology_note": "2026-08-01 phase GAP-WERNER-02a: research-complete stub for Werner CDL deliberation phase \u2014 records all scoping findings pending CDL-093 amendment decision, runtime_policy_cap ratification, and attribution path scope deliberation.",
-      "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02a Werner CDL deliberation; documents open governance questions blocking Werner guard clearance without executing any CDL mutation or runtime change.",
+      "chronology_note": "2026-08-01 phase GAP-WERNER-02a prompt record, updated 2026-08-16 after executed phase completion; retained as support-only phase prompt evidence for Werner CDL deliberation.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Completed phase prompt for GAP-WERNER-02a Werner CDL deliberation; records the CDL-109 authority path, runtime_policy_cap ratification, attribution path scope, and non-runtime boundary.",
+      "node_kind": "phase_prompt",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -69102,8 +69104,10 @@
     },
     {
       "annotation_batch": "manual_batch_235_phase_gap_werner_02b_stub",
-      "chronology_note": "2026-08-01 phase GAP-WERNER-02b: research-complete stub for Werner guard clearance and implementation phase \u2014 documents wiring plan and integration point (attribution_batch_bridge.py) pending GAP-WERNER-02a CDL outputs.",
-      "manual_read_summary": "Research-complete phase prompt stub for GAP-WERNER-02b Werner guard clearance; documents implementation plan for clearing WERNER_CREDIT_WIRING_NOT_ACTIVATED and wiring werner_runtime.py as a dimensionless reweighting factor, pending GAP-WERNER-02a completion.",
+      "chronology_note": "2026-08-01 phase GAP-WERNER-02b prompt record, updated 2026-08-16 after executed phase completion; retained as support-only phase prompt evidence for Werner guard clearance.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Completed phase prompt for GAP-WERNER-02b Werner guard clearance; records the bounded CDL-109 implementation path, WERNER_CREDIT_WIRING_NOT_ACTIVATED guard clearance, and non-minting/non-wallet boundary.",
+      "node_kind": "phase_prompt",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
