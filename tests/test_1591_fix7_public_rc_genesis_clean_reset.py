@@ -19,10 +19,10 @@ def _write_inputs(tmp_path: Path, *, testnet_zero: bool = False) -> tuple[Path, 
         reset.stable_json(
             {
                 "endpoint_labels": [
-                    {"validator_id": 1},
-                    {"validator_id": 2},
-                    {"validator_id": 3},
-                    {"validator_id": 4},
+                    {"ssh_host": "node-a", "validator_id": 1},
+                    {"ssh_host": "node-a", "validator_id": 2},
+                    {"ssh_host": "node-b", "validator_id": 3},
+                    {"ssh_host": "node-c", "validator_id": 4},
                 ],
                 "final_epoch": 8,
                 "initial_epoch": 7,
@@ -207,3 +207,101 @@ def test_execute_with_confirm_returns_plan_only_blocked_status(tmp_path: Path) -
 
     assert refusal["status"] == "blocked_plan_only"
     assert refusal["epoch0_ready_token_emit_allowed"] is False
+
+
+def test_build_validator_reset_targets_from_evidence(tmp_path: Path) -> None:
+    evidence_path, _genesis_path, node_config_path = _write_inputs(tmp_path)
+
+    targets = reset.build_validator_reset_targets(
+        evidence_path=evidence_path,
+        node_config_path=node_config_path,
+        remote_harness_dir="/home/ilcops/phase1591_fix2/public",
+    )
+
+    assert [target.validator_id for target in targets] == [1, 2, 3, 4]
+    assert targets[0].old_db_dir == "/home/ilcops/phase1591_fix2/public/db_1"
+    assert targets[0].fresh_validator_namespace == "/var/lib/ilc/rc01/validator_1"
+
+
+def test_production_execute_passes_with_fake_runner_and_writes_pre_receipt(tmp_path: Path) -> None:
+    evidence_path, genesis_path, node_config_path = _write_inputs(tmp_path)
+    receipt_path = tmp_path / "reset_receipt.json"
+    calls: list[tuple[str, str]] = []
+
+    def fake_runner(host: str, script: str) -> dict[str, object]:
+        calls.append((host, script))
+        stdout = ""
+        if "old_db_present=" in script:
+            stdout = "old_db_present=no\nforbidden_count=0\nfresh_exists=yes\n"
+        return {
+            "argv": ["ssh", host],
+            "returncode": 0,
+            "stderr": "",
+            "stderr_truncated": False,
+            "stdout": stdout,
+            "stdout_truncated": False,
+        }
+
+    result = reset.build_live_execution(
+        evidence_path=evidence_path,
+        genesis_path=genesis_path,
+        node_config_path=node_config_path,
+        no_interactive=True,
+        receipt_path=receipt_path,
+        command_runner=fake_runner,
+    )
+
+    assert result["status"] == "pass"
+    assert result["epoch0_ready_token_emit_allowed"] is True
+    assert result["epoch0_ready_token"] == reset.OUTPUT_TOKEN
+    assert len(calls) == 12
+    pre_path = tmp_path / "reset_receipt.pre_deletion.json"
+    assert pre_path.exists()
+    assert json.loads(pre_path.read_text(encoding="utf-8"))["status"] == "pre_deletion_receipt_written"
+
+
+def test_production_execute_withholds_ready_token_when_readback_fails(tmp_path: Path) -> None:
+    evidence_path, genesis_path, node_config_path = _write_inputs(tmp_path)
+
+    def fake_runner(_host: str, script: str) -> dict[str, object]:
+        stdout = ""
+        if "old_db_present=" in script:
+            stdout = "old_db_present=yes\nforbidden_count=1\nfresh_exists=yes\n"
+        return {
+            "argv": ["ssh"],
+            "returncode": 0,
+            "stderr": "",
+            "stderr_truncated": False,
+            "stdout": stdout,
+            "stdout_truncated": False,
+        }
+
+    result = reset.build_live_execution(
+        evidence_path=evidence_path,
+        genesis_path=genesis_path,
+        node_config_path=node_config_path,
+        no_interactive=True,
+        command_runner=fake_runner,
+    )
+
+    assert result["status"] == "fail_closed"
+    assert result["epoch0_ready_token_emit_allowed"] is False
+    assert result["epoch0_ready_token"] is None
+
+
+def test_remote_path_guard_rejects_relative_and_forbidden_components() -> None:
+    with pytest.raises(ValueError, match="public_rc_clean_reset_remote_path_not_absolute"):
+        reset._assert_under_allowed_root("relative/db_1", ("/home/ilcops/phase1591_fix2/public",))
+    with pytest.raises(ValueError, match="public_rc_clean_reset_remote_path_forbidden_component"):
+        reset._assert_under_allowed_root(
+            "/home/ilcops/genesis/db_1",
+            ("/home/ilcops/phase1591_fix2/public",),
+        )
+
+
+def test_remote_path_guard_rejects_outside_allowed_namespace() -> None:
+    with pytest.raises(ValueError, match="public_rc_clean_reset_remote_path_outside_allowed_namespace"):
+        reset._assert_under_allowed_root(
+            "/home/ilcops/other/db_1",
+            ("/home/ilcops/phase1591_fix2/public",),
+        )
