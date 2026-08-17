@@ -305,3 +305,14 @@ def test_remote_path_guard_rejects_outside_allowed_namespace() -> None:
             "/home/ilcops/other/db_1",
             ("/home/ilcops/phase1591_fix2/public",),
         )
+
+
+def test_stop_script_uses_pid_file_not_pkill_self_matching() -> None:
+    script = reset._stop_old_validator_script(
+        remote_harness_dir="/home/ilcops/phase1591_fix2/public",
+        validator_id=1,
+    )
+
+    assert "pids/validator_1.pid" in script
+    assert "validator_1_config.json" in script
+    assert "pkill" not in script
