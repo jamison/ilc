@@ -4,9 +4,9 @@
 **Track:** B, Public Mirror Push Authorization  
 **Date:** 2026-08-17  
 **Verdict:** PASS, publication package authorized for human-operated push and visibility flip  
-**Source private commit:** `c5f8a5dab8f15ed493038f9a740b3d812cb086e3`
-**Filtered public head SHA:** `563f8165edc629382cc89d18dd9421f0dd6fb7c8`
-**Sanitized archive SHA-256:** `sha256:9ebeed34b71fec271c05b3685f081dbc8e714d680697af68cf91c4283a4f5301`
+**Source private commit:** `d23ad21b648091ac0bc378953b2da121df94a200`
+**Filtered public head SHA:** `042f9262fa01e46e2b97391d7a571c0b19c87903`
+**Sanitized archive SHA-256:** `sha256:2e2cd89212bc1daa1bf452aca51a50a47abc4ee475c451e423433a0485c42bce`
 
 ## 0. Erratum (2026-08-18)
 
@@ -88,8 +88,8 @@ Command artifact: `/tmp/launch_00_export.json`.
 | Field | Value |
 |---|---:|
 | `result` | `pass` |
-| `included_files` | 522 |
-| `excluded_files` | 7235 |
+| `included_files` | 517 |
+| `excluded_files` | 7240 |
 | `blocked_ambiguities` | 0 |
 | `dependency_hits` | 0 |
 | `marker_hits` | 0 |
@@ -97,20 +97,20 @@ Command artifact: `/tmp/launch_00_export.json`.
 | `dependency_scan.result` | `pass` |
 | Included/excluded intersection | 0 |
 
-Execution finding and fix: the first Track B mirror attempt found one remaining public-mirror denylist hit in `tests/test_agent_keygen_cli_GAP_AGENT_KEYGEN_00.py`, where the private-key PEM marker appeared as a harmless test sentinel. Because the public mirror denylist rejects that literal string, commit `9463f1b7b` added that private-regression test to the mirror exclusion list and updated the Phase 1575n regression test. A post-Track-B audit then hardened the mirror wrapper at commit `c5f8a5dab` to require exact source-HEAD matching and safe output directories. The final audit mirror run used `c5f8a5dab8f15ed493038f9a740b3d812cb086e3` as the clean source head.
+Execution finding and fix: the first Track B mirror attempt found one remaining public-mirror denylist hit in `tests/test_agent_keygen_cli_GAP_AGENT_KEYGEN_00.py`, where the private-key PEM marker appeared as a harmless test sentinel. Because the public mirror denylist rejects that literal string, commit `9463f1b7b` added that private-regression test to the mirror exclusion list and updated the Phase 1575n regression test. Post-Track-B audits then hardened the mirror wrapper and source export classifier at commits `c5f8a5dab` and `474f62b3d`, and corrected stale public target documentation through `d23ad21b6`. The final post-audit mirror run used `d23ad21b648091ac0bc378953b2da121df94a200` as the clean source head.
 
 ## 5. Mirror Regeneration Record
 
-Receipt artifact: `/tmp/public_rc_launch_00_release_receipt.json`.
+Receipt artifact: `/tmp/public_rc_launch_00_release_receipt_post_sonnet_audit.json`.
 
 | Field | Value |
 |---|---|
-| `source_private_commit` | `c5f8a5dab8f15ed493038f9a740b3d812cb086e3` |
+| `source_private_commit` | `d23ad21b648091ac0bc378953b2da121df94a200` |
 | `source_private_branch` | `main` |
 | `private_worktree_clean` | true |
-| `filtered_public_head_sha` | `563f8165edc629382cc89d18dd9421f0dd6fb7c8` |
-| `archive_sha256` | `sha256:9ebeed34b71fec271c05b3685f081dbc8e714d680697af68cf91c4283a4f5301` |
-| `staging_dir` | `/private/tmp/ilc-public-mirror-audit-c5f8a5dab8f1` |
+| `filtered_public_head_sha` | `042f9262fa01e46e2b97391d7a571c0b19c87903` |
+| `archive_sha256` | `sha256:2e2cd89212bc1daa1bf452aca51a50a47abc4ee475c451e423433a0485c42bce` |
+| `staging_dir` | `/private/tmp/ilc-public-mirror-audit-d23ad21b6480` |
 | `denylist_scan_result` | `pass` |
 | `public_rc_exclude_scan_result` | `pass` |
 | `PUBLIC_RC_EXCLUDE` header hits in tracked mirror files | 0 |
@@ -158,7 +158,7 @@ be run from the sanitized mirror staging repository, not from the private canoni
 see §0 erratum above. The correct target is `github.com/jamison/ilc`.
 
 ```bash
-cd /private/tmp/ilc-public-mirror-audit-c5f8a5dab8f1
+cd /private/tmp/ilc-public-mirror-audit-d23ad21b6480
 git remote add public git@github.com:jamison/ilc.git  # add public remote (origin points to private source)
 git push public main --force-with-lease  # force required: mirror rewrites full history
 git tag v0.4-public-rc  # confirm exact tag with human reviewer before executing
