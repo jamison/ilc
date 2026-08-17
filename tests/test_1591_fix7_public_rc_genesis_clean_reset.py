@@ -132,6 +132,27 @@ def test_json_style_testnet_zero_is_rejected(tmp_path: Path) -> None:
     assert reset.launch_config_has_testnet_zero(config_path) is True
 
 
+def test_toml_testnet_zero_with_inline_comment_is_rejected(tmp_path: Path) -> None:
+    config_path = tmp_path / "node_config.toml"
+    config_path.write_text(
+        'lmdb_path = "/var/lib/ilc/rc01"\n'
+        "testnet_min_epoch_duration_ms = 0  # testnet-only fast epoch\n",
+        encoding="utf-8",
+    )
+
+    assert reset.launch_config_has_testnet_zero(config_path) is True
+
+
+def test_run_bounded_command_kills_timeout_and_records_receipt() -> None:
+    result = reset.run_bounded_command(
+        [sys.executable, "-c", "import time; time.sleep(5)"],
+        timeout_seconds=1,
+    )
+
+    assert result["returncode"] == 124
+    assert result["timeout_killed"] is True
+
+
 def test_canonical_json_receipt_determinism(tmp_path: Path) -> None:
     evidence_path, genesis_path, node_config_path = _write_inputs(tmp_path)
     plan_a = reset.build_plan(
@@ -287,6 +308,35 @@ def test_production_execute_withholds_ready_token_when_readback_fails(tmp_path: 
     assert result["status"] == "fail_closed"
     assert result["epoch0_ready_token_emit_allowed"] is False
     assert result["epoch0_ready_token"] is None
+
+
+def test_production_execute_records_skipped_stages_when_stop_fails(tmp_path: Path) -> None:
+    evidence_path, genesis_path, node_config_path = _write_inputs(tmp_path)
+
+    def fake_runner(_host: str, _script: str) -> dict[str, object]:
+        return {
+            "argv": ["ssh"],
+            "returncode": 1,
+            "stderr": "stopped failed",
+            "stderr_truncated": False,
+            "stdout": "",
+            "stdout_truncated": False,
+            "timeout_killed": False,
+        }
+
+    result = reset.build_live_execution(
+        evidence_path=evidence_path,
+        genesis_path=genesis_path,
+        node_config_path=node_config_path,
+        no_interactive=True,
+        command_runner=fake_runner,
+    )
+
+    assert result["status"] == "fail_closed"
+    assert len(result["deletion_records"]) == 4
+    assert len(result["readback_records"]) == 4
+    assert all(record["result"]["skipped"] is True for record in result["deletion_records"])
+    assert all(record["result"]["skip_reason"] == "stop_old_validator_failed" for record in result["readback_records"])
 
 
 def test_remote_path_guard_rejects_relative_and_forbidden_components() -> None:
