@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -22,6 +23,7 @@ from typing import Any
 
 SCHEMA_VERSION = "ilc_public_release_propagation_receipt.v0.1"
 PHASE = "1575e"
+HEX40_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 def _repo_root() -> Path:
@@ -127,9 +129,17 @@ def build_receipt(
     mirror_output_dir: Path | None = None,
 ) -> dict[str, Any]:
     repo_root = _repo_root()
-    commit = source_private_commit or _run_git(["rev-parse", "HEAD"], cwd=repo_root)
+    actual_head = _run_git(["rev-parse", "HEAD"], cwd=repo_root)
+    if source_private_commit is not None:
+        if not HEX40_RE.fullmatch(source_private_commit):
+            raise ValueError("source_private_commit_must_be_40_char_hex")
+        if source_private_commit != actual_head:
+            raise ValueError("source_private_commit_must_match_head")
+    commit = source_private_commit or actual_head
     branch = _run_git(["rev-parse", "--abbrev-ref", "HEAD"], cwd=repo_root)
     status_short = _run_git(["status", "--short"], cwd=repo_root)
+    if generate_mirror and status_short:
+        raise ValueError("mirror_generation_requires_clean_private_worktree")
     changed_files, baseline_status = _changed_files(repo_root, baseline_commit)
     source_export_manifest, manifest_sha256 = _run_source_export(repo_root)
     counts = source_export_manifest.get("counts", {})

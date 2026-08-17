@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -12,6 +13,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SPEC_PATH = REPO_ROOT / "docs/specs/ilc_public_release_propagation_workflow_1575e_v0.1.md"
 TOOL_PATH = REPO_ROOT / "tools/public_release_prepare_update.py"
 MIRROR_GENERATOR_PATH = REPO_ROOT / "tools/scripts/generate_public_mirror.sh"
+
+
+def _load_release_tool() -> ModuleType:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("public_release_prepare_update", TOOL_PATH)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 @pytest.fixture(scope="module")
@@ -106,6 +118,40 @@ def test_tool_output_records_private_worktree_status(
         "baseline_commit_not_found",
         "computed_from_explicit_baseline_commit",
     }
+
+
+def test_tool_rejects_source_private_commit_that_does_not_match_head(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_release_tool()
+
+    def fake_run_git(args: list[str], *, cwd: Path) -> str:
+        if args == ["rev-parse", "HEAD"]:
+            return "a" * 40
+        raise AssertionError(f"unexpected git call: {args}")
+
+    monkeypatch.setattr(module, "_run_git", fake_run_git)
+    with pytest.raises(ValueError, match="source_private_commit_must_match_head"):
+        module.build_receipt(source_private_commit="b" * 40)
+
+
+def test_tool_rejects_mirror_generation_from_dirty_private_worktree(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = _load_release_tool()
+
+    def fake_run_git(args: list[str], *, cwd: Path) -> str:
+        if args == ["rev-parse", "HEAD"]:
+            return "a" * 40
+        if args == ["rev-parse", "--abbrev-ref", "HEAD"]:
+            return "main"
+        if args == ["status", "--short"]:
+            return " M docs/phases/STATUS.md"
+        raise AssertionError(f"unexpected git call: {args}")
+
+    monkeypatch.setattr(module, "_run_git", fake_run_git)
+    with pytest.raises(ValueError, match="mirror_generation_requires_clean_private_worktree"):
+        module.build_receipt(source_private_commit="a" * 40, generate_mirror=True)
 
 
 def test_tool_has_no_push_or_visibility_mutation() -> None:
