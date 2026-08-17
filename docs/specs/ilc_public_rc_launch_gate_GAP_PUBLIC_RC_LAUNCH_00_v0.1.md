@@ -8,6 +8,36 @@
 **Filtered public head SHA:** `563f8165edc629382cc89d18dd9421f0dd6fb7c8`
 **Sanitized archive SHA-256:** `sha256:9ebeed34b71fec271c05b3685f081dbc8e714d680697af68cf91c4283a4f5301`
 
+## 0. Erratum (2026-08-18)
+
+**§7 push commands contained a stale remote URL.** The original §7 named
+`git@github.com:ILC-Foundation/ilc.git` as the push target. This is incorrect.
+
+The canonical public repository is **`github.com/jamison/ilc`**, not
+`ILC-Foundation/ilc`. Evidence:
+
+- `docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md` §0A names
+  `github.com/jamison/ilc` explicitly for steps 5 and 7 (push and visibility flip).
+- `docs/specs/ilc_append_only_public_release_sync_1575m_v0.1.md` records the
+  2026-07-17 repair push to `github.com/jamison/ilc`.
+- `docs/specs/ilc_phase_1576_sequence_lock_and_public_agent_bootstrap_discovery_v0.1.md`
+  records "Public GitHub source: Live at `https://github.com/jamison/ilc`".
+- `docs/specs/ilc_distribution_model_disposition_pre_1505p_v0.1.md` (2026-06-05)
+  records that `ILC-Foundation` must not be used as publication org before a formal
+  foundation entity exists.
+
+The `ILC-Foundation/ilc` reference in the original §7 predates the June 2026
+disposition decision. §7 below has been corrected. The gate verdict, all input
+tokens, epoch-0 readbacks, source export results, mirror record, and activation
+matrix are unaffected by this correction.
+
+**§8 ClawHub disposition was stale.** The original §8 stated
+`openclaw_clawhub_not_published_pending_phase_1575` remains unchanged. This token
+was emitted in Phase 1574 (pre-publication) and was superseded by Phase 1575f
+(2026-07-18), which published `clawhub install ilc` as the canonical install path
+(`ilc@0.4.1`, ClawHub listing live). §8 below has been corrected to reflect the
+actual current state.
+
 ## 1. Authorization Record
 
 Track A GO receipt in `docs/phases/STATUS.md`:
@@ -122,22 +152,38 @@ The current source state column is based on direct source reads during Track B e
 ## 7. Authorized Push Commands
 
 Human operator commands authorized after reviewing this gate artifact. These commands are to
-be run from the sanitized mirror staging repository, not from the private canonical repo:
+be run from the sanitized mirror staging repository, not from the private canonical repo.
+
+**Note:** The original §7 named `ILC-Foundation/ilc` as the push target. That was wrong —
+see §0 erratum above. The correct target is `github.com/jamison/ilc`.
 
 ```bash
 cd /private/tmp/ilc-public-mirror-audit-c5f8a5dab8f1
-git remote add foundation git@github.com:ILC-Foundation/ilc.git  # if not already set
-git push foundation main
+git remote add public git@github.com:jamison/ilc.git  # add public remote (origin points to private source)
+git push public main --force-with-lease  # force required: mirror rewrites full history
 git tag v0.4-public-rc  # confirm exact tag with human reviewer before executing
-git push foundation v0.4-public-rc
-gh repo edit ILC-Foundation/ilc --visibility public
+git push public v0.4-public-rc
+gh repo edit jamison/ilc --visibility public
 ```
 
 These commands were recorded as text only. Codex did not execute them.
 
 ## 8. OpenClaw and ClawHub Disposition
 
-`openclaw_clawhub_not_published_pending_phase_1575` remains unchanged. GAP-PUBLIC-RC-LAUNCH-00 Track B does not publish OpenClaw, ClawHub, or SKILL.md public marketplace surfaces.
+**Current state (corrected — see §0 erratum):** Phase 1575f (2026-07-18) published the
+canonical ClawHub skill. `clawhub install ilc` is live at
+`https://clawhub.ai/jamison/skills/ilc` at version `ilc@0.4.1` with moderation verdict
+`clean`. Tokens emitted: `clawhub_skill_published_phase_1575f`,
+`clawhub_listing_live_phase_1575f`, `clawhub_ilc_latest_v041_clean_post_1575f`.
+
+The token `openclaw_clawhub_not_published_pending_phase_1575` was the Phase 1574
+pre-publication disposition. It was superseded by Phase 1575f. The ClawHub skill
+publication is complete and independent of this gate.
+
+GAP-PUBLIC-RC-LAUNCH-00 Track B does not publish, update, or modify the ClawHub skill or
+SKILL.md marketplace surfaces. After the public RC push (§7), if SKILL.md content has
+changed in the new mirror relative to the published `ilc@0.4.1`, a ClawHub refresh would
+be post-RC housekeeping — not a gate requirement.
 
 ## 9. Epoch 0 to 1 Ceremony
 
