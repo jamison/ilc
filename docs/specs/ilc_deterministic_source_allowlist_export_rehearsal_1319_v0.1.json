@@ -190,10 +190,10 @@
   "counts": {
     "blocked_ambiguities": 0,
     "dependency_hits": 0,
-    "excluded_files": 7231,
-    "included_files": 522,
-    "legacy_untagged_default_excluded": 7231,
-    "legacy_untagged_included_reviewed": 495,
+    "excluded_files": 7240,
+    "included_files": 517,
+    "legacy_untagged_default_excluded": 7240,
+    "legacy_untagged_included_reviewed": 490,
     "legacy_untagged_review_required_blocked": 0,
     "marker_hits": 0
   },
@@ -13472,6 +13472,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "tools/public_release_prepare_update.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "tools/public_release_prepare_update.py",
         "target": "subprocess"
       },
       {
@@ -13568,7 +13573,8 @@
     "limitations": [
       "python_ast_static_imports_only",
       "transitive_scan_limited_to_included_python_modules",
-      "non_python_scan_uses_exact_text_patterns"
+      "non_python_scan_uses_exact_text_patterns",
+      "binary_asset_dependency_scan_skipped_by_suffix"
     ],
     "result": "pass",
     "stripped_helper_hit_count": 0,
@@ -39907,6 +39913,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_public_rc_launch_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_reputation_00_canon_audit_walkthrough.md",
       "review_required_before_public_export": true
     },
@@ -50169,6 +50182,20 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_fix_public_rc_launch_00_track_a_graph_intake_overlay_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_fix_public_rc_launch_00_track_b_graph_intake_overlay_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_fix_validator_ident_03_graph_intake_overlay_v0.1.json",
       "review_required_before_public_export": true
     },
@@ -54538,6 +54565,13 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_public_rc_genesis_clean_reset_disposition_1591_fix7_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_public_rc_launch_gate_GAP_PUBLIC_RC_LAUNCH_00_v0.1.md",
       "review_required_before_public_export": true
     },
     {
@@ -59780,6 +59814,41 @@
       "blocked": false,
       "exclusion_rule": "public_rc_exclude_marker_default_excluded",
       "marker_status": "hit",
+      "path": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_consensus/src/relay_routing_table.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_consensus/src/shamir_recover_main.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_consensus/src/shamir_split_main.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc_consensus/src/shamir_verify_main.rs",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
       "path": "ilc_core/bundle/atlas_slice_manifest.py",
       "review_required_before_public_export": true
     },
@@ -64196,7 +64265,7 @@
   ],
   "excluded_roots": [
     {
-      "count": 6530,
+      "count": 6534,
       "reason": "docs_tree_default_excluded_pending_public_manifest_review",
       "root": "docs"
     },
@@ -64206,7 +64275,7 @@
       "root": "docs/antigravity_tasks"
     },
     {
-      "count": 2026,
+      "count": 2027,
       "reason": "private_phase_walkthrough_history_default_excluded",
       "root": "docs/phases"
     },
@@ -64216,7 +64285,7 @@
       "root": "docs/research"
     },
     {
-      "count": 49338,
+      "count": 49340,
       "reason": "generated_mempalace_and_local_output_default_excluded",
       "root": "out"
     },
@@ -64797,14 +64866,6 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 7764,
-      "hash_sha256": "16971879659f90e0a80926feb059d13cb3bd657682d1ffa0429c2e09dccb40b0",
-      "marker_status": "absent",
-      "path": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
       "byte_size": 4494,
       "hash_sha256": "a9ed7ab021e223afddfc830fb6c99b50d110ea244fd55009a02053b5177bcafe",
       "marker_status": "absent",
@@ -64873,38 +64934,6 @@
       "hash_sha256": "cf5221e546515ec1e0c0a82328688a3a74a2520d5fa80aaa63e9dfaf3fe5ba84",
       "marker_status": "absent",
       "path": "ilc_consensus/src/pq_sign_main.rs",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 7038,
-      "hash_sha256": "c8caa8da60c0d797f8f41a7af3f2f0de56d16ce8627f20293a2a080dded8c9bb",
-      "marker_status": "absent",
-      "path": "ilc_consensus/src/relay_routing_table.rs",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 2741,
-      "hash_sha256": "0e66b84cea525e45855f99789cc5c080e57e535c621683fc25ea888afd5ee65f",
-      "marker_status": "absent",
-      "path": "ilc_consensus/src/shamir_recover_main.rs",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 5078,
-      "hash_sha256": "7aa372f2bab862d99acdc51abb2f46b443f74656e699ed44a3b0aa41d911860d",
-      "marker_status": "absent",
-      "path": "ilc_consensus/src/shamir_split_main.rs",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 9604,
-      "hash_sha256": "c2f5a343492186a933ef1a8bf6a340959723398a1373f8cf1a0b3bf1c9dbc87d",
-      "marker_status": "absent",
-      "path": "ilc_consensus/src/shamir_verify_main.rs",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -68501,8 +68530,8 @@
     },
     {
       "allowlist_reason": "explicit_allowlist_candidate_phase_1319",
-      "byte_size": 7771,
-      "hash_sha256": "9e5b3eb0a957eb6c44480e102ad4c5292e40229346301c10f02cec7ed7bb4625",
+      "byte_size": 8264,
+      "hash_sha256": "8840db526a65f7d83104d205d548e0583160689f57cabc4cf23eae4f5e1630f9",
       "marker_status": "absent",
       "path": "tools/public_release_prepare_update.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -83572,6 +83601,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_public_rc_launch_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_reputation_00_canon_audit_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -89436,6 +89469,14 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_fix_public_rc_launch_00_track_a_graph_intake_overlay_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_fix_public_rc_launch_00_track_b_graph_intake_overlay_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_fix_validator_ident_03_graph_intake_overlay_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -91933,6 +91974,10 @@
       },
       {
         "path": "docs/specs/ilc_public_rc_genesis_clean_reset_disposition_1591_fix7_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_public_rc_launch_gate_GAP_PUBLIC_RC_LAUNCH_00_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -94928,6 +94973,26 @@
         "reason": "timecapsule_sidecar_pre_cdl_default_excluded"
       },
       {
+        "path": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_consensus/src/relay_routing_table.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_consensus/src/shamir_recover_main.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_consensus/src/shamir_split_main.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
+        "path": "ilc_consensus/src/shamir_verify_main.rs",
+        "reason": "public_rc_exclude_marker_default_excluded"
+      },
+      {
         "path": "ilc_core/bundle/atlas_slice_manifest.py",
         "reason": "public_rc_exclude_marker_default_excluded"
       },
@@ -97594,10 +97659,6 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
-        "path": "ilc_consensus/src/genesis_recovery_fake_vector_main.rs",
-        "reason": "source_code_allowlist_reviewed_phase_1319"
-      },
-      {
         "path": "ilc_consensus/src/keygen_main.rs",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -97631,22 +97692,6 @@
       },
       {
         "path": "ilc_consensus/src/pq_sign_main.rs",
-        "reason": "source_code_allowlist_reviewed_phase_1319"
-      },
-      {
-        "path": "ilc_consensus/src/relay_routing_table.rs",
-        "reason": "source_code_allowlist_reviewed_phase_1319"
-      },
-      {
-        "path": "ilc_consensus/src/shamir_recover_main.rs",
-        "reason": "source_code_allowlist_reviewed_phase_1319"
-      },
-      {
-        "path": "ilc_consensus/src/shamir_split_main.rs",
-        "reason": "source_code_allowlist_reviewed_phase_1319"
-      },
-      {
-        "path": "ilc_consensus/src/shamir_verify_main.rs",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -99438,7 +99483,7 @@
   },
   "marker_scan": {
     "exact_marker": "PUBLIC_RC_EXCLUDE",
-    "file_count_scanned": 522,
+    "file_count_scanned": 517,
     "hit_count": 0,
     "hits": [],
     "result": "pass",
@@ -99555,7 +99600,7 @@
   "rerun": {
     "command": "./.venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "determinism": "manifest_hash_must_match_expected_manifest_hash_on_unchanged_inputs",
-    "expected_manifest_hash": "35f923eb68703115e85926425a2718fe3165be605fc5c37e64a053d4de69d8b6"
+    "expected_manifest_hash": "1640fe4032ed471d1c70e8328f5dde103cd6baab5313a57b501a4bdbe5768164"
   },
   "result": "pass",
   "scanner_limitations": [

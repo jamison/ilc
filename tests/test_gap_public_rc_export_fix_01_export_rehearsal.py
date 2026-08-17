@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.rc import source_allowlist_export_rehearsal as rehearsal
 from ilc_core.rc.source_allowlist_export_rehearsal import (
     build_source_allowlist_export_rehearsal,
     canonical_source_allowlist_export_rehearsal_json,
@@ -92,6 +93,41 @@ def test_gap_public_rc_export_fix_01_html_public_rc_exclude_header_excluded(
             "review_required_before_public_export": True,
         }
     ]
+
+
+def test_gap_public_rc_export_fix_01_indented_slash_header_excluded(
+    tmp_path: Path,
+) -> None:
+    _write(
+        tmp_path / "ilc_core/private.rs",
+        "  // PUBLIC_RC_EXCLUDE private generated adapter\npub const VALUE: u8 = 1;\n",
+    )
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("ilc_core",),
+        excluded_roots=(),
+    )
+
+    assert manifest["result"] == "pass"
+    assert manifest["included_files"] == []
+    assert manifest["excluded_files"][0]["path"] == "ilc_core/private.rs"
+    assert manifest["excluded_files"][0]["marker_status"] == "hit"
+
+
+def test_gap_public_rc_export_fix_01_dependency_scan_rejects_oversized_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write(tmp_path / "README.md", "x" * 32)
+    monkeypatch.setattr(rehearsal, "MAX_DEPENDENCY_SCAN_FILE_BYTES", 8)
+
+    with pytest.raises(ValueError, match="phase_1319_dependency_scan_file_too_large"):
+        build_source_allowlist_export_rehearsal(
+            repo_root=tmp_path,
+            include_roots=("README.md",),
+            excluded_roots=(),
+            reviewed_legacy_paths=("README.md",),
+        )
 
 
 def test_gap_public_rc_export_fix_01_broad_docs_default_excluded_but_reviewed_force_included(
