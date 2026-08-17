@@ -4,9 +4,9 @@
 **Track:** B, Public Mirror Push Authorization  
 **Date:** 2026-08-17  
 **Verdict:** PASS, publication package authorized for human-operated push and visibility flip  
-**Source private commit:** `9463f1b7b28afd417629443b9a4d81b6c5b6ad14`  
-**Filtered public head SHA:** `3b315fc1cef0a37cc3e05b29a07dccf4d09345a9`  
-**Sanitized archive SHA-256:** `sha256:a05bf1cbf4f85c4d6e1297c47268173cf5a900060ca5a0adbc1451b099774f33`
+**Source private commit:** `c5f8a5dab8f15ed493038f9a740b3d812cb086e3`
+**Filtered public head SHA:** `563f8165edc629382cc89d18dd9421f0dd6fb7c8`
+**Sanitized archive SHA-256:** `sha256:9ebeed34b71fec271c05b3685f081dbc8e714d680697af68cf91c4283a4f5301`
 
 ## 1. Authorization Record
 
@@ -59,7 +59,7 @@ Command artifact: `/tmp/launch_00_export.json`.
 |---|---:|
 | `result` | `pass` |
 | `included_files` | 522 |
-| `excluded_files` | 7233 |
+| `excluded_files` | 7235 |
 | `blocked_ambiguities` | 0 |
 | `dependency_hits` | 0 |
 | `marker_hits` | 0 |
@@ -67,7 +67,7 @@ Command artifact: `/tmp/launch_00_export.json`.
 | `dependency_scan.result` | `pass` |
 | Included/excluded intersection | 0 |
 
-Execution finding and fix: the first Track B mirror attempt found one remaining public-mirror denylist hit in `tests/test_agent_keygen_cli_GAP_AGENT_KEYGEN_00.py`, where the private-key PEM marker appeared as a harmless test sentinel. Because the public mirror denylist rejects that literal string, commit `9463f1b7b` added that private-regression test to the mirror exclusion list and updated the Phase 1575n regression test. The final mirror run used `9463f1b7b28afd417629443b9a4d81b6c5b6ad14` as the clean source head.
+Execution finding and fix: the first Track B mirror attempt found one remaining public-mirror denylist hit in `tests/test_agent_keygen_cli_GAP_AGENT_KEYGEN_00.py`, where the private-key PEM marker appeared as a harmless test sentinel. Because the public mirror denylist rejects that literal string, commit `9463f1b7b` added that private-regression test to the mirror exclusion list and updated the Phase 1575n regression test. A post-Track-B audit then hardened the mirror wrapper at commit `c5f8a5dab` to require exact source-HEAD matching and safe output directories. The final audit mirror run used `c5f8a5dab8f15ed493038f9a740b3d812cb086e3` as the clean source head.
 
 ## 5. Mirror Regeneration Record
 
@@ -75,12 +75,12 @@ Receipt artifact: `/tmp/public_rc_launch_00_release_receipt.json`.
 
 | Field | Value |
 |---|---|
-| `source_private_commit` | `9463f1b7b28afd417629443b9a4d81b6c5b6ad14` |
+| `source_private_commit` | `c5f8a5dab8f15ed493038f9a740b3d812cb086e3` |
 | `source_private_branch` | `main` |
 | `private_worktree_clean` | true |
-| `filtered_public_head_sha` | `3b315fc1cef0a37cc3e05b29a07dccf4d09345a9` |
-| `archive_sha256` | `sha256:a05bf1cbf4f85c4d6e1297c47268173cf5a900060ca5a0adbc1451b099774f33` |
-| `staging_dir` | `/tmp/ilc-public-mirror-launch00-9463f1b7b28a` |
+| `filtered_public_head_sha` | `563f8165edc629382cc89d18dd9421f0dd6fb7c8` |
+| `archive_sha256` | `sha256:9ebeed34b71fec271c05b3685f081dbc8e714d680697af68cf91c4283a4f5301` |
+| `staging_dir` | `/private/tmp/ilc-public-mirror-audit-c5f8a5dab8f1` |
 | `denylist_scan_result` | `pass` |
 | `public_rc_exclude_scan_result` | `pass` |
 | `PUBLIC_RC_EXCLUDE` header hits in tracked mirror files | 0 |
@@ -125,7 +125,7 @@ Human operator commands authorized after reviewing this gate artifact. These com
 be run from the sanitized mirror staging repository, not from the private canonical repo:
 
 ```bash
-cd /tmp/ilc-public-mirror-launch00-9463f1b7b28a
+cd /private/tmp/ilc-public-mirror-audit-c5f8a5dab8f1
 git remote add foundation git@github.com:ILC-Foundation/ilc.git  # if not already set
 git push foundation main
 git tag v0.4-public-rc  # confirm exact tag with human reviewer before executing
