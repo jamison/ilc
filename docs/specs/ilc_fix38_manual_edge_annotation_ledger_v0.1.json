@@ -81902,6 +81902,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_01_cli_json_conformance_matrix_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_export_fix_01_source_export_drift_reconciliation",
+      "chronology_note": "2026-08-17 GAP-PUBLIC-RC-EXPORT-FIX-01 phase prompt drafted for source export drift reconciliation before public RC mirror publication.",
+      "manual_read_summary": "Phase prompt requiring classification of blocked source-export ambiguities, stripped-helper dependency reconciliation, deterministic export rehearsal hardening, focused regression tests, and final proof that source export rehearsal returns pass before public mirror publication.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EXPORT-FIX-01"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_export_fix_01_g10_source_export_drift_reconciliation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_launch_00_publication_gate_prompt",
+      "chronology_note": "2026-08-17 GAP-PUBLIC-RC-LAUNCH-00 phase prompt drafted and patched with source-export drift prerequisite before Track B publication package.",
+      "manual_read_summary": "Two-stage public RC publication gate prompt for validator namespace reset and mirror publication package. Track B is blocked on source_export_drift_reconciled_GAP_PUBLIC_RC_EXPORT_FIX_01 and hardened launch-config false-positive scans.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-LAUNCH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_launch_00_g10_public_rc_publication_gate.md"
     }
   ],
   "phase": "1545p-Fix38",
