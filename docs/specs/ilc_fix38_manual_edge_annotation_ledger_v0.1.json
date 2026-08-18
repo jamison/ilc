@@ -81950,6 +81950,270 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_launch_00_g10_public_rc_publication_gate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-RELEASE-SIGN-00a phase prompt drafted and Codex-hardened for release-signing authority reconciliation.",
+      "manual_read_summary": "Phase prompt for non-sensitive direct-read reconciliation of release-signing authority, unsigned manifest state, detached-envelope semantics, STATUS tokens, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-RELEASE-SIGN-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00a_g10_release_authority_reconciliation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-RELEASE-SIGN-00b phase prompt drafted and Codex-hardened for installable release signature envelope schema.",
+      "manual_read_summary": "Phase prompt for non-sensitive Ed25519 detached envelope schema and validator module, with deterministic signed_at placeholder, no central signer registry, STATUS tokens, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-RELEASE-SIGN-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00b_g10_installable_manifest_signature_schema.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-RELEASE-SIGN-00c phase prompt drafted and Codex-hardened for the sensitive release-signing ceremony.",
+      "manual_read_summary": "Phase prompt for offline-operator Ed25519 signing ceremony, exact manifest artifact coverage proof, release-key fingerprint recording, signed manifest transition constraints, STATUS tokens, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00c_g10_release_signing_ceremony.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-RELEASE-SIGN-00d phase prompt drafted and Codex-hardened for install/update signature verification.",
+      "manual_read_summary": "Phase prompt for opt-in Ed25519 release signature verification in ilc update and install.sh, HTTPS-only fetch, byte cap before JSON parse, signature-before-install ordering, STATUS token, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00d_g10_install_verify_signature_integration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-INVITE-00a phase prompt drafted and Codex-hardened for invite bootstrap profile reconciliation.",
+      "manual_read_summary": "Phase prompt for non-sensitive invite bootstrap profile specification, two-part invite flow, inviter/bootstrap entrypoint semantics, public P2P/fetch non-claims, STATUS token, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_00a_g10_invite_bootstrap_profile.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-INVITE-00b phase prompt drafted and Codex-hardened for invite enforcement activation.",
+      "manual_read_summary": "Phase prompt for sensitive invite enforcement activation, durable-nullifier pre-activation hard stop, Genesis Agent exemption preservation, STATUS token, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_00b_g10_invite_enforcement_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-INVITE-00c phase prompt drafted and Codex-hardened for inviter bootstrap discovery smoke.",
+      "manual_read_summary": "Phase prompt for invite issue, redeem, and replay-reject smoke evidence, live/local GO split, no public P2P/fetch/DHT/hydration activation, STATUS token, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_00c_g10_inviter_bootstrap_discovery_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-EPOCH-00a phase prompt drafted and Codex-hardened for activation certificate finalization.",
+      "manual_read_summary": "Phase prompt for sensitive guard-state activation certificate, explicit deferred-surface table, mainnet/P2P/fetch/external-withdrawal non-claims, STATUS token, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00a_g10_activation_certificate_finalization.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-EPOCH-00b phase prompt drafted and Codex-hardened for Genesis first-agent validator enrollment.",
+      "manual_read_summary": "Phase prompt for sensitive Genesis Agent 1 enrollment on clean epoch-0 validators, four-validator readback requirement, invite exemption proof, STATUS token, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00b_g10_genesis_first_agent_install.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-EPOCH-00c phase prompt drafted and Codex-hardened for epoch-1 commit hello world.",
+      "manual_read_summary": "Phase prompt for sensitive public-RC epoch 0 to 1 transition, four-validator BLS/state-root agreement, scoped validator/economic liveness claim, mainnet/P2P/fetch/external-withdrawal non-claims, STATUS tokens, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00c_g10_epoch_1_commit_hello_world.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_public_rc_launch_hardening_prompts_2026_08_18",
+      "chronology_note": "2026-08-18 GAP-PUBLIC-RC-EPOCH-00d phase prompt drafted and Codex-hardened for first earned ECU and ILC smoke.",
+      "manual_read_summary": "Phase prompt for sensitive capstone economic smoke, Genesis allocation-path disposition, bounded ILC and ECU transfer readback, truth primitive attribution credit, no PoW mining claim, STATUS tokens, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
     }
   ],
   "phase": "1545p-Fix38",
