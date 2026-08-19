@@ -321,6 +321,7 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "participating_voters": 3,
             "price": Decimal("1.00"),
             "genesis_cap_blocked": False,
+            "genesis_overhead_remaining_allowance": None,
             "refuters": None,
         },
         {
@@ -343,6 +344,7 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "participating_voters": 3,
             "price": Decimal("0.70"),
             "genesis_cap_blocked": True,
+            "genesis_overhead_remaining_allowance": None,
             "refuters": ["agent:refuter-1", "agent:refuter-2"],
         },
         {
@@ -366,6 +368,30 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "participating_voters": 4,
             "price": Decimal("1.40"),
             "genesis_cap_blocked": True,
+            "genesis_overhead_remaining_allowance": None,
+            "refuters": None,
+        },
+        {
+            "epoch": 144,
+            "cumulative": Decimal("1000000"),
+            "fees": Decimal("400.000000000"),
+            "allocation_total": Decimal("1000.000000000"),
+            "treasury_budget": Decimal("750"),
+            "treasury_bounty": Decimal("20"),
+            "treasury_burn": Decimal("40"),
+            "velocity": Decimal("0.88"),
+            "write_fee_burn": Decimal("100.000000000"),
+            "ejected_stake": Decimal("12.000000000"),
+            "member_stakes": {
+                "agent:alpha": Decimal("7"),
+                "agent:beta": Decimal("11"),
+                "agent:gamma": Decimal("13"),
+            },
+            "approve_votes": 3,
+            "participating_voters": 3,
+            "price": Decimal("1.05"),
+            "genesis_cap_blocked": False,
+            "genesis_overhead_remaining_allowance": Decimal("10.000000000"),
             "refuters": None,
         },
     )
@@ -403,6 +429,9 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             epoch,
             scenario["allocation_total"],
             genesis_overhead_cap_blocked=bool(scenario["genesis_cap_blocked"]),
+            genesis_overhead_remaining_allowance_ilc=scenario[
+                "genesis_overhead_remaining_allowance"
+            ],
             upheld_refutation_recipients=scenario["refuters"],
         )
         allocation_decision_token = (
@@ -410,6 +439,8 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             + "|"
             + allocation_quote.post_theta_hard_routing_token
         )
+        if allocation_quote.genesis_partial_cap_excess_token:
+            allocation_decision_token += "|" + allocation_quote.genesis_partial_cap_excess_token
         if allocation_quote.genesis_overhead_cap_blocked:
             if allocation_quote.post_theta_hard_routing_token != POST_THETA_HARD_ROUTING_IMPLEMENTED_TOKEN:
                 raise ValueError("post_theta_hard_routing_missing_phase_1352")

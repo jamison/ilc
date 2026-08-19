@@ -19,6 +19,8 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 
 ECU_ILC_LIFECYCLE_RUNTIME_VERSION = "ecu_ilc_lifecycle_runtime_652.v0.1"
+LIFECYCLE_C_MAX_ILC = Decimal("25920000")
+LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN = "lifecycle_balance_exceeds_c_max"
 
 
 class EcuIlcLifecycleRuntimeError(ValueError):
@@ -135,6 +137,11 @@ class EcuIlcLifecycleRuntime:
             token="lifecycle_wallet_balance_invalid",
         )
         balance_after = prior_balance + reward_delta_decimal
+        if balance_after > LIFECYCLE_C_MAX_ILC:
+            raise EcuIlcLifecycleRuntimeError(
+                LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
+                "wallet balance cannot exceed the constitutional C_MAX_ILC ceiling",
+            )
         latest_balance_receipt = {
             "epoch_id": epoch_id,
             "reward_delta_ilc": decimal_to_canonical_string(reward_delta_decimal),
@@ -147,7 +154,7 @@ class EcuIlcLifecycleRuntime:
             if isinstance(item, dict) and item.get("epoch_id") != epoch_id
         ]
         merged_balance_history.append(latest_balance_receipt)
-        merged_balance_history.sort(key=lambda item: str(item.get("epoch_id", "")))
+        merged_balance_history.sort(key=_epoch_history_sort_key)
         history_digest = _stable_digest({"balance_history": merged_balance_history})
 
         next_wallet_row = {
@@ -200,6 +207,13 @@ def _stable_digest(payload: Any) -> str:
     ).hexdigest()
 
 
+def _epoch_history_sort_key(item: dict[str, Any]) -> tuple[int, int, str]:
+    epoch_id = str(item.get("epoch_id", ""))
+    if epoch_id.isdecimal():
+        return (0, int(epoch_id), epoch_id)
+    return (1, 0, epoch_id)
+
+
 def _reject_decimal_tree(value: Any) -> None:
     if isinstance(value, Decimal):
         raise EcuIlcLifecycleRuntimeError(
@@ -223,6 +237,8 @@ def _wallet_decimal_string(value: object) -> str:
 
 __all__ = [
     "ECU_ILC_LIFECYCLE_RUNTIME_VERSION",
+    "LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN",
+    "LIFECYCLE_C_MAX_ILC",
     "EcuIlcLifecycleRuntime",
     "EcuIlcLifecycleRuntimeError",
 ]

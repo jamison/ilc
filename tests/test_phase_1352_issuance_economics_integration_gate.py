@@ -68,9 +68,10 @@ def test_phase_1352_stack_verification_covers_each_cdl_and_cdl_031_deferral() ->
     assert all(row.status.startswith("confirmed") for row in report.stack_rows)
 
 
-def test_phase_1352_quote_level_conservation_passes_for_three_epoch_boundaries() -> None:
+def test_phase_1352_quote_level_conservation_passes_for_epoch_boundaries() -> None:
     report = build_issuance_economics_integration_gate_report()
     results_by_epoch: dict[int, list[str]] = {}
+    tokens_by_epoch: dict[int, list[str]] = {}
 
     for result in report.conservation_results:
         assert result.ok is True
@@ -79,11 +80,16 @@ def test_phase_1352_quote_level_conservation_passes_for_three_epoch_boundaries()
         assert result.debits_ilc.is_finite()
         assert result.credits_ilc.is_finite()
         results_by_epoch.setdefault(result.synthetic_epoch, []).append(result.surface)
+        tokens_by_epoch.setdefault(result.synthetic_epoch, []).append(result.decision_token)
 
-    assert sorted(results_by_epoch) == [0, 47, 96]
+    assert sorted(results_by_epoch) == [0, 47, 96, 144]
     assert all(len(surfaces) == 7 for surfaces in results_by_epoch.values())
     assert "cdl_025_026_027_emission_cap_quote" in results_by_epoch[96]
     assert "cdl_029_allocation_distribution_quote" in results_by_epoch[47]
+    assert any(
+        "genesis_partial_cap_excess_to_performer_pool_phase_1575c_fix3h.v0.1" in token
+        for token in tokens_by_epoch[144]
+    )
 
 
 def test_phase_1352_gate_runtime_does_not_call_production_activation_functions() -> None:
