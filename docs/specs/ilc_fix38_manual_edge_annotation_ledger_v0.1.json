@@ -80830,6 +80830,107 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/phases/phase_gap_public_rc_cdl028_amendment_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_protocol_reserve_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-PROTOCOL-RESERVE-00 created the CDL-028 protocol reserve destination module after CDL-028 amendment ratification.",
+      "manual_read_summary": "Runtime module defining PROTOCOL_RESERVE_ACCOUNT_ID reserve:cdl028:genesis_burn_pool, default-off transfer/withdrawal/governance-deployment flags, positive fail-closed guards, canonical record builder, and verifier for reserve nonspendability and non-overlap with Genesis and treasury.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_AUTHORITY",
+          "target": "cdl:CDL-028"
+        },
+        {
+          "edge_type": "DEPENDS_ON_PHASE_TOKEN",
+          "target": "token:cdl028_protocol_reserve_amendment_committed_GAP_PUBLIC_RC_CDL028_AMENDMENT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_AUTHORITY",
+        "DEPENDS_ON_PHASE_TOKEN",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/protocol_reserve_destination.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_protocol_reserve_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-PROTOCOL-RESERVE-00 added focused reserve destination tests.",
+      "manual_read_summary": "Tests verify exact reserve account ID, all default-off flags, transfer/withdrawal/governance-deployment guard tokens, canonical record verification, extra-field rejection, and non-overlap with Genesis Agent 1 and treasury.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_MODULE",
+          "target": "runtime:ilc_core/epoch/protocol_reserve_destination.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS_RUNTIME_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_protocol_reserve_destination.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_protocol_reserve_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-PROTOCOL-RESERVE-00 sensitive phase prompt committed with execution status complete.",
+      "manual_read_summary": "Phase prompt for creating the CDL-028 protocol reserve destination module with hard transfer-layer guard, STATUS tokens, graph registration, and public mirror non-claims.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-PROTOCOL-RESERVE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_protocol_reserve_00_g10_protocol_reserve_destination.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_protocol_reserve_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-PROTOCOL-RESERVE-00 walkthrough recorded verification transcript and non-claims.",
+      "manual_read_summary": "Phase walkthrough recording GO phrase receipt, preflight token audit, contradiction search, deliverable verification, tests, graph coverage, and public mirror disposition.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_EVIDENCE",
+          "target": "phase:GAP-PUBLIC-RC-PROTOCOL-RESERVE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_EVIDENCE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_protocol_reserve_00_walkthrough.md"
     }
   ],
   "nodes": [
