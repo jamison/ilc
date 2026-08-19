@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from ilc_core import epoch
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.epoch.protocol_reserve_destination import (
     CDL_028_AMENDMENT_DEPENDENCY,
@@ -61,6 +62,43 @@ def test_destination_record_contains_required_false_flags() -> None:
 
 def test_verify_valid_destination_record_passes() -> None:
     verify_protocol_reserve_destination_record(get_protocol_reserve_destination_record())
+
+
+def test_epoch_package_exports_protocol_reserve_surface() -> None:
+    assert epoch.PROTOCOL_RESERVE_ACCOUNT_ID == PROTOCOL_RESERVE_ACCOUNT_ID
+    epoch.verify_protocol_reserve_destination_record(
+        epoch.get_protocol_reserve_destination_record()
+    )
+
+
+def test_verify_rejects_non_dict_record() -> None:
+    with pytest.raises(ValueError, match="protocol_reserve_destination_record_must_be_dict"):
+        verify_protocol_reserve_destination_record(["not", "a", "dict"])  # type: ignore[arg-type]
+
+
+def test_verify_rejects_missing_required_key() -> None:
+    record = get_protocol_reserve_destination_record()
+    record.pop("transfer_enabled")
+
+    with pytest.raises(ValueError, match="protocol_reserve_destination_record_keys_mismatch"):
+        verify_protocol_reserve_destination_record(record)
+
+
+def test_verify_rejects_wrong_account_id_before_overlap_claims() -> None:
+    record = get_protocol_reserve_destination_record()
+    record["account_id"] = GENESIS_AGENT1_AGENT_ID
+    record["distinct_from_genesis_agent"] = True
+
+    with pytest.raises(ValueError, match="protocol_reserve_account_id_mismatch"):
+        verify_protocol_reserve_destination_record(record)
+
+
+def test_verify_rejects_wrong_cdl028_dependency() -> None:
+    record = get_protocol_reserve_destination_record()
+    record["cdl_028_amendment_dependency"] = "wrong"
+
+    with pytest.raises(ValueError, match="protocol_reserve_cdl028_dependency_mismatch"):
+        verify_protocol_reserve_destination_record(record)
 
 
 @pytest.mark.parametrize(
