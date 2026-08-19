@@ -9,12 +9,10 @@ history rows for one epoch are written in one LMDB write transaction. Alternate
 test/runtime objects must expose ``commit_settled_epoch_batch``; otherwise this
 module fails closed with ``atomic_lifecycle_batch_writer_required``.
 
-Carry-forward consumption is record-layer consumption. The Phase 652 lifecycle
-wallet model supports nonnegative settled deltas only; it does not expose a
-negative debit primitive for nonspendable carry-forward accounts. This writer
-therefore enforces carry-forward exact-once at the distribution record layer and
-uses the conservation equation's ``- carry_forward_in`` term before any wallet
-write.
+    Carry-forward consumption is atomic ledger movement. Consumed carry-forward
+    records create negative settlement deltas against their nonspendable
+    carry-forward accounts in the same LMDB transaction that credits newly eligible
+    recipients. Negative deltas are rejected for every other account class.
 """
 
 from __future__ import annotations
@@ -618,10 +616,12 @@ def _settlement_deltas_for_commit(output: EpochDistributionOutput) -> dict[str, 
         )
     for record in output.carry_forward_out_records:
         settlements[record.account_id] = settlements.get(record.account_id, ZERO) + record.amount_ilc
+    for record in output.consumed_carry_forward_records:
+        settlements[record.account_id] = settlements.get(record.account_id, ZERO) - record.amount_ilc
     return {
         agent_id: amount
         for agent_id, amount in sorted(settlements.items())
-        if amount > ZERO
+        if amount != ZERO
     }
 
 
@@ -658,11 +658,8 @@ def _commit_lmdb_lifecycle_batch(
     with wallet_store.env.begin(write=True) as txn:
         for agent_id, amount in sorted(settlements.items()):
             _require_agent_id(agent_id)
-            reward_delta = parse_non_negative_decimal(
-                amount,
-                token="lifecycle_reward_delta_invalid",
-            )
-            if reward_delta == ZERO:
+            settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
+            if settlement_delta == ZERO:
                 continue
             wallet_row = _decode_json(txn.get(_encode_key(agent_id), db=wallets_db)) or {}
             wallet_history = _decode_json(txn.get(_encode_key(agent_id), db=history_db)) or {}
@@ -689,7 +686,7 @@ def _commit_lmdb_lifecycle_batch(
                         token="lifecycle_reward_delta_invalid",
                     )
                 )
-                requested_delta = decimal_to_canonical_string(reward_delta)
+                requested_delta = decimal_to_canonical_string(settlement_delta)
                 if existing_delta != requested_delta:
                     raise EcuIlcLifecycleRuntimeError(
                         "lifecycle_epoch_replay_conflict",
@@ -717,7 +714,12 @@ def _commit_lmdb_lifecycle_batch(
                 wallet_row.get("balance_ilc", "0"),
                 token="lifecycle_wallet_balance_invalid",
             )
-            balance_after = prior_balance + reward_delta
+            balance_after = prior_balance + settlement_delta
+            if balance_after < ZERO:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_wallet_balance_underflow",
+                    "wallet balance cannot become negative",
+                )
             if balance_after > C_MAX_ILC:
                 raise EcuIlcLifecycleRuntimeError(
                     LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
@@ -725,7 +727,7 @@ def _commit_lmdb_lifecycle_batch(
                 )
             latest_balance_receipt = {
                 "epoch_id": epoch_id,
-                "reward_delta_ilc": decimal_to_canonical_string(reward_delta),
+                "reward_delta_ilc": decimal_to_canonical_string(settlement_delta),
                 "balance_after_ilc": decimal_to_canonical_string(balance_after),
                 "settlement_status": "applied",
             }
@@ -761,6 +763,27 @@ def _commit_lmdb_lifecycle_batch(
                 }
             )
     return results
+
+
+def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decimal:
+    if agent_id in {PERFORMER_CARRY_FORWARD_ACCOUNT_ID, AUDITOR_CARRY_FORWARD_ACCOUNT_ID}:
+        try:
+            settlement_delta = to_decimal(
+                amount,
+                token="lifecycle_settlement_delta_invalid",
+            )
+        except ValueError as exc:
+            raise EcuIlcLifecycleRuntimeError("lifecycle_settlement_delta_invalid", str(exc)) from exc
+        if not settlement_delta.is_finite():
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_settlement_delta_invalid",
+                "settlement delta must be finite",
+            )
+        return settlement_delta
+    return parse_non_negative_decimal(
+        amount,
+        token="lifecycle_reward_delta_invalid",
+    )
 
 
 def _decimal_string(value: Decimal) -> str:
