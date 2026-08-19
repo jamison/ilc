@@ -8,6 +8,7 @@ import json
 from decimal import Decimal
 from typing import Any
 
+from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.exact_numeric import (
     ZERO,
@@ -19,7 +20,7 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 
 ECU_ILC_LIFECYCLE_RUNTIME_VERSION = "ecu_ilc_lifecycle_runtime_652.v0.1"
-LIFECYCLE_C_MAX_ILC = Decimal("25920000")
+LIFECYCLE_C_MAX_ILC = C_MAX_ILC
 LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN = "lifecycle_balance_exceeds_c_max"
 
 
@@ -224,7 +225,7 @@ def _reject_decimal_tree(value: Any) -> None:
         for item in value.values():
             _reject_decimal_tree(item)
         return
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         for item in value:
             _reject_decimal_tree(item)
 

@@ -142,9 +142,16 @@ def test_record_confirms_non_overlap_tokens() -> None:
     assert PROTOCOL_RESERVE_DISTINCT_FROM_TREASURY_TOKEN
 
 
-def test_verify_rejects_missing_non_overlap_confirmation() -> None:
+@pytest.mark.parametrize(
+    ("field", "token"),
+    [
+        ("distinct_from_genesis_agent", PROTOCOL_RESERVE_DISTINCT_FROM_GENESIS_AGENT_TOKEN),
+        ("distinct_from_treasury", PROTOCOL_RESERVE_DISTINCT_FROM_TREASURY_TOKEN),
+    ],
+)
+def test_verify_rejects_missing_non_overlap_confirmation(field: str, token: str) -> None:
     record = get_protocol_reserve_destination_record()
-    record["distinct_from_genesis_agent"] = False
+    record[field] = False
 
-    with pytest.raises(ValueError, match=PROTOCOL_RESERVE_DISTINCT_FROM_GENESIS_AGENT_TOKEN):
+    with pytest.raises(ValueError, match=token):
         verify_protocol_reserve_destination_record(record)

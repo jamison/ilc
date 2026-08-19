@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
+from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
+from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+    LIFECYCLE_C_MAX_ILC,
+    EcuIlcLifecycleRuntimeError,
+    _stable_digest,
+)
 from ilc_core.server import create_app
 
 DOC_PATH = Path("docs/specs/ilc_ecu_ilc_lifecycle_runtime_652_v0.1.md")
@@ -178,6 +185,16 @@ def test_lifecycle_rejects_balance_above_cmax() -> None:
                 reward_delta_ilc="25920000.000000001",
             )
         assert getattr(exc_info.value, "token", None) == "lifecycle_balance_exceeds_c_max"
+
+
+def test_lifecycle_cmax_imports_epoch_emission_cmax() -> None:
+    assert LIFECYCLE_C_MAX_ILC == C_MAX_ILC
+
+
+def test_lifecycle_stable_digest_rejects_decimal_inside_tuple() -> None:
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        _stable_digest({"tuple_payload": ("encoded", Decimal("1"))})
+    assert exc_info.value.token == "lifecycle_stable_digest_decimal_unencoded"
 
 
 def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:
