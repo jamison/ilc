@@ -80681,6 +80681,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_harness_sidecar_05_execution_receipt_schema_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_issuance_atomicity_00a_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a prompt patched and executed before CDL-028 amendment.",
+      "manual_read_summary": "Phase prompt for non-sensitive public-RC issuance atomicity epoch output role audit; hardened to use current fee-burn and lifecycle runtime signatures.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_issuance_atomicity_00a_g10_epoch_output_role_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_issuance_atomicity_00a_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a output role audit completed; no runtime or CDL mutation performed.",
+      "manual_read_summary": "Audit baseline naming NO_UNSETTLED_ILC_ISSUANCE, mapping live epoch output roles to current destinations/writers, verifying CDL-048 deadline semantics, and routing launch-critical settlement gaps to follow-on phases.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_OUTPUT",
+          "target": "phase:GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_OUTPUT",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_epoch_output_role_audit_GAP_PUBLIC_RC_ISSUANCE_ATOMICITY_00a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_issuance_atomicity_00a_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a walkthrough completed with non-claims and follow-on blocker summary.",
+      "manual_read_summary": "Walkthrough recording direct source audit, prompt validation, MemPalace context, and verification transcript for GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_WALKTHROUGH",
+          "target": "phase:GAP-PUBLIC-RC-ISSUANCE-ATOMICITY-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_WALKTHROUGH",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/phases/phase_gap_public_rc_issuance_atomicity_00a_walkthrough.md"
     }
   ],
   "nodes": [
