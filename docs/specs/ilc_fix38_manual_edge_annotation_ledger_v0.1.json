@@ -80777,6 +80777,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_cdl028_amendment_00_g10_genesis_burn_pool_protocol_reserve.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_cdl028_amendment_00_2026_08_19",
+      "chronology_note": "2026-08-19 sensitive GAP-PUBLIC-RC-CDL028-AMENDMENT-00 completed after exact GO phrase; mutation commit c822ccb27.",
+      "manual_read_summary": "CDL-028 amendment evidence redefining genesis_burn_pool as a non-circulating protocol reserve while preserving CDL-025 Model B, CDL-028 10 percent ratio, CDL-029, CDL-047, and CDL-054.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "CDL_AMENDS",
+          "target": "cdl:CDL-028"
+        },
+        {
+          "edge_type": "PHASE_OUTPUT",
+          "target": "phase:GAP-PUBLIC-RC-CDL028-AMENDMENT-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CDL_AUTHORITY",
+        "PHASE_OUTPUT",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_028_protocol_reserve_amendment_GAP_PUBLIC_RC_CDL028_AMENDMENT_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_cdl028_amendment_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-CDL028-AMENDMENT-00 walkthrough completed after STATUS token emission.",
+      "manual_read_summary": "Walkthrough recording GO phrase, input token audit, CDL-028 mutation summary, verification transcript, tests, graph coverage, and non-claims for GAP-PUBLIC-RC-CDL028-AMENDMENT-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_WALKTHROUGH",
+          "target": "phase:GAP-PUBLIC-RC-CDL028-AMENDMENT-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_WALKTHROUGH",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/phases/phase_gap_public_rc_cdl028_amendment_00_walkthrough.md"
     }
   ],
   "nodes": [
