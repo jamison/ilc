@@ -9,10 +9,10 @@ history rows for one epoch are written in one LMDB write transaction. Alternate
 test/runtime objects must expose ``commit_settled_epoch_batch``; otherwise this
 module fails closed with ``atomic_lifecycle_batch_writer_required``.
 
-    Carry-forward consumption is atomic ledger movement. Consumed carry-forward
-    records create negative settlement deltas against their nonspendable
-    carry-forward accounts in the same LMDB transaction that credits newly eligible
-    recipients. Negative deltas are rejected for every other account class.
+Carry-forward consumption is atomic ledger movement. Consumed carry-forward
+records create negative settlement deltas against their nonspendable
+carry-forward accounts in the same LMDB transaction that credits newly eligible
+recipients. Negative deltas are rejected for every other account class.
 """
 
 from __future__ import annotations
@@ -98,6 +98,8 @@ EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN = (
 )
 
 MAX_AGENT_ID_BYTES = 256
+MAX_ELIGIBLE_AGENTS = 65_536
+MAX_PRIOR_CARRY_FORWARD_RECORDS = 65_536
 DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX = "0" * 64
 
 
@@ -121,6 +123,7 @@ class EpochDistributionInput:
     cumulative_issued_before_epoch_ilc: Decimal | int | str = ZERO
     eligible_auditor_agents: Mapping[str, Decimal | int | str] | None = None
     source_settlement_root_hex: str = DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX
+    allow_default_source_settlement_root: bool = True
 
 
 @dataclass(frozen=True)
@@ -350,7 +353,13 @@ def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
         "prior_carry_forward_records": _require_prior_record_container(
             inputs.prior_carry_forward_records
         ),
-        "source_settlement_root_hex": _require_settlement_root(inputs.source_settlement_root_hex),
+        "source_settlement_root_hex": _require_settlement_root(
+            inputs.source_settlement_root_hex,
+            allow_default_source_settlement_root=_require_bool(
+                inputs.allow_default_source_settlement_root,
+                "allow_default_source_settlement_root",
+            ),
+        ),
     }
 
 
@@ -382,6 +391,8 @@ def _require_weight_mapping(
 ) -> dict[str, Decimal]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{field_name}_must_be_mapping")
+    if len(value) > MAX_ELIGIBLE_AGENTS:
+        raise ValueError(f"{field_name}_exceeds_max_count")
     normalized: dict[str, Decimal] = {}
     for agent_id, raw_weight in value.items():
         normalized[_require_agent_id(agent_id)] = _require_non_negative_weight(
@@ -413,25 +424,38 @@ def _require_agent_id(value: object) -> str:
     return value
 
 
-def _require_settlement_root(value: object) -> str:
+def _require_bool(value: object, field_name: str) -> bool:
+    if not isinstance(value, bool):
+        raise ValueError(f"{field_name}_must_be_bool")
+    return value
+
+
+def _require_settlement_root(
+    value: object,
+    *,
+    allow_default_source_settlement_root: bool,
+) -> str:
     if not isinstance(value, str) or len(value) != 64:
         raise ValueError("source_settlement_root_must_be_sha256_hex")
     if any(char not in "0123456789abcdef" for char in value):
         raise ValueError("source_settlement_root_must_be_sha256_hex")
+    if not allow_default_source_settlement_root and value == DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX:
+        raise ValueError("source_settlement_root_default_not_allowed")
     return value
 
 
 def _require_prior_record_container(value: object) -> tuple[PoolCarryForwardRecord, ...]:
     if not isinstance(value, (list, tuple)):
         raise ValueError("prior_carry_forward_records_must_be_sequence")
+    if len(value) > MAX_PRIOR_CARRY_FORWARD_RECORDS:
+        raise ValueError("prior_carry_forward_records_exceeds_max_count")
     return tuple(value)
 
 
 def _genesis_remaining_allowance(genesis_cumulative_accrual_ilc: Decimal) -> Decimal:
-    if genesis_cumulative_accrual_ilc > C_MAX_ILC:
-        raise ValueError("genesis_cumulative_accrual_exceeds_c_max")
-    remaining = GENESIS_FIXED_TRANCHE_ILC - genesis_cumulative_accrual_ilc
-    return remaining if remaining > ZERO else ZERO
+    if genesis_cumulative_accrual_ilc > GENESIS_FIXED_TRANCHE_ILC:
+        raise ValueError("genesis_cumulative_accrual_exceeds_fixed_tranche")
+    return GENESIS_FIXED_TRANCHE_ILC - genesis_cumulative_accrual_ilc
 
 
 def _require_prior_carry_forward_records(
@@ -485,6 +509,7 @@ def _allocate_pool_to_agents(
     total_quanta = int(pool / ILC_QUANTUM)
     allocations_quanta: dict[str, int] = {}
     allocated_quanta = 0
+    # Deterministic dust assignment is lexicographic by AgentID for public RC.
     for agent_id, weight in sorted(positive_weights.items()):
         share_quanta = int((Decimal(total_quanta) * weight / total_weight).to_integral_value(rounding=ROUND_DOWN))
         allocations_quanta[agent_id] = share_quanta
@@ -794,6 +819,7 @@ __all__ = [
     "ATOMIC_SETTLEMENT_WRITER_CREATED_TOKEN",
     "CARRY_FORWARD_CONSUMED_EXACTLY_ONCE_WIRED_TOKEN",
     "CONSERVATION_EQUATION_ENFORCED_TOKEN",
+    "DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX",
     "EPOCH_DISTRIBUTION_WRITER_VERSION",
     "EPOCH_ID_FORMAT",
     "EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN",
@@ -801,6 +827,8 @@ __all__ = [
     "EpochDistributionInput",
     "EpochDistributionOutput",
     "GENESIS_CAP_ALWAYS_SUPPLIED_TOKEN",
+    "MAX_ELIGIBLE_AGENTS",
+    "MAX_PRIOR_CARRY_FORWARD_RECORDS",
     "PROTOCOL_RESERVE_WIRED_TOKEN",
     "compute_epoch_distribution",
     "commit_epoch_distribution",

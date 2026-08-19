@@ -70513,6 +70513,65 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_distribution_writer_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_writer_fix1_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-WRITER-FIX1-00 prompt drafted and executed for post-audit hardening.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "NON-SENSITIVE Fix1 prompt for bounding eligible-agent and prior carry-forward inputs, correcting Genesis fixed-tranche ceiling semantics, adding production-gate default settlement-root rejection, and pinning lexicographic dust allocation by AgentID.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-WRITER-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFINES",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-WRITER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "REFINES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_distribution_writer_fix1_00_g10_audit_hardening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_writer_fix1_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-WRITER-FIX1-00 walkthrough records audit finding disposition and verification.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Phase walkthrough recording accepted/deferred audit findings, runtime/test changes, verification outputs, output token, and non-claims for distribution writer Fix1 hardening.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_EVIDENCE",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-WRITER-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:distribution_writer_fix1_audit_hardened_GAP_PUBLIC_RC_DISTRIBUTION_WRITER_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_EVIDENCE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_distribution_writer_fix1_00_walkthrough.md"
     }
   ],
   "boundary": {
