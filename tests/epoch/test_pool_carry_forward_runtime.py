@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pytest
 
+import ilc_core.epoch as epoch
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.epoch.pool_carry_forward_runtime import (
     AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
@@ -82,6 +83,7 @@ def test_valid_consumption_sets_status_and_consumed_epoch() -> None:
         (Decimal("-1"), "carry_forward_amount_must_be_nonzero_positive"),
         (Decimal("NaN"), "carry_forward_amount_must_be_finite"),
         (Decimal("Infinity"), "carry_forward_amount_must_be_finite"),
+        (Decimal("1.0000000001"), "carry_forward_amount_must_align_to_ilc_quantum"),
         (10, "carry_forward_amount_must_be_decimal"),
         ("10", "carry_forward_amount_must_be_decimal"),
     ],
@@ -131,6 +133,13 @@ def test_invalid_consumed_epoch_rejected(consumed_at_epoch: object) -> None:
 
     with pytest.raises(ValueError):
         mark_carry_forward_consumed(record, consumed_at_epoch=consumed_at_epoch)  # type: ignore[arg-type]
+
+
+def test_consumed_epoch_must_reach_target_epoch() -> None:
+    record = _valid_record(source_epoch=1, target_epoch=5)
+
+    with pytest.raises(ValueError, match="carry_forward_consumed_epoch_must_reach_target_epoch"):
+        mark_carry_forward_consumed(record, consumed_at_epoch=4)
 
 
 def test_double_consumption_raises_token() -> None:
@@ -187,3 +196,40 @@ def test_reason_required_and_bounded() -> None:
         _valid_record(reason="")
     with pytest.raises(ValueError, match="carry_forward_reason_exceeds_max_bytes"):
         _valid_record(reason="x" * 257)
+
+
+def test_direct_constructor_runs_full_validation() -> None:
+    with pytest.raises(ValueError, match="invalid_carry_forward_status"):
+        PoolCarryForwardRecord(
+            source_epoch=1,
+            target_epoch=2,
+            pool_role=PERFORMER_POOL_ROLE,
+            amount_ilc=Decimal("10"),
+            account_id=PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+            reason="no eligible performer recipients",
+            source_settlement_root=ROOT_HEX,
+            status="forged",
+            consumed_at_epoch=None,
+        )
+
+
+def test_direct_constructor_rejects_consumed_before_target() -> None:
+    with pytest.raises(ValueError, match="carry_forward_consumed_epoch_must_reach_target_epoch"):
+        PoolCarryForwardRecord(
+            source_epoch=1,
+            target_epoch=5,
+            pool_role=PERFORMER_POOL_ROLE,
+            amount_ilc=Decimal("10"),
+            account_id=PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+            reason="no eligible performer recipients",
+            source_settlement_root=ROOT_HEX,
+            status=CONSUMED_STATUS,
+            consumed_at_epoch=4,
+        )
+
+
+def test_epoch_package_exports_carry_forward_surface() -> None:
+    assert epoch.PERFORMER_CARRY_FORWARD_ACCOUNT_ID == PERFORMER_CARRY_FORWARD_ACCOUNT_ID
+    assert epoch.AUDITOR_CARRY_FORWARD_ACCOUNT_ID == AUDITOR_CARRY_FORWARD_ACCOUNT_ID
+    assert epoch.create_carry_forward_record is create_carry_forward_record
+    assert epoch.mark_carry_forward_consumed is mark_carry_forward_consumed

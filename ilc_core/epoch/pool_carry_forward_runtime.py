@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
+from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM
 from ilc_core.ledger.exact_numeric import ZERO, decimal_to_canonical_string
 
 
@@ -78,6 +79,9 @@ class PoolCarryForwardRecord:
     status: str
     consumed_at_epoch: int | None
 
+    def __post_init__(self) -> None:
+        _validate_record(self)
+
     def to_canonical_record(self) -> dict[str, Any]:
         return {
             "account_id": self.account_id,
@@ -128,6 +132,8 @@ def _require_amount(value: Decimal) -> Decimal:
         raise ValueError("carry_forward_amount_must_be_nonzero_positive")
     if value.adjusted() > MAX_CARRY_FORWARD_AMOUNT_ADJUSTED_EXPONENT:
         raise ValueError("carry_forward_amount_exceeds_max_magnitude")
+    if value % ILC_QUANTUM != ZERO:
+        raise ValueError("carry_forward_amount_must_align_to_ilc_quantum")
     return value
 
 
@@ -163,6 +169,8 @@ def _validate_record(record: PoolCarryForwardRecord) -> None:
         consumed_at_epoch = _require_epoch(record.consumed_at_epoch, "consumed_at_epoch")
         if consumed_at_epoch <= source_epoch:
             raise ValueError("carry_forward_consumed_epoch_must_follow_source_epoch")
+        if consumed_at_epoch < target_epoch:
+            raise ValueError("carry_forward_consumed_epoch_must_reach_target_epoch")
         return
     raise ValueError("invalid_carry_forward_status")
 
@@ -177,7 +185,7 @@ def create_carry_forward_record(
     reason: str,
     source_settlement_root: str,
 ) -> PoolCarryForwardRecord:
-    record = PoolCarryForwardRecord(
+    return PoolCarryForwardRecord(
         source_epoch=source_epoch,
         target_epoch=target_epoch,
         pool_role=pool_role,
@@ -188,8 +196,6 @@ def create_carry_forward_record(
         status=PENDING_CONSUMPTION_STATUS,
         consumed_at_epoch=None,
     )
-    _validate_record(record)
-    return record
 
 
 def mark_carry_forward_consumed(
@@ -204,7 +210,9 @@ def mark_carry_forward_consumed(
     consumed_epoch = _require_epoch(consumed_at_epoch, "consumed_at_epoch")
     if consumed_epoch <= record.source_epoch:
         raise ValueError("carry_forward_consumed_epoch_must_follow_source_epoch")
-    consumed = PoolCarryForwardRecord(
+    if consumed_epoch < record.target_epoch:
+        raise ValueError("carry_forward_consumed_epoch_must_reach_target_epoch")
+    return PoolCarryForwardRecord(
         source_epoch=record.source_epoch,
         target_epoch=record.target_epoch,
         pool_role=record.pool_role,
@@ -215,8 +223,6 @@ def mark_carry_forward_consumed(
         status=CONSUMED_STATUS,
         consumed_at_epoch=consumed_epoch,
     )
-    _validate_record(consumed)
-    return consumed
 
 
 def require_carry_forward_not_spendable() -> None:
