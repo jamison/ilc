@@ -71,6 +71,8 @@ This means any future distribution writer must first decide and encode the corre
 
 The available `EcuIlcLifecycleRuntime.commit_settled_epoch()` writes one agent wallet/history row at a time. No audited batch writer currently atomically commits Genesis, performer, auditor, validator, treasury, protocol-reserve, and carry-forward outputs together.
 
+The post-audit hardening disposition is stricter: `DISTRIBUTION-WRITER-00` must either wrap all recipient writes and batch metadata in one LMDB write transaction or introduce a settlement batch record with complete/incomplete status that makes crash replay deterministic. Sequential per-recipient calls without a batch record are not acceptable for public RC.
+
 ### F-5 — Treasury binding is not required at launch unless the guard is cleared
 
 `TREASURY_DISTRIBUTION_NOT_ACTIVATED=True`, and the treasury production path explicitly says it does not execute transfers, validator payouts, ledger writes, wallet writes, or live settlement. Therefore this phase emits the “not required at launch” treasury token.
@@ -86,6 +88,14 @@ If a later phase clears treasury distribution or introduces nonzero treasury set
 `CDL048_CONVERSION_DEADLINE_ISSUANCE_EPOCHS = 4`. Registration sets `deadline_epoch = issue_epoch + 4`. Conversion rejects epochs before issue and after deadline, but does not reject conversion at the issue epoch or issue epoch + 1. The ratification evidence frames CDL-048 as anti-hoarding forced circulation.
 
 Therefore public-RC planning must not assume a four-epoch maturation delay. The code evidence supports “maximum deadline,” not “minimum wait.”
+
+### F-8 — Genesis cap inputs are caller-trusted today
+
+`compute_epoch_emission_production_path()` only evaluates the Genesis cap when `genesis_cumulative_accrual_ilc` is supplied. `build_allocation_distribution_quote()` only applies partial-cap allowance when `genesis_overhead_remaining_allowance_ilc` is supplied. Production distribution code must not call these paths with `None`; it must provide authoritative Genesis cumulative accrual and remaining allowance inputs.
+
+### F-9 — Partial-cap and cap-blocked paths need explicit tests before launch
+
+The integration gate scenarios do not exercise `genesis_overhead_remaining_allowance_ilc`. Also, `cap_blocked=True` with nonzero total allocation intentionally raises rather than silently rerouting a full Genesis tranche. The distribution writer must handle this deliberately by computing the correct post-cap allocation inputs and proving partial-cap and cap-blocked cases with regression tests.
 
 ## 3. Output Role Table
 
@@ -108,7 +118,9 @@ The next phases must close these gaps in order:
 2. Implement a concrete protocol-reserve ledger destination that cannot transfer, withdraw, or spend at launch.
 3. Define carry-forward accounts for unallocated performer/auditor amounts.
 4. Implement an atomic distribution writer that consumes scheduled emission, fee-derived pools, reserve deltas, Genesis deltas, validator deltas, treasury deltas if activated, and carry-forward in/out exactly once.
-5. Patch the epoch 0→1 gate to reject any nonzero unassigned amount.
+5. Enforce Genesis cap inputs in the production writer: no `None` accrual/allowance values in public-RC settlement.
+6. Patch the epoch 0→1 gate to reject any nonzero unassigned amount and to verify the conservation equation after settlement writes.
+7. Retain lifecycle hardening: numeric epoch-history ordering and C_MAX balance ceiling must remain covered by tests.
 
 ## 5. Tokens
 

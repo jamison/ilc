@@ -156,6 +156,30 @@ def test_same_epoch_same_delta_is_idempotent_and_conflicting_replay_fails_closed
         assert status["data"]["balance_ilc"] == "3.25"
 
 
+def test_numeric_epoch_history_sorts_numerically_not_lexicographically() -> None:
+    app = create_app()
+    with TestClient(app):
+        runtime = app.state.public_lifecycle_runtime
+        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="10", reward_delta_ilc="1")
+        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="2", reward_delta_ilc="1")
+        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="1", reward_delta_ilc="1")
+
+        history = runtime.lifecycle_snapshot(agent_id="agent-a")["wallet_history"]["balance_history"]
+        assert [entry["epoch_id"] for entry in history] == ["1", "2", "10"]
+
+
+def test_lifecycle_rejects_balance_above_cmax() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="epoch-001",
+                reward_delta_ilc="25920000.000000001",
+            )
+        assert getattr(exc_info.value, "token", None) == "lifecycle_balance_exceeds_c_max"
+
+
 def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:
     app = create_app()
     with TestClient(app):
