@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from collections.abc import Iterator, Mapping
 
 import pytest
 
 from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
 from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM, raw_epoch_emission_budget
 from ilc_core.epoch.epoch_distribution_writer import (
+    DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
     EPOCH_ID_FORMAT,
+    ILC_QUANTUM,
+    MAX_ELIGIBLE_AGENTS,
+    MAX_PRIOR_CARRY_FORWARD_RECORDS,
     EpochDistributionInput,
+    _allocate_pool_to_agents,
     compute_epoch_distribution,
     commit_epoch_distribution,
     format_epoch_id,
@@ -44,6 +50,22 @@ class RecordingBatchLifecycle:
     ) -> list[dict[str, object]]:
         self.calls.append({"settlements": settlements, "epoch_id": epoch_id})
         return [{"ok": True, "token": "recorded", "data": {}}]
+
+
+class OversizedWeightMapping(Mapping[str, Decimal]):
+    def __getitem__(self, key: str) -> Decimal:
+        raise KeyError(key)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(())
+
+    def __len__(self) -> int:
+        return MAX_ELIGIBLE_AGENTS + 1
+
+
+class OversizedPriorRecordList(list[object]):
+    def __len__(self) -> int:
+        return MAX_PRIOR_CARRY_FORWARD_RECORDS + 1
 
 
 def _inputs(**overrides: object) -> EpochDistributionInput:
@@ -230,6 +252,65 @@ def test_prior_carry_forward_records_must_be_sequence() -> None:
         compute_epoch_distribution(_inputs(prior_carry_forward_records=None))
 
 
+def test_eligible_agent_count_is_bounded_before_iteration() -> None:
+    with pytest.raises(ValueError, match="eligible_agents_exceeds_max_count"):
+        compute_epoch_distribution(_inputs(eligible_agents=OversizedWeightMapping()))
+
+
+def test_eligible_auditor_agent_count_is_bounded_before_iteration() -> None:
+    with pytest.raises(ValueError, match="eligible_auditor_agents_exceeds_max_count"):
+        compute_epoch_distribution(
+            _inputs(
+                eligible_agents={},
+                eligible_auditor_agents=OversizedWeightMapping(),
+            )
+        )
+
+
+def test_prior_carry_forward_count_is_bounded_before_iteration() -> None:
+    with pytest.raises(ValueError, match="prior_carry_forward_records_exceeds_max_count"):
+        compute_epoch_distribution(
+            _inputs(prior_carry_forward_records=OversizedPriorRecordList())
+        )
+
+
+def test_genesis_accrual_cannot_exceed_fixed_tranche() -> None:
+    with pytest.raises(ValueError, match="genesis_cumulative_accrual_exceeds_fixed_tranche"):
+        compute_epoch_distribution(
+            _inputs(
+                genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC + ILC_QUANTUM
+            )
+        )
+
+
+def test_default_settlement_root_can_be_rejected_for_production_gate() -> None:
+    with pytest.raises(ValueError, match="source_settlement_root_default_not_allowed"):
+        compute_epoch_distribution(
+            _inputs(
+                source_settlement_root_hex=DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
+                allow_default_source_settlement_root=False,
+            )
+        )
+
+
+def test_dust_assignment_order_is_lexicographic_by_agent_id() -> None:
+    allocations, residual = _allocate_pool_to_agents(
+        Decimal("0.000000005"),
+        {
+            "agent:c": Decimal("1"),
+            "agent:b": Decimal("1"),
+            "agent:a": Decimal("1"),
+        },
+    )
+
+    assert residual == Decimal("0E-9")
+    assert allocations == {
+        "agent:a": Decimal("0.000000002"),
+        "agent:b": Decimal("0.000000002"),
+        "agent:c": Decimal("0.000000001"),
+    }
+
+
 def test_commit_skips_zero_weight_agents_and_zero_delta_recipients() -> None:
     lifecycle = RecordingBatchLifecycle()
 
@@ -343,6 +424,7 @@ def test_epoch_package_exports_distribution_writer_surface() -> None:
     import ilc_core.epoch as epoch
 
     assert epoch.EPOCH_ID_FORMAT == "{:010d}"
+    assert epoch.MAX_ELIGIBLE_AGENTS == MAX_ELIGIBLE_AGENTS
     assert epoch.EpochDistributionInput is EpochDistributionInput
     assert epoch.compute_epoch_distribution is compute_epoch_distribution
     assert epoch.commit_epoch_distribution is commit_epoch_distribution
