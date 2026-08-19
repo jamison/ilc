@@ -81042,6 +81042,123 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_treasury_binding_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_carryforward_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00 adds concrete nonspendable carry-forward account infrastructure for future distribution writer wiring.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Runtime module defining nonspendable CDL-029 performer/auditor unallocated carry-forward account IDs, PoolCarryForwardRecord schema, fail-closed spend guard, strict amount/root/reason validation, and consume-exactly-once transition semantics.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_AUTHORITY",
+          "target": "cdl:CDL-029"
+        },
+        {
+          "edge_type": "DEPENDS_ON_PHASE_TOKEN",
+          "target": "token:protocol_reserve_destination_module_created_GAP_PUBLIC_RC_PROTOCOL_RESERVE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON_PHASE_TOKEN",
+          "target": "token:treasury_binding_deferred_zero_output_confirmed_GAP_PUBLIC_RC_TREASURY_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:pool_carry_forward_runtime_created_GAP_PUBLIC_RC_DISTRIBUTION_CARRYFORWARD_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_AUTHORITY",
+        "DEPENDS_ON_PHASE_TOKEN",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/pool_carry_forward_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_carryforward_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00 test coverage for the new pool carry-forward runtime.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Focused tests for carry-forward account IDs, amount validation, root/reason bounds, role/account isolation, nonspendability, canonical record shape, and consume-exactly-once rejection.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_MODULE",
+          "target": "runtime:ilc_core/epoch/pool_carry_forward_runtime.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS_RUNTIME_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_pool_carry_forward_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_carryforward_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00 prompt committed with execution status complete.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Sensitive phase prompt for creating CDL-029 performer/auditor carry-forward accounts, patched during execution for STATUS path correctness and stricter settlement-root/reason validation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_distribution_carryforward_00_g10_pool_carry_forward_accounts.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_distribution_carryforward_00_2026_08_19",
+      "chronology_note": "2026-08-19 GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00 phase-close walkthrough and verification transcript.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough recording GO phrase, source reads, preflight claim table, implementation summary, verification outputs, test counts, account isolation statement, and non-claims for carry-forward accounts.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_EVIDENCE",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-CARRYFORWARD-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:carry_forward_consume_exactly_once_enforced_GAP_PUBLIC_RC_DISTRIBUTION_CARRYFORWARD_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_EVIDENCE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_distribution_carryforward_00_walkthrough.md"
     }
   ],
   "nodes": [
