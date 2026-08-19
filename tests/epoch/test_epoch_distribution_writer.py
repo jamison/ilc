@@ -292,6 +292,37 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
     assert wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"] == "4.5"  # type: ignore[index]
 
 
+def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    first = commit_epoch_distribution(
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={}),
+        lifecycle,
+    )
+    assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "72"  # type: ignore[index]
+    assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "13.5"  # type: ignore[index]
+
+    second = commit_epoch_distribution(
+        _inputs(
+            issuance_epoch=1,
+            eligible_agents={"agent:a": Decimal("1")},
+            prior_carry_forward_records=first.carry_forward_out_records,
+        ),
+        lifecycle,
+    )
+
+    assert second.conservation_record.distribution_carry_forward_in_ilc == Decimal("85.5")
+    assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
+    assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
+    agent_wallet = wallet_store.get_wallet("agent:a")
+    assert agent_wallet is not None
+    assert Decimal(agent_wallet["balance_ilc"]) > Decimal("85.5")
+
+
 def test_float_and_missing_genesis_accrual_are_rejected() -> None:
     with pytest.raises(ValueError, match="total_epoch_fees_ilc_must_be_exact_decimal"):
         compute_epoch_distribution(_inputs(total_epoch_fees_ilc=0.1))
