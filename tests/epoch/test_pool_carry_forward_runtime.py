@@ -83,6 +83,7 @@ def test_valid_consumption_sets_status_and_consumed_epoch() -> None:
         (Decimal("-1"), "carry_forward_amount_must_be_nonzero_positive"),
         (Decimal("NaN"), "carry_forward_amount_must_be_finite"),
         (Decimal("Infinity"), "carry_forward_amount_must_be_finite"),
+        (Decimal("25920000.000000001"), "carry_forward_amount_exceeds_c_max"),
         (Decimal("1.0000000001"), "carry_forward_amount_must_align_to_ilc_quantum"),
         (10, "carry_forward_amount_must_be_decimal"),
         ("10", "carry_forward_amount_must_be_decimal"),
@@ -133,6 +134,12 @@ def test_invalid_consumed_epoch_rejected(consumed_at_epoch: object) -> None:
 
     with pytest.raises(ValueError):
         mark_carry_forward_consumed(record, consumed_at_epoch=consumed_at_epoch)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("record", [None, {"status": PENDING_CONSUMPTION_STATUS}])
+def test_consumption_requires_carry_forward_record(record: object) -> None:
+    with pytest.raises(ValueError, match="carry_forward_record_required"):
+        mark_carry_forward_consumed(record, consumed_at_epoch=2)  # type: ignore[arg-type]
 
 
 def test_consumed_epoch_must_reach_target_epoch() -> None:

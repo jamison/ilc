@@ -108,7 +108,7 @@ def normalize_json_scalars(value: object) -> object:
             str(key): normalize_json_scalars(item)
             for key, item in value.items()
         }
-    if isinstance(value, list):
+    if isinstance(value, (list, tuple)):
         return [normalize_json_scalars(item) for item in value]
     return value
 

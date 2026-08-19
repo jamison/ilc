@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
-from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM
+from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.exact_numeric import ZERO, decimal_to_canonical_string
 
 
@@ -132,6 +132,8 @@ def _require_amount(value: Decimal) -> Decimal:
         raise ValueError("carry_forward_amount_must_be_nonzero_positive")
     if value.adjusted() > MAX_CARRY_FORWARD_AMOUNT_ADJUSTED_EXPONENT:
         raise ValueError("carry_forward_amount_exceeds_max_magnitude")
+    if value > C_MAX_ILC:
+        raise ValueError("carry_forward_amount_exceeds_c_max")
     if value % ILC_QUANTUM != ZERO:
         raise ValueError("carry_forward_amount_must_align_to_ilc_quantum")
     return value
