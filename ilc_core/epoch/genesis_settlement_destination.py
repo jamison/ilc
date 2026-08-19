@@ -33,9 +33,9 @@ GENESIS_AGENT1_AGENT_ID = (
 GENESIS_AGENT1_PUBKEY_RECORD_PATH = "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
 GENESIS_AGENT1_PUBKEY_RECORD_CEREMONY = "838a"
 
-# The CDL-028 genesis_burn_pool is NOT routed to this agent. It is a permanent
-# deflationary burn. Confirmed by GENESIS_BURN_POOL_NOT_FIXED_TRANCHE_TOKEN in
-# the reconciliation runtime.
+# The CDL-028 genesis_burn_pool is NOT routed to this agent. As amended in
+# GAP-PUBLIC-RC-CDL028-AMENDMENT-00, it is a non-circulating protocol reserve
+# distinct from the CDL-029 Genesis 5% tranche.
 GENESIS_BURN_POOL_NOT_ROUTED_TO_GENESIS_AGENT_TOKEN = (
     "genesis_burn_pool_not_routed_to_genesis_agent_phase_1575c_fix3e"
 )
