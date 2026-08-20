@@ -1,0 +1,95 @@
+{
+  "artifact": "ilc_fix_public_rc_part3e_prompt_batch_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for Part 3e pre-public-RC prompt planning artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_validator_redeploy_00a_g10_post_part3d_compat_audit.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_validator_readback_00b_g10_post_part3d_live_state_confirm.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-READBACK-00b"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_validator_redeploy_00c_g10_post_part3d_live_redeploy.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00c"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_docs_fix1_00_g10_public_docs_version_audit.md",
+      "target": "phase:GAP-PUBLIC-RC-DOCS-FIX1-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_00_g10_stale_version_ref_patch.md",
+      "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_package_refresh_00a_g10_local_build_and_hash_record.md",
+      "target": "phase:GAP-PUBLIC-RC-PACKAGE-REFRESH-00a"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_fix1_00_g10_e2e_install_030_reverification.md",
+      "target": "phase:GAP-PUBLIC-INSTALL-FIX1-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_package_refresh_00b_g10_pypi_upload_and_manifest.md",
+      "target": "phase:GAP-PUBLIC-RC-PACKAGE-REFRESH-00b"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_mirror_refresh_00_g10_post_part3d_mirror_regeneration.md",
+      "target": "phase:GAP-PUBLIC-RC-MIRROR-REFRESH-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_version_consistency_00_g10_pre_signing_version_gate.md",
+      "target": "phase:GAP-PUBLIC-RC-VERSION-CONSISTENCY-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_publish_exec_00_g10_public_mirror_push_and_visibility.md",
+      "target": "phase:GAP-PUBLIC-RC-PUBLISH-EXEC-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_part3e_prompt_batch_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-PART3E-PROMPT-BATCH",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_public_rc_part3e_prompt_batch_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}
