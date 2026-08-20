@@ -70572,6 +70572,98 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_distribution_writer_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_fix1_00c_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-RC-EPOCH-FIX1-00c adds the standalone settlement-level epoch conservation gate module.",
+      "graph_delta": "load_bearing_artifact_added",
+      "manual_read_summary": "Runtime module providing verify_epoch_conservation_before_commit for EpochDistributionOutput objects, with phase-tagged NO_UNSETTLED_ILC_ISSUANCE failure token, defence-in-depth nonzero difference check, wrong-type rejection, and no epoch-0 bypass.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS_AUTHORITY",
+          "target": "invariant:NO_UNSETTLED_ILC_ISSUANCE"
+        },
+        {
+          "edge_type": "DEPENDS_ON_PHASE_TOKEN",
+          "target": "token:distribution_writer_fix1_audit_hardened_GAP_PUBLIC_RC_DISTRIBUTION_WRITER_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:epoch_gate_conservation_check_added_GAP_PUBLIC_RC_EPOCH_FIX1_00C"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:no_unsettled_ilc_issuance_gate_hard_check_GAP_PUBLIC_RC_EPOCH_FIX1_00C"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS_AUTHORITY",
+        "DEPENDS_ON_PHASE_TOKEN",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/epoch_conservation_gate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_fix1_00c_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-RC-EPOCH-FIX1-00c test coverage for the epoch conservation gate.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Focused tests covering verified balanced pass, unverified output rejection, nonzero difference rejection even when marked verified, wrong-type rejection, epoch-0 no-bypass pass, and package export surface.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS_RUNTIME_MODULE",
+          "target": "runtime:ilc_core/epoch/epoch_conservation_gate.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS_RUNTIME_MODULE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_epoch_gate_conservation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_fix1_00c_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-RC-EPOCH-FIX1-00c phase-close walkthrough and verification transcript.",
+      "graph_delta": "support_only",
+      "manual_read_summary": "Walkthrough recording GO receipt, source reads, no-preexisting-gate claim table, inline-check relationship, call-order convention, epoch-0 no-bypass disposition, verification transcript, STATUS tokens, public mirror disposition, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PHASE_EVIDENCE",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-FIX1-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:part_3d_issuance_atomicity_complete_GAP_PUBLIC_RC_EPOCH_FIX1_00C"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PHASE_EVIDENCE",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_fix1_00c_epoch_gate_conservation_check_walkthrough.md"
     }
   ],
   "boundary": {
