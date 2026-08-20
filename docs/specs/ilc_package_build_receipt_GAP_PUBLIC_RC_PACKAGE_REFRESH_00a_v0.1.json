@@ -1,0 +1,12 @@
+{
+  "build_commit": "46af33d20308ecefec7e737773d2844e0486473b",
+  "build_phase": "GAP-PUBLIC-RC-PACKAGE-REFRESH-00a",
+  "local_sdist_path": "dist/ilc_core-0.3.0.tar.gz",
+  "local_wheel_path": "dist/ilc_core-0.3.0-py3-none-any.whl",
+  "pypi_upload_status": "pending",
+  "sdist_sha256": "44c4e00d8c08f752752900f7f1df24f0c9995dadf90651dc9c9d95ccb3448ffb",
+  "sdist_size_bytes": 1108814,
+  "version": "0.3.0",
+  "wheel_sha256": "752f83e46736a8089e7d8095f140cd16802dbb78dd63ebb32c3279a62094b99c",
+  "wheel_size_bytes": 1382583
+}
