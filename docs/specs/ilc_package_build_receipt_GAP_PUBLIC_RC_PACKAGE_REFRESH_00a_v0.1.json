@@ -1,11 +1,17 @@
 {
   "build_commit": "46af33d20308ecefec7e737773d2844e0486473b",
   "build_phase": "GAP-PUBLIC-RC-PACKAGE-REFRESH-00a",
+  "fetchback_wheel_sha256": "752f83e46736a8089e7d8095f140cd16802dbb78dd63ebb32c3279a62094b99c",
   "local_sdist_path": "dist/ilc_core-0.3.0.tar.gz",
   "local_wheel_path": "dist/ilc_core-0.3.0-py3-none-any.whl",
-  "pypi_upload_status": "pending",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.3.0/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.3.0/",
+  "pypi_sdist_url": "https://files.pythonhosted.org/packages/0f/d3/32d2911446dfcc29cadc44f51ef599d0387728877125414cd0cf0dad05f0/ilc_core-0.3.0.tar.gz",
+  "pypi_upload_status": "uploaded",
+  "pypi_wheel_url": "https://files.pythonhosted.org/packages/da/a0/313f2a4666f9ed4c8062d66201b8a2fe6fea4fea3c64a6c749d4b10046a7/ilc_core-0.3.0-py3-none-any.whl",
   "sdist_sha256": "44c4e00d8c08f752752900f7f1df24f0c9995dadf90651dc9c9d95ccb3448ffb",
   "sdist_size_bytes": 1108814,
+  "upload_phase": "GAP-PUBLIC-RC-PACKAGE-REFRESH-00b",
   "version": "0.3.0",
   "wheel_sha256": "752f83e46736a8089e7d8095f140cd16802dbb78dd63ebb32c3279a62094b99c",
   "wheel_size_bytes": 1382583

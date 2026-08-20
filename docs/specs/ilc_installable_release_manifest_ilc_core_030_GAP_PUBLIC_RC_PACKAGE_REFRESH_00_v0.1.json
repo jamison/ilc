@@ -1,0 +1,48 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel@phase-1595",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:752f83e46736a8089e7d8095f140cd16802dbb78dd63ebb32c3279a62094b99c",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/da/a0/313f2a4666f9ed4c8062d66201b8a2fe6fea4fea3c64a6c749d4b10046a7/ilc_core-0.3.0-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1595,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1382583
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist@phase-1595",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:44c4e00d8c08f752752900f7f1df24f0c9995dadf90651dc9c9d95ccb3448ffb",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/0f/d3/32d2911446dfcc29cadc44f51ef599d0387728877125414cd0cf0dad05f0/ilc_core-0.3.0.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1595,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1108814
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1595,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_cdl_mutation",
+    "no_guard_clearance",
+    "no_public_rc_activation",
+    "no_public_mirror_push",
+    "no_epoch_transition",
+    "no_validator_change",
+    "no_runtime_activation"
+  ],
+  "release_id": "ilc-core-0.3.0"
+}
