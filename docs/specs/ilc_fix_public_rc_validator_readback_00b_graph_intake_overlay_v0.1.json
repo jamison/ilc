@@ -1,0 +1,39 @@
+{
+  "artifact": "ilc_fix_public_rc_validator_readback_00b_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-PUBLIC-RC-VALIDATOR-READBACK-00b live-readback artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_public_rc_validator_readback_00b_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-READBACK-00b",
+      "edge_role": "LIVE_VALIDATOR_READBACK_REPORT",
+      "repo_path": "docs/specs/ilc_post_part3d_validator_readback_GAP_PUBLIC_RC_VALIDATOR_READBACK_00b_v0.1.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-READBACK-00b"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_readback_00b_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-READBACK-00b",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_public_rc_validator_readback_00b_live_state_confirm_walkthrough.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-READBACK-00b"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_readback_00b_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-READBACK-00b",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_validator_readback_00b_g10_post_part3d_live_state_confirm.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-READBACK-00b"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_readback_00b_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-READBACK-00b",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_public_rc_validator_readback_00b_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}
