@@ -35,10 +35,10 @@ The canonical ClawHub entry is `ilc`. For the specific OpenClaw-hosted local cap
 
 OpenClaw local capture is routed through the canonical `ilc` listing.
 
-### One-liner install (after Phase 1575c — public install script)
+### One-liner install (public GitHub mirror)
 
 ```bash
-curl -fsSL https://ilc.network/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jamison/ilc/main/tools/install.sh | bash
 source ~/.bashrc
 ilc version
 ```
@@ -354,7 +354,7 @@ To request an invite: contact the Genesis Authority or an authorized inviter.
 | `ilc setup` wizard (interactive + agent-mode) | Post-1575c — requires public installability and cleaner invite/redeemer-key path |
 | `ilc update` (upgrade command) | Post-1575c — requires public package |
 | `ilc sidecar install` | Post-Fix2g — requires ClawHub live |
-| Install one-liner (`curl \| bash`) | Post-1575c — requires public install server |
+| Vanity-domain install one-liner (`https://ilc.network/install.sh`) | Future — requires DNS and install server |
 
 ---
 
