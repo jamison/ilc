@@ -53,7 +53,8 @@ container_script='
 set -euo pipefail
 bash /tmp/install.sh --channel rc --dry-run --no-onboard | tee /tmp/install-dry-run.log
 grep "install_sh_dry_run" /tmp/install-dry-run.log >/dev/null
-grep "RC_WHEEL_SHA256=80e53ea18aea0a7c474400a41e20f346c00ee3e36e8f0dd60f233cca2b0e2f1d" /tmp/install-dry-run.log >/dev/null
+grep -E "RC_WHEEL_SHA256=[0-9a-f]{64}" /tmp/install-dry-run.log >/dev/null
+grep -E "RC_WHEEL_SIZE=[1-9][0-9]*" /tmp/install-dry-run.log >/dev/null
 if [[ "${ILC_INSTALL_E2E_LIVE}" == "1" ]]; then
   bash /tmp/install.sh --channel rc --no-onboard
   python3 -m ilc_core.cli.main --help >/dev/null

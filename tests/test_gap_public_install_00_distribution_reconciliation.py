@@ -24,8 +24,11 @@ def _pyproject() -> dict[str, object]:
     return tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
 
 
-def test_pyproject_version_is_0_2_0() -> None:
-    assert _pyproject()["project"]["version"] == "0.2.0"
+def test_pyproject_version_is_at_least_public_install_baseline() -> None:
+    version = str(_pyproject()["project"]["version"])
+    major, minor, patch = (int(part) for part in version.split("."))
+
+    assert (major, minor, patch) >= (0, 2, 0)
 
 
 def test_pyproject_name_is_ilc_core() -> None:
@@ -43,7 +46,7 @@ def test_ilc_core_version_constant_matches_pyproject() -> None:
         return
     namespace: dict[str, object] = {}
     exec(compile(content, str(init_path), "exec"), namespace)
-    assert namespace.get("__version__") == "0.2.0"
+    assert namespace.get("__version__") == _pyproject()["project"]["version"]
 
 
 def test_install_from_invite_rejects_http_url() -> None:

@@ -411,6 +411,35 @@ def test_float_and_missing_genesis_accrual_are_rejected() -> None:
         compute_epoch_distribution(_inputs(genesis_cumulative_accrual_ilc=None))
 
 
+@pytest.mark.parametrize("bad_weight", [Decimal("NaN"), Decimal("Infinity")])
+def test_non_finite_eligible_agent_weights_are_rejected(bad_weight: Decimal) -> None:
+    with pytest.raises(ValueError, match="eligible_agents_weight_must_be_finite"):
+        compute_epoch_distribution(_inputs(eligible_agents={"agent:a": bad_weight}))
+
+
+@pytest.mark.parametrize("bad_weight", [Decimal("NaN"), Decimal("Infinity")])
+def test_non_finite_eligible_auditor_weights_are_rejected(bad_weight: Decimal) -> None:
+    with pytest.raises(ValueError, match="eligible_auditor_agents_weight_must_be_finite"):
+        compute_epoch_distribution(
+            _inputs(
+                eligible_agents={},
+                eligible_auditor_agents={"auditor:a": bad_weight},
+            )
+        )
+
+
+def test_conservation_record_canonical_serialization_uses_decimal_strings() -> None:
+    output = compute_epoch_distribution(
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")})
+    )
+
+    canonical = output.conservation_record.to_canonical_record()
+
+    assert canonical
+    assert all(isinstance(value, str) for value in canonical.values())
+    assert all(isinstance(value, Decimal) for value in output.conservation_record.__dict__.values())
+
+
 def test_validator_and_treasury_outputs_are_zero_while_guards_active() -> None:
     output = compute_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("100")))
 
