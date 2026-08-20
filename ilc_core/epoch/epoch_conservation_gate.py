@@ -40,7 +40,10 @@ def verify_epoch_conservation_before_commit(output: EpochDistributionOutput) -> 
         raise ValueError("conservation_gate_requires_epoch_distribution_output")
     if output.conservation_verified is not True:
         raise ValueError(NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN)
-    if output.conservation_record.difference_ilc != _ZERO:
+    difference_ilc = output.conservation_record.difference_ilc
+    if not isinstance(difference_ilc, Decimal) or not difference_ilc.is_finite():
+        raise ValueError(NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN)
+    if difference_ilc != _ZERO:
         raise ValueError(NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN)
     return None
 

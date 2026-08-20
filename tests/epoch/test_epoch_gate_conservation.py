@@ -62,6 +62,30 @@ def test_gate_rejects_nonzero_difference_even_if_verified() -> None:
         verify_epoch_conservation_before_commit(bad_difference)
 
 
+@pytest.mark.parametrize("bad_difference", [Decimal("NaN"), Decimal("Infinity")])
+def test_gate_rejects_non_finite_difference_with_phase_token(
+    bad_difference: Decimal,
+) -> None:
+    valid_output = _output()
+    bad_output = replace(
+        valid_output,
+        conservation_record=replace(
+            valid_output.conservation_record,
+            difference_ilc=bad_difference,
+        ),
+    )
+
+    with pytest.raises(ValueError, match=NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN):
+        verify_epoch_conservation_before_commit(bad_output)
+
+
+def test_gate_is_idempotent_for_verified_balanced_output() -> None:
+    output = _output()
+
+    assert verify_epoch_conservation_before_commit(output) is None
+    assert verify_epoch_conservation_before_commit(output) is None
+
+
 def test_gate_rejects_wrong_type() -> None:
     with pytest.raises(ValueError, match="conservation_gate_requires_epoch_distribution_output"):
         verify_epoch_conservation_before_commit({"conservation_verified": True})  # type: ignore[arg-type]

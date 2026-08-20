@@ -34,6 +34,8 @@ def test_install_e2e_script_mounts_install_sh_read_only() -> None:
     assert '-v "${INSTALL_SH}:/tmp/install.sh:ro"' in text
     assert "--no-onboard" in text
     assert "--from-invite" not in text
+    assert "80e53ea18aea0a7c474400a41e20f346c00ee3e36e8f0dd60f233cca2b0e2f1d" not in text
+    assert 'grep -E "RC_WHEEL_SHA256=[0-9a-f]{64}"' in text
 
 
 @pytest.mark.skipif(shutil.which("docker") is None, reason="docker not installed")
