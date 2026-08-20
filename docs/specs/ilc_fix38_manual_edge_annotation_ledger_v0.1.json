@@ -83054,6 +83054,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_package_refresh_00a_g10_local_build_and_hash_record.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_install_fix1_00_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-INSTALL-FIX1-00 E2E install re-verification report for ilc-core 0.3.0 local wheel.",
+      "manual_read_summary": "E2E install re-verification report confirming local 0.3.0 wheel imports cleanly in a temp venv, pytest 4 passed 1 skipped, no PyPI access.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-INSTALL-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_install_e2e_030_reverification_report_GAP_PUBLIC_INSTALL_FIX1_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_install_fix1_00_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-INSTALL-FIX1-00 phase prompt for E2E install re-verification.",
+      "manual_read_summary": "Phase prompt for re-verifying E2E install flow against locally-built 0.3.0 wheel before PyPI upload.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-INSTALL-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_install_fix1_00_g10_e2e_install_030_reverification.md"
     }
   ],
   "phase": "1545p-Fix38",
