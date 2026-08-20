@@ -174,6 +174,13 @@ from .epoch_distribution_writer import (
     compute_epoch_distribution,
     format_epoch_id,
 )
+from .epoch_conservation_gate import (
+    EPOCH_0_TO_1_CONSERVATION_ENFORCED_TOKEN,
+    EPOCH_CONSERVATION_GATE_VERSION,
+    EPOCH_GATE_CONSERVATION_CHECK_ADDED_TOKEN,
+    NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN,
+    verify_epoch_conservation_before_commit,
+)
 from .issuance_economics_integration_gate import (
     CDL_025_031_047_054_083_STACK_VERIFIED_TOKEN,
     CDL_031_RUNTIME_DEFERRED_TOKEN,
@@ -297,8 +304,11 @@ __all__ = [
     "CONSERVATION_EQUATION_ENFORCED_TOKEN",
     "DEVNET_PRODUCTION_TRANSITION_GATE_TOKEN",
     "DOUBLE_ENTRY_LEDGER_INVARIANT_VERIFIED_TOKEN",
+    "EPOCH_0_TO_1_CONSERVATION_ENFORCED_TOKEN",
+    "EPOCH_CONSERVATION_GATE_VERSION",
     "EPOCH_EMISSION_RUNTIME_VERSION",
     "EPOCH_DISTRIBUTION_WRITER_VERSION",
+    "EPOCH_GATE_CONSERVATION_CHECK_ADDED_TOKEN",
     "EPOCH_ID_FORMAT",
     "EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN",
     "ECU_PRICE_CLAMP_RUNTIME_VERSION",
@@ -355,6 +365,7 @@ __all__ = [
     "NO_DIRECT_PRICE_CLAMP_STUB_FOUND_TOKEN",
     "NO_DIRECT_TREASURY_STUB_FOUND_TOKEN",
     "NO_DIRECT_VALIDATOR_REWARD_STUB_FOUND_TOKEN",
+    "NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN",
     "PERFORMER_ALLOCATION_FRACTION",
     "PERFORMER_CARRY_FORWARD_ACCOUNT_DEFINED_TOKEN",
     "PERFORMER_CARRY_FORWARD_ACCOUNT_ID",
@@ -464,5 +475,6 @@ __all__ = [
     "verify_issuance_economics_integration_gate",
     "verify_protocol_reserve_destination_record",
     "verify_carry_forward_pool_record",
+    "verify_epoch_conservation_before_commit",
     "verify_epoch_snapshot",
 ]
