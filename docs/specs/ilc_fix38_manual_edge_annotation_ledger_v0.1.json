@@ -82880,6 +82880,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_fix1_00c_2026_08_20",
+      "chronology_note": "2026-08-20 GAP-PUBLIC-RC-EPOCH-FIX1-00c phase prompt drafted and Codex-hardened for the standalone epoch conservation gate module.",
+      "manual_read_summary": "Phase prompt for sensitive epoch conservation gate creation after distribution writer Fix1, including exact input-token checks, no-preexisting-gate preflight, inline-check coexistence, epoch-0 no-bypass requirement, frozen-output test guidance, STATUS token, public mirror non-claims, and graph registration.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-FIX1-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFINES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-PUBLIC-RC-DISTRIBUTION-WRITER-FIX1-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "REFINES",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_fix1_00c_g10_epoch_gate_conservation_check.md"
     }
   ],
   "phase": "1545p-Fix38",
