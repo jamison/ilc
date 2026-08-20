@@ -293,6 +293,65 @@ def test_default_settlement_root_can_be_rejected_for_production_gate() -> None:
         )
 
 
+def test_non_default_settlement_root_passes_when_default_root_is_forbidden() -> None:
+    output = compute_epoch_distribution(
+        _inputs(
+            total_epoch_fees_ilc=Decimal("100"),
+            source_settlement_root_hex=ROOT_HEX,
+            allow_default_source_settlement_root=False,
+        )
+    )
+
+    assert output.conservation_verified is True
+    assert output.carry_forward_out_records
+    assert {record.source_settlement_root for record in output.carry_forward_out_records} == {
+        ROOT_HEX
+    }
+
+
+@pytest.mark.parametrize(
+    "reserved_account_id",
+    [
+        PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+        AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
+        GENESIS_AGENT1_AGENT_ID,
+        PROTOCOL_RESERVE_ACCOUNT_ID,
+    ],
+)
+def test_reserved_protocol_accounts_cannot_be_performer_eligible_agents(
+    reserved_account_id: str,
+) -> None:
+    with pytest.raises(ValueError, match="eligible_agent_id_is_reserved_protocol_account"):
+        compute_epoch_distribution(
+            _inputs(
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={reserved_account_id: Decimal("1")},
+            )
+        )
+
+
+@pytest.mark.parametrize(
+    "reserved_account_id",
+    [
+        PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+        AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
+        GENESIS_AGENT1_AGENT_ID,
+        PROTOCOL_RESERVE_ACCOUNT_ID,
+    ],
+)
+def test_reserved_protocol_accounts_cannot_be_auditor_eligible_agents(
+    reserved_account_id: str,
+) -> None:
+    with pytest.raises(ValueError, match="eligible_agent_id_is_reserved_protocol_account"):
+        compute_epoch_distribution(
+            _inputs(
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={"performer:a": Decimal("1")},
+                eligible_auditor_agents={reserved_account_id: Decimal("1")},
+            )
+        )
+
+
 def test_dust_assignment_order_is_lexicographic_by_agent_id() -> None:
     allocations, residual = _allocate_pool_to_agents(
         Decimal("0.000000005"),

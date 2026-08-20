@@ -101,6 +101,14 @@ MAX_AGENT_ID_BYTES = 256
 MAX_ELIGIBLE_AGENTS = 65_536
 MAX_PRIOR_CARRY_FORWARD_RECORDS = 65_536
 DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX = "0" * 64
+_PROTOCOL_ACCOUNT_IDS = frozenset(
+    {
+        PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+        AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
+        GENESIS_AGENT1_AGENT_ID,
+        PROTOCOL_RESERVE_ACCOUNT_ID,
+    }
+)
 
 
 class AtomicEpochBatchWriter(Protocol):
@@ -395,7 +403,10 @@ def _require_weight_mapping(
         raise ValueError(f"{field_name}_exceeds_max_count")
     normalized: dict[str, Decimal] = {}
     for agent_id, raw_weight in value.items():
-        normalized[_require_agent_id(agent_id)] = _require_non_negative_weight(
+        normalized_agent_id = _require_agent_id(agent_id)
+        if normalized_agent_id in _PROTOCOL_ACCOUNT_IDS:
+            raise ValueError("eligible_agent_id_is_reserved_protocol_account")
+        normalized[normalized_agent_id] = _require_non_negative_weight(
             raw_weight,
             f"{field_name}_weight",
         )
