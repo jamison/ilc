@@ -1,0 +1,39 @@
+{
+  "artifact": "ilc_fix_public_rc_validator_redeploy_00a_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a compatibility-audit artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_public_rc_validator_redeploy_00a_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a",
+      "edge_role": "COMPATIBILITY_AUDIT_REPORT",
+      "repo_path": "docs/specs/ilc_post_part3d_validator_compat_audit_GAP_PUBLIC_RC_VALIDATOR_REDEPLOY_00a_v0.1.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_redeploy_00a_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_public_rc_validator_redeploy_00a_post_part3d_compat_audit_walkthrough.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_redeploy_00a_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_validator_redeploy_00a_g10_post_part3d_compat_audit.md",
+      "target": "phase:GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a"
+    },
+    {
+      "annotation_method": "gap_public_rc_validator_redeploy_00a_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-VALIDATOR-REDEPLOY-00a",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_public_rc_validator_redeploy_00a_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}
