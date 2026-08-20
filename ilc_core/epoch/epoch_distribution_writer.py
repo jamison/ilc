@@ -338,8 +338,13 @@ def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
         raise ValueError("genesis_cumulative_accrual_ilc_required")
     if TREASURY_DISTRIBUTION_NOT_ACTIVATED is not True:
         raise ValueError("treasury_distribution_guard_cleared_without_writer_update")
+    issuance_epoch = _require_epoch(inputs.issuance_epoch, "issuance_epoch")
+    allow_default_source_settlement_root = _require_bool(
+        inputs.allow_default_source_settlement_root,
+        "allow_default_source_settlement_root",
+    )
     return {
-        "issuance_epoch": _require_epoch(inputs.issuance_epoch, "issuance_epoch"),
+        "issuance_epoch": issuance_epoch,
         "total_epoch_fees_ilc": _require_non_negative_ilc(
             inputs.total_epoch_fees_ilc,
             "total_epoch_fees_ilc",
@@ -363,10 +368,8 @@ def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
         ),
         "source_settlement_root_hex": _require_settlement_root(
             inputs.source_settlement_root_hex,
-            allow_default_source_settlement_root=_require_bool(
-                inputs.allow_default_source_settlement_root,
-                "allow_default_source_settlement_root",
-            ),
+            issuance_epoch=issuance_epoch,
+            allow_default_source_settlement_root=allow_default_source_settlement_root,
         ),
     }
 
@@ -444,6 +447,7 @@ def _require_bool(value: object, field_name: str) -> bool:
 def _require_settlement_root(
     value: object,
     *,
+    issuance_epoch: int,
     allow_default_source_settlement_root: bool,
 ) -> str:
     if not isinstance(value, str) or len(value) != 64:
@@ -452,6 +456,8 @@ def _require_settlement_root(
         raise ValueError("source_settlement_root_must_be_sha256_hex")
     if not allow_default_source_settlement_root and value == DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX:
         raise ValueError("source_settlement_root_default_not_allowed")
+    if issuance_epoch > 0 and value == DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX:
+        raise ValueError("source_settlement_root_default_only_allowed_for_epoch_zero")
     return value
 
 
@@ -815,11 +821,22 @@ def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decim
                 "lifecycle_settlement_delta_invalid",
                 "settlement delta must be finite",
             )
+        if settlement_delta % ILC_QUANTUM != ZERO:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_settlement_delta_invalid",
+                "settlement delta must align to ILC quantum",
+            )
         return settlement_delta
-    return parse_non_negative_decimal(
+    settlement_delta = parse_non_negative_decimal(
         amount,
         token="lifecycle_reward_delta_invalid",
     )
+    if settlement_delta % ILC_QUANTUM != ZERO:
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_reward_delta_invalid",
+            "reward delta must align to ILC quantum",
+        )
+    return settlement_delta
 
 
 def _decimal_string(value: Decimal) -> str:

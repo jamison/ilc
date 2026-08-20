@@ -11,6 +11,7 @@ from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
     LIFECYCLE_C_MAX_ILC,
     EcuIlcLifecycleRuntimeError,
+    _epoch_history_sort_key,
     _stable_digest,
 )
 from ilc_core.server import create_app
@@ -195,6 +196,27 @@ def test_lifecycle_stable_digest_rejects_decimal_inside_tuple() -> None:
     with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
         _stable_digest({"tuple_payload": ("encoded", Decimal("1"))})
     assert exc_info.value.token == "lifecycle_stable_digest_decimal_unencoded"
+
+
+@pytest.mark.parametrize("bad_float", [0.25, float("nan"), float("inf")])
+def test_lifecycle_stable_digest_rejects_float_scalars(bad_float: float) -> None:
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        _stable_digest({"float_payload": bad_float})
+    assert exc_info.value.token == "lifecycle_stable_digest_float_unencoded"
+
+
+def test_epoch_history_sort_key_places_non_decimal_epoch_ids_after_numeric_ids() -> None:
+    items = [
+        {"epoch_id": "epoch-2"},
+        {"epoch_id": "10"},
+        {"epoch_id": "2"},
+    ]
+
+    assert [item["epoch_id"] for item in sorted(items, key=_epoch_history_sort_key)] == [
+        "2",
+        "10",
+        "epoch-2",
+    ]
 
 
 def test_coupling_invariants_diagnostic_surface_is_present_and_read_only() -> None:

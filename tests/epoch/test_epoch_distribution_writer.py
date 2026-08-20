@@ -15,6 +15,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
     MAX_PRIOR_CARRY_FORWARD_RECORDS,
     EpochDistributionInput,
     _allocate_pool_to_agents,
+    _require_lifecycle_settlement_delta,
     compute_epoch_distribution,
     commit_epoch_distribution,
     format_epoch_id,
@@ -87,6 +88,7 @@ def _prior_record(
     amount: Decimal = Decimal("10"),
     source_epoch: int = 1,
     target_epoch: int = 2,
+    source_settlement_root: str = ROOT_HEX,
 ) -> object:
     return create_carry_forward_record(
         source_epoch=source_epoch,
@@ -99,7 +101,7 @@ def _prior_record(
             else AUDITOR_CARRY_FORWARD_ACCOUNT_ID
         ),
         reason="test prior carry-forward",
-        source_settlement_root=ROOT_HEX,
+        source_settlement_root=source_settlement_root,
     )
 
 
@@ -289,6 +291,16 @@ def test_default_settlement_root_can_be_rejected_for_production_gate() -> None:
             _inputs(
                 source_settlement_root_hex=DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
                 allow_default_source_settlement_root=False,
+            )
+        )
+
+
+def test_default_settlement_root_is_automatically_rejected_after_epoch_zero() -> None:
+    with pytest.raises(ValueError, match="source_settlement_root_default_only_allowed_for_epoch_zero"):
+        compute_epoch_distribution(
+            _inputs(
+                issuance_epoch=1,
+                source_settlement_root_hex=DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
             )
         )
 
@@ -497,6 +509,49 @@ def test_conservation_record_canonical_serialization_uses_decimal_strings() -> N
     assert canonical
     assert all(isinstance(value, str) for value in canonical.values())
     assert all(isinstance(value, Decimal) for value in output.conservation_record.__dict__.values())
+    assert {
+        key: Decimal(value)
+        for key, value in canonical.items()
+    } == output.conservation_record.__dict__
+
+
+def test_lifecycle_regular_agent_delta_must_align_to_ilc_quantum() -> None:
+    with pytest.raises(Exception) as exc_info:
+        _require_lifecycle_settlement_delta("agent:a", Decimal("1.0000000001"))
+
+    assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_invalid"
+
+
+def test_lifecycle_carry_forward_delta_must_align_to_ilc_quantum() -> None:
+    with pytest.raises(Exception) as exc_info:
+        _require_lifecycle_settlement_delta(
+            PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+            Decimal("-1.0000000001"),
+        )
+
+    assert getattr(exc_info.value, "token", None) == "lifecycle_settlement_delta_invalid"
+
+
+def test_prior_carry_forward_dedup_allows_different_settlement_roots() -> None:
+    first = _prior_record(
+        amount=Decimal("10"),
+        source_settlement_root="a" * 64,
+    )
+    second = _prior_record(
+        amount=Decimal("10"),
+        source_settlement_root="b" * 64,
+    )
+
+    output = compute_epoch_distribution(
+        _inputs(
+            issuance_epoch=2,
+            eligible_agents={"agent:a": Decimal("1")},
+            prior_carry_forward_records=[first, second],
+        )
+    )
+
+    assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("20")
+    assert len(output.consumed_carry_forward_records) == 2
 
 
 def test_validator_and_treasury_outputs_are_zero_while_guards_active() -> None:

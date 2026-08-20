@@ -221,6 +221,11 @@ def _reject_decimal_tree(value: Any) -> None:
             "lifecycle_stable_digest_decimal_unencoded",
             "stable digest payloads must encode Decimal values as canonical strings",
         )
+    if isinstance(value, float):
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_stable_digest_float_unencoded",
+            "stable digest payloads must encode exact numeric values as canonical strings",
+        )
     if isinstance(value, dict):
         for item in value.values():
             _reject_decimal_tree(item)
