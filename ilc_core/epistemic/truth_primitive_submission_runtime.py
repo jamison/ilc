@@ -24,7 +24,7 @@ Phases:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
@@ -44,6 +44,10 @@ CDL_073_DEPENDENCY = "cdl_073_homoiconic_bootstrap_schema_ratified.v0.1"
 CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
 
 TRUTH_PRIMITIVE_RUNTIME_VERSION = "truth_primitive_submission_runtime_868.v0.1"
+_TOKEN_UNCERTAINTY_DECLARED_FIELD = (
+    "uncertainty_declared_field_reserved_GAP_SCHEMA_PREREQS_00"
+)
+_MAX_UNCERTAINTY_DECLARED_BYTES = 512
 
 # ---------------------------------------------------------------------------
 # Agent-issuable primitive set (commit.epoch excluded)
@@ -96,6 +100,7 @@ class TruthPrimitiveResult:
     creates_node: bool
     edges: tuple[EdgeSpec, ...]
     node_primitive_type: str | None  # None when creates_node is False
+    uncertainty_declared: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -220,6 +225,18 @@ def _validate_outer_envelope(submission: Any) -> dict:
             "payload_missing",
             "submission.payload must be a map/object",
         )
+    uncertainty_declared = submission.get("uncertainty_declared")
+    if uncertainty_declared is not None:
+        if not isinstance(uncertainty_declared, str):
+            raise EpistemicSubmissionError(
+                "uncertainty_declared_invalid",
+                "submission.uncertainty_declared must be a string or null",
+            )
+        if len(uncertainty_declared.encode("utf-8")) > _MAX_UNCERTAINTY_DECLARED_BYTES:
+            raise EpistemicSubmissionError(
+                "uncertainty_declared_too_long",
+                "submission.uncertainty_declared must be at most 512 bytes UTF-8",
+            )
     return submission
 
 
@@ -454,4 +471,5 @@ def validate_truth_primitive_submission(submission: Any) -> TruthPrimitiveResult
     primitive = envelope["primitive"]
     payload = envelope["payload"]
     handler = _HANDLERS[primitive]
-    return handler(payload)
+    result = handler(payload)
+    return replace(result, uncertainty_declared=envelope.get("uncertainty_declared"))

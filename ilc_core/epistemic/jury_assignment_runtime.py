@@ -55,6 +55,9 @@ _TOKEN_ANTI_CAPTURE_PRODUCTION_NOT_ACTIVATED = (
 )
 _TOKEN_PRODUCTION_ASSIGNMENT_ACTIVATED = "production_assignment_activated_phase_1429"
 _TOKEN_WINDOW_1429_FIRST_PHASE = "window_1429_1458_first_phase"
+_TOKEN_LINEAGE_INDEPENDENCE_SLOT_RESERVED = (
+    "lineage_independence_score_reserved_GAP_SCHEMA_PREREQS_00"
+)
 
 _DOMAIN_SEPARATOR = "ilc_jury_assignment_v1"
 _VRF_DOMAIN_SEPARATOR = "ilc.vrf.jury_assignment.v1"
@@ -121,6 +124,7 @@ class JuryAssignmentQuote:
     cluster_diversity_verified: bool
     vrf_excluded_agents: List[str] = field(default_factory=list)
     vrf_exclusion_reasons: dict[str, str] = field(default_factory=dict)
+    lineage_independence_score: Optional[str] = None
 
 
 class JuryAssignmentError(Exception):

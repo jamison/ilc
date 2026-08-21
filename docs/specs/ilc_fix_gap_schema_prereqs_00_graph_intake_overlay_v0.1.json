@@ -1,0 +1,92 @@
+{
+  "artifact": "ilc_fix_gap_schema_prereqs_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for GAP-SCHEMA-PREREQS-00 pre-public-RC schema hardening artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_schema_prereqs_00_g10_pre_rc_schema_hardening.md",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "TRUTH_PRIMITIVE_SCHEMA_SLOT",
+      "graph_delta": "load_bearing_artifact_changed",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/epistemic/truth_primitive_submission_runtime.py",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "TRUTH_PRIMITIVE_LMDB_PASS_THROUGH",
+      "graph_delta": "load_bearing_artifact_changed",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/epistemic/truth_primitive_graph_store.py",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "JURY_QUOTE_RESERVED_SLOT",
+      "graph_delta": "load_bearing_artifact_changed",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/epistemic/jury_assignment_runtime.py",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "REFUTES_EDGE_DISCIPLINE",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_refutes_edge_usage_discipline_v0.1.md",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "CAPPROOF_CAPABILITY_TIER_REQUIREMENT",
+      "graph_delta": "support_only",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_gap_capproof_cdl_00_capability_tier_requirement_note_v0.1.md",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "SCHEMA_HARDENING_TESTS",
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "repo_path": "tests/test_gap_schema_prereqs_00_schema_hardening.py",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_schema_prereqs_00_pre_rc_schema_hardening_walkthrough.md",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    },
+    {
+      "annotation_method": "gap_schema_prereqs_00_overlay_record",
+      "annotation_phase": "GAP-SCHEMA-PREREQS-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_schema_prereqs_00_graph_intake_overlay_v0.1.json",
+      "target": "phase:GAP-SCHEMA-PREREQS-00"
+    }
+  ],
+  "schema_version": "ilc_graph_intake_overlay.v0.1"
+}

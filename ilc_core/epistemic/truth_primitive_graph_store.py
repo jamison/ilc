@@ -93,6 +93,8 @@ def node_record_from_submission(
         "primitive": primitive,
         "primitive_type": result.node_primitive_type,
     }
+    if result.uncertainty_declared is not None:
+        record["uncertainty_declared"] = result.uncertainty_declared
     sig = envelope.get("sig")
     if isinstance(sig, str) and sig not in {"", "UNSIGNED"}:
         record["v"] = int(envelope.get("v", 1))
@@ -222,6 +224,8 @@ def _resolve_edges(
             "source": source,
             "target": target,
         })
+        if result.uncertainty_declared is not None:
+            records[-1]["uncertainty_declared"] = result.uncertainty_declared
         sig = envelope.get("sig")
         if isinstance(sig, str) and sig not in {"", "UNSIGNED"}:
             records[-1]["payload"] = payload
