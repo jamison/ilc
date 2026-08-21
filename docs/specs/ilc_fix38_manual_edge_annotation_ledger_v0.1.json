@@ -74194,6 +74194,54 @@
       ],
       "recommended_graph_action": "support_only:docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md",
       "repo_path": "docs/specs/ilc_dag_substrate_public_rc_gap_plan_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00 phase prompt for validator-agent public-RC implementation delta.",
+      "manual_read_summary": "Phase prompt for CDL-017 public-RC implementation delta: validator_participation_enabled field, --no-validator CLI flag, ValidatorRoleRecord canonical name ratification, enrollment-to-role-record write path, deterministic BLS sub-key derivation, and ValidatorID mapping boundary documentation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00_g10_validator_agent_public_rc_implementation_delta.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b phase prompt for Rust ValidatorID -> AgentID migration.",
+      "manual_read_summary": "Phase prompt for migrating Rust ValidatorID(u32) to AgentID([u8;48]) across 13 ilc_consensus source files, eliminating the central-assignment u32 index and replacing it with self-derived trustless AgentID.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
     }
   ],
   "manual_edge_annotations": [
