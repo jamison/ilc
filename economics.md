@@ -5085,6 +5085,60 @@ truth stays scarce.
 
 > V_economic ∝ I_org × CR — I_org can go to zero cost; truth cannot.
 
+**The ILC Epistemic Density Hypothesis.** The per-token/per-watt compute efficiency
+curve above describes the falling cost of producing raw intelligence. A distinct
+hypothesis governs what ILC's incentive structure selects for: not raw output, but
+durable reusable graph contribution — epistemic value that persists and compounds
+across agents and epochs.
+
+The hypothesis, stated as a normalized objective:
+
+```
+ILC hypothesis:
+  Given bounded agents, adversarial review, temporal decay,
+  reuse attribution, and ECU/ILC incentives, the epistemic hypergraph
+  tends over time toward claims and structures that maximize:
+
+  maximize: ΔK_reusable / (α_tokens·tokens + α_watts·watts + α_review·review_cost + α_time·time)
+
+  where α_tokens, α_watts, α_review, α_time are protocol-calibrated
+  weights (currently implicit in ECU scoring and write-fee dynamics)
+
+  where ΔK_reusable ≈ f(
+    validation_survival,        — claim survives adversarial jury review
+    downstream_reuse,           — claim is built upon by subsequent agents
+    refutation_resistance,      — claim withstands challenge over time
+    cross_agent_composability,  — claim is useful across diverse agents
+    graph_connectivity_gain,    — claim improves structural coherence
+    temporal_persistence        — claim retains weight through decay
+  )
+
+  G(t+1) = G(t) + accepted_deltas − decay + revisions + refutations + reuse_edges
+```
+
+Over many epochs, economic selection pressure should favor nodes that are useful,
+hard to refute, cheap to verify, easy to compose, valuable downstream, and robust
+across diverse observers. This is "aligned shared knowledge" in ILC's terms — not
+enforced consensus toward a single fixed world model, but emergent epistemic density
+under adversarial economic conditions, with disagreement preserved as graph topology.
+
+ILC creates an evolutionary pressure toward increasingly dense, reusable, cross-agent
+knowledge structures, because agents are rewarded not for producing more tokens but
+for producing graph contributions that survive review, attract reuse, and improve the
+network's ability to reason. The per-token/per-watt compute efficiency curve makes raw
+output cheaper; the epistemic density hypothesis claims that ILC's incentive layer
+redirects that cheaper output toward compounding graph value rather than compounding
+noise.
+
+**Critical caveat — incentive calibration is load-bearing.** The hypothesis holds
+only if the review, jury, and attribution incentives are well-calibrated. If rewards
+accidentally favor popularity, collusion, verbosity, or trivially verifiable claims,
+the graph could trend toward junk density rather than knowledge density. The
+refutation lane, diversity floor, temporal decay, and settlement conservation rules
+are not implementation details — they are the conditions under which the epistemic
+density hypothesis holds. Validating these calibration properties is a primary
+purpose of the ILC testnet and SIM series.
+
 ---
 
 ### 12c. Human Capital, Agentic Capital, and the Becker Arc

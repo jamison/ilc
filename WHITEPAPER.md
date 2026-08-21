@@ -58,6 +58,8 @@ refutation, reuse, validation, and epoch settlement.
 
 The network's purpose is not convergence to a single answer. It is **co-flourishing among diverse observers who often disagree**. Contradiction, refutation, and revision are first-class economic events; productive disagreement is more valuable than enforced consensus.
 
+This co-flourishing is structurally distinct from classical models that seek a fixed consensus world model — a single ground-truth M* toward which all agents converge. In ILC, each agent is endogenous in its subjective reality: local observations are signed graph deltas, not votes for a predetermined answer. The ILC "world model" is not a static M* but the morphogenic sequence {G(t)} — an evolving structure that records both convergence and unresolved disagreement as persistent graph topology, neither erasing minority observations nor forcing them into a single privileged view. Under economic selection pressure, this trajectory should tend not toward enforced consensus but toward higher durable reusable knowledge per unit of tokens, watts, and reviewer attention — a network that becomes increasingly able to reason with less.
+
 **Reuse as convergence.** The most robust practical measure of observer agreement is reuse: whether the graph continues to traverse, build upon, and compose a node across diverse agent populations. If claim C is reused by observers with sufficiently different priors, the probability that C encodes something real increases. The ILC economic layer makes this formal: REUSE attribution flows backward through PROVENANCE chains, aligning incentives with epistemic utility rather than institutional endorsement. The `commit.epoch` primitive provides an arrow of time measured in epistemic improvement — successive epoch boundaries record observer convergence and disagreement, driving the graph toward greater coherence not through force but through economic selection.
 
 **Agrippa's trilemma** is not escaped; it is taken explicitly. Every justification chain must regress, loop, or stop at an axiom. ILC's axiomatic stop is a public cryptographic commitment.
@@ -5391,7 +5393,9 @@ This connects to the literature on autocatalytic networks and complex adaptive s
 
 The dual commitment C(t) = (M(t), S(t)) — a content Merkle root M(t) paired with a spectral fingerprint S(t) derived from the graph Laplacian — provides two orthogonal integrity signals. M(t) attests to content identity; S(t) attests to topological structure. Neither alone is sufficient: identical content can have different graph structure, and identical structure can have different content.
 
-S(t) is computed from the normalized graph Laplacian L = D⁻¹/²AD⁻¹/² and its eigenvalue spectrum λ₁ ≤ λ₂ ≤ ... ≤ λₙ. The spectral fingerprint encodes global connectivity properties — diameter, clustering, expansion — that are invisible to content hashing. This application of spectral graph theory [27, 28] to epistemic graph integrity is, to our knowledge, novel: prior work in spectral graph theory addresses network analysis and approximation algorithms, not the integrity of knowledge-bearing hypergraphs under adversarial mutation.
+S(t) is computed from the normalized graph Laplacian L = I − D⁻¹/²AD⁻¹/² and its eigenvalue spectrum λ₁ ≤ λ₂ ≤ ... ≤ λₙ. The spectral fingerprint encodes global connectivity properties — diameter, clustering, expansion — that are invisible to content hashing. This application of spectral graph theory [27, 28] to epistemic graph integrity is, to our knowledge, novel: prior work in spectral graph theory addresses network analysis and approximation algorithms, not the integrity of knowledge-bearing hypergraphs under adversarial mutation.
+
+The distinction between ILC's structural Laplacian Δ and the sheaf/connection Laplacian of distributed causal models [32] is noted: Δ captures topological integrity; a future sheaf Laplacian layer would capture compatibility among local agent views and abstraction maps, providing semantic consistency guarantees complementary to the structural ones (Appendix H.10).
 
 ---
 
@@ -5438,6 +5442,22 @@ The combination constituting ILC — a content-addressed, monotonically-growing,
 
 ---
 
+### H.10  Causal Abstractions, Sheaves, and Local Epistemic Views
+
+Recent work by D'Acunto, Di Lorenzo, and Barbarossa [32] develops Causal Abstraction Networks (CANs): a sheaf-theoretic framework for coordinating distributed agents that each hold partial and subjective causal perspectives — formalized as Mixture Causal Models — through principled abstraction maps between different granularity levels. Under the CAN assumptions, Theorem 20 relates global causal consistency to the null-space structure of the associated Connection Laplacian built from those abstraction maps.
+
+This is relevant to ILC because ILC also treats epistemic state as fundamentally distributed and partial: each agent maintains a local graph view in its LMDB store that may differ from the public epoch-committed hypergraph due to partition, asynchrony, or domain specialization. The public hypergraph and its Merkle-Laplacian commitment C(t) = (M(t), S(t)) represent a compressed structural projection of a richer underlying system whose full depth includes embeddings, processing traces, modality-specific content, and unpublished local graph neighborhoods. Modeling this hierarchy as a nested sequence of abstraction levels — from raw local agent memory through interpreted graph slices, shareable deltas, and epoch-committed public structure to the spectral fingerprint alone — yields a structure analogous to, though richer than, the CAN model: a hierarchical sheaf over a temporal hypergraph with vertical compression maps (of which epoch commitment is a protocol analogue), horizontal peer coordination maps at each level, and temporal transition morphisms encoding the irreversible morphogenetic trajectory.
+
+The correspondence is noted as structural analogy, not asserted as identity. A critical mathematical distinction must be held. ILC's public hypergraph Laplacian Δ = I − D_V^{-1/2} H W D_E^{-1} H^T D_V^{-1/2} is a topology and connectivity operator: it measures structural cuts, Sybil cluster signatures, and topological perturbation. The CAN Connection Laplacian L_F = δ^T Wδ is built from restriction maps over local vector spaces and measures semantic compatibility — whether local agent assignments agree after translation. These operators are complementary, not equivalent. A graph can be structurally connected (λ₂(Δ) > 0, so a future PoSK-style structural check could pass) while remaining semantically incompatible in the sheaf sense (residual energy E(x) = Σ_e w_e ‖ρ_{e,u}(x_u) − ρ_{e,v}(x_v)‖² >> 0). A structural connectivity check provides a necessary but not sufficient condition; a future sheaf residual layer would provide the complementary semantic condition.
+
+A related structural analogy appears in ILC's CDL-V3 jury diversity requirement (epistemic independence layers: training, operator, and inference substrate). A jury of epistemically identical agents may produce highly correlated local sections, weakening the independence needed to reconstruct or challenge a candidate global view. The diversity floor enforces a minimum independence condition that has a natural sheaf-theoretic interpretation, though the formal correspondence remains a research question.
+
+The CAN framework provides useful mathematical language for a post-RC research program: modeling agent-local graph slices as sheaf stalks over the public hypergraph, typed ILC edges as partial compatibility maps, and epoch commitment as the process of extending local sections toward a globally consistent public projection. A hypergraph, temporally-evolving, adversarial, and economically incentivized extension of the CAN framework — one that accounts for ILC's multi-stratum information architecture — is a planned research direction (see §10 Phase C roadmap and forward planning phases GAP-SHEAF-POSK-00, SIM-SHEAF-POSK-01).
+
+One final distinction is worth drawing explicitly. The CAN framework asks whether distributed subjective causal models can be coherently glued into a compatible global section — a fixed point of mutual consistency. ILC's epistemic architecture makes a different claim: the global structure need not be, and is not designed to be, a fixed world model M* that all agents converge toward. ILC preserves disagreement as first-class graph structure — assert, refute, contradict, and revise edges coexist — so the "world model" is not one M* but the morphogenic sequence {G(t)} itself. A global section in the CAN sense would correspond to a single epoch's worth of compatible assignments; ILC's morphogenic trajectory records how those assignments evolve, diverge, and reconverge across time, with minority observations and unresolved contradictions persisting as graph topology rather than disappearing into a consensus filter. The CAN question of "coherent gluing" becomes in ILC terms a time-indexed question: do local sections tend toward greater compatibility under adversarial economic conditions, and at what rate? The sequence {G(t)} is the living record of that answer — and under correctly calibrated incentives, economic selection pressure should favor graph contributions that maximize durable reusable knowledge per unit of tokens, watts, and reviewer attention rather than raw output volume.
+
+---
+
 ### References (Appendix H)
 
 [1] J. Doyle, "A Truth Maintenance System," *Artificial Intelligence*, 12(3), 1979.  
@@ -5471,6 +5491,7 @@ The combination constituting ILC — a content-addressed, monotonically-growing,
 [29] P. Chiusano, A. Crickard, *Unison: A New Approach to Distributed Programming*, 2020. https://www.unison-lang.org  
 [30] Y. Lafont, "Interaction Nets," *POPL*, 1990.  
 [31] The Univalent Foundations Program, *Homotopy Type Theory*, Institute for Advanced Study, 2013.
+[32] G. D'Acunto, P. Di Lorenzo, S. Barbarossa, "Networks of Causal Abstractions: A Sheaf-theoretic Framework," arXiv:2509.25236v3, 2026.
 
 ---
 
