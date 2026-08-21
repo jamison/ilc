@@ -144,6 +144,7 @@ def test_phase_1353_eject_validator_returns_default_off_rotation_decision() -> N
         active_from_epoch=23,
         current_validator_ids=[4, 1, 3, 2],
         validator_id=3,
+        agent_id=_agent_id(3),
         exit_reason="liveness_miss",
         consecutive_missed_epochs=LIVENESS_MISS_THRESHOLD,
         equivocation_state=False,
@@ -155,6 +156,8 @@ def test_phase_1353_eject_validator_returns_default_off_rotation_decision() -> N
     assert decision.rotation_token == VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_TOKEN
     assert decision.current_validator_ids == (1, 2, 3, 4)
     assert decision.next_validator_ids == (1, 2, 4)
+    assert decision.agent_id == _agent_id(3)
+    assert decision.to_canonical_record()["agent_id"] == _agent_id(3)
     assert decision.penalty_fraction == LIVENESS_PENALTY_FRACTION
     assert decision.re_admission_cooldown_epochs == 2
     assert decision.re_admission_not_before_epoch == 25

@@ -49,6 +49,7 @@ from .trust_tier_runtime import (
     TRUST_TIER_RUNTIME_VERSION,
     is_trust_tier_eligible,
 )
+from .network_id_validation import require_validator_network_id
 from .validator_eligibility_certificate import (
     CANDIDATE,
     OFFICIAL,
@@ -93,7 +94,6 @@ ZERO = Decimal("0")
 ROLE_STATUSES = (CANDIDATE, PROVISIONAL, OFFICIAL, "ejected")
 _LOWER_HEX_64_RE = re.compile(r"^[0-9a-f]{64}$")
 _LOWER_HEX_96_RE = re.compile(r"^[0-9a-f]{96}$")
-_NETWORK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,62}$")
 _MAX_VALIDATOR_ENDPOINT_CHARS = 512
 
 
@@ -328,6 +328,7 @@ class ValidatorEjectionDecision:
     cdl_056_dependency: str
     cdl_058_dependency: str
     validator_id: int
+    agent_id: str | None
     exit_reason: str
     active_from_epoch: int
     consecutive_missed_epochs: int
@@ -346,6 +347,7 @@ class ValidatorEjectionDecision:
     def to_canonical_record(self) -> dict[str, Any]:
         return {
             "active_from_epoch": self.active_from_epoch,
+            "agent_id": self.agent_id,
             "cdl_017_dependency": self.cdl_017_dependency,
             "cdl_046_dependency": self.cdl_046_dependency,
             "cdl_055_dependency": self.cdl_055_dependency,
@@ -418,9 +420,10 @@ def _require_agent_id(agent_id: str) -> str:
 
 
 def _require_network_id(value: object) -> str:
-    if not isinstance(value, str) or not _NETWORK_ID_RE.fullmatch(value):
-        raise ValueError("validator_network_id_invalid_phase_1589")
-    return value
+    return require_validator_network_id(
+        value,
+        token="validator_network_id_invalid_phase_1589",
+    )
 
 
 def _require_lower_hex_96(value: object, field_name: str) -> str:
@@ -850,6 +853,7 @@ def eject_validator(
     current_validator_ids: tuple[int, ...] | list[int],
     validator_id: int,
     exit_reason: str,
+    agent_id: str | None = None,
     consecutive_missed_epochs: int = 0,
     equivocation_state: bool = False,
 ) -> ValidatorEjectionDecision:
@@ -858,6 +862,7 @@ def eject_validator(
     active_epoch = _require_future_epoch(active_from_epoch, current_epoch)
     normalized_ids = _normalize_validator_ids(current_validator_ids)
     validated_validator_id = _require_validator_id(validator_id)
+    validated_agent_id = None if agent_id is None else _require_agent_id(agent_id)
     if validated_validator_id not in normalized_ids:
         raise ValueError("validator_not_active_phase_1353")
 
@@ -879,6 +884,7 @@ def eject_validator(
         cdl_056_dependency=CDL_056_DEPENDENCY,
         cdl_058_dependency=CDL_058_DEPENDENCY,
         validator_id=validated_validator_id,
+        agent_id=validated_agent_id,
         exit_reason=exit_reason,
         active_from_epoch=active_epoch,
         consecutive_missed_epochs=missed_epochs,

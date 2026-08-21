@@ -28,7 +28,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
 from ilc_core.validator import endpoint_rotation_runtime
 from ilc_core.validator.endpoint_rotation_runtime import (
     atomic_write_json,
-    rotate_validator_endpoint_assertion,
+    rotate_validator_endpoint_assertion as _rotate_validator_endpoint_assertion,
 )
 
 
@@ -36,6 +36,20 @@ AGENT = "a" * 96
 BLS_KEY = "b" * 96
 SIGNATURE = "c" * 192
 FINGERPRINT = hashlib.sha256(b"validator-cert").hexdigest()
+ROTATION_NOW = datetime(2026, 8, 1, tzinfo=timezone.utc)
+
+
+def rotate_validator_endpoint_assertion(**kwargs: object) -> dict[str, object]:
+    kwargs.setdefault("now_utc", ROTATION_NOW)
+    old_env = os.environ.get("ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE")
+    os.environ["ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE"] = "1"
+    try:
+        return _rotate_validator_endpoint_assertion(**kwargs)  # type: ignore[arg-type]
+    finally:
+        if old_env is None:
+            os.environ.pop("ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE", None)
+        else:
+            os.environ["ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE"] = old_env
 
 
 class EdgeAtlas:
@@ -47,6 +61,8 @@ class EdgeAtlas:
 
 
 def _run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
+    env = os.environ.copy()
+    env["ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE"] = "1"
     return subprocess.run(
         [sys.executable, "-m", "ilc_core.cli", *args],
         stdout=subprocess.PIPE,
@@ -55,6 +71,7 @@ def _run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess
         check=False,
         timeout=30,
         cwd=cwd,
+        env=env,
     )
 
 
@@ -399,11 +416,10 @@ def test_rotate_endpoint_preserves_candidate_id_for_same_validator(tmp_path: Pat
 
 def test_rotate_endpoint_rejects_expired_tls_cert(tmp_path: Path) -> None:
     old_path = _write_old_assertion(tmp_path)
-    now = datetime.now(timezone.utc)
     expired = _write_test_cert(
         tmp_path,
-        not_before=now - timedelta(days=30),
-        not_after=now - timedelta(days=1),
+        not_before=ROTATION_NOW - timedelta(days=30),
+        not_after=ROTATION_NOW - timedelta(days=1),
     )
     with pytest.raises(ValueError, match="validator_endpoint_rotation_tls_cert_expired"):
         rotate_validator_endpoint_assertion(
@@ -438,11 +454,10 @@ def test_rotate_endpoint_rejects_preserved_expired_cert_metadata(tmp_path: Path)
 
 def test_rotate_endpoint_rejects_not_yet_valid_tls_cert(tmp_path: Path) -> None:
     old_path = _write_old_assertion(tmp_path)
-    now = datetime.now(timezone.utc)
     future = _write_test_cert(
         tmp_path,
-        not_before=now + timedelta(days=1),
-        not_after=now + timedelta(days=30),
+        not_before=ROTATION_NOW + timedelta(days=1),
+        not_after=ROTATION_NOW + timedelta(days=30),
     )
     with pytest.raises(ValueError, match="validator_endpoint_rotation_tls_cert_not_yet_valid"):
         rotate_validator_endpoint_assertion(
@@ -452,5 +467,49 @@ def test_rotate_endpoint_rejects_not_yet_valid_tls_cert(tmp_path: Path) -> None:
             key_path=_write_key(tmp_path),
             output_path=tmp_path / "new.json",
             tls_cert_path=future,
+            allow_test_stub_signature=True,
+        )
+
+
+def test_rotate_endpoint_runtime_requires_explicit_now_utc(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="validator_endpoint_rotation_now_utc_required"):
+        _rotate_validator_endpoint_assertion(
+            old_assertion_path=_write_old_assertion(tmp_path),
+            new_endpoint="new-validator.example:7101",
+            network_id="ilc-rc01",
+            key_path=_write_key(tmp_path),
+            output_path=tmp_path / "new.json",
+            allow_test_stub_signature=True,
+        )
+
+
+def test_rotate_endpoint_stub_signature_requires_test_authorization(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE", raising=False)
+    with pytest.raises(
+        ValueError,
+        match="validator_endpoint_rotation_test_stub_signature_not_authorized",
+    ):
+        _rotate_validator_endpoint_assertion(
+            old_assertion_path=_write_old_assertion(tmp_path),
+            new_endpoint="new-validator.example:7101",
+            network_id="ilc-rc01",
+            key_path=_write_key(tmp_path),
+            output_path=tmp_path / "new.json",
+            now_utc=ROTATION_NOW,
+            allow_test_stub_signature=True,
+        )
+
+
+def test_rotate_endpoint_uses_shared_network_id_validation(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="validator_endpoint_rotation_network_id_invalid"):
+        rotate_validator_endpoint_assertion(
+            old_assertion_path=_write_old_assertion(tmp_path),
+            new_endpoint="new-validator.example:7101",
+            network_id="INVALID NETWORK",
+            key_path=_write_key(tmp_path),
+            output_path=tmp_path / "new.json",
             allow_test_stub_signature=True,
         )
