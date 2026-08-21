@@ -39,6 +39,15 @@ from .admission_ejection_runtime import (
     build_validator_role_record,
     eject_validator,
     require_production_validator_admission_activation,
+    validate_validator_role_record_id_uniqueness,
+)
+from .validator_key_derivation import (
+    IDENTITY_LINEAGE_REF_VERSION,
+    VALIDATOR_KEY_DERIVATION_DOMAIN,
+    VALIDATOR_KEY_DERIVATION_VERSION,
+    build_validator_key_derivation_record,
+    derive_validator_key_ikm,
+    derive_validator_key_ikm_hex,
 )
 from .validator_eligibility_certificate import (
     BOOTSTRAP_ACTIVE_RATIONALE,
@@ -111,6 +120,7 @@ __all__ = [
     'EJECT_VALIDATOR_PRODUCTION_IMPL_TOKEN',
     'FIRST_NON_GENESIS_VALIDATOR_DEPLOYMENT_HUMAN_GATE_TOKEN',
     'GENESIS_STAKE_AMOUNT',
+    'IDENTITY_LINEAGE_REF_VERSION',
     'ELIGIBILITY_VERDICTS',
     'K_DEGREE_FLOOR',
     'K_REGULAR_SIZING_RUNTIME_TOKEN',
@@ -137,6 +147,8 @@ __all__ = [
     'VALIDATOR_ADMISSION_EJECTION_RUNTIME_VERSION',
     'VALIDATOR_ADMISSION_CDL055_BOND_SURFACE_TOKEN',
     'VALIDATOR_ELIGIBILITY_CERT_VERSION',
+    'VALIDATOR_KEY_DERIVATION_DOMAIN',
+    'VALIDATOR_KEY_DERIVATION_VERSION',
     'VALIDATOR_ROLE_RECORD_VERSION',
     'VALIDATOR_SET_ROTATION_WIRED_FAST_PATH_TOKEN',
     'VRF_UPGRADE_REQUIRED_TOKEN',
@@ -150,9 +162,12 @@ __all__ = [
     'ValidatorRoleRecord',
     'admit_validator',
     'apply_consensus_dispute_tiebreaker',
+    'build_validator_key_derivation_record',
     'build_validator_role_record',
     'build_topology_shuffle_plan',
     'eject_validator',
+    'derive_validator_key_ikm',
+    'derive_validator_key_ikm_hex',
     'evaluate_eligibility',
     'evaluate_vrf_upgrade_requirement',
     'is_trust_tier_eligible',
@@ -162,5 +177,6 @@ __all__ = [
     'require_vrf_ready_validator_count',
     'revoke_trust_tier_if_below_threshold',
     'validate_validator_cluster_constraints',
+    'validate_validator_role_record_id_uniqueness',
     'validate_staking_and_liveness_state',
 ]

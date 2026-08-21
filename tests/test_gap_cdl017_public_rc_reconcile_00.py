@@ -70,14 +70,20 @@ def test_rust_admit_eject_hooks_are_live_not_placeholders() -> None:
     assert "ValidatorSet::rebuild_with" in hook_region
 
 
-def test_public_rc_default_candidate_field_is_not_implemented_yet() -> None:
-    assert not _python_source_contains(REPO / "ilc_core", "validator_participation_enabled")
+def test_public_rc_default_candidate_field_gap_recorded_or_implemented() -> None:
+    spec_text = _read(SPEC)
+    assert "validator_participation_enabled" in spec_text
+    assert (
+        "validator_participation_enabled" in _read("ilc_core/validator/admission_ejection_runtime.py")
+        or "not implemented" in spec_text
+    )
 
 
-def test_no_validator_cli_opt_out_is_not_implemented_yet() -> None:
+def test_no_validator_cli_opt_out_gap_recorded_or_implemented() -> None:
+    spec_text = _read(SPEC)
     cli_text = _read("ilc_core/cli/main.py")
     assert "--invite" in cli_text
-    assert "--no-validator" not in cli_text
+    assert "--no-validator" in cli_text or "no `--no-validator`" in spec_text
 
 
 def test_first_class_validator_registration_model_is_not_implemented_yet() -> None:
