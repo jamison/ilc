@@ -47,7 +47,7 @@ use crate::network::{EpochProposal, EpochProposalAck, GossipEnvelope, GossipMess
 use crate::persistent_quic::PersistentQuicSessionManager;
 use crate::types::{
     AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-    ILCConsensusError, ObjectRef, TransferCertificate, ValidatorID,
+    ILCConsensusError, ObjectRef, TransferCertificate, AgentID,
 };
 use crate::validator::quorum_threshold;
 use crate::validator::sign_message;
@@ -58,7 +58,7 @@ use crate::validator::sign_message;
 
 struct InFlight {
     transfer: ECUTransfer,
-    sigs: Vec<(ValidatorID, crate::types::ValidatorSig)>,
+    sigs: Vec<(AgentID, crate::types::ValidatorSig)>,
     /// Whether we have already assembled and broadcast a Certificate for this transfer.
     certified: bool,
     /// SEC-FIX-04: wall-clock insertion time for TTL sweep (zombie eviction).
@@ -105,7 +105,7 @@ pub const SUBMIT_EPOCH_PROPOSAL_BFT_REJECTED_PHASE_1586: &str =
 
 struct EpochProposalInFlight {
     proposal: EpochProposal,
-    sigs: Vec<(ValidatorID, crate::types::ValidatorSig)>,
+    sigs: Vec<(AgentID, crate::types::ValidatorSig)>,
     completed: bool,
     finalizing: bool,
     inserted_at: tokio::time::Instant,
@@ -152,9 +152,9 @@ fn verify_transfer_sender_sig(transfer: &ECUTransfer) -> Result<(), ILCConsensus
 }
 
 fn next_relay_hop(
-    current_validator: ValidatorID,
-    remaining_route: &[ValidatorID],
-) -> Result<Option<(ValidatorID, Vec<ValidatorID>)>, ILCConsensusError> {
+    current_validator: AgentID,
+    remaining_route: &[AgentID],
+) -> Result<Option<(AgentID, Vec<AgentID>)>, ILCConsensusError> {
     if remaining_route.is_empty() {
         return Ok(None);
     }
@@ -170,13 +170,13 @@ fn next_relay_hop(
         if *hop == current_validator {
             return Err(ILCConsensusError::Other(format!(
                 "relay route loops back through validator {}",
-                current_validator.0
+                current_validator
             )));
         }
         if !seen.insert(*hop) {
             return Err(ILCConsensusError::Other(format!(
                 "relay route contains duplicate validator {}",
-                hop.0
+                hop
             )));
         }
     }
@@ -192,7 +192,7 @@ fn next_relay_hop(
 // ---------------------------------------------------------------------------
 
 pub struct NodeRunner {
-    pub validator_id: ValidatorID,
+    pub validator_id: AgentID,
     pub network_id: String,
     pub f: usize,
     pub validator_sk: blst::min_pk::SecretKey,
@@ -201,7 +201,7 @@ pub struct NodeRunner {
     pub balance_store: Arc<BalanceStore>,
     pub epoch_store: Arc<EpochStore>,
     /// peer_addrs: other validators' addresses, for active outbound connections.
-    pub peer_addrs: Vec<(ValidatorID, SocketAddr)>,
+    pub peer_addrs: Vec<(AgentID, SocketAddr)>,
     /// In-flight transfers keyed by ObjectRef (owned-object fast path).
     in_flight: Arc<Mutex<HashMap<ObjectRef, InFlight>>>,
     /// In-flight epoch proposals keyed by idempotency_key.
@@ -212,18 +212,18 @@ pub struct NodeRunner {
     pub persistent_sessions: Option<Arc<PersistentQuicSessionManager>>,
     pub proposal_ingress_enabled: bool,
     #[cfg(feature = "testnet_fault_sim")]
-    pub censor_validator: Option<u32>,
+    pub censor_validator: Option<AgentID>,
     #[cfg(feature = "testnet_fault_sim")]
-    pub censor_target: Option<u32>,
+    pub censor_target: Option<AgentID>,
     #[cfg(feature = "testnet_fault_sim")]
-    pub partition_block_peers: HashSet<u32>,
+    pub partition_block_peers: HashSet<AgentID>,
     #[cfg(feature = "testnet_fault_sim")]
     pub delay_ms: Option<u64>,
 }
 
 impl NodeRunner {
     pub fn new(
-        validator_id: ValidatorID,
+        validator_id: AgentID,
         network_id: String,
         f: usize,
         validator_sk: blst::min_pk::SecretKey,
@@ -231,7 +231,7 @@ impl NodeRunner {
         fast_path: Arc<FastPathProtocol>,
         balance_store: Arc<BalanceStore>,
         epoch_store: Arc<EpochStore>,
-        peer_addrs: Vec<(ValidatorID, SocketAddr)>,
+        peer_addrs: Vec<(AgentID, SocketAddr)>,
     ) -> Self {
         Self {
             validator_id,
@@ -251,16 +251,19 @@ impl NodeRunner {
             #[cfg(feature = "testnet_fault_sim")]
             censor_validator: std::env::var("CENSOR_VALIDATOR")
                 .ok()
-                .and_then(|v| v.parse().ok()),
+                .and_then(|v| v.parse::<u32>().ok())
+                .map(AgentID::from_testnet_validator_index),
             #[cfg(feature = "testnet_fault_sim")]
             censor_target: std::env::var("CENSOR_TARGET")
                 .ok()
-                .and_then(|v| v.parse().ok()),
+                .and_then(|v| v.parse::<u32>().ok())
+                .map(AgentID::from_testnet_validator_index),
             #[cfg(feature = "testnet_fault_sim")]
             partition_block_peers: std::env::var("PARTITION_BLOCK_PEERS")
                 .unwrap_or_default()
                 .split(',')
                 .filter_map(|s| s.trim().parse::<u32>().ok())
+                .map(AgentID::from_testnet_validator_index)
                 .collect(),
             #[cfg(feature = "testnet_fault_sim")]
             delay_ms: std::env::var("DELAY_MS").ok().and_then(|v| v.parse().ok()),
@@ -352,7 +355,7 @@ impl NodeRunner {
             {
                 eprintln!(
                     "[phase1586] validator_id={} EpochProposal send to peer={} failed: {}",
-                    self.validator_id.0, peer_id.0, e
+                    self.validator_id, peer_id, e
                 );
             }
         }
@@ -378,7 +381,7 @@ impl NodeRunner {
     pub async fn run(self: Arc<Self>) -> Result<(), ILCConsensusError> {
         eprintln!(
             "[m010_node] validator_id={} running on {}",
-            self.validator_id.0,
+            self.validator_id,
             self.network
                 .endpoint
                 .local_addr()
@@ -406,7 +409,7 @@ impl NodeRunner {
                         Err(e) => {
                             eprintln!(
                                 "[m015_epoch_sync] validator_id={} get_current_epoch error: {}",
-                                node.validator_id.0, e
+                                node.validator_id, e
                             );
                             continue;
                         }
@@ -416,13 +419,13 @@ impl NodeRunner {
                     };
                     for (peer_id, _addr) in &node.peer_addrs {
                         #[cfg(feature = "testnet_fault_sim")]
-                        if node.partition_block_peers.contains(&peer_id.0) {
+                        if node.partition_block_peers.contains(peer_id) {
                             continue;
                         }
                         if let Err(e) = node.send_to_peer(*peer_id, msg.clone()).await {
                             eprintln!(
                                 "[m015_epoch_sync] validator_id={} epoch sync to peer={} failed: {}",
-                                node.validator_id.0, peer_id.0, e
+                                node.validator_id, peer_id, e
                             );
                         }
                     }
@@ -445,7 +448,7 @@ impl NodeRunner {
                     if evicted > 0 {
                         eprintln!(
                             "[m010_node] validator_id={} outbound_pool sweep: evicted {} dead connections",
-                            node.validator_id.0, evicted
+                            node.validator_id, evicted
                         );
                     }
                 }
@@ -469,7 +472,7 @@ impl NodeRunner {
                     if evicted > 0 {
                         eprintln!(
                             "[m010_node] validator_id={} in_flight TTL sweep: evicted {} zombie entries",
-                            node.validator_id.0, evicted
+                            node.validator_id, evicted
                         );
                     }
                 }
@@ -529,10 +532,10 @@ impl NodeRunner {
     async fn dispatch(&self, envelope: GossipEnvelope) -> Result<(), ILCConsensusError> {
         let from = envelope.peer_id;
         #[cfg(feature = "testnet_fault_sim")]
-        if self.partition_block_peers.contains(&from.0) {
+        if self.partition_block_peers.contains(&from) {
             eprintln!(
                 "[m015_partition_drop] validator_id={} target={} kind=inbound",
-                self.validator_id.0, from.0
+                self.validator_id, from
             );
             return Ok(());
         }
@@ -566,7 +569,7 @@ impl NodeRunner {
                     let _ = (transfer, remaining_route, from);
                     eprintln!(
                         "[m021_layer2] validator_id={} RelaySubmit rejected in non-testnet build",
-                        self.validator_id.0
+                        self.validator_id
                     );
                     Err(ILCConsensusError::Other(
                         "RelaySubmit is testnet_only".into(),
@@ -580,7 +583,7 @@ impl NodeRunner {
                 // Legacy unkeyed ack — log and ignore; senders should use AckFor.
                 eprintln!(
                     "[m010_node] validator_id={} ignoring legacy Ack from peer={} (use AckFor)",
-                    self.validator_id.0, from.0
+                    self.validator_id, from
                 );
                 let _ = sig;
                 Ok(())
@@ -596,8 +599,8 @@ impl NodeRunner {
                 {
                     if let Some(censor_val) = self.censor_validator {
                         if let Some(censor_tgt) = self.censor_target {
-                            if self.validator_id.0 == censor_val && from.0 == censor_tgt {
-                                eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id.0, from.0);
+                            if self.validator_id == censor_val && from == censor_tgt {
+                                eprintln!("[m014_censor] validator_id={} dropped EpochSettlementTx from validator_id={}", self.validator_id, from);
                                 return Ok(());
                             }
                         }
@@ -615,8 +618,8 @@ impl NodeRunner {
                 #[cfg(feature = "testnet_fault_sim")]
                 if let Some(censor_val) = self.censor_validator {
                     if let Some(censor_tgt) = self.censor_target {
-                        if self.validator_id.0 == censor_val && from.0 == censor_tgt {
-                            eprintln!("[m014_censor] validator_id={} dropped EpochCheckpointMsg from validator_id={}", self.validator_id.0, from.0);
+                        if self.validator_id == censor_val && from == censor_tgt {
+                            eprintln!("[m014_censor] validator_id={} dropped EpochCheckpointMsg from validator_id={}", self.validator_id, from);
                             return Ok(());
                         }
                     }
@@ -656,13 +659,13 @@ impl NodeRunner {
     async fn handle_broadcast_honest(
         &self,
         transfer: ECUTransfer,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         // SEC-001: verify sender_sig before doing anything else.
         if verify_transfer_sender_sig(&transfer).is_err() {
             eprintln!(
                 "[m010_node] validator_id={} rejected transfer from peer={}: invalid sender_sig",
-                self.validator_id.0, from.0
+                self.validator_id, from
             );
             return Ok(()); // drop silently; do not propagate invalid transfers
         }
@@ -700,7 +703,7 @@ impl NodeRunner {
             let _ = routing_token;
             eprintln!(
                 "[row5_privacy_lane] validator_id={} obj_ref={} routing_decision=recorded",
-                self.validator_id.0,
+                self.validator_id,
                 fmt_object_ref(&transfer.object_ref),
             );
         }
@@ -717,7 +720,7 @@ impl NodeRunner {
                 {
                     eprintln!(
                         "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
-                        self.validator_id.0
+                        self.validator_id
                     );
                     return Ok(());
                 }
@@ -742,9 +745,9 @@ impl NodeRunner {
 
         eprintln!(
             "[m010_node] validator_id={} acking transfer obj_ref={} to peer={}",
-            self.validator_id.0,
+            self.validator_id,
             fmt_object_ref(&object_ref),
-            from.0
+            from
         );
 
         self.send_to_peer(from, GossipMessage::AckFor { object_ref, sig })
@@ -755,8 +758,8 @@ impl NodeRunner {
     async fn handle_relay_submit(
         &self,
         transfer: ECUTransfer,
-        remaining_route: Vec<ValidatorID>,
-        from: ValidatorID,
+        remaining_route: Vec<AgentID>,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         // testnet_only: relay metadata stays outside TransferCertificate.
         match next_relay_hop(self.validator_id, &remaining_route)? {
@@ -764,16 +767,16 @@ impl NodeRunner {
                 if verify_transfer_sender_sig(&transfer).is_err() {
                     eprintln!(
                         "[m021_layer2] validator_id={} rejected relay_submit from peer={}: invalid sender_sig",
-                        self.validator_id.0, from.0
+                        self.validator_id, from
                     );
                     return Ok(());
                 }
 
                 eprintln!(
                     "[m021_layer2] validator_id={} forwarding relay_submit obj_ref={} next_peer={} remaining_hops={}",
-                    self.validator_id.0,
+                    self.validator_id,
                     fmt_object_ref(&transfer.object_ref),
-                    next_hop.0,
+                    next_hop,
                     tail.len()
                 );
 
@@ -789,9 +792,9 @@ impl NodeRunner {
             None => {
                 eprintln!(
                     "[m021_layer2] validator_id={} final relay destination for obj_ref={} from peer={}",
-                    self.validator_id.0,
+                    self.validator_id,
                     fmt_object_ref(&transfer.object_ref),
-                    from.0
+                    from
                 );
                 self.handle_broadcast_honest(transfer, from).await
             }
@@ -806,7 +809,7 @@ impl NodeRunner {
         &self,
         object_ref: ObjectRef,
         sig: crate::types::ValidatorSig,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         // MEDIUM-004 fix: read f from the live ValidatorSet instead of using
         // self.f (captured at NodeRunner::new()). This ensures that after a
@@ -816,7 +819,7 @@ impl NodeRunner {
             let vs = self.fast_path.validator_set.read().unwrap();
             2 * vs.f + 1
         };
-        let mut to_certify: Option<(ECUTransfer, Vec<(ValidatorID, crate::types::ValidatorSig)>)> =
+        let mut to_certify: Option<(ECUTransfer, Vec<(AgentID, crate::types::ValidatorSig)>)> =
             None;
 
         {
@@ -834,8 +837,8 @@ impl NodeRunner {
                         entry.sigs.push((from, sig));
                         eprintln!(
                             "[m010_node] validator_id={} ack from peer={} for obj_ref={} sigs={}/{}",
-                            self.validator_id.0,
-                            from.0,
+                            self.validator_id,
+                            from,
                             fmt_object_ref(&object_ref),
                             entry.sigs.len(),
                             quorum
@@ -849,9 +852,9 @@ impl NodeRunner {
             } else {
                 eprintln!(
                     "[m010_node] validator_id={} AckFor for unknown obj_ref={} from peer={}",
-                    self.validator_id.0,
+                    self.validator_id,
                     fmt_object_ref(&object_ref),
-                    from.0
+                    from
                 );
             }
         }
@@ -865,7 +868,7 @@ impl NodeRunner {
             };
             eprintln!(
                 "[m010_node] validator_id={} assembled certificate for obj_ref={} — broadcasting",
-                self.validator_id.0,
+                self.validator_id,
                 fmt_object_ref(&object_ref)
             );
             self.broadcast_certificate(cert.clone()).await?;
@@ -889,7 +892,7 @@ impl NodeRunner {
     async fn handle_certificate(&self, cert: TransferCertificate) -> Result<(), ILCConsensusError> {
         eprintln!(
             "[m010_node] validator_id={} received Certificate for obj_ref={}",
-            self.validator_id.0,
+            self.validator_id,
             fmt_object_ref(&cert.transfer.object_ref)
         );
         self.execute_and_log(cert).await
@@ -906,7 +909,7 @@ impl NodeRunner {
     ) -> Result<(), ILCConsensusError> {
         eprintln!(
             "[m010_node] validator_id={} received EpochSettlementTx epoch={}",
-            self.validator_id.0, tx.epoch.0
+            self.validator_id, tx.epoch.0
         );
         let record = crate::types::EpochSettlementRecord {
             epoch: tx.epoch,
@@ -925,7 +928,7 @@ impl NodeRunner {
             Err(ILCConsensusError::InvalidEpoch) => {
                 eprintln!(
                     "[m010_node] validator_id={} duplicate EpochSettlementTx epoch={} — already committed",
-                    self.validator_id.0, tx.epoch.0
+                    self.validator_id, tx.epoch.0
                 );
             }
             Err(e) => return Err(e),
@@ -941,7 +944,7 @@ impl NodeRunner {
         &self,
         _agent: crate::types::AgentID,
         missing_versions: Vec<u64>,
-        _from: ValidatorID,
+        _from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         if missing_versions.len() > MAX_MISSING_VERSIONS {
             return Err(ILCConsensusError::Other(format!(
@@ -952,7 +955,7 @@ impl NodeRunner {
         // M-010: scaffold only. Full sync response is M-011 workload.
         eprintln!(
             "[m010_node] validator_id={} MissingCertSync received — sync response deferred to M-011",
-            self.validator_id.0
+            self.validator_id
         );
         Ok(())
     }
@@ -967,7 +970,7 @@ impl NodeRunner {
         if certs.len() > MAX_CERTS_PER_RESPONSE {
             eprintln!(
                 "[m010_node] validator_id={} MissingCertResponse: {} certs exceeds cap of {}; dropping",
-                self.validator_id.0, certs.len(), MAX_CERTS_PER_RESPONSE
+                self.validator_id, certs.len(), MAX_CERTS_PER_RESPONSE
             );
             return Err(ILCConsensusError::Other(format!(
                 "MissingCertResponse exceeds per-response cert cap of {}",
@@ -977,7 +980,7 @@ impl NodeRunner {
         for cert in certs {
             eprintln!(
                 "[m010_node] validator_id={} MissingCertResponse: replaying certificate obj_ref={}",
-                self.validator_id.0,
+                self.validator_id,
                 fmt_object_ref(&cert.transfer.object_ref)
             );
             self.execute_and_log(cert).await?;
@@ -992,7 +995,7 @@ impl NodeRunner {
     async fn handle_missing_epoch_sync(
         &self,
         latest_contiguous_epoch: u64,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         let records = self.epoch_store.get_epochs_after(latest_contiguous_epoch)?;
         if records.is_empty() {
@@ -1000,7 +1003,7 @@ impl NodeRunner {
         }
         eprintln!(
             "[m015_epoch_sync] validator_id={} responding to peer={} with {} epoch(s) after cursor={}",
-            self.validator_id.0, from.0, records.len(), latest_contiguous_epoch
+            self.validator_id, from, records.len(), latest_contiguous_epoch
         );
         self.send_to_peer(from, GossipMessage::MissingEpochResponse { records })
             .await
@@ -1023,14 +1026,14 @@ impl NodeRunner {
             Err(ILCConsensusError::InvalidEpoch) => {
                 eprintln!(
                     "[m018_node] validator_id={} EpochCheckpointMsg epoch={} already committed",
-                    self.validator_id.0, epoch
+                    self.validator_id, epoch
                 );
                 Ok(())
             }
             Err(e) => {
                 eprintln!(
                     "[m018_node] validator_id={} checkpoint validation failed: {:?}",
-                    self.validator_id.0, e
+                    self.validator_id, e
                 );
                 Err(e)
             }
@@ -1056,7 +1059,7 @@ impl NodeRunner {
                     // Already committed — idempotent; do not re-log as a new commit.
                     eprintln!(
                         "[m015_epoch_sync] validator_id={} MissingEpochResponse epoch={} already committed",
-                        self.validator_id.0, epoch
+                        self.validator_id, epoch
                     );
                 }
                 Err(e) => return Err(e),
@@ -1068,7 +1071,7 @@ impl NodeRunner {
     async fn handle_epoch_proposal(
         &self,
         proposal: EpochProposal,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         self.validate_epoch_proposal(&proposal)?;
         let proposal_commitment = proposal_commitment_sha256(&proposal);
@@ -1101,7 +1104,7 @@ impl NodeRunner {
     async fn handle_epoch_proposal_ack(
         &self,
         ack: EpochProposalAck,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         {
             let mut table = self.epoch_proposals.lock().await;
@@ -1195,7 +1198,7 @@ impl NodeRunner {
                     {
                         eprintln!(
                             "[phase1586] validator_id={} EpochCheckpointMsg send to peer={} failed: {}",
-                            self.validator_id.0, peer_id.0, e
+                            self.validator_id, peer_id, e
                         );
                     }
                 }
@@ -1233,7 +1236,7 @@ impl NodeRunner {
         if let Err(e) = durable_mark_result {
             eprintln!(
                 "[phase1586_fix2] validator_id={} durable proposal idempotency marker failed after checkpoint commit for idempotency_key={}: {}; continuing with completed in-memory state",
-                self.validator_id.0, idempotency_key, e
+                self.validator_id, idempotency_key, e
             );
         }
         let mut table = self.epoch_proposals.lock().await;
@@ -1305,7 +1308,7 @@ impl NodeRunner {
         &self,
         proposal: &EpochProposal,
         ack: &EpochProposalAck,
-        from: ValidatorID,
+        from: AgentID,
     ) -> Result<(), ILCConsensusError> {
         let commitment = proposal_commitment_sha256(proposal);
         if ack.proposal_commitment_sha256.as_slice() != commitment {
@@ -1322,7 +1325,7 @@ impl NodeRunner {
             vs.validators.get(&from).cloned().ok_or_else(|| {
                 ILCConsensusError::Other(format!(
                     "epoch_proposal_ack_unknown_validator_phase_1586_fix1:{}",
-                    from.0
+                    from
                 ))
             })?
         };
@@ -1366,7 +1369,7 @@ impl NodeRunner {
             Ok(change) => {
                 eprintln!(
                     "[m010_node] validator_id={} fast_path_executed: {:?} → {:?} amount={}",
-                    self.validator_id.0, change.from_agent, change.to_agent, change.amount
+                    self.validator_id, change.from_agent, change.to_agent, change.amount
                 );
                 Ok(())
             }
@@ -1375,7 +1378,7 @@ impl NodeRunner {
                 // For M-010, identically consuming harmlessly, but fundamentally flags adversarial structures.
                 eprintln!(
                     "[m010_node] validator_id={} duplicate certificate ignored (ConflictingTransfer / Equivocation Detected)",
-                    self.validator_id.0
+                    self.validator_id
                 );
                 Ok(())
             }
@@ -1389,10 +1392,10 @@ impl NodeRunner {
     ) -> Result<(), ILCConsensusError> {
         for (peer_id, _addr) in &self.peer_addrs {
             #[cfg(feature = "testnet_fault_sim")]
-            if self.partition_block_peers.contains(&peer_id.0) {
+            if self.partition_block_peers.contains(peer_id) {
                 eprintln!(
                     "[m015_partition_drop] validator_id={} target={} kind=broadcast_certificate",
-                    self.validator_id.0, peer_id.0
+                    self.validator_id, peer_id
                 );
                 continue;
             }
@@ -1402,7 +1405,7 @@ impl NodeRunner {
             {
                 eprintln!(
                     "[m010_node] validator_id={} broadcast_certificate: failed to send to peer={}: {}",
-                    self.validator_id.0, peer_id.0, e
+                    self.validator_id, peer_id, e
                 );
                 // Continue: partial delivery is acceptable — peers who receive the cert directly commit.
             }
@@ -1412,14 +1415,14 @@ impl NodeRunner {
 
     async fn send_to_peer(
         &self,
-        peer_id: ValidatorID,
+        peer_id: AgentID,
         msg: GossipMessage,
     ) -> Result<(), ILCConsensusError> {
         #[cfg(feature = "testnet_fault_sim")]
-        if self.partition_block_peers.contains(&peer_id.0) {
+        if self.partition_block_peers.contains(&peer_id) {
             eprintln!(
                 "[m015_partition_drop] validator_id={} target={} kind=outbound",
-                self.validator_id.0, peer_id.0
+                self.validator_id, peer_id
             );
             return Ok(());
         }
@@ -1428,7 +1431,7 @@ impl NodeRunner {
             .iter()
             .find(|(id, _)| *id == peer_id)
             .map(|(_, addr)| *addr)
-            .ok_or_else(|| ILCConsensusError::Other(format!("Unknown peer {}", peer_id.0)))?;
+            .ok_or_else(|| ILCConsensusError::Other(format!("Unknown peer {}", peer_id)))?;
 
         let env = GossipEnvelope {
             frame_type: 0x00,
@@ -1637,7 +1640,7 @@ mod tests {
     };
     use crate::types::{
         AgentID, AggSig, CIDv1Root, ECUTransfer, EpochSeq, EpochSettlementRecord, ObjectRef,
-        ValidatorID, ValidatorSet, ValidatorSig,
+        ValidatorSet, ValidatorSig,
     };
     use crate::validator::validator_dst;
     use blst::min_pk::{AggregateSignature, SecretKey};
@@ -1650,26 +1653,27 @@ mod tests {
         (Arc::new(env), dir)
     }
 
-    fn setup_validators() -> (ValidatorSet, Vec<SecretKey>) {
-        let mut keys = Vec::new();
+    fn setup_validators() -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
+        let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=2u32 {
             let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
             let pk = sk.sk_to_pk();
-            keys.push(sk);
-            validators.push((crate::types::ValidatorID(i), crate::types::ValidatorKey(pk)));
+            let id = AgentID(pk.to_bytes());
+            entries.push((id, sk));
+            validators.push((id, crate::types::ValidatorKey(pk)));
         }
-        (ValidatorSet::new(validators, 0).unwrap(), keys)
+        (ValidatorSet::new(validators, 0).unwrap(), entries)
     }
 
-    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=n {
             let ikm = [i as u8; 32];
             let sk = SecretKey::key_gen(&ikm, &[]).unwrap();
             let pk = sk.sk_to_pk();
-            let id = ValidatorID(i);
+            let id = AgentID(pk.to_bytes());
             entries.push((id, sk));
             validators.push((id, crate::types::ValidatorKey(pk)));
         }
@@ -1686,7 +1690,7 @@ mod tests {
     fn setup_proposal_runner_from_env(
         env: Arc<Environment>,
         n: u32,
-        entries: &[(ValidatorID, SecretKey)],
+        entries: &[(AgentID, SecretKey)],
     ) -> Arc<NodeRunner> {
         let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
         let epoch_store = Arc::new(EpochStore::new(env).unwrap());
@@ -1709,7 +1713,7 @@ mod tests {
         );
         Arc::new(
             NodeRunner::new(
-                ValidatorID(1),
+                entries[0].0,
                 "ilc-rc01".to_string(),
                 n.saturating_sub(1) as usize / 3,
                 own_sk,
@@ -1723,7 +1727,7 @@ mod tests {
         )
     }
 
-    fn setup_proposal_runner(n: u32) -> (Arc<NodeRunner>, Vec<(ValidatorID, SecretKey)>) {
+    fn setup_proposal_runner(n: u32) -> (Arc<NodeRunner>, Vec<(AgentID, SecretKey)>) {
         let (env, _dir) = setup_env();
         let (_validator_set, entries) = setup_n_validators(n);
         let runner = setup_proposal_runner_from_env(env, n, &entries);
@@ -1750,9 +1754,9 @@ mod tests {
 
     fn valid_epoch_proposal_ack(
         proposal: &EpochProposal,
-        signer: ValidatorID,
+        signer: AgentID,
         sk: &SecretKey,
-    ) -> (ValidatorID, EpochProposalAck) {
+    ) -> (AgentID, EpochProposalAck) {
         let record = proposal_to_record(proposal);
         let record_bytes = bincode::serialize(&record).unwrap();
         let commitment = proposal_commitment_sha256(proposal);
@@ -2259,8 +2263,9 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (validator_set, keys) = setup_validators();
-        let signers = vec![crate::types::ValidatorID(1), crate::types::ValidatorID(2)];
+        let (validator_set, entries) = setup_validators();
+        let keys: Vec<SecretKey> = entries.iter().map(|(_, key)| key.clone()).collect();
+        let signers: Vec<AgentID> = entries.iter().map(|(id, _)| *id).collect();
 
         assert_eq!(latest_epoch_sync_cursor(&store).unwrap(), 0);
         for epoch in 1u64..=3 {
@@ -2390,7 +2395,8 @@ mod tests {
         let (env, _dir) = setup_env();
         let store = Arc::new(EpochStore::new(env).unwrap());
         let protocol = EpochSettlementProtocol::new(store.clone());
-        let (vset, keys) = setup_validators();
+        let (vset, entries) = setup_validators();
+        let keys: Vec<SecretKey> = entries.iter().map(|(_, key)| key.clone()).collect();
 
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
@@ -2416,7 +2422,7 @@ mod tests {
         let stored = StoredCheckpoint {
             record,
             agg_sig_bytes: wrong_sig_bytes,
-            signers: vec![crate::types::ValidatorID(1), crate::types::ValidatorID(2)],
+            signers: entries.iter().map(|(id, _)| *id).collect(),
         };
 
         let err = apply_missing_epoch_record(&store, stored, &protocol, &vset).unwrap_err();
@@ -2571,25 +2577,35 @@ mod tests {
 
     #[test]
     fn test_next_relay_hop_returns_next_peer_and_tail() {
-        let hop = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(1)])
+        let hop = next_relay_hop(
+            crate::types::test_agent_id(2),
+            &[
+                crate::types::test_agent_id(3),
+                crate::types::test_agent_id(1),
+            ],
+        )
             .unwrap()
             .unwrap();
 
-        assert_eq!(hop.0, ValidatorID(3));
-        assert_eq!(hop.1, vec![ValidatorID(1)]);
+        assert_eq!(hop.0, crate::types::test_agent_id(3));
+        assert_eq!(hop.1, vec![crate::types::test_agent_id(1)]);
     }
 
     #[test]
     fn test_next_relay_hop_rejects_duplicate_validator() {
-        let err = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(3)]).unwrap_err();
+        let duplicate = crate::types::test_agent_id(3);
+        let err = next_relay_hop(crate::types::test_agent_id(2), &[duplicate, duplicate])
+            .unwrap_err();
 
-        assert!(format!("{:?}", err).contains("duplicate validator 3"));
+        assert!(format!("{:?}", err).contains(&format!("duplicate validator {}", duplicate)));
     }
 
     #[test]
     fn test_next_relay_hop_rejects_loop_back_through_current_validator() {
-        let err = next_relay_hop(ValidatorID(2), &[ValidatorID(3), ValidatorID(2)]).unwrap_err();
+        let current = crate::types::test_agent_id(2);
+        let err = next_relay_hop(current, &[crate::types::test_agent_id(3), current])
+            .unwrap_err();
 
-        assert!(format!("{:?}", err).contains("loops back through validator 2"));
+        assert!(format!("{:?}", err).contains(&format!("loops back through validator {}", current)));
     }
 }

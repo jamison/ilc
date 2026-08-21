@@ -101,7 +101,6 @@ _MAX_VALIDATOR_ENDPOINT_CHARS = 512
 class ValidatorRoleRecord:
     schema_version: str
     agent_id: str
-    validator_id: int
     validator_key: str
     validator_endpoint: str
     role_status: str
@@ -119,15 +118,19 @@ class ValidatorRoleRecord:
     cdl055_bond_surface_token: str
     validator_participation_enabled: bool = True
     identity_seed_commitment: str | None = None
+    # Deprecated by GAP-CDL017-IMPL-DELTA-00b. Present only for backward
+    # compatibility with historical materialized role records and tests.
+    validator_id: int | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "schema_version", _require_token(self.schema_version))
         object.__setattr__(self, "agent_id", _require_agent_id(self.agent_id))
-        object.__setattr__(
-            self,
-            "validator_id",
-            _require_validator_id(self.validator_id),
-        )
+        if self.validator_id is not None:
+            object.__setattr__(
+                self,
+                "validator_id",
+                _require_validator_id(self.validator_id),
+            )
         object.__setattr__(
             self,
             "validator_key",
@@ -498,7 +501,7 @@ def _normalize_agent_ids(values: tuple[str, ...] | list[str]) -> tuple[str, ...]
 def validate_validator_role_record_id_uniqueness(
     records: tuple[ValidatorRoleRecord, ...] | list[ValidatorRoleRecord],
 ) -> tuple[ValidatorRoleRecord, ...]:
-    """Validate temporary u32 ValidatorID uniqueness before the 00b migration."""
+    """Validate deprecated u32 role-record IDs only when legacy records include them."""
 
     if not isinstance(records, (tuple, list)):
         raise ValueError("validator_role_records_must_be_sequence")
@@ -507,11 +510,14 @@ def validate_validator_role_record_id_uniqueness(
     for record in records:
         if not isinstance(record, ValidatorRoleRecord):
             raise ValueError("validator_role_record_required")
+        if record.validator_id is None:
+            normalized.append(record)
+            continue
         if record.validator_id in seen_validator_ids:
             raise ValueError("validator_id_u32_must_be_unique_pending_00b")
         seen_validator_ids.add(record.validator_id)
         normalized.append(record)
-    return tuple(sorted(normalized, key=lambda item: (item.validator_id, item.agent_id)))
+    return tuple(sorted(normalized, key=lambda item: (item.validator_id or 0, item.agent_id)))
 
 
 def _require_stake(value: Decimal | int | str) -> Decimal:
@@ -615,7 +621,6 @@ def _parse_admission_options(
 def build_validator_role_record(
     *,
     agent_id: str,
-    validator_id: int,
     validator_key: str,
     validator_endpoint: str,
     effective_from_epoch: int,
@@ -627,6 +632,7 @@ def build_validator_role_record(
     admission_authority_token: str = PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN,
     validator_participation_enabled: bool = True,
     identity_seed_commitment: str | None = None,
+    validator_id: int | None = None,
 ) -> ValidatorRoleRecord:
     """Build the Phase 1589 agent-bound validator-role record.
 
@@ -667,7 +673,9 @@ def build_validator_role_record(
     return ValidatorRoleRecord(
         schema_version=VALIDATOR_ROLE_RECORD_VERSION,
         agent_id=validated_agent_id,
-        validator_id=_require_validator_id(validator_id),
+        validator_id=_require_validator_id(validator_id)
+        if validator_id is not None
+        else None,
         validator_key=_require_lower_hex_96(validator_key, "validator_key"),
         validator_endpoint=_require_endpoint(validator_endpoint),
         role_status=resolved_status,

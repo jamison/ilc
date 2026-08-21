@@ -1,4 +1,4 @@
-use crate::types::{ILCConsensusError, ValidatorID, ValidatorKey, ValidatorSet, ValidatorSig};
+use crate::types::{AgentID, ILCConsensusError, ValidatorKey, ValidatorSet, ValidatorSig};
 use blst::min_pk::SecretKey;
 use getrandom::getrandom;
 
@@ -27,7 +27,7 @@ pub const MIN_STAKE_MICRO_ECU: u64 = 1_000_000_000;
 
 impl ValidatorSet {
     fn rebuild_with(
-        validators: Vec<(ValidatorID, ValidatorKey)>,
+        validators: Vec<(AgentID, ValidatorKey)>,
     ) -> Result<Self, ILCConsensusError> {
         let f = validators.len().saturating_sub(1) / 3;
         // BUG-001: f=0 on N>1 means a single validator can commit transfers.
@@ -47,7 +47,7 @@ impl ValidatorSet {
     /// Applies strict centralization BFT detection limiting boundaries to guarantees of Safety under byzantine assumptions.
     /// Rejects if any single node controls >= 1/3 of the total system stake exactly as required by the Phase 694 model.
     pub fn check_concentration_limit(
-        stakes: &[(ValidatorID, u64)],
+        stakes: &[(AgentID, u64)],
     ) -> Result<(), ILCConsensusError> {
         let total_stake: u128 = stakes
             .iter()
@@ -77,7 +77,7 @@ impl ValidatorSet {
     /// CDL-017 hook: validator admission
     pub fn admit_validator(
         &mut self,
-        id: ValidatorID,
+        id: AgentID,
         key: ValidatorKey,
         stake_micro_ecu: u64,
     ) -> Result<(), ILCConsensusError> {
@@ -90,7 +90,7 @@ impl ValidatorSet {
         if self.validators.contains_key(&id) {
             return Err(ILCConsensusError::Other(format!(
                 "validator {} already present",
-                id.0
+                id
             )));
         }
         if self
@@ -103,7 +103,7 @@ impl ValidatorSet {
             ));
         }
 
-        let mut entries: Vec<(ValidatorID, ValidatorKey)> = self
+        let mut entries: Vec<(AgentID, ValidatorKey)> = self
             .validators
             .iter()
             .map(|(&eid, k)| (eid, k.clone()))
@@ -115,9 +115,9 @@ impl ValidatorSet {
     }
 
     /// CDL-017 hook: validator ejection
-    pub fn eject_validator(&mut self, id: ValidatorID) -> Result<(), ILCConsensusError> {
+    pub fn eject_validator(&mut self, id: AgentID) -> Result<(), ILCConsensusError> {
         let original_len = self.validators.len();
-        let validators: Vec<(ValidatorID, ValidatorKey)> = self
+        let validators: Vec<(AgentID, ValidatorKey)> = self
             .validators
             .iter()
             .filter(|(&existing_id, _)| existing_id != id)
@@ -127,7 +127,7 @@ impl ValidatorSet {
         if validators.len() == original_len {
             return Err(ILCConsensusError::Other(format!(
                 "validator {} not present",
-                id.0
+                id
             )));
         }
 
@@ -172,11 +172,22 @@ pub fn verify_signature(
 mod tests {
     use super::*;
 
+    fn deterministic_ikm(seed: u32) -> [u8; 32] {
+        let mut ikm = [0u8; 32];
+        ikm[0..4].copy_from_slice(&seed.to_be_bytes());
+        ikm
+    }
+
+    fn test_agent_id(seed: u32) -> AgentID {
+        let sk = SecretKey::key_gen(&deterministic_ikm(seed), &[]).unwrap();
+        AgentID(sk.sk_to_pk().to_bytes())
+    }
+
     fn make_validator_set(count: u32) -> ValidatorSet {
         let mut validators = Vec::new();
         for id in 1..=count {
             let (_, key) = generate_validator_key().unwrap();
-            validators.push((ValidatorID(id), key));
+            validators.push((test_agent_id(id), key));
         }
         ValidatorSet::new(validators, count.saturating_sub(1) as usize / 3).unwrap()
     }
@@ -222,10 +233,10 @@ mod tests {
     #[test]
     fn test_concentration_limit_detected() {
         let stakes = vec![
-            (ValidatorID(1), 20),
-            (ValidatorID(2), 20),
-            (ValidatorID(3), 20),
-            (ValidatorID(4), 40), // 40*3=120 >= 100 → rejected
+            (test_agent_id(1), 20),
+            (test_agent_id(2), 20),
+            (test_agent_id(3), 20),
+            (test_agent_id(4), 40), // 40*3=120 >= 100 → rejected
         ];
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes),
@@ -235,10 +246,10 @@ mod tests {
         );
 
         let valid_stakes = vec![
-            (ValidatorID(1), 25),
-            (ValidatorID(2), 25),
-            (ValidatorID(3), 25),
-            (ValidatorID(4), 25), // 25*3=75 < 100 → accepted
+            (test_agent_id(1), 25),
+            (test_agent_id(2), 25),
+            (test_agent_id(3), 25),
+            (test_agent_id(4), 25), // 25*3=75 < 100 → accepted
         ];
         assert!(ValidatorSet::check_concentration_limit(&valid_stakes).is_ok());
     }
@@ -248,9 +259,9 @@ mod tests {
         // BUG-002: with floor division, stake=33 on total=99 would pass (33 > 33 is false).
         // The multiplication approach correctly catches stake * 3 >= total (33*3=99 >= 99).
         let stakes_exact_third = vec![
-            (ValidatorID(1), 33),
-            (ValidatorID(2), 33),
-            (ValidatorID(3), 33),
+            (test_agent_id(1), 33),
+            (test_agent_id(2), 33),
+            (test_agent_id(3), 33),
         ]; // total=99, each stake is exactly 1/3
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes_exact_third),
@@ -262,9 +273,9 @@ mod tests {
 
         // One unit below 1/3 of total=99 (stake=32) must pass.
         let stakes_below_third = vec![
-            (ValidatorID(1), 32),
-            (ValidatorID(2), 32),
-            (ValidatorID(3), 35),
+            (test_agent_id(1), 32),
+            (test_agent_id(2), 32),
+            (test_agent_id(3), 35),
         ]; // total=99; 32*3=96 < 99, 35*3=105 >= 99
            // Validator 3 holds 35/99 > 1/3, so should be rejected.
         assert_eq!(
@@ -276,10 +287,10 @@ mod tests {
 
         // Validator with stake 32 of total 99: 32*3=96 < 99, strictly under 1/3.
         let stakes_all_under = vec![
-            (ValidatorID(1), 32),
-            (ValidatorID(2), 32),
-            (ValidatorID(3), 32),
-            (ValidatorID(4), 3),
+            (test_agent_id(1), 32),
+            (test_agent_id(2), 32),
+            (test_agent_id(3), 32),
+            (test_agent_id(4), 3),
         ]; // total=99; max stake 32, 32*3=96 < 99
         assert!(ValidatorSet::check_concentration_limit(&stakes_all_under).is_ok());
     }
@@ -294,9 +305,9 @@ mod tests {
         // The u128::MAX saturation guard is a defensive check for pathological input
         // that cannot be reached with u64 stake values.
         let stakes = vec![
-            (ValidatorID(1), u64::MAX),
-            (ValidatorID(2), u64::MAX),
-            (ValidatorID(3), u64::MAX),
+            (test_agent_id(1), u64::MAX),
+            (test_agent_id(2), u64::MAX),
+            (test_agent_id(3), u64::MAX),
         ];
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes),
@@ -315,7 +326,7 @@ mod tests {
         // and f is correctly set to 0.
         let mut set = make_validator_set(4);
         assert_eq!(set.f, 1);
-        set.eject_validator(ValidatorID(4)).unwrap();
+        set.eject_validator(test_agent_id(4)).unwrap();
         assert_eq!(set.validators.len(), 3);
         assert_eq!(set.f, 0, "f must be 0 after ejecting from N=4 to N=3");
     }
@@ -325,12 +336,12 @@ mod tests {
         let mut set = make_validator_set(3);
         let (_, key) = generate_validator_key().unwrap();
 
-        set.admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU)
+        set.admit_validator(test_agent_id(4), key, MIN_STAKE_MICRO_ECU)
             .unwrap();
 
         assert_eq!(set.validators.len(), 4);
         assert_eq!(set.f, 1);
-        assert!(set.validators.contains_key(&ValidatorID(4)));
+        assert!(set.validators.contains_key(&test_agent_id(4)));
     }
 
     #[test]
@@ -339,12 +350,9 @@ mod tests {
         let (_, key) = generate_validator_key().unwrap();
 
         let err = set
-            .admit_validator(ValidatorID(1), key, MIN_STAKE_MICRO_ECU)
+            .admit_validator(test_agent_id(1), key, MIN_STAKE_MICRO_ECU)
             .unwrap_err();
-        assert_eq!(
-            err,
-            ILCConsensusError::Other("validator 1 already present".to_string())
-        );
+        assert!(format!("{:?}", err).contains("already present"));
     }
 
     #[test]
@@ -353,7 +361,7 @@ mod tests {
         let duplicate_key = set.validators.values().next().unwrap().clone();
 
         let err = set
-            .admit_validator(ValidatorID(4), duplicate_key, MIN_STAKE_MICRO_ECU)
+            .admit_validator(test_agent_id(4), duplicate_key, MIN_STAKE_MICRO_ECU)
             .unwrap_err();
         assert_eq!(
             err,
@@ -367,7 +375,7 @@ mod tests {
         let (_, key) = generate_validator_key().unwrap();
 
         let err = set
-            .admit_validator(ValidatorID(4), key, MIN_STAKE_MICRO_ECU - 1)
+            .admit_validator(test_agent_id(4), key, MIN_STAKE_MICRO_ECU - 1)
             .unwrap_err();
         assert!(
             format!("{:?}", err).contains("insufficient stake"),
@@ -380,29 +388,26 @@ mod tests {
     fn test_eject_validator_removes_validator_and_recomputes_f() {
         let mut set = make_validator_set(4);
 
-        set.eject_validator(ValidatorID(4)).unwrap();
+        set.eject_validator(test_agent_id(4)).unwrap();
 
         assert_eq!(set.validators.len(), 3);
         assert_eq!(set.f, 0);
-        assert!(!set.validators.contains_key(&ValidatorID(4)));
+        assert!(!set.validators.contains_key(&test_agent_id(4)));
     }
 
     #[test]
     fn test_eject_validator_rejects_missing_id() {
         let mut set = make_validator_set(4);
 
-        let err = set.eject_validator(ValidatorID(99)).unwrap_err();
-        assert_eq!(
-            err,
-            ILCConsensusError::Other("validator 99 not present".to_string())
-        );
+        let err = set.eject_validator(test_agent_id(99)).unwrap_err();
+        assert!(format!("{:?}", err).contains("not present"));
     }
 
     #[test]
     fn test_eject_validator_rejects_invalid_collapse() {
         let mut set = make_validator_set(1);
 
-        let err = set.eject_validator(ValidatorID(1)).unwrap_err();
+        let err = set.eject_validator(test_agent_id(1)).unwrap_err();
         assert_eq!(
             err,
             ILCConsensusError::Other("Invalid ValidatorSet: N (0) must be > 3F (0)".to_string())
@@ -414,10 +419,10 @@ mod tests {
         let (_, key) = generate_validator_key().unwrap();
         let err = ValidatorSet::new(
             vec![
-                (ValidatorID(1), key.clone()),
-                (ValidatorID(2), key),
-                (ValidatorID(3), generate_validator_key().unwrap().1),
-                (ValidatorID(4), generate_validator_key().unwrap().1),
+                (test_agent_id(1), key.clone()),
+                (test_agent_id(2), key),
+                (test_agent_id(3), generate_validator_key().unwrap().1),
+                (test_agent_id(4), generate_validator_key().unwrap().1),
             ],
             1,
         )

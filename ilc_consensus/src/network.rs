@@ -1,7 +1,7 @@
 use crate::epoch_settlement::StoredCheckpoint;
 use crate::types::{
     CIDv1Root, EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate,
-    ValidatorID, ValidatorSig,
+    AgentID, ValidatorSig,
 };
 use bincode::Options;
 use quinn::{ClientConfig, Connection, Endpoint, RecvStream, SendStream, ServerConfig};
@@ -19,7 +19,7 @@ pub enum GossipMessage {
     /// Carries an unchanged transfer plus the remaining validator relay route.
     RelaySubmit {
         transfer: crate::types::ECUTransfer,
-        remaining_route: Vec<ValidatorID>,
+        remaining_route: Vec<AgentID>,
     },
     Ack(crate::types::ValidatorSig), // Fast path Ack (unkeyed, legacy)
     /// Keyed ack: carries the ObjectRef so the receiver can route to the correct in-flight entry.
@@ -89,12 +89,13 @@ pub struct EpochProposalAck {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GossipEnvelope {
     pub frame_type: u8, // 0x00 for DATA frame mimicking H3 structure
-    pub peer_id: ValidatorID,
+    pub peer_id: AgentID,
     pub payload: GossipMessage,
 }
 
 pub struct PeerNetwork {
     peer_certs: Arc<HashMap<u32, Vec<u8>>>,
+    peer_agent_ids: Arc<HashMap<u32, AgentID>>,
     pub endpoint: Endpoint,
 }
 
@@ -283,6 +284,7 @@ impl PeerNetwork {
 
         Ok(Self {
             peer_certs: Arc::new(peer_certs),
+            peer_agent_ids: Arc::new(HashMap::new()),
             endpoint,
         })
     }
@@ -324,12 +326,21 @@ impl PeerNetwork {
 
         Ok(Self {
             peer_certs: Arc::new(peer_certs),
+            peer_agent_ids: Arc::new(HashMap::new()),
             endpoint,
         })
     }
 
+    pub fn with_peer_agent_ids(mut self, peer_agent_ids: HashMap<u32, AgentID>) -> Self {
+        self.peer_agent_ids = Arc::new(peer_agent_ids);
+        self
+    }
+
     /// Verifies static Topology securely by mapping the physical native connection identity bounds internally (SEC-006)
-    pub fn authenticate_peer_tls(&self, connection: &Connection) -> Result<u32, ILCConsensusError> {
+    pub fn authenticate_peer_tls(
+        &self,
+        connection: &Connection,
+    ) -> Result<AgentID, ILCConsensusError> {
         let identities = connection
             .peer_identity()
             .ok_or_else(|| ILCConsensusError::Other("No TLS peer identity provided".into()))?;
@@ -346,7 +357,20 @@ impl PeerNetwork {
 
         for (id, der) in self.peer_certs.iter() {
             if der == peer_cert_der {
-                return Ok(*id);
+                if let Some(agent_id) = self.peer_agent_ids.get(id).copied() {
+                    return Ok(agent_id);
+                }
+                #[cfg(test)]
+                {
+                    return Ok(crate::types::test_agent_id(*id));
+                }
+                #[cfg(not(test))]
+                {
+                    return Err(ILCConsensusError::Other(format!(
+                        "TLS validator_id={} missing genesis AgentID metadata",
+                        id
+                    )));
+                }
             }
         }
 
@@ -426,10 +450,10 @@ impl PeerNetwork {
         })?;
 
         // SEC-006: Cryptographically bind application payload to mathematical TLS identity
-        if envelope.peer_id.0 != authenticated_id {
+        if envelope.peer_id != authenticated_id {
             return Err(ILCConsensusError::Other(format!(
                 "Spoofed peer ID: claimed {}, actually established via mTLS as {}",
-                envelope.peer_id.0, authenticated_id
+                envelope.peer_id, authenticated_id
             )));
         }
 
@@ -484,11 +508,11 @@ mod tests {
         let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
         let envelope = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(2),
+            peer_id: crate::types::test_agent_id(2),
             payload: GossipMessage::EpochCheckpointMsg(EpochCheckpoint {
                 record,
                 sigs: AggSig(agg),
-                signers: vec![ValidatorID(1), ValidatorID(2)],
+                signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2)],
             }),
         };
 
@@ -503,11 +527,11 @@ mod tests {
             .deserialize(&bytes)
             .unwrap();
 
-        assert_eq!(decoded.peer_id, ValidatorID(2));
+        assert_eq!(decoded.peer_id, crate::types::test_agent_id(2));
         match decoded.payload {
             GossipMessage::EpochCheckpointMsg(checkpoint) => {
                 assert_eq!(checkpoint.record.epoch, EpochSeq(1));
-                assert_eq!(checkpoint.signers, vec![ValidatorID(1), ValidatorID(2)]);
+                assert_eq!(checkpoint.signers, vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2)]);
             }
             other => panic!("unexpected payload: {:?}", other),
         }
@@ -566,7 +590,7 @@ mod tests {
 
         let envelope = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(2),
+            peer_id: crate::types::test_agent_id(2),
             payload: GossipMessage::BroadcastHonest(tx),
         };
 
@@ -672,7 +696,7 @@ mod tests {
         // Attacker writes peer 3 internally!
         let envelope = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(3),
+            peer_id: crate::types::test_agent_id(3),
             payload: GossipMessage::MissingCertSync {
                 agent: AgentID([1; 48]),
                 missing_versions: vec![1],
@@ -739,7 +763,7 @@ mod tests {
             {
                 let response = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: ValidatorID(1),
+                    peer_id: crate::types::test_agent_id(1),
                     payload: GossipMessage::MissingCertResponse { certs: vec![] },
                 };
                 server_node.transmit(send, response).await.unwrap();
@@ -759,7 +783,7 @@ mod tests {
 
         let sync_req = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(2),
+            peer_id: crate::types::test_agent_id(2),
             payload: GossipMessage::MissingCertSync {
                 agent: AgentID([1; 48]),
                 missing_versions: vec![5, 6, 7],

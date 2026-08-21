@@ -571,7 +571,7 @@ mod tests {
     use crate::node::NodeRunner;
     use crate::types::{
         AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-        ValidatorID, ValidatorSet,
+        AgentID, ValidatorSet,
     };
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
@@ -586,13 +586,13 @@ mod tests {
         (env, dir)
     }
 
-    fn setup_validators() -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+    fn setup_validators() -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=2u32 {
             let sk = SecretKey::key_gen(&[i as u8; 32], &[]).unwrap();
             let pk = sk.sk_to_pk();
-            let id = ValidatorID(i);
+            let id = AgentID(pk.to_bytes());
             entries.push((id, sk));
             validators.push((id, crate::types::ValidatorKey(pk)));
         }
@@ -695,7 +695,7 @@ mod tests {
         let epoch_store = Arc::new(EpochStore::new(env).unwrap());
         let sk = SecretKey::key_gen(&[71u8; 32], &[]).unwrap();
         let vk = crate::types::ValidatorKey(sk.sk_to_pk());
-        let validator_set = ValidatorSet::new(vec![(ValidatorID(1), vk)], 0).unwrap();
+        let validator_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk)], 0).unwrap();
         let fast_path = Arc::new(FastPathProtocol::new(
             validator_set,
             Arc::clone(&balance_store),
@@ -706,7 +706,7 @@ mod tests {
             Arc::new(PeerNetwork::new_client(mock_socket(), HashMap::new(), cert, key).unwrap());
         let runner = Arc::new(
             NodeRunner::new(
-                ValidatorID(1),
+                crate::types::test_agent_id(1),
                 "ilc-rc01".to_string(),
                 0,
                 sk,
@@ -732,8 +732,8 @@ mod tests {
 
     fn agg_sig_all(
         record: &EpochSettlementRecord,
-        entries: &[(ValidatorID, SecretKey)],
-    ) -> (AggSig, Vec<ValidatorID>) {
+        entries: &[(AgentID, SecretKey)],
+    ) -> (AggSig, Vec<AgentID>) {
         let msg = bincode::serialize(record).unwrap();
         let sigs: Vec<_> = entries
             .iter()
@@ -741,7 +741,7 @@ mod tests {
             .collect();
         let sig_refs: Vec<_> = sigs.iter().collect();
         let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
-        let signers: Vec<ValidatorID> = entries.iter().map(|(id, _)| *id).collect();
+        let signers: Vec<AgentID> = entries.iter().map(|(id, _)| *id).collect();
         (AggSig(agg), signers)
     }
 

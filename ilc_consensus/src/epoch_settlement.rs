@@ -4,7 +4,7 @@ use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorID,
+    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, AgentID,
     ValidatorSet, ILC_EPOCH_SIG_DST,
 };
 use crate::validator::quorum_threshold;
@@ -50,7 +50,7 @@ pub struct StoredCheckpoint {
     pub agg_sig_bytes: Vec<u8>,
     /// Signing subset stored alongside the aggregate so the recovery path can
     /// reconstruct a valid EpochCheckpoint without re-gossiping the signers.
-    pub signers: Vec<ValidatorID>,
+    pub signers: Vec<AgentID>,
 }
 
 /// Singleton key in the epoch_records DB storing the latest committed epoch number as a raw u64.
@@ -349,12 +349,12 @@ impl EpochSettlementProtocol {
         }
 
         // Duplicate signer check.
-        let mut seen: HashSet<ValidatorID> = HashSet::with_capacity(checkpoint.signers.len());
+        let mut seen: HashSet<AgentID> = HashSet::with_capacity(checkpoint.signers.len());
         for &signer_id in &checkpoint.signers {
             if !seen.insert(signer_id) {
                 return Err(ILCConsensusError::Other(format!(
                     "duplicate signer in checkpoint: validator {}",
-                    signer_id.0
+                    signer_id
                 )));
             }
         }
@@ -368,7 +368,7 @@ impl EpochSettlementProtocol {
             let vk = validator_set.validators.get(&signer_id).ok_or_else(|| {
                 ILCConsensusError::Other(format!(
                     "signer validator {} not in active validator set",
-                    signer_id.0
+                    signer_id
                 ))
             })?;
             pub_keys.push(vk.0.clone());
@@ -531,41 +531,41 @@ mod tests {
         ikm
     }
 
-    /// Returns a 2-validator set (f=0). IDs are ValidatorID(1) and ValidatorID(2).
-    fn setup_validators() -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+    /// Returns a 2-validator set (f=0). IDs are crate::types::test_agent_id(1) and crate::types::test_agent_id(2).
+    fn setup_validators() -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=2u32 {
             let sk = SecretKey::key_gen(&deterministic_ikm(i), &[]).unwrap();
             let pk = sk.sk_to_pk();
-            let id = ValidatorID(i);
+            let id = AgentID(pk.to_bytes());
             entries.push((id, sk));
             validators.push((id, crate::types::ValidatorKey(pk)));
         }
         (ValidatorSet::new(validators, 0).unwrap(), entries)
     }
 
-    /// Returns an N-validator set. IDs are ValidatorID(1)..ValidatorID(n).
-    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+    /// Returns an N-validator set. IDs are crate::types::test_agent_id(1)..AgentID(n).
+    fn setup_n_validators(n: u32) -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
         let f = (n as usize).saturating_sub(1) / 3;
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=n {
             let sk = SecretKey::key_gen(&deterministic_ikm(i), &[]).unwrap();
             let pk = sk.sk_to_pk();
-            let id = ValidatorID(i);
+            let id = AgentID(pk.to_bytes());
             entries.push((id, sk));
             validators.push((id, crate::types::ValidatorKey(pk)));
         }
         (ValidatorSet::new(validators, f).unwrap(), entries)
     }
 
-    /// Aggregate signatures for the given subset of (ValidatorID, SecretKey) pairs.
+    /// Aggregate signatures for the given subset of (AgentID, SecretKey) pairs.
     /// Returns the aggregate sig and the signer ID list.
     fn agg_sig_for_subset(
         record: &EpochSettlementRecord,
-        subset: &[(ValidatorID, SecretKey)],
-    ) -> (AggSig, Vec<ValidatorID>) {
+        subset: &[(AgentID, SecretKey)],
+    ) -> (AggSig, Vec<AgentID>) {
         let msg = bincode::serialize(record).unwrap();
         let sigs: Vec<_> = subset
             .iter()
@@ -573,15 +573,15 @@ mod tests {
             .collect();
         let sig_refs: Vec<_> = sigs.iter().collect();
         let agg = AggregateSignature::aggregate(&sig_refs, false).unwrap();
-        let signers: Vec<ValidatorID> = subset.iter().map(|(id, _)| *id).collect();
+        let signers: Vec<AgentID> = subset.iter().map(|(id, _)| *id).collect();
         (AggSig(agg), signers)
     }
 
     /// Convenience: aggregate all validators in the set (sorted by ID).
     fn agg_sig_all(
         record: &EpochSettlementRecord,
-        entries: &[(ValidatorID, SecretKey)],
-    ) -> (AggSig, Vec<ValidatorID>) {
+        entries: &[(AgentID, SecretKey)],
+    ) -> (AggSig, Vec<AgentID>) {
         let mut sorted = entries.to_vec();
         sorted.sort_by_key(|(id, _)| id.0);
         agg_sig_for_subset(record, &sorted)
@@ -592,7 +592,7 @@ mod tests {
         epoch: u64,
         fill: u8,
         vset: &ValidatorSet,
-        entries: &[(ValidatorID, SecretKey)],
+        entries: &[(AgentID, SecretKey)],
     ) {
         let record = EpochSettlementRecord {
             epoch: EpochSeq(epoch),
@@ -794,7 +794,7 @@ mod tests {
 
         // Aggregate only the first signer's key, but claim both validators signed.
         let (forged_sigs, _) = agg_sig_for_subset(&record, &entries[0..1]);
-        let all_signers: Vec<ValidatorID> = entries.iter().map(|(id, _)| *id).collect();
+        let all_signers: Vec<AgentID> = entries.iter().map(|(id, _)| *id).collect();
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
             sigs: forged_sigs,
@@ -895,7 +895,7 @@ mod tests {
         let (wrong_agg, _) = agg_sig_all(&wrong_record, &entries);
         let wrong_sig_bytes = wrong_agg.0.to_signature().compress().to_vec();
 
-        let all_signers: Vec<ValidatorID> = entries.iter().map(|(id, _)| *id).collect();
+        let all_signers: Vec<AgentID> = entries.iter().map(|(id, _)| *id).collect();
         let corrupted_stored = StoredCheckpoint {
             record: record.clone(),
             agg_sig_bytes: wrong_sig_bytes,
@@ -1182,7 +1182,7 @@ mod tests {
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
             sigs,
-            signers: vec![ValidatorID(1), ValidatorID(1), ValidatorID(2)],
+            signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(1), crate::types::test_agent_id(2)],
         };
 
         let err = protocol
@@ -1219,7 +1219,7 @@ mod tests {
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
             sigs,
-            signers: vec![ValidatorID(1), ValidatorID(2), ValidatorID(99)],
+            signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2), crate::types::test_agent_id(99)],
         };
 
         let err = protocol
@@ -1254,8 +1254,8 @@ mod tests {
             not_before_unix_ms: 0,
         };
         let (sigs, mut signers) = agg_sig_for_subset(&record, &entries[0..3]);
-        signers.push(ValidatorID(99));
-        signers.push(ValidatorID(100));
+        signers.push(crate::types::test_agent_id(99));
+        signers.push(crate::types::test_agent_id(100));
         let checkpoint = EpochCheckpoint {
             record,
             sigs,
@@ -1284,12 +1284,14 @@ mod tests {
             not_before_unix_ms: 0,
         };
         let (sigs, signers) = agg_sig_for_subset(&record, &entries[0..3]);
-        let oversized_signers: Vec<ValidatorID> = (1..=validator_count).map(ValidatorID).collect();
+        let oversized_signers: Vec<AgentID> = (1..=validator_count)
+            .map(crate::types::test_agent_id)
+            .collect();
         assert_eq!(oversized_signers.len(), MAX_SIGNERS_PER_CHECKPOINT + 1);
         assert!(oversized_signers.len() <= vset.validators.len());
         assert_eq!(
             signers,
-            vec![ValidatorID(1), ValidatorID(2), ValidatorID(3)]
+            vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2), crate::types::test_agent_id(3)]
         );
         let checkpoint = EpochCheckpoint {
             record,

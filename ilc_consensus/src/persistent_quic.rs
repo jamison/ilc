@@ -5,7 +5,7 @@
 //! projection from signed `QUIC_ENDPOINT` graph edges for one topology epoch.
 
 use crate::network::{GossipEnvelope, PeerNetwork, IO_TIMEOUT_MS};
-use crate::types::{ILCConsensusError, ValidatorID};
+use crate::types::{AgentID, ILCConsensusError};
 use quinn::Connection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -95,7 +95,7 @@ pub enum EndpointKind {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct QuicEndpointEdge {
-    pub validator_id: ValidatorID,
+    pub validator_id: AgentID,
     pub topology_epoch: u64,
     pub endpoint_kind: EndpointKind,
     pub addr: SocketAddr,
@@ -109,8 +109,8 @@ pub struct QuicEndpointEdge {
 pub struct EndpointProjection {
     topology_epoch: u64,
     source_snapshot_hash: String,
-    direct_endpoints: HashMap<u32, QuicEndpointEdge>,
-    relay_endpoints: HashMap<u32, QuicEndpointEdge>,
+    direct_endpoints: HashMap<AgentID, QuicEndpointEdge>,
+    relay_endpoints: HashMap<AgentID, QuicEndpointEdge>,
 }
 
 impl EndpointProjection {
@@ -130,7 +130,7 @@ impl EndpointProjection {
 
         for edge in signed_edges {
             validate_signed_endpoint_edge(topology_epoch, &edge)?;
-            let validator_key = edge.validator_id.0;
+            let validator_key = edge.validator_id;
             match edge.endpoint_kind {
                 EndpointKind::Direct => {
                     if direct_endpoints.insert(validator_key, edge).is_some() {
@@ -167,16 +167,16 @@ impl EndpointProjection {
         &self.source_snapshot_hash
     }
 
-    pub fn direct_endpoint(&self, validator_id: ValidatorID) -> Option<&QuicEndpointEdge> {
-        self.direct_endpoints.get(&validator_id.0)
+    pub fn direct_endpoint(&self, validator_id: AgentID) -> Option<&QuicEndpointEdge> {
+        self.direct_endpoints.get(&validator_id)
     }
 
-    pub fn relay_endpoint(&self, validator_id: ValidatorID) -> Option<&QuicEndpointEdge> {
-        self.relay_endpoints.get(&validator_id.0)
+    pub fn relay_endpoint(&self, validator_id: AgentID) -> Option<&QuicEndpointEdge> {
+        self.relay_endpoints.get(&validator_id)
     }
 
-    pub fn validator_ids(&self) -> Vec<ValidatorID> {
-        let mut ids: Vec<u32> = self
+    pub fn validator_ids(&self) -> Vec<AgentID> {
+        let mut ids: Vec<AgentID> = self
             .direct_endpoints
             .keys()
             .chain(self.relay_endpoints.keys())
@@ -184,10 +184,10 @@ impl EndpointProjection {
             .collect();
         ids.sort_unstable();
         ids.dedup();
-        ids.into_iter().map(ValidatorID).collect()
+        ids
     }
 
-    pub fn preferred_peer_addrs(&self) -> Vec<(ValidatorID, SocketAddr)> {
+    pub fn preferred_peer_addrs(&self) -> Vec<(AgentID, SocketAddr)> {
         let mut peers = Vec::new();
         for validator_id in self.validator_ids() {
             if let Some(edge) = self.direct_endpoint(validator_id) {
@@ -271,7 +271,7 @@ pub enum SessionPath {
 
 #[derive(Debug, Clone)]
 pub struct PersistentQuicSession {
-    pub validator_id: ValidatorID,
+    pub validator_id: AgentID,
     pub topology_epoch: u64,
     pub path: SessionPath,
     pub connection: Connection,
@@ -282,7 +282,7 @@ pub struct PersistentQuicSession {
 pub struct PersistentQuicSessionManager {
     network: Arc<PeerNetwork>,
     projection: Arc<EndpointProjection>,
-    sessions: Mutex<HashMap<u32, PersistentQuicSession>>,
+    sessions: Mutex<HashMap<AgentID, PersistentQuicSession>>,
     config: PersistentQuicSessionPoolConfig,
 }
 
@@ -332,9 +332,9 @@ impl PersistentQuicSessionManager {
         self.sessions.lock().await.len()
     }
 
-    pub async fn mark_stale(&self, validator_id: ValidatorID) -> bool {
+    pub async fn mark_stale(&self, validator_id: AgentID) -> bool {
         let mut sessions = self.sessions.lock().await;
-        if let Some(session) = sessions.get_mut(&validator_id.0) {
+        if let Some(session) = sessions.get_mut(&validator_id) {
             session.stale = true;
             return true;
         }
@@ -355,18 +355,18 @@ impl PersistentQuicSessionManager {
 
     pub async fn ensure_session(
         &self,
-        validator_id: ValidatorID,
+        validator_id: AgentID,
     ) -> Result<PersistentQuicSession, ILCConsensusError> {
         self.acquire_session(validator_id).await
     }
 
     pub async fn acquire_session(
         &self,
-        validator_id: ValidatorID,
+        validator_id: AgentID,
     ) -> Result<PersistentQuicSession, ILCConsensusError> {
         {
             let mut sessions = self.sessions.lock().await;
-            if let Some(session) = sessions.get(&validator_id.0) {
+            if let Some(session) = sessions.get(&validator_id) {
                 if session.topology_epoch == self.projection.topology_epoch()
                     && !session.stale
                     && session.connection.close_reason().is_none()
@@ -376,7 +376,7 @@ impl PersistentQuicSessionManager {
                     return Ok(session.clone());
                 }
             }
-            sessions.remove(&validator_id.0);
+            sessions.remove(&validator_id);
             if sessions.len() >= self.config.max_sessions {
                 return Err(ILCConsensusError::Other(format!(
                     "persistent_quic_pool_at_capacity_phase_1482p: max_sessions={}",
@@ -432,14 +432,14 @@ impl PersistentQuicSessionManager {
         Err(last_error.unwrap_or_else(|| {
             ILCConsensusError::Other(format!(
                 "no QUIC endpoint projection entry for validator_id={}",
-                validator_id.0
+                validator_id
             ))
         }))
     }
 
     async fn insert_session_after_capacity_recheck(
         &self,
-        validator_id: ValidatorID,
+        validator_id: AgentID,
         session: PersistentQuicSession,
     ) -> Result<PersistentQuicSession, ILCConsensusError> {
         let mut sessions = self.sessions.lock().await;
@@ -449,19 +449,19 @@ impl PersistentQuicSessionManager {
                 && existing.last_successful_send.elapsed()
                     < Duration::from_millis(self.config.stale_timeout_ms)
         });
-        if !sessions.contains_key(&validator_id.0) && sessions.len() >= self.config.max_sessions {
+        if !sessions.contains_key(&validator_id) && sessions.len() >= self.config.max_sessions {
             return Err(ILCConsensusError::Other(format!(
                 "persistent_quic_pool_at_capacity_phase_1575h_fix2_second_lock: max_sessions={}",
                 self.config.max_sessions
             )));
         }
-        sessions.insert(validator_id.0, session.clone());
+        sessions.insert(validator_id, session.clone());
         Ok(session)
     }
 
     pub async fn transmit_persistent(
         &self,
-        validator_id: ValidatorID,
+        validator_id: AgentID,
         envelope: GossipEnvelope,
     ) -> Result<SessionPath, ILCConsensusError> {
         let session = self.ensure_session(validator_id).await?;
@@ -473,7 +473,7 @@ impl PersistentQuicSessionManager {
         .map_err(|_| {
             ILCConsensusError::Other(format!(
                 "persistent open_bi to validator_id={} timed out",
-                validator_id.0
+                validator_id
             ))
         })?
         .map_err(|e| ILCConsensusError::Other(format!("persistent open_bi error: {}", e)))?;
@@ -482,9 +482,9 @@ impl PersistentQuicSessionManager {
         Ok(session.path)
     }
 
-    async fn record_success(&self, validator_id: ValidatorID) {
+    async fn record_success(&self, validator_id: AgentID) {
         let mut sessions = self.sessions.lock().await;
-        if let Some(session) = sessions.get_mut(&validator_id.0) {
+        if let Some(session) = sessions.get_mut(&validator_id) {
             session.last_successful_send = Instant::now();
             session.stale = false;
         }
@@ -528,7 +528,7 @@ impl PersistentQuicSessionManager {
         .map_err(|_| {
             ILCConsensusError::Other(format!(
                 "QUIC connect to validator_id={} timed out via {:?}",
-                edge.validator_id.0, edge.endpoint_kind
+                edge.validator_id, edge.endpoint_kind
             ))
         })?
         .map_err(|e| ILCConsensusError::Other(format!("QUIC connection error: {}", e)))
@@ -586,7 +586,7 @@ mod tests {
         addr: SocketAddr,
     ) -> QuicEndpointEdge {
         QuicEndpointEdge {
-            validator_id: ValidatorID(validator_id),
+            validator_id: crate::types::test_agent_id(validator_id),
             topology_epoch,
             endpoint_kind,
             addr,
@@ -664,13 +664,13 @@ mod tests {
             tokio::spawn(accept_one_missing_epoch_sync(Arc::clone(&direct_server)));
         let env = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(2),
+            peer_id: crate::types::test_agent_id(2),
             payload: GossipMessage::MissingEpochSync {
                 latest_contiguous_epoch: 0,
             },
         };
         let path = manager
-            .transmit_persistent(ValidatorID(1), env)
+            .transmit_persistent(crate::types::test_agent_id(1), env)
             .await
             .unwrap();
         assert_eq!(path, SessionPath::DirectQuic);
@@ -680,7 +680,7 @@ mod tests {
             .unwrap()
             .unwrap();
 
-        let reused = manager.ensure_session(ValidatorID(1)).await.unwrap();
+        let reused = manager.ensure_session(crate::types::test_agent_id(1)).await.unwrap();
         assert_eq!(reused.path, SessionPath::DirectQuic);
         assert_eq!(reused.topology_epoch, 14);
 
@@ -729,13 +729,13 @@ mod tests {
             tokio::spawn(accept_one_missing_epoch_sync(Arc::clone(&relay_server)));
         let relay_env = GossipEnvelope {
             frame_type: 0x00,
-            peer_id: ValidatorID(2),
+            peer_id: crate::types::test_agent_id(2),
             payload: GossipMessage::MissingEpochSync {
                 latest_contiguous_epoch: 0,
             },
         };
         let relay_path = relay_manager
-            .transmit_persistent(ValidatorID(1), relay_env)
+            .transmit_persistent(crate::types::test_agent_id(1), relay_env)
             .await
             .unwrap();
         assert_eq!(relay_path, SessionPath::Cdl078RelayFallback);

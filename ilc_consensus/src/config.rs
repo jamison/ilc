@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::types::{AgentID, ILCConsensusError, ValidatorID, ValidatorKey, ValidatorSet};
+use crate::types::{AgentID, ILCConsensusError, ValidatorKey, ValidatorSet};
 use sha2::{Digest, Sha256};
 
 // ---------------------------------------------------------------------------
@@ -115,6 +115,7 @@ pub enum SettlementPath {
 /// `load_genesis_with_metadata`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GenesisValidatorMetadata {
+    pub config_validator_id: u32,
     pub agent_id: AgentID,
     pub stake_micro_ecu: u64,
     pub role: String,
@@ -183,7 +184,7 @@ pub fn load_genesis_with_metadata(
     (
         ValidatorSet,
         String,
-        HashMap<ValidatorID, GenesisValidatorMetadata>,
+        HashMap<AgentID, GenesisValidatorMetadata>,
     ),
     ILCConsensusError,
 > {
@@ -196,7 +197,6 @@ pub fn load_genesis_with_metadata(
     let mut metadata = HashMap::with_capacity(genesis.validators.len());
     let mut seen_agent_ids = HashSet::with_capacity(genesis.validators.len());
     for v in &genesis.validators {
-        let validator_id = ValidatorID(v.validator_id);
         // blst::min_pk::PublicKey (G1 compressed) is 48 bytes = 96 hex chars.
         let key_bytes = hex_decode_exact(&v.validator_key, 48).map_err(|e| {
             ILCConsensusError::Other(format!(
@@ -224,10 +224,11 @@ pub fn load_genesis_with_metadata(
                 v.validator_id
             )));
         }
-        validators.push((validator_id, ValidatorKey(pubkey)));
+        validators.push((agent_id, ValidatorKey(pubkey)));
         metadata.insert(
-            validator_id,
+            agent_id,
             GenesisValidatorMetadata {
+                config_validator_id: v.validator_id,
                 agent_id,
                 stake_micro_ecu: v.stake_micro_ecu,
                 role: v.role.clone(),
@@ -525,7 +526,7 @@ fn peer_cert_sha256_fingerprints(peer_certs: &HashMap<u32, Vec<u8>>) -> Vec<[u8;
 }
 
 /// Parse `validator_{id}_cert.der` → Some(id), or None if the name doesn't match.
-// MEDIUM-009 fix: removed hard-coded client_cert.der → ValidatorID(5) mapping.
+// MEDIUM-009 fix: removed hard-coded client_cert.der → validator_id=5 mapping.
 // All validator certs must use the standard validator_{id}_cert.der naming scheme.
 fn parse_validator_cert_filename(name: &str) -> Option<u32> {
     let stripped = name.strip_prefix("validator_")?.strip_suffix("_cert.der")?;
@@ -791,7 +792,10 @@ mod tests {
 
         assert_eq!(network_id, "ilc-test-metadata");
         assert_eq!(validator_set.validators.len(), 1);
-        let entry = metadata.get(&ValidatorID(1)).expect("metadata retained");
+        let entry = metadata
+            .get(&AgentID([1u8; 48]))
+            .expect("metadata retained");
+        assert_eq!(entry.config_validator_id, 1);
         assert_eq!(entry.agent_id, AgentID([1u8; 48]));
         assert_eq!(entry.stake_micro_ecu, 1_234_567);
         assert_eq!(entry.role, "genesis_bootstrap");

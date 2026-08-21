@@ -17,7 +17,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use ilc_consensus::epoch_settlement::StoredCheckpoint;
-use ilc_consensus::types::{CIDv1Root, ValidatorID, ILC_EPOCH_SIG_DST};
+use ilc_consensus::types::{CIDv1Root, AgentID, ILC_EPOCH_SIG_DST};
 
 const SCHEMA_VERSION: &str = "ilc_dag_audit_v1";
 const SENTINEL: &[u8] = b"\xff";
@@ -171,13 +171,12 @@ fn verify_epoch_chain(args: &Args) -> Result<AuditReport, AuditError> {
     };
     let sentinel_consistent = sentinel_epoch == Some(max_committed);
 
-    // Build a ValidatorID → PublicKey map. Genesis validators are 0-indexed in the array;
-    // ValidatorIDs are 1-indexed (ValidatorID(1) = genesis.validators[0]).
-    let pk_by_id: HashMap<ValidatorID, &PublicKey> = genesis
+    // Build an AgentID -> PublicKey map from BLS public key material; AgentID is
+    // no longer a positional validator index.
+    let pk_by_id: HashMap<AgentID, &PublicKey> = genesis
         .public_keys
         .iter()
-        .enumerate()
-        .map(|(idx, pk)| (ValidatorID((idx + 1) as u32), pk))
+        .map(|pk| (AgentID(pk.to_bytes()), pk))
         .collect();
     let mut epoch_results = Vec::with_capacity(records.len());
     for (epoch_num, stored) in &records {
@@ -355,7 +354,7 @@ fn read_epoch_records(
 fn verify_stored_checkpoint(
     epoch_num: u64,
     stored: &StoredCheckpoint,
-    pk_by_id: &HashMap<ValidatorID, &PublicKey>,
+    pk_by_id: &HashMap<AgentID, &PublicKey>,
 ) -> EpochResult {
     let mut result = EpochResult {
         epoch: stored.record.epoch.0,
@@ -384,7 +383,7 @@ fn verify_stored_checkpoint(
         match pk_by_id.get(&signer_id) {
             Some(pk) => subset_keys.push(pk),
             None => {
-                result.bls_error = Some(format!("signer_validator_{}_not_in_genesis", signer_id.0));
+                result.bls_error = Some(format!("signer_validator_{}_not_in_genesis", signer_id));
                 return result;
             }
         }
@@ -455,7 +454,7 @@ mod tests {
         EpochSettlementProtocol, EpochStore, MIN_EPOCH_DURATION_MS,
     };
     use ilc_consensus::types::{
-        AggSig, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ValidatorID,
+        AggSig, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, AgentID,
         ValidatorKey, ValidatorSet,
     };
 
@@ -486,15 +485,16 @@ mod tests {
         ];
         let validators = keys
             .iter()
-            .enumerate()
-            .map(|(idx, sk)| (ValidatorID((idx + 1) as u32), ValidatorKey(sk.sk_to_pk())))
+            .map(|sk| {
+                let pk = sk.sk_to_pk();
+                (AgentID(pk.to_bytes()), ValidatorKey(pk))
+            })
             .collect::<Vec<_>>();
         let validator_set = ValidatorSet::new(validators, 0)?;
 
-        let all_ids: Vec<ValidatorID> = keys
+        let all_ids: Vec<AgentID> = keys
             .iter()
-            .enumerate()
-            .map(|(idx, _)| ValidatorID((idx + 1) as u32))
+            .map(|sk| AgentID(sk.sk_to_pk().to_bytes()))
             .collect();
         for epoch in 1..=3u64 {
             let record = EpochSettlementRecord {

@@ -1,5 +1,5 @@
 use crate::balance_store::{BalanceChange, BalanceStore};
-use crate::types::{EpochSeq, ILCConsensusError, TransferCertificate, ValidatorSet};
+use crate::types::{AgentID, EpochSeq, ILCConsensusError, TransferCertificate, ValidatorSet};
 use std::collections::{BTreeMap, HashSet};
 use std::sync::{Arc, RwLock};
 
@@ -128,7 +128,7 @@ impl FastPathProtocol {
 
         // 2. Cryptographic constraint loop
         for (val_id, sig) in &cert.sigs {
-            if !seen_validators.insert(val_id.0) {
+            if !seen_validators.insert(*val_id) {
                 return Err(ILCConsensusError::InvalidSignature); // Stops Sybil duplication of signatures within the set
             }
 
@@ -162,7 +162,7 @@ mod tests {
     use super::*;
     use crate::types::{
         AgentID, AgentSig, AttributionBatch, ECUTransfer, EpochSeq, ObjectRef, TransferClass,
-        ValidatorID, ValidatorKey, ValidatorSig,
+        ValidatorKey, ValidatorSig,
     };
     use blst::min_pk::SecretKey;
 
@@ -190,13 +190,13 @@ mod tests {
         (sk, ValidatorKey(pk))
     }
 
-    fn setup_n_validator_set(n: u32) -> (ValidatorSet, Vec<(ValidatorID, SecretKey)>) {
+    fn setup_n_validator_set(n: u32) -> (ValidatorSet, Vec<(AgentID, SecretKey)>) {
         let f = (n as usize).saturating_sub(1) / 3;
         let mut entries = Vec::new();
         let mut validators = Vec::new();
         for i in 1..=n {
             let (sk, vk) = generate_keypair_u32(i);
-            let id = ValidatorID(i);
+            let id = AgentID(vk.0.to_bytes());
             entries.push((id, sk));
             validators.push((id, vk));
         }
@@ -272,10 +272,10 @@ mod tests {
         let (_sk4, vk4) = generate_keypair(4);
 
         let validators = vec![
-            (ValidatorID(1), vk1),
-            (ValidatorID(2), vk2),
-            (ValidatorID(3), vk3),
-            (ValidatorID(4), vk4),
+            (crate::types::test_agent_id(1), vk1),
+            (crate::types::test_agent_id(2), vk2),
+            (crate::types::test_agent_id(3), vk3),
+            (crate::types::test_agent_id(4), vk4),
         ];
 
         let val_set = ValidatorSet::new(validators, 1).unwrap();
@@ -312,8 +312,8 @@ mod tests {
         let cert_insufficient = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()),
-                (ValidatorID(2), sig2.clone()),
+                (crate::types::test_agent_id(1), sig1.clone()),
+                (crate::types::test_agent_id(2), sig2.clone()),
             ],
             epoch: EpochSeq(1),
         };
@@ -328,9 +328,9 @@ mod tests {
         let cert_duplicate = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()),
-                (ValidatorID(2), sig2.clone()),
-                (ValidatorID(1), sig1.clone()), // Duplicate!
+                (crate::types::test_agent_id(1), sig1.clone()),
+                (crate::types::test_agent_id(2), sig2.clone()),
+                (crate::types::test_agent_id(1), sig1.clone()), // Duplicate!
             ],
             epoch: EpochSeq(1),
         };
@@ -345,9 +345,9 @@ mod tests {
         let cert_invalid = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()),
-                (ValidatorID(2), sig2.clone()),
-                (ValidatorID(3), invalid_sig),
+                (crate::types::test_agent_id(1), sig1.clone()),
+                (crate::types::test_agent_id(2), sig2.clone()),
+                (crate::types::test_agent_id(3), invalid_sig),
             ],
             epoch: EpochSeq(1),
         };
@@ -360,9 +360,9 @@ mod tests {
         let cert_valid = TransferCertificate {
             transfer: transfer.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1.clone()),
-                (ValidatorID(2), sig2.clone()),
-                (ValidatorID(3), sig3.clone()),
+                (crate::types::test_agent_id(1), sig1.clone()),
+                (crate::types::test_agent_id(2), sig2.clone()),
+                (crate::types::test_agent_id(3), sig3.clone()),
             ],
             epoch: EpochSeq(1),
         };
@@ -387,7 +387,7 @@ mod tests {
             .unwrap();
 
         let (sk1, vk1) = generate_keypair(1);
-        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
+        let val_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let transfer = signed_test_transfer(&sk_agent1, agent1, agent2);
@@ -397,8 +397,8 @@ mod tests {
         let cert = TransferCertificate {
             transfer,
             sigs: vec![
-                (ValidatorID(1), sig1.clone()),
-                (ValidatorID(2), sig1.clone()),
+                (crate::types::test_agent_id(1), sig1.clone()),
+                (crate::types::test_agent_id(2), sig1.clone()),
             ],
             epoch: EpochSeq(1),
         };
@@ -434,7 +434,7 @@ mod tests {
         let msg = bincode::serialize(&transfer).unwrap();
         let dst = crate::validator::validator_dst("testnet");
         let oversized_sig = ValidatorSig(entries[0].1.sign(&msg, &dst, &[]));
-        let sigs: Vec<(ValidatorID, ValidatorSig)> = entries
+        let sigs: Vec<(AgentID, ValidatorSig)> = entries
             .iter()
             .map(|(id, _)| (*id, oversized_sig.clone()))
             .collect();
@@ -477,10 +477,10 @@ mod tests {
         let (sk4, vk4) = generate_keypair(4); // Byzantine
 
         let validators = vec![
-            (ValidatorID(1), vk1),
-            (ValidatorID(2), vk2),
-            (ValidatorID(3), vk3),
-            (ValidatorID(4), vk4),
+            (crate::types::test_agent_id(1), vk1),
+            (crate::types::test_agent_id(2), vk2),
+            (crate::types::test_agent_id(3), vk3),
+            (crate::types::test_agent_id(4), vk4),
         ];
 
         let val_set = ValidatorSet::new(validators, 1).unwrap();
@@ -546,9 +546,9 @@ mod tests {
         let cert_alpha = TransferCertificate {
             transfer: transfer_alpha.clone(),
             sigs: vec![
-                (ValidatorID(1), sig1_alpha),
-                (ValidatorID(2), sig2_alpha),
-                (ValidatorID(4), sig4_alpha), // Byzantine component
+                (crate::types::test_agent_id(1), sig1_alpha),
+                (crate::types::test_agent_id(2), sig2_alpha),
+                (crate::types::test_agent_id(4), sig4_alpha), // Byzantine component
             ],
             epoch: EpochSeq(1),
         };
@@ -560,9 +560,9 @@ mod tests {
         let cert_beta = TransferCertificate {
             transfer: transfer_beta.clone(),
             sigs: vec![
-                (ValidatorID(3), sig3_beta),
-                (ValidatorID(2), sig2_beta),
-                (ValidatorID(4), sig4_beta), // Byzantine component explicitly equivocating
+                (crate::types::test_agent_id(3), sig3_beta),
+                (crate::types::test_agent_id(2), sig2_beta),
+                (crate::types::test_agent_id(4), sig4_beta), // Byzantine component explicitly equivocating
             ],
             epoch: EpochSeq(1),
         };
@@ -585,7 +585,7 @@ mod tests {
         let (_, agent2) = generate_agent_keypair(22);
 
         let (_, vk1) = generate_keypair(1);
-        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
+        let val_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -621,7 +621,7 @@ mod tests {
         let (_, agent2) = generate_agent_keypair(22);
 
         let (sk_val1, vk1) = generate_keypair(1);
-        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
+        let val_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -644,7 +644,7 @@ mod tests {
 
         let cert = TransferCertificate {
             transfer,
-            sigs: vec![(ValidatorID(1), sig1)],
+            sigs: vec![(crate::types::test_agent_id(1), sig1)],
             epoch: EpochSeq(1),
         };
         assert_eq!(
@@ -682,10 +682,10 @@ mod tests {
         let (_sk4, vk4) = generate_keypair(4);
 
         let validators_full = vec![
-            (ValidatorID(1), vk1.clone()),
-            (ValidatorID(2), vk2.clone()),
-            (ValidatorID(3), vk3),
-            (ValidatorID(4), vk4.clone()),
+            (crate::types::test_agent_id(1), vk1.clone()),
+            (crate::types::test_agent_id(2), vk2.clone()),
+            (crate::types::test_agent_id(3), vk3),
+            (crate::types::test_agent_id(4), vk4.clone()),
         ];
         let val_set = ValidatorSet::new(validators_full, 1).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
@@ -722,15 +722,15 @@ mod tests {
             transfer: transfer_epoch1_pre,
             sigs: vec![
                 (
-                    ValidatorID(1),
+                    crate::types::test_agent_id(1),
                     ValidatorSig(sk1.sign(&msg_epoch1_pre, &dst, &[])),
                 ),
                 (
-                    ValidatorID(2),
+                    crate::types::test_agent_id(2),
                     ValidatorSig(sk2.sign(&msg_epoch1_pre, &dst, &[])),
                 ),
                 (
-                    ValidatorID(3),
+                    crate::types::test_agent_id(3),
                     ValidatorSig(sk3.sign(&msg_epoch1_pre, &dst, &[])),
                 ),
             ],
@@ -743,9 +743,9 @@ mod tests {
 
         // Rotate at epoch 2: V3 is ejected. Post-ejection: N=3, F=0, quorum=1.
         let validators_post = vec![
-            (ValidatorID(1), vk1),
-            (ValidatorID(2), vk2),
-            (ValidatorID(4), vk4),
+            (crate::types::test_agent_id(1), vk1),
+            (crate::types::test_agent_id(2), vk2),
+            (crate::types::test_agent_id(4), vk4),
         ];
         fast_path.rotate_validator_set(EpochSeq(2), ValidatorSet::new(validators_post, 0).unwrap());
 
@@ -757,15 +757,15 @@ mod tests {
             transfer: transfer_epoch1_post,
             sigs: vec![
                 (
-                    ValidatorID(1),
+                    crate::types::test_agent_id(1),
                     ValidatorSig(sk1.sign(&msg_epoch1_post, &dst, &[])),
                 ),
                 (
-                    ValidatorID(2),
+                    crate::types::test_agent_id(2),
                     ValidatorSig(sk2.sign(&msg_epoch1_post, &dst, &[])),
                 ),
                 (
-                    ValidatorID(3),
+                    crate::types::test_agent_id(3),
                     ValidatorSig(sk3.sign(&msg_epoch1_post, &dst, &[])),
                 ),
             ],
@@ -783,15 +783,15 @@ mod tests {
             transfer: transfer_epoch2_bad,
             sigs: vec![
                 (
-                    ValidatorID(1),
+                    crate::types::test_agent_id(1),
                     ValidatorSig(sk1.sign(&msg_epoch2_bad, &dst, &[])),
                 ),
                 (
-                    ValidatorID(2),
+                    crate::types::test_agent_id(2),
                     ValidatorSig(sk2.sign(&msg_epoch2_bad, &dst, &[])),
                 ),
                 (
-                    ValidatorID(3),
+                    crate::types::test_agent_id(3),
                     ValidatorSig(sk3.sign(&msg_epoch2_bad, &dst, &[])),
                 ),
             ],
@@ -811,7 +811,7 @@ mod tests {
         let cert_epoch2_valid = TransferCertificate {
             transfer: transfer_epoch2_good,
             sigs: vec![(
-                ValidatorID(1),
+                crate::types::test_agent_id(1),
                 ValidatorSig(sk1.sign(&msg_epoch2_good, &dst, &[])),
             )],
             epoch: EpochSeq(2),
@@ -843,7 +843,7 @@ mod tests {
             .unwrap();
 
         let (sk1, vk1) = generate_keypair(1);
-        let val_set = ValidatorSet::new(vec![(ValidatorID(1), vk1)], 0).unwrap();
+        let val_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1)], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         let mut transfer = ECUTransfer {
@@ -873,7 +873,7 @@ mod tests {
         // epoch=0 cert resolves to genesis set (EpochSeq(0) entry).
         let cert = TransferCertificate {
             transfer,
-            sigs: vec![(ValidatorID(1), sig1)],
+            sigs: vec![(crate::types::test_agent_id(1), sig1)],
             epoch: EpochSeq(0),
         };
         assert!(
@@ -907,19 +907,17 @@ mod tests {
         // Build N=7, f=2 genesis set.
         let keypairs: Vec<(blst::min_pk::SecretKey, ValidatorKey)> =
             (1u8..=7).map(|s| generate_keypair(s)).collect();
-        let validators: Vec<(ValidatorID, ValidatorKey)> = keypairs
+        let validators: Vec<(AgentID, ValidatorKey)> = keypairs
             .iter()
-            .enumerate()
-            .map(|(i, (_, vk))| (ValidatorID((i + 1) as u32), vk.clone()))
+            .map(|(_, vk)| (AgentID(vk.0.to_bytes()), vk.clone()))
             .collect();
         let val_set = ValidatorSet::new(validators, 2).unwrap();
         let fast_path = FastPathProtocol::new(val_set, store, "testnet".to_string());
 
         // Rotate at epoch 2: eject validator 7 → N=6, f=1, quorum=3.
-        let validators_post: Vec<(ValidatorID, ValidatorKey)> = keypairs[..6]
+        let validators_post: Vec<(AgentID, ValidatorKey)> = keypairs[..6]
             .iter()
-            .enumerate()
-            .map(|(i, (_, vk))| (ValidatorID((i + 1) as u32), vk.clone()))
+            .map(|(_, vk)| (AgentID(vk.0.to_bytes()), vk.clone()))
             .collect();
         fast_path.rotate_validator_set(EpochSeq(2), ValidatorSet::new(validators_post, 1).unwrap());
 
@@ -948,11 +946,11 @@ mod tests {
             transfer: transfer.clone(),
             sigs: vec![
                 (
-                    ValidatorID(1),
+                    crate::types::test_agent_id(1),
                     ValidatorSig(keypairs[0].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    ValidatorID(2),
+                    crate::types::test_agent_id(2),
                     ValidatorSig(keypairs[1].0.sign(&msg, &dst, &[])),
                 ),
             ],
@@ -971,15 +969,15 @@ mod tests {
             transfer,
             sigs: vec![
                 (
-                    ValidatorID(1),
+                    crate::types::test_agent_id(1),
                     ValidatorSig(keypairs[0].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    ValidatorID(2),
+                    crate::types::test_agent_id(2),
                     ValidatorSig(keypairs[1].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    ValidatorID(3),
+                    crate::types::test_agent_id(3),
                     ValidatorSig(keypairs[2].0.sign(&msg, &dst, &[])),
                 ),
             ],
@@ -1001,19 +999,19 @@ mod tests {
 
         let (_, vk1) = generate_keypair(1);
         let (_, vk2) = generate_keypair(2);
-        let val_set_genesis = ValidatorSet::new(vec![(ValidatorID(1), vk1.clone())], 0).unwrap();
+        let val_set_genesis = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1.clone())], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set_genesis, store, "testnet".to_string());
 
         // Advance to epoch 5.
         let val_set_epoch5 = ValidatorSet::new(
-            vec![(ValidatorID(1), vk1.clone()), (ValidatorID(2), vk2.clone())],
+            vec![(crate::types::test_agent_id(1), vk1.clone()), (crate::types::test_agent_id(2), vk2.clone())],
             0,
         )
         .unwrap();
         fast_path.rotate_validator_set(EpochSeq(5), val_set_epoch5);
 
         // Stale call: epoch 3 < epoch 5 — must not overwrite.
-        let val_set_stale = ValidatorSet::new(vec![(ValidatorID(2), vk2)], 0).unwrap();
+        let val_set_stale = ValidatorSet::new(vec![(crate::types::test_agent_id(2), vk2)], 0).unwrap();
         fast_path.rotate_validator_set(EpochSeq(3), val_set_stale);
 
         // Verify epoch_sets still has only genesis (0) and epoch 5 — not the stale epoch 3.
