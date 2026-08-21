@@ -518,6 +518,77 @@ def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     return {"action": "invite-create", "output": output}
 
 
+def _identity_seed_bytes_from_hex(identity_seed_hex: object) -> bytes:
+    if not isinstance(identity_seed_hex, str) or len(identity_seed_hex) != 64:
+        raise ValueError("identity_seed_hex_must_be_64_lower_hex_chars")
+    if any(char not in "0123456789abcdef" for char in identity_seed_hex):
+        raise ValueError("identity_seed_hex_must_be_64_lower_hex_chars")
+    return bytes.fromhex(identity_seed_hex)
+
+
+def _identity_init_int_arg(args: argparse.Namespace, name: str) -> int:
+    value = getattr(args, name)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"{name}_must_be_int")
+    return value
+
+
+def _apply_validator_candidate_enrollment_state(
+    args: argparse.Namespace,
+    state: dict[str, Any],
+    enrollment_agent_id: str,
+) -> None:
+    validator_participation_enabled = not bool(getattr(args, "no_validator", False))
+    state["validator_participation_enabled"] = validator_participation_enabled
+    if not validator_participation_enabled:
+        state["validator_role_record_status"] = "opted_out"
+        return
+
+    validator_key = getattr(args, "validator_key", "") or ""
+    validator_endpoint = getattr(args, "validator_endpoint", "") or ""
+    validator_material_supplied = bool(validator_key or validator_endpoint)
+    if not validator_material_supplied:
+        state["validator_role_record_status"] = "candidate_pending_validator_key_material"
+        return
+    if not validator_key or not validator_endpoint:
+        raise ValueError("validator_candidate_material_incomplete")
+
+    identity_seed_hex = getattr(args, "identity_seed_hex", "") or ""
+    if not identity_seed_hex:
+        raise ValueError("identity_seed_hex_required_for_validator_candidate")
+
+    from ilc_core.identity.agent_id_runtime import derive_agent_id_v2
+    from ilc_core.validator.admission_ejection_runtime import build_validator_role_record
+    from ilc_core.validator.validator_key_derivation import (
+        build_validator_key_derivation_record,
+    )
+
+    identity_seed = _identity_seed_bytes_from_hex(identity_seed_hex)
+    derived_agent_id = derive_agent_id_v2(identity_seed)
+    if enrollment_agent_id and enrollment_agent_id != derived_agent_id:
+        raise ValueError("validator_candidate_agent_id_invite_mismatch")
+
+    derivation_record = build_validator_key_derivation_record(identity_seed)
+    role_record = build_validator_role_record(
+        agent_id=derived_agent_id,
+        validator_id=_identity_init_int_arg(args, "validator_id"),
+        validator_key=validator_key,
+        validator_endpoint=validator_endpoint,
+        effective_from_epoch=_identity_init_int_arg(
+            args,
+            "validator_effective_from_epoch",
+        ),
+        network_id=getattr(args, "validator_network_id", "public-rc"),
+        validator_participation_enabled=True,
+        identity_seed_commitment=derivation_record["identity_seed_commitment"],
+    )
+    state["agent_id"] = derived_agent_id
+    state["identity_seed_commitment"] = derivation_record["identity_seed_commitment"]
+    state["validator_key_derivation_record"] = derivation_record
+    state["validator_role_record"] = role_record.to_canonical_record()
+    state["validator_role_record_status"] = "candidate_materialized"
+
+
 def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -> dict[str, Any]:
     state_path = _identity_state_path(graph_state_path)
     subcommand = getattr(args, "identity_subcommand", None)
@@ -601,6 +672,7 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
             enrollment_agent_id,
             state.get("invite_redemption_record"),
         )
+        _apply_validator_candidate_enrollment_state(args, state, enrollment_agent_id)
         _write_identity_state(state_path, state)
         return {"action": "init", "state_path": str(state_path), "state": state}
 
@@ -2537,7 +2609,40 @@ def _build_parser() -> JsonArgumentParser:
         p_init.add_argument(
             "--identity-seed-hex",
             default="",
-            help="Hex identity seed used only to derive the invite redemption agent_id",
+            help="Hex identity seed for invite redemption and validator candidate linkage",
+        )
+        p_init.add_argument(
+            "--no-validator",
+            dest="no_validator",
+            action="store_true",
+            help="Opt out of default public-RC candidate validator participation",
+        )
+        p_init.add_argument(
+            "--validator-id",
+            type=int,
+            default=1,
+            help="Temporary u32 validator id used until Rust AgentID migration lands",
+        )
+        p_init.add_argument(
+            "--validator-key",
+            default="",
+            help="96-char lower-hex BLS validator public key for candidate materialization",
+        )
+        p_init.add_argument(
+            "--validator-endpoint",
+            default="",
+            help="Validator endpoint for candidate materialization, for example host:port",
+        )
+        p_init.add_argument(
+            "--validator-network-id",
+            default="public-rc",
+            help="Network id for the candidate ValidatorRoleRecord",
+        )
+        p_init.add_argument(
+            "--validator-effective-from-epoch",
+            type=int,
+            default=1,
+            help="Candidate role effective-from epoch; default 1",
         )
         p_init.add_argument(
             "--redeemer-pubkey-cid",

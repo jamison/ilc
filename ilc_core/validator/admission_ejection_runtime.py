@@ -94,6 +94,7 @@ ROLE_STATUSES = (CANDIDATE, PROVISIONAL, OFFICIAL, "ejected")
 _LOWER_HEX_64_RE = re.compile(r"^[0-9a-f]{64}$")
 _LOWER_HEX_96_RE = re.compile(r"^[0-9a-f]{96}$")
 _NETWORK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,62}$")
+_MAX_VALIDATOR_ENDPOINT_CHARS = 512
 
 
 @dataclass(frozen=True)
@@ -116,6 +117,8 @@ class ValidatorRoleRecord:
     eligibility_verdict: str | None
     rust_validator_set_eligible: bool
     cdl055_bond_surface_token: str
+    validator_participation_enabled: bool = True
+    identity_seed_commitment: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "schema_version", _require_token(self.schema_version))
@@ -201,6 +204,22 @@ class ValidatorRoleRecord:
             "cdl055_bond_surface_token",
             _require_token(self.cdl055_bond_surface_token),
         )
+        object.__setattr__(
+            self,
+            "validator_participation_enabled",
+            _require_bool(
+                self.validator_participation_enabled,
+                "validator_participation_enabled",
+            ),
+        )
+        object.__setattr__(
+            self,
+            "identity_seed_commitment",
+            _require_optional_sha384_hex(
+                self.identity_seed_commitment,
+                "identity_seed_commitment",
+            ),
+        )
 
     def to_canonical_record(self) -> dict[str, Any]:
         return {
@@ -212,6 +231,7 @@ class ValidatorRoleRecord:
             "effective_to_epoch": self.effective_to_epoch,
             "eligibility_certificate_sha256": self.eligibility_certificate_sha256,
             "eligibility_verdict": self.eligibility_verdict,
+            "identity_seed_commitment": self.identity_seed_commitment,
             "liveness_state_root": self.liveness_state_root,
             "network_id": self.network_id,
             "quorum_weight": self.quorum_weight,
@@ -222,6 +242,7 @@ class ValidatorRoleRecord:
             "validator_endpoint": self.validator_endpoint,
             "validator_id": self.validator_id,
             "validator_key": self.validator_key,
+            "validator_participation_enabled": self.validator_participation_enabled,
         }
 
 
@@ -413,9 +434,19 @@ def _require_optional_root(value: object, field_name: str) -> str | None:
     return value
 
 
+def _require_optional_sha384_hex(value: object, field_name: str) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or not _LOWER_HEX_96_RE.fullmatch(value):
+        raise ValueError(f"{field_name}_must_be_sha384_hex_or_none_phase_gap_cdl017")
+    return value
+
+
 def _require_endpoint(value: object) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError("validator_endpoint_must_be_non_empty_phase_1589")
+    if len(value) > _MAX_VALIDATOR_ENDPOINT_CHARS:
+        raise ValueError("validator_endpoint_exceeds_bound_phase_gap_cdl017")
     if any(char.isspace() for char in value):
         raise ValueError("validator_endpoint_must_not_contain_whitespace_phase_1589")
     return value
@@ -462,6 +493,25 @@ def _normalize_agent_ids(values: tuple[str, ...] | list[str]) -> tuple[str, ...]
     if len(set(normalized)) != len(normalized):
         raise ValueError("current_agent_ids_must_be_unique")
     return tuple(sorted(normalized))
+
+
+def validate_validator_role_record_id_uniqueness(
+    records: tuple[ValidatorRoleRecord, ...] | list[ValidatorRoleRecord],
+) -> tuple[ValidatorRoleRecord, ...]:
+    """Validate temporary u32 ValidatorID uniqueness before the 00b migration."""
+
+    if not isinstance(records, (tuple, list)):
+        raise ValueError("validator_role_records_must_be_sequence")
+    normalized: list[ValidatorRoleRecord] = []
+    seen_validator_ids: set[int] = set()
+    for record in records:
+        if not isinstance(record, ValidatorRoleRecord):
+            raise ValueError("validator_role_record_required")
+        if record.validator_id in seen_validator_ids:
+            raise ValueError("validator_id_u32_must_be_unique_pending_00b")
+        seen_validator_ids.add(record.validator_id)
+        normalized.append(record)
+    return tuple(sorted(normalized, key=lambda item: (item.validator_id, item.agent_id)))
 
 
 def _require_stake(value: Decimal | int | str) -> Decimal:
@@ -515,6 +565,7 @@ def _parse_admission_options(
         "current_agent_ids",
         "effective_to_epoch",
         "eligibility_certificate",
+        "identity_seed_commitment",
         "network_id",
         "quorum_weight",
         "role_status",
@@ -522,6 +573,7 @@ def _parse_admission_options(
         "trust_tier_equivocation_state",
         "validator_endpoint",
         "validator_key",
+        "validator_participation_enabled",
     }
     unknown = sorted(set(admission_options) - allowed)
     if unknown:
@@ -547,11 +599,13 @@ def _parse_admission_options(
             "admission_authority_token",
             "effective_to_epoch",
             "eligibility_certificate",
+            "identity_seed_commitment",
             "network_id",
             "quorum_weight",
             "role_status",
             "validator_endpoint",
             "validator_key",
+            "validator_participation_enabled",
         )
         if key in admission_options
     }
@@ -571,6 +625,8 @@ def build_validator_role_record(
     quorum_weight: int | None = None,
     effective_to_epoch: int | None = None,
     admission_authority_token: str = PRODUCTION_VALIDATOR_ADMISSION_NOT_ACTIVATED_TOKEN,
+    validator_participation_enabled: bool = True,
+    identity_seed_commitment: str | None = None,
 ) -> ValidatorRoleRecord:
     """Build the Phase 1589 agent-bound validator-role record.
 
@@ -627,6 +683,8 @@ def build_validator_role_record(
         eligibility_verdict=cert_verdict,
         rust_validator_set_eligible=resolved_status == OFFICIAL and resolved_weight > 0,
         cdl055_bond_surface_token=VALIDATOR_ADMISSION_CDL055_BOND_SURFACE_TOKEN,
+        validator_participation_enabled=validator_participation_enabled,
+        identity_seed_commitment=identity_seed_commitment,
     )
 
 
@@ -718,6 +776,11 @@ def admit_validator(
                 "admission_authority_token",
                 default_role_authority_token,
             ),  # type: ignore[arg-type]
+            validator_participation_enabled=role_options.get(
+                "validator_participation_enabled",
+                True,
+            ),  # type: ignore[arg-type]
+            identity_seed_commitment=role_options.get("identity_seed_commitment"),  # type: ignore[arg-type]
         )
 
     if production_active:
@@ -864,4 +927,5 @@ __all__ = [
     "build_validator_role_record",
     "eject_validator",
     "require_production_validator_admission_activation",
+    "validate_validator_role_record_id_uniqueness",
 ]
