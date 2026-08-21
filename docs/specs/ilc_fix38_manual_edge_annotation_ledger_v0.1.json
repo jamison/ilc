@@ -74813,6 +74813,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_package_00a_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-CDL017-PACKAGE-00a local 0.3.1 package build receipt.",
+      "manual_read_summary": "Build receipt recording local ilc-core 0.3.1 wheel and sdist hashes, sizes, source commit, and pending PyPI upload status for the CDL-017 release chain.",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_CDL017_PACKAGE_00a_v0.1.json",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTATION_AUTHORITY",
+          "target": "phase:GAP-CDL017-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTATION_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "manual_edge_annotations": [

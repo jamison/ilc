@@ -1,0 +1,14 @@
+{
+  "build_commit": "c32d00775ed50d1c2afda0b430c4cb2d27705bff",
+  "build_phase": "GAP-CDL017-PACKAGE-00a",
+  "build_source_note": "Built from current worktree after pyproject.toml 0.3.0-to-0.3.1 phase bump; final source state is committed with this receipt.",
+  "cdl017_release_note": "Incorporates CDL-017 validator-as-agent implementation (IMPL-DELTA-00 + IMPL-DELTA-00b Rust migration) plus CDL-017 audit hardening through e86162e21.",
+  "local_sdist_path": "dist/ilc_core-0.3.1.tar.gz",
+  "local_wheel_path": "dist/ilc_core-0.3.1-py3-none-any.whl",
+  "pypi_upload_status": "pending",
+  "sdist_sha256": "a29e232ebd4a583cae6e7f6062da6f4aec0a360845470e7c6d3ff39771959d0d",
+  "sdist_size_bytes": 1112279,
+  "version": "0.3.1",
+  "wheel_sha256": "051e0b7be4dfe248e6598cb81013281ec6806f9c356c56789bee2dbc6b72062c",
+  "wheel_size_bytes": 1386814
+}
