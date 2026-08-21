@@ -7,6 +7,7 @@ from pathlib import Path
 from dataclasses import fields
 
 from ilc_core.validator.admission_ejection_runtime import (
+    GENESIS_STAKE_AMOUNT,
     ValidatorRoleRecord,
     build_validator_role_record,
     validate_validator_role_record_id_uniqueness,
@@ -71,9 +72,10 @@ def test_persistent_quic_projection_and_sessions_are_agent_id_keyed() -> None:
     assert "sessions.insert(validator_id.0" not in text
 
 
-def test_dag_audit_maps_genesis_public_keys_to_agent_ids() -> None:
+def test_dag_audit_maps_genesis_agent_ids_to_public_keys() -> None:
     text = _read("dag_audit_main.rs")
-    assert ".map(|pk| (AgentID(pk.to_bytes()), pk))" in text
+    assert "public_keys_by_agent_id" in text
+    assert 'validator.get("agent_id").and_then(Value::as_str)' in text
     assert "AgentID((idx + 1) as u32)" not in text
 
 
@@ -104,3 +106,9 @@ def test_validator_role_record_builder_does_not_require_deprecated_validator_id(
     )
 
     assert record.validator_id is None
+
+
+def test_cdl055_stake_threshold_matches_rust_micro_ecu_constant() -> None:
+    text = _read("validator.rs")
+    expected_micro_ecu = int(GENESIS_STAKE_AMOUNT * 1_000_000)
+    assert f"pub const MIN_STAKE_MICRO_ECU: u64 = {expected_micro_ecu:_};" in text

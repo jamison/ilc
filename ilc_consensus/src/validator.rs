@@ -22,13 +22,15 @@ pub fn quorum_threshold(n: usize) -> usize {
     n.saturating_sub(n.saturating_sub(1) / 3)
 }
 
-/// Minimum stake required for validator admission (1,000 ECU = 1,000,000,000 micro-ECU).
-pub const MIN_STAKE_MICRO_ECU: u64 = 1_000_000_000;
+/// Minimum stake required for validator admission under CDL-055.
+///
+/// CDL-055/Phase 506 anchors `GENESIS_STAKE_AMOUNT = 400` ECU in the Python
+/// admission layer. The Rust consensus admission hook uses micro-ECU, where
+/// 1 ECU = 1,000,000 micro-ECU.
+pub const MIN_STAKE_MICRO_ECU: u64 = 400_000_000;
 
 impl ValidatorSet {
-    fn rebuild_with(
-        validators: Vec<(AgentID, ValidatorKey)>,
-    ) -> Result<Self, ILCConsensusError> {
+    fn rebuild_with(validators: Vec<(AgentID, ValidatorKey)>) -> Result<Self, ILCConsensusError> {
         let f = validators.len().saturating_sub(1) / 3;
         // BUG-001: f=0 on N>1 means a single validator can commit transfers.
         // This is mathematically valid under N>3F but operationally dangerous.
@@ -46,9 +48,7 @@ impl ValidatorSet {
 
     /// Applies strict centralization BFT detection limiting boundaries to guarantees of Safety under byzantine assumptions.
     /// Rejects if any single node controls >= 1/3 of the total system stake exactly as required by the Phase 694 model.
-    pub fn check_concentration_limit(
-        stakes: &[(AgentID, u64)],
-    ) -> Result<(), ILCConsensusError> {
+    pub fn check_concentration_limit(stakes: &[(AgentID, u64)]) -> Result<(), ILCConsensusError> {
         let total_stake: u128 = stakes
             .iter()
             .map(|(_, s)| *s as u128)
@@ -277,7 +277,7 @@ mod tests {
             (test_agent_id(2), 32),
             (test_agent_id(3), 35),
         ]; // total=99; 32*3=96 < 99, 35*3=105 >= 99
-           // Validator 3 holds 35/99 > 1/3, so should be rejected.
+        // Validator 3 holds 35/99 > 1/3, so should be rejected.
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes_below_third),
             Err(ILCConsensusError::Other(

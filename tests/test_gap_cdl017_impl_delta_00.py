@@ -26,7 +26,10 @@ IDENTITY_SEED = bytes(range(32))
 IDENTITY_SEED_HEX = IDENTITY_SEED.hex()
 AGENT_ID = derive_agent_id_v2(IDENTITY_SEED)
 NETWORK_ID = "public-rc"
-VALIDATOR_KEY = "c" * 96
+VALIDATOR_KEY = (
+    "8fc76b0b897092833d575794290242b4dfd41a39eb59a081"
+    "89c4dbd805612749a35b47b7a2dd7d31c9bfd353ebdfb833"
+)
 VALIDATOR_ENDPOINT = "validator.example:9101"
 
 
@@ -71,6 +74,11 @@ def test_validator_key_ikm_uses_domain_separation() -> None:
 def test_validator_key_ikm_rejects_invalid_seed_type_or_length(bad_seed: object) -> None:
     with pytest.raises(ValueError, match="validator_key_identity_seed_must"):
         derive_validator_key_ikm(bad_seed)  # type: ignore[arg-type]
+
+
+def test_validator_key_ikm_rejects_all_zero_identity_seed() -> None:
+    with pytest.raises(ValueError, match="validator_key_identity_seed_must_not_be_all_zero"):
+        derive_validator_key_ikm(bytes(32))
 
 
 def test_validator_key_derivation_record_contains_only_non_secret_commitment() -> None:

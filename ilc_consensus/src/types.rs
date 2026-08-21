@@ -94,6 +94,9 @@ impl AgentID {
     /// Deterministic testnet-only compatibility mapping for CLI/config surfaces
     /// that still accept small numeric operator indices. Production consensus
     /// identity must be loaded from genesis agent_id / BLS key material instead.
+    ///
+    /// The returned bytes are not a BLS public key and must never be passed to
+    /// `PublicKey::from_bytes`; use genesis `validator_key` for BLS material.
     pub fn from_testnet_validator_index(index: u32) -> Self {
         let mut bytes = [0u8; 48];
         bytes[44..48].copy_from_slice(&index.to_be_bytes());

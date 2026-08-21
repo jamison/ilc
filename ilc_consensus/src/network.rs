@@ -1,7 +1,7 @@
 use crate::epoch_settlement::StoredCheckpoint;
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate,
-    AgentID, ValidatorSig,
+    AgentID, CIDv1Root, EpochCheckpoint, EpochSettlementTx, ILCConsensusError, TransferCertificate,
+    ValidatorSig,
 };
 use bincode::Options;
 use quinn::{ClientConfig, Connection, Endpoint, RecvStream, SendStream, ServerConfig};
@@ -269,6 +269,10 @@ impl PeerNetwork {
             let client_verifier = Arc::new(PinnedCertVerifier {
                 allowed_cert_ders: allowed_ders_for_client,
             });
+            // SNI is intentionally not used as the validator identity authority
+            // here. This closed validator-set transport authenticates peers by
+            // exact DER certificate pinning plus the genesis validator_id ->
+            // AgentID metadata map; DNS/SNI names are operator routing hints.
             let mut client_crypto = rustls::ClientConfig::builder()
                 .dangerous()
                 .with_custom_certificate_verifier(client_verifier)
@@ -467,7 +471,7 @@ mod tests {
     use crate::types::AgentSig;
     use crate::types::{
         AgentID, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-        ObjectRef, ILC_EPOCH_SIG_DST,
+        ILC_EPOCH_SIG_DST, ObjectRef,
     };
     use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
     use tokio::time::Duration;
@@ -512,7 +516,10 @@ mod tests {
             payload: GossipMessage::EpochCheckpointMsg(EpochCheckpoint {
                 record,
                 sigs: AggSig(agg),
-                signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2)],
+                signers: vec![
+                    crate::types::test_agent_id(1),
+                    crate::types::test_agent_id(2),
+                ],
             }),
         };
 
@@ -531,7 +538,13 @@ mod tests {
         match decoded.payload {
             GossipMessage::EpochCheckpointMsg(checkpoint) => {
                 assert_eq!(checkpoint.record.epoch, EpochSeq(1));
-                assert_eq!(checkpoint.signers, vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2)]);
+                assert_eq!(
+                    checkpoint.signers,
+                    vec![
+                        crate::types::test_agent_id(1),
+                        crate::types::test_agent_id(2)
+                    ]
+                );
             }
             other => panic!("unexpected payload: {:?}", other),
         }

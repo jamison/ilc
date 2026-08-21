@@ -27,10 +27,14 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     canonical_assertion_payload,
     validator_assertion_candidate_id,
 )
+from ilc_core.validator.network_id_validation import require_validator_network_id
 
 
 ENDPOINT_ROTATION_RUNTIME_VERSION = "validator_endpoint_rotation_gap_validator_ident_03.v0.1"
 ENDPOINT_ROTATION_BLS_SIGN_COMMAND_ENV = "ILC_VALIDATOR_ENDPOINT_ROTATION_BLS_SIGN_COMMAND"
+ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE_ENV = (
+    "ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE"
+)
 BLS_SIGNATURE_HEX_LENGTH = 192
 MAX_ASSERTION_JSON_BYTES = 1_048_576
 MAX_BLS_SECRET_BYTES = 4096
@@ -48,6 +52,7 @@ def rotate_validator_endpoint_assertion(
     output_path: Path,
     tls_cert_path: Path | None = None,
     asserted_at_epoch: int | None = None,
+    now_utc: datetime | None = None,
     allow_test_stub_signature: bool = False,
 ) -> dict[str, Any]:
     """Create a new endpoint assertion and separate content-hash revision edge."""
@@ -55,6 +60,7 @@ def rotate_validator_endpoint_assertion(
     old_assertion_path = Path(old_assertion_path)
     output_path = Path(output_path)
     key_path = Path(key_path)
+    checked_now_utc = _require_now_utc(now_utc)
     if old_assertion_path.resolve() == output_path.resolve():
         raise ValueError("validator_endpoint_rotation_output_must_not_equal_old_assertion")
     old_raw = _read_bounded_text(old_assertion_path, MAX_ASSERTION_JSON_BYTES)
@@ -75,11 +81,15 @@ def rotate_validator_endpoint_assertion(
         if asserted_at_epoch is None
         else _require_uint64(asserted_at_epoch, "validator_endpoint_rotation_epoch_invalid")
     )
-    cert_fields = _cert_fields_from_path(tls_cert_path) if tls_cert_path is not None else {
-        "tls_cert_not_after_utc": old_assertion.tls_cert_not_after_utc,
-        "tls_cert_not_before_utc": old_assertion.tls_cert_not_before_utc,
-        "tls_cert_sha256_fingerprint": old_assertion.tls_cert_sha256_fingerprint,
-    }
+    cert_fields = (
+        _cert_fields_from_path(tls_cert_path, now_utc=checked_now_utc)
+        if tls_cert_path is not None
+        else {
+            "tls_cert_not_after_utc": old_assertion.tls_cert_not_after_utc,
+            "tls_cert_not_before_utc": old_assertion.tls_cert_not_before_utc,
+            "tls_cert_sha256_fingerprint": old_assertion.tls_cert_sha256_fingerprint,
+        }
+    )
     unsigned = ValidatorEndpointAssertion(
         asserted_at_epoch=asserted_epoch,
         bls_public_key_hex=old_assertion.bls_public_key_hex,
@@ -94,7 +104,7 @@ def rotate_validator_endpoint_assertion(
         validator_agent_id=old_assertion.validator_agent_id,
         revised_by=None,
     )
-    assertion_valid_at(unsigned, now_utc=datetime.now(timezone.utc))
+    assertion_valid_at(unsigned, now_utc=checked_now_utc)
     signature, signature_mode = _sign_assertion_payload(
         payload=canonical_assertion_payload(unsigned),
         key_path=key_path,
@@ -182,7 +192,7 @@ def _read_bounded_text(path: Path, max_bytes: int) -> str:
         raise ValueError("validator_endpoint_rotation_old_assertion_invalid_json") from exc
 
 
-def _cert_fields_from_path(path: Path) -> dict[str, str | None]:
+def _cert_fields_from_path(path: Path, *, now_utc: datetime) -> dict[str, str | None]:
     if not path.is_file():
         raise ValueError("validator_endpoint_rotation_tls_cert_missing")
     data = path.read_bytes()
@@ -195,10 +205,9 @@ def _cert_fields_from_path(path: Path) -> dict[str, str | None]:
             der = data
         except ValueError as exc:
             raise ValueError("validator_endpoint_rotation_tls_cert_invalid") from exc
-    now = datetime.now(timezone.utc)
-    if certificate.not_valid_before_utc > now:
+    if certificate.not_valid_before_utc > now_utc:
         raise ValueError("validator_endpoint_rotation_tls_cert_not_yet_valid")
-    if certificate.not_valid_after_utc <= now:
+    if certificate.not_valid_after_utc <= now_utc:
         raise ValueError("validator_endpoint_rotation_tls_cert_expired")
     return {
         "tls_cert_not_after_utc": _to_iso_utc(certificate.not_valid_after_utc),
@@ -214,12 +223,15 @@ def _sign_assertion_payload(
     network_id: str,
     allow_test_stub_signature: bool,
 ) -> tuple[str, str]:
-    key_bytes = _read_bounded_key_bytes(key_path)
     if allow_test_stub_signature:
+        if os.environ.get(ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE_ENV) != "1":
+            raise ValueError("validator_endpoint_rotation_test_stub_signature_not_authorized")
+        key_bytes = _read_bounded_key_bytes(key_path)
         digest = hashlib.sha384(payload + network_id.encode("utf-8") + key_bytes).hexdigest()
         signature = (digest + hashlib.sha384(digest.encode("ascii")).hexdigest())[:BLS_SIGNATURE_HEX_LENGTH]
         _require_lower_hex_exact(signature, BLS_SIGNATURE_HEX_LENGTH, "validator_endpoint_rotation_signature_invalid")
         return signature, "test_stub_not_production_valid"
+    key_bytes = _read_bounded_key_bytes(key_path)
     command = os.environ.get(ENDPOINT_ROTATION_BLS_SIGN_COMMAND_ENV)
     command_tuple = tuple(shlex.split(command)) if command is not None and command.strip() else _default_bls_sign_command()
     if command_tuple is None:
@@ -298,9 +310,18 @@ def _loads_json_no_constants(raw: str) -> Any:
 
 
 def _require_network_id(value: Any) -> str:
-    if not isinstance(value, str) or not value or any(char.isspace() for char in value):
-        raise ValueError("validator_endpoint_rotation_network_id_invalid")
-    return value
+    return require_validator_network_id(
+        value,
+        token="validator_endpoint_rotation_network_id_invalid",
+    )
+
+
+def _require_now_utc(value: datetime | None) -> datetime:
+    if value is None:
+        raise ValueError("validator_endpoint_rotation_now_utc_required")
+    if not isinstance(value, datetime) or value.tzinfo is None:
+        raise ValueError("validator_endpoint_rotation_now_utc_invalid")
+    return value.astimezone(timezone.utc)
 
 
 def _require_endpoint(value: Any) -> str:
@@ -340,6 +361,7 @@ def _to_iso_utc(value: datetime) -> str:
 
 __all__ = [
     "ENDPOINT_ROTATION_BLS_SIGN_COMMAND_ENV",
+    "ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE_ENV",
     "ENDPOINT_ROTATION_RUNTIME_VERSION",
     "atomic_write_json",
     "rotate_validator_endpoint_assertion",

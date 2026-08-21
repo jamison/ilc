@@ -3028,6 +3028,7 @@ def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
                 asserted_at_epoch=int(args.asserted_at_epoch)
                 if args.asserted_at_epoch is not None
                 else None,
+                now_utc=datetime.now(timezone.utc),
                 allow_test_stub_signature=bool(args.allow_test_stub_signature),
             ),
         }

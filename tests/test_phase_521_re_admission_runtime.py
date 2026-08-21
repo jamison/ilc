@@ -4,6 +4,8 @@ import importlib
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from ilc_core.validator import staking_liveness_runtime
 from ilc_core.validator import re_admission_runtime
 
@@ -114,6 +116,18 @@ def test_evaluate_re_admission_eligibility_raises_for_unrecognized_exit_reason()
         assert str(exc) == "unrecognized_exit_reason"
     else:
         raise AssertionError("expected ValueError for unrecognized exit reason")
+
+
+def test_recognized_exit_reason_without_mapping_raises_value_error_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        re_admission_runtime,
+        "EXIT_REASONS",
+        frozenset(("liveness_miss", "equivocation", "voluntary_exit", "new_reason")),
+    )
+    with pytest.raises(ValueError, match="recognized_exit_reason_without_cooldown_mapping"):
+        re_admission_runtime.evaluate_re_admission_eligibility("new_reason", 0)
 
 
 def test_evaluate_re_admission_eligibility_rejects_negative_epoch_count() -> None:

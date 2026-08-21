@@ -17,7 +17,7 @@ use serde::Serialize;
 use serde_json::Value;
 
 use ilc_consensus::epoch_settlement::StoredCheckpoint;
-use ilc_consensus::types::{CIDv1Root, AgentID, ILC_EPOCH_SIG_DST};
+use ilc_consensus::types::{AgentID, CIDv1Root, ILC_EPOCH_SIG_DST};
 
 const SCHEMA_VERSION: &str = "ilc_dag_audit_v1";
 const SENTINEL: &[u8] = b"\xff";
@@ -82,7 +82,7 @@ struct AuditReport {
 
 struct GenesisContext {
     anchor: GenesisAnchor,
-    public_keys: Vec<PublicKey>,
+    public_keys_by_agent_id: HashMap<AgentID, PublicKey>,
 }
 
 fn main() {
@@ -171,12 +171,10 @@ fn verify_epoch_chain(args: &Args) -> Result<AuditReport, AuditError> {
     };
     let sentinel_consistent = sentinel_epoch == Some(max_committed);
 
-    // Build an AgentID -> PublicKey map from BLS public key material; AgentID is
-    // no longer a positional validator index.
     let pk_by_id: HashMap<AgentID, &PublicKey> = genesis
-        .public_keys
+        .public_keys_by_agent_id
         .iter()
-        .map(|pk| (AgentID(pk.to_bytes()), pk))
+        .map(|(agent_id, pk)| (*agent_id, pk))
         .collect();
     let mut epoch_results = Vec::with_capacity(records.len());
     for (epoch_num, stored) in &records {
@@ -240,7 +238,7 @@ fn load_genesis(path: &Path) -> Result<GenesisContext, AuditError> {
         AuditError::Io("genesis validators array is missing or invalid".to_string())
     })?;
 
-    let mut public_keys = Vec::with_capacity(validators.len());
+    let mut public_keys_by_agent_id = HashMap::with_capacity(validators.len());
     for (idx, validator) in validators.iter().enumerate() {
         let key_hex = validator
             .get("consensus_key_hex")
@@ -267,17 +265,39 @@ fn load_genesis(path: &Path) -> Result<GenesisContext, AuditError> {
                 idx
             ))
         })?;
-        public_keys.push(public_key);
+        let agent_id = match validator.get("agent_id").and_then(Value::as_str) {
+            Some(agent_hex) => {
+                let agent_bytes: [u8; 48] = hex_decode_exact(agent_hex, 48)
+                    .map_err(|e| {
+                        AuditError::Io(format!("validator index {} agent_id: {}", idx, e))
+                    })?
+                    .try_into()
+                    .map_err(|_| {
+                        AuditError::Io(format!("validator index {} agent_id length invalid", idx))
+                    })?;
+                AgentID(agent_bytes)
+            }
+            None => AgentID(public_key.to_bytes()),
+        };
+        if public_keys_by_agent_id
+            .insert(agent_id, public_key)
+            .is_some()
+        {
+            return Err(AuditError::Io(format!(
+                "validator index {} duplicate agent_id in genesis",
+                idx
+            )));
+        }
     }
 
     Ok(GenesisContext {
         anchor: GenesisAnchor {
             network_id,
             genesis_epoch,
-            validator_count: public_keys.len(),
+            validator_count: public_keys_by_agent_id.len(),
             genesis_network_note,
         },
-        public_keys,
+        public_keys_by_agent_id,
     })
 }
 
@@ -454,8 +474,8 @@ mod tests {
         EpochSettlementProtocol, EpochStore, MIN_EPOCH_DURATION_MS,
     };
     use ilc_consensus::types::{
-        AggSig, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, AgentID,
-        ValidatorKey, ValidatorSet,
+        AgentID, AggSig, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord, ValidatorKey,
+        ValidatorSet,
     };
 
     #[test]

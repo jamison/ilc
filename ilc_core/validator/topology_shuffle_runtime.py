@@ -303,7 +303,7 @@ def build_topology_shuffle_plan(
         shuffle_cadence_epochs=SHUFFLE_CADENCE_EPOCHS,
         push_fanout_ceiling=PUSH_FANOUT_CEILING,
         randomness_mode="epoch_hash_v1",
-        vrf_upgrade_required=False,
+        vrf_upgrade_required=evaluate_vrf_upgrade_requirement(len(normalized_validator_ids)),
         production_topology_shuffle_activated=False,
         decision_token=PRODUCTION_TOPOLOGY_SHUFFLE_NOT_ACTIVATED_TOKEN,
         cadence_token=SHUFFLE_CADENCE_EPOCHS_1_RUNTIME_TOKEN,

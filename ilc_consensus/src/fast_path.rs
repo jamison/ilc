@@ -1,5 +1,5 @@
 use crate::balance_store::{BalanceChange, BalanceStore};
-use crate::types::{AgentID, EpochSeq, ILCConsensusError, TransferCertificate, ValidatorSet};
+use crate::types::{EpochSeq, ILCConsensusError, TransferCertificate, ValidatorSet};
 use std::collections::{BTreeMap, HashSet};
 use std::sync::{Arc, RwLock};
 
@@ -201,6 +201,10 @@ mod tests {
             validators.push((id, vk));
         }
         (ValidatorSet::new(validators, f).unwrap(), entries)
+    }
+
+    fn agent_id_for_validator_key(key: &ValidatorKey) -> AgentID {
+        AgentID(key.0.to_bytes())
     }
 
     fn setup_env() -> (Arc<lmdb_rkv::Environment>, tempfile::TempDir) {
@@ -946,11 +950,11 @@ mod tests {
             transfer: transfer.clone(),
             sigs: vec![
                 (
-                    crate::types::test_agent_id(1),
+                    agent_id_for_validator_key(&keypairs[0].1),
                     ValidatorSig(keypairs[0].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    crate::types::test_agent_id(2),
+                    agent_id_for_validator_key(&keypairs[1].1),
                     ValidatorSig(keypairs[1].0.sign(&msg, &dst, &[])),
                 ),
             ],
@@ -969,15 +973,15 @@ mod tests {
             transfer,
             sigs: vec![
                 (
-                    crate::types::test_agent_id(1),
+                    agent_id_for_validator_key(&keypairs[0].1),
                     ValidatorSig(keypairs[0].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    crate::types::test_agent_id(2),
+                    agent_id_for_validator_key(&keypairs[1].1),
                     ValidatorSig(keypairs[1].0.sign(&msg, &dst, &[])),
                 ),
                 (
-                    crate::types::test_agent_id(3),
+                    agent_id_for_validator_key(&keypairs[2].1),
                     ValidatorSig(keypairs[2].0.sign(&msg, &dst, &[])),
                 ),
             ],
@@ -999,19 +1003,24 @@ mod tests {
 
         let (_, vk1) = generate_keypair(1);
         let (_, vk2) = generate_keypair(2);
-        let val_set_genesis = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1.clone())], 0).unwrap();
+        let val_set_genesis =
+            ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk1.clone())], 0).unwrap();
         let fast_path = FastPathProtocol::new(val_set_genesis, store, "testnet".to_string());
 
         // Advance to epoch 5.
         let val_set_epoch5 = ValidatorSet::new(
-            vec![(crate::types::test_agent_id(1), vk1.clone()), (crate::types::test_agent_id(2), vk2.clone())],
+            vec![
+                (crate::types::test_agent_id(1), vk1.clone()),
+                (crate::types::test_agent_id(2), vk2.clone()),
+            ],
             0,
         )
         .unwrap();
         fast_path.rotate_validator_set(EpochSeq(5), val_set_epoch5);
 
         // Stale call: epoch 3 < epoch 5 — must not overwrite.
-        let val_set_stale = ValidatorSet::new(vec![(crate::types::test_agent_id(2), vk2)], 0).unwrap();
+        let val_set_stale =
+            ValidatorSet::new(vec![(crate::types::test_agent_id(2), vk2)], 0).unwrap();
         fast_path.rotate_validator_set(EpochSeq(3), val_set_stale);
 
         // Verify epoch_sets still has only genesis (0) and epoch 5 — not the stale epoch 3.

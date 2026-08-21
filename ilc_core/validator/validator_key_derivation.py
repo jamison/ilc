@@ -27,11 +27,18 @@ def _require_identity_seed(identity_seed: bytes) -> bytes:
         raise ValueError("validator_key_identity_seed_must_be_bytes")
     if len(identity_seed) != _IDENTITY_SEED_LENGTH:
         raise ValueError("validator_key_identity_seed_must_be_32_bytes")
+    if identity_seed == bytes(_IDENTITY_SEED_LENGTH):
+        raise ValueError("validator_key_identity_seed_must_not_be_all_zero")
     return identity_seed
 
 
 def derive_validator_key_ikm(identity_seed: bytes) -> bytes:
-    """Derive a BLS12-381 IETF keygen IKM from a 32-byte identity seed."""
+    """Derive ILC-specific BLS12-381 IETF keygen IKM from identity seed.
+
+    The SHA-384 domain-separated digest is intentionally truncated to 32 bytes
+    before Rust/blst `key_gen`; this is an ILC-specific sub-key derivation step,
+    not a generic BLS key-derivation standard.
+    """
 
     seed = _require_identity_seed(identity_seed)
     digest = hashlib.sha384(VALIDATOR_KEY_DERIVATION_DOMAIN + seed).digest()
