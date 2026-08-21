@@ -70686,6 +70686,91 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
+      "chronology_note": "2026-08-21, phase GAP-CDL017-PACKAGE-00a through GAP-VPS-PROVISION-00c prompt drafting and 0.3.0\u21920.3.1 patch session",
+      "manual_read_summary": "Phase prompt for CDL-017 local 0.3.1 build \u2014 bumps pyproject.toml, builds wheel/sdist, records hashes in build receipt.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00a_g10_local_build_031.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
+      "chronology_note": "2026-08-21, phase GAP-CDL017-PACKAGE-00b prompt drafting",
+      "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE PyPI upload of 0.3.1 \u2014 verifies hashes, uploads, creates installable manifest, updates install.sh.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00b_g10_pypi_upload_031.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
+      "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00a prompt drafting",
+      "manual_read_summary": "Phase prompt for CDL-017 validator AgentID keypair generation \u2014 creates keygen helper script, records four operator-provided AgentID hex strings in a PUBLIC_RC_EXCLUDE manifest.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00a_g10_validator_keypair_generation.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
+      "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00b prompt drafting",
+      "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE VPS provisioning \u2014 archives old validators, provisions four new VPS instances with ilc-core 0.3.1 and AgentID identities, confirms epoch-0 health.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00b_g10_new_vps_provisioning.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
+      "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00c prompt drafting",
+      "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE namespace verification \u2014 confirms all four validators at epoch 0 with correct AgentID identities and 0.3.1 package; produces clean namespace receipt superseding Track A.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00c_g10_namespace_verify.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
