@@ -40,7 +40,7 @@ use ilc_consensus::{
     types::{
         AgentID, AgentSig, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq,
         EpochSettlementRecord, EpochSettlementTx, ObjectRef, TransferCertificate, TransferClass,
-        ValidatorID, ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
+        ValidatorSig, AGENT_TRANSFER_DST, ILC_EPOCH_SIG_DST,
     },
 };
 use sha2::{Digest, Sha256};
@@ -65,7 +65,7 @@ struct Args {
     cert_pem: PathBuf,
     key_pem: PathBuf,
     peer_cert_der: PathBuf,
-    /// ValidatorID to claim in GossipEnvelope.peer_id (default 0).
+    /// AgentID to claim in GossipEnvelope.peer_id (default 0).
     peer_id: u32,
     msg_type: MsgType,
     // broadcast params
@@ -75,7 +75,7 @@ struct Args {
     version: u64,
     batch_window_ms: u64,
     relay_count: usize,
-    relay_route: Vec<ValidatorID>,
+    relay_route: Vec<AgentID>,
     // epoch_settlement params
     start_epoch: Option<u64>,
     state_root_hex: Option<String>,
@@ -102,7 +102,7 @@ fn parse_args() -> Result<Args, String> {
     let mut version: u64 = 0;
     let mut batch_window_ms: u64 = 500;
     let mut relay_count: usize = 0;
-    let mut relay_route: Vec<ValidatorID> = Vec::new();
+    let mut relay_route: Vec<AgentID> = Vec::new();
     let mut start_epoch: Option<u64> = None;
     let mut state_root_hex: Option<String> = None;
     let mut count: u64 = 1;
@@ -312,10 +312,10 @@ fn parse_args() -> Result<Args, String> {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct RelayPlan {
-    first_hop_id: ValidatorID,
+    first_hop_id: AgentID,
     first_hop_addr: SocketAddr,
-    full_path: Vec<ValidatorID>,
-    remaining_route: Vec<ValidatorID>,
+    full_path: Vec<AgentID>,
+    remaining_route: Vec<AgentID>,
 }
 
 fn parse_validator_spec(spec: &str, default_id: u32) -> Result<(u32, SocketAddr), String> {
@@ -335,7 +335,7 @@ fn parse_validator_spec(spec: &str, default_id: u32) -> Result<(u32, SocketAddr)
     }
 }
 
-fn parse_relay_route(spec: &str) -> Result<Vec<ValidatorID>, String> {
+fn parse_relay_route(spec: &str) -> Result<Vec<AgentID>, String> {
     if spec.trim().is_empty() {
         return Ok(Vec::new());
     }
@@ -345,7 +345,7 @@ fn parse_relay_route(spec: &str) -> Result<Vec<ValidatorID>, String> {
                 .trim()
                 .parse()
                 .map_err(|e| format!("--relay-route '{}': {}", value, e))?;
-            Ok(ValidatorID(id))
+            Ok(AgentID::from_testnet_validator_index(id))
         })
         .collect()
 }
@@ -353,7 +353,7 @@ fn parse_relay_route(spec: &str) -> Result<Vec<ValidatorID>, String> {
 fn compute_relay_plan(
     target_addr: SocketAddr,
     validators: &[(u32, SocketAddr)],
-    relay_route: &[ValidatorID],
+    relay_route: &[AgentID],
     relay_count: usize,
 ) -> Result<Option<RelayPlan>, String> {
     if relay_count == 0 {
@@ -394,11 +394,14 @@ fn compute_relay_plan(
         }
     }
 
-    let validator_map: HashMap<u32, SocketAddr> = validators.iter().copied().collect();
+    let validator_map: HashMap<AgentID, SocketAddr> = validators
+        .iter()
+        .map(|(id, addr)| (AgentID::from_testnet_validator_index(*id), *addr))
+        .collect();
     let target_id = validators
         .iter()
         .find(|(_, addr)| *addr == target_addr)
-        .map(|(id, _)| ValidatorID(*id))
+        .map(|(id, _)| AgentID::from_testnet_validator_index(*id))
         .ok_or(
             "--validators must include the final --validator target when relay mode is enabled",
         )?;
@@ -409,16 +412,16 @@ fn compute_relay_plan(
         if *hop == target_id {
             return Err("--relay-route must not include the final target validator".into());
         }
-        if !validator_map.contains_key(&hop.0) {
+        if !validator_map.contains_key(hop) {
             return Err(format!(
                 "--relay-route references unknown validator {}",
-                hop.0
+                hop
             ));
         }
-        if !seen.insert(hop.0) {
+        if !seen.insert(*hop) {
             return Err(format!(
                 "--relay-route contains duplicate validator {}",
-                hop.0
+                hop
             ));
         }
         full_path.push(*hop);
@@ -429,8 +432,8 @@ fn compute_relay_plan(
         .first()
         .ok_or("relay mode requires at least one hop")?;
     let first_hop_addr = *validator_map
-        .get(&first_hop_id.0)
-        .ok_or_else(|| format!("missing address for relay validator {}", first_hop_id.0))?;
+        .get(&first_hop_id)
+        .ok_or_else(|| format!("missing address for relay validator {}", first_hop_id))?;
 
     Ok(Some(RelayPlan {
         first_hop_id,
@@ -528,7 +531,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 };
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: ValidatorID(args.peer_id),
+                    peer_id: AgentID::from_testnet_validator_index(args.peer_id),
                     payload: GossipMessage::EpochSettlementTx(tx),
                 };
                 let (send, _recv) = conn
@@ -609,9 +612,8 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let sig_refs: Vec<&blst::min_pk::Signature> = sigs.iter().collect();
                 let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
 
-                // Testnet client: assume quorum keys are validators 1..=N in order.
-                let signers: Vec<ValidatorID> =
-                    (1..=bls_keys.len() as u32).map(ValidatorID).collect();
+                let signers: Vec<AgentID> =
+                    bls_keys.iter().map(|sk| AgentID(sk.sk_to_pk().compress())).collect();
                 let checkpoint = EpochCheckpoint {
                     record,
                     sigs: AggSig(agg),
@@ -620,7 +622,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: ValidatorID(args.peer_id),
+                    peer_id: AgentID::from_testnet_validator_index(args.peer_id),
                     payload: GossipMessage::EpochCheckpointMsg(checkpoint),
                 };
 
@@ -689,13 +691,13 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let path = plan
                     .full_path
                     .iter()
-                    .map(|id| id.0.to_string())
+                    .map(|id| id.to_string())
                     .collect::<Vec<_>>()
                     .join("->");
                 eprintln!(
                     "[testnet_client] layer2 relay mode enabled (testnet_only) target={} first_hop={} batch_window_ms={} relay_path={}",
                     args.validator_addr,
-                    plan.first_hop_id.0,
+                    plan.first_hop_id,
                     args.batch_window_ms,
                     path
                 );
@@ -736,7 +738,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: ValidatorID(args.peer_id),
+                    peer_id: AgentID::from_testnet_validator_index(args.peer_id),
                     payload: if let Some(plan) = &relay_plan {
                         GossipMessage::RelaySubmit {
                             transfer,
@@ -759,7 +761,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                     let path = plan
                         .full_path
                         .iter()
-                        .map(|id| id.0.to_string())
+                        .map(|id| id.to_string())
                         .collect::<Vec<_>>()
                         .join("->");
                     eprintln!(
@@ -857,7 +859,7 @@ async fn run_full_transfer(
 
     let envelope = GossipEnvelope {
         frame_type: 0x00,
-        peer_id: ValidatorID(args.peer_id), // e.g. 5
+        peer_id: AgentID::from_testnet_validator_index(args.peer_id), // e.g. 5
         payload: GossipMessage::BroadcastHonest(transfer.clone()),
     };
 
@@ -871,7 +873,7 @@ async fn run_full_transfer(
 
     // 5. Accept AckFor responses
     let quorum = 2 * args.f + 1;
-    let mut acks: Vec<(ValidatorID, ValidatorSig)> = Vec::new();
+    let mut acks: Vec<(AgentID, ValidatorSig)> = Vec::new();
 
     while acks.len() < quorum {
         let incoming = client_server
@@ -894,7 +896,7 @@ async fn run_full_transfer(
                     acks.push((from, sig));
                     eprintln!(
                         "[m012_client] received AckFor from validator {} ({}/{})",
-                        from.0,
+                        from,
                         acks.len(),
                         quorum
                     );
@@ -928,7 +930,7 @@ async fn run_full_transfer(
     // 7. Broadcast Certificate
     let cert_envelope = GossipEnvelope {
         frame_type: 0x00,
-        peer_id: ValidatorID(args.peer_id),
+        peer_id: AgentID::from_testnet_validator_index(args.peer_id),
         payload: GossipMessage::Certificate(cert),
     };
 
@@ -1099,6 +1101,10 @@ fn dc(c: u8, table: &[u8; 128]) -> Result<u8, String> {
 mod tests {
     use super::*;
 
+    fn testnet_agent_id(id: u32) -> AgentID {
+        AgentID::from_testnet_validator_index(id)
+    }
+
     #[test]
     fn test_compute_relay_plan_builds_first_hop_and_remaining_route() {
         let validators = vec![
@@ -1110,22 +1116,22 @@ mod tests {
         let plan = compute_relay_plan(
             "127.0.0.1:9001".parse().unwrap(),
             &validators,
-            &[ValidatorID(2), ValidatorID(3)],
+            &[testnet_agent_id(2), testnet_agent_id(3)],
             2,
         )
         .unwrap()
         .unwrap();
 
-        assert_eq!(plan.first_hop_id, ValidatorID(2));
+        assert_eq!(plan.first_hop_id, testnet_agent_id(2));
         assert_eq!(
             plan.first_hop_addr,
             "127.0.0.1:9002".parse::<SocketAddr>().unwrap()
         );
         assert_eq!(
             plan.full_path,
-            vec![ValidatorID(2), ValidatorID(3), ValidatorID(1)]
+            vec![testnet_agent_id(2), testnet_agent_id(3), testnet_agent_id(1)]
         );
-        assert_eq!(plan.remaining_route, vec![ValidatorID(3), ValidatorID(1)]);
+        assert_eq!(plan.remaining_route, vec![testnet_agent_id(3), testnet_agent_id(1)]);
     }
 
     #[test]
@@ -1139,7 +1145,7 @@ mod tests {
         let err = compute_relay_plan(
             "127.0.0.1:9001".parse().unwrap(),
             &validators,
-            &[ValidatorID(2), ValidatorID(1)],
+            &[testnet_agent_id(2), testnet_agent_id(1)],
             2,
         )
         .unwrap_err();
@@ -1158,7 +1164,7 @@ mod tests {
         let err = compute_relay_plan(
             "127.0.0.1:9001".parse().unwrap(),
             &validators,
-            &[ValidatorID(2)],
+            &[testnet_agent_id(2)],
             1,
         )
         .unwrap_err();
@@ -1177,7 +1183,7 @@ mod tests {
         let err = compute_relay_plan(
             "127.0.0.1:9001".parse().unwrap(),
             &validators,
-            &[ValidatorID(2)],
+            &[testnet_agent_id(2)],
             1,
         )
         .unwrap_err();

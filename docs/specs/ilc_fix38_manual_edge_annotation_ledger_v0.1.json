@@ -70771,6 +70771,470 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Removed Rust ValidatorID newtype; AgentID is the consensus validator identity for ValidatorSet, EpochCheckpoint, and TransferCertificate.",
+      "repo_path": "ilc_consensus/src/types.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Genesis loader now keys validator metadata by AgentID while retaining config_validator_id as an operator/config index.",
+      "repo_path": "ilc_consensus/src/config.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Validator admission/ejection hooks now accept AgentID rather than ValidatorID.",
+      "repo_path": "ilc_consensus/src/validator.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Epoch checkpoint signer storage and duplicate-signer validation now use AgentID.",
+      "repo_path": "ilc_consensus/src/epoch_settlement.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Application-interface validator test helpers and validator set construction now use AgentID.",
+      "repo_path": "ilc_consensus/src/app_interface.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Fast-path transfer certificate signature routing now uses AgentID signer keys.",
+      "repo_path": "ilc_consensus/src/fast_path.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Node runner identity, peer routing, relay handling, and fault-simulation filters now use AgentID.",
+      "repo_path": "ilc_consensus/src/node.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Gossip envelope peer identity and mTLS authentication now resolve to AgentID with production fail-closed metadata lookup.",
+      "repo_path": "ilc_consensus/src/network.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Consensus startup derives own AgentID and peer AgentIDs from genesis metadata rather than constructing ValidatorID from config indices.",
+      "repo_path": "ilc_consensus/src/main.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Persistent QUIC endpoint projection and session maps now key by AgentID.",
+      "repo_path": "ilc_consensus/src/persistent_quic.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Relay routing table endpoint keys and deterministic selection now use AgentID bytes.",
+      "repo_path": "ilc_consensus/src/relay_routing_table.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "DAG audit signer mapping now derives AgentID keys from genesis BLS public key bytes.",
+      "repo_path": "ilc_consensus/src/dag_audit_main.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "Testnet client compatibility surfaces explicitly map numeric CLI/config indices to AgentID only at the edge.",
+      "repo_path": "ilc_consensus/src/testnet_client_main.rs",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "runtime_module",
+      "manual_read_summary": "ValidatorRoleRecord.validator_id is deprecated as optional legacy data; new role records no longer require u32 validator IDs.",
+      "repo_path": "ilc_core/validator/admission_ejection_runtime.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "test_module",
+      "manual_read_summary": "Structural regression tests prove Rust ValidatorID removal, AgentID-keyed consensus surfaces, production network metadata fail-closed behavior, and Python validator_id deprecation.",
+      "repo_path": "tests/test_gap_cdl017_impl_delta_00b.py",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
+      "node_kind": "phase_walkthrough",
+      "manual_read_summary": "Walkthrough records implementation summary, verification output, local Rust toolchain non-witness, tokens, and non-claims for GAP-CDL017-IMPL-DELTA-00b.",
+      "repo_path": "docs/phases/phase_gap_cdl017_impl_delta_00b_walkthrough.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {

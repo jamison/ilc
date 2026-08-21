@@ -26,13 +26,13 @@ use ilc_consensus::app_interface::{
 };
 use ilc_consensus::{
     balance_store::BalanceStore,
-    config::{load_genesis, load_node_config, SettlementPath},
+    config::{load_genesis_with_metadata, load_node_config, SettlementPath},
     epoch_settlement::EpochStore,
     fast_path::FastPathProtocol,
     network::PeerNetwork,
     node::NodeRunner,
     persistent_quic::{load_endpoint_projection_from_path, PersistentQuicSessionManager},
-    types::{ILCConsensusError, ValidatorID},
+    types::{ILCConsensusError, AgentID},
 };
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
 
@@ -168,12 +168,23 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 1. Load genesis → (ValidatorSet, network_id) in one read.
     // -----------------------------------------------------------------------
-    let (validator_set, genesis_network_id) = load_genesis(&genesis_path)?;
+    let (validator_set, genesis_network_id, validator_metadata) =
+        load_genesis_with_metadata(&genesis_path)?;
 
     // -----------------------------------------------------------------------
     // 2. Load node config — enforces network_id == genesis_network_id
     // -----------------------------------------------------------------------
     let cfg = load_node_config(&config_path, &genesis_network_id)?;
+    let agent_by_config_id = validator_metadata
+        .values()
+        .map(|entry| (entry.config_validator_id, entry.agent_id))
+        .collect::<std::collections::HashMap<u32, AgentID>>();
+    let own_agent_id = *agent_by_config_id.get(&cfg.validator_id).ok_or_else(|| {
+        ILCConsensusError::Other(format!(
+            "validator_id={} missing from genesis agent metadata",
+            cfg.validator_id
+        ))
+    })?;
 
     // -----------------------------------------------------------------------
     // 3. SEC-005: Construct single LMDB environment with explicit map size.
@@ -249,7 +260,8 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         cfg.peer_certs,
         cfg.my_cert_der.clone(),
         cfg.my_key_der.clone(),
-    )?);
+    )?
+    .with_peer_agent_ids(agent_by_config_id.clone()));
 
     eprintln!(
         "[m010_harness] validator_id={} network_id={} listening on {}",
@@ -270,7 +282,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // 7. Build peer address list for outbound connections
     // -----------------------------------------------------------------------
     let mut persistent_sessions: Option<Arc<PersistentQuicSessionManager>> = None;
-    let peer_addrs: Vec<(ValidatorID, std::net::SocketAddr)> = match cfg.settlement_path {
+    let peer_addrs: Vec<(AgentID, std::net::SocketAddr)> = match cfg.settlement_path {
         SettlementPath::MysticetiFastPath => {
             let projection_path = cfg.endpoint_projection_path.as_ref().ok_or_else(|| {
                 ILCConsensusError::Other(
@@ -283,7 +295,7 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
             let peer_addrs = projection
                 .preferred_peer_addrs()
                 .into_iter()
-                .filter(|(id, _)| *id != ValidatorID(cfg.validator_id))
+                .filter(|(id, _)| *id != own_agent_id)
                 .collect();
             persistent_sessions = Some(Arc::new(PersistentQuicSessionManager::new(
                 Arc::clone(&network),
@@ -294,13 +306,24 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
         SettlementPath::None => cfg
             .peers
             .iter()
-            .map(|p| (ValidatorID(p.validator_id), p.addr))
-            .collect(),
+            .map(|p| {
+                agent_by_config_id
+                    .get(&p.validator_id)
+                    .copied()
+                    .map(|agent_id| (agent_id, p.addr))
+                    .ok_or_else(|| {
+                        ILCConsensusError::Other(format!(
+                            "peer validator_id={} missing from genesis agent metadata",
+                            p.validator_id
+                        ))
+                    })
+            })
+            .collect::<Result<Vec<_>, _>>()?,
     };
 
     let network_id_for_services = genesis_network_id.clone();
     let mut runner = NodeRunner::new(
-        ValidatorID(cfg.validator_id),
+        own_agent_id,
         genesis_network_id,
         f_for_gate,
         validator_sk,

@@ -81,6 +81,34 @@ where
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AgentID(pub [u8; 48]);
 
+impl fmt::Display for AgentID {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for byte in &self.0 {
+            write!(formatter, "{:02x}", byte)?;
+        }
+        Ok(())
+    }
+}
+
+impl AgentID {
+    /// Deterministic testnet-only compatibility mapping for CLI/config surfaces
+    /// that still accept small numeric operator indices. Production consensus
+    /// identity must be loaded from genesis agent_id / BLS key material instead.
+    pub fn from_testnet_validator_index(index: u32) -> Self {
+        let mut bytes = [0u8; 48];
+        bytes[44..48].copy_from_slice(&index.to_be_bytes());
+        AgentID(bytes)
+    }
+}
+
+#[cfg(test)]
+pub fn test_agent_id(seed: u32) -> AgentID {
+    let mut ikm = [0u8; 32];
+    ikm[0..4].copy_from_slice(&seed.to_be_bytes());
+    let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[]).unwrap();
+    AgentID(sk.sk_to_pk().to_bytes())
+}
+
 impl serde::Serialize for AgentID {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -237,7 +265,7 @@ impl<'de> serde::Deserialize<'de> for ValidatorSig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransferCertificate {
     pub transfer: ECUTransfer,
-    pub sigs: Vec<(ValidatorID, ValidatorSig)>, // Pair Validator routing to signature for discrete threshold checking
+    pub sigs: Vec<(AgentID, ValidatorSig)>, // Pair validator AgentID to signature for discrete threshold checking
     pub epoch: EpochSeq,
 }
 
@@ -342,12 +370,8 @@ pub struct EpochCheckpoint {
     /// Aggregate BLS signature over `record`, contributed by the validators in `signers`.
     pub sigs: AggSig,
     /// The subset of validators whose individual signatures were aggregated into `sigs`.
-    pub signers: Vec<ValidatorID>,
+    pub signers: Vec<AgentID>,
 }
-
-/// Validator identity
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct ValidatorID(pub u32);
 
 /// ValidatorKey wrapping the direct `blst` public key primitive.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -356,7 +380,7 @@ pub struct ValidatorKey(pub PublicKey);
 /// ValidatorSet tracking the current functional topology and Fault conditions.
 #[derive(Debug, Clone)]
 pub struct ValidatorSet {
-    pub validators: HashMap<ValidatorID, ValidatorKey>,
+    pub validators: HashMap<AgentID, ValidatorKey>,
     pub f: usize,
 }
 
@@ -579,7 +603,7 @@ mod tests {
 
 impl ValidatorSet {
     pub fn new(
-        validators: Vec<(ValidatorID, ValidatorKey)>,
+        validators: Vec<(AgentID, ValidatorKey)>,
         f: usize,
     ) -> Result<Self, ILCConsensusError> {
         let n = validators.len();
@@ -602,12 +626,12 @@ impl ValidatorSet {
                 f, safe_f, n
             )));
         }
-        let mut map: HashMap<ValidatorID, ValidatorKey> = HashMap::with_capacity(n);
+        let mut map: HashMap<AgentID, ValidatorKey> = HashMap::with_capacity(n);
         for (id, key) in validators {
             if map.contains_key(&id) {
                 return Err(ILCConsensusError::Other(format!(
-                    "Duplicate ValidatorID in ValidatorSet: {}",
-                    id.0
+                    "Duplicate AgentID in ValidatorSet: {}",
+                    id
                 )));
             }
             // Duplicate key check: compare against all already-inserted values.
