@@ -14,6 +14,10 @@ MANIFEST_030 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_030_GAP_PUBLIC_RC_PACKAGE_REFRESH_00_v0.1.json"
 )
+MANIFEST_031 = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_031_GAP_CDL017_PACKAGE_00a_v0.1.json"
+)
 MANIFEST_020 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_020_GAP_PUBLIC_INSTALL_01_v0.1.json"
@@ -81,8 +85,21 @@ def test_build_receipt_and_upload_receipt_hashes_match_manifest() -> None:
     assert upload_receipt["sdist_sha256"] == build_receipt["sdist_sha256"]
 
 
-def test_install_sh_is_synced_to_030_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_030)
+def test_manifest_031_validates_and_targets_ilc_core_031() -> None:
+    manifest = _load_json(MANIFEST_031)
+
+    validate_installable_release_manifest(manifest)
+
+    assert manifest["release_id"] == "ilc-core-0.3.1"
+    assert manifest["channel"] == "rc"
+    assert {artifact["artifact_type"] for artifact in manifest["artifacts"]} == {
+        "python_sdist",
+        "python_wheel",
+    }
+
+
+def test_install_sh_is_synced_to_031_manifest() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_031)
 
 
 def test_old_manifest_still_valid_and_unmodified_by_supersession() -> None:
