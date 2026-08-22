@@ -11,10 +11,13 @@
 /// Usage:
 ///   keygen --out <path>           Write secret key hex to <path>; print pubkey to stdout.
 ///   keygen --print                Print both keys to stdout (for piping / testing).
+///   keygen --pubkey-from-ikm-hex-stdin
+///                                Read 64hex IKM from stdin; print only the derived public key.
 ///   keygen --help
 ///
 /// `m011_keygen_binary_present`
 use std::fs;
+use std::io::{self, Read};
 use std::path::PathBuf;
 
 fn main() {
@@ -28,10 +31,9 @@ fn main() {
         }
     };
 
-    let (sk_hex, pk_hex) = generate_keypair();
-
     match config.mode {
         Mode::WriteFile(path) => {
+            let (sk_hex, pk_hex) = generate_keypair();
             // Write secret key to file (64 hex chars, no newline issues — write with newline
             // so the file is easily cat-able; load_node_config trims whitespace).
             if let Err(e) = fs::write(&path, format!("{}\n", sk_hex)) {
@@ -51,8 +53,23 @@ fn main() {
             );
         }
         Mode::Print => {
+            let (sk_hex, pk_hex) = generate_keypair();
             println!("sk={}", sk_hex);
             println!("pk={}", pk_hex);
+        }
+        Mode::PubkeyFromIkmHexStdin => {
+            let mut ikm_hex = String::new();
+            if let Err(err) = io::stdin().read_to_string(&mut ikm_hex) {
+                eprintln!("Error: failed to read IKM from stdin: {}", err);
+                std::process::exit(1);
+            }
+            match public_key_from_ikm_hex(ikm_hex.trim()) {
+                Ok(pk_hex) => println!("{}", pk_hex),
+                Err(err) => {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                }
+            }
         }
     }
 }
@@ -84,6 +101,34 @@ fn generate_keypair() -> (String, String) {
     (sk_hex, pk_hex)
 }
 
+fn public_key_from_ikm_hex(ikm_hex: &str) -> Result<String, String> {
+    let ikm = decode_32_byte_hex(ikm_hex)?;
+    let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[])
+        .map_err(|_| "blst key_gen failed for supplied IKM".to_string())?;
+    Ok(hex_encode(&sk.sk_to_pk().compress()))
+}
+
+fn decode_32_byte_hex(value: &str) -> Result<[u8; 32], String> {
+    if value.len() != 64 {
+        return Err(format!(
+            "--pubkey-from-ikm-hex-stdin input requires exactly 64 lowercase hex chars, got {}",
+            value.len()
+        ));
+    }
+    if !value.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
+        return Err("--pubkey-from-ikm-hex-stdin input must be lowercase hex".to_string());
+    }
+    let mut out = [0u8; 32];
+    for index in 0..32 {
+        out[index] = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)
+            .map_err(|_| "--pubkey-from-ikm-hex-stdin input must be lowercase hex".to_string())?;
+    }
+    if out == [0u8; 32] {
+        return Err("--pubkey-from-ikm-hex-stdin input must not be all zero".to_string());
+    }
+    Ok(out)
+}
+
 fn hex_encode(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02x}", b)).collect()
 }
@@ -95,6 +140,7 @@ fn hex_encode(bytes: &[u8]) -> String {
 enum Mode {
     WriteFile(PathBuf),
     Print,
+    PubkeyFromIkmHexStdin,
 }
 
 struct Config {
@@ -115,9 +161,13 @@ fn parse_args(args: &[String]) -> Result<Config, String> {
             "--print" => {
                 mode = Some(Mode::Print);
             }
+            "--pubkey-from-ikm-hex-stdin" => {
+                mode = Some(Mode::PubkeyFromIkmHexStdin);
+            }
             "--help" | "-h" => {
                 eprintln!("Usage: keygen --out <path>   # write sk to file, print pk to stdout");
                 eprintln!("       keygen --print        # print both keys to stdout");
+                eprintln!("       keygen --pubkey-from-ikm-hex-stdin    # read IKM from stdin, print public key only");
                 std::process::exit(0);
             }
             other => {
