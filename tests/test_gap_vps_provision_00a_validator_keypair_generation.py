@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import shutil
 from pathlib import Path
@@ -12,6 +13,9 @@ from tools import vps_validator_keygen_helper as helper
 
 HELPER = Path("tools/vps_validator_keygen_helper.py")
 RUST_KEYGEN = Path("ilc_consensus/src/keygen_main.rs")
+KEYPAIR_MANIFEST = Path(
+    "docs/specs/ilc_cdl017_validator_keypair_manifest_GAP_VPS_PROVISION_00a_v0.1.json"
+)
 
 
 def _cargo_path() -> str | None:
@@ -200,7 +204,21 @@ def test_real_rust_keygen_ikm_path_writes_matching_secret_key(tmp_path: Path) ->
         assert secret_path.stat().st_mode & 0o777 == 0o600
 
 
-def test_keypair_manifest_absent_until_operator_supplies_agent_ids() -> None:
-    assert not Path(
-        "docs/specs/ilc_cdl017_validator_keypair_manifest_GAP_VPS_PROVISION_00a_v0.1.json"
-    ).exists()
+def test_keypair_manifest_records_four_public_agent_ids_without_secret_fields() -> None:
+    manifest = json.loads(KEYPAIR_MANIFEST.read_text(encoding="utf-8"))
+    validators = manifest["validators"]
+
+    assert manifest["PUBLIC_RC_EXCLUDE"] is True
+    assert manifest["private_key_custody"] == "operator_offline_only_encrypted_sparsebundle"
+    assert len(validators) == 4
+    assert [record["slot"] for record in validators] == ["v0", "v1", "v2", "v3"]
+
+    agent_ids = [record["agent_id_hex"] for record in validators]
+    assert len(set(agent_ids)) == 4
+    for agent_id in agent_ids:
+        assert len(agent_id) == 96
+        assert all(char in "0123456789abcdef" for char in agent_id)
+
+    serialized_validators = json.dumps(validators, sort_keys=True)
+    for blocked in ("private_key_hex", "secret_key_hex", "ikm_hex", "BEGIN"):
+        assert blocked not in serialized_validators
