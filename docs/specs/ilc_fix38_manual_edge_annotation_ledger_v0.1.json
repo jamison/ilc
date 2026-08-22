@@ -83855,6 +83855,54 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "ilc_core/validator/network_id_validation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00a_support_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-VPS-PROVISION-00a support helper staged before operator-supplied AgentIDs; phase completion token intentionally withheld.",
+      "manual_read_summary": "Operator-local validator AgentID derivation helper. Imports canonical derive_validator_key_ikm, rejects invalid or all-zero identity seeds, hands derived validator IKM to the Rust keygen binary over stdin, validates 96-character lowercase AgentID output, and is PUBLIC_RC_EXCLUDE.",
+      "node_kind": "support_tool",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTATION_AUTHORITY",
+          "target": "phase:GAP-VPS-PROVISION-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTATION_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/vps_validator_keygen_helper.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00a_support_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-VPS-PROVISION-00a support tests staged before operator-supplied AgentIDs; phase completion token intentionally withheld.",
+      "manual_read_summary": "Regression tests for the operator-local validator AgentID helper and Rust public-key-from-IKM mode. Confirms PUBLIC_RC_EXCLUDE marker, canonical derivation import, seed validation, stdin handoff instead of command-line IKM exposure, Rust mode static properties, and manifest absence until operator supplies four public AgentIDs.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:GAP-VPS-PROVISION-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_vps_provision_00a_validator_keypair_generation.py"
     }
   ],
   "phase": "1545p-Fix38",
