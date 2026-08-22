@@ -71235,6 +71235,35 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_cdl017_impl_delta_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_do_smoke_00_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-INSTALL-DO-SMOKE-00 DigitalOcean-backed fresh Linux install and invite smoke test phase prompt.",
+      "manual_read_summary": "SENSITIVE phase prompt that provisions an ephemeral DigitalOcean droplet, performs a real fresh ilc-core 0.3.1 pip install from PyPI, transfers Genesis invite bundle via scp, runs harness smoke commands, and destroys the droplet unconditionally; emits install_e2e_verified_against_031_GAP_PUBLIC_INSTALL_FIX1_00.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-DO-SMOKE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_do_smoke_00_g10_real_fresh_linux_install_and_invite_smoke.md"
     }
   ],
   "boundary": {
