@@ -71264,6 +71264,39 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_do_smoke_00_g10_real_fresh_linux_install_and_invite_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_capproof_multiplier_reconcile_00_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-CAPPROOF-MULTIPLIER-RECONCILE-00 multiplier surface map and no-stacking rule phase prompt.",
+      "manual_read_summary": "NON-SENSITIVE phase prompt that produces a machine-readable multiplier surface map and governing no-stacking rule before any CapProof activation; inventories passive ECU quality factor, CapProof pricing factor, dynamic ranking multiplier, and Werner backward-attribution reweight; corrects stale CDL-110 reference to CDL-112 in forward plan Part 3i.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_092_capproof_prelock_1404_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CAPPROOF-MULTIPLIER-RECONCILE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_multiplier_reconcile_00_g10_multiplier_surface_map_and_no_stacking_rule.md"
     }
   ],
   "boundary": {
