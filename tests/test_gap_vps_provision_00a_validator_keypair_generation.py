@@ -143,6 +143,7 @@ def test_main_uses_shlex_for_keygen_command(monkeypatch: pytest.MonkeyPatch, cap
         [
             "--identity-seed-hex",
             "07" * 32,
+            "--allow-argv-seed",
             "--keygen-command",
             '"/tmp/path with spaces/keygen" --extra',
         ]
