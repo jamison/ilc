@@ -218,6 +218,12 @@ pub fn load_genesis_with_metadata(
             ))
         })?;
         let agent_id = hex_decode_agent_id(&v.agent_id, v.validator_id)?;
+        if agent_id.0.as_slice() != key_bytes.as_slice() {
+            return Err(ILCConsensusError::Other(format!(
+                "validator_id={}: agent_id_must_match_validator_key under CDL-017 public RC",
+                v.validator_id
+            )));
+        }
         if !seen_agent_ids.insert(agent_id) {
             return Err(ILCConsensusError::Other(format!(
                 "validator_id={}: duplicate agent_id in genesis validator metadata",
@@ -614,10 +620,6 @@ mod tests {
         bytes_to_hex(&sk.sk_to_pk().compress())
     }
 
-    fn agent_id_hex(seed: u8) -> String {
-        bytes_to_hex(&[seed; 48])
-    }
-
     fn write_genesis_json(validators: &str, f: usize) -> tempfile::NamedTempFile {
         use std::io::Write;
         let mut file = tempfile::NamedTempFile::new().unwrap();
@@ -771,6 +773,9 @@ mod tests {
 
     #[test]
     fn test_load_genesis_with_metadata_retains_agent_and_stake_binding() {
+        let validator_key = valid_validator_key_hex(11);
+        let mut expected_agent_bytes = [0u8; 48];
+        expected_agent_bytes.copy_from_slice(&hex_decode_exact(&validator_key, 48).unwrap());
         let validators = format!(
             r#"{{
                 "validator_id": 1,
@@ -782,8 +787,7 @@ mod tests {
                 "host": "node1",
                 "role": "genesis_bootstrap"
             }}"#,
-            agent_id_hex(1),
-            valid_validator_key_hex(11)
+            validator_key, validator_key
         );
         let file = write_genesis_json(&validators, 0);
 
@@ -792,18 +796,17 @@ mod tests {
 
         assert_eq!(network_id, "ilc-test-metadata");
         assert_eq!(validator_set.validators.len(), 1);
-        let entry = metadata
-            .get(&AgentID([1u8; 48]))
-            .expect("metadata retained");
+        let expected_agent_id = AgentID(expected_agent_bytes);
+        let entry = metadata.get(&expected_agent_id).expect("metadata retained");
         assert_eq!(entry.config_validator_id, 1);
-        assert_eq!(entry.agent_id, AgentID([1u8; 48]));
+        assert_eq!(entry.agent_id, expected_agent_id);
         assert_eq!(entry.stake_micro_ecu, 1_234_567);
         assert_eq!(entry.role, "genesis_bootstrap");
     }
 
     #[test]
     fn test_load_genesis_with_metadata_rejects_duplicate_agent_ids() {
-        let duplicate_agent = agent_id_hex(7);
+        let duplicate_agent = valid_validator_key_hex(21);
         let validators = format!(
             r#"{{
                 "validator_id": 1,
@@ -825,10 +828,7 @@ mod tests {
                 "host": "node2",
                 "role": "honest"
             }}"#,
-            duplicate_agent,
-            valid_validator_key_hex(21),
-            duplicate_agent,
-            valid_validator_key_hex(22)
+            duplicate_agent, duplicate_agent, duplicate_agent, duplicate_agent
         );
         let file = write_genesis_json(&validators, 0);
 
@@ -837,6 +837,34 @@ mod tests {
         assert!(
             format!("{:?}", err).contains("duplicate agent_id"),
             "expected duplicate agent_id rejection, got: {:?}",
+            err
+        );
+    }
+
+    #[test]
+    fn test_load_genesis_rejects_agent_id_validator_key_mismatch() {
+        let agent_id = valid_validator_key_hex(31);
+        let validator_key = valid_validator_key_hex(32);
+        let validators = format!(
+            r#"{{
+                "validator_id": 1,
+                "agent_id": "{}",
+                "validator_key": "{}",
+                "stake_micro_ecu": 1000000,
+                "tailscale_ip": "100.0.0.1",
+                "port": 9001,
+                "host": "node1",
+                "role": "honest"
+            }}"#,
+            agent_id, validator_key
+        );
+        let file = write_genesis_json(&validators, 0);
+
+        let err = load_genesis_with_metadata(file.path()).unwrap_err();
+
+        assert!(
+            format!("{:?}", err).contains("agent_id_must_match_validator_key"),
+            "expected agent_id/validator_key mismatch rejection, got: {:?}",
             err
         );
     }
