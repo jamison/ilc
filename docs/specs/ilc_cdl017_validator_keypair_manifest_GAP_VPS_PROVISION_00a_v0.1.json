@@ -1,0 +1,40 @@
+{
+  "PUBLIC_RC_EXCLUDE": true,
+  "date": "2026-08-22",
+  "keygen_procedure": "Each AgentID derived via derive_validator_key_ikm(identity_seed) from ilc_core.validator.validator_key_derivation, then converted by ilc_consensus keygen --keypair-from-ikm-hex-stdin. Operator held identity seeds and validator secret keys offline in encrypted sparsebundle; private key material not recorded here.",
+  "network": "public_rc",
+  "phase": "GAP-VPS-PROVISION-00a",
+  "private_key_custody": "operator_offline_only_encrypted_sparsebundle",
+  "schema": "cdl017_validator_keypair_manifest_v0.1",
+  "validator_count": 4,
+  "validators": [
+    {
+      "agent_id_hex": "8f55d1214c237366dc1a73dae26d2d369e3747150000a2e4fcc47573460db43e020ab0800ee6819f498319cdb7d6bcea",
+      "agent_id_len": 96,
+      "agent_id_note": "operator-provided public AgentID; matching private material held offline only",
+      "agent_id_prefix_8": "8f55d121",
+      "slot": "v0"
+    },
+    {
+      "agent_id_hex": "a531d95af8903419c5b851681c788b774d33e622202d1994088d62f90518809eee02d04e7be0943b43cd049667145238",
+      "agent_id_len": 96,
+      "agent_id_note": "operator-provided public AgentID; matching private material held offline only",
+      "agent_id_prefix_8": "a531d95a",
+      "slot": "v1"
+    },
+    {
+      "agent_id_hex": "96ecc2a8e1db493eff8108db34be045a288d8098608c518c92d9b80ff2a84ecec45f2dccb36bf61116b566c9c50417b9",
+      "agent_id_len": 96,
+      "agent_id_note": "operator-provided public AgentID; matching private material held offline only",
+      "agent_id_prefix_8": "96ecc2a8",
+      "slot": "v2"
+    },
+    {
+      "agent_id_hex": "99c4aad50502275274b5c47613b3cc1cb66cb31b107ead240324c401f79ff67e7cc41b0b6b3ce13e0d901e3255b93bb2",
+      "agent_id_len": 96,
+      "agent_id_note": "operator-provided public AgentID; matching private material held offline only",
+      "agent_id_prefix_8": "99c4aad5",
+      "slot": "v3"
+    }
+  ]
+}

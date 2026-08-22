@@ -71297,6 +71297,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_multiplier_reconcile_00_g10_multiplier_surface_map_and_no_stacking_rule.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00a_completion_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-VPS-PROVISION-00a completion after operator generated key material offline in encrypted sparsebundle and supplied public AgentID hex values only.",
+      "manual_read_summary": "PUBLIC_RC_EXCLUDE validator AgentID manifest for GAP-VPS-PROVISION-00a. Records four public 96-character BLS AgentID values for VPS provisioning while excluding all IKM, seed, and validator secret key material from the repository.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-PROVISION-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_cdl017_validator_keypair_manifest_GAP_VPS_PROVISION_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00a_completion_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-VPS-PROVISION-00a completion evidence. No private key material committed; no VPS or public mirror action performed.",
+      "manual_read_summary": "Walkthrough for GAP-VPS-PROVISION-00a recording input-token checks, public AgentID manifest verification, focused Python and Rust test output, private-material non-claims, and next-step routing to sensitive VPS provisioning.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-PROVISION-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_provision_00a_validator_keypair_generation_walkthrough.md"
     }
   ],
   "boundary": {
