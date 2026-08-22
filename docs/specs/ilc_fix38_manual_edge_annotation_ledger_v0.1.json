@@ -71345,6 +71345,386 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_vps_provision_00a_validator_keypair_generation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-00a phase prompt: read-only audit of 7 onboarding surfaces.",
+      "manual_read_summary": "Phase prompt for the read-only install-path surface audit that inventories 7 surfaces before any onboarding implementation begins.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_surface_audit_committed_GAP_AGENT_ONBOARDING_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00a_g10_onboarding_surface_audit.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00a_g10_onboarding_surface_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-00b phase prompt: first-run identity schema definitions.",
+      "manual_read_summary": "Phase prompt defining the ~/.ilc/identity/ directory layout, birth_attestation.json, recovery_policy.json, onboarding_receipt.json, update migration contract, and three-axis uninstall decomposition.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_identity_schema_committed_GAP_AGENT_ONBOARDING_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00b_g10_first_run_identity_schema.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00b_g10_first_run_identity_schema.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-00c phase prompt: MVP keygen and protected store implementation.",
+      "manual_read_summary": "Phase prompt implementing ilc_core/identity/first_run_provisioning.py: provision_new_identity() using secrets.token_bytes, Rust keygen path, atomic 0o600 write, birth attestation, recovery_policy (type=none), and onboarding receipt.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_mvp_keygen_committed_GAP_AGENT_ONBOARDING_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00c_g10_mvp_keygen_and_protected_store.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00c_g10_mvp_keygen_and_protected_store.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-00d phase prompt: proof-of-possession and nullifier binding (SENSITIVE).",
+      "manual_read_summary": "SENSITIVE phase prompt closing the redeemer_key_binding_required gap by implementing invite PoP (domain ilc-invite-pop-v1) as a verifiable BLS signature and changing persist_nullifier to True with InviteNullifierLmdbRegistry.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_pop_and_nullifier_committed_GAP_AGENT_ONBOARDING_00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00d_g10_proof_of_possession_and_nullifier_binding.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_00d_g10_proof_of_possession_and_nullifier_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-PACKAGE-00a phase prompt: local build of ilc-core 0.4.0.",
+      "manual_read_summary": "Phase prompt bumping pyproject.toml 0.3.1 to 0.4.0 and building the local wheel/sdist with hash recording; no PyPI upload.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_package_040_built_GAP_AGENT_ONBOARDING_PACKAGE_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_package_00a_g10_local_build_040.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_package_00a_g10_local_build_040.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-PACKAGE-00b phase prompt: PyPI upload of ilc-core 0.4.0 (SENSITIVE).",
+      "manual_read_summary": "SENSITIVE phase prompt uploading ilc-core 0.4.0 to PyPI, creating the _040 installable manifest, and updating tools/install.sh to 0.4.0.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_package_040_published_GAP_AGENT_ONBOARDING_PACKAGE_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_package_00b_g10_pypi_upload_040.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_package_00b_g10_pypi_upload_040.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-RELEASE-SIGN-PROMPT-PATCH-02 phase prompt: direct 0.3.1 to 0.4.0 version patches.",
+      "manual_read_summary": "Phase prompt that patches RELEASE-SIGN-00a/00b/00c/00d and VERSION-CONSISTENCY-00 from 0.3.1/_031 to 0.4.0/_040 and adds the onboarding smoke token to the VERSION-CONSISTENCY-00 required input list.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:release_sign_prompts_patched_for_040_onboarding_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_02_g10_040_version_patch.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_02_g10_040_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 phase prompt: 0.4.0 fresh install smoke sequence.",
+      "manual_read_summary": "Phase prompt running 7 smoke checks for ilc-core 0.4.0 including AgentID generation, 0o600 key file, kill/restart AgentID persistence, 0.3.1-to-0.4.0 upgrade AgentID preservation, and ilc doctor exit 0.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "phase:onboarding_040_install_smoke_pass"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_install_smoke_00_g10_040_fresh_install_smoke.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_install_smoke_00_g10_040_fresh_install_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-KEYSTORE-01 post-RC stub: macOS Keychain and Linux Secret Service integration.",
+      "manual_read_summary": "POST-RC STUB for OS-native keystore integration (macOS Keychain, Linux D-Bus Secret Service, Linux kernel keyring) with auto probe order; not executable before LAUNCH-00 COMPLETE.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_01_g10_os_keychain_backends.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_01_g10_os_keychain_backends.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-KEYSTORE-02 post-RC stub: LUKS/VeraCrypt operator documentation.",
+      "manual_read_summary": "POST-RC STUB for LUKS/VeraCrypt at-rest encryption operator documentation including lsblk luks detection guidance; not executable before LAUNCH-00 COMPLETE.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_02_g10_luks_veracrypt_operator_profile.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_02_g10_luks_veracrypt_operator_profile.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-KEYSTORE-03 post-RC stub: TPM-sealed LUKS for unattended VPS.",
+      "manual_read_summary": "POST-RC STUB for TPM-sealed LUKS unattended unlock via systemd-cryptenroll/tpm2-tools for headless VPS validators; not executable before LAUNCH-00 COMPLETE.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_03_g10_tpm_sealed_luks.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_03_g10_tpm_sealed_luks.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-KEYSTORE-04 post-RC stub: external signer / HSM / PKCS#11.",
+      "manual_read_summary": "POST-RC STUB for external signer integration (YubiHSM2, PKCS#11) mirroring the signing provider interface URL scheme; not executable before LAUNCH-00 COMPLETE.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_04_g10_external_signer_hsm_pkcs11.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_keystore_04_g10_external_signer_hsm_pkcs11.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-RECOVERY-00 post-RC stub: CDL-002 runtime recovery policy schema and governance (SENSITIVE).",
+      "manual_read_summary": "POST-RC SENSITIVE STUB for CDL-002 runtime recovery schema ratification including typed credential envelope and M-of-N multi-credential model; not executable before LAUNCH-00 COMPLETE.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_recovery_00_g10_recovery_policy_schema.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_recovery_00_g10_recovery_policy_schema.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-RECOVERY-01 post-RC stub: --recovery-credential flag implementation at onboarding.",
+      "manual_read_summary": "POST-RC STUB implementing --recovery-credential <type>://<ref> flag for ilc install --from-invite enabling precommitted M-of-N recovery policy at onboarding time; depends on GAP-AGENT-RECOVERY-00.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_recovery_01_g10_recovery_precommit_at_onboarding.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_recovery_01_g10_recovery_precommit_at_onboarding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-UNINSTALL-00 post-RC stub: ilc uninstall three-axis local decommission.",
+      "manual_read_summary": "POST-RC STUB for ilc uninstall with three axes: software-only default, --wipe-local-data (LMDB only), --wipe-identity (requires BLS-signed departure intent); CDL-112 AgentVoluntaryDeparture candidate; pip uninstall MUST NOT imply identity deletion.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_uninstall_00_g10_local_decommission_and_wipe.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_uninstall_00_g10_local_decommission_and_wipe.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-E2E-01 post-RC stub: multi-platform onboarding smoke.",
+      "manual_read_summary": "POST-RC STUB for end-to-end onboarding smoke across Ubuntu 22.04 bare metal, DigitalOcean droplet, macOS Apple Silicon, Docker container, and fresh DO s-1vcpu-1gb; extends the pre-RC install smoke to all target platforms.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_e2e_01_g10_multiplatform_smoke.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agent_onboarding_e2e_01_g10_multiplatform_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-VALIDATOR-CASUAL-LIVENESS-00 post-RC stub: validator-on-by-default design question (SENSITIVE).",
+      "manual_read_summary": "POST-RC SENSITIVE STUB resolving the validator_participation_enabled default and liveness decay posture for organically onboarded public agents; distinct from Genesis-controlled VPS provisioning.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_casual_liveness_00_g10_validator_on_by_default.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_casual_liveness_00_g10_validator_on_by_default.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-INSTALL-UX-01 post-RC stub: guided non-technical onboarding wizard.",
+      "manual_read_summary": "POST-RC STUB adding a guided interactive TTY onboarding wizard, ilc doctor identity health checks, backup warnings for recovery_policy.type=none, and human-readable invite redemption receipt.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md"
     }
   ],
   "boundary": {
