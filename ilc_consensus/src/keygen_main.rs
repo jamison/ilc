@@ -115,7 +115,10 @@ fn decode_32_byte_hex(value: &str) -> Result<[u8; 32], String> {
             value.len()
         ));
     }
-    if !value.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
+    if !value
+        .bytes()
+        .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    {
         return Err("--pubkey-from-ikm-hex-stdin input must be lowercase hex".to_string());
     }
     let mut out = [0u8; 32];
