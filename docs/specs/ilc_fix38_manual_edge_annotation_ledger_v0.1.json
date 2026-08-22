@@ -70669,7 +70669,6 @@
       "annotation_batch": "manual_batch_can_sheaf_whitepaper_2026_08_21",
       "chronology_note": "2026-08-21 Phase GAP session \u2014 CAN/sheaf whitepaper integration analysis memo, support_only research artifact",
       "manual_read_summary": "Internal research memo analyzing the correspondence between D Acunto et al. 2026 Causal Abstraction Networks and ILC epistemic architecture; documents the \u0394 vs L_F mathematical distinction, hierarchical multi-stratum model, and forward planning phases GAP-SHEAF-POSK-00 / SIM-SHEAF-POSK-01.",
-      "repo_path": "docs/research/ilc_causal_abstraction_whitepaper_integration_analysis_v0.1.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70685,13 +70684,13 @@
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/research/ilc_causal_abstraction_whitepaper_integration_analysis_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
       "chronology_note": "2026-08-21, phase GAP-CDL017-PACKAGE-00a through GAP-VPS-PROVISION-00c prompt drafting and 0.3.0\u21920.3.1 patch session",
       "manual_read_summary": "Phase prompt for CDL-017 local 0.3.1 build \u2014 bumps pyproject.toml, builds wheel/sdist, records hashes in build receipt.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00a_g10_local_build_031.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70702,13 +70701,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00a_g10_local_build_031.md"
     },
     {
       "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
       "chronology_note": "2026-08-21, phase GAP-CDL017-PACKAGE-00b prompt drafting",
       "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE PyPI upload of 0.3.1 \u2014 verifies hashes, uploads, creates installable manifest, updates install.sh.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00b_g10_pypi_upload_031.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70719,13 +70718,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_package_00b_g10_pypi_upload_031.md"
     },
     {
       "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
       "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00a prompt drafting",
       "manual_read_summary": "Phase prompt for CDL-017 validator AgentID keypair generation \u2014 creates keygen helper script, records four operator-provided AgentID hex strings in a PUBLIC_RC_EXCLUDE manifest.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00a_g10_validator_keypair_generation.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70736,13 +70735,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00a_g10_validator_keypair_generation.md"
     },
     {
       "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
       "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00b prompt drafting",
       "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE VPS provisioning \u2014 archives old validators, provisions four new VPS instances with ilc-core 0.3.1 and AgentID identities, confirms epoch-0 health.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00b_g10_new_vps_provisioning.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70753,13 +70752,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00b_g10_new_vps_provisioning.md"
     },
     {
       "annotation_batch": "manual_batch_cdl017_prompt_suite_2026_08_21",
       "chronology_note": "2026-08-21, phase GAP-VPS-PROVISION-00c prompt drafting",
       "manual_read_summary": "Phase prompt for CDL-017 SENSITIVE namespace verification \u2014 confirms all four validators at epoch 0 with correct AgentID identities and 0.3.1 package; produces clean namespace receipt superseding Track A.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00c_g10_namespace_verify.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -70770,14 +70769,14 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_00c_g10_namespace_verify.md"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Removed Rust ValidatorID newtype; AgentID is the consensus validator identity for ValidatorSet, EpochCheckpoint, and TransferCertificate.",
-      "repo_path": "ilc_consensus/src/types.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70799,14 +70798,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/types.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Genesis loader now keys validator metadata by AgentID while retaining config_validator_id as an operator/config index.",
-      "repo_path": "ilc_consensus/src/config.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70828,14 +70827,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/config.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Validator admission/ejection hooks now accept AgentID rather than ValidatorID.",
-      "repo_path": "ilc_consensus/src/validator.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70857,14 +70856,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/validator.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Epoch checkpoint signer storage and duplicate-signer validation now use AgentID.",
-      "repo_path": "ilc_consensus/src/epoch_settlement.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70886,14 +70885,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/epoch_settlement.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Application-interface validator test helpers and validator set construction now use AgentID.",
-      "repo_path": "ilc_consensus/src/app_interface.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70915,14 +70914,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/app_interface.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Fast-path transfer certificate signature routing now uses AgentID signer keys.",
-      "repo_path": "ilc_consensus/src/fast_path.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70944,14 +70943,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/fast_path.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Node runner identity, peer routing, relay handling, and fault-simulation filters now use AgentID.",
-      "repo_path": "ilc_consensus/src/node.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -70973,14 +70972,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/node.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Gossip envelope peer identity and mTLS authentication now resolve to AgentID with production fail-closed metadata lookup.",
-      "repo_path": "ilc_consensus/src/network.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71002,14 +71001,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/network.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Consensus startup derives own AgentID and peer AgentIDs from genesis metadata rather than constructing ValidatorID from config indices.",
-      "repo_path": "ilc_consensus/src/main.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71031,14 +71030,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/main.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Persistent QUIC endpoint projection and session maps now key by AgentID.",
-      "repo_path": "ilc_consensus/src/persistent_quic.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71060,14 +71059,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/persistent_quic.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Relay routing table endpoint keys and deterministic selection now use AgentID bytes.",
-      "repo_path": "ilc_consensus/src/relay_routing_table.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71089,14 +71088,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/relay_routing_table.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "DAG audit signer mapping now derives AgentID keys from genesis BLS public key bytes.",
-      "repo_path": "ilc_consensus/src/dag_audit_main.rs",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71118,43 +71117,43 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/dag_audit_main.rs"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "runtime_module",
       "manual_read_summary": "Testnet client compatibility surfaces explicitly map numeric CLI/config indices to AgentID only at the edge.",
-      "repo_path": "ilc_consensus/src/testnet_client_main.rs",
-      "proposed_authority_trace_edges": [
-        {
-          "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
-        }
-      ],
-      "proposed_semantic_edges": [
-        {
-          "edge_type": "SOURCE_TREE_MEMBER",
-          "target": "genesis:genesis_root_v0.4"
-        },
-        {
-          "edge_type": "EVIDENCES",
-          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
-        }
-      ],
-      "proposed_trace_roles": [
-        "REFERENCES_AUTHORITY",
-        "SOURCE_TREE_MEMBER",
-        "EVIDENCES"
-      ],
-      "recommended_graph_action": "load_bearing_artifact_added"
-    },
-    {
-      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
-      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
       "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_impl_delta_00b_g10_rust_validator_id_to_agent_id_migration.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-IMPL-DELTA-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/testnet_client_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
+      "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
       "manual_read_summary": "ValidatorRoleRecord.validator_id is deprecated as optional legacy data; new role records no longer require u32 validator IDs.",
-      "repo_path": "ilc_core/validator/admission_ejection_runtime.py",
+      "node_kind": "runtime_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71176,14 +71175,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/validator/admission_ejection_runtime.py"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "test_module",
       "manual_read_summary": "Structural regression tests prove Rust ValidatorID removal, AgentID-keyed consensus surfaces, production network metadata fail-closed behavior, and Python validator_id deprecation.",
-      "repo_path": "tests/test_gap_cdl017_impl_delta_00b.py",
+      "node_kind": "test_module",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71205,14 +71204,14 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_cdl017_impl_delta_00b.py"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl017_impl_delta_00b_runtime_2026_08_21",
       "chronology_note": "2026-08-21 GAP-CDL017-IMPL-DELTA-00b Rust ValidatorID to AgentID migration.",
-      "node_kind": "phase_walkthrough",
       "manual_read_summary": "Walkthrough records implementation summary, verification output, local Rust toolchain non-witness, tokens, and non-claims for GAP-CDL017-IMPL-DELTA-00b.",
-      "repo_path": "docs/phases/phase_gap_cdl017_impl_delta_00b_walkthrough.md",
+      "node_kind": "phase_walkthrough",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -71234,7 +71233,8 @@
         "SOURCE_TREE_MEMBER",
         "EVIDENCES"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl017_impl_delta_00b_walkthrough.md"
     }
   ],
   "boundary": {
@@ -74819,7 +74819,6 @@
       "chronology_note": "2026-08-22 GAP-CDL017-PACKAGE-00a local 0.3.1 package build receipt.",
       "manual_read_summary": "Build receipt recording local ilc-core 0.3.1 wheel and sdist hashes, sizes, source commit, and pending PyPI upload status for the CDL-017 release chain.",
       "node_kind": "spec_doc",
-      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_CDL017_PACKAGE_00a_v0.1.json",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTATION_AUTHORITY",
@@ -74836,7 +74835,32 @@
         "IMPLEMENTATION_AUTHORITY",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_CDL017_PACKAGE_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_package_00b_2026_08_22",
+      "chronology_note": "2026-08-22 GAP-CDL017-PACKAGE-00b installable release manifest for ilc-core 0.3.1 PyPI artifacts.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.3.1 recording PyPI wheel and sdist URLs, SHA-256 hashes, sizes, rc channel, and unsigned signing status after fetchback verification.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-CDL017-PACKAGE-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_031_GAP_CDL017_PACKAGE_00a_v0.1.json"
     }
   ],
   "manual_edge_annotations": [
