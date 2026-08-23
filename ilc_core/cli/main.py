@@ -3267,94 +3267,138 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     invite_bundle = _load_install_invite_bundle(str(args.from_invite))
     expected_profile = _install_expected_profile(invite_bundle)
     current_epoch = _install_current_epoch(invite_bundle)
+    invite_id = _install_invite_id(invite_bundle)
 
+    from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
     from ilc_core.sidecars.openclaw_invite_bootstrap import (
-        InviteNullifierStore,
         verify_invite_bootstrap,
     )
 
-    with tempfile.TemporaryDirectory(prefix="ilc-install-nullifier-check-") as tmpdir:
+    nullifier_registry_path = Path.home() / ".ilc" / "lmdb" / "nullifiers"
+    with InviteNullifierLmdbRegistry(nullifier_registry_path) as nullifier_registry:
         decision = verify_invite_bootstrap(
             _invite_bootstrap_payload(invite_bundle),
             expected_profile=expected_profile,
             current_epoch=current_epoch,
-            nullifier_store=InviteNullifierStore(Path(tmpdir) / "invite_nullifiers.json"),
-            persist_nullifier=False,
+            local_nullifier_registry=nullifier_registry,
+            persist_nullifier=True,
+            register_nullifier=False,
             production_required=False,
         )
-    if not decision.bootstrap_allowed:
-        raise ValueError(f"invite_verification_failed:{decision.defect_token or 'not_allowed'}")
+        if not decision.bootstrap_allowed:
+            raise ValueError(f"invite_verification_failed:{decision.defect_token or 'not_allowed'}")
 
-    witness = _required_mapping(
-        invite_bundle.get("atlas_slice_manifest_witness"),
-        "invite_bundle_missing_atlas_slice_manifest_witness",
-    )
-    from ilc_core.bundle.atlas_slice_verifier import (
-        AtlasSliceVerifierError,
-        verify_portable_manifest_witness,
-    )
-
-    try:
-        manifest_verification = verify_portable_manifest_witness(witness)
-    except AtlasSliceVerifierError as exc:
-        raise ValueError(f"manifest_verification_failed:{exc}") from exc
-    if manifest_verification.get("verified") is not True:
-        token = manifest_verification.get("error") or "not_verified"
-        raise ValueError(f"manifest_verification_failed:{token}")
-
-    materialization_payload = _install_materialization_payload(invite_bundle, witness)
-    target_dir = _install_target_dir(args, materialization_payload, witness)
-    output_receipt = _install_receipt_path(args, target_dir)
-
-    from ilc_core.sidecars.starmap_installer import (
-        StarMapInstallerError,
-        build_install_receipt,
-        materialize_starmap_manifest,
-    )
-
-    try:
-        materialization = materialize_starmap_manifest(
-            materialization_payload,
-            target=target_dir,
-            dry_run=False,
+        witness = _required_mapping(
+            invite_bundle.get("atlas_slice_manifest_witness"),
+            "invite_bundle_missing_atlas_slice_manifest_witness",
         )
-        receipt = build_install_receipt(materialization_payload)
-    except StarMapInstallerError as exc:
-        raise ValueError(f"install_materialization_failed:{exc}") from exc
+        from ilc_core.bundle.atlas_slice_verifier import (
+            AtlasSliceVerifierError,
+            verify_portable_manifest_witness,
+        )
 
-    _write_install_receipt_atomic(output_receipt, receipt)
-    from ilc_core.identity.first_run_provisioning import (
-        IdentityAlreadyExistsError,
-        existing_identity_summary,
-        provision_new_identity,
-    )
+        try:
+            manifest_verification = verify_portable_manifest_witness(witness)
+        except AtlasSliceVerifierError as exc:
+            raise ValueError(f"manifest_verification_failed:{exc}") from exc
+        if manifest_verification.get("verified") is not True:
+            token = manifest_verification.get("error") or "not_verified"
+            raise ValueError(f"manifest_verification_failed:{token}")
 
-    try:
-        identity_provisioning = provision_new_identity(
+        materialization_payload = _install_materialization_payload(invite_bundle, witness)
+        target_dir = _install_target_dir(args, materialization_payload, witness)
+        output_receipt = _install_receipt_path(args, target_dir)
+
+        from ilc_core.sidecars.starmap_installer import (
+            StarMapInstallerError,
+            build_install_receipt,
+            materialize_starmap_manifest,
+        )
+
+        try:
+            materialization = materialize_starmap_manifest(
+                materialization_payload,
+                target=target_dir,
+                dry_run=False,
+            )
+            receipt = build_install_receipt(materialization_payload)
+        except StarMapInstallerError as exc:
+            raise ValueError(f"install_materialization_failed:{exc}") from exc
+
+        _write_install_receipt_atomic(output_receipt, receipt)
+        from ilc_core.identity.first_run_provisioning import (
+            IdentityAlreadyExistsError,
+            attach_invite_pop_to_onboarding_receipt,
+            existing_identity_summary,
+            provision_new_identity,
+        )
+
+        try:
+            identity_provisioning = provision_new_identity(
+                Path.home(),
+                invite_id=invite_id,
+                epoch=current_epoch,
+                force_reprovision=bool(getattr(args, "force_reprovision", False)),
+            )
+        except IdentityAlreadyExistsError:
+            print(
+                "identity_provisioning_skipped_existing_identity: "
+                "use --force-reprovision only after explicit destructive confirmation",
+                file=sys.stderr,
+            )
+            identity_provisioning = existing_identity_summary(Path.home())
+
+        agent_id = str(identity_provisioning["agent_id"])
+        onboarding_receipt = attach_invite_pop_to_onboarding_receipt(
             Path.home(),
-            invite_id=str(invite_bundle.get("invite_id") or ""),
+            invite_id=invite_id,
+            invite_nullifier=str(decision.redemption_nullifier),
             epoch=current_epoch,
-            force_reprovision=bool(getattr(args, "force_reprovision", False)),
+            nullifier_persisted=True,
+            nullifier_registry="lmdb:~/.ilc/lmdb/nullifiers/",
         )
-    except IdentityAlreadyExistsError:
-        print(
-            "identity_provisioning_skipped_existing_identity: "
-            "use --force-reprovision only after explicit destructive confirmation",
-            file=sys.stderr,
+        redemption_record = _install_invite_redemption_record(
+            invite_bundle=invite_bundle,
+            agent_id=agent_id,
+            invite_id=invite_id,
+            redemption_nullifier=str(decision.redemption_nullifier or ""),
+            current_epoch=current_epoch,
+            redeemer_key_binding={
+                "domain": str(onboarding_receipt["invite_pop_domain"]),
+                "payload_ref": str(onboarding_receipt["invite_pop_payload_ref"]),
+                "signature": str(onboarding_receipt["invite_pop"]),
+            },
         )
-        identity_provisioning = existing_identity_summary(Path.home())
 
-    return {
-        "identity_provisioning": identity_provisioning,
-        "invite_verification": decision.to_dict(),
-        "manifest_verification": manifest_verification,
-        "materialization": materialization,
-        "receipt_path": str(output_receipt),
-        "slice_id": str(materialization.get("slice_id", _install_slice_id(materialization_payload, witness))),
-        "status": "ok",
-        "subcommand": "from-invite",
-        "target_dir": str(target_dir),
-    }
+        from ilc_core.genesis.invite_enforcement import (
+            is_enrollment_invite_enforced,
+            require_invite_for_enrollment,
+        )
+
+        require_invite_for_enrollment(
+            agent_id,
+            redemption_record,
+            nullifier_registry=nullifier_registry,
+            register_nullifier=True,
+        )
+        if not is_enrollment_invite_enforced():
+            if not nullifier_registry.register_if_new(str(decision.redemption_nullifier)):
+                raise ValueError("invite_nullifier_already_used_for_enrollment")
+        return {
+            "identity_provisioning": identity_provisioning,
+            "invite_redemption_record": redemption_record,
+            "invite_verification": decision.to_dict(),
+            "manifest_verification": manifest_verification,
+            "materialization": materialization,
+            "onboarding_receipt": onboarding_receipt,
+            "receipt_path": str(output_receipt),
+            "slice_id": str(
+                materialization.get("slice_id", _install_slice_id(materialization_payload, witness))
+            ),
+            "status": "ok",
+            "subcommand": "from-invite",
+            "target_dir": str(target_dir),
+        }
 
 
 def _load_install_invite_bundle(source: str) -> dict[str, Any]:
@@ -3402,6 +3446,17 @@ def _install_expected_profile(invite_bundle: dict[str, Any]) -> str:
     return value
 
 
+def _install_invite_id(invite_bundle: dict[str, Any]) -> str:
+    value = invite_bundle.get("invite_id")
+    if isinstance(value, str) and value:
+        return value
+    batch = _required_mapping(
+        invite_bundle.get("invite_batch_record"),
+        "install_invite_batch_record_missing",
+    )
+    return _required_non_empty_str(batch.get("batch_id"), "install_invite_batch_id_invalid")
+
+
 def _invite_bootstrap_payload(invite_bundle: dict[str, Any]) -> dict[str, Any]:
     invite_keys = {
         "intended_epoch",
@@ -3425,6 +3480,75 @@ def _install_current_epoch(invite_bundle: dict[str, Any]) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError("install_invite_intended_epoch_invalid")
     return value
+
+
+def _install_invite_redemption_record(
+    *,
+    invite_bundle: dict[str, Any],
+    agent_id: str,
+    invite_id: str,
+    redemption_nullifier: str,
+    current_epoch: int,
+    redeemer_key_binding: dict[str, str],
+) -> dict[str, Any]:
+    from ilc_core.genesis.invitation_provenance_record import (
+        InviteRedemptionRecord,
+        validate_invite_redemption_record,
+    )
+
+    batch = _required_mapping(
+        invite_bundle.get("invite_batch_record"),
+        "install_invite_batch_record_missing",
+    )
+    proof = _install_redemption_membership_proof(invite_bundle.get("nonce_membership_proof"))
+    inviter_cid = _required_non_empty_str(batch.get("inviter_cid"), "install_inviter_cid_invalid")
+    batch_id = _required_non_empty_str(batch.get("batch_id"), "install_invite_batch_id_invalid")
+    record = InviteRedemptionRecord(
+        batch_id=batch_id,
+        redemption_nullifier=redemption_nullifier,
+        nonce_membership_proof=proof,
+        redeemer_pubkey_cid=(
+            _optional_non_empty_str(invite_bundle.get("redeemer_pubkey_cid"))
+            or f"agent:{agent_id}"
+        ),
+        redeemer_agent_id=agent_id,
+        redemption_epoch=current_epoch,
+        inviter_cid=inviter_cid,
+        redeemer_key_binding=redeemer_key_binding,
+    )
+    validate_invite_redemption_record(record)
+    result = record.to_dict()
+    result["invite_id"] = invite_id
+    return result
+
+
+def _install_redemption_membership_proof(value: object) -> tuple[str, ...]:
+    if value in (None, (), []):
+        return ()
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("install_invite_nonce_membership_proof_invalid")
+    proof_hashes: list[str] = []
+    for item in value:
+        if isinstance(item, str):
+            proof_hashes.append(item)
+        elif isinstance(item, dict):
+            sibling = item.get("sibling")
+            if not isinstance(sibling, str):
+                raise ValueError("install_invite_nonce_membership_proof_invalid")
+            proof_hashes.append(sibling)
+        else:
+            raise ValueError("install_invite_nonce_membership_proof_invalid")
+    return tuple(proof_hashes)
+
+
+def _required_non_empty_str(value: object, token: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise ValueError(token)
+    return value
+
+
+def _optional_non_empty_str(value: object) -> str | None:
+    return value if isinstance(value, str) and value else None
 
 
 def _required_mapping(value: object, token: str) -> dict[str, Any]:

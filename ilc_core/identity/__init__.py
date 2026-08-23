@@ -30,10 +30,16 @@ from .log_redaction_runtime import (
 from .first_run_provisioning import (
     FIRST_RUN_PROVISIONING_VERSION,
     IdentityAlreadyExistsError,
+    POP_DOMAIN,
+    attach_invite_pop_to_onboarding_receipt,
+    build_invite_pop_transcript,
     existing_identity_summary,
+    generate_invite_pop,
     identity_root,
+    invite_pop_payload_ref,
     migrate_identity_schema_if_needed,
     provision_new_identity,
+    verify_invite_pop,
 )
 
 __all__ = [
@@ -59,8 +65,14 @@ __all__ = [
     "redact_agent_ids_in_log_message",
     "FIRST_RUN_PROVISIONING_VERSION",
     "IdentityAlreadyExistsError",
+    "POP_DOMAIN",
+    "attach_invite_pop_to_onboarding_receipt",
+    "build_invite_pop_transcript",
     "existing_identity_summary",
+    "generate_invite_pop",
     "identity_root",
+    "invite_pop_payload_ref",
     "migrate_identity_schema_if_needed",
     "provision_new_identity",
+    "verify_invite_pop",
 ]

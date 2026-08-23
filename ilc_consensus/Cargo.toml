@@ -97,5 +97,9 @@ path = "src/genesis_recovery_fake_vector_main.rs"
 name = "validator_endpoint_assertion_bls"
 path = "src/validator_endpoint_assertion_bls_main.rs"
 
+[[bin]]
+name = "invite_pop_bls"
+path = "src/invite_pop_bls_main.rs"
+
 # ILC implements its own sovereign Mysticeti-style consensus loop here. The
 # upstream mysticeti-core crate is not a current dependency or vendored source.
