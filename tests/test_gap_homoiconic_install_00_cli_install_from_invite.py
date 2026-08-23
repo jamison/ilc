@@ -50,10 +50,48 @@ def _write_bundle(path: Path, payload: dict[str, object] | None = None) -> Path:
 
 def _args(invite: Path | str, target: Path, receipt: Path) -> argparse.Namespace:
     return argparse.Namespace(
+        force_reprovision=False,
         from_invite=str(invite),
         target_dir=str(target),
         output_receipt=str(receipt),
     )
+
+
+@pytest.fixture(autouse=True)
+def _isolated_install_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setattr(Path, "home", lambda: home)
+    keygen = tmp_path / "fake_keygen.py"
+    keygen.write_text(
+        "\n".join(
+            [
+                "import pathlib, sys",
+                "out = pathlib.Path(sys.argv[sys.argv.index('--out') + 1])",
+                "out.write_text('" + ("b" * 64) + "\\n', encoding='utf-8')",
+                "print('" + ("a" * 96) + "')",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    invite_pop = tmp_path / "fake_invite_pop.py"
+    invite_pop.write_text(
+        "\n".join(
+            [
+                "import sys",
+                "sys.stdin.read()",
+                "if sys.argv[1] == 'verify':",
+                "    print('invite_pop_bls_valid')",
+                "else:",
+                "    print('" + ("c" * 192) + "')",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("ILC_ONBOARDING_BLS_KEYGEN_COMMAND", f"{sys.executable} {keygen}")
+    monkeypatch.setenv("ILC_ONBOARDING_BLS_POP_COMMAND", f"{sys.executable} {invite_pop}")
 
 
 def test_install_from_invite_help_is_discoverable() -> None:

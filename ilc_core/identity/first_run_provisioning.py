@@ -2,9 +2,8 @@
 """First-run AgentID provisioning for public-RC onboarding.
 
 This module creates the local identity store used by ``ilc install
---from-invite``. It deliberately stops before proof-of-possession and durable
-invite-nullifier binding; those sensitive surfaces are owned by
-GAP-AGENT-ONBOARDING-00d.
+--from-invite`` and, after GAP-AGENT-ONBOARDING-00d, can bind the generated
+AgentID key to the invite redemption transcript with a BLS proof-of-possession.
 """
 
 from __future__ import annotations
@@ -28,15 +27,19 @@ from ilc_core.validator.validator_key_derivation import (
 )
 
 FIRST_RUN_PROVISIONING_VERSION = "gap_agent_onboarding_00c.v0.1"
+POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = "0.4.0"
 GENESIS_ROOT_ENVELOPE_HASH = (
     "sha256:ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c"
 )
 ONBOARDING_BLS_KEYGEN_COMMAND_ENV = "ILC_ONBOARDING_BLS_KEYGEN_COMMAND"
+ONBOARDING_BLS_POP_COMMAND_ENV = "ILC_ONBOARDING_BLS_POP_COMMAND"
 
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _PRIVATE_KEY_RE = re.compile(rb"^[0-9a-f]{64}\n?$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_BLS_SIGNATURE_RE = re.compile(r"^[0-9a-f]{192}$")
 
 
 class IdentityAlreadyExistsError(ValueError):
@@ -177,6 +180,154 @@ def migrate_identity_schema_if_needed(install_dir: Path | str) -> dict[str, Any]
         "migration_version": "gap_agent_onboarding_00c_update_migration.v0.1",
     }
     _atomic_write_json(root / "migration_receipt.json", receipt, mode=0o644)
+    return receipt
+
+
+def build_invite_pop_transcript(
+    *,
+    agent_id_hex: str,
+    invite_nullifier: str,
+    invite_id: str,
+    epoch: int,
+) -> bytes:
+    """Return canonical JSON bytes for an invite redemption PoP transcript."""
+
+    _require_agent_id(agent_id_hex)
+    _require_sha256_hex(invite_nullifier, "invite_pop_nullifier_invalid")
+    _require_non_empty_string(invite_id, "invite_pop_invite_id_invalid")
+    _require_epoch(epoch, "invite_pop_epoch_invalid")
+    return _canonical_json_bytes(
+        {
+            "agent_id_hex": agent_id_hex,
+            "domain": POP_DOMAIN,
+            "epoch": epoch,
+            "invite_id": invite_id,
+            "invite_nullifier": invite_nullifier,
+        }
+    )
+
+
+def invite_pop_payload_ref(
+    *,
+    agent_id_hex: str,
+    invite_nullifier: str,
+    invite_id: str,
+    epoch: int,
+) -> str:
+    transcript = build_invite_pop_transcript(
+        agent_id_hex=agent_id_hex,
+        invite_nullifier=invite_nullifier,
+        invite_id=invite_id,
+        epoch=epoch,
+    )
+    return hashlib.sha384(transcript).hexdigest()
+
+
+def generate_invite_pop(
+    agent_id_hex: str,
+    invite_nullifier: str,
+    signing_key_path: Path,
+    *,
+    invite_id: str,
+    epoch: int,
+    pop_command: list[str] | None = None,
+) -> str:
+    """Sign the SHA-384 invite transcript digest with the AgentID BLS key."""
+
+    digest_hex = invite_pop_payload_ref(
+        agent_id_hex=agent_id_hex,
+        invite_nullifier=invite_nullifier,
+        invite_id=invite_id,
+        epoch=epoch,
+    )
+    signature_hex = _run_invite_pop_command(
+        ["sign", "--secret-key", str(signing_key_path)],
+        digest_hex,
+        pop_command=pop_command,
+        failure_token="invite_pop_signing_failed",
+    )
+    return _require_bls_signature_hex(signature_hex, "invite_pop_signature_invalid")
+
+
+def verify_invite_pop(
+    *,
+    agent_id_hex: str,
+    invite_nullifier: str,
+    invite_id: str,
+    epoch: int,
+    invite_pop: str,
+    pop_command: list[str] | None = None,
+) -> bool:
+    """Verify an invite PoP signature against its AgentID public key."""
+
+    digest_hex = invite_pop_payload_ref(
+        agent_id_hex=agent_id_hex,
+        invite_nullifier=invite_nullifier,
+        invite_id=invite_id,
+        epoch=epoch,
+    )
+    signature_hex = _require_bls_signature_hex(invite_pop, "invite_pop_signature_invalid")
+    try:
+        _run_invite_pop_command(
+            [
+                "verify",
+                "--public-key-hex",
+                agent_id_hex,
+                "--signature-hex",
+                signature_hex,
+            ],
+            digest_hex,
+            pop_command=pop_command,
+            failure_token="invite_pop_verification_failed",
+        )
+    except ValueError:
+        return False
+    return True
+
+
+def attach_invite_pop_to_onboarding_receipt(
+    install_dir: Path | str,
+    *,
+    invite_id: str,
+    invite_nullifier: str,
+    epoch: int,
+    nullifier_persisted: bool,
+    nullifier_registry: str,
+    pop_command: list[str] | None = None,
+) -> dict[str, Any]:
+    """Attach public invite PoP fields to the local onboarding receipt."""
+
+    root = identity_root(install_dir)
+    agent_id = _read_agent_id(root / "agent_id")
+    invite_pop = generate_invite_pop(
+        agent_id,
+        invite_nullifier,
+        root / "signing_key.hex",
+        invite_id=invite_id,
+        epoch=epoch,
+        pop_command=pop_command,
+    )
+    receipt_path = root / "onboarding_receipt.json"
+    receipt = _read_json_object(receipt_path, "onboarding_receipt_invalid")
+    if receipt.get("agent_id") != agent_id:
+        raise ValueError("onboarding_receipt_agent_id_mismatch")
+    receipt.update(
+        {
+            "invite_id": invite_id,
+            "invite_nullifier": invite_nullifier,
+            "invite_pop": invite_pop,
+            "invite_pop_domain": POP_DOMAIN,
+            "invite_pop_payload_ref": invite_pop_payload_ref(
+                agent_id_hex=agent_id,
+                invite_nullifier=invite_nullifier,
+                invite_id=invite_id,
+                epoch=epoch,
+            ),
+            "nullifier_persisted": bool(nullifier_persisted),
+            "nullifier_registry": nullifier_registry,
+        }
+    )
+    _atomic_write_json(receipt_path, receipt, mode=0o644)
     return receipt
 
 
@@ -333,6 +484,63 @@ def _default_keygen_command() -> list[str]:
     ]
 
 
+def _run_invite_pop_command(
+    args: list[str],
+    digest_hex: str,
+    *,
+    pop_command: list[str] | None,
+    failure_token: str,
+) -> str:
+    command = list(pop_command or _default_invite_pop_command())
+    try:
+        result = subprocess.run(
+            [*command, *args],
+            input=f"{digest_hex}\n",
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except FileNotFoundError as exc:
+        raise ValueError("invite_pop_bls_backend_unavailable") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("invite_pop_bls_backend_timed_out") from exc
+    if result.returncode != 0:
+        raise ValueError(failure_token)
+    return result.stdout.strip()
+
+
+def _default_invite_pop_command() -> list[str]:
+    env_command = os.environ.get(ONBOARDING_BLS_POP_COMMAND_ENV)
+    if env_command:
+        return shlex.split(env_command)
+
+    repo_root = Path(__file__).resolve().parents[2]
+    for candidate in (
+        repo_root / "ilc_consensus" / "target" / "release" / "invite_pop_bls",
+        repo_root / "ilc_consensus" / "target" / "debug" / "invite_pop_bls",
+    ):
+        if candidate.exists():
+            return [str(candidate)]
+
+    cargo = shutil.which("cargo")
+    if cargo is None:
+        user_cargo = Path.home() / ".cargo" / "bin" / "cargo"
+        cargo = str(user_cargo) if user_cargo.exists() else None
+    if cargo is None:
+        raise ValueError("invite_pop_bls_backend_unavailable")
+    return [
+        cargo,
+        "run",
+        "--quiet",
+        "--manifest-path",
+        str(repo_root / "ilc_consensus" / "Cargo.toml"),
+        "--bin",
+        "invite_pop_bls",
+        "--",
+    ]
+
+
 def _remove_stale_identity_metadata(root: Path) -> None:
     for name in (
         "migration_receipt.json",
@@ -354,6 +562,30 @@ def _read_agent_id(path: Path) -> str:
 def _require_agent_id(value: str) -> str:
     if not isinstance(value, str) or _AGENT_ID_RE.fullmatch(value) is None:
         raise ValueError("identity_agent_id_invalid")
+    return value
+
+
+def _require_sha256_hex(value: str, token: str) -> str:
+    if not isinstance(value, str) or _SHA256_RE.fullmatch(value) is None:
+        raise ValueError(token)
+    return value
+
+
+def _require_bls_signature_hex(value: str, token: str) -> str:
+    if not isinstance(value, str) or _BLS_SIGNATURE_RE.fullmatch(value) is None:
+        raise ValueError(token)
+    return value
+
+
+def _require_non_empty_string(value: str, token: str) -> str:
+    if not isinstance(value, str) or not value or value.strip() != value:
+        raise ValueError(token)
+    return value
+
+
+def _require_epoch(value: int, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(token)
     return value
 
 
@@ -418,8 +650,14 @@ def _zero_bytearray(value: bytearray) -> None:
 __all__ = [
     "FIRST_RUN_PROVISIONING_VERSION",
     "IdentityAlreadyExistsError",
+    "POP_DOMAIN",
+    "attach_invite_pop_to_onboarding_receipt",
+    "build_invite_pop_transcript",
     "existing_identity_summary",
+    "generate_invite_pop",
     "identity_root",
+    "invite_pop_payload_ref",
     "migrate_identity_schema_if_needed",
     "provision_new_identity",
+    "verify_invite_pop",
 ]

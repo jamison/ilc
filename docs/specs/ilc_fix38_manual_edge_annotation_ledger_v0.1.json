@@ -84546,6 +84546,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_gap_vps_provision_00a_validator_keypair_generation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00d_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00d PoP and durable nullifier binding runtime helper.",
+      "manual_read_summary": "Rust blst helper for invite proof-of-possession signing and verification. Signs or verifies SHA-384 invite redemption transcript digests under the invite-specific BLS DST; reads secret key only from the local 0600 key file path and prints public signature or verification status.",
+      "node_kind": "runtime_support_binary_source",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTATION_AUTHORITY",
+          "target": "phase:GAP-AGENT-ONBOARDING-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTATION_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_consensus/src/invite_pop_bls_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00d_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00d PoP and durable nullifier binding test coverage.",
+      "manual_read_summary": "Regression tests for invite PoP signing/verification, distinct domain separation, durable LMDB nullifier persistence across restart, duplicate nullifier rejection, disabled invite enforcement guard preservation, PoP/key distinction, and transferred-invite replay rejection.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:GAP-AGENT-ONBOARDING-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_agent_onboarding_00d_pop_and_nullifier.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00d_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00d walkthrough and verification evidence.",
+      "manual_read_summary": "Walkthrough for the PoP and durable nullifier binding phase. Records GO, closure of redeemer_key_binding_required, exact INVITE_ENFORCEMENT guard grep, persist_nullifier=True grep, PoP domain grep, pytest output, regression output, Rust check output, graph coverage, and non-claims.",
+      "node_kind": "walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-AGENT-ONBOARDING-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_00d_pop_and_nullifier_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

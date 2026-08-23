@@ -147,6 +147,7 @@ def verify_invite_bootstrap(
     nullifier_store: InviteNullifierStore | None = None,
     local_nullifier_registry: InviteNullifierRegistry | None = None,
     persist_nullifier: bool = True,
+    register_nullifier: bool = True,
     production_required: bool = False,
     nullifier_gossip_broadcaster: Callable[[Mapping[str, str]], object] | None = None,
     nullifier_gossip_claimed_actor: str | None = None,
@@ -178,8 +179,14 @@ def verify_invite_bootstrap(
             return _deny("wrong_profile", nullifier, "not_checked", "not_checked", "not_checked")
         if intended_epoch != epoch or created_epoch > epoch:
             return _deny("wrong_epoch_window", nullifier, "not_checked", "not_checked", "not_checked")
-        store = nullifier_store or InviteNullifierStore()
-        local_registry = local_nullifier_registry if local_nullifier_registry is not None else store.local_registry
+        store = nullifier_store
+        if store is None and local_nullifier_registry is None:
+            store = InviteNullifierStore()
+        local_registry = (
+            local_nullifier_registry
+            if local_nullifier_registry is not None
+            else store.local_registry
+        )
         if local_registry.is_known(nullifier):
             return _deny("invite_nullifier_already_seen", nullifier, "not_checked", "used", "not_checked")
         membership_status = _verify_nonce_membership(
@@ -190,7 +197,7 @@ def verify_invite_bootstrap(
         )
         if membership_status != "verified":
             return _deny(membership_status, nullifier, membership_status, "not_checked", "not_checked")
-        if store.contains(nullifier):
+        if store is not None and store.contains(nullifier):
             return _deny("replayed_nullifier", nullifier, "verified", "used", "not_checked")
         signature_status = _signature_status(inviter_sig)
         redeemer_status = _redeemer_binding_status(invite_bundle)
@@ -198,9 +205,9 @@ def verify_invite_bootstrap(
             return _deny("invite_signature_authority_unverified", nullifier, "verified", "unused", redeemer_status)
         if production_required and redeemer_status != "verified":
             return _deny("redeemer_key_binding_required", nullifier, "verified", "unused", redeemer_status)
-        if not local_registry.register_if_new(nullifier):
+        if register_nullifier and not local_registry.register_if_new(nullifier):
             return _deny("invite_nullifier_already_seen", nullifier, "verified", "used", redeemer_status)
-        if persist_nullifier:
+        if persist_nullifier and register_nullifier and store is not None:
             try:
                 store.add(
                     nullifier,
@@ -245,7 +252,11 @@ def verify_invite_bootstrap(
             redemption_nullifier=nullifier,
             signature_authority_status=signature_status,
             nonce_membership_status="verified",
-            nullifier_status="recorded" if persist_nullifier else "local_recorded_not_persisted",
+            nullifier_status=(
+                "recorded"
+                if persist_nullifier and register_nullifier
+                else "verified_pending_enrollment_binding"
+            ),
             redeemer_key_binding_status=redeemer_status,
             production_ready=production_ready,
             cross_node_replay_prevention_gap=CROSS_NODE_REPLAY_PREVENTION_GAP,
