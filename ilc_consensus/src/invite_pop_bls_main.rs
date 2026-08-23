@@ -34,6 +34,7 @@ fn run() -> Result<(), String> {
             let sig_bytes = hex_decode_exact(&signature_hex, 96)?;
             let pk = PublicKey::from_bytes(&pk_bytes).map_err(|_| "invalid public key bytes")?;
             let sig = Signature::from_bytes(&sig_bytes).map_err(|_| "invalid signature bytes")?;
+            pk.validate().map_err(|_| "invalid public key subgroup")?;
             sig.validate(true)
                 .map_err(|_| "invalid signature subgroup or infinity")?;
             let result = sig.verify(true, &message, ILC_INVITE_POP_DST, &[], &pk, true);

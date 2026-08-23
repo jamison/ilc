@@ -203,6 +203,7 @@ def test_cross_node_gossip_blocks_redeemed_invite_when_enforcement_enabled(
             REDEEMER_AGENT_ID,
             redemption,
             nullifier_registry=registry_node_b,
+            require_redeemer_key_binding=False,
         )
 
 

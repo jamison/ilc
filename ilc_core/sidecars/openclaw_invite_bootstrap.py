@@ -252,10 +252,9 @@ def verify_invite_bootstrap(
             redemption_nullifier=nullifier,
             signature_authority_status=signature_status,
             nonce_membership_status="verified",
-            nullifier_status=(
-                "recorded"
-                if persist_nullifier and register_nullifier
-                else "verified_pending_enrollment_binding"
+            nullifier_status=_accepted_nullifier_status(
+                persist_nullifier=persist_nullifier,
+                register_nullifier=register_nullifier,
             ),
             redeemer_key_binding_status=redeemer_status,
             production_ready=production_ready,
@@ -295,6 +294,14 @@ def build_synthetic_invite_bundle(
         },
         "private_invite_nonce": nonce_hex,
     }
+
+
+def _accepted_nullifier_status(*, persist_nullifier: bool, register_nullifier: bool) -> str:
+    if persist_nullifier and register_nullifier:
+        return "recorded"
+    if register_nullifier:
+        return "local_recorded_not_persisted"
+    return "verified_pending_enrollment_binding"
 
 
 def canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:

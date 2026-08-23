@@ -85,6 +85,8 @@ def provision_new_identity(
     try:
         identity_seed = bytes(identity_seed_buf)
         derivation_record = build_validator_key_derivation_record(identity_seed)
+        # Python cannot zero immutable hex strings after subprocess handoff; keep
+        # the IKM lifetime bounded to this function and zero bytearray copies.
         validator_ikm = derive_validator_key_ikm(identity_seed)
         validator_ikm_buf = bytearray(validator_ikm)
         agent_id = _write_private_key_from_ikm(
@@ -311,6 +313,12 @@ def attach_invite_pop_to_onboarding_receipt(
     receipt = _read_json_object(receipt_path, "onboarding_receipt_invalid")
     if receipt.get("agent_id") != agent_id:
         raise ValueError("onboarding_receipt_agent_id_mismatch")
+    existing_invite_id = receipt.get("invite_id")
+    existing_nullifier = receipt.get("invite_nullifier")
+    if existing_invite_id not in (None, "not_recorded", invite_id):
+        raise ValueError("onboarding_receipt_invite_binding_mismatch")
+    if existing_nullifier not in (None, "not_yet_bound_00d", invite_nullifier):
+        raise ValueError("onboarding_receipt_invite_binding_mismatch")
     receipt.update(
         {
             "invite_id": invite_id,

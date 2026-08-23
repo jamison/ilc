@@ -71424,7 +71424,7 @@
     {
       "annotation_batch": "manual_batch_gap_agent_onboarding_lane_2026_08_22",
       "chronology_note": "2026-08-22 GAP-AGENT-ONBOARDING-00d phase prompt: proof-of-possession and nullifier binding (SENSITIVE).",
-      "manual_read_summary": "SENSITIVE phase prompt closing the redeemer_key_binding_required gap by implementing invite PoP (domain ilc-invite-pop-v1) as a verifiable BLS signature and changing persist_nullifier to True with InviteNullifierLmdbRegistry.",
+      "manual_read_summary": "SENSITIVE phase prompt implementing post-redemption invite PoP (domain ilc-invite-pop-v1) as a verifiable BLS signature and changing persist_nullifier to True with InviteNullifierLmdbRegistry. Issuer-side intended-redeemer binding for transferred invites remains pre-activation work.",
       "node_kind": "phase_prompt",
       "proposed_authority_trace_edges": [
         {
@@ -84598,7 +84598,7 @@
     {
       "annotation_batch": "manual_batch_gap_agent_onboarding_00d_2026_08_23",
       "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00d walkthrough and verification evidence.",
-      "manual_read_summary": "Walkthrough for the PoP and durable nullifier binding phase. Records GO, closure of redeemer_key_binding_required, exact INVITE_ENFORCEMENT guard grep, persist_nullifier=True grep, PoP domain grep, pytest output, regression output, Rust check output, graph coverage, and non-claims.",
+      "manual_read_summary": "Walkthrough for the PoP and durable nullifier binding phase. Records GO, post-redemption PoP and nullifier binding, exact INVITE_ENFORCEMENT guard grep, persist_nullifier=True grep, PoP domain grep, pytest output, regression output, Rust check output, graph coverage, and non-claims including no issuer-side intended-redeemer binding claim.",
       "node_kind": "walkthrough",
       "proposed_authority_trace_edges": [
         {

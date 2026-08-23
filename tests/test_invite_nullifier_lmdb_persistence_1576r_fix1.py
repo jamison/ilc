@@ -63,6 +63,7 @@ def test_invite_enforcement_rejects_lmdb_persisted_replay_after_restart(
             redemption,
             nullifier_registry=registry,
             register_nullifier=True,
+            require_redeemer_key_binding=False,
         )
 
     with InviteNullifierLmdbRegistry(store_path) as restarted:
@@ -72,6 +73,7 @@ def test_invite_enforcement_rejects_lmdb_persisted_replay_after_restart(
                 redemption,
                 nullifier_registry=restarted,
                 register_nullifier=True,
+                require_redeemer_key_binding=False,
             )
 
 
