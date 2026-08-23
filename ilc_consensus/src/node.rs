@@ -46,8 +46,8 @@ use crate::fast_path::{FastPathProtocol, MAX_CERT_SIGS};
 use crate::network::{EpochProposal, EpochProposalAck, GossipEnvelope, GossipMessage, PeerNetwork};
 use crate::persistent_quic::PersistentQuicSessionManager;
 use crate::types::{
-    AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-    ILCConsensusError, ObjectRef, TransferCertificate, AgentID,
+    AgentID, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
+    ILCConsensusError, ObjectRef, TransferCertificate,
 };
 use crate::validator::quorum_threshold;
 use crate::validator::sign_message;
@@ -2584,8 +2584,8 @@ mod tests {
                 crate::types::test_agent_id(1),
             ],
         )
-            .unwrap()
-            .unwrap();
+        .unwrap()
+        .unwrap();
 
         assert_eq!(hop.0, crate::types::test_agent_id(3));
         assert_eq!(hop.1, vec![crate::types::test_agent_id(1)]);
@@ -2594,8 +2594,8 @@ mod tests {
     #[test]
     fn test_next_relay_hop_rejects_duplicate_validator() {
         let duplicate = crate::types::test_agent_id(3);
-        let err = next_relay_hop(crate::types::test_agent_id(2), &[duplicate, duplicate])
-            .unwrap_err();
+        let err =
+            next_relay_hop(crate::types::test_agent_id(2), &[duplicate, duplicate]).unwrap_err();
 
         assert!(format!("{:?}", err).contains(&format!("duplicate validator {}", duplicate)));
     }
@@ -2603,8 +2603,7 @@ mod tests {
     #[test]
     fn test_next_relay_hop_rejects_loop_back_through_current_validator() {
         let current = crate::types::test_agent_id(2);
-        let err = next_relay_hop(current, &[crate::types::test_agent_id(3), current])
-            .unwrap_err();
+        let err = next_relay_hop(current, &[crate::types::test_agent_id(3), current]).unwrap_err();
 
         assert!(format!("{:?}", err).contains(&format!("loops back through validator {}", current)));
     }

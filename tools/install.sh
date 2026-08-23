@@ -28,6 +28,7 @@ usage() {
 usage: install.sh [--channel rc] [--no-onboard] [--target-dir PATH] [--dry-run]
 
 Installs the ilc-core Python wheel after SHA-256 verification.
+Defaults to an ILC-managed venv at ~/.ilc/venv unless --target-dir is supplied.
 Channels stable and dev are reserved but not embedded in this installer yet.
 USAGE
 }
@@ -113,6 +114,7 @@ if (( PY_MINOR < RC_MIN_PYTHON_MINOR )); then
 fi
 
 python3 -m pip --version >/dev/null 2>&1 || die 1 "install_sh_pip_missing"
+python3 -m venv --help >/dev/null 2>&1 || die 1 "install_sh_venv_unavailable"
 
 if command -v shasum >/dev/null 2>&1; then
   HASH_COMMAND="shasum"
@@ -154,14 +156,14 @@ if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]; then
   die 1 "install_sh_hash_verification_failed:expected_${RC_WHEEL_SHA256}:actual_${actual_hash}"
 fi
 
-if [[ -n "${TARGET_DIR}" ]]; then
-  python3 -m venv "${TARGET_DIR}"
-  "${TARGET_DIR}/bin/python" -m pip install --quiet "${TMP_WHEEL}"
-  "${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
-else
-  python3 -m pip install --quiet "${TMP_WHEEL}"
-  python3 -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+if [[ -z "${TARGET_DIR}" ]]; then
+  TARGET_DIR="${HOME}/.ilc/venv"
 fi
 
+python3 -m venv "${TARGET_DIR}"
+"${TARGET_DIR}/bin/python" -m pip install --quiet "${TMP_WHEEL}"
+"${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+
 printf 'install_sh_success version=%s channel=%s\n' "${INSTALLER_VERSION}" "${CHANNEL}"
+printf 'install_target_dir=%s\n' "${TARGET_DIR}"
 next_step_hint

@@ -277,7 +277,7 @@ mod tests {
             (test_agent_id(2), 32),
             (test_agent_id(3), 35),
         ]; // total=99; 32*3=96 < 99, 35*3=105 >= 99
-        // Validator 3 holds 35/99 > 1/3, so should be rejected.
+           // Validator 3 holds 35/99 > 1/3, so should be rejected.
         assert_eq!(
             ValidatorSet::check_concentration_limit(&stakes_below_third),
             Err(ILCConsensusError::Other(

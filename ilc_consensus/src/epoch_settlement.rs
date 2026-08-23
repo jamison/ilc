@@ -4,8 +4,8 @@ use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::types::{
-    CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, AgentID,
-    ValidatorSet, ILC_EPOCH_SIG_DST,
+    AgentID, CIDv1Root, EpochCheckpoint, EpochSettlementRecord, ILCConsensusError, ValidatorSet,
+    ILC_EPOCH_SIG_DST,
 };
 use crate::validator::quorum_threshold;
 
@@ -1182,7 +1182,11 @@ mod tests {
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
             sigs,
-            signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(1), crate::types::test_agent_id(2)],
+            signers: vec![
+                crate::types::test_agent_id(1),
+                crate::types::test_agent_id(1),
+                crate::types::test_agent_id(2),
+            ],
         };
 
         let err = protocol
@@ -1219,7 +1223,11 @@ mod tests {
         let checkpoint = EpochCheckpoint {
             record: record.clone(),
             sigs,
-            signers: vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2), crate::types::test_agent_id(99)],
+            signers: vec![
+                crate::types::test_agent_id(1),
+                crate::types::test_agent_id(2),
+                crate::types::test_agent_id(99),
+            ],
         };
 
         let err = protocol
@@ -1291,7 +1299,11 @@ mod tests {
         assert!(oversized_signers.len() <= vset.validators.len());
         assert_eq!(
             signers,
-            vec![crate::types::test_agent_id(1), crate::types::test_agent_id(2), crate::types::test_agent_id(3)]
+            vec![
+                crate::types::test_agent_id(1),
+                crate::types::test_agent_id(2),
+                crate::types::test_agent_id(3)
+            ]
         );
         let checkpoint = EpochCheckpoint {
             record,

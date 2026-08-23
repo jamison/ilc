@@ -680,7 +680,10 @@ mod tests {
             .unwrap()
             .unwrap();
 
-        let reused = manager.ensure_session(crate::types::test_agent_id(1)).await.unwrap();
+        let reused = manager
+            .ensure_session(crate::types::test_agent_id(1))
+            .await
+            .unwrap();
         assert_eq!(reused.path, SessionPath::DirectQuic);
         assert_eq!(reused.topology_epoch, 14);
 
