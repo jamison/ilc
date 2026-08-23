@@ -206,6 +206,92 @@ def test_enforcement_gate_still_false_after_this_phase(
     )
 
 
+def test_enabled_enforcement_rejects_missing_pop(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-missing-pop"))
+    result = cli_main._run_install_subcommand(
+        _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    )
+    record = dict(result["invite_redemption_record"])
+    record["redeemer_key_binding"] = None
+    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+
+    with InviteNullifierLmdbRegistry(install_env / ".ilc/lmdb/other-nullifiers") as registry:
+        with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_required"):
+            invite_enforcement.require_invite_for_enrollment(
+                result["identity_provisioning"]["agent_id"],
+                record,
+                nullifier_registry=registry,
+            )
+
+
+def test_enabled_enforcement_rejects_pop_payload_mismatch(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-pop-mismatch"))
+    result = cli_main._run_install_subcommand(
+        _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    )
+    record = dict(result["invite_redemption_record"])
+    binding = dict(record["redeemer_key_binding"])
+    binding["payload_ref"] = "0" * 96
+    record["redeemer_key_binding"] = binding
+    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+
+    with InviteNullifierLmdbRegistry(install_env / ".ilc/lmdb/other-nullifiers") as registry:
+        with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_payload_mismatch"):
+            invite_enforcement.require_invite_for_enrollment(
+                result["identity_provisioning"]["agent_id"],
+                record,
+                nullifier_registry=registry,
+                invite_pop_verifier=lambda **kwargs: True,
+            )
+
+
+def test_enabled_enforcement_accepts_verified_pop_and_registers_nullifier(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-pop-enforced"))
+    result = cli_main._run_install_subcommand(
+        _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    )
+    registry_path = install_env / ".ilc/lmdb/enforced-nullifiers"
+    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+
+    with InviteNullifierLmdbRegistry(registry_path) as registry:
+        invite_enforcement.require_invite_for_enrollment(
+            result["identity_provisioning"]["agent_id"],
+            result["invite_redemption_record"],
+            nullifier_registry=registry,
+            register_nullifier=True,
+            invite_pop_verifier=lambda **kwargs: True,
+        )
+        assert registry.is_known(result["invite_verification"]["redemption_nullifier"])
+
+
+def test_existing_identity_cannot_consume_different_invite(
+    tmp_path: Path,
+    install_env: Path,
+) -> None:
+    first_path = _write_bundle(tmp_path / "invite-a.json", _bundle(batch_id="batch-first"))
+    second_path = _write_bundle(tmp_path / "invite-b.json", _bundle(batch_id="batch-second"))
+    cli_main._run_install_subcommand(
+        _args(first_path, tmp_path / "target-a", tmp_path / "install_receipt_a.json")
+    )
+
+    with pytest.raises(ValueError, match="onboarding_receipt_invite_binding_mismatch"):
+        cli_main._run_install_subcommand(
+            _args(second_path, tmp_path / "target-b", tmp_path / "install_receipt_b.json")
+        )
+
+
 def test_pop_not_in_signing_key_position(
     tmp_path: Path,
     install_env: Path,

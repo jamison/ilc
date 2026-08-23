@@ -90,7 +90,27 @@ def test_enforcement_enabled_valid_invite_passes(monkeypatch: pytest.MonkeyPatch
     monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     redemption = _valid_redemption()
 
-    invite_enforcement.require_invite_for_enrollment(REDEEMER_AGENT_ID, redemption.to_dict())
+    invite_enforcement.require_invite_for_enrollment(
+        REDEEMER_AGENT_ID,
+        redemption.to_dict(),
+        require_redeemer_key_binding=False,
+    )
+
+
+def test_legacy_redemption_without_invite_id_omits_nullable_field() -> None:
+    redemption = InviteRedemptionRecord(
+        batch_id="legacy-batch",
+        redemption_nullifier="a" * 64,
+        nonce_membership_proof=(),
+        redeemer_pubkey_cid="pubkey:legacy",
+        redeemer_agent_id=REDEEMER_AGENT_ID,
+        redemption_epoch=0,
+        inviter_cid="genesis_agent:01",
+    )
+
+    payload = validate_invite_redemption_record(redemption).to_dict()
+
+    assert "invite_id" not in payload
 
 
 def test_genesis_agent_bypass_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -150,6 +170,7 @@ def test_nullifier_already_used_rejected(monkeypatch: pytest.MonkeyPatch) -> Non
             REDEEMER_AGENT_ID,
             redemption,
             nullifier_registry=registry,
+            require_redeemer_key_binding=False,
         )
 
 
@@ -162,6 +183,7 @@ def test_register_nullifier_requires_registry(monkeypatch: pytest.MonkeyPatch) -
             REDEEMER_AGENT_ID,
             redemption,
             register_nullifier=True,
+            require_redeemer_key_binding=False,
         )
 
 
@@ -207,7 +229,7 @@ def test_cli_identity_init_disabled_ignores_optional_bad_seed(
     assert "invite_redemption_record" not in result["state"]
 
 
-def test_cli_identity_init_with_valid_invite_passes_when_enforcement_enabled(
+def test_cli_identity_init_with_legacy_invite_rejected_when_enforcement_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -224,9 +246,5 @@ def test_cli_identity_init_with_valid_invite_passes_when_enforcement_enabled(
         redemption_epoch=0,
     )
 
-    result = _run_identity_subcommand(args, tmp_path / "graph.json")
-
-    assert result["action"] == "init"
-    state = result["state"]
-    assert state["production_graph_write"] is False
-    assert state["invite_redemption_record"]["redeemer_agent_id"] == REDEEMER_AGENT_ID
+    with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_required"):
+        _run_identity_subcommand(args, tmp_path / "graph.json")

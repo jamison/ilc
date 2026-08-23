@@ -14,6 +14,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -3264,6 +3265,11 @@ def _require_update_https_url(value: Any, field: str) -> str:
 
 
 def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    with _install_process_lock():
+        return _run_install_subcommand_locked(args)
+
+
+def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
     invite_bundle = _load_install_invite_bundle(str(args.from_invite))
     expected_profile = _install_expected_profile(invite_bundle)
     current_epoch = _install_current_epoch(invite_bundle)
@@ -3374,20 +3380,27 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             is_enrollment_invite_enforced,
             require_invite_for_enrollment,
         )
+        from ilc_core.genesis.invitation_provenance_record import (
+            verify_invite_redemption_redeemer_key_binding,
+        )
 
+        verify_invite_redemption_redeemer_key_binding(redemption_record)
         require_invite_for_enrollment(
             agent_id,
             redemption_record,
             nullifier_registry=nullifier_registry,
             register_nullifier=True,
         )
+        invite_verification = decision.to_dict()
         if not is_enrollment_invite_enforced():
             if not nullifier_registry.register_if_new(str(decision.redemption_nullifier)):
                 raise ValueError("invite_nullifier_already_used_for_enrollment")
+            invite_verification["nullifier_status"] = "recorded"
+        invite_verification["enrollment_nullifier_status"] = "recorded"
         return {
             "identity_provisioning": identity_provisioning,
             "invite_redemption_record": redemption_record,
-            "invite_verification": decision.to_dict(),
+            "invite_verification": invite_verification,
             "manifest_verification": manifest_verification,
             "materialization": materialization,
             "onboarding_receipt": onboarding_receipt,
@@ -3399,6 +3412,24 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             "subcommand": "from-invite",
             "target_dir": str(target_dir),
         }
+
+
+@contextmanager
+def _install_process_lock() -> Any:
+    lock_dir = Path.home() / ".ilc"
+    lock_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = lock_dir / "install.lock"
+    with lock_path.open("a+", encoding="utf-8") as handle:
+        try:
+            import fcntl
+        except ImportError:
+            yield
+            return
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def _load_install_invite_bundle(source: str) -> dict[str, Any]:
@@ -3514,12 +3545,11 @@ def _install_invite_redemption_record(
         redeemer_agent_id=agent_id,
         redemption_epoch=current_epoch,
         inviter_cid=inviter_cid,
+        invite_id=invite_id,
         redeemer_key_binding=redeemer_key_binding,
     )
     validate_invite_redemption_record(record)
-    result = record.to_dict()
-    result["invite_id"] = invite_id
-    return result
+    return record.to_dict()
 
 
 def _install_redemption_membership_proof(value: object) -> tuple[str, ...]:

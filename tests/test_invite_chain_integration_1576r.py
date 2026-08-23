@@ -121,6 +121,7 @@ def test_batch_creation_and_single_redemption_end_to_end(
         redemption,
         nullifier_registry=registry,
         register_nullifier=True,
+        require_redeemer_key_binding=False,
     )
     message = build_nullifier_gossip_message(
         redemption.redemption_nullifier,
@@ -194,6 +195,7 @@ def test_double_redemption_rejected_by_nullifier_registry(
         redemption,
         nullifier_registry=registry,
         register_nullifier=True,
+        require_redeemer_key_binding=False,
     )
 
     with pytest.raises(ValueError, match="invite_nullifier_already_used_for_enrollment"):
@@ -202,6 +204,7 @@ def test_double_redemption_rejected_by_nullifier_registry(
             redemption,
             nullifier_registry=registry,
             register_nullifier=True,
+            require_redeemer_key_binding=False,
         )
 
 
@@ -231,12 +234,14 @@ def test_different_nonce_from_same_batch_accepted(monkeypatch: pytest.MonkeyPatc
         left,
         nullifier_registry=registry,
         register_nullifier=True,
+        require_redeemer_key_binding=False,
     )
     invite_enforcement.require_invite_for_enrollment(
         RIGHT_AGENT_ID,
         right,
         nullifier_registry=registry,
         register_nullifier=True,
+        require_redeemer_key_binding=False,
     )
 
     assert left.redemption_nullifier != right.redemption_nullifier
