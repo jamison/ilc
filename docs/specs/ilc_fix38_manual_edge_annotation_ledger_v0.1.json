@@ -71771,6 +71771,71 @@
       ],
       "recommended_graph_action": "support_only:docs/phases/phase_gap_agent_onboarding_00a_walkthrough.md",
       "repo_path": "docs/phases/phase_gap_agent_onboarding_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00b_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00b execution artifact: first-run identity schema.",
+      "manual_read_summary": "NON-SENSITIVE schema defining ~/.ilc/identity layout, birth_attestation.json, recovery_policy.json default type=none, onboarding_receipt.json, update migration contract, and three-axis uninstall decomposition for public-RC onboarding.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:0038_agent_birth_attestation"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:002_credential_supersession_and_compromise_signaling"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:017_validator_identity_public_rc_lane"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_AGENT_ONBOARDING_00b"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "repo:file_ref:docs_specs_ilc_agent_onboarding_surface_audit_GAP_AGENT_ONBOARDING_00a_v0_1_md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_agent_onboarding_identity_schema_GAP_AGENT_ONBOARDING_00b_v0.1.md",
+      "repo_path": "docs/specs/ilc_agent_onboarding_identity_schema_GAP_AGENT_ONBOARDING_00b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00b_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00b execution walkthrough.",
+      "manual_read_summary": "Phase walkthrough recording direct source evidence and actual verification command output for the first-run identity schema phase.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:onboarding_identity_schema_committed_GAP_AGENT_ONBOARDING_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_agent_onboarding_00b_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_00b_walkthrough.md"
     }
   ],
   "boundary": {
