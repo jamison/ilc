@@ -71853,6 +71853,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl017_mirror_refresh_00_g10_post_onboarding_040_mirror_regeneration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00c_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00c execution artifact: first-run provisioning runtime.",
+      "manual_read_summary": "Runtime module implementing GAP-AGENT-ONBOARDING-00c MVP first-run AgentID provisioning, atomic local signing_key.hex write, birth attestation, recovery policy, onboarding receipt, existing-identity reuse summary, and update migration helper.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP_AGENT_ONBOARDING_00c"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:0038_agent_birth_attestation"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:002_credential_supersession_and_compromise_signaling"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:017_validator_identity_public_rc_lane"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:ilc_core/identity/first_run_provisioning.py",
+      "repo_path": "ilc_core/identity/first_run_provisioning.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00c_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00c execution tests.",
+      "manual_read_summary": "Focused tests for first-run provisioning file creation, 0600 signing key permissions, no secret material in receipts/attestation, seed non-persistence, restart AgentID persistence, second-run non-overwrite, migration, and fail-closed keygen behavior.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/identity/first_run_provisioning.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:onboarding_mvp_keygen_committed_GAP_AGENT_ONBOARDING_00c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:tests/test_gap_agent_onboarding_00c_first_run_provisioning.py",
+      "repo_path": "tests/test_gap_agent_onboarding_00c_first_run_provisioning.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00c_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00c execution walkthrough.",
+      "manual_read_summary": "Phase walkthrough recording direct reads, implementation summary, verification output, secret-material boundary, non-claims, and coverage for GAP-AGENT-ONBOARDING-00c.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:onboarding_mvp_keygen_committed_GAP_AGENT_ONBOARDING_00c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_agent_onboarding_00c_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_00c_walkthrough.md"
     }
   ],
   "boundary": {

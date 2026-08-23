@@ -1599,6 +1599,11 @@ def _build_parser() -> JsonArgumentParser:
                 default="",
                 help="Path for atomic install receipt JSON; defaults to <target-dir>/install_receipt.json",
             )
+            install_parser.add_argument(
+                "--force-reprovision",
+                action="store_true",
+                help="Explicitly replace an existing local onboarding identity after invite install",
+            )
             continue
 
         if command == "update":
@@ -3101,6 +3106,11 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         )
         if post_install.returncode != 0:
             raise ValueError("ilc_update_post_install_check_failed")
+        from ilc_core.identity.first_run_provisioning import (
+            migrate_identity_schema_if_needed,
+        )
+
+        result["identity_migration"] = migrate_identity_schema_if_needed(Path.home())
     finally:
         try:
             temp_path.unlink()
@@ -3313,7 +3323,29 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError(f"install_materialization_failed:{exc}") from exc
 
     _write_install_receipt_atomic(output_receipt, receipt)
+    from ilc_core.identity.first_run_provisioning import (
+        IdentityAlreadyExistsError,
+        existing_identity_summary,
+        provision_new_identity,
+    )
+
+    try:
+        identity_provisioning = provision_new_identity(
+            Path.home(),
+            invite_id=str(invite_bundle.get("invite_id") or ""),
+            epoch=current_epoch,
+            force_reprovision=bool(getattr(args, "force_reprovision", False)),
+        )
+    except IdentityAlreadyExistsError:
+        print(
+            "identity_provisioning_skipped_existing_identity: "
+            "use --force-reprovision only after explicit destructive confirmation",
+            file=sys.stderr,
+        )
+        identity_provisioning = existing_identity_summary(Path.home())
+
     return {
+        "identity_provisioning": identity_provisioning,
         "invite_verification": decision.to_dict(),
         "manifest_verification": manifest_verification,
         "materialization": materialization,
