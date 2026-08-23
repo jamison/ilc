@@ -27,6 +27,14 @@ from .log_redaction_runtime import (
     redact_agent_id_for_log,
     redact_agent_ids_in_log_message,
 )
+from .first_run_provisioning import (
+    FIRST_RUN_PROVISIONING_VERSION,
+    IdentityAlreadyExistsError,
+    existing_identity_summary,
+    identity_root,
+    migrate_identity_schema_if_needed,
+    provision_new_identity,
+)
 
 __all__ = [
     "CDL_V2_RUNTIME_VERSION",
@@ -49,4 +57,10 @@ __all__ = [
     "AgentIDLogRedactionFilter",
     "redact_agent_id_for_log",
     "redact_agent_ids_in_log_message",
+    "FIRST_RUN_PROVISIONING_VERSION",
+    "IdentityAlreadyExistsError",
+    "existing_identity_summary",
+    "identity_root",
+    "migrate_identity_schema_if_needed",
+    "provision_new_identity",
 ]
