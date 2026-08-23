@@ -71725,6 +71725,52 @@
       ],
       "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00a_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00a execution artifact: onboarding surface audit.",
+      "manual_read_summary": "NON-SENSITIVE audit report documenting current ilc install --from-invite behavior, missing first-run identity provisioning, durable nullifier gap, PoP gap, protected keystore gap, recovery-policy gap, and AgentID semantic split requiring 00b/00c closure.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP_AGENT_ONBOARDING_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_agent_onboarding_surface_audit_GAP_AGENT_ONBOARDING_00a_v0.1.md",
+      "repo_path": "docs/specs/ilc_agent_onboarding_surface_audit_GAP_AGENT_ONBOARDING_00a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_00a_execution_2026_08_23",
+      "chronology_note": "2026-08-23 GAP-AGENT-ONBOARDING-00a execution walkthrough.",
+      "manual_read_summary": "Phase walkthrough recording direct source snippets, verification command output, gap table, and non-claims for the onboarding surface audit.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "token:onboarding_surface_audit_committed_GAP_AGENT_ONBOARDING_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_agent_onboarding_00a_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_00a_walkthrough.md"
     }
   ],
   "boundary": {
