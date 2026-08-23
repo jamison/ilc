@@ -471,7 +471,7 @@ mod tests {
     use crate::types::AgentSig;
     use crate::types::{
         AgentID, AggSig, CIDv1Root, ECUTransfer, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-        ILC_EPOCH_SIG_DST, ObjectRef,
+        ObjectRef, ILC_EPOCH_SIG_DST,
     };
     use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
     use tokio::time::Duration;

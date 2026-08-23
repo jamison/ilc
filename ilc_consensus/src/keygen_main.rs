@@ -174,7 +174,7 @@ fn keypair_from_ikm_hex(ikm_hex: &str) -> Result<(String, String), String> {
 
 fn write_secret_key_file(path: &PathBuf, sk_hex: &str) -> io::Result<()> {
     let mut options = OpenOptions::new();
-    options.write(true).create(true).truncate(true);
+    options.write(true).create_new(true);
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
@@ -385,6 +385,23 @@ mod tests {
             assert_eq!(mode, 0o600);
         }
 
+        fs::remove_file(&path).unwrap();
+    }
+
+    #[test]
+    fn test_write_secret_key_file_rejects_existing_path() {
+        let path = std::env::temp_dir().join(format!(
+            "ilc_keygen_test_{}_{}.hex",
+            process::id(),
+            "existing"
+        ));
+        let _ = fs::remove_file(&path);
+        fs::write(&path, "existing\n").unwrap();
+
+        let err = write_secret_key_file(&path, &"34".repeat(32)).unwrap_err();
+
+        assert_eq!(err.kind(), io::ErrorKind::AlreadyExists);
+        assert_eq!(fs::read_to_string(&path).unwrap(), "existing\n");
         fs::remove_file(&path).unwrap();
     }
 

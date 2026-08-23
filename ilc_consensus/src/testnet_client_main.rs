@@ -612,8 +612,10 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 let sig_refs: Vec<&blst::min_pk::Signature> = sigs.iter().collect();
                 let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
 
-                let signers: Vec<AgentID> =
-                    bls_keys.iter().map(|sk| AgentID(sk.sk_to_pk().compress())).collect();
+                let signers: Vec<AgentID> = bls_keys
+                    .iter()
+                    .map(|sk| AgentID(sk.sk_to_pk().compress()))
+                    .collect();
                 let checkpoint = EpochCheckpoint {
                     record,
                     sigs: AggSig(agg),
@@ -1129,9 +1131,16 @@ mod tests {
         );
         assert_eq!(
             plan.full_path,
-            vec![testnet_agent_id(2), testnet_agent_id(3), testnet_agent_id(1)]
+            vec![
+                testnet_agent_id(2),
+                testnet_agent_id(3),
+                testnet_agent_id(1)
+            ]
         );
-        assert_eq!(plan.remaining_route, vec![testnet_agent_id(3), testnet_agent_id(1)]);
+        assert_eq!(
+            plan.remaining_route,
+            vec![testnet_agent_id(3), testnet_agent_id(1)]
+        );
     }
 
     #[test]

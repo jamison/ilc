@@ -570,8 +570,8 @@ mod tests {
     use crate::network::PeerNetwork;
     use crate::node::NodeRunner;
     use crate::types::{
-        AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq, EpochSettlementRecord,
-        AgentID, ValidatorSet,
+        AgentID, AggSig, AttributionBatch, CIDv1Root, EpochCheckpoint, EpochSeq,
+        EpochSettlementRecord, ValidatorSet,
     };
     use blst::min_pk::{AggregateSignature, SecretKey};
     use lmdb_rkv::Environment;
@@ -695,7 +695,8 @@ mod tests {
         let epoch_store = Arc::new(EpochStore::new(env).unwrap());
         let sk = SecretKey::key_gen(&[71u8; 32], &[]).unwrap();
         let vk = crate::types::ValidatorKey(sk.sk_to_pk());
-        let validator_set = ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk)], 0).unwrap();
+        let validator_set =
+            ValidatorSet::new(vec![(crate::types::test_agent_id(1), vk)], 0).unwrap();
         let fast_path = Arc::new(FastPathProtocol::new(
             validator_set,
             Arc::clone(&balance_store),

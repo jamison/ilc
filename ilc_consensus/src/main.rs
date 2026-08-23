@@ -32,7 +32,7 @@ use ilc_consensus::{
     network::PeerNetwork,
     node::NodeRunner,
     persistent_quic::{load_endpoint_projection_from_path, PersistentQuicSessionManager},
-    types::{ILCConsensusError, AgentID},
+    types::{AgentID, ILCConsensusError},
 };
 use tonic::transport::{Certificate, Identity, ServerTlsConfig};
 
@@ -255,13 +255,15 @@ async fn run(config_path: PathBuf, genesis_path: PathBuf) -> Result<(), ILCConse
     // -----------------------------------------------------------------------
     // 5. Construct PeerNetwork (mTLS QUIC, SEC-006)
     // -----------------------------------------------------------------------
-    let network = Arc::new(PeerNetwork::new_server(
-        cfg.bind_addr,
-        cfg.peer_certs,
-        cfg.my_cert_der.clone(),
-        cfg.my_key_der.clone(),
-    )?
-    .with_peer_agent_ids(agent_by_config_id.clone()));
+    let network = Arc::new(
+        PeerNetwork::new_server(
+            cfg.bind_addr,
+            cfg.peer_certs,
+            cfg.my_cert_der.clone(),
+            cfg.my_key_der.clone(),
+        )?
+        .with_peer_agent_ids(agent_by_config_id.clone()),
+    );
 
     eprintln!(
         "[m010_harness] validator_id={} network_id={} listening on {}",

@@ -154,11 +154,12 @@ def test_install_sh_manifest_sync_rejects_duplicate_assignments(tmp_path: Path) 
         verify_install_sh_manifest_sync(path, MANIFEST)
 
 
-def test_install_sh_no_graph_onboarding_calls() -> None:
+def test_install_sh_does_not_execute_graph_onboarding_calls() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
-    forbidden = ("ilc install", "from-invite", "lmdb", "graph")
+    forbidden = ("\nilc install", " --from-invite ", "lmdb", "graph")
     for token in forbidden:
         assert token not in text
+    assert "next_step_hint: ilc %s --from-%s <path>" in text
 
 
 def test_install_sh_set_e_pipefail_present() -> None:
@@ -186,8 +187,14 @@ def test_install_sh_post_install_check_is_path_independent() -> None:
         '"${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1'
         in text
     )
-    assert "python3 -m ilc_core.cli.main --help >/dev/null 2>&1" in text
     assert "ilc --help >/dev/null" not in text
+
+
+def test_install_sh_defaults_to_managed_venv_not_active_python() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+
+    assert 'TARGET_DIR="${HOME}/.ilc/venv"' in text
+    assert 'python3 -m pip install --quiet "${TMP_WHEEL}"' not in text
 
 
 def test_install_sh_does_not_disable_tls_verification() -> None:
