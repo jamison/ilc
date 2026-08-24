@@ -23,9 +23,7 @@
   "non_claims": {
     "invite_enforcement_activation": false,
     "network_activation": false,
-    "public_mirror_push": false,
-    "pypi_upload": true,
-    "tools_install_sh_update": true
+    "public_mirror_push": false
   },
   "onboarding_release_note": "Includes first-run AgentID provisioning, invite proof-of-possession, durable nullifier binding, and a packageable py-ecc BLS backend for wheel users.",
   "output_token": "onboarding_package_040_built_GAP_AGENT_ONBOARDING_PACKAGE_00a",
@@ -35,6 +33,10 @@
   "pypi_upload_status": "uploaded",
   "pypi_version_url": "https://pypi.org/project/ilc-core/0.4.0/",
   "pypi_wheel_url": "https://files.pythonhosted.org/packages/2a/42/5f67c2a63e253caa64092a44dc82d5339188f3d9408cfcc24a713223459d/ilc_core-0.4.0-py3-none-any.whl",
+  "recorded_phase_effects": {
+    "pypi_upload": true,
+    "tools_install_sh_update": true
+  },
   "python_requires": ">=3.10",
   "upload_output_token": "onboarding_package_040_published_GAP_AGENT_ONBOARDING_PACKAGE_00b",
   "version": "0.4.0",

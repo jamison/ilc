@@ -132,6 +132,19 @@ else
   die 1 "install_sh_downloader_missing"
 fi
 
+if [[ -z "${TARGET_DIR}" ]]; then
+  TARGET_DIR="${HOME}/.ilc/venv"
+fi
+
+if [[ -e "${TARGET_DIR}" ]]; then
+  if [[ ! -d "${TARGET_DIR}" || ! -f "${TARGET_DIR}/pyvenv.cfg" ]]; then
+    die 1 "install_sh_target_dir_exists_not_venv:${TARGET_DIR}"
+  fi
+  if [[ ! -x "${TARGET_DIR}/bin/python" ]]; then
+    die 1 "install_sh_target_venv_python_missing:${TARGET_DIR}"
+  fi
+fi
+
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"
 TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.0.whl"
 
@@ -154,10 +167,6 @@ fi
 
 if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]; then
   die 1 "install_sh_hash_verification_failed:expected_${RC_WHEEL_SHA256}:actual_${actual_hash}"
-fi
-
-if [[ -z "${TARGET_DIR}" ]]; then
-  TARGET_DIR="${HOME}/.ilc/venv"
 fi
 
 python3 -m venv "${TARGET_DIR}"

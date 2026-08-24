@@ -91,6 +91,30 @@ def test_install_sh_target_dir_dry_run_records_target(tmp_path: Path) -> None:
     assert f"target_dir={target}" in result.stdout
 
 
+def test_install_sh_rejects_existing_non_venv_target_before_download(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "not-a-venv"
+    target.mkdir()
+    (target / "keep.txt").write_text("do not contaminate", encoding="utf-8")
+
+    result = _run_install_sh("--target-dir", str(target))
+
+    assert result.returncode == 1
+    assert "install_sh_target_dir_exists_not_venv" in result.stderr
+
+
+def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None:
+    target = tmp_path / "broken-venv"
+    target.mkdir()
+    (target / "pyvenv.cfg").write_text("home = /usr/bin\n", encoding="utf-8")
+
+    result = _run_install_sh("--target-dir", str(target))
+
+    assert result.returncode == 1
+    assert "install_sh_target_venv_python_missing" in result.stderr
+
+
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
     payload = tmp_path / "payload.whl"
     payload.write_bytes(b"not a wheel")
