@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -3336,16 +3337,20 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             IdentityAlreadyExistsError,
             attach_invite_pop_to_onboarding_receipt,
             existing_identity_summary,
+            identity_root,
             provision_new_identity,
         )
 
+        created_fresh_identity = False
+        force_reprovision = bool(getattr(args, "force_reprovision", False))
         try:
             identity_provisioning = provision_new_identity(
                 Path.home(),
                 invite_id=invite_id,
                 epoch=current_epoch,
-                force_reprovision=bool(getattr(args, "force_reprovision", False)),
+                force_reprovision=force_reprovision,
             )
+            created_fresh_identity = not force_reprovision
         except IdentityAlreadyExistsError:
             print(
                 "identity_provisioning_skipped_existing_identity: "
@@ -3354,64 +3359,72 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             )
             identity_provisioning = existing_identity_summary(Path.home())
 
-        agent_id = str(identity_provisioning["agent_id"])
-        onboarding_receipt = attach_invite_pop_to_onboarding_receipt(
-            Path.home(),
-            invite_id=invite_id,
-            invite_nullifier=str(decision.redemption_nullifier),
-            epoch=current_epoch,
-            nullifier_persisted=True,
-            nullifier_registry="lmdb:~/.ilc/lmdb/nullifiers/",
-        )
-        redemption_record = _install_invite_redemption_record(
-            invite_bundle=invite_bundle,
-            agent_id=agent_id,
-            invite_id=invite_id,
-            redemption_nullifier=str(decision.redemption_nullifier or ""),
-            current_epoch=current_epoch,
-            redeemer_key_binding={
-                "domain": str(onboarding_receipt["invite_pop_domain"]),
-                "payload_ref": str(onboarding_receipt["invite_pop_payload_ref"]),
-                "signature": str(onboarding_receipt["invite_pop"]),
-            },
-        )
+        try:
+            agent_id = str(identity_provisioning["agent_id"])
+            onboarding_receipt = attach_invite_pop_to_onboarding_receipt(
+                Path.home(),
+                invite_id=invite_id,
+                invite_nullifier=str(decision.redemption_nullifier),
+                epoch=current_epoch,
+                nullifier_persisted=True,
+                nullifier_registry="lmdb:~/.ilc/lmdb/nullifiers/",
+            )
+            redemption_record = _install_invite_redemption_record(
+                invite_bundle=invite_bundle,
+                agent_id=agent_id,
+                invite_id=invite_id,
+                redemption_nullifier=str(decision.redemption_nullifier or ""),
+                current_epoch=current_epoch,
+                redeemer_key_binding={
+                    "domain": str(onboarding_receipt["invite_pop_domain"]),
+                    "payload_ref": str(onboarding_receipt["invite_pop_payload_ref"]),
+                    "signature": str(onboarding_receipt["invite_pop"]),
+                },
+            )
 
-        from ilc_core.genesis.invite_enforcement import (
-            is_enrollment_invite_enforced,
-            require_invite_for_enrollment,
-        )
-        from ilc_core.genesis.invitation_provenance_record import (
-            verify_invite_redemption_redeemer_key_binding,
-        )
+            from ilc_core.genesis.invite_enforcement import (
+                is_enrollment_invite_enforced,
+                require_invite_for_enrollment,
+            )
+            from ilc_core.genesis.invitation_provenance_record import (
+                verify_invite_redemption_redeemer_key_binding,
+            )
 
-        verify_invite_redemption_redeemer_key_binding(redemption_record)
-        require_invite_for_enrollment(
-            agent_id,
-            redemption_record,
-            nullifier_registry=nullifier_registry,
-            register_nullifier=True,
-        )
-        invite_verification = decision.to_dict()
-        if not is_enrollment_invite_enforced():
-            if not nullifier_registry.register_if_new(str(decision.redemption_nullifier)):
-                raise ValueError("invite_nullifier_already_used_for_enrollment")
+            verify_invite_redemption_redeemer_key_binding(redemption_record)
+            require_invite_for_enrollment(
+                agent_id,
+                redemption_record,
+                nullifier_registry=nullifier_registry,
+                register_nullifier=True,
+            )
+            invite_verification = decision.to_dict()
+            if not is_enrollment_invite_enforced():
+                if not nullifier_registry.register_if_new(str(decision.redemption_nullifier)):
+                    raise ValueError("invite_nullifier_already_used_for_enrollment")
             invite_verification["nullifier_status"] = "recorded"
-        invite_verification["enrollment_nullifier_status"] = "recorded"
-        return {
-            "identity_provisioning": identity_provisioning,
-            "invite_redemption_record": redemption_record,
-            "invite_verification": invite_verification,
-            "manifest_verification": manifest_verification,
-            "materialization": materialization,
-            "onboarding_receipt": onboarding_receipt,
-            "receipt_path": str(output_receipt),
-            "slice_id": str(
-                materialization.get("slice_id", _install_slice_id(materialization_payload, witness))
-            ),
-            "status": "ok",
-            "subcommand": "from-invite",
-            "target_dir": str(target_dir),
-        }
+            invite_verification["enrollment_nullifier_status"] = "recorded"
+            return {
+                "identity_provisioning": identity_provisioning,
+                "invite_redemption_record": redemption_record,
+                "invite_verification": invite_verification,
+                "manifest_verification": manifest_verification,
+                "materialization": materialization,
+                "onboarding_receipt": onboarding_receipt,
+                "receipt_path": str(output_receipt),
+                "slice_id": str(
+                    materialization.get(
+                        "slice_id",
+                        _install_slice_id(materialization_payload, witness),
+                    )
+                ),
+                "status": "ok",
+                "subcommand": "from-invite",
+                "target_dir": str(target_dir),
+            }
+        except Exception:
+            if created_fresh_identity:
+                shutil.rmtree(identity_root(Path.home()), ignore_errors=True)
+            raise
 
 
 @contextmanager
