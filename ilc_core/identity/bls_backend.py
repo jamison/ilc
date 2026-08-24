@@ -33,6 +33,8 @@ def keypair_from_ikm_hex(ikm_hex: str) -> tuple[str, str]:
     """Return ``(secret_key_hex, public_key_hex)`` from a 32-byte IKM hex string."""
 
     ikm = _require_hex(ikm_hex, _IKM_RE, "onboarding_bls_ikm_invalid")
+    if ikm == "0" * 64:
+        raise ValueError("onboarding_bls_ikm_must_not_be_all_zero")
     secret_key_int = G2Basic.KeyGen(bytes.fromhex(ikm), b"")
     if not G2Basic._is_valid_privkey(secret_key_int):
         raise ValueError("onboarding_bls_private_key_invalid")

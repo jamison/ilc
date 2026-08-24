@@ -365,6 +365,27 @@ def test_fresh_identity_rolls_back_when_pop_signing_fails(
     assert not identity_root(install_env).exists()
 
 
+def test_force_reprovision_without_existing_identity_rolls_back_when_pop_signing_fails(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failing_pop = tmp_path / "failing_invite_pop.py"
+    failing_pop.write_text(
+        "import sys\nsys.stderr.write('forced pop failure\\n')\nsys.exit(1)\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("ILC_ONBOARDING_BLS_POP_COMMAND", f"{sys.executable} {failing_pop}")
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-force-pop-fails"))
+    args = _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    args.force_reprovision = True
+
+    with pytest.raises(ValueError, match="invite_pop_signing_failed"):
+        cli_main._run_install_subcommand(args)
+
+    assert not identity_root(install_env).exists()
+
+
 def test_pop_not_in_signing_key_position(
     tmp_path: Path,
     install_env: Path,

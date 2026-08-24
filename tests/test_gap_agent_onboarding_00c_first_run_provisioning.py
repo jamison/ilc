@@ -89,6 +89,11 @@ def test_default_backend_is_packageable_without_rust_command(
     assert (root / "signing_key.hex").read_text(encoding="utf-8").strip() == expected_sk
 
 
+def test_default_backend_rejects_all_zero_ikm() -> None:
+    with pytest.raises(ValueError, match="onboarding_bls_ikm_must_not_be_all_zero"):
+        keypair_from_ikm_hex("0" * 64)
+
+
 def test_signing_key_has_0600_permissions(
     tmp_path: Path, fake_keygen: list[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
