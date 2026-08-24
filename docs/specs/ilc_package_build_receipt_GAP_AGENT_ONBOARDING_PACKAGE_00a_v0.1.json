@@ -1,0 +1,48 @@
+{
+  "artifact_schema_version": "ilc.package_build_receipt.v0.1",
+  "build_phase": "GAP-AGENT-ONBOARDING-PACKAGE-00a",
+  "build_source_commit_before_phase_commit": "5290ff9d1201c56070e569592e9e66e969bc33c3",
+  "build_source_state_note": "Built from the phase worktree before this phase commit; receipt is committed together with the source and tests that produced it.",
+  "dist_artifacts": {
+    "sdist": {
+      "path": "dist/ilc_core-0.4.0.tar.gz",
+      "sha256": "b8c4a2fcb3014452cbfad88705633fc21b741e0cefc5abf7fd70f7d0ed5aa783",
+      "size_bytes": 1100209
+    },
+    "wheel": {
+      "path": "dist/ilc_core-0.4.0-py3-none-any.whl",
+      "sha256": "0a26cd5f7750b33d4953ffc3382488aa89a86e2749eb1441cf9693edad56f0de",
+      "size_bytes": 1362334
+    }
+  },
+  "non_claims": {
+    "invite_enforcement_activation": false,
+    "network_activation": false,
+    "public_mirror_push": false,
+    "pypi_upload": false,
+    "tools_install_sh_update": false
+  },
+  "onboarding_release_note": "Includes first-run AgentID provisioning, invite proof-of-possession, durable nullifier binding, and a packageable py-ecc BLS backend for wheel users.",
+  "output_token": "onboarding_package_040_built_GAP_AGENT_ONBOARDING_PACKAGE_00a",
+  "package_name": "ilc-core",
+  "pypi_upload_status": "pending",
+  "python_requires": ">=3.10",
+  "version": "0.4.0",
+  "wheel_only_bls_backend": {
+    "agent_id_len": 96,
+    "cargo_fallback": false,
+    "default_backend_module": "ilc_core.identity.bls_backend",
+    "explicit_rust_command_override_supported": true,
+    "fresh_venv_install_from_local_wheel": "pass",
+    "install_ok": true,
+    "invite_pop_len": 192,
+    "keygen_surface": "keypair_from_ikm_hex",
+    "materialized_file_count": 5,
+    "nullifier_status": "recorded",
+    "package_dependency": "py-ecc>=8.0.0,<9",
+    "repo_local_rust_fallback": false,
+    "signing_key_mode": "0o600",
+    "software_version": "0.4.0",
+    "verification_surface": "sign_invite_pop_digest/verify_invite_pop_digest"
+  }
+}
