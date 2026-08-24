@@ -82811,6 +82811,102 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_distribution_carryforward_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_package_00a_2026_08_24",
+      "chronology_note": "2026-08-24 GAP-AGENT-ONBOARDING-PACKAGE-00a packageable BLS backend runtime module.",
+      "manual_read_summary": "Pure-Python py-ecc BLS12-381 backend for first-run onboarding AgentID key derivation and invite proof-of-possession signing/verification. Replaces default repo-local Rust helper discovery for wheel users while retaining explicit command overrides for parity testing.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTATION_AUTHORITY",
+          "target": "phase:GAP-AGENT-ONBOARDING-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTATION_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/identity/bls_backend.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_package_00a_2026_08_24",
+      "chronology_note": "2026-08-24 GAP-AGENT-ONBOARDING-PACKAGE-00a local 0.4.0 package build receipt.",
+      "manual_read_summary": "Sorted JSON build receipt for ilc-core 0.4.0 local wheel and sdist artifacts. Records artifact hashes, sizes, pending PyPI status, non-claims, and fresh wheel install proof for the packageable onboarding BLS backend.",
+      "node_kind": "build_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-AGENT-ONBOARDING-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_AGENT_ONBOARDING_PACKAGE_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_package_00a_2026_08_24",
+      "chronology_note": "2026-08-24 GAP-AGENT-ONBOARDING-PACKAGE-00a walkthrough and verification evidence.",
+      "manual_read_summary": "Walkthrough for local 0.4.0 onboarding package build. Records token audit, MemPalace and repo discovery, wheel/sdist hashes, wheel metadata, fresh wheel-only install smoke, focused pytest output, prompt validation, graph coverage, and non-claims.",
+      "node_kind": "walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-AGENT-ONBOARDING-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_package_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_package_00a_2026_08_24",
+      "chronology_note": "2026-08-24 GAP-AGENT-ONBOARDING-PACKAGE-00a package root metadata initializer.",
+      "manual_read_summary": "Minimal ilc_core package initializer exposing __version__ = 0.4.0 for release/package verification without importing protocol runtime modules.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTATION_AUTHORITY",
+          "target": "phase:GAP-AGENT-ONBOARDING-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTATION_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/__init__.py"
     }
   ],
   "nodes": [

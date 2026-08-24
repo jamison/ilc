@@ -14,13 +14,17 @@ import os
 import re
 import secrets  # OS CSPRNG; no private graph entropy.
 import shlex
-import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any
 
+from ilc_core.identity.bls_backend import (
+    keypair_from_ikm_hex,
+    sign_invite_pop_digest,
+    verify_invite_pop_digest,
+)
 from ilc_core.validator.validator_key_derivation import (
     build_validator_key_derivation_record,
     derive_validator_key_ikm,
@@ -411,7 +415,7 @@ def _write_private_key_from_ikm(
     *,
     keygen_command: list[str] | None,
 ) -> str:
-    command = list(keygen_command or _default_keygen_command())
+    command = list(keygen_command or _configured_keygen_command() or [])
     fd, temp_name = tempfile.mkstemp(
         prefix=f".{final_path.name}.", suffix=".tmp", dir=identity_dir
     )
@@ -419,30 +423,11 @@ def _write_private_key_from_ikm(
     temp_path = Path(temp_name)
     temp_path.unlink()
     try:
-        result = subprocess.run(
-            [
-                *command,
-                "--keypair-from-ikm-hex-stdin",
-                "--out",
-                str(temp_path),
-            ],
-            input=f"{ikm_hex}\n",
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=120,
-        )
-    except FileNotFoundError as exc:
-        raise ValueError("onboarding_bls_keygen_unavailable") from exc
-    except subprocess.TimeoutExpired as exc:
-        raise ValueError("onboarding_bls_keygen_timed_out") from exc
-
-    try:
-        if result.returncode != 0:
-            raise ValueError("onboarding_bls_keygen_failed")
-
-        agent_id = result.stdout.strip()
-        _require_agent_id(agent_id)
+        if command:
+            agent_id = _run_keygen_command(command, ikm_hex, temp_path)
+        else:
+            private_key_hex, agent_id = keypair_from_ikm_hex(ikm_hex)
+            _atomic_write_text(temp_path, f"{private_key_hex}\n", mode=0o600)
         try:
             private_payload = temp_path.read_bytes()
         except OSError as exc:
@@ -461,35 +446,35 @@ def _write_private_key_from_ikm(
         raise
 
 
-def _default_keygen_command() -> list[str]:
+def _run_keygen_command(command: list[str], ikm_hex: str, temp_path: Path) -> str:
+    try:
+        result = subprocess.run(
+            [
+                *command,
+                "--keypair-from-ikm-hex-stdin",
+                "--out",
+                str(temp_path),
+            ],
+            input=f"{ikm_hex}\n",
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+    except FileNotFoundError as exc:
+        raise ValueError("onboarding_bls_keygen_unavailable") from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("onboarding_bls_keygen_timed_out") from exc
+    if result.returncode != 0:
+        raise ValueError("onboarding_bls_keygen_failed")
+    return _require_agent_id(result.stdout.strip())
+
+
+def _configured_keygen_command() -> list[str] | None:
     env_command = os.environ.get(ONBOARDING_BLS_KEYGEN_COMMAND_ENV)
     if env_command:
         return shlex.split(env_command)
-
-    repo_root = Path(__file__).resolve().parents[2]
-    for candidate in (
-        repo_root / "ilc_consensus" / "target" / "release" / "keygen",
-        repo_root / "ilc_consensus" / "target" / "debug" / "keygen",
-    ):
-        if candidate.exists():
-            return [str(candidate)]
-
-    cargo = shutil.which("cargo")
-    if cargo is None:
-        user_cargo = Path.home() / ".cargo" / "bin" / "cargo"
-        cargo = str(user_cargo) if user_cargo.exists() else None
-    if cargo is None:
-        raise ValueError("onboarding_bls_keygen_unavailable")
-    return [
-        cargo,
-        "run",
-        "--quiet",
-        "--manifest-path",
-        str(repo_root / "ilc_consensus" / "Cargo.toml"),
-        "--bin",
-        "keygen",
-        "--",
-    ]
+    return None
 
 
 def _run_invite_pop_command(
@@ -499,7 +484,9 @@ def _run_invite_pop_command(
     pop_command: list[str] | None,
     failure_token: str,
 ) -> str:
-    command = list(pop_command or _default_invite_pop_command())
+    command = list(pop_command or _configured_invite_pop_command() or [])
+    if not command:
+        return _run_invite_pop_python(args, digest_hex, failure_token=failure_token)
     try:
         result = subprocess.run(
             [*command, *args],
@@ -518,35 +505,57 @@ def _run_invite_pop_command(
     return result.stdout.strip()
 
 
-def _default_invite_pop_command() -> list[str]:
+def _run_invite_pop_python(
+    args: list[str],
+    digest_hex: str,
+    *,
+    failure_token: str,
+) -> str:
+    if not args:
+        raise ValueError(failure_token)
+    command = args[0]
+    if command == "sign":
+        parsed = _parse_exact_cli_args(args[1:], ("--secret-key",))
+        key_path = parsed["--secret-key"]
+        try:
+            secret_key_hex = Path(key_path).read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ValueError("onboarding_bls_private_key_unreadable") from exc
+        return sign_invite_pop_digest(secret_key_hex, digest_hex)
+    if command == "verify":
+        parsed = _parse_exact_cli_args(args[1:], ("--public-key-hex", "--signature-hex"))
+        public_key_hex = parsed["--public-key-hex"]
+        signature_hex = parsed["--signature-hex"]
+        if verify_invite_pop_digest(
+            public_key_hex=public_key_hex,
+            digest_hex=digest_hex,
+            signature_hex=signature_hex,
+        ):
+            return "invite_pop_bls_valid"
+        raise ValueError(failure_token)
+    raise ValueError(failure_token)
+
+
+def _parse_exact_cli_args(args: list[str], names: tuple[str, ...]) -> dict[str, str]:
+    if len(args) != 2 * len(names):
+        raise ValueError("invite_pop_bls_args_invalid")
+    parsed: dict[str, str] = {}
+    for index in range(0, len(args), 2):
+        name = args[index]
+        value = args[index + 1]
+        if name not in names or name in parsed or value.startswith("--"):
+            raise ValueError("invite_pop_bls_args_invalid")
+        parsed[name] = value
+    if set(parsed) != set(names):
+        raise ValueError("invite_pop_bls_args_invalid")
+    return parsed
+
+
+def _configured_invite_pop_command() -> list[str] | None:
     env_command = os.environ.get(ONBOARDING_BLS_POP_COMMAND_ENV)
     if env_command:
         return shlex.split(env_command)
-
-    repo_root = Path(__file__).resolve().parents[2]
-    for candidate in (
-        repo_root / "ilc_consensus" / "target" / "release" / "invite_pop_bls",
-        repo_root / "ilc_consensus" / "target" / "debug" / "invite_pop_bls",
-    ):
-        if candidate.exists():
-            return [str(candidate)]
-
-    cargo = shutil.which("cargo")
-    if cargo is None:
-        user_cargo = Path.home() / ".cargo" / "bin" / "cargo"
-        cargo = str(user_cargo) if user_cargo.exists() else None
-    if cargo is None:
-        raise ValueError("invite_pop_bls_backend_unavailable")
-    return [
-        cargo,
-        "run",
-        "--quiet",
-        "--manifest-path",
-        str(repo_root / "ilc_consensus" / "Cargo.toml"),
-        "--bin",
-        "invite_pop_bls",
-        "--",
-    ]
+    return None
 
 
 def _remove_stale_identity_metadata(root: Path) -> None:

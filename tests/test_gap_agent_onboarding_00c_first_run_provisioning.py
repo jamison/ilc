@@ -16,6 +16,8 @@ from ilc_core.identity.first_run_provisioning import (
     migrate_identity_schema_if_needed,
     provision_new_identity,
 )
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+from ilc_core.validator.validator_key_derivation import derive_validator_key_ikm
 
 
 AGENT_ID_HEX = "a" * 96
@@ -68,6 +70,23 @@ def test_provision_creates_required_files(
     assert (root / "birth_attestation.json").is_file()
     assert (root / "recovery_policy.json").is_file()
     assert (root / "onboarding_receipt.json").is_file()
+
+
+def test_default_backend_is_packageable_without_rust_command(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("ILC_ONBOARDING_BLS_KEYGEN_COMMAND", raising=False)
+    monkeypatch.setattr("secrets.token_bytes", lambda size: KNOWN_SEED)
+    expected_sk, expected_agent_id = keypair_from_ikm_hex(
+        derive_validator_key_ikm(KNOWN_SEED).hex()
+    )
+
+    receipt = provision_new_identity(tmp_path, invite_id="invite-test", emit_warning=False)
+    root = identity_root(tmp_path)
+
+    assert receipt["agent_id"] == expected_agent_id
+    assert (root / "agent_id").read_text(encoding="utf-8").strip() == expected_agent_id
+    assert (root / "signing_key.hex").read_text(encoding="utf-8").strip() == expected_sk
 
 
 def test_signing_key_has_0600_permissions(

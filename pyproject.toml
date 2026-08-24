@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ilc-core"
-version = "0.3.1"
+version = "0.4.0"
 description = "ILC Protocol Core Library"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -25,6 +25,7 @@ dependencies = [
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
     "lmdb>=2.2.0",
+    "py-ecc>=8.0.0,<9",
     "PyYAML>=6.0.0",
     "typing-extensions>=4.8.0",
 ]
@@ -58,6 +59,7 @@ operator-node = [
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
     "lmdb>=2.2.0",
+    "py-ecc>=8.0.0,<9",
     "PyYAML>=6.0.0",
     "typing-extensions>=4.8.0",
 ]
@@ -88,6 +90,7 @@ public-rc = [
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
     "lmdb>=2.2.0",
+    "py-ecc>=8.0.0,<9",
     "PyYAML>=6.0.0",
     "typing-extensions>=4.8.0",
 ]
@@ -124,6 +127,7 @@ dev = [
     "PyNaCl==1.6.2",
     "jsonschema>=4.0.0",
     "lmdb>=2.2.0",
+    "py-ecc>=8.0.0,<9",
     "PyYAML>=6.0.0",
     "typing-extensions>=4.8.0",
     "scipy>=1.11.0",

@@ -152,6 +152,40 @@ def test_pop_signature_is_valid(tmp_path: Path, bls_bins: dict[str, str]) -> Non
     )
 
 
+def test_default_packageable_pop_backend_signs_and_verifies(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("ILC_ONBOARDING_BLS_KEYGEN_COMMAND", raising=False)
+    monkeypatch.delenv("ILC_ONBOARDING_BLS_POP_COMMAND", raising=False)
+    provision_new_identity(tmp_path, invite_id=INVITE_ID, emit_warning=False)
+    root = identity_root(tmp_path)
+    agent_id = (root / "agent_id").read_text(encoding="utf-8").strip()
+    nullifier = derive_redemption_nullifier("batch-packageable-pop", NONCE_HEX)
+
+    invite_pop = generate_invite_pop(
+        agent_id,
+        nullifier,
+        root / "signing_key.hex",
+        invite_id=INVITE_ID,
+        epoch=0,
+    )
+
+    assert verify_invite_pop(
+        agent_id_hex=agent_id,
+        invite_nullifier=nullifier,
+        invite_id=INVITE_ID,
+        epoch=0,
+        invite_pop=invite_pop,
+    )
+    assert not verify_invite_pop(
+        agent_id_hex=agent_id,
+        invite_nullifier=derive_redemption_nullifier("batch-packageable-pop-wrong", NONCE_HEX),
+        invite_id=INVITE_ID,
+        epoch=0,
+        invite_pop=invite_pop,
+    )
+
+
 def test_pop_domain_separator_is_distinct() -> None:
     assert POP_DOMAIN == "ilc-invite-pop-v1"
     assert POP_DOMAIN not in {
