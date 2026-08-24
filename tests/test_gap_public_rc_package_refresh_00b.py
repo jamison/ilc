@@ -18,6 +18,10 @@ MANIFEST_031 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_031_GAP_CDL017_PACKAGE_00a_v0.1.json"
 )
+MANIFEST_040 = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_040_GAP_AGENT_ONBOARDING_PACKAGE_00a_v0.1.json"
+)
 MANIFEST_020 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_020_GAP_PUBLIC_INSTALL_01_v0.1.json"
@@ -98,8 +102,12 @@ def test_manifest_031_validates_and_targets_ilc_core_031() -> None:
     }
 
 
-def test_install_sh_is_synced_to_031_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_031)
+def test_manifest_031_remains_valid_after_040_supersession() -> None:
+    validate_installable_release_manifest(_load_json(MANIFEST_031))
+
+
+def test_install_sh_is_synced_to_current_040_manifest() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_040)
 
 
 def test_old_manifest_still_valid_and_unmodified_by_supersession() -> None:

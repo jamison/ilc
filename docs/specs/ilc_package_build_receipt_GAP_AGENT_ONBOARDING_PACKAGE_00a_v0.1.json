@@ -15,31 +15,41 @@
       "size_bytes": 1362456
     }
   },
+  "fetchback_sdist_sha256": "bb9a7c45a13fb47893961458038ed3039881b12de23552c4a8ed36b3432ff68b",
+  "fetchback_sdist_size_bytes": 1100243,
+  "fetchback_wheel_sha256": "523fca5a3262eb7921cb0388a185a140d2a9417064483e5689acd64a71f50924",
+  "fetchback_wheel_size_bytes": 1362456,
+  "installable_manifest_path": "docs/specs/ilc_installable_release_manifest_ilc_core_040_GAP_AGENT_ONBOARDING_PACKAGE_00a_v0.1.json",
   "non_claims": {
     "invite_enforcement_activation": false,
     "network_activation": false,
     "public_mirror_push": false,
-    "pypi_upload": false,
-    "tools_install_sh_update": false
+    "pypi_upload": true,
+    "tools_install_sh_update": true
   },
   "onboarding_release_note": "Includes first-run AgentID provisioning, invite proof-of-possession, durable nullifier binding, and a packageable py-ecc BLS backend for wheel users.",
   "output_token": "onboarding_package_040_built_GAP_AGENT_ONBOARDING_PACKAGE_00a",
   "package_name": "ilc-core",
-  "pypi_upload_status": "pending",
+  "pypi_sdist_url": "https://files.pythonhosted.org/packages/78/c7/d8d9009adbbf9a4cd7e678567bd87d6d91aefd2a6d1a55c44ee50bd61b6e/ilc_core-0.4.0.tar.gz",
+  "pypi_upload_phase": "GAP-AGENT-ONBOARDING-PACKAGE-00b",
+  "pypi_upload_status": "uploaded",
+  "pypi_version_url": "https://pypi.org/project/ilc-core/0.4.0/",
+  "pypi_wheel_url": "https://files.pythonhosted.org/packages/2a/42/5f67c2a63e253caa64092a44dc82d5339188f3d9408cfcc24a713223459d/ilc_core-0.4.0-py3-none-any.whl",
   "python_requires": ">=3.10",
+  "upload_output_token": "onboarding_package_040_published_GAP_AGENT_ONBOARDING_PACKAGE_00b",
   "version": "0.4.0",
   "wheel_only_bls_backend": {
     "agent_id_len": 96,
     "cargo_fallback": false,
     "default_backend_module": "ilc_core.identity.bls_backend",
     "explicit_rust_command_override_supported": true,
+    "fresh_venv_install_from_local_wheel": "pass",
     "hardening_after_audit": {
       "all_zero_ikm_rejected": true,
       "force_reprovision_fresh_failure_rolls_back": true,
       "onboarding_receipt_nullifier_status_persisted": true,
       "private_py_ecc_validity_api_removed": true
     },
-    "fresh_venv_install_from_local_wheel": "pass",
     "install_ok": true,
     "invite_pop_len": 192,
     "keygen_surface": "keypair_from_ikm_hex",
