@@ -3341,6 +3341,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             provision_new_identity,
         )
 
+        had_existing_identity = (identity_root(Path.home()) / "signing_key.hex").exists()
         created_fresh_identity = False
         force_reprovision = bool(getattr(args, "force_reprovision", False))
         try:
@@ -3350,7 +3351,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 epoch=current_epoch,
                 force_reprovision=force_reprovision,
             )
-            created_fresh_identity = not force_reprovision
+            created_fresh_identity = not had_existing_identity
         except IdentityAlreadyExistsError:
             print(
                 "identity_provisioning_skipped_existing_identity: "
