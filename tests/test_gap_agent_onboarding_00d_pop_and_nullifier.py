@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -206,6 +207,22 @@ def test_enforcement_gate_still_false_after_this_phase(
     )
 
 
+def test_enabled_install_reports_recorded_nullifier_status(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-enabled-status"))
+
+    result = cli_main._run_install_subcommand(
+        _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    )
+
+    assert result["invite_verification"]["nullifier_status"] == "recorded"
+    assert result["invite_verification"]["enrollment_nullifier_status"] == "recorded"
+
+
 def test_enabled_enforcement_rejects_missing_pop(
     tmp_path: Path,
     install_env: Path,
@@ -290,6 +307,28 @@ def test_existing_identity_cannot_consume_different_invite(
         cli_main._run_install_subcommand(
             _args(second_path, tmp_path / "target-b", tmp_path / "install_receipt_b.json")
         )
+    assert (identity_root(install_env) / "signing_key.hex").is_file()
+
+
+def test_fresh_identity_rolls_back_when_pop_signing_fails(
+    tmp_path: Path,
+    install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    failing_pop = tmp_path / "failing_invite_pop.py"
+    failing_pop.write_text(
+        "import sys\nsys.stderr.write('forced pop failure\\n')\nsys.exit(1)\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("ILC_ONBOARDING_BLS_POP_COMMAND", f"{sys.executable} {failing_pop}")
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-pop-fails"))
+
+    with pytest.raises(ValueError, match="invite_pop_signing_failed"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+        )
+
+    assert not identity_root(install_env).exists()
 
 
 def test_pop_not_in_signing_key_position(
