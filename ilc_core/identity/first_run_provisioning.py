@@ -337,6 +337,7 @@ def attach_invite_pop_to_onboarding_receipt(
             ),
             "nullifier_persisted": bool(nullifier_persisted),
             "nullifier_registry": nullifier_registry,
+            "nullifier_status": "recorded" if nullifier_persisted else "not_persisted",
         }
     )
     _atomic_write_json(receipt_path, receipt, mode=0o644)

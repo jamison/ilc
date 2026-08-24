@@ -8,7 +8,9 @@ import sys
 from pathlib import Path
 
 import pytest
+from py_ecc.optimized_bls12_381 import curve_order
 
+from ilc_core.identity import bls_backend
 from ilc_core.identity.first_run_provisioning import (
     IdentityAlreadyExistsError,
     existing_identity_summary,
@@ -16,7 +18,7 @@ from ilc_core.identity.first_run_provisioning import (
     migrate_identity_schema_if_needed,
     provision_new_identity,
 )
-from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex, sign_invite_pop_digest
 from ilc_core.validator.validator_key_derivation import derive_validator_key_ikm
 
 
@@ -92,6 +94,12 @@ def test_default_backend_is_packageable_without_rust_command(
 def test_default_backend_rejects_all_zero_ikm() -> None:
     with pytest.raises(ValueError, match="onboarding_bls_ikm_must_not_be_all_zero"):
         keypair_from_ikm_hex("0" * 64)
+
+
+def test_default_backend_uses_public_curve_order_not_private_py_ecc_api() -> None:
+    assert "_is_valid_privkey" not in Path(bls_backend.__file__).read_text(encoding="utf-8")
+    with pytest.raises(ValueError, match="onboarding_bls_private_key_invalid"):
+        sign_invite_pop_digest(f"{curve_order:064x}", "a" * 96)
 
 
 def test_signing_key_has_0600_permissions(

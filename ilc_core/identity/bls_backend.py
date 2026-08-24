@@ -13,6 +13,7 @@ import re
 from typing import Final
 
 from py_ecc.bls import G2Basic
+from py_ecc.optimized_bls12_381 import curve_order
 
 ILC_INVITE_POP_DST: Final[bytes] = (
     b"ILC_INVITE_POP_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
@@ -36,7 +37,7 @@ def keypair_from_ikm_hex(ikm_hex: str) -> tuple[str, str]:
     if ikm == "0" * 64:
         raise ValueError("onboarding_bls_ikm_must_not_be_all_zero")
     secret_key_int = G2Basic.KeyGen(bytes.fromhex(ikm), b"")
-    if not G2Basic._is_valid_privkey(secret_key_int):
+    if not _is_valid_secret_key_int(secret_key_int):
         raise ValueError("onboarding_bls_private_key_invalid")
     secret_key_hex = secret_key_int.to_bytes(32, "big").hex()
     public_key_hex = bytes(G2Basic.SkToPk(secret_key_int)).hex()
@@ -51,7 +52,7 @@ def sign_invite_pop_digest(secret_key_hex: str, digest_hex: str) -> str:
         _require_hex(secret_key_hex, _BLS_SECRET_KEY_RE, "onboarding_bls_private_key_invalid"),
         16,
     )
-    if not G2Basic._is_valid_privkey(secret_key_int):
+    if not _is_valid_secret_key_int(secret_key_int):
         raise ValueError("onboarding_bls_private_key_invalid")
     digest = bytes.fromhex(_require_hex(digest_hex, _SHA384_RE, "invite_pop_digest_invalid"))
     signature_hex = bytes(_ILCInvitePoP.Sign(secret_key_int, digest)).hex()
@@ -85,6 +86,10 @@ def _require_hex(value: str, pattern: re.Pattern[str], token: str) -> str:
     if not isinstance(value, str) or pattern.fullmatch(value) is None:
         raise ValueError(token)
     return value
+
+
+def _is_valid_secret_key_int(value: int) -> bool:
+    return isinstance(value, int) and 0 < value < curve_order
 
 
 __all__ = [

@@ -255,6 +255,7 @@ def test_enabled_install_reports_recorded_nullifier_status(
 
     assert result["invite_verification"]["nullifier_status"] == "recorded"
     assert result["invite_verification"]["enrollment_nullifier_status"] == "recorded"
+    assert result["onboarding_receipt"]["nullifier_status"] == "recorded"
 
 
 def test_enabled_enforcement_rejects_missing_pop(
