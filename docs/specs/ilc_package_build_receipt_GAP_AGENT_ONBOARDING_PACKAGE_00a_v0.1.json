@@ -6,13 +6,13 @@
   "dist_artifacts": {
     "sdist": {
       "path": "dist/ilc_core-0.4.0.tar.gz",
-      "sha256": "6dbbc6385f8290b43ac9aa6bb1fe60e0ba03a9d307c10bfa4fa91d0b22929435",
-      "size_bytes": 1100277
+      "sha256": "bb9a7c45a13fb47893961458038ed3039881b12de23552c4a8ed36b3432ff68b",
+      "size_bytes": 1100243
     },
     "wheel": {
       "path": "dist/ilc_core-0.4.0-py3-none-any.whl",
-      "sha256": "22f0ed8eedff5b6d1f851134ebcc5fbea637b14d202525b0024463dc0b447090",
-      "size_bytes": 1362387
+      "sha256": "523fca5a3262eb7921cb0388a185a140d2a9417064483e5689acd64a71f50924",
+      "size_bytes": 1362456
     }
   },
   "non_claims": {
@@ -35,7 +35,9 @@
     "explicit_rust_command_override_supported": true,
     "hardening_after_audit": {
       "all_zero_ikm_rejected": true,
-      "force_reprovision_fresh_failure_rolls_back": true
+      "force_reprovision_fresh_failure_rolls_back": true,
+      "onboarding_receipt_nullifier_status_persisted": true,
+      "private_py_ecc_validity_api_removed": true
     },
     "fresh_venv_install_from_local_wheel": "pass",
     "install_ok": true,
