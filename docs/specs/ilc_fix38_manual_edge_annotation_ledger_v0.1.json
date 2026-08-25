@@ -85223,6 +85223,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_pre_rc_external_security_review_GAP_PRE_RC_SECURITY_REVIEW_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_042_00a_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-042-00a prompt hardened and executed as a local-build-only 0.4.2 package phase.",
+      "manual_read_summary": "Non-sensitive phase prompt for local ilc-core 0.4.2 package build. Requires security-review completion, prior 0.4.1 publication and install-smoke tokens, dependency-floor Gate A, clean resolver Gate B, local artifact hash receipt, and explicit no-upload/no-signing/no-mirror non-claims.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-042-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_onboarding_package_042_00a_g10_local_build_042.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_042_00a_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-042-00a local build receipt created.",
+      "manual_read_summary": "Canonical JSON receipt for local ilc-core 0.4.2 wheel and sdist build, recording SHA-256 values, byte sizes, dependency-floor regression, outside-repo site-packages resolver check, import smoke, pypi_upload_status pending, and no-upload/no-signing/no-activation non-claims.",
+      "node_kind": "phase_evidence",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-042-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_ONBOARDING_PACKAGE_042_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_042_00a_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-042-00a walkthrough created.",
+      "manual_read_summary": "Phase walkthrough for local ilc-core 0.4.2 package build, including direct reads, token audit, prompt path hardening, Gate A output, version bump, build output summary, hashes, resolver evidence, import smoke, receipt path, status token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-042-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_onboarding_package_042_00a_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
