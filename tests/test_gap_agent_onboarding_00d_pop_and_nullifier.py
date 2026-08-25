@@ -364,6 +364,8 @@ def test_fresh_identity_rolls_back_when_pop_signing_fails(
         )
 
     assert not identity_root(install_env).exists()
+    assert not any((tmp_path / "target").rglob("*.node.json"))
+    assert not (tmp_path / "install_receipt.json").exists()
 
 
 def test_force_reprovision_without_existing_identity_rolls_back_when_pop_signing_fails(
@@ -385,6 +387,28 @@ def test_force_reprovision_without_existing_identity_rolls_back_when_pop_signing
         cli_main._run_install_subcommand(args)
 
     assert not identity_root(install_env).exists()
+
+
+def test_install_rejects_existing_materialization_target_path(
+    tmp_path: Path,
+    install_env: Path,
+) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-existing-target"))
+    preexisting = (
+        tmp_path
+        / "target"
+        / "nodes"
+        / "adr_0004_genesis_truth_primitives.node.json"
+    )
+    preexisting.parent.mkdir(parents=True)
+    preexisting.write_text("user-owned content\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="install_materialization_target_path_exists"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+        )
+
+    assert preexisting.read_text(encoding="utf-8") == "user-owned content\n"
 
 
 def test_pop_not_in_signing_key_position(

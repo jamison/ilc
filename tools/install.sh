@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-AGENT-ONBOARDING-PACKAGE-00b"
+INSTALLER_VERSION="GAP-ONBOARDING-PACKAGE-FIX1-00b"
 RC_WHEEL_URL="https://files.pythonhosted.org/packages/c6/a7/e844165d9da2a49e27619a7f2e98e3225ad533d221fe2662b034e28b9e53/ilc_core-0.4.1-py3-none-any.whl"
 RC_WHEEL_SHA256="a3bb249404bd3a5df2ddc19a9c32e2a01d173bc5892bc3a7e99019da02912dcb"
 RC_WHEEL_SIZE="1362826"

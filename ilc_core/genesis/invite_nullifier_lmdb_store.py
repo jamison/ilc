@@ -28,7 +28,11 @@ DEFAULT_INVITE_NULLIFIER_MAP_SIZE_BYTES = 64 * 1024 * 1024
 _NULLIFIERS_DB_NAME = b"nullifiers"
 _META_DB_NAME = b"meta"
 _SCHEMA_VERSION_KEY = b"schema_version"
-_NULLIFIER_VALUE = b'{"seen":true,"schema_version":"invite_nullifier_lmdb_store_1576r_fix1.v0.1"}'
+_NULLIFIER_VALUE = json.dumps(
+    {"schema_version": INVITE_NULLIFIER_LMDB_STORE_VERSION, "seen": True},
+    sort_keys=True,
+    separators=(",", ":"),
+).encode("utf-8")
 
 
 class InviteNullifierLmdbRegistry(InviteNullifierRegistry):

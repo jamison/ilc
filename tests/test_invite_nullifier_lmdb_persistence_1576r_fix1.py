@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -11,6 +12,7 @@ from ilc_core.genesis import invite_enforcement
 from ilc_core.genesis.invite_nullifier_lmdb_store import (
     INVITE_NULLIFIER_LMDB_STORE_VERSION,
     InviteNullifierLmdbRegistry,
+    _NULLIFIER_VALUE,
 )
 from ilc_core.genesis.invite_nullifier_registry import InviteNullifierError
 from ilc_core.network.d2d.invite_nullifier_gossip import (
@@ -123,3 +125,13 @@ def test_lmdb_payload_corruption_fails_closed(tmp_path: Path) -> None:
 
 def test_lmdb_store_version_is_named_for_status_token() -> None:
     assert INVITE_NULLIFIER_LMDB_STORE_VERSION == "invite_nullifier_lmdb_store_1576r_fix1.v0.1"
+
+
+def test_lmdb_nullifier_value_is_canonical_json() -> None:
+    expected = json.dumps(
+        {"schema_version": INVITE_NULLIFIER_LMDB_STORE_VERSION, "seen": True},
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+    assert _NULLIFIER_VALUE == expected
