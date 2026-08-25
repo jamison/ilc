@@ -71988,6 +71988,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_02_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_03_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-RELEASE-SIGN-PROMPT-PATCH-03 completed after GAP-ONBOARDING-PACKAGE-FIX1-00b published ilc-core 0.4.1 and yanked broken 0.4.0.",
+      "manual_read_summary": "Walkthrough for GAP-RELEASE-SIGN-PROMPT-PATCH-03 recording the 0.4.1 prompt cascade, installer and manifest checks, stale-reference scan, prompt validation, STATUS token, and non-claims.",
+      "node_kind": "walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-03"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_03_walkthrough.md"
     }
   ],
   "boundary": {
