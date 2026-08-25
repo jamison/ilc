@@ -72012,6 +72012,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_03_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_agent_invite_onboard_patch_00_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-VPS-AGENT-INVITE-ONBOARD-PATCH-00 completed as a non-sensitive prompt patch before VPS provisioning.",
+      "manual_read_summary": "Walkthrough recording MemPalace/direct reads, CLI source review, Option A install-receipt AgentID decision, VPS-PROVISION-00b P2.3 invite onboarding patch, VPS-PROVISION-00c onboarding verification patch, validations, STATUS token, and non-claims.",
+      "node_kind": "walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:GAP-VPS-AGENT-INVITE-ONBOARD-PATCH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_agent_invite_onboard_patch_00_walkthrough.md"
     }
   ],
   "boundary": {
