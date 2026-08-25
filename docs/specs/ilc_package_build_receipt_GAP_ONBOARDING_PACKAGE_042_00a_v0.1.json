@@ -5,14 +5,14 @@
     "Clean resolver gate was rerun from /tmp using an isolated venv created by .venv/bin/python 3.14.3."
   ],
   "non_claims": [
-    "no_pypi_upload",
+    "no_predecessor_yank_completed",
     "no_release_signing",
     "no_manifest_signing",
     "no_public_mirror_refresh",
     "no_vps_mutation",
     "no_guard_activation"
   ],
-  "package_scope": "local_build_only_no_upload",
+  "package_scope": "local_build_then_pypi_upload_yank_pending",
   "phase": "GAP-ONBOARDING-PACKAGE-042-00a",
   "post_build_import_smoke": {
     "imports": [
@@ -35,8 +35,15 @@
     "test_id": "tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py::test_phase_1573f_fix1_dependency_floor_uses_cryptography_48"
   },
   "predecessor_version": "0.4.1",
-  "pypi_upload_status": "pending",
+  "predecessor_yank_reason": "Intermediate pre-signing package superseded by ilc-core==0.4.2 launch artifact.",
+  "predecessor_yank_status": "pending_operator_yank",
+  "pypi_sdist_url": "https://files.pythonhosted.org/packages/32/1e/72f824e978e6319f00fbfb44f8b8d7b297369eade681f865d87734bde2eb/ilc_core-0.4.2.tar.gz",
+  "pypi_upload_phase": "GAP-ONBOARDING-PACKAGE-042-00b",
+  "pypi_upload_status": "uploaded",
+  "pypi_version_url": "https://pypi.org/project/ilc-core/0.4.2/",
+  "pypi_wheel_url": "https://files.pythonhosted.org/packages/f1/42/900d71218779e5ab09b3d89b7d24a2828429e2a6f1aca7557413bc509140/ilc_core-0.4.2-py3-none-any.whl",
   "sdist": {
+    "fetchback_sha256": "67e70f9251caa7f729d2f2e3f146ffcaac655eada479a0a95060cc09c9f08baf",
     "filename": "ilc_core-0.4.2.tar.gz",
     "sha256": "67e70f9251caa7f729d2f2e3f146ffcaac655eada479a0a95060cc09c9f08baf",
     "size_bytes": 1101156
@@ -44,6 +51,7 @@
   "version": "0.4.2",
   "wheel": {
     "filename": "ilc_core-0.4.2-py3-none-any.whl",
+    "fetchback_sha256": "340ec7833aacde796a70e5a6aa6d232b125d4caa4d92d9d70444b9d36d9c8d09",
     "sha256": "340ec7833aacde796a70e5a6aa6d232b125d4caa4d92d9d70444b9d36d9c8d09",
     "size_bytes": 1363684
   }
