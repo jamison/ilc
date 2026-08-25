@@ -85202,8 +85202,8 @@
     },
     {
       "annotation_batch": "manual_batch_gap_pre_rc_security_review_followup_2026_08_25",
-      "chronology_note": "2026-08-25 external Gemini security review report reconciled and actionable fixes applied pending human HIGH-finding disposition.",
-      "manual_read_summary": "Findings and disposition artifact for GAP-PRE-RC-SECURITY-REVIEW-00: records external report path, HIGH/MEDIUM/LOW finding dispositions, code fixes for bounded bincode fallback, validator key zeroization, exact numeric hardening, input-validation guards, and verification evidence. Completion token is intentionally absent until human HIGH-finding disposition.",
+      "chronology_note": "2026-08-25 external Gemini security review report reconciled and actionable fixes applied; 2026-08-26 human HIGH-finding disposition supplied.",
+      "manual_read_summary": "Findings and disposition artifact for GAP-PRE-RC-SECURITY-REVIEW-00: records external report path, HIGH/MEDIUM/LOW finding dispositions, code fixes for bounded bincode fallback, validator key zeroization, exact numeric hardening, input-validation guards, verification evidence, and human HIGH-finding acceptance for F1, F2, and F14.",
       "node_kind": "phase_evidence",
       "proposed_authority_trace_edges": [
         {

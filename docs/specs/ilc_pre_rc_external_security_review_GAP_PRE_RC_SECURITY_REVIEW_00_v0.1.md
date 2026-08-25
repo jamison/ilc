@@ -3,7 +3,7 @@
 **Date:** 2026-08-25
 **External report path:** `/Users/jamison/.gemini/antigravity-ide/brain/844f5fc0-a07b-458c-9737-b584999d1933/security_audit_report.md`
 **Reviewed source state:** local private repo after `b658fae89`
-**Status:** FIXES_APPLIED_AWAITING_HIGH_FINDING_HUMAN_DISPOSITION
+**Status:** COMPLETE
 
 ## Secret Boundary
 
@@ -78,7 +78,14 @@ $ git diff --check
 
 ## Gate Disposition
 
-The completion token
-`pre_rc_external_security_review_complete_GAP_PRE_RC_SECURITY_REVIEW_00` is not
-emitted in this artifact because the phase prompt requires explicit human
-disposition for HIGH findings before the phase can close.
+Human disposition was supplied on 2026-08-26:
+
+- F1 ACCEPTED: pre-existing `MAX_EPOCH_CHAIN_BATCH = 128` cap verified.
+- F2 ACCEPTED: pre-existing `deserialize_fixed_bytes` visitor pattern verified.
+- F14 ACCEPTED: follow-up `.with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64)` fix verified.
+
+The phase is authorized to emit:
+
+```text
+pre_rc_external_security_review_complete_GAP_PRE_RC_SECURITY_REVIEW_00
+```
