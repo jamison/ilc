@@ -2,9 +2,9 @@
 set -euo pipefail
 
 INSTALLER_VERSION="GAP-AGENT-ONBOARDING-PACKAGE-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/2a/42/5f67c2a63e253caa64092a44dc82d5339188f3d9408cfcc24a713223459d/ilc_core-0.4.0-py3-none-any.whl"
-RC_WHEEL_SHA256="523fca5a3262eb7921cb0388a185a140d2a9417064483e5689acd64a71f50924"
-RC_WHEEL_SIZE="1362456"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/c6/a7/e844165d9da2a49e27619a7f2e98e3225ad533d221fe2662b034e28b9e53/ilc_core-0.4.1-py3-none-any.whl"
+RC_WHEEL_SHA256="a3bb249404bd3a5df2ddc19a9c32e2a01d173bc5892bc3a7e99019da02912dcb"
+RC_WHEEL_SIZE="1362826"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
@@ -146,7 +146,7 @@ if [[ -e "${TARGET_DIR}" ]]; then
 fi
 
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"
-TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.0.whl"
+TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.1.whl"
 
 if [[ "${DOWNLOADER}" == "curl" ]]; then
   curl -fsSL --progress-bar --max-time 120 -o "${TMP_WHEEL}" "${RC_WHEEL_URL}"

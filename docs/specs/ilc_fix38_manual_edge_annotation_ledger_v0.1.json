@@ -75739,6 +75739,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_fix1_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_fix1_00b_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-ONBOARDING-PACKAGE-FIX1-00b installable release manifest for ilc-core 0.4.1 PyPI artifacts.",
+      "manual_read_summary": "Schema-valid installable release manifest for ilc-core 0.4.1 recording PyPI wheel and sdist URLs, SHA-256 hashes, sizes, rc channel, and unsigned signing status after fetchback verification.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_041_GAP_ONBOARDING_PACKAGE_FIX1_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_fix1_00b_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-ONBOARDING-PACKAGE-FIX1-00b walkthrough recording PyPI 0.4.1 upload and 0.4.0 yank evidence.",
+      "manual_read_summary": "Walkthrough for ilc-core 0.4.1 PyPI upload phase. Records exact GO, token audit, prompt hardening, build receipt hash match, twine check/upload output, PyPI JSON URLs, fetchback SHA-256 verification, 0.4.0 yank evidence, manifest validation, install.sh sync, focused pytest output, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_onboarding_package_fix1_00b_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [

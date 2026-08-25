@@ -1,10 +1,13 @@
 {
   "date": "2026-08-25T01:13:22Z",
+  "fetchback_sdist_sha256": "1aa2fd4608bd4391111f62cc71c17c0d462466a79136eaacecb243b590a66bfc",
+  "fetchback_wheel_sha256": "a3bb249404bd3a5df2ddc19a9c32e2a01d173bc5892bc3a7e99019da02912dcb",
   "fix_description": "Packaging metadata fix: cryptography floor restored to >=48.0.0 (was >=49.0.0 in immutable 0.4.0 artifact), plus import-cycle hardening for packaged node-value governance conformance import. Version metadata bumped to 0.4.1.",
   "focused_regression": {
     "result": "PASS",
     "summary": "323 passed, 60 skipped, 15922 deselected, 1 warning in 157.10s"
   },
+  "installable_manifest_path": "docs/specs/ilc_installable_release_manifest_ilc_core_041_GAP_ONBOARDING_PACKAGE_FIX1_00a_v0.1.json",
   "phase": "GAP-ONBOARDING-PACKAGE-FIX1-00a",
   "post_build_import_smoke": {
     "imports": [
@@ -27,13 +30,17 @@
   },
   "predecessor_version": "0.4.0",
   "predecessor_version_defect": "cryptography>=49.0.0 not resolvable in the blocked install-smoke path; ilc-core==0.4.0 install failed during PyPI dependency resolution.",
-  "pypi_upload_status": "pending_fix1_00b",
+  "pypi_sdist_url": "https://files.pythonhosted.org/packages/60/0a/9107cd75e7c01c7e390bd577914a295fdc8b75c8e3104612b690b581a9db/ilc_core-0.4.1.tar.gz",
+  "pypi_upload_status": "uploaded",
+  "pypi_version_url": "https://pypi.org/project/ilc-core/0.4.1/",
+  "pypi_wheel_url": "https://files.pythonhosted.org/packages/c6/a7/e844165d9da2a49e27619a7f2e98e3225ad533d221fe2662b034e28b9e53/ilc_core-0.4.1-py3-none-any.whl",
   "sdist": {
     "filename": "ilc_core-0.4.1.tar.gz",
     "sha256": "1aa2fd4608bd4391111f62cc71c17c0d462466a79136eaacecb243b590a66bfc",
     "size_bytes": 1100555
   },
   "signing_status": "unsigned",
+  "upload_phase": "GAP-ONBOARDING-PACKAGE-FIX1-00b",
   "version": "0.4.1",
   "wheel": {
     "filename": "ilc_core-0.4.1-py3-none-any.whl",
