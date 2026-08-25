@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -150,8 +151,14 @@ def test_inadmissible_counterexample_rejection_is_deterministic() -> None:
 
 
 def test_reproducibility_threshold_helper_bounds_and_threshold_compare() -> None:
-    assert meets_reproducibility_threshold(agreement_score=0.90, reproducibility_threshold=0.85)
-    assert not meets_reproducibility_threshold(agreement_score=0.80, reproducibility_threshold=0.85)
+    assert meets_reproducibility_threshold(
+        agreement_score=Decimal("0.90"),
+        reproducibility_threshold=Decimal("0.85"),
+    )
+    assert not meets_reproducibility_threshold(
+        agreement_score="0.80",
+        reproducibility_threshold="0.85",
+    )
 
 
 def test_top_level_admissibility_verdict_combines_all_constraints() -> None:
@@ -159,15 +166,15 @@ def test_top_level_admissibility_verdict_combines_all_constraints() -> None:
         claim_form="singular",
         has_falsifiable_test=True,
         is_inadmissible_counterexample=False,
-        agreement_score=0.90,
-        reproducibility_threshold=0.85,
+        agreement_score=Decimal("0.90"),
+        reproducibility_threshold=Decimal("0.85"),
     )
     assert not evaluate_decomposition_admissibility(
         claim_form="singular",
         has_falsifiable_test=False,
         is_inadmissible_counterexample=False,
-        agreement_score=0.90,
-        reproducibility_threshold=0.85,
+        agreement_score=Decimal("0.90"),
+        reproducibility_threshold=Decimal("0.85"),
     )
 
 
@@ -183,22 +190,34 @@ def test_invalid_bool_and_out_of_range_numeric_raise_tokenized_errors() -> None:
     assert exc_bool.value.token == "cdl_v7_popperian_invalid_bool"
 
     with pytest.raises(PopperianGateValidationError) as exc_num:
-        meets_reproducibility_threshold(agreement_score=1.2, reproducibility_threshold=0.85)
+        meets_reproducibility_threshold(
+            agreement_score="1.2",
+            reproducibility_threshold="0.85",
+        )
     assert exc_num.value.token == "cdl_v7_popperian_out_of_range"
 
     with pytest.raises(PopperianGateValidationError) as exc_nan:
         meets_reproducibility_threshold(
-            agreement_score=float("nan"),
-            reproducibility_threshold=0.85,
+            agreement_score="NaN",
+            reproducibility_threshold=Decimal("0.85"),
         )
     assert exc_nan.value.token == "cdl_v7_popperian_invalid_numeric"
 
     with pytest.raises(PopperianGateValidationError) as exc_inf:
         meets_reproducibility_threshold(
-            agreement_score=0.9,
-            reproducibility_threshold=float("inf"),
+            agreement_score=Decimal("0.9"),
+            reproducibility_threshold="Infinity",
         )
     assert exc_inf.value.token == "cdl_v7_popperian_invalid_numeric"
+
+
+def test_reproducibility_threshold_rejects_float_inputs() -> None:
+    with pytest.raises(PopperianGateValidationError) as exc:
+        meets_reproducibility_threshold(
+            agreement_score=0.9,
+            reproducibility_threshold=Decimal("0.85"),
+        )
+    assert exc.value.token == "cdl_v7_popperian_invalid_numeric"
 
 
 def test_handoff_artifact_has_required_headings_and_tokens() -> None:

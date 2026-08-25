@@ -14,6 +14,7 @@ use std::path::{Path, PathBuf};
 
 use crate::types::{AgentID, ILCConsensusError, ValidatorKey, ValidatorSet};
 use sha2::{Digest, Sha256};
+use zeroize::Zeroize;
 
 // ---------------------------------------------------------------------------
 // Raw JSON shapes (deployment format)
@@ -337,10 +338,10 @@ pub fn load_node_config(
         grpc_listen_addr.map(|a: std::net::SocketAddr| a.to_string()).as_deref().unwrap_or("disabled"),
     );
 
-    let sk_hex = fs::read_to_string(&cfg.validator_consensus_key_path).map_err(|e| {
+    let mut sk_hex = fs::read_to_string(&cfg.validator_consensus_key_path).map_err(|e| {
         ILCConsensusError::Other(format!("Missing validator_consensus_key_path: {}", e))
     })?;
-    let sk_bytes = hex_decode_exact(sk_hex.trim(), 32).map_err(|e| {
+    let mut sk_bytes = hex_decode_exact(sk_hex.trim(), 32).map_err(|e| {
         ILCConsensusError::Other(format!(
             "validator_consensus_key_path hex decode limit tracking fail: {}",
             e
@@ -351,6 +352,8 @@ pub fn load_node_config(
             "Invalid BLS validator secret key mapped via local bounds natively.".into(),
         )
     })?;
+    sk_hex.zeroize();
+    sk_bytes.zeroize();
 
     Ok(NodeConfig {
         validator_id: cfg.validator_id,

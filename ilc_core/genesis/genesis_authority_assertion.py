@@ -115,7 +115,14 @@ def _authority_key_from_config(genesis_config: Mapping[str, Any]) -> GenesisAuth
     public_key_hex = _required_str(raw, "public_key_hex")
     key_id = raw.get("key_id")
     if key_id is None:
-        key_id = hashlib.sha256(bytes.fromhex(public_key_hex)).hexdigest()[:16]
+        try:
+            public_key_bytes = bytes.fromhex(public_key_hex)
+        except ValueError as exc:
+            raise GenesisAssertionError(
+                "genesis_authority_key_public_key_hex_invalid",
+                "genesis_authority_key.public_key_hex must be valid hex",
+            ) from exc
+        key_id = hashlib.sha256(public_key_bytes).hexdigest()[:16]
     return GenesisAuthorityKey(
         algorithm=str(raw.get("algorithm", GENESIS_AUTHORITY_KEY_ALGORITHM)),
         public_key_hex=public_key_hex,

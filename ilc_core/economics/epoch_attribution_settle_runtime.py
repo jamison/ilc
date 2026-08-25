@@ -15,7 +15,7 @@ with geometric decay ECU payout.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation, ROUND_DOWN
+from decimal import Decimal, InvalidOperation, ROUND_DOWN, localcontext
 from typing import TYPE_CHECKING, Any, Optional
 
 from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
@@ -95,7 +95,9 @@ def _stake_proportional_payouts(
                 )
             share = _quantize_payout(residual)
         else:
-            share = _quantize_payout(total_amount * (stake / total_stake))
+            with localcontext() as ctx:
+                ctx.prec = 50
+                share = _quantize_payout(total_amount * (stake / total_stake))
             running_total += share
         if share == _ZERO:
             continue
