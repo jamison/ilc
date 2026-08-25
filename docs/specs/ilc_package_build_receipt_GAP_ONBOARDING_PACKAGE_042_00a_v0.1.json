@@ -1,0 +1,50 @@
+{
+  "date": "2026-08-26T00:00:00Z",
+  "environment_notes": [
+    "Initial resolver attempt using /usr/bin/python3 failed because that interpreter is Python 3.9.6 and ilc-core requires Python >=3.10.",
+    "Clean resolver gate was rerun from /tmp using an isolated venv created by .venv/bin/python 3.14.3."
+  ],
+  "non_claims": [
+    "no_pypi_upload",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_public_mirror_refresh",
+    "no_vps_mutation",
+    "no_guard_activation"
+  ],
+  "package_scope": "local_build_only_no_upload",
+  "phase": "GAP-ONBOARDING-PACKAGE-042-00a",
+  "post_build_import_smoke": {
+    "imports": [
+      "ilc_core",
+      "ilc_core.identity.first_run_provisioning.provision_new_identity",
+      "ilc_core.genesis.invite_nullifier_lmdb_store._NULLIFIER_VALUE",
+      "ilc_core.consensus.popperian_gate_runtime.meets_reproducibility_threshold",
+      "ilc_core.economics.entropy.entropy_weight"
+    ],
+    "result": "PASS"
+  },
+  "post_build_resolver_check": {
+    "python_version": "3.14.3",
+    "result": "PASS",
+    "site_packages_confirmed": true,
+    "venv_path": "/tmp/ilc_042_resolver_check"
+  },
+  "pre_build_gates": {
+    "dependency_floor_regression": "PASS",
+    "test_id": "tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py::test_phase_1573f_fix1_dependency_floor_uses_cryptography_48"
+  },
+  "predecessor_version": "0.4.1",
+  "pypi_upload_status": "pending",
+  "sdist": {
+    "filename": "ilc_core-0.4.2.tar.gz",
+    "sha256": "67e70f9251caa7f729d2f2e3f146ffcaac655eada479a0a95060cc09c9f08baf",
+    "size_bytes": 1101156
+  },
+  "version": "0.4.2",
+  "wheel": {
+    "filename": "ilc_core-0.4.2-py3-none-any.whl",
+    "sha256": "340ec7833aacde796a70e5a6aa6d232b125d4caa4d92d9d70444b9d36d9c8d09",
+    "size_bytes": 1363684
+  }
+}
