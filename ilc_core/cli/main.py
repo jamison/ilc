@@ -3322,17 +3322,28 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             materialize_starmap_manifest,
         )
 
+        receipt_written = False
+        receipt_preexisted = output_receipt.exists()
+        planned_materialized_paths: tuple[tuple[Path, str], ...] = ()
         try:
+            receipt = build_install_receipt(materialization_payload)
+            planned_materialized_paths = _install_planned_materialized_paths(target_dir, receipt)
+            _reject_existing_materialized_paths(planned_materialized_paths)
             materialization = materialize_starmap_manifest(
                 materialization_payload,
                 target=target_dir,
                 dry_run=False,
             )
-            receipt = build_install_receipt(materialization_payload)
         except StarMapInstallerError as exc:
+            _rollback_install_side_effects(
+                planned_materialized_paths,
+                output_receipt=output_receipt,
+                receipt_written=False,
+                receipt_preexisted=receipt_preexisted,
+            )
             raise ValueError(f"install_materialization_failed:{exc}") from exc
-
         _write_install_receipt_atomic(output_receipt, receipt)
+        receipt_written = True
         from ilc_core.identity.first_run_provisioning import (
             IdentityAlreadyExistsError,
             attach_invite_pop_to_onboarding_receipt,
@@ -3425,6 +3436,12 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
         except Exception:
             if created_fresh_identity:
                 shutil.rmtree(identity_root(Path.home()), ignore_errors=True)
+            _rollback_install_side_effects(
+                planned_materialized_paths,
+                output_receipt=output_receipt,
+                receipt_written=receipt_written,
+                receipt_preexisted=receipt_preexisted,
+            )
             raise
 
 
@@ -3662,6 +3679,62 @@ def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
             pass
         raise
     return path
+
+
+def _install_planned_materialized_paths(
+    target_dir: Path,
+    receipt: dict[str, Any],
+) -> tuple[tuple[Path, str], ...]:
+    content_hashes = receipt.get("content_hashes")
+    if not isinstance(content_hashes, dict):
+        raise ValueError("install_receipt_content_hashes_invalid")
+    planned: list[tuple[Path, str]] = []
+    for relative, expected_sha256 in content_hashes.items():
+        if not isinstance(relative, str) or not relative:
+            raise ValueError("install_materialization_relative_path_invalid")
+        if not isinstance(expected_sha256, str) or len(expected_sha256) != 64:
+            raise ValueError("install_materialization_expected_hash_invalid")
+        if any(char not in "0123456789abcdef" for char in expected_sha256):
+            raise ValueError("install_materialization_expected_hash_invalid")
+        relative_path = Path(relative)
+        if relative_path.is_absolute() or any(part in {"", ".", ".."} for part in relative_path.parts):
+            raise ValueError("install_materialization_relative_path_invalid")
+        planned.append((target_dir / relative_path, expected_sha256))
+    return tuple(planned)
+
+
+def _reject_existing_materialized_paths(planned_paths: tuple[tuple[Path, str], ...]) -> None:
+    for path, _expected_sha256 in planned_paths:
+        if path.exists():
+            raise ValueError(f"install_materialization_target_path_exists:{path}")
+
+
+def _rollback_install_side_effects(
+    planned_paths: tuple[tuple[Path, str], ...],
+    *,
+    output_receipt: Path,
+    receipt_written: bool,
+    receipt_preexisted: bool,
+) -> None:
+    for path, expected_sha256 in planned_paths:
+        try:
+            if path.is_file() and _sha256_file(path) == expected_sha256:
+                path.unlink()
+        except OSError:
+            pass
+    if receipt_written and not receipt_preexisted:
+        try:
+            output_receipt.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(UPDATE_HTTP_CHUNK_BYTES), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _safe_path_segment(value: str) -> str:

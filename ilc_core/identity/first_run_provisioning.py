@@ -20,6 +20,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from ilc_core import __version__ as ILC_CORE_VERSION
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_invite_pop_digest,
@@ -33,7 +34,7 @@ from ilc_core.validator.validator_key_derivation import (
 FIRST_RUN_PROVISIONING_VERSION = "gap_agent_onboarding_00c.v0.1"
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
-ONBOARDING_SOFTWARE_VERSION = "0.4.0"
+ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
 GENESIS_ROOT_ENVELOPE_HASH = (
     "sha256:ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c"
 )

@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 from py_ecc.optimized_bls12_381 import curve_order
 
+import ilc_core
 from ilc_core.identity import bls_backend
 from ilc_core.identity.first_run_provisioning import (
     IdentityAlreadyExistsError,
@@ -72,6 +73,17 @@ def test_provision_creates_required_files(
     assert (root / "birth_attestation.json").is_file()
     assert (root / "recovery_policy.json").is_file()
     assert (root / "onboarding_receipt.json").is_file()
+
+
+def test_onboarding_receipt_uses_package_version(
+    tmp_path: Path, fake_keygen: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("secrets.token_bytes", lambda size: KNOWN_SEED)
+    _, root = _provision(tmp_path, fake_keygen)
+
+    receipt = json.loads((root / "onboarding_receipt.json").read_text(encoding="utf-8"))
+
+    assert receipt["software_version"] == ilc_core.__version__
 
 
 def test_default_backend_is_packageable_without_rust_command(
