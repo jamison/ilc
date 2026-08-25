@@ -50,7 +50,7 @@ def test_current_governor_runtime_uses_cmax_denominator_after_1573ab() -> None:
     assert 'required_keys = {"genesis_cumulative_accrual", "total_cumulative_issuance"}' in governor
     assert 'total_issuance = signal["total_cumulative_issuance"]' in governor
     assert 'return signal["genesis_cumulative_accrual"] / C_MAX_ILC' in governor
-    assert "from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC" in governor
+    assert "from ilc_core.economic_constants import C_MAX_ILC" in governor
 
 
 def test_cmax_canonical_value_confirmed_in_cdl026_row() -> None:

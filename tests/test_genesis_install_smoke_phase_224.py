@@ -45,6 +45,8 @@ def test_phase_224_post_install_import_smoke(tmp_path: Path) -> None:
         env=_install_env(),
     )
 
+    probe_env = _install_env()
+    probe_env.pop("PYTHONPATH", None)
     import_probe = subprocess.run(
         [
             str(python_bin),
@@ -56,7 +58,8 @@ def test_phase_224_post_install_import_smoke(tmp_path: Path) -> None:
             ),
         ],
         check=True,
-        cwd=repo_root,
+        cwd=tmp_path,
+        env=probe_env,
         capture_output=True,
         text=True,
     )
