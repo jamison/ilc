@@ -84810,6 +84810,126 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_agent_onboarding_00d_pop_and_nullifier_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_rc_041_vps_prompt_hardening_2026_08_25",
+      "chronology_note": "2026-08-25 pre-RC 0.4.1 package-fix local build prompt drafted and hardened.",
+      "manual_read_summary": "Phase prompt for local ilc-core 0.4.1 packaging fix build. Requires dependency-floor regression before build, outside-repo clean-venv install, site-packages import verification, build receipt, and no runtime/source changes outside version metadata.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_onboarding_package_fix1_00a_g10_local_build_041.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_rc_041_vps_prompt_hardening_2026_08_25",
+      "chronology_note": "2026-08-25 pre-RC 0.4.1 package-fix PyPI upload prompt drafted.",
+      "manual_read_summary": "Sensitive phase prompt for operator-confirmed PyPI yank of broken 0.4.0, upload of ilc-core 0.4.1, fetchback verification, _041 installable manifest creation, and tools/install.sh update.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_onboarding_package_fix1_00b_g10_pypi_upload_041.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_rc_041_vps_prompt_hardening_2026_08_25",
+      "chronology_note": "2026-08-25 pre-RC release-sign prompt patch 03 drafted.",
+      "manual_read_summary": "Non-sensitive phase prompt for 0.4.0/_040 to 0.4.1/_041 cascade across install smoke, release signing, version consistency, mirror refresh, publish exec, VPS provisioning, DO smoke, and forward-plan pending rows.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-03"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_03_g10_041_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_rc_041_vps_prompt_hardening_2026_08_25",
+      "chronology_note": "2026-08-25 VPS Genesis invite onboarding patch prompt drafted and hardened.",
+      "manual_read_summary": "Non-sensitive phase prompt that patches VPS-PROVISION-00b/00c to require Genesis invite onboarding on each VPS, install-receipt AgentID canonicalization, invite PoP/nullifier/materialized-slice verification, and no raw invite bundle retention.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-AGENT-INVITE-ONBOARD-PATCH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_agent_invite_onboard_patch_00_g10_vps_invite_flow.md"
+    },
+    {
+      "annotation_batch": "manual_batch_pre_rc_041_vps_prompt_hardening_2026_08_25",
+      "chronology_note": "2026-08-25 VPS CDL-105 endpoint admission patch prompt renamed and hardened.",
+      "manual_read_summary": "Non-sensitive phase prompt that patches VPS-PROVISION-00b/00c with CDL-105 ValidatorEndpointAssertion generation and Atlas verification, using install-receipt AgentIDs as canonical and keeping graph-binding enforcement default-off.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-CDL105-ENDPOINT-ADMISSION-PATCH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_cdl105_endpoint_admission_patch_00_g10_validator_endpoint_assertion_spec.md"
     }
   ],
   "phase": "1545p-Fix38",
