@@ -294,6 +294,16 @@ def test_g9_ejected_stake_vote_payouts_are_decimal():
         assert not isinstance(amount, float)
 
 
+def test_g9_ejected_stake_repeating_decimal_payouts_conserve_with_explicit_precision():
+    _, payouts = evaluate_ejected_stake_vote(
+        Decimal("1"),
+        {"a": Decimal("1"), "b": Decimal("1"), "c": Decimal("1")},
+        approve_votes=3,
+        participating_voters=3,
+    )
+    assert sum((amount for _, amount in payouts), Decimal("0")) == Decimal("1.000000000")
+
+
 # ---------------------------------------------------------------------------
 # G10: Prelock historical assertion (1 test)
 # ---------------------------------------------------------------------------

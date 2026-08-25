@@ -85199,6 +85199,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_agent_onboarding_install_smoke_00_041_rerun_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_pre_rc_security_review_followup_2026_08_25",
+      "chronology_note": "2026-08-25 external Gemini security review report reconciled and actionable fixes applied pending human HIGH-finding disposition.",
+      "manual_read_summary": "Findings and disposition artifact for GAP-PRE-RC-SECURITY-REVIEW-00: records external report path, HIGH/MEDIUM/LOW finding dispositions, code fixes for bounded bincode fallback, validator key zeroization, exact numeric hardening, input-validation guards, and verification evidence. Completion token is intentionally absent until human HIGH-finding disposition.",
+      "node_kind": "phase_evidence",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PRE-RC-SECURITY-REVIEW-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pre_rc_external_security_review_GAP_PRE_RC_SECURITY_REVIEW_00_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",

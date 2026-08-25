@@ -440,18 +440,7 @@ impl PeerNetwork {
             .map_err(|_| ILCConsensusError::Other("Receive: payload read timed out".into()))?
             .map_err(|_| ILCConsensusError::Other("Read fail payload".into()))?;
 
-        let fixed_options = bincode::DefaultOptions::new()
-            .with_fixint_encoding()
-            .allow_trailing_bytes()
-            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64);
-        let envelope: GossipEnvelope = fixed_options.deserialize(&buf).or_else(|fixed_err| {
-            bincode::deserialize(&buf).map_err(|legacy_err| {
-                ILCConsensusError::Other(format!(
-                    "Corrupted CDL-061 Envelope parsed: fixed_bincode={}; legacy_bincode={}",
-                    fixed_err, legacy_err
-                ))
-            })
-        })?;
+        let envelope = deserialize_gossip_envelope_bytes(&buf)?;
 
         // SEC-006: Cryptographically bind application payload to mathematical TLS identity
         if envelope.peer_id != authenticated_id {
@@ -463,6 +452,24 @@ impl PeerNetwork {
 
         Ok(envelope)
     }
+}
+
+fn deserialize_gossip_envelope_bytes(buf: &[u8]) -> Result<GossipEnvelope, ILCConsensusError> {
+    let fixed_options = bincode::DefaultOptions::new()
+        .with_fixint_encoding()
+        .allow_trailing_bytes()
+        .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64);
+    fixed_options.deserialize(buf).or_else(|fixed_err| {
+        let legacy_options = bincode::DefaultOptions::new()
+            .allow_trailing_bytes()
+            .with_limit(MAX_GOSSIP_PAYLOAD_BYTES as u64);
+        legacy_options.deserialize(buf).map_err(|legacy_err| {
+            ILCConsensusError::Other(format!(
+                "Corrupted CDL-061 Envelope parsed: fixed_bincode={}; legacy_bincode={}",
+                fixed_err, legacy_err
+            ))
+        })
+    })
 }
 
 #[cfg(test)]
@@ -546,6 +553,28 @@ mod tests {
                     ]
                 );
             }
+            other => panic!("unexpected payload: {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_legacy_bincode_fallback_decodes_under_size_limit() {
+        let envelope = GossipEnvelope {
+            frame_type: 0x00,
+            peer_id: crate::types::test_agent_id(2),
+            payload: GossipMessage::MissingEpochSync {
+                latest_contiguous_epoch: 7,
+            },
+        };
+        let legacy_bytes = bincode::serialize(&envelope).unwrap();
+
+        let decoded = deserialize_gossip_envelope_bytes(&legacy_bytes).unwrap();
+
+        assert_eq!(decoded.peer_id, envelope.peer_id);
+        match decoded.payload {
+            GossipMessage::MissingEpochSync {
+                latest_contiguous_epoch,
+            } => assert_eq!(latest_contiguous_epoch, 7),
             other => panic!("unexpected payload: {:?}", other),
         }
     }

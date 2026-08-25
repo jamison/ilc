@@ -17,6 +17,7 @@ from decimal import Decimal, InvalidOperation
 _ZERO = Decimal("0")
 _ONE = Decimal("1")
 _MAX_SIGNAL = Decimal("0.25")
+_MAX_ENTROPY_WEIGHT_CAP = Decimal("10")
 
 
 def _decimal(value: object, token: str) -> Decimal:
@@ -70,6 +71,8 @@ def entropy_weight(
     cap = _decimal(max_cap, "entropy_max_cap_invalid")
     if floor < _ZERO or cap < _ZERO:
         raise ValueError("entropy_weight_bounds_must_be_non_negative")
+    if cap > _MAX_ENTROPY_WEIGHT_CAP:
+        raise ValueError("entropy_cap_exceeds_maximum")
     if cap < floor:
         raise ValueError("entropy_cap_must_not_be_less_than_floor")
 

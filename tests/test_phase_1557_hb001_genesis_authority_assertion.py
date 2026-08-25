@@ -105,9 +105,16 @@ def test_builder_rejects_structural_violation_with_genesis_assertion_error():
         build_genesis_authority_assertions(config)
 
 
+def test_builder_rejects_invalid_authority_public_key_hex_with_structured_error():
+    config = fixture_config()
+    config["genesis_authority_key"]["public_key_hex"] = "not-hex"
+    with pytest.raises(GenesisAssertionError) as exc_info:
+        build_genesis_authority_assertions(config)
+    assert exc_info.value.token == "genesis_authority_key_public_key_hex_invalid"
+
+
 def test_builder_output_is_canonical_json_stable():
     assertion = build_genesis_authority_assertions(fixture_config())[0]
     first = json.dumps(assertion, sort_keys=True, separators=(",", ":"))
     second = json.dumps(assertion, sort_keys=True, separators=(",", ":"))
     assert first == second
-

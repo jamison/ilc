@@ -23,6 +23,11 @@ def test_entropy_weight_bounds():
         assert Decimal("0.5") <= w <= Decimal("2.0")
 
 
+def test_entropy_weight_rejects_unbounded_max_cap_configuration():
+    with pytest.raises(ValueError, match="entropy_cap_exceeds_maximum"):
+        entropy_weight("0.5", max_cap=Decimal("10.000000001"))
+
+
 def test_simple_claim_reward_entropy_weighting():
     stake = Decimal("10")
     potential = Decimal("0.8")

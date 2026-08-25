@@ -7,7 +7,7 @@ ratified Popperian basic-statement gate.
 
 from __future__ import annotations
 
-import math
+from decimal import Decimal, InvalidOperation
 
 from ilc_core.consensus.diversity_floor_runtime import CDL_V3_DEPENDENCY
 
@@ -19,6 +19,8 @@ _ADMISSIBLE_CLAIM_FORMS = {
     "bounded_existential",
     "falsifiable_positive",
 }
+_ZERO = Decimal("0")
+_ONE = Decimal("1")
 
 
 class PopperianGateValidationError(ValueError):
@@ -53,19 +55,25 @@ def _require_bool(name: str, value: bool) -> bool:
     return value
 
 
-def _require_unit_interval(name: str, value: float) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+def _require_unit_interval(name: str, value: object) -> Decimal:
+    if isinstance(value, bool) or isinstance(value, float) or not isinstance(value, (Decimal, int, str)):
         raise PopperianGateValidationError(
             "cdl_v7_popperian_invalid_numeric",
-            f"{name} must be a numeric value",
+            f"{name} must be an exact numeric value",
         )
-    number = float(value)
-    if not math.isfinite(number):
+    try:
+        number = value if isinstance(value, Decimal) else Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise PopperianGateValidationError(
+            "cdl_v7_popperian_invalid_numeric",
+            f"{name} must be a finite numeric value",
+        ) from exc
+    if not number.is_finite():
         raise PopperianGateValidationError(
             "cdl_v7_popperian_invalid_numeric",
             f"{name} must be a finite numeric value",
         )
-    if number < 0.0 or number > 1.0:
+    if number < _ZERO or number > _ONE:
         raise PopperianGateValidationError(
             "cdl_v7_popperian_out_of_range",
             f"{name} must be in [0, 1]",
@@ -95,8 +103,8 @@ def reject_inadmissible_counterexample(*, is_inadmissible_counterexample: bool) 
 
 def meets_reproducibility_threshold(
     *,
-    agreement_score: float,
-    reproducibility_threshold: float = 0.85,
+    agreement_score: object,
+    reproducibility_threshold: object = Decimal("0.85"),
 ) -> bool:
     """Check cross-agent reproducibility threshold compliance."""
 
@@ -110,8 +118,8 @@ def evaluate_decomposition_admissibility(
     claim_form: str,
     has_falsifiable_test: bool,
     is_inadmissible_counterexample: bool,
-    agreement_score: float,
-    reproducibility_threshold: float = 0.85,
+    agreement_score: object,
+    reproducibility_threshold: object = Decimal("0.85"),
 ) -> bool:
     """Compute deterministic top-level Popperian admissibility verdict."""
 
