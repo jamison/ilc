@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, localcontext
 from typing import Any
 
+from ilc_core.economic_constants import C_MAX_ILC
 
 EPOCH_EMISSION_RUNTIME_VERSION = "epoch_emission_runtime_1345.v0.1"
 CDL_025_EMISSION_SCHEDULE_RUNTIME_TOKEN = "cdl_025_emission_schedule_runtime_phase_1345.v0.1"
@@ -18,7 +19,6 @@ CDL_026_DEPENDENCY = "cdl_026_cmax_lock_ratified_phase_273.v0.1"
 CDL_027_DEPENDENCY = "cdl_027_decay_formulation_ratified_phase_276.v0.1"
 
 TERMINAL_ISSUANCE_MODEL = "fee_funded_tail_model_b"
-C_MAX_ILC = Decimal("25920000")
 HALVING_INTERVAL_ISSUANCE_EPOCHS = 48
 ISSUANCE_EPOCH_DURATION = "1_month"
 VALIDATION_EPOCH_SECONDS = 60

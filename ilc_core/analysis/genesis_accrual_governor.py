@@ -4,7 +4,7 @@ from __future__ import annotations
 from decimal import Decimal, InvalidOperation, localcontext
 from typing import Iterable, Mapping, TypedDict
 
-from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
+from ilc_core.economic_constants import C_MAX_ILC
 from ilc_core.exceptions import GenesisAccrualGovernorError
 
 

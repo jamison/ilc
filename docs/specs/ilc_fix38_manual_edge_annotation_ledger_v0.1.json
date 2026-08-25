@@ -75662,6 +75662,83 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_agent_onboarding_package_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_fix1_00a_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-ONBOARDING-PACKAGE-FIX1-00a shared C_MAX constant module added during package import-cycle hardening.",
+      "manual_read_summary": "Root-level runtime constants module defining canonical C_MAX_ILC so analysis and epoch runtime modules can share the constitutional cap without importing through ilc_core.epoch package initialization.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "constant:C_MAX_ILC"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/economic_constants.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_fix1_00a_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-ONBOARDING-PACKAGE-FIX1-00a build receipt recorded.",
+      "manual_read_summary": "Atomic JSON receipt for ilc-core 0.4.1 local build, artifact SHA-256/size measurements, dependency-floor gate, resolver check, import smoke, unsigned status, and pending PyPI upload status.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_ONBOARDING_PACKAGE_FIX1_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_fix1_00a_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-ONBOARDING-PACKAGE-FIX1-00a walkthrough recorded.",
+      "manual_read_summary": "Phase walkthrough documenting token audit, prompt hardening, dependency-floor gates, version bump, build artifacts, resolver checks, import smoke, regression results, non-claims, and next SENSITIVE upload step.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-FIX1-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_onboarding_package_fix1_00a_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [

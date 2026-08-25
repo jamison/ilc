@@ -12,6 +12,7 @@ from typing import Any
 import pytest
 
 from ilc_core.cli import main as cli_main
+from ilc_core.identity import first_run_provisioning
 from ilc_core.release.installable_release_manifest import load_installable_release_manifest
 from ilc_core.release.update_runtime import (
     artifact_version,
@@ -195,6 +196,11 @@ def test_ilc_update_non_dry_run_hash_verifies_before_pip(
 
     monkeypatch.setattr(cli_main, "_download_update_wheel", _download)
     monkeypatch.setattr(cli_main.subprocess, "run", _run)
+    monkeypatch.setattr(
+        first_run_provisioning,
+        "migrate_identity_schema_if_needed",
+        lambda _home: {"status": "test_identity_migration_skipped"},
+    )
     result = cli_main._run_update_subcommand(
         Namespace(
             channel="rc",
