@@ -85079,6 +85079,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_cdl105_endpoint_admission_patch_00_g10_validator_endpoint_assertion_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_install_smoke_041_2026_08_25",
+      "chronology_note": "2026-08-25 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 rerun against ilc-core 0.4.1 completed.",
+      "manual_read_summary": "Phase walkthrough recording the fresh PyPI install smoke for ilc-core 0.4.1: Python 3.12 venv outside repo, ilc install --from-invite, AgentID persistence, birth attestation, recovery_policy type=none, invite PoP, nullifier recording, starmap materialization, restart readback, and carry-forward notes for second-run replay rejection and receipt software_version 0.4.0.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_install_smoke_00_041_rerun_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
