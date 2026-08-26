@@ -36,7 +36,7 @@
   },
   "predecessor_version": "0.4.1",
   "predecessor_yank_reason": "Intermediate pre-signing package superseded by ilc-core==0.4.2 launch artifact.",
-  "predecessor_yank_status": "pending_operator_yank",
+  "predecessor_yank_status": "verified_yanked",
   "pypi_sdist_url": "https://files.pythonhosted.org/packages/32/1e/72f824e978e6319f00fbfb44f8b8d7b297369eade681f865d87734bde2eb/ilc_core-0.4.2.tar.gz",
   "pypi_upload_phase": "GAP-ONBOARDING-PACKAGE-042-00b",
   "pypi_upload_status": "uploaded",
