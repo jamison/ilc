@@ -72108,6 +72108,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_pre_rc_security_review_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 prompt drafted and validated for 0.4.3 release-signing prompt cascade.",
+      "manual_read_summary": "Phase prompt requiring direct reads, token audit, MemPalace and broad repo search, 0.4.2 to 0.4.3 prompt cascade, prompt validation, graph intake, STATUS token, and non-claims for release-signing prompt patch 05.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_05_g10_043_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 walkthrough created after non-sensitive prompt cascade completion.",
+      "manual_read_summary": "Phase walkthrough recording direct reads, token audit, MemPalace and repo search, patched file list, residual reference scan, prompt validation, STATUS token, non-claims, and next-step routing for the 0.4.3 release prompt cascade.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:release_sign_prompts_patched_for_043_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_05_walkthrough.md"
     }
   ],
   "boundary": {
@@ -75959,6 +76012,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_043_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 prompt drafted and validated for 0.4.3 release-signing prompt cascade.",
+      "manual_read_summary": "Phase prompt requiring direct reads, token audit, MemPalace and broad repo search, 0.4.2 to 0.4.3 prompt cascade, prompt validation, graph intake, STATUS token, and non-claims for release-signing prompt patch 05.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_05_g10_043_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 walkthrough created after non-sensitive prompt cascade completion.",
+      "manual_read_summary": "Phase walkthrough recording direct reads, token audit, MemPalace and repo search, patched file list, residual reference scan, prompt validation, STATUS token, non-claims, and next-step routing for the 0.4.3 release prompt cascade.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:release_sign_prompts_patched_for_043_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_05_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [
@@ -85639,6 +85745,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_043_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 prompt drafted and validated for 0.4.3 release-signing prompt cascade.",
+      "manual_read_summary": "Phase prompt requiring direct reads, token audit, MemPalace and broad repo search, 0.4.2 to 0.4.3 prompt cascade, prompt validation, graph intake, STATUS token, and non-claims for release-signing prompt patch 05.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_05_g10_043_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_05_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-05 walkthrough created after non-sensitive prompt cascade completion.",
+      "manual_read_summary": "Phase walkthrough recording direct reads, token audit, MemPalace and repo search, patched file list, residual reference scan, prompt validation, STATUS token, non-claims, and next-step routing for the 0.4.3 release prompt cascade.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-05"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:release_sign_prompts_patched_for_043_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_05_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
