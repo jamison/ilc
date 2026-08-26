@@ -156,11 +156,35 @@ class GenesisAuthorityKey:
                 f"({_MLDSA_PK_BYTES} bytes ML-DSA-65 pubkey), "
                 f"got {len(self.public_key_hex) if isinstance(self.public_key_hex, str) else type(self.public_key_hex)}",
             )
+        try:
+            bytes.fromhex(self.public_key_hex)
+        except ValueError as exc:
+            raise GenesisAssertionError(
+                "genesis_assertion_authority_key_hex_invalid",
+                "genesis authority public_key_hex must be valid lowercase hex",
+            ) from exc
+        if any(char not in "0123456789abcdef" for char in self.public_key_hex):
+            raise GenesisAssertionError(
+                "genesis_assertion_authority_key_hex_invalid",
+                "genesis authority public_key_hex must be valid lowercase hex",
+            )
         if not isinstance(self.key_id, str) or len(self.key_id) != _KEY_ID_HEX_LENGTH:
             raise GenesisAssertionError(
                 "genesis_assertion_authority_key_id_length_invalid",
                 f"key_id must be {_KEY_ID_HEX_LENGTH} hex chars, "
                 f"got {len(self.key_id) if isinstance(self.key_id, str) else type(self.key_id)}",
+            )
+        try:
+            bytes.fromhex(self.key_id)
+        except ValueError as exc:
+            raise GenesisAssertionError(
+                "genesis_assertion_authority_key_id_hex_invalid",
+                "genesis authority key_id must be valid lowercase hex",
+            ) from exc
+        if any(char not in "0123456789abcdef" for char in self.key_id):
+            raise GenesisAssertionError(
+                "genesis_assertion_authority_key_id_hex_invalid",
+                "genesis authority key_id must be valid lowercase hex",
             )
 
     def to_dict(self) -> dict:

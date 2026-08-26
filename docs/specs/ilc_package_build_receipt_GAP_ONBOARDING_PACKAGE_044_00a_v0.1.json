@@ -12,7 +12,7 @@
     "no_epoch_transition",
     "no_public_rc_launch"
   ],
-  "package_scope": "local_build_only",
+  "package_scope": "local_build_only_no_upload",
   "phase": "GAP-ONBOARDING-PACKAGE-044-00a",
   "post_build_import_smoke": {
     "imports": [
@@ -33,20 +33,21 @@
   "pre_build_gates": {
     "dependency_floor_regression": "PASS",
     "update_download_size_helper_regression": "PASS",
-    "wheel_filename_regression": "PASS"
+    "wheel_filename_canonical_regression": "PASS",
+    "wheel_filename_invalid_rejection_regression": "PASS"
   },
   "predecessor_version": "0.4.3",
   "predecessor_yank_reason": "Blocked by temporary wheel filename regression in ilc update command. Superseded by ilc-core==0.4.4.",
   "pypi_upload_status": "pending",
   "sdist": {
     "filename": "ilc_core-0.4.4.tar.gz",
-    "sha256": "e86c05f515edc2466534e625a992061ca7dc27e2460da221df1ab794abb25395",
-    "size_bytes": 1101263
+    "sha256": "1bbc183692dce7e16d4e43b86b1a2b3f17b6ff2f563019bfdc36e44b1570f86a",
+    "size_bytes": 1101873
   },
   "version": "0.4.4",
   "wheel": {
     "filename": "ilc_core-0.4.4-py3-none-any.whl",
-    "sha256": "3ac6b8bc7aab74acb636eb698f3f270c627c6e1ea0f8c3adc37a666ad1d0f11c",
-    "size_bytes": 1363822
+    "sha256": "4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13",
+    "size_bytes": 1364353
   }
 }

@@ -116,7 +116,7 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
 
 
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
-    payload = tmp_path / "payload.whl"
+    payload = tmp_path / "ilc_core-0.4.3-py3-none-any.whl"
     payload.write_bytes(b"not a wheel")
     bad_script = _copy_script(
         tmp_path,
@@ -161,6 +161,17 @@ def test_install_sh_manifest_sync_fails_on_size_mismatch(tmp_path: Path) -> None
         verify_install_sh_manifest_sync(bad_script, MANIFEST)
 
 
+def test_install_sh_manifest_sync_fails_on_tmp_wheel_mismatch(tmp_path: Path) -> None:
+    bad_script = _copy_script(
+        tmp_path,
+        replacements={
+            'TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"': 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"',
+        },
+    )
+    with pytest.raises(ValueError, match="TMP_WHEEL"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
 def test_install_sh_manifest_sync_rejects_oversized_script(tmp_path: Path) -> None:
     path = tmp_path / "install.sh"
     path.write_bytes(b"#" * (1_048_576 + 1))
@@ -201,8 +212,25 @@ def test_install_sh_verifies_hash_before_pip_install() -> None:
 def test_install_sh_uses_private_temp_directory_for_wheel() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
     assert 'TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"' in text
-    assert 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"' in text
+    assert 'WHEEL_BASENAME="${RC_WHEEL_URL##*/}"' in text
+    assert 'TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"' in text
+    assert "ilc-core-0.4.3.whl" not in text
     assert "XXXXXX.whl" not in text
+
+
+def test_install_sh_rejects_non_canonical_wheel_basename() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    assert "install_sh_wheel_filename_invalid" in text
+    assert "py3-none-any\\.whl" in text
+
+
+def test_install_sh_download_has_pre_hash_size_cap() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    cap = text.index("RC_WHEEL_SIZE_CAP=")
+    download = text.index("urlopen(request, timeout=120)")
+    hash_check = text.index('if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]')
+    assert cap < download < hash_check
+    assert "install_sh_download_size_exceeded" in text
 
 
 def test_install_sh_post_install_check_is_path_independent() -> None:

@@ -124,14 +124,6 @@ else
   die 1 "install_sh_sha256_tool_missing"
 fi
 
-if command -v curl >/dev/null 2>&1; then
-  DOWNLOADER="curl"
-elif command -v wget >/dev/null 2>&1; then
-  DOWNLOADER="wget"
-else
-  die 1 "install_sh_downloader_missing"
-fi
-
 if [[ -z "${TARGET_DIR}" ]]; then
   TARGET_DIR="${HOME}/.ilc/venv"
 fi
@@ -146,13 +138,49 @@ if [[ -e "${TARGET_DIR}" ]]; then
 fi
 
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"
-TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"
-
-if [[ "${DOWNLOADER}" == "curl" ]]; then
-  curl -fsSL --progress-bar --max-time 120 -o "${TMP_WHEEL}" "${RC_WHEEL_URL}"
-else
-  wget -q --show-progress --timeout=120 -O "${TMP_WHEEL}" "${RC_WHEEL_URL}"
+WHEEL_BASENAME="${RC_WHEEL_URL##*/}"
+if [[ ! "${WHEEL_BASENAME}" =~ ^ilc_core-[0-9]+(\.[0-9]+){1,2}-py3-none-any\.whl$ ]]; then
+  die 1 "install_sh_wheel_filename_invalid:${WHEEL_BASENAME}"
 fi
+TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"
+RC_WHEEL_SIZE_CAP="$(( (RC_WHEEL_SIZE * 11 + 9) / 10 ))"
+
+python3 - "${RC_WHEEL_URL}" "${TMP_WHEEL}" "${RC_WHEEL_SIZE_CAP}" <<'PY'
+import sys
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+url, output_path, cap_text = sys.argv[1], sys.argv[2], sys.argv[3]
+cap = int(cap_text)
+request = Request(url, headers={"User-Agent": "ilc-install/GAP-PUBLIC-INSTALL"})
+try:
+    with urlopen(request, timeout=120) as response:
+        raw_status = getattr(response, "status", None)
+        status = 200 if raw_status is None else int(raw_status)
+        if status != 200:
+            raise SystemExit(f"install_sh_download_failed:{status}")
+        declared = response.headers.get("Content-Length")
+        if declared is not None and int(declared) > cap:
+            raise SystemExit("install_sh_download_size_exceeded")
+        total = 0
+        with open(output_path, "wb") as handle:
+            while True:
+                chunk = response.read(65536)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > cap:
+                    raise SystemExit("install_sh_download_size_exceeded")
+                handle.write(chunk)
+except HTTPError as exc:
+    raise SystemExit(f"install_sh_download_failed:{exc.code}") from exc
+except URLError as exc:
+    raise SystemExit("install_sh_download_failed:network") from exc
+except TimeoutError as exc:
+    raise SystemExit("install_sh_download_failed:timeout") from exc
+except ValueError as exc:
+    raise SystemExit("install_sh_download_content_length_invalid") from exc
+PY
 
 actual_size="$(wc -c < "${TMP_WHEEL}" | tr -d '[:space:]')"
 if [[ "${actual_size}" != "${RC_WHEEL_SIZE}" ]]; then

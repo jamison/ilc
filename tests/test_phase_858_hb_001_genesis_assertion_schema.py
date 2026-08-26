@@ -348,6 +348,20 @@ def test_genesis_authority_key_short_hex_rejected():
     assert "hex_length_invalid" in exc_info.value.token
 
 
+def test_genesis_authority_key_non_hex_rejected():
+    key = _make_authority_key(public_key_hex="g" * 3328)
+    with pytest.raises(GenesisAssertionError) as exc_info:
+        key.validate()
+    assert "authority_key_hex_invalid" in exc_info.value.token
+
+
+def test_genesis_authority_key_id_non_hex_rejected():
+    key = _make_authority_key(key_id="g" * 16)
+    with pytest.raises(GenesisAssertionError) as exc_info:
+        key.validate()
+    assert "key_id_hex_invalid" in exc_info.value.token
+
+
 def test_genesis_authority_key_wrong_key_id_length_rejected():
     key = _make_authority_key(key_id="b" * 8)  # too short
     with pytest.raises(GenesisAssertionError) as exc_info:

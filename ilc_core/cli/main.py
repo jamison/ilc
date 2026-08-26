@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -32,6 +33,9 @@ INSTALL_INVITE_MAX_BYTES = 1_048_576
 UPDATE_MANIFEST_MAX_BYTES = 1_048_576
 UPDATE_HTTP_CHUNK_BYTES = 64 * 1024
 DEFAULT_UPDATE_MANIFEST_URL = "https://ilc.network/release/manifest.json"
+_ILC_CORE_PY3_ANY_WHEEL_RE = re.compile(
+    r"^ilc_core-[0-9]+(?:\.[0-9]+){1,2}-py3-none-any\.whl$"
+)
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -3120,9 +3124,7 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
 def _update_wheel_filename_from_url(download_url: str) -> str:
     parsed = urlparse(download_url)
     filename = Path(unquote(parsed.path)).name
-    if not filename.endswith(".whl") or filename.count("-") < 4:
-        raise ValueError("ilc_update_wheel_filename_invalid")
-    if "/" in filename or "\\" in filename:
+    if _ILC_CORE_PY3_ANY_WHEEL_RE.fullmatch(filename) is None:
         raise ValueError("ilc_update_wheel_filename_invalid")
     return filename
 
