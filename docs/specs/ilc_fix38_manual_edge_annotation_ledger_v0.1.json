@@ -75907,6 +75907,58 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_fix1_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_043_00b_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-043-00b unsigned installable release manifest created after PyPI 0.4.3 upload and fetchback verification.",
+      "manual_read_summary": "Canonical JSON installable release manifest for ilc-core 0.4.3. Records PyPI JSON-sourced wheel and sdist URLs, SHA-256 hashes, byte sizes, min Python version, unsigned signing status, and non-claims for no signing, no mirror push, no epoch transition, no validator change, and no runtime activation.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-043-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:ilc-core-0.4.3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_043_GAP_ONBOARDING_PACKAGE_043_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_043_00b_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-043-00b walkthrough created after sensitive PyPI upload/yank phase completion.",
+      "manual_read_summary": "Phase walkthrough recording exact GO phrase, direct reads, MemPalace and repo search summary, pre-upload token/hash/size checks, stale 0.4.2 local artifact quarantine, PyPI duplicate-version preflight, twine check, twine upload, PyPI JSON artifact URLs and yanked flags, fetchback verification, human-assisted 0.4.2 yank with JSON confirmation, install.sh dry-run, focused tests, STATUS token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-043-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_onboarding_package_043_00b_walkthrough.md"
     }
   ],
   "manual_edge_annotations": [
@@ -85535,6 +85587,58 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_onboarding_package_043_00b_g10_pypi_upload_043.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_043_00b_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-043-00b unsigned installable release manifest created after PyPI 0.4.3 upload and fetchback verification.",
+      "manual_read_summary": "Canonical JSON installable release manifest for ilc-core 0.4.3. Records PyPI JSON-sourced wheel and sdist URLs, SHA-256 hashes, byte sizes, min Python version, unsigned signing status, and non-claims for no signing, no mirror push, no epoch transition, no validator change, and no runtime activation.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-043-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:ilc-core-0.4.3"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_043_GAP_ONBOARDING_PACKAGE_043_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_043_00b_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-043-00b walkthrough created after sensitive PyPI upload/yank phase completion.",
+      "manual_read_summary": "Phase walkthrough recording exact GO phrase, direct reads, MemPalace and repo search summary, pre-upload token/hash/size checks, stale 0.4.2 local artifact quarantine, PyPI duplicate-version preflight, twine check, twine upload, PyPI JSON artifact URLs and yanked flags, fetchback verification, human-assisted 0.4.2 yank with JSON confirmation, install.sh dry-run, focused tests, STATUS token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-043-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_onboarding_package_043_00b_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

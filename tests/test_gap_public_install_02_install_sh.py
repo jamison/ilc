@@ -16,15 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_042_GAP_ONBOARDING_PACKAGE_042_00a_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_043_GAP_ONBOARDING_PACKAGE_043_00a_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/f1/42/"
-    "900d71218779e5ab09b3d89b7d24a2828429e2a6f1aca7557413bc509140/"
-    "ilc_core-0.4.2-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/fd/76/"
+    "afcd3906d9d985c3c34d594831c649470ce6cac6654cccbe1fadd4d42692/"
+    "ilc_core-0.4.3-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "340ec7833aacde796a70e5a6aa6d232b125d4caa4d92d9d70444b9d36d9c8d09"
-EXPECTED_SIZE = "1363684"
+EXPECTED_SHA256 = "a8c0ece5b1e209b7acff39a0d19b0ba578606ecf3273224572ea85841a156fe3"
+EXPECTED_SIZE = "1363691"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -201,7 +201,7 @@ def test_install_sh_verifies_hash_before_pip_install() -> None:
 def test_install_sh_uses_private_temp_directory_for_wheel() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
     assert 'TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"' in text
-    assert 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.2.whl"' in text
+    assert 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"' in text
     assert "XXXXXX.whl" not in text
 
 
