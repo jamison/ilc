@@ -85415,6 +85415,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_04_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_install_smoke_00_042_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 0.4.2 rerun blocked at update-path gate after fresh install/invite checks passed.",
+      "manual_read_summary": "Walkthrough recording prompt hardening, token audit, temp venv/HOME smoke, PyPI install origin, invite generation, doctor output, install-from-invite verification, duplicate replay rejection, restart readback, update-path NameError, source fix, focused tests, blocked disposition, and no-token non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_install_smoke_00_042_rerun_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

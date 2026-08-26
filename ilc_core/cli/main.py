@@ -3045,7 +3045,6 @@ def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
 def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     from ilc_core.release.update_runtime import (
         artifact_version,
-        enforce_download_size,
         installed_ilc_core_version,
         is_already_current,
         select_update_artifact,
@@ -3207,6 +3206,8 @@ def _read_bounded_http_body(response: Any, max_bytes: int) -> bytes:
 
 
 def _download_update_wheel(download_url: str, destination: Path, expected_size_bytes: int) -> None:
+    from ilc_core.release.update_runtime import enforce_download_size
+
     url = _require_update_https_url(download_url, "download_url")
     request = Request(url, headers={"User-Agent": "ilc-update/GAP-PUBLIC-INSTALL-03"})
     try:
