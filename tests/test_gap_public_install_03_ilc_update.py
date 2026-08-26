@@ -168,6 +168,33 @@ def test_ilc_update_size_cap_enforced() -> None:
         enforce_download_size(111, 100)
 
 
+def test_download_update_wheel_enforces_declared_content_length(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class _Response:
+        status = 200
+        headers = {"Content-Length": "111"}
+
+        def __enter__(self) -> "_Response":
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def read(self, _size: int) -> bytes:
+            return b""
+
+    monkeypatch.setattr(cli_main, "urlopen", lambda *_args, **_kwargs: _Response())
+
+    with pytest.raises(ValueError, match="ilc_update_size_exceeded"):
+        cli_main._download_update_wheel(
+            "https://files.pythonhosted.org/packages/test/ilc_core-0.4.2-py3-none-any.whl",
+            tmp_path / "download.whl",
+            100,
+        )
+
+
 def test_ilc_update_non_dry_run_hash_verifies_before_pip(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
