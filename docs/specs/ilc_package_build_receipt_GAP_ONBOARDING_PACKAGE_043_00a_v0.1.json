@@ -1,0 +1,39 @@
+{
+  "non_claims": [
+    "no_pypi_upload",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_install_smoke_token",
+    "no_version_consistency",
+    "no_mirror_refresh",
+    "no_vps_mutation",
+    "no_guard_activation"
+  ],
+  "package_scope": "local_build_only_no_upload",
+  "phase": "GAP-ONBOARDING-PACKAGE-043-00a",
+  "post_build_import_smoke": {
+    "result": "PASS",
+    "version": "0.4.3"
+  },
+  "post_build_resolver_check": {
+    "result": "PASS",
+    "site_packages_confirmed": true
+  },
+  "pre_build_gates": {
+    "dependency_floor_regression": "PASS",
+    "update_download_size_helper_regression": "PASS"
+  },
+  "predecessor_version": "0.4.2",
+  "pypi_upload_status": "pending",
+  "sdist": {
+    "filename": "ilc_core-0.4.3.tar.gz",
+    "sha256": "be4d50e12e9af7b149b92a037891e48b6b54c6bf8002f838b0ea7917027d64a0",
+    "size_bytes": 1101163
+  },
+  "version": "0.4.3",
+  "wheel": {
+    "filename": "ilc_core-0.4.3-py3-none-any.whl",
+    "sha256": "a8c0ece5b1e209b7acff39a0d19b0ba578606ecf3273224572ea85841a156fe3",
+    "size_bytes": 1363691
+  }
+}
