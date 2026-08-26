@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-ONBOARDING-PACKAGE-042-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/f1/42/900d71218779e5ab09b3d89b7d24a2828429e2a6f1aca7557413bc509140/ilc_core-0.4.2-py3-none-any.whl"
-RC_WHEEL_SHA256="340ec7833aacde796a70e5a6aa6d232b125d4caa4d92d9d70444b9d36d9c8d09"
-RC_WHEEL_SIZE="1363684"
+INSTALLER_VERSION="GAP-ONBOARDING-PACKAGE-043-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/fd/76/afcd3906d9d985c3c34d594831c649470ce6cac6654cccbe1fadd4d42692/ilc_core-0.4.3-py3-none-any.whl"
+RC_WHEEL_SHA256="a8c0ece5b1e209b7acff39a0d19b0ba578606ecf3273224572ea85841a156fe3"
+RC_WHEEL_SIZE="1363691"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
@@ -146,7 +146,7 @@ if [[ -e "${TARGET_DIR}" ]]; then
 fi
 
 TMP_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ilc-install-XXXXXX")"
-TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.2.whl"
+TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"
 
 if [[ "${DOWNLOADER}" == "curl" ]]; then
   curl -fsSL --progress-bar --max-time 120 -o "${TMP_WHEEL}" "${RC_WHEEL_URL}"
