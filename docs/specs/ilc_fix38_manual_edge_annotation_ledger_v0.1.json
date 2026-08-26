@@ -85511,6 +85511,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_043_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_onboarding_package_043_00b_prompt_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-ONBOARDING-PACKAGE-043-00b sensitive upload/yank prompt drafted, hardened, and validated after local 0.4.3 build completion.",
+      "manual_read_summary": "Sensitive phase prompt for ilc-core 0.4.3 PyPI upload, fetchback verification, 0.4.2 predecessor yank, _043 manifest creation, install.sh update, and completion-token guard. Hardened with pinned SHA-256 and byte-size checks, PyPI duplicate-version preflight, deterministic .venv interpreter usage, stale local 0.4.2 artifact quarantine/removal before upload, PyPI JSON URL sourcing, and explicit no-upload/no-signing/no-activation non-claims until exact GO.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ONBOARDING-PACKAGE-043-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_onboarding_package_043_00b_g10_pypi_upload_043.md"
     }
   ],
   "phase": "1545p-Fix38",
