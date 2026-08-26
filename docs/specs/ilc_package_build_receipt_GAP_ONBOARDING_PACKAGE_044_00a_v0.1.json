@@ -1,0 +1,52 @@
+{
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_install_smoke_token",
+    "no_version_consistency",
+    "no_mirror_refresh",
+    "no_vps_mutation",
+    "no_guard_activation",
+    "no_epoch_transition",
+    "no_public_rc_launch"
+  ],
+  "package_scope": "local_build_only",
+  "phase": "GAP-ONBOARDING-PACKAGE-044-00a",
+  "post_build_import_smoke": {
+    "imports": [
+      "ilc_core",
+      "ilc_core.identity.first_run_provisioning.provision_new_identity",
+      "ilc_core.genesis.invite_nullifier_lmdb_store._NULLIFIER_VALUE",
+      "ilc_core.consensus.popperian_gate_runtime.meets_reproducibility_threshold",
+      "ilc_core.economics.entropy.entropy_weight"
+    ],
+    "result": "PASS",
+    "version": "0.4.4"
+  },
+  "post_build_resolver_check": {
+    "python": "Python 3.12.13",
+    "result": "PASS",
+    "site_packages_confirmed": true
+  },
+  "pre_build_gates": {
+    "dependency_floor_regression": "PASS",
+    "update_download_size_helper_regression": "PASS",
+    "wheel_filename_regression": "PASS"
+  },
+  "predecessor_version": "0.4.3",
+  "predecessor_yank_reason": "Blocked by temporary wheel filename regression in ilc update command. Superseded by ilc-core==0.4.4.",
+  "pypi_upload_status": "pending",
+  "sdist": {
+    "filename": "ilc_core-0.4.4.tar.gz",
+    "sha256": "e86c05f515edc2466534e625a992061ca7dc27e2460da221df1ab794abb25395",
+    "size_bytes": 1101263
+  },
+  "version": "0.4.4",
+  "wheel": {
+    "filename": "ilc_core-0.4.4-py3-none-any.whl",
+    "sha256": "3ac6b8bc7aab74acb636eb698f3f270c627c6e1ea0f8c3adc37a666ad1d0f11c",
+    "size_bytes": 1363822
+  }
+}
