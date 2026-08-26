@@ -252,6 +252,28 @@ def test_ilc_update_rejects_invalid_wheel_filename() -> None:
         cli_main._update_wheel_filename_from_url("https://files.pythonhosted.org/packages/x/not-a-wheel.whl")
 
 
+@pytest.mark.parametrize(
+    "url",
+    (
+        "https://files.pythonhosted.org/packages/x/ilc-core-0.4.4.whl",
+        "https://files.pythonhosted.org/packages/x/not-a-real-wheel-name-with-many-parts.whl",
+        "https://files.pythonhosted.org/packages/x/evil-1-2-3-4.whl",
+    ),
+)
+def test_ilc_update_rejects_malformed_wheel_filenames(url: str) -> None:
+    with pytest.raises(ValueError, match="ilc_update_wheel_filename_invalid"):
+        cli_main._update_wheel_filename_from_url(url)
+
+
+def test_ilc_update_accepts_canonical_ilc_core_wheel_filename() -> None:
+    assert (
+        cli_main._update_wheel_filename_from_url(
+            "https://files.pythonhosted.org/packages/x/ilc_core-0.4.4-py3-none-any.whl?download=1"
+        )
+        == "ilc_core-0.4.4-py3-none-any.whl"
+    )
+
+
 def test_ilc_update_no_graph_onboarding_calls() -> None:
     handler_source = inspect.getsource(cli_main._run_update_subcommand)
     runtime_source = UPDATE_RUNTIME_PATH.read_text(encoding="utf-8")

@@ -16,7 +16,11 @@ _SYNCED_ASSIGNMENT_NAMES = frozenset(
         "RC_WHEEL_SHA256",
         "RC_WHEEL_SIZE",
         "RC_MIN_PYTHON_MINOR",
+        "TMP_WHEEL",
     }
+)
+_ILC_CORE_PY3_ANY_WHEEL_RE = re.compile(
+    r"^ilc_core-[0-9]+(?:\.[0-9]+){1,2}-py3-none-any\.whl$"
 )
 _MAX_INSTALL_SH_BYTES = 1_048_576
 
@@ -28,11 +32,14 @@ def _load_shell_assignments(path: Path) -> dict[str, str]:
     assignments: dict[str, str] = {}
     for match in _ASSIGNMENT_RE.finditer(text):
         name = match.group("name")
-        if name in _SYNCED_ASSIGNMENT_NAMES and name in assignments:
-            raise ValueError(
-                f"install_sh_manifest_sync_failed:duplicate_assignment:{name}"
-            )
-        assignments[name] = match.group("value")
+        value = match.group("value")
+        previous = assignments.get(name)
+        if name in _SYNCED_ASSIGNMENT_NAMES and previous is not None:
+            if not (previous == "" and value != ""):
+                raise ValueError(
+                    f"install_sh_manifest_sync_failed:duplicate_assignment:{name}"
+                )
+        assignments[name] = value
     return assignments
 
 
@@ -53,6 +60,27 @@ def _require_sync(
     if actual != expected:
         raise ValueError(
             f"install_sh_manifest_sync_failed:{shell_field}:{expected}:{actual}"
+        )
+
+
+def _require_tmp_wheel_sync(assignments: dict[str, str], expected_basename: str) -> None:
+    if _ILC_CORE_PY3_ANY_WHEEL_RE.fullmatch(expected_basename) is None:
+        raise ValueError(
+            f"install_sh_manifest_sync_failed:wheel_filename_invalid:{expected_basename}"
+        )
+    actual = assignments.get("TMP_WHEEL")
+    expected = "${TMP_DIR}/" + expected_basename
+    dynamic_expected = "${TMP_DIR}/${WHEEL_BASENAME}"
+    if actual == dynamic_expected:
+        if assignments.get("WHEEL_BASENAME") != "${RC_WHEEL_URL##*/}":
+            raise ValueError(
+                "install_sh_manifest_sync_failed:WHEEL_BASENAME:${RC_WHEEL_URL##*/}:"
+                f"{assignments.get('WHEEL_BASENAME')}"
+            )
+        return
+    if actual != expected:
+        raise ValueError(
+            f"install_sh_manifest_sync_failed:TMP_WHEEL:{expected}:{actual}"
         )
 
 
@@ -89,3 +117,5 @@ def verify_install_sh_manifest_sync(
         shell_field="RC_MIN_PYTHON_MINOR",
         expected=min_python_version.split(".", maxsplit=1)[1],
     )
+    wheel_basename = str(record["download_url"]).rsplit("/", maxsplit=1)[-1]
+    _require_tmp_wheel_sync(assignments, wheel_basename)

@@ -741,14 +741,12 @@ def evaluate_panel(
         majority_hash = major[0][0]
         agreement_score = (Decimal(major[0][1]) / Decimal(PANEL_SIZE)).quantize(_TWELVE_PLACES)
         try:
-            # The Popperian gate API is still float-typed; these casts are an
-            # adapter only. Stored panel economics remain canonical Decimal strings.
             gate_ok = evaluate_decomposition_admissibility(
                 claim_form=task["claim_form"],
                 has_falsifiable_test=bool(task["has_falsifiable_test"]),
                 is_inadmissible_counterexample=bool(task["is_inadmissible_counterexample"]),
-                agreement_score=float(agreement_score),
-                reproducibility_threshold=float(_require_unit_decimal("reproducibility_threshold", task["reproducibility_threshold"])),
+                agreement_score=agreement_score,
+                reproducibility_threshold=_require_unit_decimal("reproducibility_threshold", task["reproducibility_threshold"]),
             )
         except PopperianGateValidationError as exc:
             raise AgentLoopRuntimeError(exc.token, str(exc)) from exc
