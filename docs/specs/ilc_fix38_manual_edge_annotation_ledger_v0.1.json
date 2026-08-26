@@ -85367,6 +85367,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_042_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_04_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-04 prompt drafted, validated, and executed after ilc-core 0.4.2 publication.",
+      "manual_read_summary": "Phase prompt requiring direct reads, token audit, 0.4.1/_041 to 0.4.2/_042 prompt cascade, residual stale-reference scans, prompt validation, STATUS token emission, and non-claims for no runtime, package, signing, mirror, VPS, guard, or epoch mutation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-04"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_04_g10_042_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_04_2026_08_26",
+      "chronology_note": "2026-08-26 GAP-RELEASE-SIGN-PROMPT-PATCH-04 completed the 0.4.2 prompt cascade and set INSTALL-SMOKE-00 0.4.2 rerun as the next non-sensitive phase.",
+      "manual_read_summary": "Walkthrough recording MemPalace/direct reads, token audit, _042 manifest and install.sh checks, patched file list, hardening corrections, residual stale-reference scan, prompt-validation output, graph coverage output, STATUS token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-04"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_04_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
