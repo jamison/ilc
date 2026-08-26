@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import unquote, urlparse
 from urllib.request import Request, urlopen
 
 
@@ -3087,10 +3088,8 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             result["event_token"] = "ilc_update_cancelled"
             return result
 
-    fd, temp_name = tempfile.mkstemp(prefix="ilc-update-", suffix=".whl")
-    os.close(fd)
-    temp_path = Path(temp_name)
-    try:
+    with tempfile.TemporaryDirectory(prefix="ilc-update-") as temp_dir:
+        temp_path = Path(temp_dir) / _update_wheel_filename_from_url(download_url)
         _download_update_wheel(download_url, temp_path, size_bytes)
         verify_download_hash(temp_path, canonical_hash)
         subprocess.run(
@@ -3112,15 +3111,20 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         )
 
         result["identity_migration"] = migrate_identity_schema_if_needed(Path.home())
-    finally:
-        try:
-            temp_path.unlink()
-        except FileNotFoundError:
-            pass
 
     result["status"] = "updated"
     result["event_token"] = f"ilc_update_success:{artifact_id}"
     return result
+
+
+def _update_wheel_filename_from_url(download_url: str) -> str:
+    parsed = urlparse(download_url)
+    filename = Path(unquote(parsed.path)).name
+    if not filename.endswith(".whl") or filename.count("-") < 4:
+        raise ValueError("ilc_update_wheel_filename_invalid")
+    if "/" in filename or "\\" in filename:
+        raise ValueError("ilc_update_wheel_filename_invalid")
+    return filename
 
 
 def _load_update_manifest(args: argparse.Namespace) -> dict[str, Any]:

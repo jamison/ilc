@@ -205,6 +205,7 @@ def test_ilc_update_non_dry_run_hash_verifies_before_pip(
     artifact["size_bytes"] = len(payload)
     manifest_path = _manifest_with_single_artifact(artifact, tmp_path)
     call_order: list[str] = []
+    pip_install_path: Path | None = None
 
     def _download(_download_url: str, destination: Path, _expected_size_bytes: int) -> None:
         call_order.append("download")
@@ -218,7 +219,10 @@ def test_ilc_update_non_dry_run_hash_verifies_before_pip(
         capture_output: bool = False,
         text: bool = False,
     ) -> subprocess.CompletedProcess[str]:
+        nonlocal pip_install_path
         call_order.append("pip" if command[2:4] == ["pip", "install"] else "post-check")
+        if command[2:4] == ["pip", "install"]:
+            pip_install_path = Path(command[-1])
         return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
 
     monkeypatch.setattr(cli_main, "_download_update_wheel", _download)
@@ -239,6 +243,13 @@ def test_ilc_update_non_dry_run_hash_verifies_before_pip(
     )
     assert result["status"] == "updated"
     assert call_order == ["download", "pip", "post-check"]
+    assert pip_install_path is not None
+    assert pip_install_path.name == "ilc_core-0.2.0-py3-none-any.whl"
+
+
+def test_ilc_update_rejects_invalid_wheel_filename() -> None:
+    with pytest.raises(ValueError, match="ilc_update_wheel_filename_invalid"):
+        cli_main._update_wheel_filename_from_url("https://files.pythonhosted.org/packages/x/not-a-wheel.whl")
 
 
 def test_ilc_update_no_graph_onboarding_calls() -> None:
