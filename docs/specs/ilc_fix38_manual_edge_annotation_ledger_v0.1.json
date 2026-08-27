@@ -86966,6 +86966,43 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_agent_onboarding_install_smoke_00_044_rerun_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_prompt_hardening_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b prompt drafted and hardened to close invite bundle assembly, mandatory one-command install, and validator status UX gaps before re-running public-RC install/VPS smoke paths.",
+      "manual_read_summary": "Prompt requires a Genesis-side install-ready invite bundle CLI with dict-shaped Merkle membership proofs, installed-wheel starmap defaults, public install.sh invite-bundle enforcement, and validator status JSON.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "tools/install.sh"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_fix1_00b_g10_invite_bundle_assembly_and_install_ux.md"
     }
   ],
   "phase": "1545p-Fix38",
