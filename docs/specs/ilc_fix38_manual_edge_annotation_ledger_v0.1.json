@@ -87003,6 +87003,153 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_fix1_00b_g10_invite_bundle_assembly_and_install_ux.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_runtime_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b added installed default public-RC starmap payload and witness helpers for invite bundle assembly without depending on repo-local test fixtures.",
+      "manual_read_summary": "Runtime helper builds a minimal public-safe starmap manifest payload and verifier-valid portable Atlas witness for invite onboarding materialization.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "installer_profile:default_public_rc_invite_onboarding"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "runtime_candidate",
+      "repo_path": "ilc_core/bundle/default_public_rc_starmap.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_tests_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b added focused regression tests for invite bundle CLI, mandatory installer invite enforcement, and validator status readback.",
+      "manual_read_summary": "Tests cover count-4 Merkle proof bundle assembly, default starmap inclusion, missing invite bundle fail-closed behavior, removal of --no-onboard bypass, one-command onboarding ordering, and validator status JSON.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/main.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/install.sh"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/bundle/default_public_rc_starmap.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_vps_provision_00b_fix1_invite_bundle_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_tests_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b added focused regression tests for invite bundle CLI, mandatory installer invite enforcement, and validator status readback.",
+      "manual_read_summary": "Tests cover count-4 Merkle proof bundle assembly, default starmap inclusion, missing invite bundle fail-closed behavior, removal of --no-onboard bypass, one-command onboarding ordering, and validator status JSON.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/install.sh"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_vps_provision_00b_fix1_install_sh_invite.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_tests_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b added focused regression tests for invite bundle CLI, mandatory installer invite enforcement, and validator status readback.",
+      "manual_read_summary": "Tests cover count-4 Merkle proof bundle assembly, default starmap inclusion, missing invite bundle fail-closed behavior, removal of --no-onboard bypass, one-command onboarding ordering, and validator status JSON.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_vps_provision_00b_fix1_validator_status.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix1_00b_walkthrough_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX1-00b walkthrough records installer invite enforcement, starmap helper, nonce-proof, validator-status, and verification limitations.",
+      "manual_read_summary": "Walkthrough captures actual command output for prompt validation, shell syntax, installer guards, validator status, helper probes, syntax checks, static checks, pytest unavailability, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX1-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:vps_provision_00b_fix1_invite_bundle_cli_and_install_ux_complete"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "tools/install.sh"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_provision_fix1_00b_invite_install_ux_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

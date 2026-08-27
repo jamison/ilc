@@ -8,7 +8,7 @@ RC_WHEEL_SIZE="1364353"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
-NO_ONBOARD="0"
+INVITE_BUNDLE=""
 TARGET_DIR=""
 DRY_RUN="0"
 TMP_DIR=""
@@ -25,9 +25,10 @@ trap cleanup EXIT
 
 usage() {
   cat >&2 <<'USAGE'
-usage: install.sh [--channel rc] [--no-onboard] [--target-dir PATH] [--dry-run]
+usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--dry-run]
 
-Installs the ilc-core Python wheel after SHA-256 verification.
+Installs the ilc-core Python wheel after SHA-256 verification and completes
+invite-based onboarding with the supplied Genesis invite bundle.
 Defaults to an ILC-managed venv at ~/.ilc/venv unless --target-dir is supplied.
 Channels stable and dev are reserved but not embedded in this installer yet.
 USAGE
@@ -47,9 +48,10 @@ while [[ "$#" -gt 0 ]]; do
       CHANNEL="$2"
       shift 2
       ;;
-    --no-onboard)
-      NO_ONBOARD="1"
-      shift
+    --invite-bundle)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_invite_bundle_value"
+      INVITE_BUNDLE="$2"
+      shift 2
       ;;
     --target-dir)
       [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_target_dir_value"
@@ -75,13 +77,9 @@ if [[ "${CHANNEL}" != "rc" ]]; then
   die 1 "install_sh_channel_not_embedded:${CHANNEL}"
 fi
 
-next_step_hint() {
-  if [[ "${NO_ONBOARD}" == "0" ]]; then
-    local subcommand="install"
-    local source_kind="invite"
-    printf 'next_step_hint: ilc %s --from-%s <path>\n' "${subcommand}" "${source_kind}"
-  fi
-}
+if [[ -z "${INVITE_BUNDLE}" ]]; then
+  die 2 "install_sh_invite_bundle_required"
+fi
 
 if [[ "${DRY_RUN}" == "1" ]]; then
   printf 'install_sh_dry_run\n'
@@ -94,8 +92,12 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   if [[ -n "${TARGET_DIR}" ]]; then
     printf 'target_dir=%s\n' "${TARGET_DIR}"
   fi
-  next_step_hint
+  printf 'invite_bundle=%s\n' "${INVITE_BUNDLE}"
   exit 0
+fi
+
+if [[ ! -f "${INVITE_BUNDLE}" ]]; then
+  die 1 "install_sh_invite_bundle_not_found:${INVITE_BUNDLE}"
 fi
 
 command -v python3 >/dev/null 2>&1 || die 2 "install_sh_python3_missing"
@@ -203,4 +205,12 @@ python3 -m venv "${TARGET_DIR}"
 
 printf 'install_sh_success version=%s channel=%s\n' "${INSTALLER_VERSION}" "${CHANNEL}"
 printf 'install_target_dir=%s\n' "${TARGET_DIR}"
-next_step_hint
+
+INSTALL_SLICE_DIR="${HOME}/.ilc/installed_slices"
+INSTALL_RECEIPT="${INSTALL_SLICE_DIR}/install_receipt.json"
+printf 'install_sh_running_invite_onboard\n'
+"${TARGET_DIR}/bin/python" -m ilc_core.cli.main install \
+  --from-invite "${INVITE_BUNDLE}" \
+  --target-dir "${INSTALL_SLICE_DIR}" \
+  --output-receipt "${INSTALL_RECEIPT}"
+printf 'install_sh_invite_onboard_complete\n'

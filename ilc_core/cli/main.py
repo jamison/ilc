@@ -36,6 +36,7 @@ DEFAULT_UPDATE_MANIFEST_URL = "https://ilc.network/release/manifest.json"
 _ILC_CORE_PY3_ANY_WHEEL_RE = re.compile(
     r"^ilc_core-[0-9]+(?:\.[0-9]+){1,2}-py3-none-any\.whl$"
 )
+_AGENT_ID_HEX_RE = re.compile(r"^[0-9a-f]{96}$")
 
 PRIMITIVE_COMMANDS = (
     "assert",
@@ -499,6 +500,8 @@ def _require_invite_cli_enabled(args: argparse.Namespace) -> None:
 def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     _require_invite_cli_enabled(args)
     invite_subcommand = getattr(args, "identity_invite_subcommand", None)
+    if invite_subcommand == "bundle":
+        return _run_identity_invite_bundle_subcommand(args)
     if invite_subcommand != "create":
         raise ValueError(f"unknown_identity_invite_subcommand:{invite_subcommand}")
 
@@ -523,6 +526,98 @@ def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     if output_path:
         return {"action": "invite-create", "output_path": _write_local_json_file(output_path, output)}
     return {"action": "invite-create", "output": output}
+
+
+def _run_identity_invite_bundle_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    from ilc_core.bundle.atlas_slice_verifier import (
+        AtlasSliceVerifierError,
+        verify_portable_manifest_witness,
+    )
+    from ilc_core.bundle.default_public_rc_starmap import (
+        build_default_public_rc_starmap_payload,
+        build_default_public_rc_starmap_witness,
+    )
+    from ilc_core.genesis.invitation_provenance_record import (
+        InvitationProvenanceError,
+        build_nonce_membership_proof,
+        invite_batch_record_from_dict,
+        verify_nonce_membership_proof,
+    )
+    from ilc_core.sidecars.starmap_installer import (
+        StarMapInstallerError,
+        verify_starmap_manifest,
+    )
+
+    batch_payload = _read_local_json_file(str(args.batch_json_path))
+    invite_batch_record = _required_mapping(
+        batch_payload.get("invite_batch_record"),
+        "invite_bundle_batch_record_missing",
+    )
+    private_nonce_values = batch_payload.get("private_invite_nonces")
+    if not isinstance(private_nonce_values, list) or not private_nonce_values:
+        raise ValueError("invite_bundle_private_nonces_missing")
+    nonce_index = int(getattr(args, "nonce_index"))
+    if nonce_index < 0 or nonce_index >= len(private_nonce_values):
+        raise ValueError("invite_bundle_nonce_index_invalid")
+    nonces = tuple(_invite_bundle_nonce_bytes(value) for value in private_nonce_values)
+    try:
+        batch = invite_batch_record_from_dict(invite_batch_record)
+        if int(batch.count) != len(nonces):
+            raise InvitationProvenanceError("invite_bundle_nonce_count_mismatch")
+        proof = build_nonce_membership_proof(nonces=nonces, nonce_index=nonce_index)
+        verify_nonce_membership_proof(
+            nonce_bytes=nonces[nonce_index],
+            nonce_merkle_root=batch.nonce_merkle_root,
+            count=batch.count,
+            proof=proof,
+        )
+    except InvitationProvenanceError as exc:
+        raise ValueError(f"invite_bundle_nonce_proof_invalid:{exc}") from exc
+
+    starmap_path = str(getattr(args, "starmap_path", "") or "")
+    starmap_payload = (
+        _read_local_json_file(starmap_path)
+        if starmap_path
+        else build_default_public_rc_starmap_payload()
+    )
+    try:
+        verify_starmap_manifest(starmap_payload)
+        witness = build_default_public_rc_starmap_witness(starmap_payload)
+        verify_portable_manifest_witness(witness)
+    except (AtlasSliceVerifierError, StarMapInstallerError) as exc:
+        raise ValueError(f"invite_bundle_starmap_invalid:{exc}") from exc
+
+    intended_epoch = getattr(args, "intended_epoch")
+    if isinstance(intended_epoch, bool) or not isinstance(intended_epoch, int) or intended_epoch < 0:
+        raise ValueError("invite_bundle_intended_epoch_invalid")
+    intended_profile = str(getattr(args, "intended_profile"))
+    if not intended_profile:
+        raise ValueError("invite_bundle_intended_profile_invalid")
+    output = {
+        "atlas_slice_manifest_witness": witness,
+        "intended_epoch": intended_epoch,
+        "intended_profile": intended_profile,
+        "invite_batch_record": batch.to_dict(),
+        "invite_id": str(batch.batch_id),
+        "nonce_membership_proof": [dict(item) for item in proof],
+        "private_invite_nonce": nonces[nonce_index].hex(),
+        "starmap_manifest_payload": starmap_payload,
+    }
+    output_path = getattr(args, "output", "") or ""
+    if output_path:
+        return {"action": "invite-bundle", "output_path": _write_local_json_file(output_path, output)}
+    return {"action": "invite-bundle", "output": output}
+
+
+def _invite_bundle_nonce_bytes(value: object) -> bytes:
+    if not isinstance(value, str) or len(value) != 64:
+        raise ValueError("invite_bundle_private_nonce_invalid")
+    if any(char not in "0123456789abcdef" for char in value):
+        raise ValueError("invite_bundle_private_nonce_invalid")
+    try:
+        return bytes.fromhex(value)
+    except ValueError as exc:
+        raise ValueError("invite_bundle_private_nonce_invalid") from exc
 
 
 def _identity_seed_bytes_from_hex(identity_seed_hex: object) -> bytes:
@@ -1660,6 +1755,20 @@ def _build_parser() -> JsonArgumentParser:
                 dest="validator_subcommand",
                 required=True,
             )
+            p_validator_status = validator_subparsers.add_parser(
+                "status",
+                help="Report local validator identity and LMDB readiness status",
+            )
+            p_validator_status.add_argument(
+                "--json",
+                action="store_true",
+                help="Accepted for operator clarity; CLI output is JSON by default",
+            )
+            p_validator_status.add_argument(
+                "--lmdb-path",
+                default="",
+                help="Optional LMDB root to check; defaults to ~/.ilc/lmdb",
+            )
             p_rotate_endpoint = validator_subparsers.add_parser(
                 "rotate-endpoint",
                 help="Generate a new ValidatorEndpointAssertion and revised_by edge",
@@ -2708,6 +2817,46 @@ def _build_parser() -> JsonArgumentParser:
             default="genesis",
             help="Inviter signature placeholder or signature reference",
         )
+        p_invite_bundle = invite_subparsers.add_parser(
+            "bundle",
+            help="Assemble one install-ready invite bundle from a batch JSON",
+        )
+        p_invite_bundle.add_argument(
+            "batch_json_path",
+            help="Path to JSON produced by `ilc identity invite create`",
+        )
+        p_invite_bundle.add_argument(
+            "--nonce-index",
+            type=int,
+            required=True,
+            help="Zero-based private nonce index to include in this bundle",
+        )
+        p_invite_bundle.add_argument(
+            "--starmap-path",
+            default="",
+            help="Optional starmap payload JSON; omitted uses installed public-RC default",
+        )
+        p_invite_bundle.add_argument(
+            "--intended-epoch",
+            type=int,
+            default=0,
+            help="Intended bootstrap epoch for the invite bundle",
+        )
+        p_invite_bundle.add_argument(
+            "--intended-profile",
+            default="public_rc_validator_bootstrap",
+            help="Expected invite bootstrap profile",
+        )
+        p_invite_bundle.add_argument(
+            "--output",
+            default="",
+            help="Path to write one install-ready invite bundle JSON",
+        )
+        p_invite_bundle.add_argument(
+            "--enable-invites",
+            action="store_true",
+            help="Explicitly enable default-off invite CLI plumbing",
+        )
 
         identity_subparsers.add_parser("show", help="Show local identity state")
 
@@ -3021,12 +3170,14 @@ def _load_firewall_plan_runtime_module() -> Any:
 
 
 def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
-    from ilc_core.validator.endpoint_rotation_runtime import (
-        rotate_validator_endpoint_assertion,
-    )
-
     subcommand = getattr(args, "validator_subcommand", None)
+    if subcommand == "status":
+        return _validator_status_data(args)
     if subcommand == "rotate-endpoint":
+        from ilc_core.validator.endpoint_rotation_runtime import (
+            rotate_validator_endpoint_assertion,
+        )
+
         output_path = Path(args.output) if args.output else Path("out/validator_endpoint_rotation/new_assertion.json")
         return {
             "action": "validator-rotate-endpoint",
@@ -3045,6 +3196,39 @@ def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
             ),
         }
     raise ValueError("validator_subcommand_missing")
+
+
+def _validator_status_data(args: argparse.Namespace) -> dict[str, Any]:
+    from ilc_core import __version__ as ilc_core_version
+
+    home = Path.home()
+    root = home.expanduser().resolve() / ".ilc" / "identity"
+    agent_id_path = root / "agent_id"
+    agent_id: str | None = None
+    identity_status = "missing"
+    if agent_id_path.is_file():
+        try:
+            candidate = agent_id_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise ValueError("validator_status_identity_unreadable") from exc
+        if _AGENT_ID_HEX_RE.fullmatch(candidate) is None:
+            raise ValueError("validator_status_agent_id_invalid")
+        agent_id = candidate
+        identity_status = "present"
+
+    lmdb_path = Path(str(getattr(args, "lmdb_path", "") or home / ".ilc" / "lmdb")).expanduser()
+    return {
+        "action": "validator-status",
+        "agent_id": agent_id,
+        "identity_dir": str(root),
+        "identity_provisioned": identity_status == "present",
+        "identity_status": identity_status,
+        "ilc_core_version": ilc_core_version,
+        "lmdb_epoch": None,
+        "lmdb_path": str(lmdb_path),
+        "lmdb_readable": lmdb_path.exists() and os.access(lmdb_path, os.R_OK),
+        "validator_participation_enabled": identity_status == "present",
+    }
 
 
 def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:

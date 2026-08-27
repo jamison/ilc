@@ -32,8 +32,8 @@ def test_install_e2e_script_syntax_passes() -> None:
 def test_install_e2e_script_mounts_install_sh_read_only() -> None:
     text = SCRIPT.read_text(encoding="utf-8")
     assert '-v "${INSTALL_SH}:/tmp/install.sh:ro"' in text
-    assert "--no-onboard" in text
-    assert "--from-invite" not in text
+    assert "--no-onboard" not in text
+    assert "--invite-bundle /tmp/invite.json" in text
     assert "80e53ea18aea0a7c474400a41e20f346c00ee3e36e8f0dd60f233cca2b0e2f1d" not in text
     assert 'grep -E "RC_WHEEL_SHA256=[0-9a-f]{64}"' in text
 
@@ -56,4 +56,5 @@ def test_install_e2e_live_mode_is_manual_only() -> None:
     text = SCRIPT.read_text(encoding="utf-8")
     assert "--live" in text
     assert 'if [[ "${ILC_INSTALL_E2E_LIVE}" == "1" ]]' in text
+    assert "install_e2e_invite_bundle_required_for_live" in text
     assert "python3 -m ilc_core.cli.main --help" in text
