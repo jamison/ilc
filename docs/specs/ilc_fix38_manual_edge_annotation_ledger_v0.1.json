@@ -87216,6 +87216,98 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_fix3_00b_g10_cdl017_harness_rebuild.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix2_00b_blocked_checkpoint_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX2-00b checkpoint after public endpoint config, certificate rotation, remote deployment, and host UFW changes; completion remains blocked by DigitalOcean cloud firewall public reachability.",
+      "manual_read_summary": "Blocked phase walkthrough documenting public-IP endpoint deployment, public IP SAN verification, host UFW readiness, and cloud firewall timeout evidence without emitting the completion token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-PROVISION-FIX2-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "config/public_rc_validators"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_provision_fix2_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix2_00b_blocked_checkpoint_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX2-00b blocked receipt records completed public endpoint config/cert deployment and the outstanding DigitalOcean cloud firewall blocker.",
+      "manual_read_summary": "Machine-readable blocked receipt with public endpoint assertion manifest hash, validator public endpoints, config hashes, non-claims, and withheld completion token.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-PROVISION-FIX2-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "config/public_rc_validators"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_cdl017_vps_provision_receipt_GAP_VPS_PROVISION_FIX2_00B_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix2_00b_blocked_checkpoint_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX2-00b generated a replacement CDL-105 endpoint assertion manifest for public DigitalOcean IP gRPC endpoints.",
+      "manual_read_summary": "Machine-readable public-IP validator endpoint assertion manifest containing four Genesis-witnessed BLS-signed ValidatorEndpointAssertion records and assertion index hashes.",
+      "node_kind": "machine_readable_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-PROVISION-FIX2-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "cdl:CDL-105"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "config/public_rc_validators"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_validator_endpoint_assertions_manifest_GAP_VPS_PROVISION_FIX2_00B_v0.1.json"
     }
   ],
   "phase": "1545p-Fix38",
