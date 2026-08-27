@@ -16,15 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_043_GAP_ONBOARDING_PACKAGE_043_00a_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_044_GAP_ONBOARDING_PACKAGE_044_00a_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/fd/76/"
-    "afcd3906d9d985c3c34d594831c649470ce6cac6654cccbe1fadd4d42692/"
-    "ilc_core-0.4.3-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/01/1e/"
+    "78a69d572d4fa7e563a5d20ae5e2dbcca94f1b511c4373d09137639095c9/"
+    "ilc_core-0.4.4-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "a8c0ece5b1e209b7acff39a0d19b0ba578606ecf3273224572ea85841a156fe3"
-EXPECTED_SIZE = "1363691"
+EXPECTED_SHA256 = "4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13"
+EXPECTED_SIZE = "1364353"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -116,7 +116,7 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
 
 
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.3-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.4-py3-none-any.whl"
     payload.write_bytes(b"not a wheel")
     bad_script = _copy_script(
         tmp_path,
@@ -165,7 +165,7 @@ def test_install_sh_manifest_sync_fails_on_tmp_wheel_mismatch(tmp_path: Path) ->
     bad_script = _copy_script(
         tmp_path,
         replacements={
-            'TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"': 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.3.whl"',
+            'TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"': 'TMP_WHEEL="${TMP_DIR}/ilc-core-0.4.4.whl"',
         },
     )
     with pytest.raises(ValueError, match="TMP_WHEEL"):
@@ -215,6 +215,7 @@ def test_install_sh_uses_private_temp_directory_for_wheel() -> None:
     assert 'WHEEL_BASENAME="${RC_WHEEL_URL##*/}"' in text
     assert 'TMP_WHEEL="${TMP_DIR}/${WHEEL_BASENAME}"' in text
     assert "ilc-core-0.4.3.whl" not in text
+    assert "ilc-core-0.4.4.whl" not in text
     assert "XXXXXX.whl" not in text
 
 

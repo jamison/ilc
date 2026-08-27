@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-ONBOARDING-PACKAGE-043-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/fd/76/afcd3906d9d985c3c34d594831c649470ce6cac6654cccbe1fadd4d42692/ilc_core-0.4.3-py3-none-any.whl"
-RC_WHEEL_SHA256="a8c0ece5b1e209b7acff39a0d19b0ba578606ecf3273224572ea85841a156fe3"
-RC_WHEEL_SIZE="1363691"
+INSTALLER_VERSION="GAP-ONBOARDING-PACKAGE-044-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/01/1e/78a69d572d4fa7e563a5d20ae5e2dbcca94f1b511c4373d09137639095c9/ilc_core-0.4.4-py3-none-any.whl"
+RC_WHEEL_SHA256="4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13"
+RC_WHEEL_SIZE="1364353"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"

@@ -1,7 +1,5 @@
 {
   "non_claims": [
-    "no_pypi_upload",
-    "no_pypi_yank",
     "no_release_signing",
     "no_manifest_signing",
     "no_install_smoke_token",
@@ -12,7 +10,7 @@
     "no_epoch_transition",
     "no_public_rc_launch"
   ],
-  "package_scope": "local_build_only_no_upload",
+  "package_scope": "local_build_then_pypi_upload_complete",
   "phase": "GAP-ONBOARDING-PACKAGE-044-00a",
   "post_build_import_smoke": {
     "imports": [
@@ -37,15 +35,24 @@
     "wheel_filename_invalid_rejection_regression": "PASS"
   },
   "predecessor_version": "0.4.3",
-  "predecessor_yank_reason": "Blocked by temporary wheel filename regression in ilc update command. Superseded by ilc-core==0.4.4.",
-  "pypi_upload_status": "pending",
+  "predecessor_yank_reason": "Blocked by random temp wheel filename in ilc update. pip rejects non-PEP-427 filenames. Superseded by ilc-core==0.4.4.",
+  "predecessor_yank_status": "verified_yanked",
+  "pypi_sdist_url": "https://files.pythonhosted.org/packages/8e/18/5ce97cae8374fa64702b44cca93751d63c6eb8a9c34382f5d5a7b49291b9/ilc_core-0.4.4.tar.gz",
+  "pypi_upload_phase": "GAP-ONBOARDING-PACKAGE-044-00b",
+  "pypi_upload_status": "uploaded",
+  "pypi_version_url": "https://pypi.org/project/ilc-core/0.4.4/",
+  "pypi_wheel_url": "https://files.pythonhosted.org/packages/01/1e/78a69d572d4fa7e563a5d20ae5e2dbcca94f1b511c4373d09137639095c9/ilc_core-0.4.4-py3-none-any.whl",
   "sdist": {
+    "fetchback_sha256": "1bbc183692dce7e16d4e43b86b1a2b3f17b6ff2f563019bfdc36e44b1570f86a",
+    "fetchback_size_bytes": 1101873,
     "filename": "ilc_core-0.4.4.tar.gz",
     "sha256": "1bbc183692dce7e16d4e43b86b1a2b3f17b6ff2f563019bfdc36e44b1570f86a",
     "size_bytes": 1101873
   },
   "version": "0.4.4",
   "wheel": {
+    "fetchback_sha256": "4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13",
+    "fetchback_size_bytes": 1364353,
     "filename": "ilc_core-0.4.4-py3-none-any.whl",
     "sha256": "4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13",
     "size_bytes": 1364353
