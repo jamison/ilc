@@ -86375,8 +86375,8 @@
     },
     {
       "annotation_batch": "manual_batch_gap_agent_onboarding_install_smoke_00_044_2026_08_27",
-      "chronology_note": "2026-08-27 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 0.4.4 rerun blocked after the required 0.3.1-to-0.4.4 self-update path failed inside the installed 0.3.1 updater.",
-      "manual_read_summary": "Walkthrough records clean PyPI 0.4.4 fresh install smoke, invite PoP, durable nullifier, starmap materialization, duplicate replay rejection, restart readback, legacy updater failure, non-emission of the pass token, and non-claims.",
+      "chronology_note": "2026-08-27 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 0.4.4 rerun passed by human disposition after the clean fresh-install path passed and the 0.3.1-to-0.4.4 self-update failure was recorded as a non-claim.",
+      "manual_read_summary": "Walkthrough records clean PyPI 0.4.4 fresh install smoke, invite PoP, durable nullifier, starmap materialization, duplicate replay rejection, restart readback, legacy updater failure dispositioned as a non-claim, PyPI cleanup state, and non-claims.",
       "node_kind": "phase_walkthrough",
       "proposed_authority_trace_edges": [
         {
@@ -86385,7 +86385,7 @@
         },
         {
           "edge_type": "EVIDENCES",
-          "target": "phase:onboarding_044_install_smoke_blocked_no_token"
+          "target": "phase:onboarding_044_install_smoke_pass"
         }
       ],
       "proposed_semantic_edges": [
