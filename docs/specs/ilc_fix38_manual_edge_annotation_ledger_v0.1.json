@@ -87247,6 +87247,40 @@
       "repo_path": "docs/phases/phase_gap_vps_provision_fix2_00b_walkthrough.md"
     },
     {
+      "annotation_batch": "manual_batch_1619_phase_GAP_VPS_CONNECTIVITY_UPGRADE_00_prompt",
+      "chronology_note": "2026-08-27 GAP-VPS-CONNECTIVITY-UPGRADE-00 prompt added during Codex hardening of the Part 3l connectivity lane to close the live-validator 0.4.4 versus launch-package 0.4.5 gap.",
+      "manual_read_summary": "Sensitive phase prompt requiring in-place upgrade of four existing public-RC validator slots to ilc-core 0.4.5 while preserving AgentID, validator key material, invite/onboarding receipts, endpoint assertion bindings, LMDB epoch-0 state, and settlement_path=none.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-CONNECTIVITY-UPGRADE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "config/public_rc_validators"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_connectivity_upgrade_00_g10_validator_045_upgrade.md"
+    },
+    {
       "annotation_batch": "manual_batch_gap_vps_provision_fix2_00b_blocked_checkpoint_2026_08_27",
       "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX2-00b blocked receipt records completed public endpoint config/cert deployment and the outstanding DigitalOcean cloud firewall blocker.",
       "manual_read_summary": "Machine-readable blocked receipt with public endpoint assertion manifest hash, validator public endpoints, config hashes, non-claims, and withheld completion token.",
