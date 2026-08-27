@@ -3754,6 +3754,9 @@ def _install_invite_redemption_record(
         "install_invite_batch_record_missing",
     )
     proof = _install_redemption_membership_proof(invite_bundle.get("nonce_membership_proof"))
+    proof_steps = _install_redemption_membership_proof_steps(
+        invite_bundle.get("nonce_membership_proof")
+    )
     inviter_cid = _required_non_empty_str(batch.get("inviter_cid"), "install_inviter_cid_invalid")
     batch_id = _required_non_empty_str(batch.get("batch_id"), "install_invite_batch_id_invalid")
     record = InviteRedemptionRecord(
@@ -3769,6 +3772,7 @@ def _install_invite_redemption_record(
         inviter_cid=inviter_cid,
         invite_id=invite_id,
         redeemer_key_binding=redeemer_key_binding,
+        nonce_membership_proof_steps=proof_steps,
     )
     validate_invite_redemption_record(record)
     return record.to_dict()
@@ -3791,6 +3795,25 @@ def _install_redemption_membership_proof(value: object) -> tuple[str, ...]:
         else:
             raise ValueError("install_invite_nonce_membership_proof_invalid")
     return tuple(proof_hashes)
+
+
+def _install_redemption_membership_proof_steps(
+    value: object,
+) -> tuple[dict[str, str], ...] | None:
+    if value in (None, (), []):
+        return ()
+    if not isinstance(value, (list, tuple)):
+        raise ValueError("install_invite_nonce_membership_proof_invalid")
+    steps: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            return None
+        sibling = item.get("sibling")
+        position = item.get("position")
+        if not isinstance(sibling, str) or position not in {"left", "right"}:
+            raise ValueError("install_invite_nonce_membership_proof_invalid")
+        steps.append({"position": str(position), "sibling": sibling})
+    return tuple(steps)
 
 
 def _required_non_empty_str(value: object, token: str) -> str:

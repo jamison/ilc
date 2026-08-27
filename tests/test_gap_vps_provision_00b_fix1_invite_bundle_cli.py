@@ -5,7 +5,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from ilc_core.cli.main import _install_invite_redemption_record
 from ilc_core.genesis.invitation_provenance_record import build_invite_batch_record
+from ilc_core.genesis.invitation_provenance_record import invite_redemption_record_from_dict
+from ilc_core.sidecars.openclaw_invite_bootstrap import InviteNullifierStore
 from ilc_core.sidecars.openclaw_invite_bootstrap import verify_invite_bootstrap
 
 
@@ -73,12 +76,74 @@ def test_invite_bundle_cli_builds_count_four_verifier_valid_bundle(tmp_path: Pat
         bundle,
         expected_profile="public_rc_validator_bootstrap",
         current_epoch=0,
+        nullifier_store=InviteNullifierStore(tmp_path / "nullifiers.json"),
         persist_nullifier=False,
         register_nullifier=False,
         production_required=False,
     )
     assert decision.bootstrap_allowed is True
     assert decision.nonce_membership_status == "verified"
+
+
+def test_install_redemption_record_preserves_structured_proof_steps(tmp_path: Path) -> None:
+    batch_path = tmp_path / "batch.json"
+    bundle_path = tmp_path / "bundle.json"
+    _write_batch(batch_path)
+    result = _run_cli(
+        "identity",
+        "invite",
+        "bundle",
+        str(batch_path),
+        "--nonce-index",
+        "1",
+        "--output",
+        str(bundle_path),
+        "--enable-invites",
+    )
+    assert result.returncode == 0, result.stderr
+    bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+
+    record = _install_invite_redemption_record(
+        invite_bundle=bundle,
+        agent_id="a" * 96,
+        invite_id=str(bundle["invite_id"]),
+        redemption_nullifier="b" * 64,
+        current_epoch=0,
+        redeemer_key_binding={
+            "domain": "ilc-invite-pop-v1",
+            "payload_ref": "c" * 96,
+            "signature": "d" * 192,
+        },
+    )
+
+    assert record["nonce_membership_proof_steps"] == bundle["nonce_membership_proof"]
+    assert list(record["nonce_membership_proof"]) == [
+        item["sibling"] for item in bundle["nonce_membership_proof"]
+    ]
+    round_trip = invite_redemption_record_from_dict(record).to_dict()
+    assert round_trip["nonce_membership_proof_steps"] == bundle["nonce_membership_proof"]
+
+
+def test_invite_redemption_record_rejects_mismatched_structured_proof() -> None:
+    payload = {
+        "batch_id": "batch",
+        "invite_id": "batch",
+        "inviter_cid": "genesis_agent:01",
+        "nonce_membership_proof": ["a" * 64],
+        "nonce_membership_proof_steps": [{"position": "left", "sibling": "b" * 64}],
+        "redeemer_agent_id": "c" * 96,
+        "redeemer_key_binding": None,
+        "redeemer_pubkey_cid": "agent:" + "c" * 96,
+        "redemption_epoch": 0,
+        "redemption_nullifier": "d" * 64,
+    }
+
+    try:
+        invite_redemption_record_from_dict(payload)
+    except ValueError as exc:
+        assert "invite_redemption_nonce_membership_proof_mismatch" in str(exc)
+    else:
+        raise AssertionError("expected_mismatched_structured_proof_rejection")
 
 
 def test_invite_bundle_cli_rejects_out_of_range_nonce_index(tmp_path: Path) -> None:
