@@ -54,10 +54,17 @@ def test_install_sh_exists_and_is_executable() -> None:
 
 
 def test_install_sh_dry_run_exits_zero() -> None:
-    result = _run_install_sh("--channel", "rc", "--dry-run")
+    result = _run_install_sh(
+        "--channel",
+        "rc",
+        "--dry-run",
+        "--invite-bundle",
+        "/tmp/example-invite.json",
+    )
     assert result.returncode == 0
     assert f"RC_WHEEL_URL={EXPECTED_URL}" in result.stdout
     assert f"RC_WHEEL_SHA256={EXPECTED_SHA256}" in result.stdout
+    assert "invite_bundle=/tmp/example-invite.json" in result.stdout
 
 
 def test_install_sh_unsupported_channel_exits_error() -> None:
@@ -67,28 +74,46 @@ def test_install_sh_unsupported_channel_exits_error() -> None:
 
 
 def test_install_sh_dev_channel_exits_error() -> None:
-    result = _run_install_sh("--channel", "dev", "--dry-run")
+    result = _run_install_sh(
+        "--channel",
+        "dev",
+        "--dry-run",
+        "--invite-bundle",
+        "/tmp/example-invite.json",
+    )
     assert result.returncode == 1
     assert "install_sh_channel_not_embedded:dev" in result.stderr
 
 
-def test_install_sh_dry_run_no_onboard_suppresses_hint() -> None:
-    result = _run_install_sh("--dry-run", "--no-onboard")
-    assert result.returncode == 0
-    assert "ilc install --from-invite" not in result.stdout
-
-
-def test_install_sh_dry_run_default_no_onboard_flag_includes_hint() -> None:
+def test_install_sh_missing_invite_bundle_required() -> None:
     result = _run_install_sh("--dry-run")
-    assert result.returncode == 0
-    assert "ilc install --from-invite" in result.stdout
+    assert result.returncode == 2
+    assert "install_sh_invite_bundle_required" in result.stderr
+
+
+def test_install_sh_no_onboard_flag_is_not_public_install_bypass() -> None:
+    result = _run_install_sh("--dry-run", "--no-onboard")
+    assert result.returncode == 2
+    assert "install_sh_unknown_argument:--no-onboard" in result.stderr
 
 
 def test_install_sh_target_dir_dry_run_records_target(tmp_path: Path) -> None:
     target = tmp_path / "venv"
-    result = _run_install_sh("--dry-run", "--target-dir", str(target))
+    result = _run_install_sh(
+        "--dry-run",
+        "--invite-bundle",
+        "/tmp/example-invite.json",
+        "--target-dir",
+        str(target),
+    )
     assert result.returncode == 0
     assert f"target_dir={target}" in result.stdout
+
+
+def test_install_sh_invite_bundle_not_found_exits_1(tmp_path: Path) -> None:
+    result = _run_install_sh("--invite-bundle", str(tmp_path / "missing.json"))
+    assert result.returncode == 1
+    assert "install_sh_invite_bundle_not_found" in result.stderr
 
 
 def test_install_sh_rejects_existing_non_venv_target_before_download(
@@ -97,8 +122,10 @@ def test_install_sh_rejects_existing_non_venv_target_before_download(
     target = tmp_path / "not-a-venv"
     target.mkdir()
     (target / "keep.txt").write_text("do not contaminate", encoding="utf-8")
+    invite = tmp_path / "invite.json"
+    invite.write_text("{}", encoding="utf-8")
 
-    result = _run_install_sh("--target-dir", str(target))
+    result = _run_install_sh("--invite-bundle", str(invite), "--target-dir", str(target))
 
     assert result.returncode == 1
     assert "install_sh_target_dir_exists_not_venv" in result.stderr
@@ -108,8 +135,10 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
     target = tmp_path / "broken-venv"
     target.mkdir()
     (target / "pyvenv.cfg").write_text("home = /usr/bin\n", encoding="utf-8")
+    invite = tmp_path / "invite.json"
+    invite.write_text("{}", encoding="utf-8")
 
-    result = _run_install_sh("--target-dir", str(target))
+    result = _run_install_sh("--invite-bundle", str(invite), "--target-dir", str(target))
 
     assert result.returncode == 1
     assert "install_sh_target_venv_python_missing" in result.stderr
@@ -118,6 +147,8 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
     payload = tmp_path / "ilc_core-0.4.4-py3-none-any.whl"
     payload.write_bytes(b"not a wheel")
+    invite = tmp_path / "invite.json"
+    invite.write_text("{}", encoding="utf-8")
     bad_script = _copy_script(
         tmp_path,
         replacements={
@@ -125,7 +156,7 @@ def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
             f'RC_WHEEL_SIZE="{EXPECTED_SIZE}"': f'RC_WHEEL_SIZE="{payload.stat().st_size}"',
         },
     )
-    result = _run_install_sh(path=bad_script)
+    result = _run_install_sh("--invite-bundle", str(invite), path=bad_script)
     assert result.returncode == 1
     assert "install_sh_hash_verification_failed" in result.stderr
 
@@ -189,12 +220,14 @@ def test_install_sh_manifest_sync_rejects_duplicate_assignments(tmp_path: Path) 
         verify_install_sh_manifest_sync(path, MANIFEST)
 
 
-def test_install_sh_does_not_execute_graph_onboarding_calls() -> None:
+def test_install_sh_executes_invite_onboarding_after_verified_install() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
-    forbidden = ("\nilc install", " --from-invite ", "lmdb", "graph")
-    for token in forbidden:
-        assert token not in text
-    assert "next_step_hint: ilc %s --from-%s <path>" in text
+    hash_check = text.index('if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]')
+    onboard = text.index("install_sh_running_invite_onboard")
+    assert hash_check < onboard
+    assert "--from-invite" in text
+    assert "--output-receipt" in text
+    assert "install_sh_invite_onboard_complete" in text
 
 
 def test_install_sh_set_e_pipefail_present() -> None:
