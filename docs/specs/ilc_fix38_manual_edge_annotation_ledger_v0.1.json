@@ -86372,6 +86372,40 @@
       "node_kind": "phase_walkthrough",
       "path": "docs/phases/phase_gap_release_sign_prompt_patch_06_walkthrough.md",
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_agent_onboarding_install_smoke_00_044_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00 0.4.4 rerun blocked after the required 0.3.1-to-0.4.4 self-update path failed inside the installed 0.3.1 updater.",
+      "manual_read_summary": "Walkthrough records clean PyPI 0.4.4 fresh install smoke, invite PoP, durable nullifier, starmap materialization, duplicate replay rejection, restart readback, legacy updater failure, non-emission of the pass token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-AGENT-ONBOARDING-INSTALL-SMOKE-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:onboarding_044_install_smoke_blocked_no_token"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_agent_onboarding_install_smoke_00_044_rerun_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
