@@ -85,7 +85,7 @@ def test_invite_bundle_cli_builds_count_four_verifier_valid_bundle(tmp_path: Pat
     assert decision.nonce_membership_status == "verified"
 
 
-def test_install_redemption_record_preserves_structured_proof_steps(tmp_path: Path) -> None:
+def test_install_redemption_record_preserves_structured_proof(tmp_path: Path) -> None:
     batch_path = tmp_path / "batch.json"
     bundle_path = tmp_path / "bundle.json"
     _write_batch(batch_path)
@@ -116,21 +116,18 @@ def test_install_redemption_record_preserves_structured_proof_steps(tmp_path: Pa
         },
     )
 
-    assert record["nonce_membership_proof_steps"] == bundle["nonce_membership_proof"]
-    assert list(record["nonce_membership_proof"]) == [
-        item["sibling"] for item in bundle["nonce_membership_proof"]
-    ]
+    assert record["nonce_membership_proof"] == bundle["nonce_membership_proof"]
+    assert "nonce_membership_proof_steps" not in record
     round_trip = invite_redemption_record_from_dict(record).to_dict()
-    assert round_trip["nonce_membership_proof_steps"] == bundle["nonce_membership_proof"]
+    assert round_trip["nonce_membership_proof"] == bundle["nonce_membership_proof"]
 
 
-def test_invite_redemption_record_rejects_mismatched_structured_proof() -> None:
+def test_invite_redemption_record_rejects_legacy_sibling_only_proof() -> None:
     payload = {
         "batch_id": "batch",
         "invite_id": "batch",
         "inviter_cid": "genesis_agent:01",
         "nonce_membership_proof": ["a" * 64],
-        "nonce_membership_proof_steps": [{"position": "left", "sibling": "b" * 64}],
         "redeemer_agent_id": "c" * 96,
         "redeemer_key_binding": None,
         "redeemer_pubkey_cid": "agent:" + "c" * 96,
@@ -141,9 +138,9 @@ def test_invite_redemption_record_rejects_mismatched_structured_proof() -> None:
     try:
         invite_redemption_record_from_dict(payload)
     except ValueError as exc:
-        assert "invite_redemption_nonce_membership_proof_mismatch" in str(exc)
+        assert "invite_redemption_invalid_nonce_membership_proof" in str(exc)
     else:
-        raise AssertionError("expected_mismatched_structured_proof_rejection")
+        raise AssertionError("expected_legacy_sibling_only_proof_rejection")
 
 
 def test_invite_bundle_cli_rejects_out_of_range_nonce_index(tmp_path: Path) -> None:

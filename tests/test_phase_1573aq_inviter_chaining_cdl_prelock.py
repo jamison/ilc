@@ -108,6 +108,8 @@ def test_runtime_record_dataclass_fields_match_prelock_doc() -> None:
         "redeemer_agent_id",
         "redemption_epoch",
         "inviter_cid",
+        "invite_id",
+        "redeemer_key_binding",
     )
 
 
