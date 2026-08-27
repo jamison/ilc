@@ -86367,6 +86367,11 @@
       "node_kind": "phase_walkthrough",
       "path": "docs/phases/phase_gap_onboarding_package_044_00b_walkthrough.md",
       "recommended_graph_action": "support_only"
+    },
+    {
+      "node_kind": "phase_walkthrough",
+      "path": "docs/phases/phase_gap_release_sign_prompt_patch_06_walkthrough.md",
+      "recommended_graph_action": "support_only"
     }
   ],
   "phase": "1545p-Fix38",
