@@ -151,6 +151,8 @@ config/mysticeti_testnet_M009/validator_*_lmdb_path.txt
 config/mysticeti_testnet_M009/validator_*_peers/
 # VPS validator BLS consensus signing keys — NEVER commit
 config/public_rc_validators/certs/*_consensus_key.hex
+config/public_rc_validators/certs/*_key.pem
+config/public_rc_validators/pki/
 
 # =========================
 # TLA+ traces and state dumps
