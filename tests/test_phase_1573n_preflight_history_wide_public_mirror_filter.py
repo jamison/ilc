@@ -40,3 +40,10 @@ def test_public_mirror_commit_count_guard_is_ratio_based() -> None:
     assert 'MIN_COMMIT_COUNT_AFTER="$((COMMIT_COUNT_BEFORE * 60 / 100))"' in content
     assert '"commit_count_min_required": int(commit_count_min_required)' in content
     assert "commit_count_after_too_low:$COMMIT_COUNT_AFTER:min_required:" in content
+
+
+def test_public_mirror_excludes_public_rc_validator_operator_config() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    assert '"config/public_rc_validators"' in content
+    assert "internal public-RC validator topology and TLS material" in content
