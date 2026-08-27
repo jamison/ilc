@@ -72,10 +72,6 @@ def _right_proof_dict() -> tuple[dict[str, object], ...]:
     return ({"sibling": _leaf(LEFT_NONCE).hex(), "position": "left"},)
 
 
-def _left_proof_hash_tuple() -> tuple[str, ...]:
-    return (_leaf(RIGHT_NONCE).hex(),)
-
-
 def _build_two_nonce_batch(*, batch_id: str = "batch-1576r-two"):
     return build_invite_batch_record(
         inviter_cid=INVITER_CID,
@@ -156,7 +152,7 @@ def test_batch_creation_and_redemption_nonce_membership_verified() -> None:
     redemption = build_invite_redemption_record(
         batch=batch,
         nonce=private_nonces[0],
-        nonce_membership_proof=_left_proof_hash_tuple(),
+        nonce_membership_proof=_left_proof_dict(),
         redeemer_pubkey_cid="pubkey:redeemer-left",
         identity_seed=LEFT_IDENTITY_SEED,
         redemption_epoch=0,
@@ -215,7 +211,7 @@ def test_different_nonce_from_same_batch_accepted(monkeypatch: pytest.MonkeyPatc
     left = build_invite_redemption_record(
         batch=batch,
         nonce=private_nonces[0],
-        nonce_membership_proof=_left_proof_hash_tuple(),
+        nonce_membership_proof=_left_proof_dict(),
         redeemer_pubkey_cid="pubkey:redeemer-left",
         identity_seed=LEFT_IDENTITY_SEED,
         redemption_epoch=0,
@@ -223,7 +219,7 @@ def test_different_nonce_from_same_batch_accepted(monkeypatch: pytest.MonkeyPatc
     right = build_invite_redemption_record(
         batch=batch,
         nonce=private_nonces[1],
-        nonce_membership_proof=(_leaf(LEFT_NONCE).hex(),),
+        nonce_membership_proof=_right_proof_dict(),
         redeemer_pubkey_cid="pubkey:redeemer-right",
         identity_seed=RIGHT_IDENTITY_SEED,
         redemption_epoch=0,

@@ -92,7 +92,7 @@ def test_raw_nonce_absent_from_redemption_and_canonical_json() -> None:
     record = InviteRedemptionRecord(
         batch_id="batch-private",
         redemption_nullifier="0" * 64,
-        nonce_membership_proof=("1" * 64,),
+        nonce_membership_proof=({"position": "right", "sibling": "1" * 64},),
         redeemer_pubkey_cid="pubkey:redeemer",
         redeemer_agent_id="2" * 96,
         redemption_epoch=0,
