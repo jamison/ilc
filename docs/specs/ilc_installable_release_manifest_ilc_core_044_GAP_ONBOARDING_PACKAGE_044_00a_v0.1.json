@@ -1,0 +1,48 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-044@phase-1596",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:4e6891c836d2b9c6757fa798b41b0fd1758b17503248783e89a94c60c6bfbd13",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/01/1e/78a69d572d4fa7e563a5d20ae5e2dbcca94f1b511c4373d09137639095c9/ilc_core-0.4.4-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1596,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1364353
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-044@phase-1596",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:1bbc183692dce7e16d4e43b86b1a2b3f17b6ff2f563019bfdc36e44b1570f86a",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/8e/18/5ce97cae8374fa64702b44cca93751d63c6eb8a9c34382f5d5a7b49291b9/ilc_core-0.4.4.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1596,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1101873
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1596,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_cdl_mutation",
+    "no_guard_clearance",
+    "no_public_rc_activation",
+    "no_public_mirror_push",
+    "no_epoch_transition",
+    "no_validator_change",
+    "no_runtime_activation"
+  ],
+  "release_id": "ilc-core-0.4.4"
+}

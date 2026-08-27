@@ -86357,6 +86357,16 @@
       "node_kind": "phase_walkthrough",
       "path": "docs/phases/phase_gap_onboarding_package_044_00a_walkthrough.md",
       "recommended_graph_action": "support_only"
+    },
+    {
+      "node_kind": "spec_doc",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_044_GAP_ONBOARDING_PACKAGE_044_00a_v0.1.json",
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "node_kind": "phase_walkthrough",
+      "path": "docs/phases/phase_gap_onboarding_package_044_00b_walkthrough.md",
+      "recommended_graph_action": "support_only"
     }
   ],
   "phase": "1545p-Fix38",
