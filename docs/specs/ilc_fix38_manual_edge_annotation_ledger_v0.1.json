@@ -87150,6 +87150,72 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_vps_provision_fix1_00b_invite_install_ux_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix2_fix3_prompt_registration_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX2-00b prompt registered after validator-compatible rename from the stale 00b-FIX-2 draft naming pattern.",
+      "manual_read_summary": "Sensitive prompt draft closes public endpoint reachability by replacing private Tailscale endpoint assumptions with public IP endpoints and regenerated endpoint assertion evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX2-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "config/public_rc_validators"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_fix2_00b_g10_public_ip_endpoints.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_fix2_fix3_prompt_registration_2026_08_27",
+      "chronology_note": "2026-08-27 GAP-VPS-PROVISION-FIX3-00b prompt registered after validator-compatible rename from the stale 00b-FIX-3 draft naming pattern.",
+      "manual_read_summary": "Sensitive prompt draft rebuilds the running validator harness after CDL-017 AgentID migration and records TLS CA governance for public-RC validators.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX3-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VPS-PROVISION-FIX2-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_consensus"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_provision_fix3_00b_g10_cdl017_harness_rebuild.md"
     }
   ],
   "phase": "1545p-Fix38",

@@ -161,7 +161,9 @@ def verify_invite_bootstrap(
     if invite_bundle is None:
         return _deny("missing_invite", None, "not_checked", "not_checked", "not_checked")
     try:
-        _validate_json_value(invite_bundle)
+        # Bundle witnesses are canonical JSON artifacts and may contain booleans.
+        # Integer protocol fields below still use type(value) is int guards.
+        _validate_json_value(invite_bundle, allow_bool=True)
         batch = _require_mapping(invite_bundle.get("invite_batch_record"), "openclaw_invite_batch_record_missing")
         batch_id = _required_str(batch, "batch_id", "openclaw_invite_batch_id_invalid")
         inviter_cid = _required_str(batch, "inviter_cid", "openclaw_inviter_cid_invalid")
