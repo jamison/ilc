@@ -72899,6 +72899,47 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "out/vps_provision_00b_endpoint_assertions_lmdb/lock.mdb"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00c_clean_namespace_2026_08_28",
+      "chronology_note": "2026-08-28 GAP-VPS-PROVISION-00c clean namespace receipt produced after live read-only validator verification.",
+      "manual_read_summary": "PUBLIC_RC_EXCLUDE receipt confirming all four CDL-017 public-RC validator slots remain at epoch 0 with invite-installed AgentIDs, invite PoP/nullifier evidence, public-IP endpoint assertions, and active validator services.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "none",
+      "repo_path": "out/gap_vps_provision_00c/clean_namespace_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_provision_00c_clean_namespace_2026_08_28",
+      "chronology_note": "2026-08-28 GAP-VPS-PROVISION-00c walkthrough for clean namespace verification.",
+      "manual_read_summary": "Walkthrough recording GO phrase, MemPalace/direct-read context, per-validator live readback, endpoint assertion verification, receipt validation, and non-claims for GAP-VPS-PROVISION-00c.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_provision_00c_walkthrough.md"
     }
   ],
   "boundary": {
