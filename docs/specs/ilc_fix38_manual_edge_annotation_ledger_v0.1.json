@@ -73963,6 +73963,43 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_auto_nat_traversal_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_RELAY_RENDEZVOUS_DEPLOY_00_blocked_checkpoint",
+      "chronology_note": "2026-08-29 GAP-RELAY-RENDEZVOUS-DEPLOY-00 blocked before live deployment by missing relay server artifact and missing Genesis-controlled non-validator relay host.",
+      "manual_read_summary": "Blocked walkthrough records exact GO phrase receipt, prompt hardening, required token checks, relay guard still True, no deployable Option A relay server artifact, SSH inventory limited to validator VPS aliases, no doctl availability, non-claims, and required predecessor work before reattempt.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "blocker:relay_server_process_not_ready_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "blocker:genesis_controlled_relay_host_missing_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_walkthrough.md"
     }
   ],
   "boundary": {
