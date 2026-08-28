@@ -88575,6 +88575,109 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_validator_endpoint_assertions_manifest_GAP_VPS_PROVISION_FIX2_00B_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_CONNECTIVITY_AUDIT_FIX_00_security_fixes",
+      "chronology_note": "2026-08-28 GAP-CONNECTIVITY-AUDIT-FIX-00 hardened the stale Sonnet prompt against the reconciled connectivity audit finding set before execution.",
+      "manual_read_summary": "Phase prompt for connectivity audit fixes covering NAT probe outbound evidence, relay grant and lifecycle binding, UPnP rollback cross-binding, endpoint validation, and regression preservation for prior redirect/XML/SOAP/SSDP/NaN protections.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-AUDIT-FIX-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/network"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/sidecars"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_audit_fix_00_g10_connectivity_audit_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_CONNECTIVITY_AUDIT_FIX_00_security_fixes",
+      "chronology_note": "2026-08-28 GAP-CONNECTIVITY-AUDIT-FIX-00 added adversarial regression tests for the reconciled connectivity audit fixes.",
+      "manual_read_summary": "Focused pytest coverage for unproved outbound claims, observer failure handling, TypeError propagation, IPv6 UDP probing, endpoint host validation, UPnP rollback field/token binding, relay grant request-hash binding, relay lifecycle epoch discipline, and NAT traversal receipt invariants.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-AUDIT-FIX-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/nat_probe.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/relay/relay_client.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/sidecars/upnp_router_mapping.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/connectivity_mode.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_connectivity_audit_fix.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_CONNECTIVITY_AUDIT_FIX_00_security_fixes",
+      "chronology_note": "2026-08-28 GAP-CONNECTIVITY-AUDIT-FIX-00 completed with focused tests, compile checks, taboo scan, prompt validation, guard verification, and a broad-suite sample.",
+      "manual_read_summary": "Phase walkthrough recording scope, reconciled audit decisions, exact verification command outputs, non-claims, and completion token for the connectivity audit fix.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_connectivity_audit_fix_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

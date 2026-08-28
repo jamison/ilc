@@ -102,6 +102,8 @@ class RouterMappingResult:
     external_port: int | None
     lease_seconds: int
     rollback_token: str | None
+    internal_port: int | None = None
+    protocol: str | None = None
     firewall_mutation_attempted: bool = False
     error: str | None = None
     rollback_instruction: dict[str, Any] | None = None
@@ -115,6 +117,15 @@ class RouterMappingResult:
             raise RouterMappingError("router_mapping_method_used_invalid")
         if self.external_port is not None:
             _require_port(self.external_port, "external_port")
+        if self.internal_port is not None:
+            _require_port(self.internal_port, "internal_port")
+        if self.protocol is not None:
+            if (
+                not isinstance(self.protocol, str)
+                or self.protocol.lower() not in {"tcp", "udp"}
+            ):
+                raise RouterMappingError("router_mapping_protocol_invalid")
+            object.__setattr__(self, "protocol", self.protocol.lower())
         if isinstance(self.lease_seconds, bool) or not isinstance(self.lease_seconds, int):
             raise RouterMappingError("router_mapping_result_lease_must_be_int")
         if self.lease_seconds < 0 or self.lease_seconds > _MAX_LEASE_SECONDS:
@@ -130,6 +141,10 @@ class RouterMappingResult:
                 raise RouterMappingError("router_mapping_success_method_required")
             if self.external_port is None:
                 raise RouterMappingError("router_mapping_success_external_port_required")
+            if self.internal_port is None:
+                raise RouterMappingError("router_mapping_success_internal_port_required")
+            if self.protocol is None:
+                raise RouterMappingError("router_mapping_success_protocol_required")
             if self.rollback_token is None:
                 raise RouterMappingError("router_mapping_success_rollback_token_required")
             if self.firewall_mutation_attempted is not True:
@@ -138,7 +153,23 @@ class RouterMappingResult:
                 raise RouterMappingError("router_mapping_success_error_forbidden")
             if self.rollback_instruction is None:
                 raise RouterMappingError("router_mapping_success_rollback_instruction_required")
-            _validate_rollback_instruction(self.rollback_instruction)
+            _validate_rollback_instruction(
+                self.rollback_instruction,
+                method_used=self.method_used,
+                internal_port=self.internal_port,
+                external_port=self.external_port,
+                lease_seconds=self.lease_seconds,
+                protocol=self.protocol,
+            )
+            if self.rollback_token != _rollback_token_from_fields(
+                method=self.method_used,
+                internal_port=self.internal_port,
+                external_port=self.external_port,
+                lease_seconds=self.lease_seconds,
+                protocol=self.protocol,
+                rollback_instruction=self.rollback_instruction,
+            ):
+                raise RouterMappingError("router_mapping_rollback_token_mismatch")
         elif self.rollback_instruction is not None:
             _validate_rollback_instruction(self.rollback_instruction)
 
@@ -181,10 +212,14 @@ class StdlibRouterMappingTransport:
         if location is None:
             return _unsupported(request, "upnp_igd", "upnp_igd_gateway_not_found")
         control_url, service_type = _load_upnp_control(location, request)
-        _send_upnp_add_port_mapping(control_url, service_type, request)
+        internal_client = _send_upnp_add_port_mapping(control_url, service_type, request)
         external_port = request.requested_external_port or request.internal_port
         rollback_instruction = build_upnp_rollback_instruction(
             control_url=control_url,
+            internal_client=internal_client,
+            internal_port=request.internal_port,
+            lease_seconds=request.lease_seconds,
+            method_used="upnp_igd",
             service_type=service_type,
             external_port=external_port,
             protocol=request.protocol,
@@ -200,6 +235,8 @@ class StdlibRouterMappingTransport:
                 external_port=external_port,
                 rollback_instruction=rollback_instruction,
             ),
+            internal_port=request.internal_port,
+            protocol=request.protocol,
             firewall_mutation_attempted=True,
             rollback_instruction=rollback_instruction,
         )
@@ -288,6 +325,8 @@ def _unsupported(
         external_port=None,
         lease_seconds=request.lease_seconds,
         rollback_token=None,
+        internal_port=request.internal_port,
+        protocol=request.protocol,
         firewall_mutation_attempted=False,
         error=error,
     )
@@ -353,7 +392,7 @@ def _send_upnp_add_port_mapping(
     control_url: str,
     service_type: str,
     request: RouterMappingRequest,
-) -> None:
+) -> str:
     external_port = request.requested_external_port or request.internal_port
     internal_client = _local_lan_ip_for(control_url, timeout_seconds=float(request.timeout_seconds))
     body = (
@@ -390,6 +429,7 @@ def _send_upnp_add_port_mapping(
         _reject_upnp_soap_fault(_read_response(response))
     finally:
         response.close()
+    return internal_client
 
 
 def remove_upnp_port_mapping(
@@ -449,6 +489,10 @@ def remove_upnp_port_mapping(
 def build_upnp_rollback_instruction(
     *,
     control_url: str,
+    internal_client: str | None = None,
+    internal_port: int,
+    lease_seconds: int,
+    method_used: str,
     service_type: str,
     external_port: int,
     protocol: str,
@@ -456,6 +500,18 @@ def build_upnp_rollback_instruction(
     """Return the executable DeletePortMapping instruction for rollback."""
 
     _require_local_http_url(control_url)
+    if method_used not in _ALLOWED_METHODS:
+        raise RouterMappingError("router_mapping_method_used_invalid")
+    _require_port(internal_port, "internal_port")
+    if isinstance(lease_seconds, bool) or not isinstance(lease_seconds, int):
+        raise RouterMappingError("router_mapping_result_lease_must_be_int")
+    if lease_seconds < 1 or lease_seconds > _MAX_LEASE_SECONDS:
+        raise RouterMappingError("router_mapping_result_lease_out_of_range")
+    if internal_client is not None:
+        try:
+            ipaddress.ip_address(internal_client)
+        except ValueError as exc:
+            raise RouterMappingError("router_mapping_internal_client_invalid") from exc
     service_type = _require_upnp_service_type(service_type)
     _require_port(external_port, "external_port")
     if not isinstance(protocol, str) or protocol.lower() not in {"tcp", "udp"}:
@@ -464,6 +520,10 @@ def build_upnp_rollback_instruction(
         "action": "DeletePortMapping",
         "control_url": control_url,
         "external_port": external_port,
+        "internal_client": internal_client,
+        "internal_port": internal_port,
+        "lease_seconds": lease_seconds,
+        "method_used": method_used,
         "protocol": protocol.lower(),
         "schema_version": UPNP_ROUTER_MAPPING_SIDECAR_VERSION,
         "service_type": service_type,
@@ -566,7 +626,15 @@ def _require_upnp_service_type(value: str) -> str:
     return value
 
 
-def _validate_rollback_instruction(value: Mapping[str, Any]) -> None:
+def _validate_rollback_instruction(
+    value: Mapping[str, Any],
+    *,
+    method_used: str | None = None,
+    internal_port: int | None = None,
+    external_port: int | None = None,
+    lease_seconds: int | None = None,
+    protocol: str | None = None,
+) -> None:
     if not isinstance(value, Mapping):
         raise RouterMappingError("router_mapping_rollback_instruction_invalid")
     if value.get("schema_version") != UPNP_ROUTER_MAPPING_SIDECAR_VERSION:
@@ -576,9 +644,35 @@ def _validate_rollback_instruction(value: Mapping[str, Any]) -> None:
     _require_local_http_url(str(value.get("control_url", "")))
     _require_upnp_service_type(str(value.get("service_type", "")))
     _require_port(value.get("external_port"), "external_port")
-    protocol = value.get("protocol")
-    if not isinstance(protocol, str) or protocol not in {"tcp", "udp"}:
+    _require_port(value.get("internal_port"), "internal_port")
+    if isinstance(value.get("lease_seconds"), bool) or not isinstance(
+        value.get("lease_seconds"),
+        int,
+    ):
         raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    if value["lease_seconds"] < 1 or value["lease_seconds"] > _MAX_LEASE_SECONDS:
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    if value.get("method_used") not in _ALLOWED_METHODS:
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    internal_client = value.get("internal_client")
+    if internal_client is not None:
+        try:
+            ipaddress.ip_address(internal_client)
+        except ValueError as exc:
+            raise RouterMappingError("router_mapping_rollback_instruction_invalid") from exc
+    actual_protocol = value.get("protocol")
+    if not isinstance(actual_protocol, str) or actual_protocol not in {"tcp", "udp"}:
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    expected = {
+        "external_port": external_port,
+        "internal_port": internal_port,
+        "lease_seconds": lease_seconds,
+        "method_used": method_used,
+        "protocol": protocol,
+    }
+    for field_name, expected_value in expected.items():
+        if expected_value is not None and value.get(field_name) != expected_value:
+            raise RouterMappingError("router_mapping_rollback_instruction_mismatch")
 
 
 def _is_allowed_private_gateway_ip(host: ipaddress._BaseAddress) -> bool:
@@ -608,12 +702,31 @@ def _rollback_token(
     external_port: int,
     rollback_instruction: Mapping[str, Any],
 ) -> str:
+    return _rollback_token_from_fields(
+        method=method,
+        internal_port=request.internal_port,
+        external_port=external_port,
+        lease_seconds=request.lease_seconds,
+        protocol=request.protocol,
+        rollback_instruction=rollback_instruction,
+    )
+
+
+def _rollback_token_from_fields(
+    *,
+    method: str,
+    internal_port: int,
+    external_port: int,
+    lease_seconds: int,
+    protocol: str,
+    rollback_instruction: Mapping[str, Any],
+) -> str:
     payload = {
         "external_port": external_port,
-        "internal_port": request.internal_port,
-        "lease_seconds": request.lease_seconds,
+        "internal_port": internal_port,
+        "lease_seconds": lease_seconds,
         "method": method,
-        "protocol": request.protocol,
+        "protocol": protocol,
         "rollback_instruction": dict(rollback_instruction),
         "schema_version": UPNP_ROUTER_MAPPING_SIDECAR_VERSION,
     }

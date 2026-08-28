@@ -41,10 +41,10 @@ def test_network_doctor_default_json_live_non_mutating_receipt() -> None:
     payload = json.loads(result.stdout)
     data = payload["data"]
     assert payload["command"] == "network-doctor"
-    assert data["connectivity_mode"] == "outbound_only"
+    assert data["connectivity_mode"] == "local_only"
     assert data["firewall_mutation_attempted"] is False
     assert data["router_mapping"] is None
-    assert data["receipt"]["mode"] == "outbound_only"
+    assert data["receipt"]["mode"] == "local_only"
     assert data["receipt"]["probe_epoch"] == 0
     assert data["receipt"]["schema_version"] == "gap_connectivity_mode_runtime_00.v0.1"
     assert "no_ilc_probe_observer_configured" in data["warnings"]
@@ -55,7 +55,7 @@ def test_network_doctor_text_live_non_mutating_receipt() -> None:
     result = _run_cli("network-doctor", "--text")
     assert result.returncode == 0
     assert result.stdout.startswith("ILC network doctor\n")
-    assert "connectivity_mode: outbound_only" in result.stdout
+    assert "connectivity_mode: local_only" in result.stdout
     assert "warning: no_ilc_probe_observer_configured" in result.stdout
 
 
@@ -127,6 +127,7 @@ def test_upnp_tip_absent_in_json_even_when_relay_reachable(monkeypatch) -> None:
             observer_endpoint_url=None,
             firewall_mutation_attempted=False,
             router_mapping=None,
+            attempt_receipts=(),
             warnings=(),
         ),
     )
@@ -162,6 +163,7 @@ def test_network_doctor_passes_enable_upnp_to_live_probe(monkeypatch) -> None:
             observer_endpoint_url=None,
             firewall_mutation_attempted=False,
             router_mapping=None,
+            attempt_receipts=(),
             warnings=(),
         )
 
@@ -215,6 +217,7 @@ def test_network_doctor_loads_relay_admission_material(tmp_path, monkeypatch) ->
             observer_endpoint_url=None,
             firewall_mutation_attempted=False,
             router_mapping=None,
+            attempt_receipts=(),
             warnings=(),
         )
 
