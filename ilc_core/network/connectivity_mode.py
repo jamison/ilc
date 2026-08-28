@@ -220,9 +220,7 @@ def _require_optional_endpoint(value: object, field_name: str) -> None:
         raise ConnectivityModeValidationError(f"{field_name}_must_be_string")
     if len(value) > _MAX_ENDPOINT_CHARS or not value.strip():
         raise ConnectivityModeValidationError(f"{field_name}_invalid")
-    host, separator, port_text = value.rpartition(":")
-    if not separator or not host or not port_text:
-        raise ConnectivityModeValidationError(f"{field_name}_must_be_host_port")
+    host, port_text = _split_host_port(value, field_name)
     if any(char.isspace() for char in host) or any(char in host for char in "/?#@"):
         raise ConnectivityModeValidationError(f"{field_name}_host_invalid")
     try:
@@ -231,6 +229,18 @@ def _require_optional_endpoint(value: object, field_name: str) -> None:
         raise ConnectivityModeValidationError(f"{field_name}_port_invalid") from exc
     if port < 1 or port > 65535:
         raise ConnectivityModeValidationError(f"{field_name}_port_out_of_range")
+
+
+def _split_host_port(value: str, field_name: str) -> tuple[str, str]:
+    if value.startswith("["):
+        closing = value.find("]")
+        if closing <= 1 or closing + 1 >= len(value) or value[closing + 1] != ":":
+            raise ConnectivityModeValidationError(f"{field_name}_must_be_host_port")
+        return value[1:closing], value[closing + 2 :]
+    host, separator, port_text = value.rpartition(":")
+    if not separator or not host or not port_text or ":" in host:
+        raise ConnectivityModeValidationError(f"{field_name}_must_be_host_port")
+    return host, port_text
 
 
 __all__ = [

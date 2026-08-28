@@ -15,6 +15,7 @@ import math
 import socket
 from collections.abc import Mapping
 from typing import Any, Callable
+from urllib.error import URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, build_opener
 
@@ -38,6 +39,7 @@ UPNP_SIDECAR_UNAVAILABLE = "UPnP sidecar not available — reinstall ilc-core"
 
 _DEFAULT_TIMEOUT_SECONDS = 3.0
 _DEFAULT_INTERNAL_PORT = 50151
+_MIN_PROTOCOL_PORT = 1
 _MAX_OBSERVER_RESPONSE_BYTES = 8192
 _MAX_ENDPOINT_CHARS = 512
 _AGENT_ID_HEX_LENGTH = 96
@@ -108,6 +110,37 @@ class NatTraversalAttemptReceipt:
         _require_bool(self.firewall_mutation_attempted, "firewall_mutation_attempted")
         if self.firewall_mutation_attempted and self.rollback_instruction is None:
             raise NatProbeError("firewall_mutation_requires_rollback_instruction")
+        if self.firewall_mutation_attempted and self.method not in {
+            "pcp",
+            "nat_pmp",
+            "upnp_igd",
+        }:
+            raise NatProbeError("firewall_mutation_method_invalid")
+        if self.result in {"not_attempted", "skipped_no_opt_in"}:
+            if self.external_endpoint is not None:
+                raise NatProbeError("non_attempt_endpoint_forbidden")
+            if self.rollback_instruction is not None:
+                raise NatProbeError("non_attempt_rollback_forbidden")
+            if self.firewall_mutation_attempted:
+                raise NatProbeError("non_attempt_mutation_forbidden")
+            if self.lease_seconds != 0:
+                raise NatProbeError("non_attempt_lease_forbidden")
+        if self.result == "skipped_no_opt_in" and self.method not in {
+            "pcp",
+            "nat_pmp",
+            "upnp_igd",
+        }:
+            raise NatProbeError("skipped_no_opt_in_method_invalid")
+        if self.result == "not_attempted" and self.method != "ilc_observer_detection":
+            raise NatProbeError("not_attempted_method_invalid")
+        if self.lease_seconds > 0 and self.method not in {"pcp", "nat_pmp", "upnp_igd"}:
+            raise NatProbeError("lease_seconds_method_invalid")
+        if (
+            self.result == "success"
+            and self.method == "relay_fallback"
+            and self.external_endpoint is None
+        ):
+            raise NatProbeError("relay_success_endpoint_required")
         if self.policy_version != NAT_TRAVERSAL_POLICY_VERSION:
             raise NatProbeError("nat_traversal_policy_version_invalid")
 
@@ -204,6 +237,10 @@ class NatProbeEngine:
     ) -> NatProbeReport:
         """Return deterministic connectivity evidence for one protocol epoch."""
 
+        attempt_router_mapping = _require_bool(
+            attempt_router_mapping,
+            "attempt_router_mapping",
+        )
         _require_epoch(probe_epoch, "probe_epoch")
         warnings: list[str] = []
         attempt_receipts: list[NatTraversalAttemptReceipt] = []
@@ -247,7 +284,7 @@ class NatProbeEngine:
                     observed_ip = None
                     observed_port = None
                 break
-            except (NatProbeError, OSError, TimeoutError, ValueError) as exc:
+            except (NatProbeError, OSError, TimeoutError, URLError) as exc:
                 warnings.append(f"probe_observer_failed:{observer.endpoint_url}:{type(exc).__name__}")
                 attempt_receipts.append(
                     self._attempt_receipt(
@@ -308,7 +345,9 @@ class NatProbeEngine:
                 )
             )
 
-        relay_endpoint = self.relay_endpoint
+        relay_endpoint = None
+        if self.relay_endpoint is not None:
+            warnings.append("configured_relay_endpoint_unverified")
         if (
             not has_public_ip
             and not direct_mapping_candidate
@@ -422,7 +461,7 @@ class NatProbeEngine:
                 relay_admission_signature=admission_signature,
             )
             return grant.relay_endpoint.as_host_port()
-        except (relay_module.RelayClientError, OSError, TimeoutError, ValueError) as exc:
+        except (relay_module.RelayClientError, OSError, TimeoutError) as exc:
             warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
             return None
 
@@ -508,6 +547,12 @@ def _coerce_observer(value: ProbeObserver | str) -> ProbeObserver:
 def _endpoint(ip_value: str | None, port_value: int | None) -> str | None:
     if ip_value is None or port_value is None:
         return None
+    try:
+        parsed = ipaddress.ip_address(ip_value)
+    except ValueError as exc:
+        raise NatProbeError("endpoint_ip_invalid") from exc
+    if isinstance(parsed, ipaddress.IPv6Address):
+        return f"[{ip_value}]:{port_value}"
     return f"{ip_value}:{port_value}"
 
 
@@ -516,9 +561,7 @@ def _require_endpoint_string(value: object, field_name: str) -> None:
         raise NatProbeError(f"{field_name}_must_be_host_port")
     if len(value) > _MAX_ENDPOINT_CHARS or not value.strip():
         raise NatProbeError(f"{field_name}_invalid")
-    host, separator, port_text = value.rpartition(":")
-    if not separator or not host or not port_text:
-        raise NatProbeError(f"{field_name}_must_be_host_port")
+    host, port_text = _split_host_port(value, field_name)
     if any(char.isspace() for char in host) or any(char in host for char in "/?#@"):
         raise NatProbeError(f"{field_name}_host_invalid")
     _require_port(int(port_text) if port_text.isdecimal() else port_text, field_name)
@@ -529,19 +572,25 @@ def _sidecar_unavailable_result() -> Any:
         firewall_mutation_attempted = False
         success = False
         external_port = None
+        internal_port = None
+        lease_seconds = 0
+        method_used = None
+        protocol = None
+        rollback_instruction = None
+        rollback_token = None
 
         def to_dict(self) -> dict[str, Any]:
             return {
                 "error": UPNP_SIDECAR_UNAVAILABLE,
-                "external_port": None,
-                "firewall_mutation_attempted": False,
-                "internal_port": None,
-                "lease_seconds": 0,
-                "method_used": None,
-                "protocol": None,
-                "rollback_instruction": None,
-                "rollback_token": None,
-                "success": False,
+                "external_port": self.external_port,
+                "firewall_mutation_attempted": self.firewall_mutation_attempted,
+                "internal_port": self.internal_port,
+                "lease_seconds": self.lease_seconds,
+                "method_used": self.method_used,
+                "protocol": self.protocol,
+                "rollback_instruction": self.rollback_instruction,
+                "rollback_token": self.rollback_token,
+                "success": self.success,
             }
 
     return _UnavailableResult()
@@ -589,7 +638,10 @@ def _require_ip(value: object, field_name: str) -> None:
 def _require_port(value: object, field_name: str) -> None:
     if isinstance(value, bool) or not isinstance(value, int):
         raise NatProbeError(f"{field_name}_must_be_port_int")
-    if value < 1 or value > 65535:
+    # NAT probe endpoint validation accepts the full protocol port range.
+    # Router-mapping mutation is stricter and rejects privileged ports in the
+    # UPnP sidecar before any firewall mutation can be attempted.
+    if value < _MIN_PROTOCOL_PORT or value > 65535:
         raise NatProbeError(f"{field_name}_out_of_range")
 
 
@@ -613,6 +665,18 @@ def _require_bool(value: object, field_name: str) -> bool:
     if not isinstance(value, bool):
         raise NatProbeError(f"{field_name}_must_be_bool")
     return value
+
+
+def _split_host_port(value: str, field_name: str) -> tuple[str, str]:
+    if value.startswith("["):
+        closing = value.find("]")
+        if closing <= 1 or closing + 1 >= len(value) or value[closing + 1] != ":":
+            raise NatProbeError(f"{field_name}_must_be_host_port")
+        return value[1:closing], value[closing + 2 :]
+    host, separator, port_text = value.rpartition(":")
+    if not separator or not host or not port_text or ":" in host:
+        raise NatProbeError(f"{field_name}_must_be_host_port")
+    return host, port_text
 
 
 class _NoRedirect(HTTPRedirectHandler):

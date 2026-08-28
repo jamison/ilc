@@ -253,9 +253,25 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
                     ).to_dict()
                 }
             elif self.path == "/relay/slot/keepalive":
-                body = {"renewal_result": "renewed"}
+                body = {
+                    "agent_id": payload["agent_id"],
+                    "keepalive_epoch": payload["keepalive_epoch"],
+                    "previous_grant_hash": payload["previous_grant_hash"],
+                    "relay_lifecycle_payload_ref": payload["relay_lifecycle_payload_ref"],
+                    "renewal_result": "renewed",
+                    "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+                    "slot_id": payload["slot_id"],
+                }
             elif self.path == "/relay/slot/release":
-                body = {"release_result": "released"}
+                body = {
+                    "agent_id": payload["agent_id"],
+                    "previous_grant_hash": payload["previous_grant_hash"],
+                    "release_epoch": payload["release_epoch"],
+                    "relay_lifecycle_payload_ref": payload["relay_lifecycle_payload_ref"],
+                    "release_result": "released",
+                    "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+                    "slot_id": payload["slot_id"],
+                }
             else:
                 self.send_response(404)
                 self.end_headers()
@@ -349,17 +365,19 @@ def test_grant_rejects_agent_mismatch() -> None:
 
     class BadTransport:
         def post_json(self, *_args: object) -> dict[str, object]:
-            return RelaySlotGrant(
-                slot_id="slot-0001",
-                agent_id="a" * 96,
-                relay_endpoint=RelayEndpoint(host="relay.local", port=50151),
-                granted_epoch=0,
-                ttl_epochs=4,
-                target_internal_port=50151,
-                max_bytes_per_epoch=64 * 1024 * 1024,
-                max_concurrent_streams=8,
-                admission_request_hash="0" * 64,
-            ).to_dict()
+            return {
+                "grant": RelaySlotGrant(
+                    slot_id="slot-0001",
+                    agent_id="a" * 96,
+                    relay_endpoint=RelayEndpoint(host="relay.local", port=50151),
+                    granted_epoch=0,
+                    ttl_epochs=4,
+                    target_internal_port=50151,
+                    max_bytes_per_epoch=64 * 1024 * 1024,
+                    max_concurrent_streams=8,
+                    admission_request_hash="0" * 64,
+                ).to_dict()
+            }
 
     client = RelayClient(
         relay_base_url="http://127.0.0.1:9",
