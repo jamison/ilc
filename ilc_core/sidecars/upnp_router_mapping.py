@@ -548,13 +548,13 @@ def _read_response(response: Any) -> bytes:
 
 
 def _reject_xml_entities(payload: bytes) -> None:
-    lowered = payload[:1024].lower()
+    lowered = payload.lower()
     if b"<!doctype" in lowered or b"<!entity" in lowered:
         raise RouterMappingError("upnp_description_xml_entity_forbidden")
 
 
 def _reject_upnp_soap_fault(payload: bytes) -> None:
-    lowered = payload[:4096].lower()
+    lowered = payload.lower()
     if b"<fault" in lowered or b":fault" in lowered or b"<errorcode>" in lowered:
         raise RouterMappingError("upnp_soap_fault_response")
 

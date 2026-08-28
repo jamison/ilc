@@ -8,6 +8,7 @@ import os
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
+from types import SimpleNamespace
 from typing import Any
 
 from ilc_core.network.connectivity_mode import (
@@ -22,7 +23,7 @@ from ilc_core.network.connectivity_mode import (
 NETWORK_DOCTOR_CLI_TOKEN = "network_doctor_cli_committed_GAP_INSTALL_NETWORK_DOCTOR_00"
 NETWORK_DOCTOR_STUB_WARNING = (
     "CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED=True; live network probes are "
-    "not active, returning an outbound_only stub receipt."
+    "not active, returning a local_only stub receipt."
 )
 UPNP_RELAY_TIP = (
     "Tip: Relay mode active (higher latency than direct). If your home or office router\n"
@@ -95,18 +96,16 @@ def _current_probe_report(
             observed_port=None,
             relay_available=False,
             validator_participation_enabled=False,
-            has_outbound_connectivity=True,
+            has_outbound_connectivity=False,
         )
         receipt = _receipt_from_mode(connectivity_mode_from_probe_result(probe_result))
-
-        class _StubReport:
-            connectivity_receipt = receipt
-            firewall_mutation_attempted = False
-            probe_result = probe_result
-            router_mapping = None
-            warnings: tuple[str, ...] = ()
-
-        return _StubReport()
+        return SimpleNamespace(
+            connectivity_receipt=receipt,
+            firewall_mutation_attempted=False,
+            probe_result=probe_result,
+            router_mapping=None,
+            warnings=(),
+        )
 
     from ilc_core.network.nat_probe import NatProbeEngine
 

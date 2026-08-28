@@ -51,6 +51,17 @@ def test_network_doctor_default_json_live_non_mutating_receipt() -> None:
     assert "no_ilc_probe_observer_configured" in result.stderr
 
 
+def test_network_doctor_guarded_stub_is_local_only_without_name_error(monkeypatch) -> None:
+    monkeypatch.setattr(network_doctor, "CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED", True)
+
+    payload = network_doctor.build_network_doctor_payload()
+
+    assert payload["connectivity_mode"] == "local_only"
+    assert payload["receipt"]["mode"] == "local_only"
+    assert payload["firewall_mutation_attempted"] is False
+    assert payload["warnings"] == [network_doctor.NETWORK_DOCTOR_STUB_WARNING]
+
+
 def test_network_doctor_text_live_non_mutating_receipt() -> None:
     result = _run_cli("network-doctor", "--text")
     assert result.returncode == 0

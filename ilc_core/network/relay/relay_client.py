@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 import hashlib
+import ipaddress
 import json
 import math
 import re
@@ -176,6 +177,12 @@ class RelayEndpoint:
             raise RelayClientError("relay_endpoint_mode_invalid")
 
     def as_host_port(self) -> str:
+        try:
+            parsed = ipaddress.ip_address(self.host)
+        except ValueError:
+            return f"{self.host}:{self.port}"
+        if isinstance(parsed, ipaddress.IPv6Address):
+            return f"[{self.host}]:{self.port}"
         return f"{self.host}:{self.port}"
 
     def to_dict(self) -> dict[str, Any]:
@@ -695,6 +702,15 @@ class RelayClient:
             payload,
             self.timeout_seconds,
         )
+        renewal_result = _require_bound_lifecycle_response(
+            response,
+            action="keepalive",
+            agent_id=self.agent_id,
+            epoch=keepalive_epoch,
+            previous_grant_hash=slot.canonical_response_hash,
+            payload_ref=payload_ref,
+            slot_id=slot.slot_id,
+        )
         return RelayKeepaliveReceipt(
             slot_id=slot.slot_id,
             agent_id=self.agent_id,
@@ -702,10 +718,7 @@ class RelayClient:
             previous_grant_hash=slot.canonical_response_hash,
             relay_lifecycle_payload_ref=payload_ref,
             relay_lifecycle_signature=relay_lifecycle_signature,
-            renewal_result=_require_token(
-                response.get("renewal_result"),
-                "relay_keepalive_result_invalid",
-            ),
+            renewal_result=renewal_result,
         )
 
     def release_slot(
@@ -752,6 +765,15 @@ class RelayClient:
             payload,
             self.timeout_seconds,
         )
+        release_result = _require_bound_lifecycle_response(
+            response,
+            action="release",
+            agent_id=self.agent_id,
+            epoch=release_epoch,
+            previous_grant_hash=slot.canonical_response_hash,
+            payload_ref=payload_ref,
+            slot_id=slot.slot_id,
+        )
         return RelayReleaseReceipt(
             slot_id=slot.slot_id,
             agent_id=self.agent_id,
@@ -759,10 +781,7 @@ class RelayClient:
             previous_grant_hash=slot.canonical_response_hash,
             relay_lifecycle_payload_ref=payload_ref,
             relay_lifecycle_signature=relay_lifecycle_signature,
-            release_result=_require_token(
-                response.get("release_result"),
-                "relay_release_result_invalid",
-            ),
+            release_result=release_result,
         )
 
     def _require_active(self) -> None:
@@ -784,12 +803,51 @@ def _extract_object(
     key: str,
     missing_token: str,
 ) -> Mapping[str, Any]:
-    if key in payload:
-        value = payload[key]
-        _require_mapping(value, missing_token)
-        return value
     _require_mapping(payload, missing_token)
-    return payload
+    if key not in payload:
+        raise RelayClientError(missing_token)
+    value = payload[key]
+    _require_mapping(value, missing_token)
+    return value
+
+
+def _require_bound_lifecycle_response(
+    response: Mapping[str, Any],
+    *,
+    action: str,
+    agent_id: str,
+    epoch: int,
+    previous_grant_hash: str,
+    payload_ref: str,
+    slot_id: str,
+) -> str:
+    if action == "keepalive":
+        epoch_field = "keepalive_epoch"
+        result_field = "renewal_result"
+        result_token = "relay_keepalive_result_invalid"
+        mismatch_token = "relay_keepalive_response_binding_mismatch"
+    elif action == "release":
+        epoch_field = "release_epoch"
+        result_field = "release_result"
+        result_token = "relay_release_result_invalid"
+        mismatch_token = "relay_release_response_binding_mismatch"
+    else:
+        raise RelayClientError("relay_lifecycle_action_invalid")
+
+    _require_mapping(response, mismatch_token)
+    result = _require_token(response.get(result_field), result_token)
+    expected = {
+        "agent_id": agent_id,
+        epoch_field: epoch,
+        "previous_grant_hash": previous_grant_hash,
+        "relay_lifecycle_payload_ref": payload_ref,
+        "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+        "slot_id": slot_id,
+    }
+    for field_name, expected_value in expected.items():
+        if response.get(field_name) != expected_value:
+            raise RelayClientError(mismatch_token)
+    return result
 
 
 def _coerce_endpoint(value: object) -> RelayEndpoint:
