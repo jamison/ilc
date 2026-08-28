@@ -1,0 +1,700 @@
+# SPDX-License-Identifier: AGPL-3.0-only
+"""Guarded relay/rendezvous client and Option A admission handshake.
+
+This module implements the client-side relay slot protocol only. It does not
+deploy a relay server, clear activation guards, grant validator authority, or
+activate CDL-078 rewards. Relay admission presents an existing AgentID,
+Genesis-traced invite metadata, and the invite proof-of-possession from the
+onboarding path; future relay servers must verify the same material again.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Mapping
+from dataclasses import asdict, dataclass
+import hashlib
+import json
+import re
+from typing import Any, Protocol
+from urllib.error import URLError
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
+
+from ilc_core import __version__ as ILC_CORE_VERSION
+from ilc_core.identity.first_run_provisioning import (
+    POP_DOMAIN,
+    invite_pop_payload_ref,
+    verify_invite_pop,
+)
+
+
+RELAY_CLIENT_NOT_ACTIVATED = True
+RELAY_CLIENT_SCHEMA_VERSION = "relay_client_GAP_RELAY_RENDEZVOUS_IMPL_00.v0.1"
+RELAY_CLIENT_TOKEN = "relay_client_committed_GAP_RELAY_RENDEZVOUS_IMPL_00"
+RELAY_ADMISSION_DOMAIN = "ilc-relay-rendezvous-admission-v1"
+RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC = "pass_through_consensus_quic"
+
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_SHA384_RE = re.compile(r"^[0-9a-f]{96}$")
+_BLS_SIGNATURE_RE = re.compile(r"^[0-9a-f]{192}$")
+_TOKEN_RE = re.compile(r"^[A-Za-z0-9._:-]{1,128}$")
+_NETWORK_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{1,62}$")
+
+_DEFAULT_TIMEOUT_SECONDS = 3.0
+_DEFAULT_INTERNAL_PORT = 50151
+_MAX_EPOCH = (1 << 64) - 1
+_MAX_TEXT_CHARS = 512
+_MAX_REQUEST_BYTES = 32_768
+_MAX_RESPONSE_BYTES = 65_536
+_MAX_TTL_EPOCHS = 4
+_MAX_BYTES_PER_EPOCH = 64 * 1024 * 1024
+_MAX_CONCURRENT_STREAMS = 8
+
+
+class RelayClientError(ValueError):
+    """Raised when relay client input, transport, or server response is invalid."""
+
+
+class RelayClientTransport(Protocol):
+    """Minimal JSON POST transport used by RelayClient."""
+
+    def post_json(
+        self,
+        path: str,
+        payload: Mapping[str, Any],
+        timeout_seconds: float,
+    ) -> dict[str, Any]:
+        """POST canonical JSON and return a decoded JSON object."""
+
+
+@dataclass(frozen=True)
+class RelayEndpoint:
+    """Endpoint assigned by a relay slot grant."""
+
+    host: str
+    port: int
+    transport: str = "quic"
+    relay_mode: str = RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC
+
+    def __post_init__(self) -> None:
+        _require_host(self.host, "relay_endpoint_host")
+        _require_port(self.port, "relay_endpoint_port")
+        _require_token(self.transport, "relay_endpoint_transport")
+        if self.transport != "quic":
+            raise RelayClientError("relay_endpoint_transport_must_be_quic")
+        if self.relay_mode != RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC:
+            raise RelayClientError("relay_endpoint_mode_invalid")
+
+    def as_host_port(self) -> str:
+        return f"{self.host}:{self.port}"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class RelayAdmissionRequest:
+    """Canonical request payload for Option A relay admission."""
+
+    agent_id: str
+    invite_id: str
+    invite_nullifier: str
+    invite_pop: str
+    invite_pop_epoch: int
+    admission_epoch: int
+    network_id: str = "public-rc"
+    requested_internal_port: int = _DEFAULT_INTERNAL_PORT
+    requested_protocol: str = "quic"
+    software_version: str = ILC_CORE_VERSION
+
+    def __post_init__(self) -> None:
+        _require_agent_id(self.agent_id, "relay_agent_id_invalid")
+        _require_non_empty_string(self.invite_id, "relay_invite_id_invalid")
+        _require_sha256_hex(self.invite_nullifier, "relay_invite_nullifier_invalid")
+        _require_bls_signature_hex(self.invite_pop, "relay_invite_pop_invalid")
+        _require_epoch(self.invite_pop_epoch, "relay_invite_pop_epoch_invalid")
+        _require_epoch(self.admission_epoch, "relay_admission_epoch_invalid")
+        _require_network_id(self.network_id)
+        _require_port(self.requested_internal_port, "relay_requested_internal_port")
+        _require_token(self.software_version, "relay_software_version_invalid")
+        if self.requested_protocol != "quic":
+            raise RelayClientError("relay_requested_protocol_must_be_quic")
+        if not verify_invite_pop(
+            agent_id_hex=self.agent_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_id=self.invite_id,
+            epoch=self.invite_pop_epoch,
+            invite_pop=self.invite_pop,
+        ):
+            raise RelayClientError("relay_invite_pop_verification_failed")
+
+    @property
+    def invite_pop_payload_ref(self) -> str:
+        return invite_pop_payload_ref(
+            agent_id_hex=self.agent_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_id=self.invite_id,
+            epoch=self.invite_pop_epoch,
+        )
+
+    @property
+    def canonical_request_hash(self) -> str:
+        return hashlib.sha256(_canonical_json_bytes(self._core_payload())).hexdigest()
+
+    def _core_payload(self) -> dict[str, Any]:
+        return {
+            "admission_epoch": self.admission_epoch,
+            "agent_id": self.agent_id,
+            "domain": RELAY_ADMISSION_DOMAIN,
+            "invite_id": self.invite_id,
+            "invite_nullifier": self.invite_nullifier,
+            "invite_pop": self.invite_pop,
+            "invite_pop_domain": POP_DOMAIN,
+            "invite_pop_epoch": self.invite_pop_epoch,
+            "invite_pop_payload_ref": self.invite_pop_payload_ref,
+            "network_id": self.network_id,
+            "requested_internal_port": self.requested_internal_port,
+            "requested_protocol": self.requested_protocol,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "software_version": self.software_version,
+        }
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = self._core_payload()
+        payload["canonical_request_hash"] = self.canonical_request_hash
+        return payload
+
+    def to_canonical_json(self) -> bytes:
+        return _canonical_json_bytes(self.to_dict())
+
+
+@dataclass(frozen=True)
+class RelaySlotGrant:
+    """Bound relay slot grant returned by a relay server."""
+
+    slot_id: str
+    agent_id: str
+    relay_endpoint: RelayEndpoint
+    granted_epoch: int
+    ttl_epochs: int
+    target_internal_port: int
+    max_bytes_per_epoch: int
+    max_concurrent_streams: int
+    relay_mode: str = RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC
+    revocation_ref: str | None = None
+    canonical_response_hash: str | None = None
+
+    def __post_init__(self) -> None:
+        _require_token(self.slot_id, "relay_slot_id_invalid")
+        _require_agent_id(self.agent_id, "relay_grant_agent_id_invalid")
+        endpoint = _coerce_endpoint(self.relay_endpoint)
+        object.__setattr__(self, "relay_endpoint", endpoint)
+        _require_epoch(self.granted_epoch, "relay_granted_epoch_invalid")
+        _require_ttl_epochs(self.ttl_epochs)
+        _require_port(self.target_internal_port, "relay_target_internal_port")
+        _require_uint_range(
+            self.max_bytes_per_epoch,
+            "relay_max_bytes_per_epoch_invalid",
+            1,
+            _MAX_BYTES_PER_EPOCH,
+        )
+        _require_uint_range(
+            self.max_concurrent_streams,
+            "relay_max_concurrent_streams_invalid",
+            1,
+            _MAX_CONCURRENT_STREAMS,
+        )
+        if self.relay_mode != RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC:
+            raise RelayClientError("relay_grant_mode_invalid")
+        if self.revocation_ref is not None:
+            _require_token(self.revocation_ref, "relay_revocation_ref_invalid")
+        expected_hash = self._response_hash()
+        if self.canonical_response_hash is None:
+            object.__setattr__(self, "canonical_response_hash", expected_hash)
+        elif self.canonical_response_hash != expected_hash:
+            raise RelayClientError("relay_response_hash_mismatch")
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "RelaySlotGrant":
+        _require_mapping(payload, "relay_grant_response_must_be_object")
+        return cls(
+            slot_id=payload.get("slot_id"),
+            agent_id=payload.get("agent_id"),
+            relay_endpoint=_coerce_endpoint(payload.get("relay_endpoint")),
+            granted_epoch=payload.get("granted_epoch"),
+            ttl_epochs=payload.get("ttl_epochs"),
+            target_internal_port=payload.get("target_internal_port"),
+            max_bytes_per_epoch=payload.get("max_bytes_per_epoch"),
+            max_concurrent_streams=payload.get("max_concurrent_streams"),
+            relay_mode=payload.get("relay_mode", RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC),
+            revocation_ref=payload.get("revocation_ref"),
+            canonical_response_hash=payload.get("canonical_response_hash"),
+        )
+
+    def _core_payload(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "granted_epoch": self.granted_epoch,
+            "max_bytes_per_epoch": self.max_bytes_per_epoch,
+            "max_concurrent_streams": self.max_concurrent_streams,
+            "relay_endpoint": self.relay_endpoint.to_dict(),
+            "relay_mode": self.relay_mode,
+            "revocation_ref": self.revocation_ref,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "slot_id": self.slot_id,
+            "target_internal_port": self.target_internal_port,
+            "ttl_epochs": self.ttl_epochs,
+        }
+
+    def _response_hash(self) -> str:
+        return hashlib.sha256(_canonical_json_bytes(self._core_payload())).hexdigest()
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = self._core_payload()
+        payload["canonical_response_hash"] = self.canonical_response_hash
+        return payload
+
+    def to_canonical_json(self) -> bytes:
+        return _canonical_json_bytes(self.to_dict())
+
+
+@dataclass(frozen=True)
+class RelayKeepaliveReceipt:
+    """Client-side receipt for a relay keepalive response."""
+
+    slot_id: str
+    agent_id: str
+    keepalive_epoch: int
+    previous_grant_hash: str
+    renewal_result: str
+
+    def __post_init__(self) -> None:
+        _require_token(self.slot_id, "relay_slot_id_invalid")
+        _require_agent_id(self.agent_id, "relay_keepalive_agent_id_invalid")
+        _require_epoch(self.keepalive_epoch, "relay_keepalive_epoch_invalid")
+        _require_sha256_hex(self.previous_grant_hash, "relay_previous_grant_hash_invalid")
+        _require_token(self.renewal_result, "relay_keepalive_result_invalid")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "keepalive_epoch": self.keepalive_epoch,
+            "previous_grant_hash": self.previous_grant_hash,
+            "renewal_result": self.renewal_result,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "slot_id": self.slot_id,
+        }
+
+    def to_canonical_json(self) -> bytes:
+        return _canonical_json_bytes(self.to_dict())
+
+
+@dataclass(frozen=True)
+class RelayReleaseReceipt:
+    """Client-side receipt for a relay slot release response."""
+
+    slot_id: str
+    agent_id: str
+    release_epoch: int
+    release_result: str
+
+    def __post_init__(self) -> None:
+        _require_token(self.slot_id, "relay_slot_id_invalid")
+        _require_agent_id(self.agent_id, "relay_release_agent_id_invalid")
+        _require_epoch(self.release_epoch, "relay_release_epoch_invalid")
+        _require_token(self.release_result, "relay_release_result_invalid")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "release_epoch": self.release_epoch,
+            "release_result": self.release_result,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "slot_id": self.slot_id,
+        }
+
+    def to_canonical_json(self) -> bytes:
+        return _canonical_json_bytes(self.to_dict())
+
+
+class HttpsRelayClientTransport:
+    """Bounded HTTPS JSON transport for relay admission and slot lifecycle."""
+
+    def __init__(self, relay_base_url: str) -> None:
+        self._base_url = _require_relay_base_url(relay_base_url).rstrip("/")
+
+    def post_json(
+        self,
+        path: str,
+        payload: Mapping[str, Any],
+        timeout_seconds: float,
+    ) -> dict[str, Any]:
+        _require_timeout(timeout_seconds)
+        if not isinstance(path, str) or not path.startswith("/"):
+            raise RelayClientError("relay_request_path_invalid")
+        encoded = _canonical_json_bytes(dict(payload))
+        if len(encoded) > _MAX_REQUEST_BYTES:
+            raise RelayClientError("relay_request_too_large")
+        request = Request(
+            f"{self._base_url}{path}",
+            data=encoded,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "User-Agent": f"ilc-core/{ILC_CORE_VERSION} relay-client",
+            },
+            method="POST",
+        )
+        try:
+            response = urlopen(request, timeout=timeout_seconds)
+            try:
+                raw = response.read(_MAX_RESPONSE_BYTES + 1)
+            finally:
+                response.close()
+        except URLError as exc:
+            raise RelayClientError("relay_transport_failed") from exc
+        if len(raw) > _MAX_RESPONSE_BYTES:
+            raise RelayClientError("relay_response_too_large")
+        try:
+            decoded = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RelayClientError("relay_response_json_invalid") from exc
+        if not isinstance(decoded, dict):
+            raise RelayClientError("relay_response_must_be_object")
+        return decoded
+
+
+class RelayClient:
+    """Client-side relay slot admission, keepalive, and release."""
+
+    def __init__(
+        self,
+        *,
+        relay_base_url: str,
+        agent_id: str,
+        invite_id: str,
+        invite_nullifier: str,
+        invite_pop: str,
+        invite_pop_epoch: int = 0,
+        network_id: str = "public-rc",
+        requested_internal_port: int = _DEFAULT_INTERNAL_PORT,
+        software_version: str = ILC_CORE_VERSION,
+        timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
+        transport: RelayClientTransport | None = None,
+        allow_guarded_request: bool = False,
+    ) -> None:
+        self.relay_base_url = _require_relay_base_url(relay_base_url)
+        self.agent_id = _require_agent_id(agent_id, "relay_agent_id_invalid")
+        self.invite_id = _require_non_empty_string(invite_id, "relay_invite_id_invalid")
+        self.invite_nullifier = _require_sha256_hex(
+            invite_nullifier,
+            "relay_invite_nullifier_invalid",
+        )
+        self.invite_pop = _require_bls_signature_hex(invite_pop, "relay_invite_pop_invalid")
+        _require_epoch(invite_pop_epoch, "relay_invite_pop_epoch_invalid")
+        self.invite_pop_epoch = invite_pop_epoch
+        _require_network_id(network_id)
+        self.network_id = network_id
+        _require_port(requested_internal_port, "relay_requested_internal_port")
+        self.requested_internal_port = requested_internal_port
+        self.software_version = _require_token(
+            software_version,
+            "relay_software_version_invalid",
+        )
+        self.timeout_seconds = _require_timeout(timeout_seconds)
+        self._transport = transport or HttpsRelayClientTransport(self.relay_base_url)
+        self._allow_guarded_request = _require_bool(
+            allow_guarded_request,
+            "relay_allow_guarded_request_must_be_bool",
+        )
+
+    def request_slot(self, *, admission_epoch: int) -> RelaySlotGrant:
+        """Request a bounded relay slot for the current protocol epoch."""
+
+        self._require_active()
+        request = RelayAdmissionRequest(
+            agent_id=self.agent_id,
+            invite_id=self.invite_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_pop=self.invite_pop,
+            invite_pop_epoch=self.invite_pop_epoch,
+            admission_epoch=admission_epoch,
+            network_id=self.network_id,
+            requested_internal_port=self.requested_internal_port,
+            software_version=self.software_version,
+        )
+        response = self._transport.post_json(
+            "/relay/admission/request",
+            request.to_dict(),
+            self.timeout_seconds,
+        )
+        grant_payload = _extract_object(response, "grant", "relay_grant_missing")
+        grant = RelaySlotGrant.from_dict(grant_payload)
+        if grant.agent_id != self.agent_id:
+            raise RelayClientError("relay_grant_agent_id_mismatch")
+        if grant.target_internal_port != self.requested_internal_port:
+            raise RelayClientError("relay_grant_target_port_mismatch")
+        if grant.granted_epoch != admission_epoch:
+            raise RelayClientError("relay_grant_epoch_mismatch")
+        return grant
+
+    def keepalive(
+        self,
+        *,
+        slot: RelaySlotGrant,
+        keepalive_epoch: int,
+    ) -> RelayKeepaliveReceipt:
+        """Send a per-epoch relay slot keepalive."""
+
+        self._require_active()
+        slot = self._require_slot_for_agent(slot)
+        _require_epoch(keepalive_epoch, "relay_keepalive_epoch_invalid")
+        payload = {
+            "agent_id": self.agent_id,
+            "keepalive_epoch": keepalive_epoch,
+            "previous_grant_hash": slot.canonical_response_hash,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "slot_id": slot.slot_id,
+        }
+        response = self._transport.post_json(
+            "/relay/slot/keepalive",
+            payload,
+            self.timeout_seconds,
+        )
+        return RelayKeepaliveReceipt(
+            slot_id=slot.slot_id,
+            agent_id=self.agent_id,
+            keepalive_epoch=keepalive_epoch,
+            previous_grant_hash=slot.canonical_response_hash,
+            renewal_result=_require_token(
+                response.get("renewal_result"),
+                "relay_keepalive_result_invalid",
+            ),
+        )
+
+    def release_slot(
+        self,
+        *,
+        slot: RelaySlotGrant,
+        release_epoch: int,
+    ) -> RelayReleaseReceipt:
+        """Gracefully release a relay slot before shutdown."""
+
+        self._require_active()
+        slot = self._require_slot_for_agent(slot)
+        _require_epoch(release_epoch, "relay_release_epoch_invalid")
+        payload = {
+            "agent_id": self.agent_id,
+            "release_epoch": release_epoch,
+            "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+            "slot_id": slot.slot_id,
+        }
+        response = self._transport.post_json(
+            "/relay/slot/release",
+            payload,
+            self.timeout_seconds,
+        )
+        return RelayReleaseReceipt(
+            slot_id=slot.slot_id,
+            agent_id=self.agent_id,
+            release_epoch=release_epoch,
+            release_result=_require_token(
+                response.get("release_result"),
+                "relay_release_result_invalid",
+            ),
+        )
+
+    def _require_active(self) -> None:
+        if RELAY_CLIENT_NOT_ACTIVATED and not self._allow_guarded_request:
+            raise RelayClientError("relay_client_not_activated")
+
+    def _require_slot_for_agent(self, slot: object) -> RelaySlotGrant:
+        if not isinstance(slot, RelaySlotGrant):
+            raise RelayClientError("relay_slot_grant_required")
+        if slot.agent_id != self.agent_id:
+            raise RelayClientError("relay_slot_agent_id_mismatch")
+        if slot.target_internal_port != self.requested_internal_port:
+            raise RelayClientError("relay_slot_target_port_mismatch")
+        return slot
+
+
+def _extract_object(
+    payload: Mapping[str, Any],
+    key: str,
+    missing_token: str,
+) -> Mapping[str, Any]:
+    if key in payload:
+        value = payload[key]
+        _require_mapping(value, missing_token)
+        return value
+    _require_mapping(payload, missing_token)
+    return payload
+
+
+def _coerce_endpoint(value: object) -> RelayEndpoint:
+    if isinstance(value, RelayEndpoint):
+        return value
+    if not isinstance(value, Mapping):
+        raise RelayClientError("relay_endpoint_must_be_object")
+    return RelayEndpoint(
+        host=value.get("host"),
+        port=value.get("port"),
+        transport=value.get("transport", "quic"),
+        relay_mode=value.get("relay_mode", RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC),
+    )
+
+
+def _require_mapping(value: object, token: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise RelayClientError(token)
+    return value
+
+
+def _require_relay_base_url(value: object) -> str:
+    if not isinstance(value, str) or len(value) > _MAX_TEXT_CHARS:
+        raise RelayClientError("relay_base_url_invalid")
+    parsed = urlparse(value)
+    if parsed.username is not None or parsed.password is not None:
+        raise RelayClientError("relay_base_url_credentials_forbidden")
+    if parsed.query or parsed.fragment:
+        raise RelayClientError("relay_base_url_query_fragment_forbidden")
+    if parsed.scheme == "https" and parsed.netloc:
+        return value
+    if parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "::1", "localhost"}:
+        return value
+    raise RelayClientError("relay_base_url_must_be_https_or_loopback_test_url")
+
+
+def _require_host(value: object, token: str) -> str:
+    if not isinstance(value, str) or not value.strip() or value.strip() != value:
+        raise RelayClientError(token)
+    if (
+        len(value) > _MAX_TEXT_CHARS
+        or any(char in value for char in "/?#@")
+        or any(char.isspace() for char in value)
+    ):
+        raise RelayClientError(token)
+    return value
+
+
+def _require_agent_id(value: object, token: str) -> str:
+    if not isinstance(value, str) or _AGENT_ID_RE.fullmatch(value) is None:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_sha256_hex(value: object, token: str) -> str:
+    if not isinstance(value, str) or _SHA256_RE.fullmatch(value) is None:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_sha384_hex(value: object, token: str) -> str:
+    if not isinstance(value, str) or _SHA384_RE.fullmatch(value) is None:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_bls_signature_hex(value: object, token: str) -> str:
+    if not isinstance(value, str) or _BLS_SIGNATURE_RE.fullmatch(value) is None:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_non_empty_string(value: object, token: str) -> str:
+    if not isinstance(value, str) or not value or value.strip() != value:
+        raise RelayClientError(token)
+    if len(value) > _MAX_TEXT_CHARS:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_token(value: object, token: str) -> str:
+    if not isinstance(value, str) or _TOKEN_RE.fullmatch(value) is None:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_network_id(value: object) -> str:
+    if not isinstance(value, str) or _NETWORK_ID_RE.fullmatch(value) is None:
+        raise RelayClientError("relay_network_id_invalid")
+    return value
+
+
+def _require_port(value: object, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise RelayClientError(f"{token}_must_be_port_int")
+    if value < 1 or value > 65535:
+        raise RelayClientError(f"{token}_out_of_range")
+    return value
+
+
+def _require_epoch(value: object, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise RelayClientError(token)
+    if value < 0 or value > _MAX_EPOCH:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_ttl_epochs(value: object) -> int:
+    return _require_uint_range(
+        value,
+        "relay_ttl_epochs_invalid",
+        1,
+        _MAX_TTL_EPOCHS,
+    )
+
+
+def _require_uint_range(value: object, token: str, minimum: int, maximum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise RelayClientError(token)
+    if value < minimum or value > maximum:
+        raise RelayClientError(token)
+    return value
+
+
+def _require_timeout(value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RelayClientError("relay_timeout_invalid")
+    timeout = float(value)
+    if timeout <= 0 or timeout > 10:
+        raise RelayClientError("relay_timeout_out_of_range")
+    return timeout
+
+
+def _require_bool(value: object, token: str) -> bool:
+    if not isinstance(value, bool):
+        raise RelayClientError(token)
+    return value
+
+
+def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:
+    encoded = json.dumps(
+        dict(payload),
+        allow_nan=False,
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    if len(encoded) > _MAX_REQUEST_BYTES:
+        raise RelayClientError("relay_canonical_payload_too_large")
+    return encoded
+
+
+__all__ = [
+    "RELAY_ADMISSION_DOMAIN",
+    "RELAY_CLIENT_NOT_ACTIVATED",
+    "RELAY_CLIENT_SCHEMA_VERSION",
+    "RELAY_CLIENT_TOKEN",
+    "RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC",
+    "HttpsRelayClientTransport",
+    "RelayAdmissionRequest",
+    "RelayClient",
+    "RelayClientError",
+    "RelayEndpoint",
+    "RelayKeepaliveReceipt",
+    "RelayReleaseReceipt",
+    "RelaySlotGrant",
+]
