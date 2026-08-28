@@ -73557,6 +73557,412 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_network_doctor_00_g10_network_doctor_cli.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "NAT probe engine for ILC observer external endpoint detection, conservative hole-punch classification, relay/outbound fallback, and explicit UPnP sidecar delegation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_added"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/nat_probe.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Bundled protocol sidecar for explicit-opt-in PCP/NAT-PMP/UPnP router mapping with bounded lease, port allowlist, rollback token, and no import-time mutation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_added"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/sidecars/upnp_router_mapping.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Connectivity probe runtime guard cleared to False after NAT probe engine implementation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_modified"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/network/connectivity_mode.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Network doctor wired to live NAT probe path with default non-mutating behavior and optional UPnP consent plumbing.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_modified"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/cli/network_doctor.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "CLI parser and dispatcher updated for network-doctor --enable-upnp explicit router mapping consent flag.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_modified"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/cli/main.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Sidecar registry expanded with upnp-router-mapping protocol sidecar metadata and list_sidecars accessor.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_modified"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/sidecars/registry_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Sidecar package export list includes upnp_router_mapping.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "runtime_module",
+        "connectivity_lane",
+        "load_bearing_artifact_modified"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/sidecars/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Focused tests for NAT probe no-observer fallback, loopback observer direct classification, canonical report serialization, observer guards, and explicit router mapping call boundary.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_nat_probe.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Focused tests for UPnP router mapping sidecar opt-in enforcement, method ordering, request validation, canonical result serialization, manifest metadata, local URL and XML entity guards.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_upnp_router_mapping_sidecar.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Connectivity mode test updated for cleared probe guard.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_connectivity_mode.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Network doctor CLI tests updated for live non-mutating probe default and --enable-upnp argument propagation.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_network_doctor_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Sidecar registry import-health test updated for the intentional fifteenth protocol sidecar.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_sidecar_registry_import_health_GAP_HARNESS_SIDECAR_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Phase prompt hardened with current date, scoped output-token absence check, and corrected NAT policy path.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "phase_prompt",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_auto_nat_traversal_impl_00_g10_nat_traversal_engine.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1605_phase_GAP_AUTO_NAT_TRAVERSAL_IMPL_00_probe_engine",
+      "chronology_note": "Recorded during GAP-AUTO-NAT-TRAVERSAL-IMPL-00 execution on 2026-08-28.",
+      "manual_read_summary": "Execution walkthrough for GAP-AUTO-NAT-TRAVERSAL-IMPL-00 with command outputs, graph delta, token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-IMPL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "phase_walkthrough",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_auto_nat_traversal_impl_00_walkthrough.md"
     }
   ],
   "boundary": {

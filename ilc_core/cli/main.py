@@ -2032,6 +2032,19 @@ def _build_parser() -> JsonArgumentParser:
                 default="",
                 help="Optional path for canonical ConnectivityReceipt JSON",
             )
+            network_doctor_parser.add_argument(
+                "--enable-upnp",
+                action="store_true",
+                help=(
+                    "Attempt UPnP/NAT-PMP/PCP router port mapping for direct "
+                    "inbound reachability. Opt-in only — not enabled by default. "
+                    "Security note: UPnP IGD has no router-side authentication; "
+                    "any process on your local network can open ports via UPnP. "
+                    "Enable only on trusted home or office networks. Not "
+                    "recommended for production validators or shared/enterprise "
+                    "environments. Use manual port forwarding for production."
+                ),
+            )
             continue
 
         if command == "wallet":
@@ -3015,6 +3028,7 @@ def _run_top_level_command(
         data = build_network_doctor_payload(
             text=bool(getattr(args, "text", False)),
             output_path=str(getattr(args, "out", "") or "") or None,
+            enable_upnp=bool(getattr(args, "enable_upnp", False)),
         )
         return _success_payload(command, data)
     if command == "ccss":
