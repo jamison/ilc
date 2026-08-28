@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass
 import ipaddress
 import json
 import socket
+from collections.abc import Mapping
 from typing import Any, Callable
 from urllib.parse import urlparse
 from urllib.request import urlopen
@@ -87,6 +88,7 @@ class NatProbeReport:
 
 ObserverFetcher = Callable[[str, float], dict[str, Any]]
 HolePuncher = Callable[[str, int, float], bool]
+RelayClientFactory = Callable[..., Any]
 
 
 class NatProbeEngine:
@@ -103,9 +105,17 @@ class NatProbeEngine:
         timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
         observer_fetcher: ObserverFetcher | None = None,
         hole_puncher: HolePuncher | None = None,
+        relay_server_url: str | None = None,
+        relay_admission_material: Mapping[str, Any] | None = None,
+        relay_client_factory: RelayClientFactory | None = None,
     ) -> None:
         self.observers = tuple(_coerce_observer(observer) for observer in observers)
+        if relay_endpoint is not None:
+            _require_endpoint_string(relay_endpoint, "relay_endpoint")
         self.relay_endpoint = relay_endpoint
+        self.relay_server_url = relay_server_url
+        self.relay_admission_material = dict(relay_admission_material or {})
+        self._relay_client_factory = relay_client_factory
         self.validator_participation_enabled = _require_bool(
             validator_participation_enabled,
             "validator_participation_enabled",
@@ -167,11 +177,19 @@ class NatProbeEngine:
         if not self.observers:
             warnings.append("no_ilc_probe_observer_configured")
 
+        relay_endpoint = self.relay_endpoint
+        if (
+            not has_public_ip
+            and not direct_mapping_candidate
+            and relay_endpoint is None
+        ):
+            relay_endpoint = self._request_relay_slot_if_active(probe_epoch, warnings)
+
         probe_result = ProbeResult(
             has_public_ip=has_public_ip,
             observed_ip=observed_ip,
             observed_port=observed_port,
-            relay_available=self.relay_endpoint is not None,
+            relay_available=relay_endpoint is not None,
             validator_participation_enabled=self.validator_participation_enabled,
             has_outbound_connectivity=True,
             direct_mapping_candidate=direct_mapping_candidate,
@@ -181,7 +199,7 @@ class NatProbeEngine:
         receipt = ConnectivityReceipt(
             mode=mode,
             observed_endpoint=_endpoint(observed_ip, observed_port),
-            relay_endpoint=self.relay_endpoint,
+            relay_endpoint=relay_endpoint,
             probe_observer_agent_id=observer_agent_id,
             probe_epoch=probe_epoch,
         )
@@ -193,6 +211,39 @@ class NatProbeEngine:
             router_mapping=router_mapping_payload,
             warnings=tuple(warnings),
         )
+
+    def _request_relay_slot_if_active(
+        self,
+        probe_epoch: int,
+        warnings: list[str],
+    ) -> str | None:
+        try:
+            from ilc_core.network.relay import relay_client as relay_module
+        except ImportError:
+            warnings.append("relay_client_unavailable")
+            return None
+
+        if relay_module.RELAY_CLIENT_NOT_ACTIVATED:
+            return None
+        if not self.relay_server_url:
+            warnings.append("relay_server_url_missing")
+            return None
+        if not self.relay_admission_material:
+            warnings.append("relay_admission_material_missing")
+            return None
+        try:
+            factory = self._relay_client_factory or relay_module.RelayClient
+            client = factory(
+                relay_base_url=self.relay_server_url,
+                requested_internal_port=self.internal_port,
+                timeout_seconds=self.timeout_seconds,
+                **self.relay_admission_material,
+            )
+            grant = client.request_slot(admission_epoch=probe_epoch)
+            return grant.relay_endpoint.as_host_port()
+        except Exception as exc:
+            warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
+            return None
 
     def _attempt_router_mapping(self, warnings: list[str]) -> Any:
         try:
@@ -265,6 +316,17 @@ def _endpoint(ip_value: str | None, port_value: int | None) -> str | None:
     if ip_value is None or port_value is None:
         return None
     return f"{ip_value}:{port_value}"
+
+
+def _require_endpoint_string(value: object, field_name: str) -> None:
+    if not isinstance(value, str):
+        raise NatProbeError(f"{field_name}_must_be_host_port")
+    if len(value) > _MAX_ENDPOINT_CHARS or not value.strip():
+        raise NatProbeError(f"{field_name}_invalid")
+    host, separator, port_text = value.rpartition(":")
+    if not separator or not host or not port_text:
+        raise NatProbeError(f"{field_name}_must_be_host_port")
+    _require_port(int(port_text) if port_text.isdecimal() else port_text, field_name)
 
 
 def _sidecar_unavailable_result() -> Any:
