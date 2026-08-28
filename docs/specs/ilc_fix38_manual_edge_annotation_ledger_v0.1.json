@@ -73206,6 +73206,113 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_auto_nat_traversal_policy_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_RELAY_RENDEZVOUS_SPEC_00_relay_spec",
+      "chronology_note": "Created during GAP-RELAY-RENDEZVOUS-SPEC-00 after direct reads of ADR-0039, CDL-078/CDL-103 register rows, OpenClaw relay guard, onboarding PoP path, the connectivity taxonomy, and auto-NAT policy.",
+      "manual_read_summary": "Relay rendezvous semantics spec defining Option A invite-provenance admission, slot lifecycle, pass-through non-termination, abuse limits, pre-RC relay host governance, receipts, and CDL-112 relationship.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0039_Validator_Endpoint_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_auto_nat_traversal_policy_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-078"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-SPEC-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "relay_rendezvous_spec",
+        "connectivity_lane",
+        "load_bearing_artifact_added"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_relay_rendezvous_spec_GAP_RELAY_RENDEZVOUS_SPEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_RELAY_RENDEZVOUS_SPEC_00_relay_spec",
+      "chronology_note": "Created during GAP-RELAY-RENDEZVOUS-SPEC-00 after prompt hardening, MemPalace/direct reads, verification commands, and graph-intake coverage.",
+      "manual_read_summary": "Execution walkthrough and verification evidence for GAP-RELAY-RENDEZVOUS-SPEC-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0039_Validator_Endpoint_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_auto_nat_traversal_policy_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-SPEC-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "relay_rendezvous_spec",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_spec_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1604_phase_GAP_RELAY_RENDEZVOUS_SPEC_00_relay_spec",
+      "chronology_note": "Hardened during GAP-RELAY-RENDEZVOUS-SPEC-00 before execution.",
+      "manual_read_summary": "Phase prompt for GAP-RELAY-RENDEZVOUS-SPEC-00, hardened for output-token absence scope and current execution date.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-SPEC-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-SPEC-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "phase_prompt",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_spec_00_g10_relay_semantics_and_abuse_limits.md"
     }
   ],
   "boundary": {
