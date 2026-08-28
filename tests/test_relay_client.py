@@ -20,6 +20,7 @@ from ilc_core.network.relay.relay_client import (
     RelayClientError,
     RelayEndpoint,
     RelaySlotGrant,
+    relay_admission_payload_ref,
 )
 
 
@@ -28,7 +29,7 @@ INVITE_ID = "public-rc-relay-invite-00"
 INVITE_NULLIFIER = "22" * 32
 
 
-def _pop_material() -> tuple[str, str]:
+def _pop_material() -> tuple[str, str, str]:
     secret_key, agent_id = keypair_from_ikm_hex(IKM_HEX)
     digest = invite_pop_payload_ref(
         agent_id_hex=agent_id,
@@ -36,18 +37,55 @@ def _pop_material() -> tuple[str, str]:
         invite_id=INVITE_ID,
         epoch=0,
     )
-    return agent_id, sign_invite_pop_digest(secret_key, digest)
+    return secret_key, agent_id, sign_invite_pop_digest(secret_key, digest)
+
+
+def _relay_admission_signature(
+    secret_key: str,
+    agent_id: str,
+    *,
+    admission_epoch: int,
+    network_id: str = "public-rc",
+    relay_base_url: str = "http://127.0.0.1:9",
+    requested_internal_port: int = 50151,
+    software_version: str | None = None,
+) -> tuple[str, str]:
+    invite_ref = invite_pop_payload_ref(
+        agent_id_hex=agent_id,
+        invite_nullifier=INVITE_NULLIFIER,
+        invite_id=INVITE_ID,
+        epoch=0,
+    )
+    admission_ref = relay_admission_payload_ref(
+        agent_id=agent_id,
+        invite_id=INVITE_ID,
+        invite_nullifier=INVITE_NULLIFIER,
+        invite_pop_payload_ref_value=invite_ref,
+        admission_epoch=admission_epoch,
+        network_id=network_id,
+        relay_base_url=relay_base_url,
+        requested_internal_port=requested_internal_port,
+        requested_protocol="quic",
+        software_version=software_version or relay_module.ILC_CORE_VERSION,
+    )
+    return admission_ref, sign_invite_pop_digest(secret_key, admission_ref)
 
 
 def test_relay_client_guard_defaults_closed() -> None:
     assert RELAY_CLIENT_NOT_ACTIVATED is True
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    _, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
     client = RelayClient(
         relay_base_url="http://127.0.0.1:9",
         agent_id=agent_id,
         invite_id=INVITE_ID,
         invite_nullifier=INVITE_NULLIFIER,
         invite_pop=invite_pop,
+        relay_admission_signature=admission_signature,
     )
 
     with pytest.raises(RelayClientError, match="relay_client_not_activated"):
@@ -55,7 +93,12 @@ def test_relay_client_guard_defaults_closed() -> None:
 
 
 def test_admission_request_verifies_invite_pop_and_serializes_canonically() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    admission_ref, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
     request = RelayAdmissionRequest(
         agent_id=agent_id,
         invite_id=INVITE_ID,
@@ -64,6 +107,9 @@ def test_admission_request_verifies_invite_pop_and_serializes_canonically() -> N
         invite_pop_epoch=0,
         admission_epoch=0,
         network_id="public-rc",
+        relay_base_url="http://127.0.0.1:9",
+        relay_admission_payload_ref=admission_ref,
+        relay_admission_signature=admission_signature,
     )
 
     payload = request.to_dict()
@@ -78,21 +124,49 @@ def test_admission_request_verifies_invite_pop_and_serializes_canonically() -> N
 
 
 def test_admission_request_rejects_wrong_invite_pop_binding() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    wrong_nullifier = "33" * 32
+    invite_ref = invite_pop_payload_ref(
+        agent_id_hex=agent_id,
+        invite_nullifier=wrong_nullifier,
+        invite_id=INVITE_ID,
+        epoch=0,
+    )
+    admission_ref = relay_admission_payload_ref(
+        agent_id=agent_id,
+        invite_id=INVITE_ID,
+        invite_nullifier=wrong_nullifier,
+        invite_pop_payload_ref_value=invite_ref,
+        admission_epoch=0,
+        network_id="public-rc",
+        relay_base_url="http://127.0.0.1:9",
+        requested_internal_port=50151,
+        requested_protocol="quic",
+        software_version=relay_module.ILC_CORE_VERSION,
+    )
+    admission_signature = sign_invite_pop_digest(secret_key, admission_ref)
 
     with pytest.raises(RelayClientError, match="relay_invite_pop_verification_failed"):
         RelayAdmissionRequest(
             agent_id=agent_id,
             invite_id=INVITE_ID,
-            invite_nullifier="33" * 32,
+            invite_nullifier=wrong_nullifier,
             invite_pop=invite_pop,
             invite_pop_epoch=0,
             admission_epoch=0,
+            relay_base_url="http://127.0.0.1:9",
+            relay_admission_payload_ref=admission_ref,
+            relay_admission_signature=admission_signature,
         )
 
 
 def test_admission_epoch_can_differ_from_invite_pop_epoch() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    admission_ref, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=7,
+    )
     request = RelayAdmissionRequest(
         agent_id=agent_id,
         invite_id=INVITE_ID,
@@ -100,6 +174,9 @@ def test_admission_epoch_can_differ_from_invite_pop_epoch() -> None:
         invite_pop=invite_pop,
         invite_pop_epoch=0,
         admission_epoch=7,
+        relay_base_url="http://127.0.0.1:9",
+        relay_admission_payload_ref=admission_ref,
+        relay_admission_signature=admission_signature,
     )
 
     payload = request.to_dict()
@@ -107,8 +184,30 @@ def test_admission_epoch_can_differ_from_invite_pop_epoch() -> None:
     assert payload["invite_pop_epoch"] == 0
 
 
+def test_admission_request_rejects_stale_relay_signature() -> None:
+    secret_key, agent_id, invite_pop = _pop_material()
+    admission_ref, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
+
+    with pytest.raises(RelayClientError, match="relay_admission_payload_ref_mismatch"):
+        RelayAdmissionRequest(
+            agent_id=agent_id,
+            invite_id=INVITE_ID,
+            invite_nullifier=INVITE_NULLIFIER,
+            invite_pop=invite_pop,
+            invite_pop_epoch=0,
+            admission_epoch=1,
+            relay_base_url="http://127.0.0.1:9",
+            relay_admission_payload_ref=admission_ref,
+            relay_admission_signature=admission_signature,
+        )
+
+
 def test_loopback_relay_slot_keepalive_and_release() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
     captured: list[dict[str, Any]] = []
 
     class Handler(BaseHTTPRequestHandler):
@@ -156,12 +255,20 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     try:
+        relay_base_url = f"http://127.0.0.1:{server.server_port}"
+        _, admission_signature = _relay_admission_signature(
+            secret_key,
+            agent_id,
+            admission_epoch=0,
+            relay_base_url=relay_base_url,
+        )
         client = RelayClient(
-            relay_base_url=f"http://127.0.0.1:{server.server_port}",
+            relay_base_url=relay_base_url,
             agent_id=agent_id,
             invite_id=INVITE_ID,
             invite_nullifier=INVITE_NULLIFIER,
             invite_pop=invite_pop,
+            relay_admission_signature=admission_signature,
             allow_guarded_request=True,
         )
         grant = client.request_slot(admission_epoch=0)
@@ -185,7 +292,12 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
 
 
 def test_grant_rejects_agent_mismatch() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    _, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
 
     class BadTransport:
         def post_json(self, *_args: object) -> dict[str, object]:
@@ -206,6 +318,7 @@ def test_grant_rejects_agent_mismatch() -> None:
         invite_id=INVITE_ID,
         invite_nullifier=INVITE_NULLIFIER,
         invite_pop=invite_pop,
+        relay_admission_signature=admission_signature,
         transport=BadTransport(),
         allow_guarded_request=True,
     )
@@ -215,13 +328,19 @@ def test_grant_rejects_agent_mismatch() -> None:
 
 
 def test_keepalive_and_release_reject_foreign_slot() -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    _, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
     client = RelayClient(
         relay_base_url="http://127.0.0.1:9",
         agent_id=agent_id,
         invite_id=INVITE_ID,
         invite_nullifier=INVITE_NULLIFIER,
         invite_pop=invite_pop,
+        relay_admission_signature=admission_signature,
         allow_guarded_request=True,
     )
     foreign_slot = RelaySlotGrant(
@@ -242,7 +361,7 @@ def test_keepalive_and_release_reject_foreign_slot() -> None:
 
 
 def test_https_required_except_loopback_test_url() -> None:
-    agent_id, invite_pop = _pop_material()
+    _secret_key, agent_id, invite_pop = _pop_material()
 
     with pytest.raises(
         RelayClientError,
@@ -276,15 +395,27 @@ def test_https_required_except_loopback_test_url() -> None:
 
 
 def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
-    agent_id, invite_pop = _pop_material()
+    secret_key, agent_id, invite_pop = _pop_material()
+    _, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=2,
+        relay_base_url="https://relay.example",
+    )
     calls: list[int] = []
 
     class FakeClient:
         def __init__(self, **kwargs: object) -> None:
             assert kwargs["relay_base_url"] == "https://relay.example"
 
-        def request_slot(self, *, admission_epoch: int) -> RelaySlotGrant:
+        def request_slot(
+            self,
+            *,
+            admission_epoch: int,
+            relay_admission_signature: str | None = None,
+        ) -> RelaySlotGrant:
             calls.append(admission_epoch)
+            assert relay_admission_signature == admission_signature
             return RelaySlotGrant(
                 slot_id="slot-0001",
                 agent_id=agent_id,
@@ -304,6 +435,7 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
             "invite_nullifier": INVITE_NULLIFIER,
             "invite_pop": invite_pop,
             "invite_pop_epoch": 0,
+            "relay_admission_signature": admission_signature,
         },
         relay_client_factory=FakeClient,
     )

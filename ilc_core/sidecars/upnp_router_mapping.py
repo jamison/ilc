@@ -12,10 +12,14 @@ from dataclasses import asdict, dataclass
 import hashlib
 import ipaddress
 import json
+import math
+import re
 import socket
+from collections.abc import Mapping
 from typing import Any, Protocol
 from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
+from xml.sax.saxutils import quoteattr
 import xml.etree.ElementTree as ET
 
 from ilc_core.network.connectivity_mode import ProbeResult
@@ -33,6 +37,15 @@ _MIN_PORT = 1024
 _MAX_PORT = 65535
 _ALLOWED_METHODS = ("pcp", "nat_pmp", "upnp_igd")
 _SSDP_ADDR = ("239.255.255.250", 1900)
+_UPNP_SERVICE_TYPE_RE = re.compile(
+    r"^urn:schemas-upnp-org:service:WAN(?:IP|PPP)Connection:[1-9][0-9]*$"
+)
+_ALLOWED_PRIVATE_IPV4_GATEWAYS = (
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+)
+_ALLOWED_PRIVATE_IPV6_GATEWAYS = (ipaddress.ip_network("fc00::/7"),)
 
 
 class RouterMappingError(ValueError):
@@ -61,13 +74,17 @@ class RouterMappingRequest:
             raise RouterMappingError("router_mapping_lease_out_of_range")
         if isinstance(self.explicit_opt_in, bool) is False:
             raise RouterMappingError("router_mapping_explicit_opt_in_must_be_bool")
-        if self.protocol.lower() not in {"tcp", "udp"}:
+        if not isinstance(self.protocol, str) or self.protocol.lower() not in {"tcp", "udp"}:
             raise RouterMappingError("router_mapping_protocol_invalid")
         if not isinstance(self.timeout_seconds, (int, float)) or isinstance(
             self.timeout_seconds, bool
         ):
             raise RouterMappingError("router_mapping_timeout_invalid")
-        if self.timeout_seconds <= 0 or self.timeout_seconds > 10:
+        if (
+            not math.isfinite(float(self.timeout_seconds))
+            or self.timeout_seconds <= 0
+            or self.timeout_seconds > 10
+        ):
             raise RouterMappingError("router_mapping_timeout_out_of_range")
         methods = tuple(self.methods)
         if not methods or any(method not in _ALLOWED_METHODS for method in methods):
@@ -87,6 +104,7 @@ class RouterMappingResult:
     rollback_token: str | None
     firewall_mutation_attempted: bool = False
     error: str | None = None
+    rollback_instruction: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if isinstance(self.success, bool) is False:
@@ -107,6 +125,22 @@ class RouterMappingResult:
             not isinstance(self.error, str) or not self.error.strip()
         ):
             raise RouterMappingError("router_mapping_error_invalid")
+        if self.success:
+            if self.method_used is None:
+                raise RouterMappingError("router_mapping_success_method_required")
+            if self.external_port is None:
+                raise RouterMappingError("router_mapping_success_external_port_required")
+            if self.rollback_token is None:
+                raise RouterMappingError("router_mapping_success_rollback_token_required")
+            if self.firewall_mutation_attempted is not True:
+                raise RouterMappingError("router_mapping_success_mutation_flag_required")
+            if self.error is not None:
+                raise RouterMappingError("router_mapping_success_error_forbidden")
+            if self.rollback_instruction is None:
+                raise RouterMappingError("router_mapping_success_rollback_instruction_required")
+            _validate_rollback_instruction(self.rollback_instruction)
+        elif self.rollback_instruction is not None:
+            _validate_rollback_instruction(self.rollback_instruction)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -149,13 +183,25 @@ class StdlibRouterMappingTransport:
         control_url, service_type = _load_upnp_control(location, request)
         _send_upnp_add_port_mapping(control_url, service_type, request)
         external_port = request.requested_external_port or request.internal_port
+        rollback_instruction = build_upnp_rollback_instruction(
+            control_url=control_url,
+            service_type=service_type,
+            external_port=external_port,
+            protocol=request.protocol,
+        )
         return RouterMappingResult(
             success=True,
             method_used="upnp_igd",
             external_port=external_port,
             lease_seconds=request.lease_seconds,
-            rollback_token=_rollback_token(request, "upnp_igd"),
+            rollback_token=_rollback_token(
+                request,
+                "upnp_igd",
+                external_port=external_port,
+                rollback_instruction=rollback_instruction,
+            ),
             firewall_mutation_attempted=True,
+            rollback_instruction=rollback_instruction,
         )
 
 
@@ -191,6 +237,8 @@ def attempt_router_mapping_via_sidecar(
             result = active_transport.attempt_upnp_igd(request)
         else:  # __post_init__ prevents this branch.
             raise RouterMappingError("router_mapping_method_invalid")
+        if not isinstance(result, RouterMappingResult):
+            raise RouterMappingError("router_mapping_result_required")
         last_result = result
         if result.success:
             return result
@@ -218,6 +266,7 @@ def upnp_router_mapping_sidecar_manifest() -> dict[str, Any]:
         "required_capabilities": [
             "bounded_lease_seconds",
             "explicit_opt_in_router_mapping",
+            "machine_parseable_rollback_instruction",
             "port_allowlist_enforcement",
             "rollback_receipt_token",
         ],
@@ -257,7 +306,7 @@ def _discover_upnp_location(*, timeout_seconds: float) -> str | None:
         sock.settimeout(timeout_seconds)
         sock.sendto(message, _SSDP_ADDR)
         try:
-            payload, _ = sock.recvfrom(4096)
+            payload, sender = sock.recvfrom(4096)
         except TimeoutError:
             return None
     for line in payload.decode("iso-8859-1", errors="replace").splitlines():
@@ -265,6 +314,7 @@ def _discover_upnp_location(*, timeout_seconds: float) -> str | None:
         if separator and name.lower() == "location":
             location = value.strip()
             _require_local_http_url(location)
+            _require_ssdp_location_sender(location, sender[0])
             return location
     return None
 
@@ -276,7 +326,10 @@ def _load_upnp_control(
     _require_local_http_url(location)
     description = _read_url(location, timeout_seconds=float(request.timeout_seconds))
     _reject_xml_entities(description)
-    root = ET.fromstring(description)
+    try:
+        root = ET.fromstring(description)
+    except ET.ParseError as exc:
+        raise RouterMappingError("upnp_description_xml_invalid") from exc
     for service in root.iter():
         if _local_name(service.tag) != "service":
             continue
@@ -287,6 +340,7 @@ def _load_upnp_control(
         service_type = fields.get("serviceType", "")
         control_url = fields.get("controlURL", "")
         if "WANIPConnection" in service_type or "WANPPPConnection" in service_type:
+            service_type = _require_upnp_service_type(service_type)
             if not control_url:
                 raise RouterMappingError("upnp_control_url_missing")
             full_url = urljoin(location, control_url)
@@ -307,7 +361,7 @@ def _send_upnp_add_port_mapping(
         '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" '
         's:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'
         "<s:Body>"
-        f'<u:AddPortMapping xmlns:u="{service_type}">'
+        f"<u:AddPortMapping xmlns:u={quoteattr(service_type)}>"
         "<NewRemoteHost></NewRemoteHost>"
         f"<NewExternalPort>{external_port}</NewExternalPort>"
         f"<NewProtocol>{request.protocol.upper()}</NewProtocol>"
@@ -329,18 +383,98 @@ def _send_upnp_add_port_mapping(
         },
         method="POST",
     )
-    response = urlopen(http_request, timeout=float(request.timeout_seconds))
+    response = _urlopen_no_redirect(http_request, float(request.timeout_seconds))
     try:
         if getattr(response, "status", 200) >= 400:
             raise RouterMappingError("upnp_add_port_mapping_failed")
-        _read_response(response)
+        _reject_upnp_soap_fault(_read_response(response))
     finally:
         response.close()
 
 
-def _read_url(url: str, *, timeout_seconds: float) -> bytes:
-    response = urlopen(url, timeout=timeout_seconds)
+def remove_upnp_port_mapping(
+    *,
+    control_url: str,
+    service_type: str,
+    external_port: int,
+    protocol: str,
+    timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
+) -> None:
+    """Execute the machine-parseable rollback instruction for a UPnP mapping."""
+
+    _require_local_http_url(control_url)
+    service_type = _require_upnp_service_type(service_type)
+    _require_port(external_port, "external_port")
+    if not isinstance(protocol, str) or protocol.lower() not in {"tcp", "udp"}:
+        raise RouterMappingError("router_mapping_protocol_invalid")
+    if (
+        isinstance(timeout_seconds, bool)
+        or not isinstance(timeout_seconds, (int, float))
+        or not math.isfinite(float(timeout_seconds))
+        or float(timeout_seconds) <= 0
+        or float(timeout_seconds) > 10
+    ):
+        raise RouterMappingError("router_mapping_timeout_out_of_range")
+    body = (
+        '<?xml version="1.0"?>'
+        '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" '
+        's:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'
+        "<s:Body>"
+        f"<u:DeletePortMapping xmlns:u={quoteattr(service_type)}>"
+        "<NewRemoteHost></NewRemoteHost>"
+        f"<NewExternalPort>{external_port}</NewExternalPort>"
+        f"<NewProtocol>{protocol.upper()}</NewProtocol>"
+        "</u:DeletePortMapping>"
+        "</s:Body>"
+        "</s:Envelope>"
+    ).encode("utf-8")
+    request = Request(
+        control_url,
+        data=body,
+        headers={
+            "Content-Type": 'text/xml; charset="utf-8"',
+            "SOAPAction": f'"{service_type}#DeletePortMapping"',
+        },
+        method="POST",
+    )
+    response = _urlopen_no_redirect(request, float(timeout_seconds))
     try:
+        if getattr(response, "status", 200) >= 400:
+            raise RouterMappingError("upnp_delete_port_mapping_failed")
+        _reject_upnp_soap_fault(_read_response(response))
+    finally:
+        response.close()
+
+
+def build_upnp_rollback_instruction(
+    *,
+    control_url: str,
+    service_type: str,
+    external_port: int,
+    protocol: str,
+) -> dict[str, Any]:
+    """Return the executable DeletePortMapping instruction for rollback."""
+
+    _require_local_http_url(control_url)
+    service_type = _require_upnp_service_type(service_type)
+    _require_port(external_port, "external_port")
+    if not isinstance(protocol, str) or protocol.lower() not in {"tcp", "udp"}:
+        raise RouterMappingError("router_mapping_protocol_invalid")
+    return {
+        "action": "DeletePortMapping",
+        "control_url": control_url,
+        "external_port": external_port,
+        "protocol": protocol.lower(),
+        "schema_version": UPNP_ROUTER_MAPPING_SIDECAR_VERSION,
+        "service_type": service_type,
+    }
+
+
+def _read_url(url: str, *, timeout_seconds: float) -> bytes:
+    response = _urlopen_no_redirect(url, timeout_seconds)
+    try:
+        if getattr(response, "status", 200) >= 400:
+            raise RouterMappingError("router_mapping_http_status_failed")
         return _read_response(response)
     finally:
         response.close()
@@ -359,14 +493,30 @@ def _reject_xml_entities(payload: bytes) -> None:
         raise RouterMappingError("upnp_description_xml_entity_forbidden")
 
 
+def _reject_upnp_soap_fault(payload: bytes) -> None:
+    lowered = payload[:4096].lower()
+    if b"<fault" in lowered or b":fault" in lowered or b"<errorcode>" in lowered:
+        raise RouterMappingError("upnp_soap_fault_response")
+
+
 def _local_lan_ip_for(control_url: str, *, timeout_seconds: float) -> str:
     parsed = urlparse(control_url)
     if parsed.hostname is None:
         raise RouterMappingError("upnp_control_host_missing")
+    try:
+        remote_ip = ipaddress.ip_address(parsed.hostname)
+    except ValueError as exc:
+        raise RouterMappingError("upnp_control_host_missing") from exc
     port = parsed.port or 80
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    family = socket.AF_INET6 if isinstance(remote_ip, ipaddress.IPv6Address) else socket.AF_INET
+    address: tuple[Any, ...]
+    if family == socket.AF_INET6:
+        address = (str(remote_ip), port, 0, 0)
+    else:
+        address = (str(remote_ip), port)
+    with socket.socket(family, socket.SOCK_DGRAM) as sock:
         sock.settimeout(timeout_seconds)
-        sock.connect((parsed.hostname, port))
+        sock.connect(address)
         local_ip = sock.getsockname()[0]
     try:
         ipaddress.ip_address(local_ip)
@@ -379,21 +529,92 @@ def _require_local_http_url(value: str) -> None:
     parsed = urlparse(value)
     if parsed.scheme != "http" or parsed.hostname is None:
         raise RouterMappingError("upnp_location_must_be_local_http_url")
+    if parsed.username is not None or parsed.password is not None:
+        raise RouterMappingError("upnp_location_credentials_forbidden")
+    if parsed.query or parsed.fragment:
+        raise RouterMappingError("upnp_location_query_fragment_forbidden")
+    try:
+        parsed_port = parsed.port
+    except ValueError as exc:
+        raise RouterMappingError("upnp_location_port_invalid") from exc
+    if parsed_port is not None and (parsed_port < 1 or parsed_port > _MAX_PORT):
+        raise RouterMappingError("upnp_location_port_invalid")
     try:
         host = ipaddress.ip_address(parsed.hostname)
     except ValueError as exc:
         raise RouterMappingError("upnp_location_host_must_be_ip") from exc
-    if host.is_global:
-        raise RouterMappingError("upnp_location_global_host_forbidden")
+    if not _is_allowed_private_gateway_ip(host):
+        raise RouterMappingError("upnp_location_private_gateway_required")
 
 
-def _rollback_token(request: RouterMappingRequest, method: str) -> str:
+def _require_ssdp_location_sender(location: str, sender_host: str) -> None:
+    parsed = urlparse(location)
+    if parsed.hostname is None:
+        raise RouterMappingError("upnp_location_host_must_be_ip")
+    try:
+        location_ip = ipaddress.ip_address(parsed.hostname)
+        sender_ip = ipaddress.ip_address(sender_host)
+    except ValueError as exc:
+        raise RouterMappingError("upnp_location_sender_invalid") from exc
+    if location_ip != sender_ip:
+        raise RouterMappingError("upnp_location_sender_mismatch")
+
+
+def _require_upnp_service_type(value: str) -> str:
+    if not isinstance(value, str) or _UPNP_SERVICE_TYPE_RE.fullmatch(value) is None:
+        raise RouterMappingError("upnp_service_type_invalid")
+    return value
+
+
+def _validate_rollback_instruction(value: Mapping[str, Any]) -> None:
+    if not isinstance(value, Mapping):
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    if value.get("schema_version") != UPNP_ROUTER_MAPPING_SIDECAR_VERSION:
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    if value.get("action") != "DeletePortMapping":
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+    _require_local_http_url(str(value.get("control_url", "")))
+    _require_upnp_service_type(str(value.get("service_type", "")))
+    _require_port(value.get("external_port"), "external_port")
+    protocol = value.get("protocol")
+    if not isinstance(protocol, str) or protocol not in {"tcp", "udp"}:
+        raise RouterMappingError("router_mapping_rollback_instruction_invalid")
+
+
+def _is_allowed_private_gateway_ip(host: ipaddress._BaseAddress) -> bool:
+    if host.is_loopback or host.is_link_local or host.is_unspecified or host.is_multicast:
+        return False
+    networks = (
+        _ALLOWED_PRIVATE_IPV4_GATEWAYS
+        if isinstance(host, ipaddress.IPv4Address)
+        else _ALLOWED_PRIVATE_IPV6_GATEWAYS
+    )
+    return any(host in network for network in networks)
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, *_args: object, **_kwargs: object) -> None:
+        raise RouterMappingError("router_mapping_redirect_forbidden")
+
+
+def _urlopen_no_redirect(request_or_url: Request | str, timeout_seconds: float) -> Any:
+    return build_opener(_NoRedirect).open(request_or_url, timeout=timeout_seconds)
+
+
+def _rollback_token(
+    request: RouterMappingRequest,
+    method: str,
+    *,
+    external_port: int,
+    rollback_instruction: Mapping[str, Any],
+) -> str:
     payload = {
-        "external_port": request.requested_external_port or request.internal_port,
+        "external_port": external_port,
         "internal_port": request.internal_port,
         "lease_seconds": request.lease_seconds,
         "method": method,
         "protocol": request.protocol,
+        "rollback_instruction": dict(rollback_instruction),
         "schema_version": UPNP_ROUTER_MAPPING_SIDECAR_VERSION,
     }
     encoded = json.dumps(
@@ -434,5 +655,7 @@ __all__ = [
     "StdlibRouterMappingTransport",
     "UPNP_ROUTER_MAPPING_SIDECAR_VERSION",
     "attempt_router_mapping_via_sidecar",
+    "build_upnp_rollback_instruction",
+    "remove_upnp_port_mapping",
     "upnp_router_mapping_sidecar_manifest",
 ]

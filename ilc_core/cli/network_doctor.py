@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Any
 
 from ilc_core.network.connectivity_mode import (
@@ -39,12 +40,22 @@ def build_network_doctor_payload(
     output_path: str | None = None,
     enable_upnp: bool = False,
     probe_epoch: int = 0,
+    probe_observers: tuple[str, ...] = (),
+    relay_server_url: str | None = None,
+    relay_admission_material_path: str | None = None,
+    relay_admission_material: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Build the CLI payload for `ilc network-doctor`."""
 
+    admission_material = dict(relay_admission_material or {})
+    if relay_admission_material_path:
+        admission_material = _load_relay_admission_material(relay_admission_material_path)
     report = _current_probe_report(
         attempt_router_mapping=enable_upnp,
         probe_epoch=probe_epoch,
+        probe_observers=tuple(probe_observers),
+        relay_server_url=relay_server_url,
+        relay_admission_material=admission_material,
     )
     probe = report.probe_result
     mode = connectivity_mode_from_probe_result(probe)
@@ -69,7 +80,14 @@ def build_network_doctor_payload(
     return data
 
 
-def _current_probe_report(*, attempt_router_mapping: bool, probe_epoch: int):
+def _current_probe_report(
+    *,
+    attempt_router_mapping: bool,
+    probe_epoch: int,
+    probe_observers: tuple[str, ...] = (),
+    relay_server_url: str | None = None,
+    relay_admission_material: Mapping[str, Any] | None = None,
+):
     if CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED:
         probe_result = ProbeResult(
             has_public_ip=False,
@@ -92,7 +110,11 @@ def _current_probe_report(*, attempt_router_mapping: bool, probe_epoch: int):
 
     from ilc_core.network.nat_probe import NatProbeEngine
 
-    engine = NatProbeEngine()
+    engine = NatProbeEngine(
+        observers=tuple(probe_observers),
+        relay_server_url=relay_server_url,
+        relay_admission_material=relay_admission_material,
+    )
     return engine.run_probe(
         attempt_router_mapping=attempt_router_mapping,
         probe_epoch=probe_epoch,
@@ -166,6 +188,16 @@ def _atomic_write_bytes(path: Path, data: bytes) -> None:
         except FileNotFoundError:
             pass
         raise
+
+
+def _load_relay_admission_material(path_value: str) -> dict[str, Any]:
+    if not isinstance(path_value, str) or not path_value.strip():
+        raise ValueError("network_doctor_relay_admission_material_path_invalid")
+    path = Path(path_value).expanduser().resolve()
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("network_doctor_relay_admission_material_must_be_object")
+    return payload
 
 
 __all__ = [

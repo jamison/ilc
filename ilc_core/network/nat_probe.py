@@ -11,11 +11,12 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import ipaddress
 import json
+import math
 import socket
 from collections.abc import Mapping
 from typing import Any, Callable
 from urllib.parse import urlparse
-from urllib.request import urlopen
+from urllib.request import HTTPRedirectHandler, build_opener
 
 from ilc_core.network.connectivity_mode import (
     ConnectivityModeValidationError,
@@ -170,9 +171,7 @@ class NatProbeEngine:
             router_mapping_payload = mapping.to_dict()
             firewall_mutation_attempted = mapping.firewall_mutation_attempted
             if mapping.success:
-                direct_mapping_candidate = True
-                observed_ip = "0.0.0.0"
-                observed_port = mapping.external_port
+                warnings.append("router_mapping_created_external_verification_pending")
 
         if not self.observers:
             warnings.append("no_ilc_probe_observer_configured")
@@ -233,13 +232,19 @@ class NatProbeEngine:
             return None
         try:
             factory = self._relay_client_factory or relay_module.RelayClient
+            relay_material = dict(self.relay_admission_material)
+            admission_signature = relay_material.pop("relay_admission_signature", None)
+            relay_material.pop("relay_admission_payload_ref", None)
             client = factory(
                 relay_base_url=self.relay_server_url,
                 requested_internal_port=self.internal_port,
                 timeout_seconds=self.timeout_seconds,
-                **self.relay_admission_material,
+                **relay_material,
             )
-            grant = client.request_slot(admission_epoch=probe_epoch)
+            grant = client.request_slot(
+                admission_epoch=probe_epoch,
+                relay_admission_signature=admission_signature,
+            )
             return grant.relay_endpoint.as_host_port()
         except Exception as exc:
             warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
@@ -274,14 +279,19 @@ class NatProbeEngine:
 
 def _fetch_observer_payload(url: str, timeout_seconds: float) -> dict[str, Any]:
     _require_observer_url(url)
-    response = urlopen(url, timeout=timeout_seconds)
+    response = _urlopen_no_redirect(url, timeout_seconds)
     try:
+        if getattr(response, "status", 200) >= 400:
+            raise NatProbeError("probe_observer_http_status_failed")
         payload = response.read(_MAX_OBSERVER_RESPONSE_BYTES + 1)
     finally:
         response.close()
     if len(payload) > _MAX_OBSERVER_RESPONSE_BYTES:
         raise NatProbeError("probe_observer_response_too_large")
-    decoded = json.loads(payload.decode("utf-8"))
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise NatProbeError("probe_observer_response_json_invalid") from exc
     if not isinstance(decoded, dict):
         raise NatProbeError("probe_observer_response_must_be_object")
     return decoded
@@ -353,7 +363,17 @@ def _require_observer_url(value: object) -> None:
     if not isinstance(value, str) or len(value) > _MAX_ENDPOINT_CHARS:
         raise NatProbeError("probe_observer_url_invalid")
     parsed = urlparse(value)
-    if parsed.scheme == "https" and parsed.netloc:
+    if parsed.username is not None or parsed.password is not None:
+        raise NatProbeError("probe_observer_url_credentials_forbidden")
+    if parsed.query or parsed.fragment:
+        raise NatProbeError("probe_observer_url_query_fragment_forbidden")
+    try:
+        parsed_port = parsed.port
+    except ValueError as exc:
+        raise NatProbeError("probe_observer_url_port_invalid") from exc
+    if parsed_port is not None and (parsed_port < 1 or parsed_port > 65535):
+        raise NatProbeError("probe_observer_url_port_invalid")
+    if parsed.scheme == "https" and parsed.netloc and parsed.hostname:
         return
     if parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "::1", "localhost"}:
         return
@@ -396,7 +416,7 @@ def _require_timeout(value: object) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         raise NatProbeError("probe_timeout_invalid")
     timeout = float(value)
-    if timeout <= 0 or timeout > 10:
+    if not math.isfinite(timeout) or timeout <= 0 or timeout > 10:
         raise NatProbeError("probe_timeout_out_of_range")
     return timeout
 
@@ -405,6 +425,15 @@ def _require_bool(value: object, field_name: str) -> bool:
     if not isinstance(value, bool):
         raise NatProbeError(f"{field_name}_must_be_bool")
     return value
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, *_args: object, **_kwargs: object) -> None:
+        raise NatProbeError("probe_observer_redirect_forbidden")
+
+
+def _urlopen_no_redirect(url: str, timeout_seconds: float) -> Any:
+    return build_opener(_NoRedirect).open(url, timeout=timeout_seconds)
 
 
 __all__ = [

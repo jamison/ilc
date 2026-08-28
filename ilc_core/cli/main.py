@@ -2012,8 +2012,11 @@ def _build_parser() -> JsonArgumentParser:
         if command == "network-doctor":
             network_doctor_parser = subparsers.add_parser(
                 "network-doctor",
-                help="Read-only connectivity mode diagnostic",
-                description="Read-only connectivity mode diagnostic",
+                help="Connectivity mode diagnostic",
+                description=(
+                    "Connectivity mode diagnostic. Read-only unless --enable-upnp "
+                    "is supplied."
+                ),
             )
             output_group = network_doctor_parser.add_mutually_exclusive_group()
             output_group.add_argument(
@@ -2031,6 +2034,28 @@ def _build_parser() -> JsonArgumentParser:
                 "--out",
                 default="",
                 help="Optional path for canonical ConnectivityReceipt JSON",
+            )
+            network_doctor_parser.add_argument(
+                "--probe-observer",
+                action="append",
+                default=[],
+                help="ILC observer URL for direct reachability probing; may be repeated",
+            )
+            network_doctor_parser.add_argument(
+                "--relay-url",
+                default="",
+                help="Optional relay/rendezvous HTTPS URL for guarded relay probing",
+            )
+            network_doctor_parser.add_argument(
+                "--relay-admission-material",
+                default="",
+                help="Path to relay admission material JSON for guarded relay probing",
+            )
+            network_doctor_parser.add_argument(
+                "--probe-epoch",
+                type=int,
+                default=0,
+                help="Protocol epoch recorded in the connectivity receipt",
             )
             network_doctor_parser.add_argument(
                 "--enable-upnp",
@@ -3029,6 +3054,12 @@ def _run_top_level_command(
             text=bool(getattr(args, "text", False)),
             output_path=str(getattr(args, "out", "") or "") or None,
             enable_upnp=bool(getattr(args, "enable_upnp", False)),
+            probe_epoch=int(getattr(args, "probe_epoch", 0)),
+            probe_observers=tuple(getattr(args, "probe_observer", []) or []),
+            relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
+            relay_admission_material_path=(
+                str(getattr(args, "relay_admission_material", "") or "") or None
+            ),
         )
         return _success_payload(command, data)
     if command == "ccss":

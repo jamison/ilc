@@ -14,13 +14,15 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 import hashlib
 import json
+import math
 import re
 from typing import Any, Protocol
 from urllib.error import URLError
 from urllib.parse import urlparse
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from ilc_core import __version__ as ILC_CORE_VERSION
+from ilc_core.identity.bls_backend import verify_invite_pop_digest
 from ilc_core.identity.first_run_provisioning import (
     POP_DOMAIN,
     invite_pop_payload_ref,
@@ -68,6 +70,55 @@ class RelayClientTransport(Protocol):
         """POST canonical JSON and return a decoded JSON object."""
 
 
+def relay_admission_payload_ref(
+    *,
+    agent_id: str,
+    invite_id: str,
+    invite_nullifier: str,
+    invite_pop_payload_ref_value: str,
+    admission_epoch: int,
+    network_id: str,
+    relay_base_url: str,
+    requested_internal_port: int,
+    requested_protocol: str,
+    software_version: str,
+) -> str:
+    """Return the SHA-384 relay admission transcript digest signed by the agent."""
+
+    _require_agent_id(agent_id, "relay_agent_id_invalid")
+    _require_non_empty_string(invite_id, "relay_invite_id_invalid")
+    _require_sha256_hex(invite_nullifier, "relay_invite_nullifier_invalid")
+    _require_sha384_hex(
+        invite_pop_payload_ref_value,
+        "relay_invite_pop_payload_ref_invalid",
+    )
+    _require_epoch(admission_epoch, "relay_admission_epoch_invalid")
+    _require_network_id(network_id)
+    relay_base_url = _require_relay_base_url(relay_base_url)
+    _require_port(requested_internal_port, "relay_requested_internal_port")
+    _require_token(software_version, "relay_software_version_invalid")
+    if requested_protocol != "quic":
+        raise RelayClientError("relay_requested_protocol_must_be_quic")
+    return hashlib.sha384(
+        _canonical_json_bytes(
+            {
+                "admission_epoch": admission_epoch,
+                "agent_id": agent_id,
+                "domain": RELAY_ADMISSION_DOMAIN,
+                "invite_id": invite_id,
+                "invite_nullifier": invite_nullifier,
+                "invite_pop_payload_ref": invite_pop_payload_ref_value,
+                "network_id": network_id,
+                "relay_base_url": relay_base_url,
+                "requested_internal_port": requested_internal_port,
+                "requested_protocol": requested_protocol,
+                "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
+                "software_version": software_version,
+            }
+        )
+    ).hexdigest()
+
+
 @dataclass(frozen=True)
 class RelayEndpoint:
     """Endpoint assigned by a relay slot grant."""
@@ -104,9 +155,12 @@ class RelayAdmissionRequest:
     invite_pop_epoch: int
     admission_epoch: int
     network_id: str = "public-rc"
+    relay_base_url: str | None = None
     requested_internal_port: int = _DEFAULT_INTERNAL_PORT
     requested_protocol: str = "quic"
     software_version: str = ILC_CORE_VERSION
+    relay_admission_payload_ref: str | None = None
+    relay_admission_signature: str | None = None
 
     def __post_init__(self) -> None:
         _require_agent_id(self.agent_id, "relay_agent_id_invalid")
@@ -116,10 +170,28 @@ class RelayAdmissionRequest:
         _require_epoch(self.invite_pop_epoch, "relay_invite_pop_epoch_invalid")
         _require_epoch(self.admission_epoch, "relay_admission_epoch_invalid")
         _require_network_id(self.network_id)
+        if self.relay_base_url is None:
+            raise RelayClientError("relay_base_url_required")
+        _require_relay_base_url(self.relay_base_url)
         _require_port(self.requested_internal_port, "relay_requested_internal_port")
         _require_token(self.software_version, "relay_software_version_invalid")
         if self.requested_protocol != "quic":
             raise RelayClientError("relay_requested_protocol_must_be_quic")
+        expected_admission_ref = self.expected_relay_admission_payload_ref
+        if self.relay_admission_payload_ref is None:
+            raise RelayClientError("relay_admission_payload_ref_required")
+        _require_sha384_hex(
+            self.relay_admission_payload_ref,
+            "relay_admission_payload_ref_invalid",
+        )
+        if self.relay_admission_payload_ref != expected_admission_ref:
+            raise RelayClientError("relay_admission_payload_ref_mismatch")
+        if self.relay_admission_signature is None:
+            raise RelayClientError("relay_admission_signature_required")
+        _require_bls_signature_hex(
+            self.relay_admission_signature,
+            "relay_admission_signature_invalid",
+        )
         if not verify_invite_pop(
             agent_id_hex=self.agent_id,
             invite_nullifier=self.invite_nullifier,
@@ -128,6 +200,16 @@ class RelayAdmissionRequest:
             invite_pop=self.invite_pop,
         ):
             raise RelayClientError("relay_invite_pop_verification_failed")
+        try:
+            signature_ok = verify_invite_pop_digest(
+                public_key_hex=self.agent_id,
+                digest_hex=self.relay_admission_payload_ref,
+                signature_hex=self.relay_admission_signature,
+            )
+        except ValueError as exc:
+            raise RelayClientError("relay_admission_signature_invalid") from exc
+        if not signature_ok:
+            raise RelayClientError("relay_admission_signature_verification_failed")
 
     @property
     def invite_pop_payload_ref(self) -> str:
@@ -136,6 +218,21 @@ class RelayAdmissionRequest:
             invite_nullifier=self.invite_nullifier,
             invite_id=self.invite_id,
             epoch=self.invite_pop_epoch,
+        )
+
+    @property
+    def expected_relay_admission_payload_ref(self) -> str:
+        return relay_admission_payload_ref(
+            agent_id=self.agent_id,
+            invite_id=self.invite_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_pop_payload_ref_value=self.invite_pop_payload_ref,
+            admission_epoch=self.admission_epoch,
+            network_id=self.network_id,
+            relay_base_url=self.relay_base_url or "",
+            requested_internal_port=self.requested_internal_port,
+            requested_protocol=self.requested_protocol,
+            software_version=self.software_version,
         )
 
     @property
@@ -154,8 +251,11 @@ class RelayAdmissionRequest:
             "invite_pop_epoch": self.invite_pop_epoch,
             "invite_pop_payload_ref": self.invite_pop_payload_ref,
             "network_id": self.network_id,
+            "relay_base_url": self.relay_base_url,
             "requested_internal_port": self.requested_internal_port,
             "requested_protocol": self.requested_protocol,
+            "relay_admission_payload_ref": self.relay_admission_payload_ref,
+            "relay_admission_signature": self.relay_admission_signature,
             "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
             "software_version": self.software_version,
         }
@@ -347,8 +447,10 @@ class HttpsRelayClientTransport:
             method="POST",
         )
         try:
-            response = urlopen(request, timeout=timeout_seconds)
+            response = _urlopen_no_redirect(request, timeout_seconds)
             try:
+                if getattr(response, "status", 200) >= 400:
+                    raise RelayClientError("relay_transport_http_status_failed")
                 raw = response.read(_MAX_RESPONSE_BYTES + 1)
             finally:
                 response.close()
@@ -380,6 +482,7 @@ class RelayClient:
         network_id: str = "public-rc",
         requested_internal_port: int = _DEFAULT_INTERNAL_PORT,
         software_version: str = ILC_CORE_VERSION,
+        relay_admission_signature: str | None = None,
         timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
         transport: RelayClientTransport | None = None,
         allow_guarded_request: bool = False,
@@ -402,6 +505,12 @@ class RelayClient:
             software_version,
             "relay_software_version_invalid",
         )
+        if relay_admission_signature is not None:
+            _require_bls_signature_hex(
+                relay_admission_signature,
+                "relay_admission_signature_invalid",
+            )
+        self.relay_admission_signature = relay_admission_signature
         self.timeout_seconds = _require_timeout(timeout_seconds)
         self._transport = transport or HttpsRelayClientTransport(self.relay_base_url)
         self._allow_guarded_request = _require_bool(
@@ -409,10 +518,33 @@ class RelayClient:
             "relay_allow_guarded_request_must_be_bool",
         )
 
-    def request_slot(self, *, admission_epoch: int) -> RelaySlotGrant:
+    def request_slot(
+        self,
+        *,
+        admission_epoch: int,
+        relay_admission_signature: str | None = None,
+    ) -> RelaySlotGrant:
         """Request a bounded relay slot for the current protocol epoch."""
 
         self._require_active()
+        invite_ref = invite_pop_payload_ref(
+            agent_id_hex=self.agent_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_id=self.invite_id,
+            epoch=self.invite_pop_epoch,
+        )
+        admission_ref = relay_admission_payload_ref(
+            agent_id=self.agent_id,
+            invite_id=self.invite_id,
+            invite_nullifier=self.invite_nullifier,
+            invite_pop_payload_ref_value=invite_ref,
+            admission_epoch=admission_epoch,
+            network_id=self.network_id,
+            relay_base_url=self.relay_base_url,
+            requested_internal_port=self.requested_internal_port,
+            requested_protocol="quic",
+            software_version=self.software_version,
+        )
         request = RelayAdmissionRequest(
             agent_id=self.agent_id,
             invite_id=self.invite_id,
@@ -421,8 +553,13 @@ class RelayClient:
             invite_pop_epoch=self.invite_pop_epoch,
             admission_epoch=admission_epoch,
             network_id=self.network_id,
+            relay_base_url=self.relay_base_url,
             requested_internal_port=self.requested_internal_port,
             software_version=self.software_version,
+            relay_admission_payload_ref=admission_ref,
+            relay_admission_signature=(
+                relay_admission_signature or self.relay_admission_signature
+            ),
         )
         response = self._transport.post_json(
             "/relay/admission/request",
@@ -559,7 +696,13 @@ def _require_relay_base_url(value: object) -> str:
         raise RelayClientError("relay_base_url_credentials_forbidden")
     if parsed.query or parsed.fragment:
         raise RelayClientError("relay_base_url_query_fragment_forbidden")
-    if parsed.scheme == "https" and parsed.netloc:
+    try:
+        parsed_port = parsed.port
+    except ValueError as exc:
+        raise RelayClientError("relay_base_url_port_invalid") from exc
+    if parsed_port is not None and (parsed_port < 1 or parsed_port > 65535):
+        raise RelayClientError("relay_base_url_port_invalid")
+    if parsed.scheme == "https" and parsed.netloc and parsed.hostname:
         return value
     if parsed.scheme == "http" and parsed.hostname in {"127.0.0.1", "::1", "localhost"}:
         return value
@@ -659,7 +802,7 @@ def _require_timeout(value: object) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise RelayClientError("relay_timeout_invalid")
     timeout = float(value)
-    if timeout <= 0 or timeout > 10:
+    if not math.isfinite(timeout) or timeout <= 0 or timeout > 10:
         raise RelayClientError("relay_timeout_out_of_range")
     return timeout
 
@@ -668,6 +811,15 @@ def _require_bool(value: object, token: str) -> bool:
     if not isinstance(value, bool):
         raise RelayClientError(token)
     return value
+
+
+class _NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, *_args: object, **_kwargs: object) -> None:
+        raise RelayClientError("relay_redirect_forbidden")
+
+
+def _urlopen_no_redirect(request: Request, timeout_seconds: float) -> Any:
+    return build_opener(_NoRedirect).open(request, timeout=timeout_seconds)
 
 
 def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:
@@ -697,4 +849,5 @@ __all__ = [
     "RelayKeepaliveReceipt",
     "RelayReleaseReceipt",
     "RelaySlotGrant",
+    "relay_admission_payload_ref",
 ]
