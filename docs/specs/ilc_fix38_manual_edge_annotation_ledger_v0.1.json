@@ -73095,6 +73095,117 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_reconcile_00_g10_path_taxonomy_and_claim_boundaries.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_traversal_policy",
+      "chronology_note": "Created or hardened during GAP-AUTO-NAT-TRAVERSAL-POLICY-00 after direct reads of the connectivity taxonomy, ADR-0011, ADR-0039, CLI install defaults, and OpenClaw non-activation boundary.",
+      "manual_read_summary": "Canonical policy for bounded, disclosed, receipted, reversible Auto-NAT traversal and consent model.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0039_Validator_Endpoint_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-POLICY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "nat_traversal_policy",
+        "connectivity_lane",
+        "load_bearing_spec"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_auto_nat_traversal_policy_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_traversal_policy",
+      "chronology_note": "Created or hardened during GAP-AUTO-NAT-TRAVERSAL-POLICY-00 after direct reads of the connectivity taxonomy, ADR-0011, ADR-0039, CLI install defaults, and OpenClaw non-activation boundary.",
+      "manual_read_summary": "Phase prompt for GAP-AUTO-NAT-TRAVERSAL-POLICY-00, hardened for output-token absence scope and current execution date.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0039_Validator_Endpoint_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-POLICY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "nat_traversal_policy",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_auto_nat_traversal_policy_00_g10_traversal_policy_and_consent_model.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_traversal_policy",
+      "chronology_note": "Created or hardened during GAP-AUTO-NAT-TRAVERSAL-POLICY-00 after direct reads of the connectivity taxonomy, ADR-0011, ADR-0039, CLI install defaults, and OpenClaw non-activation boundary.",
+      "manual_read_summary": "Execution walkthrough and verification evidence for GAP-AUTO-NAT-TRAVERSAL-POLICY-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0039_Validator_Endpoint_Registry.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-AUTO-NAT-TRAVERSAL-POLICY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "nat_traversal_policy",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_auto_nat_traversal_policy_00_walkthrough.md"
     }
   ],
   "boundary": {
