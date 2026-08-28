@@ -72901,6 +72901,52 @@
       "repo_path": "out/vps_provision_00b_endpoint_assertions_lmdb/lock.mdb"
     },
     {
+      "annotation_batch": "manual_batch_1620_phase_GAP_VPS_VALIDATOR_TEARDOWN_00_wipe",
+      "chronology_note": "2026-08-28 GAP-VPS-VALIDATOR-TEARDOWN-00 phase prompt \u2014 wipe all four live validator slots before real-world reprovision",
+      "manual_read_summary": "SENSITIVE phase prompt for stopping, disabling, and fully deleting all four public-RC validator slots from live VPS hosts in preparation for canonical ilc install --from-invite reprovisioning.",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_validator_teardown_00_g10_validator_slot_wipe.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_1621_phase_GAP_VPS_VALIDATOR_REPROVISION_00_real_install",
+      "chronology_note": "2026-08-28 GAP-VPS-VALIDATOR-REPROVISION-00 phase prompt \u2014 real-world ilc install --from-invite on all four validator slots before PUBLISH-EXEC-00",
+      "manual_read_summary": "SENSITIVE phase prompt for provisioning all four public-RC validator slots using the canonical single-command ilc install --from-invite user flow, generating genuine on-device AgentIDs and updating genesis.json.",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_vps_validator_reprovision_00_g10_real_world_validator_install.md",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
       "annotation_batch": "manual_batch_gap_vps_provision_00c_clean_namespace_2026_08_28",
       "chronology_note": "2026-08-28 GAP-VPS-PROVISION-00c clean namespace receipt produced after live read-only validator verification.",
       "manual_read_summary": "PUBLIC_RC_EXCLUDE receipt confirming all four CDL-017 public-RC validator slots remain at epoch 0 with invite-installed AgentIDs, invite PoP/nullifier evidence, public-IP endpoint assertions, and active validator services.",
