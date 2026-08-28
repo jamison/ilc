@@ -73313,6 +73313,130 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_spec_00_g10_relay_semantics_and_abuse_limits.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_CONNECTIVITY_MODE_RUNTIME_00_mode_enum",
+      "chronology_note": "Created during GAP-CONNECTIVITY-MODE-RUNTIME-00 after prompt hardening identified missing discriminator fields for deterministic 9-mode classification.",
+      "manual_read_summary": "Pure connectivity mode runtime with ConnectivityMode enum, ProbeResult, ConnectivityReceipt, strict validators, canonical JSON serialization, and no network I/O.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_auto_nat_traversal_policy_GAP_AUTO_NAT_TRAVERSAL_POLICY_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_relay_rendezvous_spec_GAP_RELAY_RENDEZVOUS_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "connectivity_mode_runtime",
+        "connectivity_lane",
+        "load_bearing_artifact_added"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/connectivity_mode.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_CONNECTIVITY_MODE_RUNTIME_00_mode_enum",
+      "chronology_note": "Created during GAP-CONNECTIVITY-MODE-RUNTIME-00 to cover all nine connectivity transitions and schema guard failures.",
+      "manual_read_summary": "Focused unit tests for ConnectivityMode taxonomy completeness, all nine mode transitions, canonical receipt serialization, AgentID validation, endpoint validation, and guard token presence.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/connectivity_mode.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "test_file",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_connectivity_mode.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_CONNECTIVITY_MODE_RUNTIME_00_mode_enum",
+      "chronology_note": "Created during GAP-CONNECTIVITY-MODE-RUNTIME-00 after implementation and verification commands completed.",
+      "manual_read_summary": "Execution walkthrough recording prompt hardening, direct reads, focused test output, graph delta, STATUS token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "phase_evidence",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_connectivity_mode_runtime_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1602_phase_GAP_CONNECTIVITY_MODE_RUNTIME_00_mode_enum",
+      "chronology_note": "Hardened during GAP-CONNECTIVITY-MODE-RUNTIME-00 before execution to require explicit discriminator fields for all nine modes and scoped token absence checks.",
+      "manual_read_summary": "Phase prompt for GAP-CONNECTIVITY-MODE-RUNTIME-00, hardened for deterministic classification completeness and current execution date.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_PHASE",
+          "target": "phase:GAP-CONNECTIVITY-MODE-RUNTIME-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "phase_prompt",
+        "connectivity_lane",
+        "support_only"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_mode_runtime_00_g10_connectivity_mode_and_probe_receipt_schema.md"
     }
   ],
   "boundary": {
