@@ -68,6 +68,7 @@ OPERATIONAL_COMMANDS = (
     "ccss",
     "atlas",
     "doctor",
+    "network-doctor",
     "bootstrap",
     "bootstrap-census",
     "bootstrap-receipt",
@@ -2008,6 +2009,31 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "network-doctor":
+            network_doctor_parser = subparsers.add_parser(
+                "network-doctor",
+                help="Read-only connectivity mode diagnostic",
+                description="Read-only connectivity mode diagnostic",
+            )
+            output_group = network_doctor_parser.add_mutually_exclusive_group()
+            output_group.add_argument(
+                "--json",
+                dest="network_doctor_json",
+                action="store_true",
+                help="Emit machine-readable JSON output (default)",
+            )
+            output_group.add_argument(
+                "--text",
+                action="store_true",
+                help="Emit human-readable connectivity output",
+            )
+            network_doctor_parser.add_argument(
+                "--out",
+                default="",
+                help="Optional path for canonical ConnectivityReceipt JSON",
+            )
+            continue
+
         if command == "wallet":
             wallet_parser = subparsers.add_parser(
                 "wallet",
@@ -2897,6 +2923,7 @@ def _run_top_level_command(
         "ccss",
         "doctor",
         "install",
+        "network-doctor",
         "node",
         "query",
         "sidecar",
@@ -2981,6 +3008,14 @@ def _run_top_level_command(
         return _success_payload("sidecar" if command == "skills" else command, data)
     if command == "doctor":
         data = _run_doctor_subcommand(args, graph_state_path)
+        return _success_payload(command, data)
+    if command == "network-doctor":
+        from ilc_core.cli.network_doctor import build_network_doctor_payload
+
+        data = build_network_doctor_payload(
+            text=bool(getattr(args, "text", False)),
+            output_path=str(getattr(args, "out", "") or "") or None,
+        )
         return _success_payload(command, data)
     if command == "ccss":
         from ilc_core.cli.ccss_cli import run_ccss_command
