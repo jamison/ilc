@@ -263,7 +263,7 @@ def test_receipt_rejects_bad_agent_id_and_bad_epoch() -> None:
 
 
 def test_guard_and_output_token_are_present() -> None:
-    assert CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED is True
+    assert CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED is False
     assert (
         CONNECTIVITY_MODE_RUNTIME_TOKEN
         == "connectivity_mode_runtime_committed_GAP_CONNECTIVITY_MODE_RUNTIME_00"

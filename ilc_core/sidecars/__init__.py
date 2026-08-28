@@ -15,6 +15,7 @@ __all__ = [
     "public_fetch_p2p_readiness",
     "registry_manifest",
     "transport_principal_admission",
+    "upnp_router_mapping",
     "value_path_activation_boundary_preflight",
     "wallet_action_semantics_preflight",
 ]

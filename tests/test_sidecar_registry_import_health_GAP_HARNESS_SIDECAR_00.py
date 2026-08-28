@@ -14,10 +14,10 @@ def test_sidecar_registry_manifest_imports_and_builds_cleanly() -> None:
     manifest = build_sidecar_registry_manifest()
 
     assert manifest["version"] == "graph_native_sidecar_registry_manifest_phase_1307.v0.1"
-    assert len(manifest["sidecars"]) == 14
+    assert len(manifest["sidecars"]) == 15
 
 
-def test_sidecar_registry_manifest_has_fourteen_sidecars() -> None:
+def test_sidecar_registry_manifest_has_fifteen_sidecars() -> None:
     manifest = build_sidecar_registry_manifest()
     sidecar_ids = {sidecar["sidecar_id"] for sidecar in manifest["sidecars"]}
 
@@ -34,6 +34,7 @@ def test_sidecar_registry_manifest_has_fourteen_sidecars() -> None:
         "sidecar_registry_manifest",
         "transport_principal_admission",
         "truth_primitive_submission_boundary",
+        "upnp-router-mapping",
         "value_path_activation_boundary_preflight",
         "wallet_action_semantics_preflight",
     }

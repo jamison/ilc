@@ -6,6 +6,7 @@ import sys
 
 from ilc_core.cli import network_doctor
 from ilc_core.network.connectivity_mode import ConnectivityMode, ConnectivityReceipt
+from ilc_core.network.nat_probe import NatProbeReport
 
 
 def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
@@ -24,28 +25,32 @@ def test_network_doctor_help_exits_zero() -> None:
     assert "Read-only connectivity mode diagnostic" in result.stdout
     assert "--text" in result.stdout
     assert "--out" in result.stdout
+    assert "--enable-upnp" in result.stdout
+    assert "no router-side authentication" in result.stdout
 
 
-def test_network_doctor_default_json_stub_receipt() -> None:
+def test_network_doctor_default_json_live_non_mutating_receipt() -> None:
     result = _run_cli("network-doctor")
     assert result.returncode == 0
     payload = json.loads(result.stdout)
     data = payload["data"]
     assert payload["command"] == "network-doctor"
     assert data["connectivity_mode"] == "outbound_only"
+    assert data["firewall_mutation_attempted"] is False
+    assert data["router_mapping"] is None
     assert data["receipt"]["mode"] == "outbound_only"
     assert data["receipt"]["probe_epoch"] == 0
     assert data["receipt"]["schema_version"] == "gap_connectivity_mode_runtime_00.v0.1"
-    assert network_doctor.NETWORK_DOCTOR_STUB_WARNING in data["warnings"]
-    assert network_doctor.NETWORK_DOCTOR_STUB_WARNING in result.stderr
+    assert "no_ilc_probe_observer_configured" in data["warnings"]
+    assert "no_ilc_probe_observer_configured" in result.stderr
 
 
-def test_network_doctor_text_stub_receipt() -> None:
+def test_network_doctor_text_live_non_mutating_receipt() -> None:
     result = _run_cli("network-doctor", "--text")
     assert result.returncode == 0
     assert result.stdout.startswith("ILC network doctor\n")
     assert "connectivity_mode: outbound_only" in result.stdout
-    assert "warning: CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED=True" in result.stdout
+    assert "warning: no_ilc_probe_observer_configured" in result.stdout
 
 
 def test_network_doctor_out_writes_canonical_receipt(tmp_path) -> None:
@@ -92,19 +97,72 @@ def test_upnp_tip_absent_for_non_relay_text_modes() -> None:
 
 
 def test_upnp_tip_absent_in_json_even_when_relay_reachable(monkeypatch) -> None:
+    probe_result = network_doctor.ProbeResult(
+        has_public_ip=False,
+        observed_ip=None,
+        observed_port=None,
+        relay_available=True,
+        validator_participation_enabled=False,
+        has_outbound_connectivity=True,
+    )
+    receipt = ConnectivityReceipt(
+        mode=ConnectivityMode.RELAY_REACHABLE,
+        observed_endpoint=None,
+        relay_endpoint="relay.example:50151",
+        probe_observer_agent_id=None,
+        probe_epoch=0,
+    )
     monkeypatch.setattr(
         network_doctor,
-        "_current_probe_result",
-        lambda: network_doctor.ProbeResult(
-            has_public_ip=False,
-            observed_ip=None,
-            observed_port=None,
-            relay_available=True,
-            validator_participation_enabled=False,
-            has_outbound_connectivity=True,
+        "_current_probe_report",
+        lambda **_: NatProbeReport(
+            connectivity_receipt=receipt,
+            probe_result=probe_result,
+            observer_endpoint_url=None,
+            firewall_mutation_attempted=False,
+            router_mapping=None,
+            warnings=(),
         ),
     )
     payload = network_doctor.build_network_doctor_payload(text=False)
     encoded = json.dumps(payload, sort_keys=True)
     assert payload["connectivity_mode"] == "relay_reachable"
     assert network_doctor.UPNP_RELAY_TIP not in encoded
+
+
+def test_network_doctor_passes_enable_upnp_to_live_probe(monkeypatch) -> None:
+    calls: list[dict[str, object]] = []
+    probe_result = network_doctor.ProbeResult(
+        has_public_ip=False,
+        observed_ip=None,
+        observed_port=None,
+        relay_available=False,
+        validator_participation_enabled=False,
+        has_outbound_connectivity=True,
+    )
+    receipt = ConnectivityReceipt(
+        mode=ConnectivityMode.OUTBOUND_ONLY,
+        observed_endpoint=None,
+        relay_endpoint=None,
+        probe_observer_agent_id=None,
+        probe_epoch=7,
+    )
+
+    def fake_report(**kwargs: object) -> NatProbeReport:
+        calls.append(kwargs)
+        return NatProbeReport(
+            connectivity_receipt=receipt,
+            probe_result=probe_result,
+            observer_endpoint_url=None,
+            firewall_mutation_attempted=False,
+            router_mapping=None,
+            warnings=(),
+        )
+
+    monkeypatch.setattr(network_doctor, "_current_probe_report", fake_report)
+    payload = network_doctor.build_network_doctor_payload(
+        enable_upnp=True,
+        probe_epoch=7,
+    )
+    assert payload["receipt"]["probe_epoch"] == 7
+    assert calls == [{"attempt_router_mapping": True, "probe_epoch": 7}]

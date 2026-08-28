@@ -43,6 +43,9 @@ from ilc_core.sidecars.public_fetch_p2p_readiness import (
 from ilc_core.sidecars.transport_principal_admission import (
     transport_principal_admission_sidecar_manifest,
 )
+from ilc_core.sidecars.upnp_router_mapping import (
+    upnp_router_mapping_sidecar_manifest,
+)
 from ilc_core.sidecars.value_path_activation_boundary_preflight import (
     value_path_activation_boundary_preflight_manifest,
 )
@@ -210,6 +213,20 @@ _SIDECAR_DEFINITIONS = (
         ),
         "sidecar_id": "public_fetch_p2p_readiness_candidate",
         "wiring_modes": _PRIVATE_WIRING_MODES,
+    },
+    {
+        "authority_gate": "explicit opt-in only via attempt_router_mapping=True",
+        "component": "upnp_router_mapping",
+        "implementation_status": "implemented_gap_auto_nat_traversal_impl_00",
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "bounded_lease_seconds",
+            "explicit_opt_in_router_mapping",
+            "port_allowlist_enforcement",
+            "rollback_receipt_token",
+        ),
+        "sidecar_id": "upnp-router-mapping",
+        "wiring_modes": ("in_process_import",),
     },
     {
         "authority_gate": "phase_1592_wallet_claimability_ilc_settlement_authorized_actions_blocked",
@@ -431,6 +448,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
             "public_fetch_p2p_readiness_candidate_manifest": public_fetch_p2p_readiness_candidate_manifest(),
             "public_p2p_activation_authorized": False,
             "transport_principal_admission_sidecar_manifest": transport_principal_admission_sidecar_manifest(),
+            "upnp_router_mapping_sidecar_manifest": upnp_router_mapping_sidecar_manifest(),
             "value_path_activation_boundary_preflight_manifest": value_path_activation_boundary_preflight_manifest(),
             "wallet_action_semantics_preflight_manifest": wallet_action_semantics_preflight_manifest(),
         },
@@ -453,6 +471,12 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
         "version": SIDECAR_REGISTRY_MANIFEST_VERSION,
     }
     return validate_sidecar_registry_manifest(manifest)
+
+
+def list_sidecars() -> list[dict[str, Any]]:
+    """Return sorted protocol sidecars from the deterministic registry."""
+
+    return list(build_sidecar_registry_manifest()["sidecars"])
 
 
 def validate_sidecar_registry_manifest(manifest: Mapping[str, Any] | None = None) -> dict[str, Any]:
@@ -1159,9 +1183,11 @@ __all__ = [
     "ccss_004_gossip_jitter_cover_policy_manifest",
     "claimability_receipt_verifier_manifest",
     "export_sidecar_registry_manifest_json",
+    "list_sidecars",
     "public_fetch_p2p_readiness_candidate_manifest",
     "sidecar_registry_required_tokens",
     "transport_principal_admission_sidecar_manifest",
+    "upnp_router_mapping_sidecar_manifest",
     "validate_sidecar_registry_manifest",
     "value_path_activation_boundary_preflight_manifest",
     "wallet_action_semantics_preflight_manifest",

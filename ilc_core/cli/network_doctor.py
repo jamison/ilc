@@ -1,9 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Read-only network-doctor CLI helper.
-
-The live connectivity probe is intentionally not active in this phase. This
-module only formats deterministic connectivity receipts from stub evidence.
-"""
+"""Network-doctor CLI helper for deterministic connectivity diagnostics."""
 
 from __future__ import annotations
 
@@ -41,14 +37,20 @@ def build_network_doctor_payload(
     *,
     text: bool = False,
     output_path: str | None = None,
+    enable_upnp: bool = False,
+    probe_epoch: int = 0,
 ) -> dict[str, Any]:
     """Build the CLI payload for `ilc network-doctor`."""
 
-    probe = _current_probe_result()
+    report = _current_probe_report(
+        attempt_router_mapping=enable_upnp,
+        probe_epoch=probe_epoch,
+    )
+    probe = report.probe_result
     mode = connectivity_mode_from_probe_result(probe)
-    receipt = _receipt_from_mode(mode)
+    receipt = report.connectivity_receipt
     receipt_payload = receipt.to_dict()
-    warnings = []
+    warnings = list(report.warnings)
     if CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED:
         warnings.append(NETWORK_DOCTOR_STUB_WARNING)
 
@@ -57,7 +59,9 @@ def build_network_doctor_payload(
 
     data: dict[str, Any] = {
         "connectivity_mode": mode.value,
+        "firewall_mutation_attempted": report.firewall_mutation_attempted,
         "receipt": receipt_payload,
+        "router_mapping": report.router_mapping,
         "warnings": warnings,
     }
     if text:
@@ -65,9 +69,9 @@ def build_network_doctor_payload(
     return data
 
 
-def _current_probe_result() -> ProbeResult:
+def _current_probe_report(*, attempt_router_mapping: bool, probe_epoch: int):
     if CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED:
-        return ProbeResult(
+        probe_result = ProbeResult(
             has_public_ip=False,
             observed_ip=None,
             observed_port=None,
@@ -75,7 +79,31 @@ def _current_probe_result() -> ProbeResult:
             validator_participation_enabled=False,
             has_outbound_connectivity=True,
         )
-    raise ValueError("connectivity_probe_runtime_unexpectedly_active")
+        receipt = _receipt_from_mode(connectivity_mode_from_probe_result(probe_result))
+
+        class _StubReport:
+            connectivity_receipt = receipt
+            firewall_mutation_attempted = False
+            probe_result = probe_result
+            router_mapping = None
+            warnings: tuple[str, ...] = ()
+
+        return _StubReport()
+
+    from ilc_core.network.nat_probe import NatProbeEngine
+
+    engine = NatProbeEngine()
+    return engine.run_probe(
+        attempt_router_mapping=attempt_router_mapping,
+        probe_epoch=probe_epoch,
+    )
+
+
+def _current_probe_result() -> ProbeResult:
+    return _current_probe_report(
+        attempt_router_mapping=False,
+        probe_epoch=0,
+    ).probe_result
 
 
 def _receipt_from_mode(mode: ConnectivityMode) -> ConnectivityReceipt:
