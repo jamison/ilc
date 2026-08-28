@@ -27,7 +27,13 @@ from ilc_core.network.connectivity_mode import (
 
 
 NAT_PROBE_ENGINE_TOKEN = "nat_probe_engine_committed_GAP_AUTO_NAT_TRAVERSAL_IMPL_00"
+CONNECTIVITY_AUDIT_FIX_TOKEN = (
+    "connectivity_audit_fix_committed_GAP_CONNECTIVITY_AUDIT_FIX_00"
+)
 NAT_PROBE_SCHEMA_VERSION = "nat_probe_engine_GAP_AUTO_NAT_TRAVERSAL_IMPL_00.v0.1"
+NAT_TRAVERSAL_POLICY_VERSION = (
+    "ilc_auto_nat_traversal_policy_GAP_AUTO_NAT_TRAVERSAL_POLICY_00.v0.1"
+)
 UPNP_SIDECAR_UNAVAILABLE = "UPnP sidecar not available — reinstall ilc-core"
 
 _DEFAULT_TIMEOUT_SECONDS = 3.0
@@ -36,6 +42,10 @@ _MAX_OBSERVER_RESPONSE_BYTES = 8192
 _MAX_ENDPOINT_CHARS = 512
 _AGENT_ID_HEX_LENGTH = 96
 _MAX_EPOCH = (1 << 64) - 1
+_ATTEMPT_METHODS = frozenset(
+    {"ilc_observer_detection", "pcp", "nat_pmp", "upnp_igd", "relay_fallback"}
+)
+_ATTEMPT_RESULTS = frozenset({"success", "failure", "not_attempted", "skipped_no_opt_in"})
 
 
 class NatProbeError(ValueError):
@@ -56,6 +66,56 @@ class ProbeObserver:
 
 
 @dataclass(frozen=True)
+class NatTraversalAttemptReceipt:
+    """Policy receipt for one observer, relay, or explicit router-mapping attempt."""
+
+    agent_id: str | None
+    attempt_timestamp_epoch: int
+    method: str
+    result: str
+    external_endpoint: str | None
+    internal_port: int
+    lease_seconds: int
+    rollback_instruction: dict[str, Any] | None
+    observer_ref: str | None
+    firewall_mutation_attempted: bool
+    policy_version: str = NAT_TRAVERSAL_POLICY_VERSION
+
+    def __post_init__(self) -> None:
+        if self.agent_id is not None:
+            _require_agent_id(self.agent_id, "agent_id")
+        _require_epoch(self.attempt_timestamp_epoch, "attempt_timestamp_epoch")
+        if self.method not in _ATTEMPT_METHODS:
+            raise NatProbeError("nat_traversal_attempt_method_invalid")
+        if self.result not in _ATTEMPT_RESULTS:
+            raise NatProbeError("nat_traversal_attempt_result_invalid")
+        if self.external_endpoint is not None:
+            _require_endpoint_string(self.external_endpoint, "external_endpoint")
+        _require_port(self.internal_port, "internal_port")
+        if isinstance(self.lease_seconds, bool) or not isinstance(self.lease_seconds, int):
+            raise NatProbeError("lease_seconds_must_be_int")
+        if self.lease_seconds < 0:
+            raise NatProbeError("lease_seconds_out_of_range")
+        if self.rollback_instruction is not None and not isinstance(
+            self.rollback_instruction,
+            dict,
+        ):
+            raise NatProbeError("rollback_instruction_must_be_object")
+        if self.observer_ref is not None and (
+            not isinstance(self.observer_ref, str) or not self.observer_ref.strip()
+        ):
+            raise NatProbeError("observer_ref_invalid")
+        _require_bool(self.firewall_mutation_attempted, "firewall_mutation_attempted")
+        if self.firewall_mutation_attempted and self.rollback_instruction is None:
+            raise NatProbeError("firewall_mutation_requires_rollback_instruction")
+        if self.policy_version != NAT_TRAVERSAL_POLICY_VERSION:
+            raise NatProbeError("nat_traversal_policy_version_invalid")
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
 class NatProbeReport:
     """Deterministic local receipt for one NAT probe run."""
 
@@ -64,10 +124,14 @@ class NatProbeReport:
     observer_endpoint_url: str | None
     firewall_mutation_attempted: bool
     router_mapping: dict[str, Any] | None
+    attempt_receipts: tuple[NatTraversalAttemptReceipt, ...]
     warnings: tuple[str, ...]
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "attempt_receipts": [
+                attempt_receipt.to_dict() for attempt_receipt in self.attempt_receipts
+            ],
             "connectivity_receipt": self.connectivity_receipt.to_dict(),
             "firewall_mutation_attempted": self.firewall_mutation_attempted,
             "observer_endpoint_url": self.observer_endpoint_url,
@@ -109,6 +173,7 @@ class NatProbeEngine:
         relay_server_url: str | None = None,
         relay_admission_material: Mapping[str, Any] | None = None,
         relay_client_factory: RelayClientFactory | None = None,
+        agent_id: str | None = None,
     ) -> None:
         self.observers = tuple(_coerce_observer(observer) for observer in observers)
         if relay_endpoint is not None:
@@ -117,6 +182,9 @@ class NatProbeEngine:
         self.relay_server_url = relay_server_url
         self.relay_admission_material = dict(relay_admission_material or {})
         self._relay_client_factory = relay_client_factory
+        if agent_id is not None:
+            _require_agent_id(agent_id, "agent_id")
+        self.agent_id = agent_id
         self.validator_participation_enabled = _require_bool(
             validator_participation_enabled,
             "validator_participation_enabled",
@@ -138,29 +206,57 @@ class NatProbeEngine:
 
         _require_epoch(probe_epoch, "probe_epoch")
         warnings: list[str] = []
+        attempt_receipts: list[NatTraversalAttemptReceipt] = []
         observed_ip: str | None = None
         observed_port: int | None = None
         observer_agent_id: str | None = None
         observer_url: str | None = None
         has_public_ip = False
+        has_outbound_connectivity = False
 
         for observer in self.observers:
             try:
                 payload = self._observer_fetcher(observer.endpoint_url, self.timeout_seconds)
                 observed_ip, observed_port = _parse_observer_payload(payload)
+                has_outbound_connectivity = True
                 observer_agent_id = payload.get("observer_agent_id") or observer.observer_agent_id
                 if observer_agent_id is not None:
                     _require_agent_id(observer_agent_id, "observer_agent_id")
                 observer_url = observer.endpoint_url
                 if self._hole_puncher(observed_ip, observed_port, self.timeout_seconds):
                     has_public_ip = True
+                    attempt_receipts.append(
+                        self._attempt_receipt(
+                            method="ilc_observer_detection",
+                            result="success",
+                            probe_epoch=probe_epoch,
+                            external_endpoint=_endpoint(observed_ip, observed_port),
+                            observer_ref=observer_agent_id or observer.endpoint_url,
+                        )
+                    )
                 else:
                     warnings.append("probe_observer_endpoint_not_confirmed_direct")
+                    attempt_receipts.append(
+                        self._attempt_receipt(
+                            method="ilc_observer_detection",
+                            result="success",
+                            probe_epoch=probe_epoch,
+                            observer_ref=observer_agent_id or observer.endpoint_url,
+                        )
+                    )
                     observed_ip = None
                     observed_port = None
                 break
-            except Exception as exc:  # Try the next ILC observer; report failure deterministically.
+            except (NatProbeError, OSError, TimeoutError, ValueError) as exc:
                 warnings.append(f"probe_observer_failed:{observer.endpoint_url}:{type(exc).__name__}")
+                attempt_receipts.append(
+                    self._attempt_receipt(
+                        method="ilc_observer_detection",
+                        result="failure",
+                        probe_epoch=probe_epoch,
+                        observer_ref=observer.observer_agent_id or observer.endpoint_url,
+                    )
+                )
 
         router_mapping_payload: dict[str, Any] | None = None
         firewall_mutation_attempted = False
@@ -172,9 +268,45 @@ class NatProbeEngine:
             firewall_mutation_attempted = mapping.firewall_mutation_attempted
             if mapping.success:
                 warnings.append("router_mapping_created_external_verification_pending")
+                attempt_receipts.append(
+                    self._attempt_receipt(
+                        method=mapping.method_used,
+                        result="success",
+                        probe_epoch=probe_epoch,
+                        lease_seconds=mapping.lease_seconds,
+                        rollback_instruction=mapping.rollback_instruction,
+                        firewall_mutation_attempted=mapping.firewall_mutation_attempted,
+                    )
+                )
+            else:
+                attempt_receipts.append(
+                    self._attempt_receipt(
+                        method=mapping.method_used or "upnp_igd",
+                        result="failure",
+                        probe_epoch=probe_epoch,
+                        lease_seconds=mapping.lease_seconds,
+                        rollback_instruction=mapping.rollback_instruction,
+                        firewall_mutation_attempted=mapping.firewall_mutation_attempted,
+                    )
+                )
+        elif not attempt_router_mapping:
+            attempt_receipts.append(
+                self._attempt_receipt(
+                    method="upnp_igd",
+                    result="skipped_no_opt_in",
+                    probe_epoch=probe_epoch,
+                )
+            )
 
         if not self.observers:
             warnings.append("no_ilc_probe_observer_configured")
+            attempt_receipts.append(
+                self._attempt_receipt(
+                    method="ilc_observer_detection",
+                    result="not_attempted",
+                    probe_epoch=probe_epoch,
+                )
+            )
 
         relay_endpoint = self.relay_endpoint
         if (
@@ -183,6 +315,24 @@ class NatProbeEngine:
             and relay_endpoint is None
         ):
             relay_endpoint = self._request_relay_slot_if_active(probe_epoch, warnings)
+            if relay_endpoint is not None:
+                has_outbound_connectivity = True
+                attempt_receipts.append(
+                    self._attempt_receipt(
+                        method="relay_fallback",
+                        result="success",
+                        probe_epoch=probe_epoch,
+                        external_endpoint=relay_endpoint,
+                    )
+                )
+            elif self.relay_server_url or self.relay_admission_material:
+                attempt_receipts.append(
+                    self._attempt_receipt(
+                        method="relay_fallback",
+                        result="failure",
+                        probe_epoch=probe_epoch,
+                    )
+                )
 
         probe_result = ProbeResult(
             has_public_ip=has_public_ip,
@@ -190,7 +340,7 @@ class NatProbeEngine:
             observed_port=observed_port,
             relay_available=relay_endpoint is not None,
             validator_participation_enabled=self.validator_participation_enabled,
-            has_outbound_connectivity=True,
+            has_outbound_connectivity=has_outbound_connectivity,
             direct_mapping_candidate=direct_mapping_candidate,
             validator_admitted=self.validator_admitted,
         )
@@ -208,7 +358,33 @@ class NatProbeEngine:
             observer_endpoint_url=observer_url,
             firewall_mutation_attempted=firewall_mutation_attempted,
             router_mapping=router_mapping_payload,
+            attempt_receipts=tuple(attempt_receipts),
             warnings=tuple(warnings),
+        )
+
+    def _attempt_receipt(
+        self,
+        *,
+        method: str,
+        result: str,
+        probe_epoch: int,
+        external_endpoint: str | None = None,
+        lease_seconds: int = 0,
+        rollback_instruction: dict[str, Any] | None = None,
+        observer_ref: str | None = None,
+        firewall_mutation_attempted: bool = False,
+    ) -> NatTraversalAttemptReceipt:
+        return NatTraversalAttemptReceipt(
+            agent_id=self.agent_id,
+            attempt_timestamp_epoch=probe_epoch,
+            method=method,
+            result=result,
+            external_endpoint=external_endpoint,
+            internal_port=self.internal_port,
+            lease_seconds=lease_seconds,
+            rollback_instruction=rollback_instruction,
+            observer_ref=observer_ref,
+            firewall_mutation_attempted=firewall_mutation_attempted,
         )
 
     def _request_relay_slot_if_active(
@@ -246,7 +422,7 @@ class NatProbeEngine:
                 relay_admission_signature=admission_signature,
             )
             return grant.relay_endpoint.as_host_port()
-        except Exception as exc:
+        except (relay_module.RelayClientError, OSError, TimeoutError, ValueError) as exc:
             warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
             return None
 
@@ -266,7 +442,7 @@ class NatProbeEngine:
             observed_port=None,
             relay_available=self.relay_endpoint is not None,
             validator_participation_enabled=self.validator_participation_enabled,
-            has_outbound_connectivity=True,
+            has_outbound_connectivity=False,
             validator_admitted=self.validator_admitted,
         )
         request = RouterMappingRequest(
@@ -300,9 +476,16 @@ def _fetch_observer_payload(url: str, timeout_seconds: float) -> dict[str, Any]:
 def _udp_hole_punch_attempt(ip_value: str, port_value: int, timeout_seconds: float) -> bool:
     _require_ip(ip_value, "observed_ip")
     _require_port(port_value, "observed_port")
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    ip_address = ipaddress.ip_address(ip_value)
+    family = socket.AF_INET6 if ip_address.version == 6 else socket.AF_INET
+    with socket.socket(family, socket.SOCK_DGRAM) as sock:
         sock.settimeout(timeout_seconds)
-        sock.sendto(b"ilc-nat-probe-v1", (ip_value, port_value))
+        address: tuple[Any, ...] = (
+            (ip_value, port_value, 0, 0)
+            if family == socket.AF_INET6
+            else (ip_value, port_value)
+        )
+        sock.sendto(b"ilc-nat-probe-v1", address)
     return False
 
 
@@ -336,6 +519,8 @@ def _require_endpoint_string(value: object, field_name: str) -> None:
     host, separator, port_text = value.rpartition(":")
     if not separator or not host or not port_text:
         raise NatProbeError(f"{field_name}_must_be_host_port")
+    if any(char.isspace() for char in host) or any(char in host for char in "/?#@"):
+        raise NatProbeError(f"{field_name}_host_invalid")
     _require_port(int(port_text) if port_text.isdecimal() else port_text, field_name)
 
 
@@ -350,8 +535,11 @@ def _sidecar_unavailable_result() -> Any:
                 "error": UPNP_SIDECAR_UNAVAILABLE,
                 "external_port": None,
                 "firewall_mutation_attempted": False,
+                "internal_port": None,
                 "lease_seconds": 0,
                 "method_used": None,
+                "protocol": None,
+                "rollback_instruction": None,
                 "rollback_token": None,
                 "success": False,
             }
@@ -439,9 +627,12 @@ def _urlopen_no_redirect(url: str, timeout_seconds: float) -> Any:
 __all__ = [
     "NAT_PROBE_ENGINE_TOKEN",
     "NAT_PROBE_SCHEMA_VERSION",
+    "NAT_TRAVERSAL_POLICY_VERSION",
+    "CONNECTIVITY_AUDIT_FIX_TOKEN",
     "UPNP_SIDECAR_UNAVAILABLE",
     "NatProbeEngine",
     "NatProbeError",
     "NatProbeReport",
+    "NatTraversalAttemptReceipt",
     "ProbeObserver",
 ]

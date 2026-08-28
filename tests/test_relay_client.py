@@ -21,6 +21,7 @@ from ilc_core.network.relay.relay_client import (
     RelayEndpoint,
     RelaySlotGrant,
     relay_admission_payload_ref,
+    relay_lifecycle_payload_ref,
 )
 
 
@@ -69,6 +70,28 @@ def _relay_admission_signature(
         software_version=software_version or relay_module.ILC_CORE_VERSION,
     )
     return admission_ref, sign_invite_pop_digest(secret_key, admission_ref)
+
+
+def _relay_lifecycle_signature(
+    secret_key: str,
+    agent_id: str,
+    *,
+    action: str,
+    slot: RelaySlotGrant,
+    lifecycle_epoch: int,
+    network_id: str = "public-rc",
+    relay_base_url: str = "http://127.0.0.1:9",
+) -> tuple[str, str]:
+    payload_ref = relay_lifecycle_payload_ref(
+        action=action,
+        agent_id=agent_id,
+        slot_id=slot.slot_id,
+        lifecycle_epoch=lifecycle_epoch,
+        previous_grant_hash=slot.canonical_response_hash,
+        network_id=network_id,
+        relay_base_url=relay_base_url,
+    )
+    return payload_ref, sign_invite_pop_digest(secret_key, payload_ref)
 
 
 def test_relay_client_guard_defaults_closed() -> None:
@@ -226,6 +249,7 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
                         target_internal_port=payload["requested_internal_port"],
                         max_bytes_per_epoch=64 * 1024 * 1024,
                         max_concurrent_streams=8,
+                        admission_request_hash=payload["canonical_request_hash"],
                     ).to_dict()
                 }
             elif self.path == "/relay/slot/keepalive":
@@ -272,8 +296,32 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
             allow_guarded_request=True,
         )
         grant = client.request_slot(admission_epoch=0)
-        keepalive = client.keepalive(slot=grant, keepalive_epoch=1)
-        release = client.release_slot(slot=grant, release_epoch=1)
+        _, keepalive_signature = _relay_lifecycle_signature(
+            secret_key,
+            agent_id,
+            action="keepalive",
+            slot=grant,
+            lifecycle_epoch=1,
+            relay_base_url=relay_base_url,
+        )
+        _, release_signature = _relay_lifecycle_signature(
+            secret_key,
+            agent_id,
+            action="release",
+            slot=grant,
+            lifecycle_epoch=1,
+            relay_base_url=relay_base_url,
+        )
+        keepalive = client.keepalive(
+            slot=grant,
+            keepalive_epoch=1,
+            relay_lifecycle_signature=keepalive_signature,
+        )
+        release = client.release_slot(
+            slot=grant,
+            release_epoch=1,
+            relay_lifecycle_signature=release_signature,
+        )
     finally:
         server.shutdown()
         server.server_close()
@@ -310,6 +358,7 @@ def test_grant_rejects_agent_mismatch() -> None:
                 target_internal_port=50151,
                 max_bytes_per_epoch=64 * 1024 * 1024,
                 max_concurrent_streams=8,
+                admission_request_hash="0" * 64,
             ).to_dict()
 
     client = RelayClient(
@@ -352,12 +401,21 @@ def test_keepalive_and_release_reject_foreign_slot() -> None:
         target_internal_port=50151,
         max_bytes_per_epoch=64 * 1024 * 1024,
         max_concurrent_streams=8,
+        admission_request_hash="0" * 64,
     )
 
     with pytest.raises(RelayClientError, match="relay_slot_agent_id_mismatch"):
-        client.keepalive(slot=foreign_slot, keepalive_epoch=1)
+        client.keepalive(
+            slot=foreign_slot,
+            keepalive_epoch=1,
+            relay_lifecycle_signature="a" * 192,
+        )
     with pytest.raises(RelayClientError, match="relay_slot_agent_id_mismatch"):
-        client.release_slot(slot=foreign_slot, release_epoch=1)
+        client.release_slot(
+            slot=foreign_slot,
+            release_epoch=1,
+            relay_lifecycle_signature="a" * 192,
+        )
 
 
 def test_https_required_except_loopback_test_url() -> None:
@@ -425,6 +483,7 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
                 target_internal_port=50151,
                 max_bytes_per_epoch=64 * 1024 * 1024,
                 max_concurrent_streams=8,
+                admission_request_hash="0" * 64,
             )
 
     engine = NatProbeEngine(
@@ -440,7 +499,7 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
         relay_client_factory=FakeClient,
     )
     guarded = engine.run_probe(probe_epoch=2)
-    assert guarded.connectivity_receipt.mode is ConnectivityMode.OUTBOUND_ONLY
+    assert guarded.connectivity_receipt.mode is ConnectivityMode.LOCAL_ONLY
     assert calls == []
 
     monkeypatch.setattr(relay_module, "RELAY_CLIENT_NOT_ACTIVATED", False)

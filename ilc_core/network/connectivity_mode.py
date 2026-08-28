@@ -223,6 +223,8 @@ def _require_optional_endpoint(value: object, field_name: str) -> None:
     host, separator, port_text = value.rpartition(":")
     if not separator or not host or not port_text:
         raise ConnectivityModeValidationError(f"{field_name}_must_be_host_port")
+    if any(char.isspace() for char in host) or any(char in host for char in "/?#@"):
+        raise ConnectivityModeValidationError(f"{field_name}_host_invalid")
     try:
         port = int(port_text)
     except ValueError as exc:

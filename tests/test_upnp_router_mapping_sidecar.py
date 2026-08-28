@@ -10,6 +10,7 @@ from ilc_core.sidecars.upnp_router_mapping import (
     RouterMappingError,
     RouterMappingRequest,
     RouterMappingResult,
+    _rollback_token_from_fields,
     _reject_upnp_soap_fault,
     _require_upnp_service_type,
     _reject_xml_entities,
@@ -32,10 +33,25 @@ ROLLBACK_INSTRUCTION = {
     "action": "DeletePortMapping",
     "control_url": "http://192.168.1.1/control",
     "external_port": 50151,
+    "internal_client": "192.168.1.20",
+    "internal_port": 50151,
+    "lease_seconds": 3600,
+    "method_used": "nat_pmp",
     "protocol": "udp",
     "schema_version": "upnp_router_mapping_sidecar_GAP_AUTO_NAT_TRAVERSAL_IMPL_00.v0.1",
     "service_type": "urn:schemas-upnp-org:service:WANIPConnection:1",
 }
+
+
+def _rollback_token(instruction: dict[str, object] = ROLLBACK_INSTRUCTION) -> str:
+    return _rollback_token_from_fields(
+        method=str(instruction["method_used"]),
+        internal_port=int(instruction["internal_port"]),
+        external_port=int(instruction["external_port"]),
+        lease_seconds=int(instruction["lease_seconds"]),
+        protocol=str(instruction["protocol"]),
+        rollback_instruction=instruction,
+    )
 
 
 class FakeTransport:
@@ -61,7 +77,9 @@ class FakeTransport:
             method_used="nat_pmp",
             external_port=request.requested_external_port,
             lease_seconds=request.lease_seconds,
-            rollback_token="c" * 64,
+            rollback_token=_rollback_token(),
+            internal_port=request.internal_port,
+            protocol=request.protocol,
             firewall_mutation_attempted=True,
             rollback_instruction=ROLLBACK_INSTRUCTION,
         )
@@ -127,9 +145,14 @@ def test_result_serializes_canonically() -> None:
         method_used="upnp_igd",
         external_port=50151,
         lease_seconds=3600,
-        rollback_token="d" * 64,
+        rollback_token=_rollback_token({**ROLLBACK_INSTRUCTION, "method_used": "upnp_igd"}),
+        internal_port=50151,
+        protocol="udp",
         firewall_mutation_attempted=True,
-        rollback_instruction=ROLLBACK_INSTRUCTION,
+        rollback_instruction={
+            **ROLLBACK_INSTRUCTION,
+            "method_used": "upnp_igd",
+        },
     )
     encoded = result.to_canonical_json()
     assert encoded.startswith(b'{"error":')
@@ -194,8 +217,15 @@ def test_upnp_service_type_and_soap_faults_are_rejected() -> None:
 def test_rollback_instruction_is_machine_executable_shape() -> None:
     instruction = build_upnp_rollback_instruction(
         control_url="http://192.168.1.1/control",
+        internal_client="192.168.1.20",
+        internal_port=50151,
+        lease_seconds=3600,
+        method_used="upnp_igd",
         service_type="urn:schemas-upnp-org:service:WANIPConnection:1",
         external_port=50151,
         protocol="udp",
     )
-    assert instruction == ROLLBACK_INSTRUCTION
+    assert instruction == {
+        **ROLLBACK_INSTRUCTION,
+        "method_used": "upnp_igd",
+    }
