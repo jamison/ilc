@@ -10,6 +10,14 @@ from ilc_core.sidecars.upnp_router_mapping import RouterMappingResult
 
 
 AGENT_ID = "a" * 96
+ROLLBACK_INSTRUCTION = {
+    "action": "DeletePortMapping",
+    "control_url": "http://192.168.1.1/control",
+    "external_port": 50151,
+    "protocol": "udp",
+    "schema_version": "upnp_router_mapping_sidecar_GAP_AUTO_NAT_TRAVERSAL_IMPL_00.v0.1",
+    "service_type": "urn:schemas-upnp-org:service:WANIPConnection:1",
+}
 
 
 def test_live_probe_without_observers_is_non_mutating_outbound_only() -> None:
@@ -82,6 +90,7 @@ def test_router_mapping_called_only_when_requested(monkeypatch) -> None:
             lease_seconds=3600,
             rollback_token="b" * 64,
             firewall_mutation_attempted=True,
+            rollback_instruction=ROLLBACK_INSTRUCTION,
         )
 
     monkeypatch.setattr(
@@ -99,4 +108,6 @@ def test_router_mapping_called_only_when_requested(monkeypatch) -> None:
     )
     assert calls == [True]
     assert with_mapping.firewall_mutation_attempted is True
-    assert with_mapping.connectivity_receipt.mode is ConnectivityMode.NAT_TRAVERSED_DIRECT
+    assert with_mapping.connectivity_receipt.mode is ConnectivityMode.OUTBOUND_ONLY
+    assert with_mapping.connectivity_receipt.observed_endpoint is None
+    assert "router_mapping_created_external_verification_pending" in with_mapping.warnings

@@ -22,11 +22,17 @@ def _run_cli(*args: str) -> subprocess.CompletedProcess[str]:
 def test_network_doctor_help_exits_zero() -> None:
     result = _run_cli("network-doctor", "--help")
     assert result.returncode == 0
-    assert "Read-only connectivity mode diagnostic" in result.stdout
+    assert "Connectivity mode diagnostic" in result.stdout
+    assert "Read-only unless --enable-upnp is supplied" in result.stdout
     assert "--text" in result.stdout
     assert "--out" in result.stdout
+    assert "--probe-observer" in result.stdout
+    assert "--relay-url" in result.stdout
+    assert "--relay-admission-material" in result.stdout
+    assert "--probe-epoch" in result.stdout
     assert "--enable-upnp" in result.stdout
-    assert "no router-side authentication" in result.stdout
+    assert "UPnP IGD has no" in result.stdout
+    assert "authentication; any process" in result.stdout
 
 
 def test_network_doctor_default_json_live_non_mutating_receipt() -> None:
@@ -163,6 +169,58 @@ def test_network_doctor_passes_enable_upnp_to_live_probe(monkeypatch) -> None:
     payload = network_doctor.build_network_doctor_payload(
         enable_upnp=True,
         probe_epoch=7,
+        probe_observers=("https://observer.example/probe",),
+        relay_server_url="https://relay.example",
     )
     assert payload["receipt"]["probe_epoch"] == 7
-    assert calls == [{"attempt_router_mapping": True, "probe_epoch": 7}]
+    assert calls == [
+        {
+            "attempt_router_mapping": True,
+            "probe_epoch": 7,
+            "probe_observers": ("https://observer.example/probe",),
+            "relay_admission_material": {},
+            "relay_server_url": "https://relay.example",
+        }
+    ]
+
+
+def test_network_doctor_loads_relay_admission_material(tmp_path, monkeypatch) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(
+        json.dumps({"agent_id": "a" * 96}, sort_keys=True),
+        encoding="utf-8",
+    )
+    calls: list[dict[str, object]] = []
+    probe_result = network_doctor.ProbeResult(
+        has_public_ip=False,
+        observed_ip=None,
+        observed_port=None,
+        relay_available=False,
+        validator_participation_enabled=False,
+        has_outbound_connectivity=True,
+    )
+    receipt = ConnectivityReceipt(
+        mode=ConnectivityMode.OUTBOUND_ONLY,
+        observed_endpoint=None,
+        relay_endpoint=None,
+        probe_observer_agent_id=None,
+        probe_epoch=3,
+    )
+
+    def fake_report(**kwargs: object) -> NatProbeReport:
+        calls.append(kwargs)
+        return NatProbeReport(
+            connectivity_receipt=receipt,
+            probe_result=probe_result,
+            observer_endpoint_url=None,
+            firewall_mutation_attempted=False,
+            router_mapping=None,
+            warnings=(),
+        )
+
+    monkeypatch.setattr(network_doctor, "_current_probe_report", fake_report)
+    network_doctor.build_network_doctor_payload(
+        probe_epoch=3,
+        relay_admission_material_path=str(material_path),
+    )
+    assert calls[0]["relay_admission_material"] == {"agent_id": "a" * 96}
