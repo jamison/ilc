@@ -279,7 +279,7 @@ class RelayAdmissionRequest:
             invite_pop_payload_ref_value=self.invite_pop_payload_ref,
             admission_epoch=self.admission_epoch,
             network_id=self.network_id,
-            relay_base_url=self.relay_base_url or "",
+            relay_base_url=self.relay_base_url,
             requested_internal_port=self.requested_internal_port,
             requested_protocol=self.requested_protocol,
             software_version=self.software_version,
@@ -332,6 +332,7 @@ class RelaySlotGrant:
     max_bytes_per_epoch: int
     max_concurrent_streams: int
     admission_request_hash: str
+    relay_slot_nonce: str
     relay_mode: str = RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC
     revocation_ref: str | None = None
     canonical_response_hash: str | None = None
@@ -357,6 +358,7 @@ class RelaySlotGrant:
             _MAX_CONCURRENT_STREAMS,
         )
         _require_sha256_hex(self.admission_request_hash, "relay_admission_request_hash_invalid")
+        _require_relay_slot_nonce(self.relay_slot_nonce)
         if self.relay_mode != RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC:
             raise RelayClientError("relay_grant_mode_invalid")
         if self.revocation_ref is not None:
@@ -380,6 +382,7 @@ class RelaySlotGrant:
             max_bytes_per_epoch=payload.get("max_bytes_per_epoch"),
             max_concurrent_streams=payload.get("max_concurrent_streams"),
             admission_request_hash=payload.get("admission_request_hash"),
+            relay_slot_nonce=payload.get("relay_slot_nonce"),
             relay_mode=payload.get("relay_mode", RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC),
             revocation_ref=payload.get("revocation_ref"),
             canonical_response_hash=payload.get("canonical_response_hash"),
@@ -394,6 +397,7 @@ class RelaySlotGrant:
             "max_concurrent_streams": self.max_concurrent_streams,
             "relay_endpoint": self.relay_endpoint.to_dict(),
             "relay_mode": self.relay_mode,
+            "relay_slot_nonce": self.relay_slot_nonce,
             "revocation_ref": self.revocation_ref,
             "schema_version": RELAY_CLIENT_SCHEMA_VERSION,
             "slot_id": self.slot_id,
@@ -411,6 +415,14 @@ class RelaySlotGrant:
 
     def to_canonical_json(self) -> bytes:
         return _canonical_json_bytes(self.to_dict())
+
+
+def relay_slot_claim_datagram(grant: RelaySlotGrant) -> bytes:
+    """Return the explicit first UDP datagram that claims a relay slot."""
+
+    if not isinstance(grant, RelaySlotGrant):
+        raise RelayClientError("relay_slot_grant_required")
+    return bytes.fromhex(_require_relay_slot_nonce(grant.relay_slot_nonce))
 
 
 @dataclass(frozen=True)
@@ -518,7 +530,16 @@ class HttpsRelayClientTransport:
         _require_timeout(timeout_seconds)
         if not isinstance(path, str) or not path.startswith("/"):
             raise RelayClientError("relay_request_path_invalid")
-        encoded = _canonical_json_bytes(dict(payload))
+        try:
+            encoded = json.dumps(
+                dict(payload),
+                allow_nan=False,
+                ensure_ascii=True,
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode("utf-8")
+        except (TypeError, ValueError) as exc:
+            raise RelayClientError("relay_request_payload_invalid") from exc
         if len(encoded) > _MAX_REQUEST_BYTES:
             raise RelayClientError("relay_request_too_large")
         request = Request(
@@ -983,6 +1004,18 @@ def _require_bls_signature_hex(value: object, token: str) -> str:
     return value
 
 
+def _require_relay_slot_nonce(value: object) -> str:
+    if not isinstance(value, str) or len(value) != 64:
+        raise RelayClientError("relay_slot_nonce_invalid")
+    try:
+        bytes.fromhex(value)
+    except ValueError as exc:
+        raise RelayClientError("relay_slot_nonce_invalid") from exc
+    if value.lower() != value:
+        raise RelayClientError("relay_slot_nonce_invalid")
+    return value
+
+
 def _require_non_empty_string(value: object, token: str) -> str:
     if not isinstance(value, str) or not value or value.strip() != value:
         raise RelayClientError(token)
@@ -1134,4 +1167,5 @@ __all__ = [
     "RelaySlotGrant",
     "relay_admission_payload_ref",
     "relay_lifecycle_payload_ref",
+    "relay_slot_claim_datagram",
 ]

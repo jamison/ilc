@@ -4,6 +4,8 @@ import json
 import subprocess
 import sys
 
+import pytest
+
 from ilc_core.cli import network_doctor
 from ilc_core.network.connectivity_mode import ConnectivityMode, ConnectivityReceipt
 from ilc_core.network.nat_probe import NatProbeReport
@@ -238,3 +240,55 @@ def test_network_doctor_loads_relay_admission_material(tmp_path, monkeypatch) ->
         relay_admission_material_path=str(material_path),
     )
     assert calls[0]["relay_admission_material"] == {"agent_id": "a" * 96}
+
+
+def test_network_doctor_rejects_oversized_relay_admission_material(tmp_path) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_bytes(b"{" + b'"x":' + b'"a"' * 70_000 + b"}")
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_relay_admission_material_too_large",
+    ):
+        network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
+
+
+@pytest.mark.parametrize("payload", ["[]", "1", "true", '"string"'])
+def test_network_doctor_rejects_non_object_relay_admission_material(
+    tmp_path,
+    payload: str,
+) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(payload, encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_relay_admission_material_must_be_object",
+    ):
+        network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
+
+
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_network_doctor_rejects_nonfinite_relay_admission_material(
+    tmp_path,
+    constant: str,
+) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(f'{{"value":{constant}}}', encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_relay_admission_material_json_invalid",
+    ):
+        network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
+
+
+def test_network_doctor_rejects_finite_float_relay_admission_material(tmp_path) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text('{"nested":{"value":1.25}}', encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_relay_admission_material_float_forbidden",
+    ):
+        network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001

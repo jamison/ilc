@@ -74117,6 +74117,79 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_deploy_surface_fix2_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_audit_fix_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-AUDIT-FIX-00 closed relay audit findings before live DEPLOY-00 retry.",
+      "manual_read_summary": "Walkthrough and verification evidence for GAP-RELAY-AUDIT-FIX-00, including nonce-bound UDP slot claiming, capsule network/epoch binding, bootstrap control URL binding, export cleanup, data-structure hardening, prompt validation, focused tests, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_audit_fix_00_g10_relay_audit_fix.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_audit_fix_committed_GAP_RELAY_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_audit_fix_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_audit_fix_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-AUDIT-FIX-00 prompt and walkthrough registered for relay audit-fix execution.",
+      "manual_read_summary": "Phase prompt for GAP-RELAY-AUDIT-FIX-00 relay audit hardening, including nonce-bound UDP claims, capsule network/epoch binding, bootstrap URL binding, data-structure hardening, adversarial tests, verification commands, and non-claims.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_audit_fix_committed_GAP_RELAY_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_audit_fix_00_g10_relay_audit_fix.md"
     }
   ],
   "boundary": {

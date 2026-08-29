@@ -6,6 +6,10 @@ admission verifies invite proof-of-possession and a second relay-admission BLS
 signature before issuing a bounded slot grant. The forwarding primitive is
 pass-through only: it accounts opaque QUIC/UDP bytes by slot and never
 terminates, decrypts, re-signs, rewrites, or re-originates consensus messages.
+The current relay data plane proves per-slot client address binding and opaque
+UDP forwarding only. General third-party NAT traversal, arbitrary peer relay
+reachability, and validator-grade relay readiness require DEPLOY-00 topology
+smoke evidence across distinct hosts or network namespaces.
 
 This module is source-only until GAP-RELAY-RENDEZVOUS-DEPLOY-00 clears
 ``RELAY_SERVER_NOT_ACTIVATED`` and starts it on live validator hosts.
@@ -14,18 +18,22 @@ This module is source-only until GAP-RELAY-RENDEZVOUS-DEPLOY-00 clears
 from __future__ import annotations
 
 import asyncio
+from collections import deque
 from collections.abc import Mapping
 from dataclasses import dataclass
+import heapq
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import ipaddress
 import json
 import math
+import re
 import secrets
 import ssl
 import threading
 import time
 from typing import Any, Callable
+from urllib.parse import urlparse
 
 from ilc_core import __version__ as ILC_CORE_VERSION
 from ilc_core.identity.bls_backend import (
@@ -81,6 +89,7 @@ _MAX_FAILED_ATTEMPTS = 5
 _FAILED_ADMISSION_COOLDOWN_SECONDS = 60.0
 _MAX_FAILED_ADMISSION_ENTRIES = 65_536
 _MAX_RELAY_RECORDS_PER_CAPSULE = 8
+_CONTROLLED_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _ADMISSION_FAILURE_TOKENS = frozenset(
     {
         "relay_admission_payload_ref_invalid",
@@ -350,7 +359,8 @@ class _FailedAdmissionTracker:
         now_provider: Callable[[], float] = time.monotonic,
     ) -> None:
         self._entries: dict[str, _FailedAdmissionEntry] = {}
-        self._insertion_order: list[str] = []
+        self._insertion_order: deque[str] = deque()
+        self._queued_keys: set[str] = set()
         self._max_entries = _require_uint_range(
             max_entries,
             "relay_failed_admission_max_entries_invalid",
@@ -370,7 +380,9 @@ class _FailedAdmissionTracker:
                 first_attempt=now,
                 last_attempt=now,
             )
-            self._insertion_order.append(clean_key)
+            if clean_key not in self._queued_keys:
+                self._insertion_order.append(clean_key)
+                self._queued_keys.add(clean_key)
             return
         if self._cooldown_elapsed(entry, now):
             self._entries[clean_key] = _FailedAdmissionEntry(
@@ -393,9 +405,7 @@ class _FailedAdmissionTracker:
             return False
         if self._cooldown_elapsed(entry, now):
             self._entries.pop(clean_key, None)
-            self._insertion_order = [
-                existing for existing in self._insertion_order if existing != clean_key
-            ]
+            self._queued_keys.discard(clean_key)
             return False
         return True
 
@@ -405,7 +415,14 @@ class _FailedAdmissionTracker:
 
     def _evict_if_needed(self) -> None:
         while len(self._entries) >= self._max_entries:
-            oldest = self._insertion_order.pop(0)
+            if not self._insertion_order:
+                self._entries.clear()
+                self._queued_keys.clear()
+                return
+            oldest = self._insertion_order.popleft()
+            if oldest not in self._queued_keys or oldest not in self._entries:
+                continue
+            self._queued_keys.discard(oldest)
             self._entries.pop(oldest, None)
 
     def _cooldown_elapsed(self, entry: _FailedAdmissionEntry, now: float) -> bool:
@@ -426,7 +443,8 @@ class _RelayPortPool:
         self._end = _require_port(end, "relay_data_port_range_end_invalid")
         if self._start > self._end:
             raise RelayServerError("relay_data_port_range_invalid")
-        self._available: set[int] = set(range(self._start, self._end + 1))
+        self._available: list[int] = list(range(self._start, self._end + 1))
+        heapq.heapify(self._available)
         self._allocated: set[int] = set()
         self._lock = threading.Lock()
 
@@ -434,8 +452,7 @@ class _RelayPortPool:
         with self._lock:
             if not self._available:
                 raise RelayServerError("relay_data_port_pool_exhausted")
-            port = min(self._available)
-            self._available.remove(port)
+            port = heapq.heappop(self._available)
             self._allocated.add(port)
             return port
 
@@ -450,7 +467,7 @@ class _RelayPortPool:
             if clean_port not in self._allocated:
                 return
             self._allocated.remove(clean_port)
-            self._available.add(clean_port)
+            heapq.heappush(self._available, clean_port)
 
     @property
     def available_count(self) -> int:
@@ -478,6 +495,7 @@ class RelayRendezvousServer:
         self._revocation_receipts_by_slot: dict[str, RelayRevocationReceipt] = {}
         self._state_lock = threading.RLock()
         self._released_data_ports_by_slot: set[str] = set()
+        self._active_slot_count = 0
         self._port_pool = _RelayPortPool(
             self.config.data_port_range_start,
             self.config.data_port_range_end,
@@ -496,7 +514,7 @@ class RelayRendezvousServer:
     @property
     def active_slot_count(self) -> int:
         with self._state_lock:
-            return sum(1 for slot in self._slots_by_id.values() if slot.status == "active")
+            return self._active_slot_count
 
     def health(self) -> dict[str, Any]:
         with self._state_lock:
@@ -540,6 +558,7 @@ class RelayRendezvousServer:
                 raise RelayServerError("relay_slot_already_active")
             slot_id = f"slot-{secrets.token_hex(16)}"
             allocated_port = self._port_pool.allocate()
+            active_count_incremented = False
             try:
                 grant = RelaySlotGrant(
                     slot_id=slot_id,
@@ -554,6 +573,7 @@ class RelayRendezvousServer:
                     max_bytes_per_epoch=self.config.max_bytes_per_epoch,
                     max_concurrent_streams=self.config.max_concurrent_streams,
                     admission_request_hash=request.canonical_request_hash,
+                    relay_slot_nonce=secrets.token_hex(32),
                 )
                 self._slots_by_id[slot_id] = RelaySlotState(
                     grant=grant,
@@ -562,6 +582,8 @@ class RelayRendezvousServer:
                     current_epoch=request.admission_epoch,
                 )
                 self._active_slot_by_agent[request.agent_id] = slot_id
+                self._active_slot_count += 1
+                active_count_incremented = True
                 self._packet_rate_buckets[slot_id] = _PacketRateBucket(
                     window_start=time.monotonic(),
                 )
@@ -571,10 +593,13 @@ class RelayRendezvousServer:
                         target_host=source_host,
                         target_port=request.requested_internal_port,
                         allocated_port=allocated_port,
+                        relay_slot_nonce=grant.relay_slot_nonce,
                     )
             except Exception:
                 self._slots_by_id.pop(slot_id, None)
                 self._active_slot_by_agent.pop(request.agent_id, None)
+                if active_count_incremented:
+                    self._decrement_active_slot_count()
                 self._packet_rate_buckets.pop(slot_id, None)
                 self._port_pool.release(allocated_port)
                 raise
@@ -819,6 +844,8 @@ class RelayRendezvousServer:
     def _release_slot(self, slot_id: str) -> None:
         slot = self._slots_by_id[slot_id]
         self._release_data_port_once(slot_id, slot)
+        if slot.status == "active":
+            self._decrement_active_slot_count()
         self._slots_by_id[slot_id] = RelaySlotState(
             grant=slot.grant,
             target_host=slot.target_host,
@@ -833,6 +860,8 @@ class RelayRendezvousServer:
     def _expire_slot(self, slot_id: str) -> None:
         slot = self._slots_by_id[slot_id]
         self._release_data_port_once(slot_id, slot)
+        if slot.status == "active":
+            self._decrement_active_slot_count()
         self._slots_by_id[slot_id] = RelaySlotState(
             grant=slot.grant,
             target_host=slot.target_host,
@@ -847,6 +876,8 @@ class RelayRendezvousServer:
     def _revoke_slot(self, slot_id: str, reason_token: str) -> RelayRevocationReceipt:
         slot = self._slots_by_id[slot_id]
         self._release_data_port_once(slot_id, slot)
+        if slot.status == "active":
+            self._decrement_active_slot_count()
         epoch = slot.current_epoch
         if epoch is None:
             epoch = slot.grant.granted_epoch
@@ -884,6 +915,11 @@ class RelayRendezvousServer:
         if slot.allocated_data_port is not None:
             self._port_pool.release(slot.allocated_data_port)
 
+    def _decrement_active_slot_count(self) -> None:
+        if self._active_slot_count <= 0:
+            raise RelayServerError("relay_active_slot_count_underflow")
+        self._active_slot_count -= 1
+
 
 class RelayUdpForwarder:
     """Bounded opaque QUIC/UDP pass-through helper.
@@ -909,10 +945,14 @@ class RelayUdpForwarder:
 class RelayUdpPortForwarder(asyncio.DatagramProtocol):
     """Asyncio UDP protocol that forwards opaque bytes for one relay slot.
 
-    The first sender on the dedicated slot port becomes the relay requester.
-    Packets from that requester are sent verbatim to the target address; packets
-    from the target address are sent verbatim back to the learned requester.
-    Unknown sources are dropped without parsing or rewriting QUIC bytes.
+    The first sender on the dedicated slot port becomes the relay requester
+    only after sending the per-slot nonce as the prefix of its first datagram.
+    The learned client-side address is the source address of that nonce claim
+    as seen by the relay socket. For NATed clients, this is the post-NAT
+    address:port. Packets from that requester are sent verbatim to the target
+    address; packets from the target address are sent verbatim back to the
+    learned requester. Unknown sources are dropped without parsing or rewriting
+    QUIC bytes.
     """
 
     def __init__(
@@ -922,6 +962,7 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         slot_id: str,
         target_host: str,
         target_port: int,
+        relay_slot_nonce: str,
         epoch_provider: Callable[[], int],
         receipt_sink: Callable[[RelayForwardReceipt, tuple[str, int]], None] | None = None,
     ) -> None:
@@ -931,6 +972,8 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
             _require_host(target_host, "relay_udp_target_host_invalid"),
             _require_port(target_port, "relay_udp_target_port_invalid"),
         )
+        self._nonce = _require_relay_slot_nonce_bytes(relay_slot_nonce)
+        self._nonce_verified = False
         self._epoch_provider = epoch_provider
         self._receipt_sink = receipt_sink
         self._client_addr: tuple[str, int] | None = None
@@ -954,13 +997,18 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
             return
         try:
             sender = _require_socket_addr(addr, "relay_udp_sender_addr_invalid")
+            payload = data
+            if not self._nonce_verified:
+                payload = self._claim_client_addr(sender, payload)
+                if payload is None:
+                    return
             destination = self._destination_for_sender(sender)
             if destination is None:
                 self._last_error = "relay_udp_unknown_source"
                 return
             receipt, revocation = self._server.forward_datagram(
                 slot_id=self._slot_id,
-                payload=data,
+                payload=payload,
                 epoch=self._epoch_provider(),
             )
             if revocation is not None:
@@ -968,7 +1016,7 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
                 self._closed = True
                 self._transport.close()
                 return
-            self._transport.sendto(data, destination)
+            self._transport.sendto(payload, destination)
         except RelayServerError as exc:
             self._last_error = _error_token(exc)
             return
@@ -994,14 +1042,25 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
 
     def _destination_for_sender(self, sender: tuple[str, int]) -> tuple[str, int] | None:
         with self._client_addr_lock:
-            if self._client_addr is None:
-                self._client_addr = sender
-                return self._target_addr
             if sender == self._client_addr:
                 return self._target_addr
             if sender == self._target_addr:
                 return self._client_addr
         return None
+
+    def _claim_client_addr(self, sender: tuple[str, int], data: bytes) -> bytes | None:
+        if not data.startswith(self._nonce):
+            self._last_error = "relay_udp_nonce_mismatch"
+            return None
+        with self._client_addr_lock:
+            if self._client_addr is None:
+                self._client_addr = sender
+                self._nonce_verified = True
+        payload = data[len(self._nonce):]
+        if not payload:
+            self._last_error = None
+            return None
+        return payload
 
 
 class RelayDataPlaneRuntime:
@@ -1066,11 +1125,13 @@ class RelayDataPlaneRuntime:
         target_host: str,
         target_port: int,
         allocated_port: int,
+        relay_slot_nonce: str,
     ) -> None:
         clean_slot_id = _require_token(slot_id, "relay_data_plane_slot_id_invalid")
         clean_target_host = _require_host(target_host, "relay_data_plane_target_host_invalid")
         clean_target_port = _require_port(target_port, "relay_data_plane_target_port_invalid")
         clean_allocated_port = _require_port(allocated_port, "relay_data_plane_port_invalid")
+        clean_relay_slot_nonce = _require_relay_slot_nonce(relay_slot_nonce)
         with self._lock:
             if not self._running:
                 raise RelayServerError("relay_data_plane_not_running")
@@ -1082,6 +1143,7 @@ class RelayDataPlaneRuntime:
                 target_host=clean_target_host,
                 target_port=clean_target_port,
                 allocated_port=clean_allocated_port,
+                relay_slot_nonce=clean_relay_slot_nonce,
             ),
             self._loop,
         )
@@ -1110,6 +1172,7 @@ class RelayDataPlaneRuntime:
         target_host: str,
         target_port: int,
         allocated_port: int,
+        relay_slot_nonce: str,
     ) -> None:
         transport, protocol = await self._loop.create_datagram_endpoint(
             lambda: RelayUdpPortForwarder(
@@ -1117,6 +1180,7 @@ class RelayDataPlaneRuntime:
                 slot_id=slot_id,
                 target_host=target_host,
                 target_port=target_port,
+                relay_slot_nonce=relay_slot_nonce,
                 epoch_provider=self._epoch_provider,
                 receipt_sink=self._receipt_sink,
             ),
@@ -1144,6 +1208,7 @@ class RelayDataPlaneRuntime:
         self._loop.run_forever()
 
 
+# Superseded by RelayUdpPortForwarder. Not exported. Will be removed post-RC.
 class RelayUdpDatagramProtocol(asyncio.DatagramProtocol):
     """Asyncio UDP adapter for opaque relay byte accounting.
 
@@ -1330,6 +1395,7 @@ def build_relay_bootstrap_record(
         )
     )
     payload = {
+        "control_port": config.control_port,
         "control_url": config.relay_base_url,
         "data_port_range": {
             "end": config.data_port_range_end,
@@ -1382,7 +1448,7 @@ def sign_relay_bootstrap_record(
         "relay_bootstrap_agent_id_invalid",
     ):
         raise RelayServerError("relay_bootstrap_signing_key_mismatch")
-    return {
+    signed = {
         **dict(unsigned),
         "payload_sha384": payload_ref,
         "signature": sign_relay_bootstrap_record_digest(
@@ -1392,6 +1458,9 @@ def sign_relay_bootstrap_record(
         "signature_alg": _RELAY_BOOTSTRAP_SIGNATURE_ALG,
         "signing_key_id": clean_signing_key_id,
     }
+    if not verify_relay_bootstrap_record(signed):
+        raise RelayServerError("relay_bootstrap_signature_self_check_failed")
+    return signed
 
 
 def verify_relay_bootstrap_record(record: Mapping[str, Any]) -> bool:
@@ -1445,6 +1514,8 @@ def parse_relay_bootstrap_capsule(
     capsule: Mapping[str, Any],
     *,
     genesis_agent_id: str,
+    expected_network_id: str,
+    current_epoch: int,
 ) -> tuple[dict[str, Any], ...]:
     """Verify a Genesis relay capsule and return verified relay records.
 
@@ -1453,6 +1524,11 @@ def parse_relay_bootstrap_capsule(
     Invalid capsules return an empty tuple rather than partially trusted data.
     """
 
+    clean_expected_network_id = _require_network_id(expected_network_id)
+    clean_current_epoch = _require_epoch(
+        current_epoch,
+        "relay_bootstrap_capsule_current_epoch_invalid",
+    )
     try:
         clean_capsule = _require_mapping(
             capsule,
@@ -1463,6 +1539,15 @@ def parse_relay_bootstrap_capsule(
             "relay_bootstrap_capsule_genesis_agent_id_invalid",
         )
         payload_ref = relay_bootstrap_capsule_payload_ref(clean_capsule)
+        capsule_payload = _relay_bootstrap_capsule_payload(clean_capsule)
+        if capsule_payload["network_id"] != clean_expected_network_id:
+            return ()
+        if not (
+            capsule_payload["issued_epoch"]
+            <= clean_current_epoch
+            <= capsule_payload["expires_epoch"]
+        ):
+            return ()
         if clean_capsule.get("payload_sha384") != payload_ref:
             return ()
         if clean_capsule.get("signature_alg") != _RELAY_BOOTSTRAP_SIGNATURE_ALG:
@@ -1480,7 +1565,16 @@ def parse_relay_bootstrap_capsule(
         ):
             return ()
         records = _require_relay_records(clean_capsule.get("relay_records"))
-        return tuple(dict(record) for record in records if verify_relay_bootstrap_record(record))
+        return tuple(
+            dict(record)
+            for record in records
+            if verify_relay_bootstrap_record(record)
+            and _relay_record_matches_scope(
+                record,
+                expected_network_id=clean_expected_network_id,
+                current_epoch=clean_current_epoch,
+            )
+        )
     except (RelayClientError, RelayServerError, ValueError):
         return ()
 
@@ -1504,6 +1598,10 @@ def _relay_bootstrap_record_payload(record: Mapping[str, Any]) -> dict[str, Any]
     )
     if data_start > data_end:
         raise RelayServerError("relay_bootstrap_data_port_range_invalid")
+    control_port = _require_port(
+        clean_record.get("control_port"),
+        "relay_bootstrap_control_port_invalid",
+    )
     issued = _require_epoch(
         clean_record.get("issued_epoch"),
         "relay_bootstrap_record_epoch_invalid",
@@ -1526,11 +1624,16 @@ def _relay_bootstrap_record_payload(record: Mapping[str, Any]) -> dict[str, Any]
         tls_mode=clean_record.get("tls_mode"),
         tls_cert_der_sha256=tls_cert_der_sha256,
     )
+    control_url = _require_relay_base_url_for_record(
+        clean_record.get("control_url"),
+        "relay_bootstrap_control_url_invalid",
+        relay_host=relay_host,
+        control_port=control_port,
+        tls_mode=tls_mode,
+    )
     payload = {
-        "control_url": _require_relay_base_url_for_record(
-            clean_record.get("control_url"),
-            "relay_bootstrap_control_url_invalid",
-        ),
+        "control_port": control_port,
+        "control_url": control_url,
         "data_port_range": {"end": data_end, "start": data_start},
         "expires_epoch": expires,
         "issued_epoch": issued,
@@ -1545,15 +1648,6 @@ def _relay_bootstrap_record_payload(record: Mapping[str, Any]) -> dict[str, Any]
         "tls_cert_der_sha256": tls_cert_der_sha256,
         "tls_mode": tls_mode,
     }
-    if tls_mode == _TLS_MODE_PINNED_DER_SHA256 and not payload["control_url"].startswith(
-        "https://"
-    ):
-        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
-    if tls_mode == _TLS_MODE_LOOPBACK_ONLY and not (
-        payload["control_url"].startswith("http://")
-        or payload["control_url"].startswith("https://")
-    ):
-        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
     return payload
 
 
@@ -1606,6 +1700,21 @@ def _require_relay_mode(value: object) -> str:
     return value
 
 
+def _relay_record_matches_scope(
+    record: Mapping[str, Any],
+    *,
+    expected_network_id: str,
+    current_epoch: int,
+) -> bool:
+    try:
+        payload = _relay_bootstrap_record_payload(record)
+    except (RelayClientError, RelayServerError, ValueError):
+        return False
+    if payload["network_id"] != expected_network_id:
+        return False
+    return payload["issued_epoch"] <= current_epoch <= payload["expires_epoch"]
+
+
 def _require_tls_mode_for_record(
     relay_host: str,
     *,
@@ -1625,16 +1734,44 @@ def _require_tls_mode_for_record(
     return tls_mode
 
 
-def _require_relay_base_url_for_record(value: object, token: str) -> str:
+def _require_relay_base_url_for_record(
+    value: object,
+    token: str,
+    *,
+    relay_host: str,
+    control_port: int,
+    tls_mode: str,
+) -> str:
     if not isinstance(value, str) or not value or value.strip() != value:
         raise RelayServerError(token)
     text = value
     if len(text) > _MAX_TEXT_CHARS:
         raise RelayServerError(token)
-    if any(char.isspace() for char in text) or any(char in text for char in "?#@"):
+    if any(char.isspace() for char in text):
         raise RelayServerError(token)
-    if not (text.startswith("https://") or text.startswith("http://")):
+    parsed = urlparse(text)
+    if parsed.username is not None or parsed.password is not None:
+        raise RelayServerError("relay_bootstrap_control_url_invalid_authority")
+    if parsed.query or parsed.fragment:
+        raise RelayServerError("relay_bootstrap_control_url_not_root")
+    if parsed.path not in {"", "/"}:
+        raise RelayServerError("relay_bootstrap_control_url_not_root")
+    if parsed.hostname is None:
         raise RelayServerError(token)
+    if parsed.hostname.lower() != relay_host.lower():
+        raise RelayServerError("relay_bootstrap_control_url_host_mismatch")
+    try:
+        parsed_port = parsed.port
+    except ValueError as exc:
+        raise RelayServerError("relay_bootstrap_control_url_port_mismatch") from exc
+    default_port = 443 if parsed.scheme == "https" else 80 if parsed.scheme == "http" else None
+    effective_port = parsed_port if parsed_port is not None else default_port
+    if effective_port != control_port:
+        raise RelayServerError("relay_bootstrap_control_url_port_mismatch")
+    if tls_mode == _TLS_MODE_PINNED_DER_SHA256 and parsed.scheme != "https":
+        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
+    if tls_mode == _TLS_MODE_LOOPBACK_ONLY and parsed.scheme not in {"http", "https"}:
+        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
     return text.rstrip("/")
 
 
@@ -1675,7 +1812,7 @@ def _verify_lifecycle_signature(
     except ValueError as exc:
         raise RelayServerError("relay_lifecycle_signature_invalid") from exc
     if not signature_ok:
-        raise RelayServerError("relay_lifecycle_signature_invalid")
+        raise RelayServerError("relay_lifecycle_signature_verification_failed")
 
 
 def _admission_ip_key(source_host: str) -> str:
@@ -1754,6 +1891,22 @@ def _require_bls_signature_hex(value: object, token: str) -> str:
     if value.lower() != value:
         raise RelayServerError(token)
     return value
+
+
+def _require_relay_slot_nonce(value: object) -> str:
+    if not isinstance(value, str) or len(value) != 64:
+        raise RelayServerError("relay_slot_nonce_invalid")
+    try:
+        bytes.fromhex(value)
+    except ValueError as exc:
+        raise RelayServerError("relay_slot_nonce_invalid") from exc
+    if value.lower() != value:
+        raise RelayServerError("relay_slot_nonce_invalid")
+    return value
+
+
+def _require_relay_slot_nonce_bytes(value: object) -> bytes:
+    return bytes.fromhex(_require_relay_slot_nonce(value))
 
 
 def _require_token(value: object, token: str) -> str:
@@ -1875,9 +2028,9 @@ def _require_datagram(value: object) -> bytes:
 
 
 def _error_token(exc: BaseException) -> str:
-    token = str(exc)
-    if not token or any(char.isspace() for char in token) or len(token) > 128:
-        return "relay_server_error"
+    token = str(exc).strip()
+    if _CONTROLLED_TOKEN_RE.fullmatch(token) is None:
+        return "relay_internal_error"
     return token
 
 
@@ -1897,7 +2050,6 @@ __all__ = [
     "RelayServerConfig",
     "RelayServerError",
     "RelaySlotState",
-    "RelayUdpDatagramProtocol",
     "RelayUdpForwarder",
     "RelayUdpPortForwarder",
     "build_relay_bootstrap_record",

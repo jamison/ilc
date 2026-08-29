@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import tempfile
 from pathlib import Path
@@ -33,6 +34,7 @@ UPNP_RELAY_TIP = (
     "if you understand the implications. Not recommended for production validators or\n"
     "shared/enterprise networks — use manual port forwarding instead."
 )
+MAX_RELAY_ADMISSION_MATERIAL_BYTES = 65_536
 
 
 def build_network_doctor_payload(
@@ -193,15 +195,48 @@ def _load_relay_admission_material(path_value: str) -> dict[str, Any]:
     if not isinstance(path_value, str) or not path_value.strip():
         raise ValueError("network_doctor_relay_admission_material_path_invalid")
     path = Path(path_value).expanduser().resolve()
-    payload = json.loads(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes()
+    if len(raw) > MAX_RELAY_ADMISSION_MATERIAL_BYTES:
+        raise ValueError("network_doctor_relay_admission_material_too_large")
+    try:
+        payload = json.loads(
+            raw.decode("utf-8"),
+            parse_constant=lambda _constant: (_ for _ in ()).throw(
+                ValueError("network_doctor_relay_admission_material_json_invalid")
+            ),
+        )
+    except UnicodeDecodeError as exc:
+        raise ValueError("network_doctor_relay_admission_material_json_invalid") from exc
     if not isinstance(payload, dict):
         raise ValueError("network_doctor_relay_admission_material_must_be_object")
+    _reject_non_protocol_numbers(payload)
     return payload
+
+
+def _reject_non_protocol_numbers(value: object) -> None:
+    if isinstance(value, bool) or value is None or isinstance(value, str):
+        return
+    if isinstance(value, int):
+        return
+    if isinstance(value, float):
+        if not math.isfinite(value):
+            raise ValueError("network_doctor_relay_admission_material_json_invalid")
+        raise ValueError("network_doctor_relay_admission_material_float_forbidden")
+    if isinstance(value, list):
+        for item in value:
+            _reject_non_protocol_numbers(item)
+        return
+    if isinstance(value, dict):
+        for item in value.values():
+            _reject_non_protocol_numbers(item)
+        return
+    raise ValueError("network_doctor_relay_admission_material_json_invalid")
 
 
 __all__ = [
     "NETWORK_DOCTOR_CLI_TOKEN",
     "NETWORK_DOCTOR_STUB_WARNING",
+    "MAX_RELAY_ADMISSION_MATERIAL_BYTES",
     "UPNP_RELAY_TIP",
     "build_network_doctor_payload",
 ]
