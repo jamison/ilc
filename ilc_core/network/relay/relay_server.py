@@ -564,22 +564,29 @@ class RelayRendezvousServer:
         *,
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
+        # Admission classification:
+        # Pre-lock safe: request shape/field validation, payload-ref checks,
+        # invite PoP BLS verification, and relay admission BLS verification are
+        # performed by RelayAdmissionRequest construction below.
+        # Lock-required: failed-admission cooldown checks, tracker mutation,
+        # active-slot checks, tombstone GC, port allocation, slot insertion, and
+        # active-agent/rate-bucket state mutation.
+        body = _require_mapping(payload, "relay_request_body_must_be_object")
         source_host = _require_host(source_host, "relay_source_host_invalid")
         ip_key = _admission_ip_key(source_host)
-        agent_key = _admission_agent_key(payload.get("agent_id"))
+        agent_key = _admission_agent_key(body.get("agent_id"))
+        try:
+            request = _coerce_admission_request(body)
+        except (RelayClientError, RelayServerError, ValueError) as exc:
+            token = _error_token(exc)
+            if token in _ADMISSION_FAILURE_TOKENS:
+                if self._record_admission_failure(ip_key, agent_key):
+                    raise RelayServerError("relay_admission_cooldown_active") from exc
+            raise
         with self._state_lock:
             self._require_admission_not_blocked(ip_key, agent_key)
             if self.active_slot_count >= _MAX_ACTIVE_SLOTS:
                 raise RelayServerError("relay_server_active_slot_limit_exceeded")
-            try:
-                request = _coerce_admission_request(payload)
-            except (RelayClientError, RelayServerError, ValueError) as exc:
-                token = _error_token(exc)
-                if token in _ADMISSION_FAILURE_TOKENS:
-                    self._failed_admissions.record_failure(ip_key)
-                    if agent_key is not None:
-                        self._failed_admissions.record_failure(agent_key)
-                raise
             self._gc_tombstones(request.admission_epoch)
             if request.network_id != self.config.network_id:
                 raise RelayServerError("relay_admission_network_id_mismatch")
@@ -851,6 +858,18 @@ class RelayRendezvousServer:
             raise RelayServerError("relay_admission_cooldown_active")
         if agent_key is not None and self._failed_admissions.is_blocked(agent_key):
             raise RelayServerError("relay_admission_cooldown_active")
+
+    def _record_admission_failure(self, ip_key: str, agent_key: str | None) -> bool:
+        with self._state_lock:
+            was_blocked = self._failed_admissions.is_blocked(ip_key)
+            if agent_key is not None:
+                was_blocked = was_blocked or self._failed_admissions.is_blocked(agent_key)
+            if was_blocked:
+                return True
+            self._failed_admissions.record_failure(ip_key)
+            if agent_key is not None:
+                self._failed_admissions.record_failure(agent_key)
+            return was_blocked
 
     def _require_lifecycle_epoch(self, slot: RelaySlotState, epoch: int) -> None:
         if epoch < slot.grant.granted_epoch:
