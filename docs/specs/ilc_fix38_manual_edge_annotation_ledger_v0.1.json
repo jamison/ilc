@@ -89443,6 +89443,79 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_walkthrough_fix2.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_slot_gc_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-SLOT-GC-00 prompt hardened and executed as the relay tombstone GC hardening phase after GAP-RELAY-AUDIT-FIX-00.",
+      "manual_read_summary": "Phase prompt directs bounded relay slot terminal-state retention: remove released, expired, and revoked slots from active state; retain revocation receipts through bounded tombstones; run admission-time GC; keep relay guards closed.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELAY-SLOT-GC-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "claim:relay_audit_fix_committed_GAP_RELAY_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_slot_gc_committed_GAP_RELAY_SLOT_GC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_slot_gc_00_g10_relay_slot_gc.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_slot_gc_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-SLOT-GC-00 completed with bounded relay slot tombstones and retained guard closure.",
+      "manual_read_summary": "Walkthrough records prompt validation, compile, guard/config smoke, structural removal of old side maps, and relay server tests passing with 102 tests. It records that relay deployment and guard clearance did not occur.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-SLOT-GC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_slot_gc_00_g10_relay_slot_gc.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_slot_gc_committed_GAP_RELAY_SLOT_GC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_slot_gc_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

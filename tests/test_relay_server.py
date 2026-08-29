@@ -62,6 +62,7 @@ from ilc_core.network.relay.relay_server import (
 from ilc_core.network.relay.relay_server import (
     _FailedAdmissionTracker,
     _RelayPortPool,
+    _RelayTombstone,
     _PacketRateBucket,
     _MAX_FAILED_ADMISSION_ENTRIES,
     _MAX_PACKETS_PER_WINDOW,
@@ -1114,6 +1115,212 @@ def test_bucket_removed_on_release_expiry_and_revocation() -> None:
     assert slot.slot_id in server._packet_rate_buckets
     server._revoke_slot(slot.slot_id, "relay_slot_revoked_operator_emergency")
     assert slot.slot_id not in server._packet_rate_buckets
+
+
+def test_release_removes_active_slot_and_retains_tombstone_with_port_returned() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+    before_release = server._port_pool.available_count
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_RELEASE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="release",
+            epoch=1,
+        ),
+    )
+
+    assert status == 200
+    assert body["release_result"] == "released"
+    assert slot.slot_id not in server._slots_by_id
+    assert server._tombstones[slot.slot_id].status == "released"
+    assert server._tombstones[slot.slot_id].terminated_epoch == 1
+    assert server._tombstones[slot.slot_id].data_port == slot.relay_endpoint.port
+    assert server._port_pool.available_count == before_release + 1
+
+
+def test_revocation_removes_active_slot_and_keeps_receipt_in_tombstone() -> None:
+    server = _server()
+    _, agent_id, slot = _grant(server)
+
+    receipt = server._revoke_slot(
+        slot.slot_id,
+        "relay_slot_revoked_operator_emergency",
+        terminated_epoch=2,
+    )
+
+    assert slot.slot_id not in server._slots_by_id
+    tombstone = server._tombstones[slot.slot_id]
+    assert tombstone.status == "revoked"
+    assert tombstone.terminated_epoch == 2
+    assert tombstone.revocation_receipt == receipt
+    assert receipt.agent_id == agent_id
+    assert server.get_revocation_receipt(slot.slot_id) == receipt
+
+
+def test_expiry_removes_active_slot_and_preserves_terminal_error_token() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_KEEPALIVE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="keepalive",
+            epoch=5,
+        ),
+    )
+    assert status == 400
+    assert body["error"] == "relay_lifecycle_epoch_after_expiry"
+
+    assert slot.slot_id not in server._slots_by_id
+    assert server._tombstones[slot.slot_id].status == "expired"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_KEEPALIVE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="keepalive",
+            epoch=1,
+        ),
+    )
+    assert status == 400
+    assert body["error"] == "relay_slot_expired"
+
+
+def test_tombstone_gc_evicts_entries_older_than_retention_window() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            tombstone_retention_epochs=1,
+        )
+    )
+    secret_key, agent_id, slot = _grant(server)
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_RELEASE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="release",
+            epoch=0,
+        ),
+    )[0] == 200
+    assert slot.slot_id in server._tombstones
+    _, _, payload = _admission_request(admission_epoch=2)
+
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )[0] == 200
+
+    assert slot.slot_id not in server._tombstones
+
+
+def test_tombstone_gc_retains_entries_inside_retention_window() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            tombstone_retention_epochs=2,
+        )
+    )
+    secret_key, agent_id, slot = _grant(server)
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_RELEASE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="release",
+            epoch=1,
+        ),
+    )[0] == 200
+    _, _, payload = _admission_request(admission_epoch=3)
+
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )[0] == 200
+
+    assert slot.slot_id in server._tombstones
+
+
+def test_revocation_receipt_returns_none_after_tombstone_gc() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            tombstone_retention_epochs=1,
+        )
+    )
+    _, _, slot = _grant(server)
+    receipt = server._revoke_slot(
+        slot.slot_id,
+        "relay_slot_revoked_operator_emergency",
+        terminated_epoch=0,
+    )
+    assert server.get_revocation_receipt(slot.slot_id) == receipt
+    _, _, payload = _admission_request(admission_epoch=2)
+
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )[0] == 200
+
+    assert server.get_revocation_receipt(slot.slot_id) is None
+
+
+def test_tombstones_remain_bounded_after_many_release_cycles() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            tombstone_retention_epochs=1,
+        )
+    )
+
+    for epoch in range(200):
+        server._tombstones[f"slot-{epoch}"] = _RelayTombstone(
+            slot_id=f"slot-{epoch}",
+            status="released",
+            terminated_epoch=epoch,
+        )
+        server._gc_tombstones(epoch)
+
+    assert len(server._slots_by_id) == 0
+    assert len(server._tombstones) <= 2
+    assert server.active_slot_count == 0
+
+
+def test_tombstone_retention_config_rejects_invalid_values() -> None:
+    with pytest.raises(RelayServerError, match="relay_tombstone_retention_epochs_invalid"):
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            tombstone_retention_epochs=True,
+        )
 
 
 def test_port_pool_allocates_lowest_first() -> None:

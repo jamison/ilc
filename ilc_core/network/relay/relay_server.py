@@ -89,6 +89,7 @@ _MAX_FAILED_ATTEMPTS = 5
 _FAILED_ADMISSION_COOLDOWN_SECONDS = 60.0
 _MAX_FAILED_ADMISSION_ENTRIES = 65_536
 _MAX_RELAY_RECORDS_PER_CAPSULE = 8
+_TOMBSTONE_RETENTION_EPOCHS = 8
 _CONTROLLED_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _ADMISSION_FAILURE_TOKENS = frozenset(
     {
@@ -138,6 +139,7 @@ class RelayServerConfig:
     data_port_range_start: int = _DEFAULT_DATA_PORT_RANGE_START
     data_port_range_end: int = _DEFAULT_DATA_PORT_RANGE_END
     control_port: int = _DEFAULT_CONTROL_PORT
+    tombstone_retention_epochs: int = _TOMBSTONE_RETENTION_EPOCHS
     ssl_certfile: str | None = None
     ssl_keyfile: str | None = None
 
@@ -177,6 +179,12 @@ class RelayServerConfig:
         control_port = _require_port(self.control_port, "relay_control_port_invalid")
         if data_start <= control_port <= data_end:
             raise RelayServerError("relay_control_port_overlaps_data_range")
+        _require_uint_range(
+            self.tombstone_retention_epochs,
+            "relay_tombstone_retention_epochs_invalid",
+            0,
+            _MAX_TTL_EPOCHS * 16,
+        )
         certfile = _require_optional_path(
             self.ssl_certfile,
             "relay_ssl_certfile_invalid",
@@ -320,6 +328,29 @@ class RelayRevocationReceipt:
 
     def to_canonical_json(self) -> bytes:
         return _canonical_json_bytes(self.to_dict())
+
+
+@dataclass(frozen=True)
+class _RelayTombstone:
+    """Bounded terminal-state record for released, expired, or revoked slots."""
+
+    slot_id: str
+    status: str
+    terminated_epoch: int
+    revocation_receipt: RelayRevocationReceipt | None = None
+    data_port: int | None = None
+
+    def __post_init__(self) -> None:
+        _require_token(self.slot_id, "relay_tombstone_slot_id_invalid")
+        if self.status not in {"released", "expired", "revoked"}:
+            raise RelayServerError("relay_tombstone_status_invalid")
+        _require_epoch(self.terminated_epoch, "relay_tombstone_epoch_invalid")
+        if self.data_port is not None:
+            _require_port(self.data_port, "relay_tombstone_data_port_invalid")
+        if self.status == "revoked" and self.revocation_receipt is None:
+            raise RelayServerError("relay_tombstone_revocation_receipt_required")
+        if self.status != "revoked" and self.revocation_receipt is not None:
+            raise RelayServerError("relay_tombstone_revocation_receipt_forbidden")
 
 
 @dataclass
@@ -492,9 +523,8 @@ class RelayRendezvousServer:
         self._active_slot_by_agent: dict[str, str] = {}
         self._packet_rate_buckets: dict[str, _PacketRateBucket] = {}
         self._failed_admissions = _FailedAdmissionTracker()
-        self._revocation_receipts_by_slot: dict[str, RelayRevocationReceipt] = {}
+        self._tombstones: dict[str, _RelayTombstone] = {}
         self._state_lock = threading.RLock()
-        self._released_data_ports_by_slot: set[str] = set()
         self._active_slot_count = 0
         self._port_pool = _RelayPortPool(
             self.config.data_port_range_start,
@@ -550,6 +580,7 @@ class RelayRendezvousServer:
                     if agent_key is not None:
                         self._failed_admissions.record_failure(agent_key)
                 raise
+            self._gc_tombstones(request.admission_epoch)
             if request.network_id != self.config.network_id:
                 raise RelayServerError("relay_admission_network_id_mismatch")
             if request.relay_base_url != self.config.relay_base_url:
@@ -689,7 +720,7 @@ class RelayRendezvousServer:
                 payload_ref=payload_ref,
                 signature=payload.get("relay_lifecycle_signature"),
             )
-            self._release_slot(slot.grant.slot_id)
+            self._release_slot(slot.grant.slot_id, terminated_epoch=epoch)
             return {
                 "agent_id": agent_id,
                 "previous_grant_hash": previous_hash,
@@ -720,6 +751,7 @@ class RelayRendezvousServer:
                 revocation = self._revoke_slot(
                     slot.grant.slot_id,
                     "relay_slot_revoked_packet_rate_exceeded",
+                    terminated_epoch=epoch,
                 )
                 return (
                     RelayForwardReceipt(
@@ -739,6 +771,7 @@ class RelayRendezvousServer:
                 revocation = self._revoke_slot(
                     slot.grant.slot_id,
                     "relay_slot_revoked_budget_exceeded",
+                    terminated_epoch=epoch,
                 )
                 return (
                     RelayForwardReceipt(
@@ -823,14 +856,19 @@ class RelayRendezvousServer:
         if epoch < slot.grant.granted_epoch:
             raise RelayServerError("relay_lifecycle_epoch_before_grant")
         if epoch > slot.grant.granted_epoch + slot.grant.ttl_epochs:
-            self._expire_slot(slot.grant.slot_id)
+            self._expire_slot(slot.grant.slot_id, terminated_epoch=epoch)
             raise RelayServerError("relay_lifecycle_epoch_after_expiry")
 
     def _require_known_slot(self, slot_id: object) -> RelaySlotState:
         clean_slot_id = _require_token(slot_id, "relay_slot_id_invalid")
         slot = self._slots_by_id.get(clean_slot_id)
         if slot is None:
-            raise RelayServerError("relay_slot_not_found")
+            tombstone = self._tombstones.get(clean_slot_id)
+            if tombstone is None:
+                raise RelayServerError("relay_slot_not_found")
+            if tombstone.status == "revoked" and tombstone.revocation_receipt is not None:
+                raise RelayServerError(tombstone.revocation_receipt.reason_token)
+            raise RelayServerError(f"relay_slot_{tombstone.status}")
         return slot
 
     def _require_active_slot(self, slot_id: object) -> RelaySlotState:
@@ -841,46 +879,48 @@ class RelayRendezvousServer:
             raise RelayServerError(slot.revocation_reason)
         raise RelayServerError(f"relay_slot_{slot.status}")
 
-    def _release_slot(self, slot_id: str) -> None:
+    def _release_slot(self, slot_id: str, *, terminated_epoch: int | None = None) -> None:
         slot = self._slots_by_id[slot_id]
-        self._release_data_port_once(slot_id, slot)
+        self._release_data_port(slot_id, slot)
         if slot.status == "active":
             self._decrement_active_slot_count()
-        self._slots_by_id[slot_id] = RelaySlotState(
-            grant=slot.grant,
-            target_host=slot.target_host,
-            allocated_data_port=slot.allocated_data_port,
-            bytes_forwarded_this_epoch=slot.bytes_forwarded_this_epoch,
-            current_epoch=slot.current_epoch,
+        self._slots_by_id.pop(slot_id, None)
+        self._tombstones[slot_id] = _RelayTombstone(
+            slot_id=slot_id,
             status="released",
+            terminated_epoch=self._terminal_epoch(slot, terminated_epoch),
+            data_port=slot.allocated_data_port,
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
         self._packet_rate_buckets.pop(slot_id, None)
 
-    def _expire_slot(self, slot_id: str) -> None:
+    def _expire_slot(self, slot_id: str, *, terminated_epoch: int | None = None) -> None:
         slot = self._slots_by_id[slot_id]
-        self._release_data_port_once(slot_id, slot)
+        self._release_data_port(slot_id, slot)
         if slot.status == "active":
             self._decrement_active_slot_count()
-        self._slots_by_id[slot_id] = RelaySlotState(
-            grant=slot.grant,
-            target_host=slot.target_host,
-            allocated_data_port=slot.allocated_data_port,
-            bytes_forwarded_this_epoch=slot.bytes_forwarded_this_epoch,
-            current_epoch=slot.current_epoch,
+        self._slots_by_id.pop(slot_id, None)
+        self._tombstones[slot_id] = _RelayTombstone(
+            slot_id=slot_id,
             status="expired",
+            terminated_epoch=self._terminal_epoch(slot, terminated_epoch),
+            data_port=slot.allocated_data_port,
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
         self._packet_rate_buckets.pop(slot_id, None)
 
-    def _revoke_slot(self, slot_id: str, reason_token: str) -> RelayRevocationReceipt:
+    def _revoke_slot(
+        self,
+        slot_id: str,
+        reason_token: str,
+        *,
+        terminated_epoch: int | None = None,
+    ) -> RelayRevocationReceipt:
         slot = self._slots_by_id[slot_id]
-        self._release_data_port_once(slot_id, slot)
+        self._release_data_port(slot_id, slot)
         if slot.status == "active":
             self._decrement_active_slot_count()
-        epoch = slot.current_epoch
-        if epoch is None:
-            epoch = slot.grant.granted_epoch
+        epoch = self._terminal_epoch(slot, terminated_epoch)
         receipt = RelayRevocationReceipt.build(
             slot_id=slot.grant.slot_id,
             agent_id=slot.grant.agent_id,
@@ -888,24 +928,19 @@ class RelayRendezvousServer:
             reason_token=reason_token,
             bytes_forwarded=slot.bytes_forwarded_this_epoch,
         )
-        self._slots_by_id[slot_id] = RelaySlotState(
-            grant=slot.grant,
-            target_host=slot.target_host,
-            allocated_data_port=slot.allocated_data_port,
-            bytes_forwarded_this_epoch=slot.bytes_forwarded_this_epoch,
-            current_epoch=slot.current_epoch,
+        self._slots_by_id.pop(slot_id, None)
+        self._tombstones[slot_id] = _RelayTombstone(
+            slot_id=slot_id,
             status="revoked",
-            revocation_reason=reason_token,
+            terminated_epoch=epoch,
+            revocation_receipt=receipt,
+            data_port=slot.allocated_data_port,
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
         self._packet_rate_buckets.pop(slot_id, None)
-        self._revocation_receipts_by_slot[slot_id] = receipt
         return receipt
 
-    def _release_data_port_once(self, slot_id: str, slot: RelaySlotState) -> None:
-        if slot_id in self._released_data_ports_by_slot:
-            return
-        self._released_data_ports_by_slot.add(slot_id)
+    def _release_data_port(self, slot_id: str, slot: RelaySlotState) -> None:
         if self._data_plane is not None:
             try:
                 self._data_plane.close_slot(slot_id)
@@ -914,6 +949,33 @@ class RelayRendezvousServer:
                     raise
         if slot.allocated_data_port is not None:
             self._port_pool.release(slot.allocated_data_port)
+
+    def _terminal_epoch(self, slot: RelaySlotState, epoch: int | None) -> int:
+        if epoch is not None:
+            return _require_epoch(epoch, "relay_tombstone_epoch_invalid")
+        if slot.current_epoch is not None:
+            return _require_epoch(slot.current_epoch, "relay_tombstone_epoch_invalid")
+        return _require_epoch(slot.grant.granted_epoch, "relay_tombstone_epoch_invalid")
+
+    def _gc_tombstones(self, current_epoch: int) -> None:
+        clean_epoch = _require_epoch(current_epoch, "relay_tombstone_gc_epoch_invalid")
+        cutoff = clean_epoch - self.config.tombstone_retention_epochs
+        if cutoff <= 0:
+            return
+        expired = [
+            slot_id
+            for slot_id, tombstone in self._tombstones.items()
+            if tombstone.terminated_epoch < cutoff
+        ]
+        for slot_id in expired:
+            self._tombstones.pop(slot_id, None)
+
+    def get_revocation_receipt(self, slot_id: object) -> RelayRevocationReceipt | None:
+        clean_slot_id = _require_token(slot_id, "relay_slot_id_invalid")
+        tombstone = self._tombstones.get(clean_slot_id)
+        if tombstone is None:
+            return None
+        return tombstone.revocation_receipt
 
     def _decrement_active_slot_count(self) -> None:
         if self._active_slot_count <= 0:
