@@ -8,6 +8,7 @@ AgentID key to the invite redemption transcript with a BLS proof-of-possession.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import hashlib
 import json
 import os
@@ -32,6 +33,12 @@ from ilc_core.validator.validator_key_derivation import (
 )
 
 FIRST_RUN_PROVISIONING_VERSION = "gap_agent_onboarding_00c.v0.1"
+INSTALL_CONNECTIVITY_RECEIPT_VERSION = (
+    "install_connectivity_receipt_GAP_INSTALL_CONNECTIVITY_RECEIPT_00.v0.1"
+)
+INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION = (
+    "nat_probe_engine_GAP_AUTO_NAT_TRAVERSAL_IMPL_00.v0.1"
+)
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
@@ -151,6 +158,104 @@ def existing_identity_summary(install_dir: Path | str) -> dict[str, str]:
         "identity_dir": str(root),
         "key_store_profile": KEY_STORE_PROFILE_FILE_0600,
         "status": "existing_identity_reused",
+    }
+
+
+def record_install_connectivity_receipt(
+    install_dir: Path | str,
+    *,
+    agent_id: str,
+    epoch: int,
+    attempt_router_mapping: bool = False,
+    observers: tuple[str, ...] = (),
+    relay_server_url: str | None = None,
+    relay_admission_material: Mapping[str, Any] | None = None,
+    internal_port: int = 50151,
+) -> dict[str, Any]:
+    """Probe local reachability and attach a connectivity receipt to onboarding state.
+
+    Probe failures are deliberately non-fatal: installation should still finish
+    with a local receipt that makes the reduced claim explicit.
+    """
+
+    _require_agent_id(agent_id)
+    _require_epoch(epoch, "connectivity_probe_epoch_invalid")
+    if not isinstance(attempt_router_mapping, bool):
+        raise ValueError("connectivity_probe_attempt_router_mapping_invalid")
+
+    root = identity_root(install_dir)
+    if not root.exists():
+        raise ValueError("connectivity_receipt_identity_root_missing")
+
+    try:
+        from ilc_core.network.nat_probe import NatProbeEngine
+
+        report = NatProbeEngine(
+            observers=tuple(observers),
+            relay_server_url=relay_server_url,
+            relay_admission_material=relay_admission_material,
+            agent_id=agent_id,
+            internal_port=internal_port,
+        ).run_probe(
+            attempt_router_mapping=attempt_router_mapping,
+            probe_epoch=epoch,
+        )
+        report_payload = report.to_dict()
+        connectivity_receipt = _require_connectivity_report_payload(report_payload)
+        firewall_mutation_attempted = report_payload.get(
+            "firewall_mutation_attempted",
+            False,
+        )
+        if not isinstance(firewall_mutation_attempted, bool):
+            raise ValueError("connectivity_probe_report_firewall_mutation_invalid")
+    except Exception as exc:
+        report_payload = _fallback_connectivity_report_payload(
+            agent_id=agent_id,
+            epoch=epoch,
+            error_type=type(exc).__name__,
+        )
+        connectivity_receipt = _require_connectivity_report_payload(report_payload)
+        firewall_mutation_attempted = False
+
+    payload = {
+        "agent_id": agent_id,
+        "attempt_router_mapping": attempt_router_mapping,
+        "connectivity_mode": connectivity_receipt["mode"],
+        "connectivity_summary": _format_connectivity_summary(connectivity_receipt),
+        "firewall_mutation_attempted": firewall_mutation_attempted,
+        "nat_probe_report": report_payload,
+        "observed_endpoint": connectivity_receipt.get("observed_endpoint"),
+        "probe_epoch": epoch,
+        "relay_endpoint": connectivity_receipt.get("relay_endpoint"),
+        "schema_version": INSTALL_CONNECTIVITY_RECEIPT_VERSION,
+    }
+    receipt_sha384 = _canonical_sha384(payload)
+    payload["connectivity_receipt_sha384"] = receipt_sha384
+    connectivity_receipt_path = root / "connectivity_receipt.json"
+    _atomic_write_json(connectivity_receipt_path, payload, mode=0o644)
+
+    onboarding_receipt_path = root / "onboarding_receipt.json"
+    onboarding_receipt = _read_json_object(
+        onboarding_receipt_path,
+        "onboarding_receipt_invalid",
+    )
+    if onboarding_receipt.get("agent_id") != agent_id:
+        raise ValueError("onboarding_receipt_agent_id_mismatch")
+    onboarding_receipt.update(
+        {
+            "connectivity_mode": payload["connectivity_mode"],
+            "connectivity_receipt_path": "~/.ilc/identity/connectivity_receipt.json",
+            "connectivity_receipt_sha384": receipt_sha384,
+            "connectivity_summary": payload["connectivity_summary"],
+            "firewall_mutation_attempted": payload["firewall_mutation_attempted"],
+            "observed_endpoint": payload["observed_endpoint"],
+            "relay_endpoint": payload["relay_endpoint"],
+        }
+    )
+    _atomic_write_json(onboarding_receipt_path, onboarding_receipt, mode=0o644)
+    return {
+        "connectivity_receipt": payload,
+        "onboarding_receipt": onboarding_receipt,
     }
 
 
@@ -570,6 +675,86 @@ def _remove_stale_identity_metadata(root: Path) -> None:
             pass
 
 
+def _fallback_connectivity_report_payload(
+    *,
+    agent_id: str,
+    epoch: int,
+    error_type: str,
+) -> dict[str, Any]:
+    from ilc_core.network.connectivity_mode import (
+        CONNECTIVITY_MODE_RUNTIME_VERSION,
+        ConnectivityMode,
+        ConnectivityReceipt,
+        ProbeResult,
+    )
+
+    fallback_mode = "outbound_only"
+    receipt = ConnectivityReceipt(
+        mode=ConnectivityMode(fallback_mode),
+        observed_endpoint=None,
+        relay_endpoint=None,
+        probe_observer_agent_id=None,
+        probe_epoch=epoch,
+    )
+    return {
+        "attempt_receipts": [],
+        "connectivity_receipt": receipt.to_dict(),
+        "firewall_mutation_attempted": False,
+        "nat_probe_failure": {
+            "agent_id": agent_id,
+            "error_type": error_type,
+            "fallback_mode": fallback_mode,
+            "schema_version": CONNECTIVITY_MODE_RUNTIME_VERSION,
+        },
+        "observer_endpoint_url": None,
+        "probe_result": {
+            **ProbeResult(
+                has_public_ip=False,
+                observed_ip=None,
+                observed_port=None,
+                relay_available=False,
+                validator_participation_enabled=False,
+                has_outbound_connectivity=True,
+            ).__dict__,
+        },
+        "router_mapping": None,
+        "schema_version": INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION,
+        "warnings": [f"connectivity_probe_failed:{error_type}"],
+    }
+
+
+def _require_connectivity_report_payload(report_payload: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(report_payload, dict):
+        raise ValueError("connectivity_probe_report_invalid")
+    receipt = report_payload.get("connectivity_receipt")
+    if not isinstance(receipt, dict):
+        raise ValueError("connectivity_probe_report_receipt_missing")
+    from ilc_core.network.connectivity_mode import ConnectivityReceipt
+
+    try:
+        validated = ConnectivityReceipt(
+            mode=receipt.get("mode"),
+            observed_endpoint=receipt.get("observed_endpoint"),
+            relay_endpoint=receipt.get("relay_endpoint"),
+            probe_observer_agent_id=receipt.get("probe_observer_agent_id"),
+            probe_epoch=receipt.get("probe_epoch"),
+        )
+    except Exception as exc:
+        raise ValueError("connectivity_probe_report_receipt_invalid") from exc
+    return validated.to_dict()
+
+
+def _format_connectivity_summary(connectivity_receipt: dict[str, Any]) -> str:
+    mode = str(connectivity_receipt["mode"])
+    relay_endpoint = connectivity_receipt.get("relay_endpoint")
+    observed_endpoint = connectivity_receipt.get("observed_endpoint")
+    if relay_endpoint:
+        return f"Detected mode: {mode} via {relay_endpoint}"
+    if observed_endpoint:
+        return f"Detected mode: {mode} at {observed_endpoint}"
+    return f"Detected mode: {mode}"
+
+
 def _read_agent_id(path: Path) -> str:
     try:
         value = path.read_text(encoding="utf-8").strip()
@@ -670,6 +855,8 @@ __all__ = [
     "FIRST_RUN_PROVISIONING_VERSION",
     "IdentityAlreadyExistsError",
     "POP_DOMAIN",
+    "INSTALL_CONNECTIVITY_RECEIPT_VERSION",
+    "INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION",
     "attach_invite_pop_to_onboarding_receipt",
     "build_invite_pop_transcript",
     "existing_identity_summary",
@@ -678,5 +865,6 @@ __all__ = [
     "invite_pop_payload_ref",
     "migrate_identity_schema_if_needed",
     "provision_new_identity",
+    "record_install_connectivity_receipt",
     "verify_invite_pop",
 ]

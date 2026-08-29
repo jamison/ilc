@@ -1708,6 +1708,30 @@ def _build_parser() -> JsonArgumentParser:
                 action="store_true",
                 help="Explicitly replace an existing local onboarding identity after invite install",
             )
+            install_parser.add_argument(
+                "--probe-observer",
+                action="append",
+                default=[],
+                help="ILC observer URL for first-run connectivity probing; may be repeated",
+            )
+            install_parser.add_argument(
+                "--relay-url",
+                default="",
+                help="Optional relay/rendezvous HTTPS URL for guarded first-run relay probing",
+            )
+            install_parser.add_argument(
+                "--relay-admission-material",
+                default="",
+                help="Path to relay admission material JSON for guarded first-run relay probing",
+            )
+            install_parser.add_argument(
+                "--enable-upnp",
+                action="store_true",
+                help=(
+                    "Attempt UPnP/NAT-PMP/PCP router port mapping during install. "
+                    "Opt-in only; default install performs no router mutation."
+                ),
+            )
             continue
 
         if command == "update":
@@ -3758,6 +3782,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             existing_identity_summary,
             identity_root,
             provision_new_identity,
+            record_install_connectivity_receipt,
         )
 
         had_existing_identity = (identity_root(Path.home()) / "signing_key.hex").exists()
@@ -3823,7 +3848,22 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                     raise ValueError("invite_nullifier_already_used_for_enrollment")
             invite_verification["nullifier_status"] = "recorded"
             invite_verification["enrollment_nullifier_status"] = "recorded"
+            connectivity_result = record_install_connectivity_receipt(
+                Path.home(),
+                agent_id=agent_id,
+                epoch=current_epoch,
+                attempt_router_mapping=bool(getattr(args, "enable_upnp", False)),
+                observers=tuple(getattr(args, "probe_observer", []) or []),
+                relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
+                relay_admission_material=_install_relay_admission_material(args),
+            )
+            connectivity_receipt = dict(connectivity_result["connectivity_receipt"])
+            onboarding_receipt = dict(connectivity_result["onboarding_receipt"])
+            receipt.update(_install_connectivity_receipt_fields(connectivity_receipt))
+            _write_install_receipt_atomic(output_receipt, receipt)
             return {
+                "connectivity_receipt": connectivity_receipt,
+                "connectivity_summary": connectivity_receipt["connectivity_summary"],
                 "identity_provisioning": identity_provisioning,
                 "invite_redemption_record": redemption_record,
                 "invite_verification": invite_verification,
@@ -4060,6 +4100,29 @@ def _install_receipt_path(args: argparse.Namespace, target_dir: Path) -> Path:
     if requested:
         return Path(requested).expanduser().resolve()
     return target_dir / "install_receipt.json"
+
+
+def _install_relay_admission_material(args: argparse.Namespace) -> dict[str, Any] | None:
+    path_value = str(getattr(args, "relay_admission_material", "") or "")
+    if not path_value:
+        return None
+    from ilc_core.cli.network_doctor import _load_relay_admission_material
+
+    return _load_relay_admission_material(path_value)
+
+
+def _install_connectivity_receipt_fields(
+    connectivity_receipt: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "connectivity_mode": connectivity_receipt["connectivity_mode"],
+        "connectivity_receipt_path": "~/.ilc/identity/connectivity_receipt.json",
+        "connectivity_receipt_sha384": connectivity_receipt["connectivity_receipt_sha384"],
+        "connectivity_summary": connectivity_receipt["connectivity_summary"],
+        "firewall_mutation_attempted": connectivity_receipt["firewall_mutation_attempted"],
+        "observed_endpoint": connectivity_receipt["observed_endpoint"],
+        "relay_endpoint": connectivity_receipt["relay_endpoint"],
+    }
 
 
 def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
