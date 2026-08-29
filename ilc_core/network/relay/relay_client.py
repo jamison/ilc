@@ -17,10 +17,11 @@ import ipaddress
 import json
 import math
 import re
+import ssl
 from typing import Any, Protocol
 from urllib.error import URLError
 from urllib.parse import urlparse
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPSHandler, HTTPRedirectHandler, Request, build_opener
 
 from ilc_core import __version__ as ILC_CORE_VERSION
 from ilc_core.identity.bls_backend import verify_invite_pop_digest
@@ -501,8 +502,12 @@ class RelayReleaseReceipt:
 class HttpsRelayClientTransport:
     """Bounded HTTPS JSON transport for relay admission and slot lifecycle."""
 
-    def __init__(self, relay_base_url: str) -> None:
+    def __init__(self, relay_base_url: str, tls_cert_der_sha256: str | None = None) -> None:
         self._base_url = _require_relay_base_url(relay_base_url)
+        self._tls_cert_der_sha256 = _require_optional_sha256_hex(
+            tls_cert_der_sha256,
+            "relay_tls_cert_der_sha256_invalid",
+        )
 
     def post_json(
         self,
@@ -527,7 +532,11 @@ class HttpsRelayClientTransport:
             method="POST",
         )
         try:
-            response = _urlopen_no_redirect(request, timeout_seconds)
+            response = _urlopen_no_redirect(
+                request,
+                timeout_seconds,
+                tls_cert_der_sha256=self._tls_cert_der_sha256,
+            )
             try:
                 if getattr(response, "status", 200) >= 400:
                     raise RelayClientError("relay_transport_http_status_failed")
@@ -563,6 +572,7 @@ class RelayClient:
         requested_internal_port: int = _DEFAULT_INTERNAL_PORT,
         software_version: str = ILC_CORE_VERSION,
         relay_admission_signature: str | None = None,
+        tls_cert_der_sha256: str | None = None,
         timeout_seconds: float = _DEFAULT_TIMEOUT_SECONDS,
         transport: RelayClientTransport | None = None,
         allow_guarded_request: bool = False,
@@ -591,8 +601,15 @@ class RelayClient:
                 "relay_admission_signature_invalid",
             )
         self.relay_admission_signature = relay_admission_signature
+        self.tls_cert_der_sha256 = _require_optional_sha256_hex(
+            tls_cert_der_sha256,
+            "relay_tls_cert_der_sha256_invalid",
+        )
         self.timeout_seconds = _require_timeout(timeout_seconds)
-        self._transport = transport or HttpsRelayClientTransport(self.relay_base_url)
+        self._transport = transport or HttpsRelayClientTransport(
+            self.relay_base_url,
+            tls_cert_der_sha256=self.tls_cert_der_sha256,
+        )
         self._allow_guarded_request = _require_bool(
             allow_guarded_request,
             "relay_allow_guarded_request_must_be_bool",
@@ -954,6 +971,12 @@ def _require_sha384_hex(value: object, token: str) -> str:
     return value
 
 
+def _require_optional_sha256_hex(value: object, token: str) -> str | None:
+    if value is None:
+        return None
+    return _require_sha256_hex(value, token)
+
+
 def _require_bls_signature_hex(value: object, token: str) -> str:
     if not isinstance(value, str) or _BLS_SIGNATURE_RE.fullmatch(value) is None:
         raise RelayClientError(token)
@@ -1033,8 +1056,52 @@ class _NoRedirect(HTTPRedirectHandler):
         raise RelayClientError("relay_redirect_forbidden")
 
 
-def _urlopen_no_redirect(request: Request, timeout_seconds: float) -> Any:
-    return build_opener(_NoRedirect).open(request, timeout=timeout_seconds)
+def _urlopen_no_redirect(
+    request: Request,
+    timeout_seconds: float,
+    *,
+    tls_cert_der_sha256: str | None = None,
+) -> Any:
+    if tls_cert_der_sha256 is None:
+        return build_opener(_NoRedirect).open(request, timeout=timeout_seconds)
+    # ILC-native relay trust is the signed DER fingerprint in the bootstrap
+    # record. CA and hostname verification are intentionally replaced here by
+    # post-handshake pin verification against that signed fingerprint.
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    response = build_opener(HTTPSHandler(context=context), _NoRedirect).open(
+        request,
+        timeout=timeout_seconds,
+    )
+    try:
+        _verify_response_tls_pin(response, tls_cert_der_sha256)
+    except BaseException:
+        response.close()
+        raise
+    return response
+
+
+def _verify_response_tls_pin(response: Any, tls_cert_der_sha256: str) -> None:
+    expected = _require_sha256_hex(
+        tls_cert_der_sha256,
+        "relay_tls_cert_der_sha256_invalid",
+    )
+    cert_der = _extract_response_cert_der(response)
+    actual = hashlib.sha256(cert_der).hexdigest()
+    if actual != expected:
+        raise RelayClientError("relay_tls_cert_der_sha256_mismatch")
+
+
+def _extract_response_cert_der(response: Any) -> bytes:
+    try:
+        sock = response.fp.raw._sock
+        cert_der = sock.getpeercert(binary_form=True)
+    except AttributeError as exc:
+        raise RelayClientError("relay_tls_cert_unavailable") from exc
+    if not isinstance(cert_der, bytes) or not cert_der:
+        raise RelayClientError("relay_tls_cert_unavailable")
+    return cert_der
 
 
 def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:

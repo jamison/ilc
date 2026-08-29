@@ -69,6 +69,7 @@ OPERATIONAL_COMMANDS = (
     "atlas",
     "doctor",
     "network-doctor",
+    "relay",
     "bootstrap",
     "bootstrap-census",
     "bootstrap-receipt",
@@ -2072,6 +2073,92 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "relay":
+            relay_parser = subparsers.add_parser(
+                "relay",
+                help="Relay/rendezvous server commands",
+            )
+            relay_subparsers = relay_parser.add_subparsers(
+                dest="relay_subcommand",
+                required=True,
+            )
+            p_relay_serve = relay_subparsers.add_parser(
+                "serve",
+                help="Run the relay/rendezvous control and UDP data plane",
+            )
+            p_relay_serve.add_argument(
+                "--relay-host",
+                required=True,
+                help="Advertised relay host/IP used in bootstrap records and grants",
+            )
+            p_relay_serve.add_argument(
+                "--bind-host",
+                default="0.0.0.0",
+                help="Local listener bind address; does not need to match --relay-host",
+            )
+            p_relay_serve.add_argument(
+                "--agent-id",
+                required=True,
+                help="Relay AgentID as a 96-character lowercase BLS public key hex",
+            )
+            p_relay_serve.add_argument(
+                "--network-id",
+                default="public-rc",
+                help="Network identifier for relay admission requests",
+            )
+            p_relay_serve.add_argument(
+                "--control-port",
+                type=int,
+                default=51151,
+                help="HTTPS control-plane port",
+            )
+            p_relay_serve.add_argument(
+                "--data-port-range-start",
+                type=int,
+                default=52000,
+                help="First UDP data-plane relay port",
+            )
+            p_relay_serve.add_argument(
+                "--data-port-range-end",
+                type=int,
+                default=52999,
+                help="Last UDP data-plane relay port",
+            )
+            p_relay_serve.add_argument(
+                "--ttl-epochs",
+                type=int,
+                default=4,
+                help="Maximum slot lifetime in protocol epochs",
+            )
+            p_relay_serve.add_argument(
+                "--max-bytes-per-epoch",
+                type=int,
+                default=64 * 1024 * 1024,
+                help="Per-slot byte budget per epoch",
+            )
+            p_relay_serve.add_argument(
+                "--max-concurrent-streams",
+                type=int,
+                default=8,
+                help="Advertised per-slot stream cap",
+            )
+            p_relay_serve.add_argument(
+                "--ssl-certfile",
+                default=None,
+                help="TLS certificate file; required for non-loopback relay hosts",
+            )
+            p_relay_serve.add_argument(
+                "--ssl-keyfile",
+                default=None,
+                help="TLS private-key file; required when --ssl-certfile is supplied",
+            )
+            p_relay_serve.add_argument(
+                "--allow-guarded-start",
+                action="store_true",
+                help="Test-only escape hatch; DEPLOY-00 clears guards instead of using this",
+            )
+            continue
+
         if command == "wallet":
             wallet_parser = subparsers.add_parser(
                 "wallet",
@@ -2964,6 +3051,7 @@ def _run_top_level_command(
         "network-doctor",
         "node",
         "query",
+        "relay",
         "sidecar",
         "skills",
         "update",
@@ -3061,6 +3149,9 @@ def _run_top_level_command(
                 str(getattr(args, "relay_admission_material", "") or "") or None
             ),
         )
+        return _success_payload(command, data)
+    if command == "relay":
+        data = _run_relay_subcommand(args)
         return _success_payload(command, data)
     if command == "ccss":
         from ilc_core.cli.ccss_cli import run_ccss_command
@@ -3247,6 +3338,52 @@ def _load_firewall_plan_runtime_module() -> Any:
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def _run_relay_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    subcommand = getattr(args, "relay_subcommand", None)
+    if subcommand != "serve":
+        raise ValueError(f"unknown_relay_subcommand:{subcommand}")
+    from ilc_core.network.relay.relay_server import (
+        RelayServerConfig,
+        RelayServerError,
+        run_relay_http_server,
+    )
+
+    try:
+        config = RelayServerConfig(
+            relay_agent_id=str(args.agent_id),
+            relay_host=str(args.relay_host),
+            network_id=str(args.network_id),
+            ttl_epochs=int(args.ttl_epochs),
+            max_bytes_per_epoch=int(args.max_bytes_per_epoch),
+            max_concurrent_streams=int(args.max_concurrent_streams),
+            data_port_range_start=int(args.data_port_range_start),
+            data_port_range_end=int(args.data_port_range_end),
+            control_port=int(args.control_port),
+            ssl_certfile=str(args.ssl_certfile) if args.ssl_certfile else None,
+            ssl_keyfile=str(args.ssl_keyfile) if args.ssl_keyfile else None,
+        )
+        run_relay_http_server(
+            config=config,
+            bind_host=str(args.bind_host),
+            allow_guarded_start=bool(args.allow_guarded_start),
+        )
+    except RelayServerError as exc:
+        raise ValueError(str(exc)) from exc
+    return {
+        "action": "relay-serve",
+        "control_port": config.control_port,
+        "data_port_range": {
+            "end": config.data_port_range_end,
+            "start": config.data_port_range_start,
+        },
+        "network_id": config.network_id,
+        "relay_agent_id": config.relay_agent_id,
+        "relay_base_url": config.relay_base_url,
+        "relay_host": config.relay_host,
+        "status": "stopped",
+    }
 
 
 def _run_validator_subcommand(args: argparse.Namespace) -> dict[str, Any]:
