@@ -24,7 +24,10 @@ from urllib.parse import urlparse
 from urllib.request import HTTPSHandler, HTTPRedirectHandler, Request, build_opener
 
 from ilc_core import __version__ as ILC_CORE_VERSION
-from ilc_core.identity.bls_backend import verify_invite_pop_digest
+from ilc_core.identity.bls_backend import (
+    verify_relay_admission_digest,
+    verify_relay_lifecycle_digest,
+)
 from ilc_core.identity.first_run_provisioning import (
     POP_DOMAIN,
     invite_pop_payload_ref,
@@ -251,7 +254,7 @@ class RelayAdmissionRequest:
         ):
             raise RelayClientError("relay_invite_pop_verification_failed")
         try:
-            signature_ok = verify_invite_pop_digest(
+            signature_ok = verify_relay_admission_digest(
                 public_key_hex=self.agent_id,
                 digest_hex=self.relay_admission_payload_ref,
                 signature_hex=self.relay_admission_signature,
@@ -951,7 +954,7 @@ def _verify_lifecycle_signature(
 ) -> None:
     _require_bls_signature_hex(signature, "relay_lifecycle_signature_invalid")
     try:
-        signature_ok = verify_invite_pop_digest(
+        signature_ok = verify_relay_lifecycle_digest(
             public_key_hex=agent_id,
             digest_hex=payload_ref,
             signature_hex=signature,

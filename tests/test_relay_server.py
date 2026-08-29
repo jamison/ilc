@@ -19,8 +19,10 @@ import pytest
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_invite_pop_digest,
+    sign_relay_admission_digest,
     sign_relay_bootstrap_capsule_digest,
     sign_relay_bootstrap_record_digest,
+    sign_relay_lifecycle_digest,
 )
 from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
 import ilc_core.network.relay as relay_package
@@ -136,7 +138,7 @@ def _admission_request(
     )
     admission_signature = signature
     if admission_signature is None:
-        admission_signature = sign_invite_pop_digest(secret_key, admission_ref)
+        admission_signature = sign_relay_admission_digest(secret_key, admission_ref)
     return secret_key, agent_id, {
         "admission_epoch": admission_epoch,
         "agent_id": agent_id,
@@ -186,7 +188,7 @@ def _lifecycle_payload(
     )
     signed = signature
     if signed is None:
-        signed = sign_invite_pop_digest(secret_key, payload_ref)
+        signed = sign_relay_lifecycle_digest(secret_key, payload_ref)
     if action == "keepalive":
         return {
             "agent_id": agent_id,
@@ -244,17 +246,20 @@ def test_valid_admission_accepted() -> None:
 
 def test_concurrent_admission_allocates_unique_ports() -> None:
     server = _server()
+    payloads = [
+        _admission_request(ikm_hex=f"{0x50 + index:02x}" * 32)[2]
+        for index in range(8)
+    ]
     results: list[int] = []
     errors: list[BaseException] = []
     lock = threading.Lock()
 
     def admit(index: int) -> None:
         try:
-            _, _agent_id, payload = _admission_request(ikm_hex=f"{0x50 + index:02x}" * 32)
             status, body = server.handle_json_request(
                 method="POST",
                 path=RELAY_ADMISSION_REQUEST_PATH,
-                payload=payload,
+                payload=payloads[index],
                 source_host=f"198.51.100.{index + 1}",
             )
             assert status == 200, body
@@ -269,6 +274,7 @@ def test_concurrent_admission_allocates_unique_ports() -> None:
         thread.start()
     for thread in threads:
         thread.join(timeout=10)
+    assert all(not thread.is_alive() for thread in threads)
 
     assert errors == []
     assert len(results) == 8
@@ -278,6 +284,23 @@ def test_concurrent_admission_allocates_unique_ports() -> None:
 
 def test_invalid_bls_signature_rejected() -> None:
     _, _, payload = _admission_request(signature="f" * 192)
+
+    status, body = _server().handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_signature_verification_failed"
+
+
+def test_relay_admission_rejects_invite_pop_signature_domain() -> None:
+    secret_key, _, payload = _admission_request()
+    payload["relay_admission_signature"] = sign_invite_pop_digest(
+        secret_key,
+        payload["relay_admission_payload_ref"],
+    )
 
     status, body = _server().handle_json_request(
         method="POST",
@@ -438,18 +461,18 @@ def test_concurrent_capacity_race_leaves_one_winner_and_no_port_leak(
     assert server._port_pool.available_count == before - 1
 
 
-def test_request_slot_keeps_bls_coercion_before_state_lock_in_source() -> None:
+def test_request_slot_checks_cooldown_before_and_after_bls_in_source() -> None:
     src = Path("ilc_core/network/relay/relay_server.py").read_text()
     start = src.index("def request_slot(")
     end = src.index("    def keepalive(", start)
     request_slot_src = src[start:end]
+    first_lock = request_slot_src.index("with self._state_lock:")
+    coerce = request_slot_src.index("_coerce_admission_request(body)")
+    second_lock = request_slot_src.index("with self._state_lock:", coerce)
 
-    assert request_slot_src.index("_coerce_admission_request(body)") < request_slot_src.index(
-        "with self._state_lock:"
-    )
-    assert request_slot_src.index("self._require_admission_not_blocked") > request_slot_src.index(
-        "with self._state_lock:"
-    )
+    assert first_lock < coerce < second_lock
+    assert request_slot_src.index("self._require_admission_not_blocked", first_lock) < coerce
+    assert request_slot_src.index("self._require_admission_not_blocked", second_lock) > coerce
 
 
 def test_agent_id_format_invalid_rejected() -> None:
@@ -574,6 +597,31 @@ def test_keepalive_wrong_lifecycle_signature_rejected() -> None:
             epoch=1,
             signature="d" * 192,
         ),
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_lifecycle_signature_verification_failed"
+
+
+def test_relay_lifecycle_rejects_invite_pop_signature_domain() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+    payload = _lifecycle_payload(
+        secret_key=secret_key,
+        agent_id=agent_id,
+        slot=slot,
+        action="keepalive",
+        epoch=1,
+    )
+    payload["relay_lifecycle_signature"] = sign_invite_pop_digest(
+        secret_key,
+        payload["relay_lifecycle_payload_ref"],
+    )
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_KEEPALIVE_PATH,
+        payload=payload,
     )
 
     assert status == 400
@@ -820,7 +868,7 @@ def test_server_implements_existing_client_paths() -> None:
         invite_id=INVITE_ID,
         invite_nullifier=INVITE_NULLIFIER,
         invite_pop=invite_pop,
-        relay_admission_signature=sign_invite_pop_digest(secret_key, admission_ref),
+        relay_admission_signature=sign_relay_admission_digest(secret_key, admission_ref),
         software_version="0.4.5",
         transport=Transport(),
         allow_guarded_request=True,
@@ -848,12 +896,12 @@ def test_server_implements_existing_client_paths() -> None:
     assert client.keepalive(
         slot=grant,
         keepalive_epoch=1,
-        relay_lifecycle_signature=sign_invite_pop_digest(secret_key, keepalive_ref),
+        relay_lifecycle_signature=sign_relay_lifecycle_digest(secret_key, keepalive_ref),
     ).renewal_result == "renewed"
     assert client.release_slot(
         slot=grant,
         release_epoch=1,
-        relay_lifecycle_signature=sign_invite_pop_digest(secret_key, release_ref),
+        relay_lifecycle_signature=sign_relay_lifecycle_digest(secret_key, release_ref),
     ).release_result == "released"
     assert captured_paths == [
         RELAY_ADMISSION_REQUEST_PATH,
@@ -1045,6 +1093,30 @@ def test_failed_admission_tracker_cooldown_expiry_unblocks(monkeypatch: pytest.M
     assert tracker.is_blocked(key) is False
     assert key not in tracker._entries
     assert key not in tracker._queued_keys
+    assert key not in tracker._insertion_order
+
+
+def test_cooldown_rejects_before_bls_coercion(monkeypatch: pytest.MonkeyPatch) -> None:
+    server = _server()
+    _, _, payload = _admission_request()
+    source_host = "198.51.100.222"
+    for _ in range(5):
+        server._failed_admissions.record_failure(f"ip:{source_host}")
+
+    def fail_if_called(_payload: Mapping[str, Any]) -> None:
+        raise AssertionError("cooldown must block before BLS validation")
+
+    monkeypatch.setattr(relay_server_module, "_coerce_admission_request", fail_if_called)
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host=source_host,
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_cooldown_active"
 
 
 def test_failed_admission_tracker_duplicate_key_reports_do_not_grow_fifo() -> None:
@@ -1224,7 +1296,7 @@ def test_network_id_mismatch_does_not_increment_failed_admission_tracker() -> No
         software_version="0.4.5",
     )
     payload["relay_admission_payload_ref"] = admission_ref
-    payload["relay_admission_signature"] = sign_invite_pop_digest(secret_key, admission_ref)
+    payload["relay_admission_signature"] = sign_relay_admission_digest(secret_key, admission_ref)
 
     status, body = server.handle_json_request(
         method="POST",
@@ -1463,6 +1535,23 @@ def test_tombstones_remain_bounded_after_many_release_cycles() -> None:
     assert server.active_slot_count == 0
 
 
+def test_tombstones_count_cap_bounds_same_epoch_churn(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(relay_server_module, "_MAX_TOMBSTONES", 3)
+    server = _server()
+
+    for index in range(8):
+        server._track_tombstone(
+            _RelayTombstone(
+                slot_id=f"slot-{index}",
+                status="released",
+                terminated_epoch=0,
+            )
+        )
+
+    assert len(server._tombstones) == 3
+    assert set(server._tombstones) == {"slot-5", "slot-6", "slot-7"}
+
+
 def test_tombstone_retention_config_rejects_invalid_values() -> None:
     with pytest.raises(RelayServerError, match="relay_tombstone_retention_epochs_invalid"):
         RelayServerConfig(
@@ -1653,6 +1742,11 @@ def test_sign_and_verify_relay_bootstrap_record_recomputes_payload_hash() -> Non
     tampered = {**signed, "relay_host": "evil.example"}
     assert verify_relay_bootstrap_record(tampered) is False
 
+    with_extra_field = {**signed, "unsigned_extra": "must-not-ride-along"}
+    assert verify_relay_bootstrap_record(with_extra_field) is False
+    with pytest.raises(RelayServerError, match="relay_bootstrap_record_keys_invalid"):
+        relay_bootstrap_record_payload_ref(with_extra_field)
+
 
 def test_bootstrap_record_rejects_control_url_host_mismatch() -> None:
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
@@ -1810,6 +1904,14 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
         expected_network_id="public-rc",
         current_epoch=0,
     ) == (signed,)
+
+    with_extra_field = {**capsule, "unsigned_extra": "must-not-ride-along"}
+    assert parse_relay_bootstrap_capsule(
+        with_extra_field,
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    ) == ()
 
     tampered_capsule = {**capsule, "network_id": "evil-rc"}
     assert parse_relay_bootstrap_capsule(
@@ -2175,57 +2277,58 @@ def _data_plane_server_for_target(target_port: int) -> tuple[RelayRendezvousServ
     return server, RelaySlotGrant.from_dict(body["grant"])
 
 
-def test_udp_forwarder_client_to_target_real_socket() -> None:
-    target = _udp_socket()
+def test_udp_forwarder_client_to_peer_real_socket() -> None:
+    peer = _udp_socket()
     client = _udp_socket()
-    server, grant = _data_plane_server_for_target(target.getsockname()[1])
-    try:
-        client.sendto(relay_slot_claim_datagram(grant), ("127.0.0.1", grant.relay_endpoint.port))
-        client.sendto(b"client-to-target", ("127.0.0.1", grant.relay_endpoint.port))
-        data, _addr = target.recvfrom(1024)
-    finally:
-        server._data_plane.stop() if server._data_plane is not None else None
-        target.close()
-        client.close()
-
-    assert data == b"client-to-target"
-
-
-def test_udp_forwarder_target_to_client_real_socket() -> None:
-    target = _udp_socket()
-    client = _udp_socket()
-    server, grant = _data_plane_server_for_target(target.getsockname()[1])
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
         client.sendto(relay_slot_claim_datagram(grant), relay_addr)
-        client.sendto(b"client-to-target", relay_addr)
-        assert target.recvfrom(1024)[0] == b"client-to-target"
-        target.sendto(b"target-to-client", relay_addr)
+        peer.sendto(b"peer-binds-slot", relay_addr)
+        assert client.recvfrom(1024)[0] == b"peer-binds-slot"
+        client.sendto(b"client-to-peer", relay_addr)
+        data, _addr = peer.recvfrom(1024)
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        peer.close()
+        client.close()
+
+    assert data == b"client-to-peer"
+
+
+def test_udp_forwarder_peer_to_client_real_socket() -> None:
+    peer = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        peer.sendto(b"peer-to-client", relay_addr)
         data, _addr = client.recvfrom(1024)
     finally:
         server._data_plane.stop() if server._data_plane is not None else None
-        target.close()
+        peer.close()
         client.close()
 
-    assert data == b"target-to-client"
+    assert data == b"peer-to-client"
 
 
 def test_udp_forwarder_unknown_source_dropped_real_socket() -> None:
-    target = _udp_socket()
+    peer = _udp_socket()
     client = _udp_socket()
     stranger = _udp_socket()
-    server, grant = _data_plane_server_for_target(target.getsockname()[1])
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
         client.sendto(relay_slot_claim_datagram(grant), relay_addr)
-        client.sendto(b"learn-client", relay_addr)
-        assert target.recvfrom(1024)[0] == b"learn-client"
+        peer.sendto(b"learn-peer", relay_addr)
+        assert client.recvfrom(1024)[0] == b"learn-peer"
         stranger.sendto(b"stranger", relay_addr)
         with pytest.raises(TimeoutError):
-            target.recvfrom(1024)
+            peer.recvfrom(1024)
     finally:
         server._data_plane.stop() if server._data_plane is not None else None
-        target.close()
+        peer.close()
         client.close()
         stranger.close()
 
@@ -2261,16 +2364,18 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
 
     transport = FakeTransport()
     protocol.connection_made(transport)
-    protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), ("198.51.100.10", 50000))
-    protocol.datagram_received(b"first", ("198.51.100.10", 50000))
-    protocol.datagram_received(b"second", ("198.51.100.10", 50000))
+    client = ("198.51.100.10", 50000)
+    peer = ("198.51.100.11", 50001)
+    protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), client)
+    protocol.datagram_received(b"peer-first", peer)
+    protocol.datagram_received(b"client-second", client)
 
-    assert protocol.client_addr == ("198.51.100.10", 50000)
+    assert protocol.client_addr == client
     assert transport.sends == [
-        (b"first", ("127.0.0.1", 50151)),
-        (b"second", ("127.0.0.1", 50151)),
+        (b"peer-first", client),
+        (b"client-second", peer),
     ]
-    assert [receipt.bytes_forwarded for receipt in receipts] == [5, 6]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [10, 13]
 
 
 def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
@@ -2357,15 +2462,17 @@ def test_udp_forwarder_preclaim_attacker_does_not_poison_nonce_state() -> None:
     assert protocol.client_addr is None
 
     client = ("198.51.100.31", 50003)
+    peer = ("198.51.100.33", 50005)
     protocol.datagram_received(relay_slot_claim_datagram(slot), client)
+    protocol.datagram_received(b"peer-payload", peer)
     protocol.datagram_received(b"client-payload", client)
 
     assert protocol.client_addr == client
-    assert transport.sends == [(b"client-payload", ("127.0.0.1", 50151))]
-    assert [receipt.bytes_forwarded for receipt in receipts] == [14]
+    assert transport.sends == [(b"peer-payload", client), (b"client-payload", peer)]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [12, 14]
 
 
-def test_udp_forwarder_nonce_prefixed_payload_forwards_stripped_payload() -> None:
+def test_udp_forwarder_nonce_prefixed_payload_waits_for_peer_binding() -> None:
     server = _server()
     _secret_key, _agent_id, slot = _grant(server)
     protocol = RelayUdpPortForwarder(
@@ -2392,9 +2499,9 @@ def test_udp_forwarder_nonce_prefixed_payload_forwards_stripped_payload() -> Non
         ("198.51.100.32", 50004),
     )
 
-    assert protocol.last_error is None
+    assert protocol.last_error == "relay_udp_peer_not_bound"
     assert protocol.client_addr == ("198.51.100.32", 50004)
-    assert transport.sends == [(b"first-payload", ("127.0.0.1", 50151))]
+    assert transport.sends == []
 
 
 def test_data_plane_start_stop_releases_port() -> None:

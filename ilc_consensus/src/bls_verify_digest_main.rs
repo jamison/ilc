@@ -3,6 +3,8 @@ use std::env;
 use std::io::{self, Read};
 
 const ILC_INVITE_POP_DST: &[u8] = b"ILC_INVITE_POP_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
+const ILC_RELAY_ADMISSION_DST: &[u8] = b"ILC_RELAY_ADMISSION_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
+const ILC_RELAY_LIFECYCLE_DST: &[u8] = b"ILC_RELAY_LIFECYCLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
 const ILC_RELAY_BOOTSTRAP_RECORD_DST: &[u8] =
     b"ILC_RELAY_BOOTSTRAP_RECORD_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
 const ILC_RELAY_BOOTSTRAP_CAPSULE_DST: &[u8] =
@@ -88,6 +90,8 @@ fn read_digest_hex_from_stdin() -> Result<Vec<u8>, String> {
 fn dst_for_suite(suite: &str) -> Result<&'static [u8], String> {
     match suite {
         "invite_pop" => Ok(ILC_INVITE_POP_DST),
+        "relay_admission" => Ok(ILC_RELAY_ADMISSION_DST),
+        "relay_lifecycle" => Ok(ILC_RELAY_LIFECYCLE_DST),
         "relay_bootstrap_record" => Ok(ILC_RELAY_BOOTSTRAP_RECORD_DST),
         "relay_bootstrap_capsule" => Ok(ILC_RELAY_BOOTSTRAP_CAPSULE_DST),
         _ => Err("unknown BLS verification suite".to_string()),

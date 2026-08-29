@@ -4,7 +4,12 @@ import builtins
 import socket
 
 import pytest
-from ilc_core.identity.bls_backend import keypair_from_ikm_hex, sign_invite_pop_digest
+from ilc_core.identity.bls_backend import (
+    keypair_from_ikm_hex,
+    sign_invite_pop_digest,
+    sign_relay_admission_digest,
+    sign_relay_lifecycle_digest,
+)
 from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
 from ilc_core.network.connectivity_mode import (
     ConnectivityMode,
@@ -109,7 +114,7 @@ def _admission_signature(
         requested_protocol="quic",
         software_version="0.4.4",
     )
-    return sign_invite_pop_digest(secret_key, admission_ref)
+    return sign_relay_admission_digest(secret_key, admission_ref)
 
 
 def _lifecycle_signature(
@@ -130,7 +135,7 @@ def _lifecycle_signature(
         network_id="public-rc",
         relay_base_url=relay_base_url,
     )
-    return payload_ref, sign_invite_pop_digest(secret_key, payload_ref)
+    return payload_ref, sign_relay_lifecycle_digest(secret_key, payload_ref)
 
 
 def _grant(*, agent_id: str, granted_epoch: int = 4) -> RelaySlotGrant:

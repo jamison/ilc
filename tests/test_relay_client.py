@@ -8,7 +8,12 @@ from typing import Any
 
 import pytest
 
-from ilc_core.identity.bls_backend import keypair_from_ikm_hex, sign_invite_pop_digest
+from ilc_core.identity.bls_backend import (
+    keypair_from_ikm_hex,
+    sign_invite_pop_digest,
+    sign_relay_admission_digest,
+    sign_relay_lifecycle_digest,
+)
 from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
 from ilc_core.network.connectivity_mode import ConnectivityMode
 from ilc_core.network.nat_probe import NatProbeEngine
@@ -72,7 +77,7 @@ def _relay_admission_signature(
         requested_protocol="quic",
         software_version=software_version or relay_module.ILC_CORE_VERSION,
     )
-    return admission_ref, sign_invite_pop_digest(secret_key, admission_ref)
+    return admission_ref, sign_relay_admission_digest(secret_key, admission_ref)
 
 
 def _relay_lifecycle_signature(
@@ -94,7 +99,7 @@ def _relay_lifecycle_signature(
         network_id=network_id,
         relay_base_url=relay_base_url,
     )
-    return payload_ref, sign_invite_pop_digest(secret_key, payload_ref)
+    return payload_ref, sign_relay_lifecycle_digest(secret_key, payload_ref)
 
 
 def test_relay_client_guard_defaults_closed() -> None:
@@ -170,7 +175,7 @@ def test_admission_request_rejects_wrong_invite_pop_binding() -> None:
         requested_protocol="quic",
         software_version=relay_module.ILC_CORE_VERSION,
     )
-    admission_signature = sign_invite_pop_digest(secret_key, admission_ref)
+    admission_signature = sign_relay_admission_digest(secret_key, admission_ref)
 
     with pytest.raises(RelayClientError, match="relay_invite_pop_verification_failed"):
         RelayAdmissionRequest(
