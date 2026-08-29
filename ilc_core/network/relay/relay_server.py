@@ -28,7 +28,12 @@ import time
 from typing import Any, Callable
 
 from ilc_core import __version__ as ILC_CORE_VERSION
-from ilc_core.identity.bls_backend import verify_invite_pop_digest
+from ilc_core.identity.bls_backend import (
+    sign_relay_bootstrap_record_digest,
+    verify_invite_pop_digest,
+    verify_relay_bootstrap_capsule_digest,
+    verify_relay_bootstrap_record_digest,
+)
 from ilc_core.network.relay.relay_client import (
     RELAY_CLIENT_SCHEMA_VERSION,
     RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC,
@@ -56,7 +61,10 @@ _DEFAULT_CONTROL_PORT = 51151
 _DEFAULT_DATA_PORT_RANGE_START = 52000
 _DEFAULT_DATA_PORT_RANGE_END = 52999
 _RELAY_BOOTSTRAP_RECORD_SCHEMA_VERSION = "relay_bootstrap_record_v0.1"
+_RELAY_BOOTSTRAP_CAPSULE_SCHEMA_VERSION = "relay_bootstrap_capsule_v0.1"
 _RELAY_BOOTSTRAP_SIGNATURE_ALG = "BLS12-381-G2-SHA-256-SSWU-RO"
+_TLS_MODE_PINNED_DER_SHA256 = "pinned_der_sha256"
+_TLS_MODE_LOOPBACK_ONLY = "loopback_only"
 _MAX_REQUEST_BYTES = 32_768
 _MAX_RESPONSE_BYTES = 65_536
 _MAX_DATAGRAM_BYTES = 65_535
@@ -72,6 +80,7 @@ _PACKET_RATE_WINDOW_SECONDS = 1.0
 _MAX_FAILED_ATTEMPTS = 5
 _FAILED_ADMISSION_COOLDOWN_SECONDS = 60.0
 _MAX_FAILED_ADMISSION_ENTRIES = 65_536
+_MAX_RELAY_RECORDS_PER_CAPSULE = 8
 _ADMISSION_FAILURE_TOKENS = frozenset(
     {
         "relay_admission_payload_ref_invalid",
@@ -177,7 +186,12 @@ class RelayServerConfig:
         host = self.relay_host
         if ":" in host and not host.startswith("["):
             host = f"[{host}]"
-        return f"https://{host}:{self.control_port}"
+        scheme = "https"
+        if self.ssl_certfile is None and self.ssl_keyfile is None and _host_is_loopback(
+            self.relay_host
+        ):
+            scheme = "http"
+        return f"{scheme}://{host}:{self.control_port}"
 
 
 @dataclass(frozen=True)
@@ -1261,7 +1275,11 @@ def run_relay_http_server(
         "relay_bind_port_invalid",
     )
     timeout = _require_timeout(timeout_seconds)
-    relay_server = RelayRendezvousServer(config, enable_data_plane=True)
+    relay_server = RelayRendezvousServer(
+        config,
+        enable_data_plane=True,
+        data_plane_bind_host=bind_host,
+    )
 
     class _TimedThreadingHTTPServer(ThreadingHTTPServer):
         daemon_threads = True
@@ -1289,6 +1307,8 @@ def build_relay_bootstrap_record(
     *,
     issued_epoch: int,
     expires_epoch: int,
+    tls_cert_der_sha256: str | None = None,
+    tls_mode: str | None = None,
 ) -> dict[str, Any]:
     """Build an unsigned canonical relay bootstrap record for later signing."""
 
@@ -1296,6 +1316,19 @@ def build_relay_bootstrap_record(
     expires = _require_epoch(expires_epoch, "relay_bootstrap_record_epoch_invalid")
     if expires <= issued:
         raise RelayServerError("relay_bootstrap_record_epoch_invalid")
+    resolved_tls_mode = _require_tls_mode_for_record(
+        config.relay_host,
+        tls_mode=tls_mode,
+        tls_cert_der_sha256=tls_cert_der_sha256,
+    )
+    cert_sha256 = (
+        None
+        if tls_cert_der_sha256 is None
+        else _require_sha256_hex(
+            tls_cert_der_sha256,
+            "relay_bootstrap_tls_cert_der_sha256_invalid",
+        )
+    )
     payload = {
         "control_url": config.relay_base_url,
         "data_port_range": {
@@ -1309,6 +1342,8 @@ def build_relay_bootstrap_record(
         "relay_host": config.relay_host,
         "relay_mode": RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC,
         "schema_version": _RELAY_BOOTSTRAP_RECORD_SCHEMA_VERSION,
+        "tls_cert_der_sha256": cert_sha256,
+        "tls_mode": resolved_tls_mode,
     }
     return {
         **payload,
@@ -1317,6 +1352,290 @@ def build_relay_bootstrap_record(
         "signature_alg": _RELAY_BOOTSTRAP_SIGNATURE_ALG,
         "signing_key_id": None,
     }
+
+
+def sign_relay_bootstrap_record(
+    record: Mapping[str, Any],
+    *,
+    relay_secret_key_hex: str,
+    signing_key_id: str,
+) -> dict[str, Any]:
+    """Return a relay self-signed bootstrap record.
+
+    The relay AgentID is the BLS public key that verifies the signature. Genesis
+    signs capsules containing these records in DEPLOY-00; this function does not
+    use or require Genesis signing material.
+    """
+
+    unsigned = _require_mapping(record, "relay_bootstrap_record_must_be_object")
+    if unsigned.get("signature") is not None:
+        raise RelayServerError("relay_bootstrap_record_already_signed")
+    payload_ref = relay_bootstrap_record_payload_ref(unsigned)
+    if unsigned.get("payload_sha384") != payload_ref:
+        raise RelayServerError("relay_bootstrap_payload_ref_mismatch")
+    clean_signing_key_id = _require_agent_id(
+        signing_key_id,
+        "relay_bootstrap_signing_key_invalid",
+    )
+    if clean_signing_key_id != _require_agent_id(
+        unsigned.get("relay_agent_id"),
+        "relay_bootstrap_agent_id_invalid",
+    ):
+        raise RelayServerError("relay_bootstrap_signing_key_mismatch")
+    return {
+        **dict(unsigned),
+        "payload_sha384": payload_ref,
+        "signature": sign_relay_bootstrap_record_digest(
+            secret_key_hex=relay_secret_key_hex,
+            digest_hex=payload_ref,
+        ),
+        "signature_alg": _RELAY_BOOTSTRAP_SIGNATURE_ALG,
+        "signing_key_id": clean_signing_key_id,
+    }
+
+
+def verify_relay_bootstrap_record(record: Mapping[str, Any]) -> bool:
+    """Return True only for a well-formed, self-signed relay bootstrap record."""
+
+    try:
+        signed = _require_mapping(record, "relay_bootstrap_record_must_be_object")
+        payload_ref = relay_bootstrap_record_payload_ref(signed)
+        if signed.get("payload_sha384") != payload_ref:
+            return False
+        if signed.get("signature_alg") != _RELAY_BOOTSTRAP_SIGNATURE_ALG:
+            return False
+        relay_agent_id = _require_agent_id(
+            signed.get("relay_agent_id"),
+            "relay_bootstrap_agent_id_invalid",
+        )
+        signing_key_id = _require_agent_id(
+            signed.get("signing_key_id"),
+            "relay_bootstrap_signing_key_invalid",
+        )
+        if signing_key_id != relay_agent_id:
+            return False
+        signature = _require_bls_signature_hex(
+            signed.get("signature"),
+            "relay_bootstrap_signature_invalid",
+        )
+        return verify_relay_bootstrap_record_digest(
+            public_key_hex=signing_key_id,
+            digest_hex=payload_ref,
+            signature_hex=signature,
+        )
+    except (RelayClientError, RelayServerError, ValueError):
+        return False
+
+
+def relay_bootstrap_record_payload_ref(record: Mapping[str, Any]) -> str:
+    """Return the canonical SHA-384 payload hash for a bootstrap record."""
+
+    payload = _relay_bootstrap_record_payload(record)
+    return hashlib.sha384(_canonical_json_bytes(payload)).hexdigest()
+
+
+def relay_bootstrap_capsule_payload_ref(capsule: Mapping[str, Any]) -> str:
+    """Return the canonical SHA-384 payload hash for a Genesis relay capsule."""
+
+    payload = _relay_bootstrap_capsule_payload(capsule)
+    return hashlib.sha384(_canonical_json_bytes(payload)).hexdigest()
+
+
+def parse_relay_bootstrap_capsule(
+    capsule: Mapping[str, Any],
+    *,
+    genesis_agent_id: str,
+) -> tuple[dict[str, Any], ...]:
+    """Verify a Genesis relay capsule and return verified relay records.
+
+    The capsule signature authenticates the set of relay self-signed records.
+    Each returned record has also passed its own relay-AgentID signature check.
+    Invalid capsules return an empty tuple rather than partially trusted data.
+    """
+
+    try:
+        clean_capsule = _require_mapping(
+            capsule,
+            "relay_bootstrap_capsule_must_be_object",
+        )
+        clean_genesis_agent_id = _require_agent_id(
+            genesis_agent_id,
+            "relay_bootstrap_capsule_genesis_agent_id_invalid",
+        )
+        payload_ref = relay_bootstrap_capsule_payload_ref(clean_capsule)
+        if clean_capsule.get("payload_sha384") != payload_ref:
+            return ()
+        if clean_capsule.get("signature_alg") != _RELAY_BOOTSTRAP_SIGNATURE_ALG:
+            return ()
+        if clean_capsule.get("signing_key_id") != clean_genesis_agent_id:
+            return ()
+        signature = _require_bls_signature_hex(
+            clean_capsule.get("signature"),
+            "relay_bootstrap_capsule_signature_invalid",
+        )
+        if not verify_relay_bootstrap_capsule_digest(
+            public_key_hex=clean_genesis_agent_id,
+            digest_hex=payload_ref,
+            signature_hex=signature,
+        ):
+            return ()
+        records = _require_relay_records(clean_capsule.get("relay_records"))
+        return tuple(dict(record) for record in records if verify_relay_bootstrap_record(record))
+    except (RelayClientError, RelayServerError, ValueError):
+        return ()
+
+
+def _relay_bootstrap_record_payload(record: Mapping[str, Any]) -> dict[str, Any]:
+    clean_record = _require_mapping(record, "relay_bootstrap_record_must_be_object")
+    schema_version = clean_record.get("schema_version")
+    if schema_version != _RELAY_BOOTSTRAP_RECORD_SCHEMA_VERSION:
+        raise RelayServerError("relay_bootstrap_schema_version_invalid")
+    data_range = _require_mapping(
+        clean_record.get("data_port_range"),
+        "relay_bootstrap_data_port_range_invalid",
+    )
+    data_start = _require_port(
+        data_range.get("start"),
+        "relay_bootstrap_data_port_range_start_invalid",
+    )
+    data_end = _require_port(
+        data_range.get("end"),
+        "relay_bootstrap_data_port_range_end_invalid",
+    )
+    if data_start > data_end:
+        raise RelayServerError("relay_bootstrap_data_port_range_invalid")
+    issued = _require_epoch(
+        clean_record.get("issued_epoch"),
+        "relay_bootstrap_record_epoch_invalid",
+    )
+    expires = _require_epoch(
+        clean_record.get("expires_epoch"),
+        "relay_bootstrap_record_epoch_invalid",
+    )
+    if expires <= issued:
+        raise RelayServerError("relay_bootstrap_record_epoch_invalid")
+    relay_host = _require_host(clean_record.get("relay_host"), "relay_bootstrap_host_invalid")
+    tls_cert_der_sha256 = clean_record.get("tls_cert_der_sha256")
+    if tls_cert_der_sha256 is not None:
+        tls_cert_der_sha256 = _require_sha256_hex(
+            tls_cert_der_sha256,
+            "relay_bootstrap_tls_cert_der_sha256_invalid",
+        )
+    tls_mode = _require_tls_mode_for_record(
+        relay_host,
+        tls_mode=clean_record.get("tls_mode"),
+        tls_cert_der_sha256=tls_cert_der_sha256,
+    )
+    payload = {
+        "control_url": _require_relay_base_url_for_record(
+            clean_record.get("control_url"),
+            "relay_bootstrap_control_url_invalid",
+        ),
+        "data_port_range": {"end": data_end, "start": data_start},
+        "expires_epoch": expires,
+        "issued_epoch": issued,
+        "network_id": _require_network_id(clean_record.get("network_id")),
+        "relay_agent_id": _require_agent_id(
+            clean_record.get("relay_agent_id"),
+            "relay_bootstrap_agent_id_invalid",
+        ),
+        "relay_host": relay_host,
+        "relay_mode": _require_relay_mode(clean_record.get("relay_mode")),
+        "schema_version": schema_version,
+        "tls_cert_der_sha256": tls_cert_der_sha256,
+        "tls_mode": tls_mode,
+    }
+    if tls_mode == _TLS_MODE_PINNED_DER_SHA256 and not payload["control_url"].startswith(
+        "https://"
+    ):
+        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
+    if tls_mode == _TLS_MODE_LOOPBACK_ONLY and not (
+        payload["control_url"].startswith("http://")
+        or payload["control_url"].startswith("https://")
+    ):
+        raise RelayServerError("relay_bootstrap_control_url_tls_mode_mismatch")
+    return payload
+
+
+def _relay_bootstrap_capsule_payload(capsule: Mapping[str, Any]) -> dict[str, Any]:
+    clean_capsule = _require_mapping(
+        capsule,
+        "relay_bootstrap_capsule_must_be_object",
+    )
+    if clean_capsule.get("schema_version") != _RELAY_BOOTSTRAP_CAPSULE_SCHEMA_VERSION:
+        raise RelayServerError("relay_bootstrap_capsule_schema_version_invalid")
+    records = _require_relay_records(clean_capsule.get("relay_records"))
+    issued = _require_epoch(
+        clean_capsule.get("issued_epoch"),
+        "relay_bootstrap_capsule_epoch_invalid",
+    )
+    expires = _require_epoch(
+        clean_capsule.get("expires_epoch"),
+        "relay_bootstrap_capsule_epoch_invalid",
+    )
+    if expires <= issued:
+        raise RelayServerError("relay_bootstrap_capsule_epoch_invalid")
+    return {
+        "expires_epoch": expires,
+        "issued_epoch": issued,
+        "network_id": _require_network_id(clean_capsule.get("network_id")),
+        "relay_records": tuple(dict(record) for record in records),
+        "schema_version": _RELAY_BOOTSTRAP_CAPSULE_SCHEMA_VERSION,
+    }
+
+
+def _require_relay_records(value: object) -> tuple[Mapping[str, Any], ...]:
+    if not isinstance(value, (list, tuple)):
+        raise RelayServerError("relay_bootstrap_capsule_records_invalid")
+    if len(value) < 1 or len(value) > _MAX_RELAY_RECORDS_PER_CAPSULE:
+        raise RelayServerError("relay_bootstrap_capsule_records_invalid")
+    records: list[Mapping[str, Any]] = []
+    for item in value:
+        records.append(
+            _require_mapping(
+                item,
+                "relay_bootstrap_capsule_record_invalid",
+            )
+        )
+    return tuple(records)
+
+
+def _require_relay_mode(value: object) -> str:
+    if value != RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC:
+        raise RelayServerError("relay_bootstrap_relay_mode_invalid")
+    return value
+
+
+def _require_tls_mode_for_record(
+    relay_host: str,
+    *,
+    tls_mode: object,
+    tls_cert_der_sha256: str | None,
+) -> str:
+    if tls_mode is None:
+        tls_mode = _TLS_MODE_LOOPBACK_ONLY if _host_is_loopback(relay_host) else _TLS_MODE_PINNED_DER_SHA256
+    if tls_mode not in {_TLS_MODE_LOOPBACK_ONLY, _TLS_MODE_PINNED_DER_SHA256}:
+        raise RelayServerError("relay_bootstrap_tls_mode_invalid")
+    if tls_mode == _TLS_MODE_PINNED_DER_SHA256 and tls_cert_der_sha256 is None:
+        raise RelayServerError("relay_bootstrap_tls_cert_der_sha256_required")
+    if tls_mode == _TLS_MODE_LOOPBACK_ONLY and not _host_is_loopback(relay_host):
+        raise RelayServerError("relay_bootstrap_loopback_tls_mode_host_invalid")
+    if tls_mode == _TLS_MODE_LOOPBACK_ONLY and tls_cert_der_sha256 is not None:
+        raise RelayServerError("relay_bootstrap_loopback_tls_cert_pin_forbidden")
+    return tls_mode
+
+
+def _require_relay_base_url_for_record(value: object, token: str) -> str:
+    if not isinstance(value, str) or not value or value.strip() != value:
+        raise RelayServerError(token)
+    text = value
+    if len(text) > _MAX_TEXT_CHARS:
+        raise RelayServerError(token)
+    if any(char.isspace() for char in text) or any(char in text for char in "?#@"):
+        raise RelayServerError(token)
+    if not (text.startswith("https://") or text.startswith("http://")):
+        raise RelayServerError(token)
+    return text.rstrip("/")
 
 
 def _coerce_admission_request(payload: Mapping[str, Any]) -> RelayAdmissionRequest:
@@ -1583,5 +1902,10 @@ __all__ = [
     "RelayUdpPortForwarder",
     "build_relay_bootstrap_record",
     "make_relay_http_handler",
+    "parse_relay_bootstrap_capsule",
+    "relay_bootstrap_capsule_payload_ref",
+    "relay_bootstrap_record_payload_ref",
     "run_relay_http_server",
+    "sign_relay_bootstrap_record",
+    "verify_relay_bootstrap_record",
 ]

@@ -7,6 +7,8 @@ from http.server import ThreadingHTTPServer
 import json
 from pathlib import Path
 import socket
+import subprocess
+import sys
 import threading
 from typing import Any
 from urllib.error import HTTPError
@@ -14,7 +16,12 @@ from urllib.request import Request, urlopen
 
 import pytest
 
-from ilc_core.identity.bls_backend import keypair_from_ikm_hex, sign_invite_pop_digest
+from ilc_core.identity.bls_backend import (
+    keypair_from_ikm_hex,
+    sign_invite_pop_digest,
+    sign_relay_bootstrap_capsule_digest,
+    sign_relay_bootstrap_record_digest,
+)
 from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
 from ilc_core.network.relay.relay_client import (
     RELAY_CLIENT_SCHEMA_VERSION,
@@ -43,7 +50,12 @@ from ilc_core.network.relay.relay_server import (
     RelayUdpPortForwarder,
     build_relay_bootstrap_record,
     make_relay_http_handler,
+    parse_relay_bootstrap_capsule,
+    relay_bootstrap_capsule_payload_ref,
+    relay_bootstrap_record_payload_ref,
     run_relay_http_server,
+    sign_relay_bootstrap_record,
+    verify_relay_bootstrap_record,
 )
 from ilc_core.network.relay.relay_server import (
     _FailedAdmissionTracker,
@@ -1061,7 +1073,7 @@ def test_build_relay_bootstrap_record_unsigned() -> None:
     assert record["signature"] is None
     assert record["signing_key_id"] is None
     assert record["relay_agent_id"] == RELAY_AGENT_ID
-    assert record["control_url"] == "https://127.0.0.1:51151"
+    assert record["control_url"] == "http://127.0.0.1:51151"
     assert record["data_port_range"] == {"end": 52999, "start": 52000}
 
 
@@ -1079,6 +1091,8 @@ def test_build_relay_bootstrap_record_payload_sha384() -> None:
             "relay_host",
             "relay_mode",
             "schema_version",
+            "tls_cert_der_sha256",
+            "tls_mode",
         )
     }
     expected = hashlib.sha384(
@@ -1098,6 +1112,325 @@ def test_build_relay_bootstrap_record_payload_sha384() -> None:
 def test_build_relay_bootstrap_record_epoch_invalid() -> None:
     with pytest.raises(RelayServerError, match="relay_bootstrap_record_epoch_invalid"):
         build_relay_bootstrap_record(_server_config(), issued_epoch=4, expires_epoch=4)
+
+
+def test_bootstrap_record_pinned_der_sha256_requires_cert_hash() -> None:
+    with pytest.raises(RelayServerError, match="relay_bootstrap_tls_cert_der_sha256_required"):
+        build_relay_bootstrap_record(
+            _server_config(),
+            issued_epoch=0,
+            expires_epoch=4,
+            tls_mode="pinned_der_sha256",
+        )
+
+
+def test_bootstrap_record_loopback_mode_forbids_cert_hash() -> None:
+    with pytest.raises(RelayServerError, match="relay_bootstrap_loopback_tls_cert_pin_forbidden"):
+        build_relay_bootstrap_record(
+            _server_config(),
+            issued_epoch=0,
+            expires_epoch=4,
+            tls_cert_der_sha256="12" * 32,
+            tls_mode="loopback_only",
+        )
+
+
+def test_sign_and_verify_relay_bootstrap_record_recomputes_payload_hash() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    config = RelayServerConfig(
+        relay_agent_id=relay_agent_id,
+        relay_host="relay.example",
+        ssl_certfile="/tmp/relay-cert.pem",
+        ssl_keyfile="/tmp/relay-key.pem",
+    )
+    unsigned = build_relay_bootstrap_record(
+        config,
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="12" * 32,
+    )
+    signed = sign_relay_bootstrap_record(
+        unsigned,
+        relay_secret_key_hex=relay_secret_key,
+        signing_key_id=relay_agent_id,
+    )
+
+    assert signed["signature"] is not None
+    assert relay_bootstrap_record_payload_ref(signed) == signed["payload_sha384"]
+    assert verify_relay_bootstrap_record(signed) is True
+
+    tampered = {**signed, "relay_host": "evil.example"}
+    assert verify_relay_bootstrap_record(tampered) is False
+
+
+def test_sign_relay_bootstrap_record_rejects_wrong_signing_key_id() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    _other_secret_key, other_agent_id = keypair_from_ikm_hex("46" * 32)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_signing_key_mismatch"):
+        sign_relay_bootstrap_record(
+            unsigned,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=other_agent_id,
+        )
+
+
+def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -> None:
+    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    signed = sign_relay_bootstrap_record(
+        unsigned,
+        relay_secret_key_hex=relay_secret_key,
+        signing_key_id=relay_agent_id,
+    )
+    capsule_payload = {
+        "expires_epoch": 4,
+        "issued_epoch": 0,
+        "network_id": "public-rc",
+        "relay_records": [signed],
+        "schema_version": "relay_bootstrap_capsule_v0.1",
+    }
+    payload_ref = relay_bootstrap_capsule_payload_ref(capsule_payload)
+    capsule = {
+        **capsule_payload,
+        "payload_sha384": payload_ref,
+        "signature": sign_relay_bootstrap_capsule_digest(
+            secret_key_hex=genesis_secret_key,
+            digest_hex=payload_ref,
+        ),
+        "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+        "signing_key_id": genesis_agent_id,
+    }
+
+    assert parse_relay_bootstrap_capsule(capsule, genesis_agent_id=genesis_agent_id) == (signed,)
+
+    tampered_capsule = {**capsule, "network_id": "evil-rc"}
+    assert parse_relay_bootstrap_capsule(
+        tampered_capsule,
+        genesis_agent_id=genesis_agent_id,
+    ) == ()
+
+
+def test_sign_relay_bootstrap_record_rejects_payload_ref_mismatch() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    stale = {**unsigned, "payload_sha384": "12" * 48}
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_payload_ref_mismatch"):
+        sign_relay_bootstrap_record(
+            stale,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+
+def test_sign_relay_bootstrap_record_rejects_already_signed_record() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_record_already_signed"):
+        sign_relay_bootstrap_record(
+            {**unsigned, "signature": "12" * 96},
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+
+def test_verify_relay_bootstrap_record_rejects_invite_pop_dst_signature() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    wrong_dst_signature = sign_invite_pop_digest(relay_secret_key, unsigned["payload_sha384"])
+    signed_wrong_dst = {
+        **unsigned,
+        "signature": wrong_dst_signature,
+        "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+        "signing_key_id": relay_agent_id,
+    }
+
+    assert verify_relay_bootstrap_record(signed_wrong_dst) is False
+
+
+def test_verify_relay_bootstrap_record_rejects_non_matching_signing_key() -> None:
+    _relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    other_secret_key, other_agent_id = keypair_from_ikm_hex("46" * 32)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    wrong_signature = sign_relay_bootstrap_record_digest(
+        secret_key_hex=other_secret_key,
+        digest_hex=unsigned["payload_sha384"],
+    )
+    assert other_agent_id != relay_agent_id
+    forged = {
+        **unsigned,
+        "signature": wrong_signature,
+        "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+        "signing_key_id": relay_agent_id,
+    }
+
+    assert verify_relay_bootstrap_record(forged) is False
+
+
+def test_parse_relay_bootstrap_capsule_rejects_too_many_records() -> None:
+    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    signed = sign_relay_bootstrap_record(
+        unsigned,
+        relay_secret_key_hex=relay_secret_key,
+        signing_key_id=relay_agent_id,
+    )
+    payload = {
+        "expires_epoch": 4,
+        "issued_epoch": 0,
+        "network_id": "public-rc",
+        "relay_records": [signed] * 9,
+        "schema_version": "relay_bootstrap_capsule_v0.1",
+    }
+    payload_ref = hashlib.sha384(
+        json.dumps(
+            payload,
+            allow_nan=False,
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()
+    capsule = {
+        **payload,
+        "payload_sha384": payload_ref,
+        "signature": sign_relay_bootstrap_capsule_digest(
+            secret_key_hex=genesis_secret_key,
+            digest_hex=payload_ref,
+        ),
+        "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+        "signing_key_id": genesis_agent_id,
+    }
+
+    assert parse_relay_bootstrap_capsule(capsule, genesis_agent_id=genesis_agent_id) == ()
+
+
+def test_bootstrap_record_rejects_bad_relay_mode() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+    signed = sign_relay_bootstrap_record(
+        unsigned,
+        relay_secret_key_hex=relay_secret_key,
+        signing_key_id=relay_agent_id,
+    )
+
+    assert verify_relay_bootstrap_record({**signed, "relay_mode": "terminating_proxy"}) is False
+
+
+def test_non_loopback_bootstrap_record_defaults_to_pinned_der_sha256() -> None:
+    _relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    config = RelayServerConfig(
+        relay_agent_id=relay_agent_id,
+        relay_host="relay.example",
+        ssl_certfile="/tmp/relay-cert.pem",
+        ssl_keyfile="/tmp/relay-key.pem",
+    )
+
+    record = build_relay_bootstrap_record(
+        config,
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="12" * 32,
+    )
+
+    assert record["tls_mode"] == "pinned_der_sha256"
+    assert record["tls_cert_der_sha256"] == "12" * 32
+
+
+def test_relay_cli_help_exposes_serve_entrypoint() -> None:
+    result = subprocess.run(
+        [sys.executable, "-m", "ilc_core.cli.main", "relay", "serve", "--help"],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert result.returncode == 0
+    assert "--relay-host" in result.stdout
+    assert "--bind-host" in result.stdout
+    assert "--ssl-certfile" in result.stdout
+
+
+def test_relay_service_template_uses_committed_cli_entrypoint() -> None:
+    template = Path("tools/relay_service_template.service").read_text(encoding="utf-8")
+
+    assert "ilc relay serve" in template
+    assert "--relay-host ${ILC_RELAY_HOST}" in template
+    assert "--bind-host ${ILC_RELAY_BIND_HOST}" in template
+    assert "NoNewPrivileges=true" in template
+    assert "MemoryMax=512M" in template
+
+
+def test_run_relay_http_server_passes_bind_host_to_data_plane(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    class FakeRelayRendezvousServer:
+        def __init__(self, config: RelayServerConfig, **kwargs: object) -> None:
+            captured["config"] = config
+            captured.update(kwargs)
+            self._data_plane = None
+
+    class FakeHttpServer:
+        def __init__(self, address: tuple[str, int], _handler: object) -> None:
+            captured["address"] = address
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        def serve_forever(self) -> None:
+            return
+
+        def server_close(self) -> None:
+            self.socket.close()
+
+    monkeypatch.setattr(relay_server_module, "RelayRendezvousServer", FakeRelayRendezvousServer)
+    monkeypatch.setattr(relay_server_module, "ThreadingHTTPServer", FakeHttpServer)
+    monkeypatch.setattr(relay_server_module, "RELAY_SERVER_NOT_ACTIVATED", False)
+
+    run_relay_http_server(
+        config=_server_config(),
+        bind_host="127.0.0.1",
+    )
+
+    assert captured["address"] == ("127.0.0.1", 51151)
+    assert captured["enable_data_plane"] is True
+    assert captured["data_plane_bind_host"] == "127.0.0.1"
 
 
 def test_request_slot_returns_allocated_port() -> None:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import threading
@@ -468,6 +469,89 @@ def test_https_required_except_loopback_test_url() -> None:
             invite_nullifier=INVITE_NULLIFIER,
             invite_pop=invite_pop,
         )
+
+
+def test_relay_client_accepts_tls_cert_der_sha256_pin() -> None:
+    secret_key, agent_id, invite_pop = _pop_material()
+    _, admission_signature = _relay_admission_signature(
+        secret_key,
+        agent_id,
+        admission_epoch=0,
+    )
+
+    client = RelayClient(
+        relay_base_url="http://127.0.0.1:9",
+        agent_id=agent_id,
+        invite_id=INVITE_ID,
+        invite_nullifier=INVITE_NULLIFIER,
+        invite_pop=invite_pop,
+        relay_admission_signature=admission_signature,
+        tls_cert_der_sha256="12" * 32,
+    )
+
+    assert client.tls_cert_der_sha256 == "12" * 32
+
+
+def test_relay_client_rejects_malformed_tls_cert_der_sha256_pin() -> None:
+    _secret_key, agent_id, invite_pop = _pop_material()
+
+    with pytest.raises(RelayClientError, match="relay_tls_cert_der_sha256_invalid"):
+        RelayClient(
+            relay_base_url="http://127.0.0.1:9",
+            agent_id=agent_id,
+            invite_id=INVITE_ID,
+            invite_nullifier=INVITE_NULLIFIER,
+            invite_pop=invite_pop,
+            tls_cert_der_sha256="not-a-sha",
+        )
+
+
+def test_relay_client_tls_pin_verifier_accepts_matching_cert() -> None:
+    cert_der = b"test-cert-der"
+    expected = hashlib.sha256(cert_der).hexdigest()
+
+    class FakeSock:
+        def getpeercert(self, *, binary_form: bool = False) -> bytes:
+            assert binary_form is True
+            return cert_der
+
+    class FakeRaw:
+        _sock = FakeSock()
+
+    class FakeFp:
+        raw = FakeRaw()
+
+    class FakeResponse:
+        fp = FakeFp()
+
+    relay_module._verify_response_tls_pin(FakeResponse(), expected)
+
+
+def test_relay_client_tls_pin_verifier_rejects_mismatch() -> None:
+    class FakeSock:
+        def getpeercert(self, *, binary_form: bool = False) -> bytes:
+            assert binary_form is True
+            return b"other-cert-der"
+
+    class FakeRaw:
+        _sock = FakeSock()
+
+    class FakeFp:
+        raw = FakeRaw()
+
+    class FakeResponse:
+        fp = FakeFp()
+
+    with pytest.raises(RelayClientError, match="relay_tls_cert_der_sha256_mismatch"):
+        relay_module._verify_response_tls_pin(FakeResponse(), "12" * 32)
+
+
+def test_relay_client_tls_pin_verifier_rejects_missing_cert() -> None:
+    class FakeResponse:
+        pass
+
+    with pytest.raises(RelayClientError, match="relay_tls_cert_unavailable"):
+        relay_module._verify_response_tls_pin(FakeResponse(), "12" * 32)
 
 
 def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:

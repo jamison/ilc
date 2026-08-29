@@ -1,0 +1,27 @@
+[Unit]
+Description=ILC relay rendezvous server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ilc
+Group=ilc
+EnvironmentFile=/etc/ilc/relay.env
+ExecStart=/opt/ilc/venv/bin/ilc relay serve --relay-host ${ILC_RELAY_HOST} --bind-host ${ILC_RELAY_BIND_HOST} --agent-id ${ILC_RELAY_AGENT_ID} --network-id ${ILC_NETWORK_ID} --control-port ${ILC_RELAY_CONTROL_PORT} --data-port-range-start ${ILC_RELAY_DATA_PORT_START} --data-port-range-end ${ILC_RELAY_DATA_PORT_END} --ssl-certfile ${ILC_RELAY_TLS_CERTFILE} --ssl-keyfile ${ILC_RELAY_TLS_KEYFILE}
+Restart=on-failure
+RestartSec=5s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/ilc /var/log/ilc /run/ilc
+LimitNOFILE=65536
+MemoryMax=512M
+CPUQuota=200%
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ilc-relay
+
+[Install]
+WantedBy=multi-user.target

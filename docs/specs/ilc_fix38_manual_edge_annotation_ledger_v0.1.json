@@ -74000,6 +74000,123 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_deploy_surface_fix2_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-DEPLOY-SURFACE-FIX2-00 closed source-side blockers before live relay DEPLOY-00 retry.",
+      "manual_read_summary": "Hardened phase prompt for closing relay deploy-surface blockers with ILC-native pinned-DER trust, relay self-signed bootstrap records, Genesis-signed capsules, CLI entrypoint, and systemd template scope.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-DEPLOY-SURFACE-FIX2-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_deploy_surface_fix2_committed_GAP_RELAY_DEPLOY_SURFACE_FIX2_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_deploy_surface_fix2_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-DEPLOY-SURFACE-FIX2-00 closed source-side blockers before live relay DEPLOY-00 retry.",
+      "manual_read_summary": "Hardened systemd service template for package-visible ilc relay serve deployment with process isolation and resource limits.",
+      "node_kind": "ops_template",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-DEPLOY-SURFACE-FIX2-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_deploy_surface_fix2_committed_GAP_RELAY_DEPLOY_SURFACE_FIX2_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/relay_service_template.service"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_deploy_surface_fix2_00_2026_08_29",
+      "chronology_note": "2026-08-29 GAP-RELAY-DEPLOY-SURFACE-FIX2-00 closed source-side blockers before live relay DEPLOY-00 retry.",
+      "manual_read_summary": "Walkthrough and verification evidence for GAP-RELAY-DEPLOY-SURFACE-FIX2-00, including prompt validation, token audit, CLI help, compile, focused relay tests, graph delta, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-DEPLOY-SURFACE-FIX2-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_deploy_surface_fix2_committed_GAP_RELAY_DEPLOY_SURFACE_FIX2_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_deploy_surface_fix2_00_walkthrough.md"
     }
   ],
   "boundary": {
