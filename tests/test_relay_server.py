@@ -302,6 +302,156 @@ def test_invite_pop_verification_failure_rejected() -> None:
     assert body["error"] == "relay_invite_pop_verification_failed"
 
 
+def test_bls_invite_pop_failure_records_failure_without_slot_or_port() -> None:
+    server = _server()
+    _, agent_id, payload = _admission_request(invite_pop="e" * 192)
+    before = server._port_pool.available_count
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.31",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_invite_pop_verification_failed"
+    assert server.active_slot_count == 0
+    assert server._slots_by_id == {}
+    assert server._port_pool.available_count == before
+    assert server._failed_admissions.failure_count(agent_id) == 1
+    assert server._failed_admissions.failure_count("ip:198.51.100.31") == 1
+
+
+def test_bls_admission_signature_failure_records_failure_without_slot_or_port() -> None:
+    server = _server()
+    _, agent_id, payload = _admission_request(signature="f" * 192)
+    before = server._port_pool.available_count
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.32",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_signature_verification_failed"
+    assert server.active_slot_count == 0
+    assert server._slots_by_id == {}
+    assert server._port_pool.available_count == before
+    assert server._failed_admissions.failure_count(agent_id) == 1
+    assert server._failed_admissions.failure_count("ip:198.51.100.32") == 1
+
+
+def test_admission_request_coercion_runs_before_state_lock(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    server = _server()
+    _, _, payload = _admission_request()
+    original = relay_server_module._coerce_admission_request
+    lock_observed: list[bool] = []
+
+    def wrapped(payload: Mapping[str, Any]) -> Any:
+        is_owned = getattr(server._state_lock, "_is_owned", lambda: False)()
+        lock_observed.append(bool(is_owned))
+        return original(payload)
+
+    monkeypatch.setattr(relay_server_module, "_coerce_admission_request", wrapped)
+
+    status, _body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.33",
+    )
+
+    assert status == 200
+    assert lock_observed == [False]
+
+
+def test_two_concurrent_valid_admissions_succeed_without_deadlock() -> None:
+    server = _server()
+    _, _, first_payload = _admission_request(ikm_hex=IKM_HEX)
+    _, _, second_payload = _admission_request(ikm_hex=SECOND_IKM_HEX)
+    results: list[tuple[int, dict[str, Any]]] = []
+    results_lock = threading.Lock()
+
+    def request(payload: dict[str, Any], source_host: str) -> None:
+        result = server.handle_json_request(
+            method="POST",
+            path=RELAY_ADMISSION_REQUEST_PATH,
+            payload=payload,
+            source_host=source_host,
+        )
+        with results_lock:
+            results.append(result)
+
+    first = threading.Thread(target=request, args=(first_payload, "198.51.100.34"))
+    second = threading.Thread(target=request, args=(second_payload, "198.51.100.35"))
+    first.start()
+    second.start()
+    first.join(timeout=10)
+    second.join(timeout=10)
+
+    assert not first.is_alive()
+    assert not second.is_alive()
+    assert sorted(status for status, _body in results) == [200, 200]
+    assert server.active_slot_count == 2
+
+
+def test_concurrent_capacity_race_leaves_one_winner_and_no_port_leak(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(relay_server_module, "_MAX_ACTIVE_SLOTS", 1)
+    server = _server()
+    _, _, first_payload = _admission_request(ikm_hex=IKM_HEX)
+    _, _, second_payload = _admission_request(ikm_hex=SECOND_IKM_HEX)
+    before = server._port_pool.available_count
+    results: list[tuple[int, dict[str, Any]]] = []
+    results_lock = threading.Lock()
+
+    def request(payload: dict[str, Any], source_host: str) -> None:
+        result = server.handle_json_request(
+            method="POST",
+            path=RELAY_ADMISSION_REQUEST_PATH,
+            payload=payload,
+            source_host=source_host,
+        )
+        with results_lock:
+            results.append(result)
+
+    first = threading.Thread(target=request, args=(first_payload, "198.51.100.36"))
+    second = threading.Thread(target=request, args=(second_payload, "198.51.100.37"))
+    first.start()
+    second.start()
+    first.join(timeout=10)
+    second.join(timeout=10)
+
+    assert not first.is_alive()
+    assert not second.is_alive()
+    assert sorted(status for status, _body in results) == [200, 400]
+    assert [body.get("error") for status, body in results if status == 400] == [
+        "relay_server_active_slot_limit_exceeded"
+    ]
+    assert server.active_slot_count == 1
+    assert server._port_pool.available_count == before - 1
+
+
+def test_request_slot_keeps_bls_coercion_before_state_lock_in_source() -> None:
+    src = Path("ilc_core/network/relay/relay_server.py").read_text()
+    start = src.index("def request_slot(")
+    end = src.index("    def keepalive(", start)
+    request_slot_src = src[start:end]
+
+    assert request_slot_src.index("_coerce_admission_request(body)") < request_slot_src.index(
+        "with self._state_lock:"
+    )
+    assert request_slot_src.index("self._require_admission_not_blocked") > request_slot_src.index(
+        "with self._state_lock:"
+    )
+
+
 def test_agent_id_format_invalid_rejected() -> None:
     _, _, payload = _admission_request()
     payload["agent_id"] = "not-hex"
