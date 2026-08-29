@@ -101,5 +101,9 @@ path = "src/validator_endpoint_assertion_bls_main.rs"
 name = "invite_pop_bls"
 path = "src/invite_pop_bls_main.rs"
 
+[[bin]]
+name = "bls_verify_digest"
+path = "src/bls_verify_digest_main.rs"
+
 # ILC implements its own sovereign Mysticeti-style consensus loop here. The
 # upstream mysticeti-core crate is not a current dependency or vendored source.
