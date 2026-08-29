@@ -14,12 +14,14 @@ This module is source-only until GAP-RELAY-RENDEZVOUS-DEPLOY-00 clears
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 from dataclasses import dataclass
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import math
 import secrets
-from collections.abc import Mapping
+import time
 from typing import Any, Callable
 
 from ilc_core import __version__ as ILC_CORE_VERSION
@@ -38,6 +40,7 @@ from ilc_core.network.relay.relay_client import (
 RELAY_SERVER_NOT_ACTIVATED = True
 RELAY_SERVER_SCHEMA_VERSION = "relay_server_GAP_RELAY_SERVER_IMPL_00.v0.1"
 RELAY_SERVER_TOKEN = "relay_server_impl_committed_GAP_RELAY_SERVER_IMPL_00"
+RELAY_ABUSE_LIMITS_SCHEMA_VERSION = "relay_abuse_limits_GAP_RELAY_ABUSE_LIMITS_FIX1_00.v0.1"
 
 RELAY_ADMISSION_REQUEST_PATH = "/relay/admission/request"
 RELAY_SLOT_KEEPALIVE_PATH = "/relay/slot/keepalive"
@@ -55,6 +58,34 @@ _MAX_BYTES_PER_EPOCH = 64 * 1024 * 1024
 _MAX_CONCURRENT_STREAMS = 8
 _MAX_TEXT_CHARS = 512
 _MAX_ACTIVE_SLOTS = 1024
+_MAX_PACKETS_PER_WINDOW = 1000
+_PACKET_RATE_WINDOW_SECONDS = 1.0
+_MAX_FAILED_ATTEMPTS = 5
+_FAILED_ADMISSION_COOLDOWN_SECONDS = 60.0
+_MAX_FAILED_ADMISSION_ENTRIES = 65_536
+_ADMISSION_FAILURE_TOKENS = frozenset(
+    {
+        "relay_admission_payload_ref_invalid",
+        "relay_admission_payload_ref_mismatch",
+        "relay_admission_payload_ref_required",
+        "relay_admission_signature_invalid",
+        "relay_admission_signature_required",
+        "relay_admission_signature_verification_failed",
+        "relay_agent_id_invalid",
+        "relay_base_url_invalid",
+        "relay_base_url_required",
+        "relay_invite_id_invalid",
+        "relay_invite_nullifier_invalid",
+        "relay_invite_pop_epoch_invalid",
+        "relay_invite_pop_invalid",
+        "relay_invite_pop_payload_ref_invalid",
+        "relay_invite_pop_verification_failed",
+        "relay_requested_internal_port_must_be_port_int",
+        "relay_requested_internal_port_out_of_range",
+        "relay_requested_protocol_must_be_quic",
+        "relay_software_version_invalid",
+    }
+)
 
 
 class RelayServerError(ValueError):
@@ -154,6 +185,179 @@ class RelayForwardReceipt:
         return _canonical_json_bytes(self.to_dict())
 
 
+@dataclass(frozen=True)
+class RelayRevocationReceipt:
+    """Self-certifying local receipt for relay slot revocation."""
+
+    slot_id: str
+    agent_id: str
+    epoch: int
+    reason_token: str
+    bytes_forwarded: int
+    revocation_ref: str
+
+    def __post_init__(self) -> None:
+        _require_token(self.slot_id, "relay_revocation_slot_id_invalid")
+        _require_agent_id(self.agent_id, "relay_revocation_agent_id_invalid")
+        _require_epoch(self.epoch, "relay_revocation_epoch_invalid")
+        _require_token(self.reason_token, "relay_revocation_reason_invalid")
+        _require_uint_range(
+            self.bytes_forwarded,
+            "relay_revocation_bytes_forwarded_invalid",
+            0,
+            _MAX_BYTES_PER_EPOCH,
+        )
+        _require_sha256_hex(self.revocation_ref, "relay_revocation_ref_invalid")
+
+    @classmethod
+    def build(
+        cls,
+        *,
+        slot_id: str,
+        agent_id: str,
+        epoch: int,
+        reason_token: str,
+        bytes_forwarded: int,
+    ) -> "RelayRevocationReceipt":
+        payload = {
+            "agent_id": _require_agent_id(agent_id, "relay_revocation_agent_id_invalid"),
+            "bytes_forwarded": _require_uint_range(
+                bytes_forwarded,
+                "relay_revocation_bytes_forwarded_invalid",
+                0,
+                _MAX_BYTES_PER_EPOCH,
+            ),
+            "epoch": _require_epoch(epoch, "relay_revocation_epoch_invalid"),
+            "reason_token": _require_token(
+                reason_token,
+                "relay_revocation_reason_invalid",
+            ),
+            "slot_id": _require_token(slot_id, "relay_revocation_slot_id_invalid"),
+        }
+        # Self-certifying receipt: hash exactly the other five canonical fields.
+        revocation_ref = hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
+        return cls(**payload, revocation_ref=revocation_ref)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "bytes_forwarded": self.bytes_forwarded,
+            "epoch": self.epoch,
+            "reason_token": self.reason_token,
+            "revocation_ref": self.revocation_ref,
+            "schema_version": RELAY_ABUSE_LIMITS_SCHEMA_VERSION,
+            "slot_id": self.slot_id,
+        }
+
+    def to_canonical_json(self) -> bytes:
+        return _canonical_json_bytes(self.to_dict())
+
+
+@dataclass
+class _PacketRateBucket:
+    window_start: float
+    packet_count: int = 0
+
+    def allow(self) -> bool:
+        # time.monotonic() is local infrastructure rate limiting only, not a
+        # protocol epoch, settlement, keepalive, or consensus-validity clock.
+        now = time.monotonic()
+        if not math.isfinite(now):
+            raise RelayServerError("relay_packet_rate_clock_invalid")
+        if now - self.window_start >= _PACKET_RATE_WINDOW_SECONDS:
+            self.window_start = now
+            self.packet_count = 0
+        if self.packet_count >= _MAX_PACKETS_PER_WINDOW:
+            return False
+        self.packet_count += 1
+        return True
+
+
+@dataclass
+class _FailedAdmissionEntry:
+    attempt_count: int
+    first_attempt: float
+    last_attempt: float
+
+
+class _FailedAdmissionTracker:
+    """Bounded local failed-admission cooldown tracker."""
+
+    def __init__(
+        self,
+        *,
+        max_entries: int = _MAX_FAILED_ADMISSION_ENTRIES,
+        now_provider: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._entries: dict[str, _FailedAdmissionEntry] = {}
+        self._insertion_order: list[str] = []
+        self._max_entries = _require_uint_range(
+            max_entries,
+            "relay_failed_admission_max_entries_invalid",
+            1,
+            _MAX_FAILED_ADMISSION_ENTRIES,
+        )
+        self._now_provider = now_provider
+
+    def record_failure(self, key: str) -> None:
+        clean_key = _require_admission_tracker_key(key)
+        now = self._now()
+        entry = self._entries.get(clean_key)
+        if entry is None:
+            self._evict_if_needed()
+            self._entries[clean_key] = _FailedAdmissionEntry(
+                attempt_count=1,
+                first_attempt=now,
+                last_attempt=now,
+            )
+            self._insertion_order.append(clean_key)
+            return
+        if self._cooldown_elapsed(entry, now):
+            self._entries[clean_key] = _FailedAdmissionEntry(
+                attempt_count=1,
+                first_attempt=now,
+                last_attempt=now,
+            )
+            return
+        self._entries[clean_key] = _FailedAdmissionEntry(
+            attempt_count=entry.attempt_count + 1,
+            first_attempt=entry.first_attempt,
+            last_attempt=now,
+        )
+
+    def is_blocked(self, key: str) -> bool:
+        clean_key = _require_admission_tracker_key(key)
+        now = self._now()
+        entry = self._entries.get(clean_key)
+        if entry is None or entry.attempt_count < _MAX_FAILED_ATTEMPTS:
+            return False
+        if self._cooldown_elapsed(entry, now):
+            self._entries.pop(clean_key, None)
+            self._insertion_order = [
+                existing for existing in self._insertion_order if existing != clean_key
+            ]
+            return False
+        return True
+
+    def failure_count(self, key: str) -> int:
+        entry = self._entries.get(_require_admission_tracker_key(key))
+        return 0 if entry is None else entry.attempt_count
+
+    def _evict_if_needed(self) -> None:
+        while len(self._entries) >= self._max_entries:
+            oldest = self._insertion_order.pop(0)
+            self._entries.pop(oldest, None)
+
+    def _cooldown_elapsed(self, entry: _FailedAdmissionEntry, now: float) -> bool:
+        return now - entry.last_attempt >= _FAILED_ADMISSION_COOLDOWN_SECONDS
+
+    def _now(self) -> float:
+        now = self._now_provider()
+        if not math.isfinite(now):
+            raise RelayServerError("relay_failed_admission_clock_invalid")
+        return now
+
+
 class RelayRendezvousServer:
     """Option A relay admission and lifecycle state machine."""
 
@@ -161,6 +365,9 @@ class RelayRendezvousServer:
         self.config = config
         self._slots_by_id: dict[str, RelaySlotState] = {}
         self._active_slot_by_agent: dict[str, str] = {}
+        self._packet_rate_buckets: dict[str, _PacketRateBucket] = {}
+        self._failed_admissions = _FailedAdmissionTracker()
+        self._revocation_receipts_by_slot: dict[str, RelayRevocationReceipt] = {}
 
     @property
     def active_slot_count(self) -> int:
@@ -181,16 +388,27 @@ class RelayRendezvousServer:
         *,
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
+        source_host = _require_host(source_host, "relay_source_host_invalid")
+        ip_key = _admission_ip_key(source_host)
+        agent_key = _admission_agent_key(payload.get("agent_id"))
+        self._require_admission_not_blocked(ip_key, agent_key)
         if self.active_slot_count >= _MAX_ACTIVE_SLOTS:
             raise RelayServerError("relay_server_active_slot_limit_exceeded")
-        request = _coerce_admission_request(payload)
+        try:
+            request = _coerce_admission_request(payload)
+        except (RelayClientError, RelayServerError, ValueError) as exc:
+            token = _error_token(exc)
+            if token in _ADMISSION_FAILURE_TOKENS:
+                self._failed_admissions.record_failure(ip_key)
+                if agent_key is not None:
+                    self._failed_admissions.record_failure(agent_key)
+            raise
         if request.network_id != self.config.network_id:
             raise RelayServerError("relay_admission_network_id_mismatch")
         if request.relay_base_url != self.config.relay_base_url:
             raise RelayServerError("relay_admission_base_url_mismatch")
         if request.agent_id in self._active_slot_by_agent:
             raise RelayServerError("relay_slot_already_active")
-        source_host = _require_host(source_host, "relay_source_host_invalid")
         slot_id = f"slot-{secrets.token_hex(16)}"
         grant = RelaySlotGrant(
             slot_id=slot_id,
@@ -212,6 +430,9 @@ class RelayRendezvousServer:
             current_epoch=request.admission_epoch,
         )
         self._active_slot_by_agent[request.agent_id] = slot_id
+        self._packet_rate_buckets[slot_id] = _PacketRateBucket(
+            window_start=time.monotonic(),
+        )
         return {"grant": grant.to_dict(), "schema_version": RELAY_SERVER_SCHEMA_VERSION}
 
     def keepalive(self, payload: Mapping[str, Any]) -> dict[str, Any]:
@@ -309,29 +530,60 @@ class RelayRendezvousServer:
         slot_id: str,
         payload: bytes,
         epoch: int,
-    ) -> RelayForwardReceipt:
+    ) -> tuple[RelayForwardReceipt, RelayRevocationReceipt | None]:
         slot = self._require_active_slot(slot_id)
         epoch = _require_epoch(epoch, "relay_forward_epoch_invalid")
         self._require_lifecycle_epoch(slot, epoch)
         clean_payload = _require_datagram(payload)
+        bucket = self._packet_rate_buckets.setdefault(
+            slot.grant.slot_id,
+            _PacketRateBucket(window_start=time.monotonic()),
+        )
+        if not bucket.allow():
+            revocation = self._revoke_slot(
+                slot.grant.slot_id,
+                "relay_slot_revoked_packet_rate_exceeded",
+            )
+            return (
+                RelayForwardReceipt(
+                    slot_id=slot.grant.slot_id,
+                    agent_id=slot.grant.agent_id,
+                    bytes_forwarded=0,
+                    epoch=epoch,
+                    status="revoked",
+                ),
+                revocation,
+            )
         prior_bytes = slot.bytes_forwarded_this_epoch
         if slot.current_epoch != epoch:
             prior_bytes = 0
         next_total = prior_bytes + len(clean_payload)
         if next_total > slot.grant.max_bytes_per_epoch:
-            self._revoke_slot(slot.grant.slot_id, "relay_slot_revoked_budget_exceeded")
-            raise RelayServerError("relay_slot_revoked_budget_exceeded")
+            revocation = self._revoke_slot(slot.grant.slot_id, "relay_slot_revoked_budget_exceeded")
+            return (
+                RelayForwardReceipt(
+                    slot_id=slot.grant.slot_id,
+                    agent_id=slot.grant.agent_id,
+                    bytes_forwarded=0,
+                    epoch=epoch,
+                    status="revoked",
+                ),
+                revocation,
+            )
         self._slots_by_id[slot.grant.slot_id] = RelaySlotState(
             grant=slot.grant,
             target_host=slot.target_host,
             bytes_forwarded_this_epoch=next_total,
             current_epoch=epoch,
         )
-        return RelayForwardReceipt(
-            slot_id=slot.grant.slot_id,
-            agent_id=slot.grant.agent_id,
-            bytes_forwarded=len(clean_payload),
-            epoch=epoch,
+        return (
+            RelayForwardReceipt(
+                slot_id=slot.grant.slot_id,
+                agent_id=slot.grant.agent_id,
+                bytes_forwarded=len(clean_payload),
+                epoch=epoch,
+            ),
+            None,
         )
 
     def handle_json_request(
@@ -380,6 +632,12 @@ class RelayRendezvousServer:
         if payload_ref != expected:
             raise RelayServerError("relay_lifecycle_payload_ref_mismatch")
 
+    def _require_admission_not_blocked(self, ip_key: str, agent_key: str | None) -> None:
+        if self._failed_admissions.is_blocked(ip_key):
+            raise RelayServerError("relay_admission_cooldown_active")
+        if agent_key is not None and self._failed_admissions.is_blocked(agent_key):
+            raise RelayServerError("relay_admission_cooldown_active")
+
     def _require_lifecycle_epoch(self, slot: RelaySlotState, epoch: int) -> None:
         if epoch < slot.grant.granted_epoch:
             raise RelayServerError("relay_lifecycle_epoch_before_grant")
@@ -412,6 +670,7 @@ class RelayRendezvousServer:
             status="released",
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
+        self._packet_rate_buckets.pop(slot_id, None)
 
     def _expire_slot(self, slot_id: str) -> None:
         slot = self._slots_by_id[slot_id]
@@ -423,18 +682,32 @@ class RelayRendezvousServer:
             status="expired",
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
+        self._packet_rate_buckets.pop(slot_id, None)
 
-    def _revoke_slot(self, slot_id: str, reason: str) -> None:
+    def _revoke_slot(self, slot_id: str, reason_token: str) -> RelayRevocationReceipt:
         slot = self._slots_by_id[slot_id]
+        epoch = slot.current_epoch
+        if epoch is None:
+            epoch = slot.grant.granted_epoch
+        receipt = RelayRevocationReceipt.build(
+            slot_id=slot.grant.slot_id,
+            agent_id=slot.grant.agent_id,
+            epoch=epoch,
+            reason_token=reason_token,
+            bytes_forwarded=slot.bytes_forwarded_this_epoch,
+        )
         self._slots_by_id[slot_id] = RelaySlotState(
             grant=slot.grant,
             target_host=slot.target_host,
             bytes_forwarded_this_epoch=slot.bytes_forwarded_this_epoch,
             current_epoch=slot.current_epoch,
             status="revoked",
-            revocation_reason=reason,
+            revocation_reason=reason_token,
         )
         self._active_slot_by_agent.pop(slot.grant.agent_id, None)
+        self._packet_rate_buckets.pop(slot_id, None)
+        self._revocation_receipts_by_slot[slot_id] = receipt
+        return receipt
 
 
 class RelayUdpForwarder:
@@ -448,7 +721,13 @@ class RelayUdpForwarder:
     def __init__(self, server: RelayRendezvousServer) -> None:
         self._server = server
 
-    def forward(self, *, slot_id: str, payload: bytes, epoch: int) -> RelayForwardReceipt:
+    def forward(
+        self,
+        *,
+        slot_id: str,
+        payload: bytes,
+        epoch: int,
+    ) -> tuple[RelayForwardReceipt, RelayRevocationReceipt | None]:
         return self._server.forward_datagram(slot_id=slot_id, payload=payload, epoch=epoch)
 
 
@@ -482,13 +761,16 @@ class RelayUdpDatagramProtocol(asyncio.DatagramProtocol):
             self.last_error = "relay_udp_peer_not_admitted"
             return
         try:
-            receipt = self._server.forward_datagram(
+            receipt, revocation = self._server.forward_datagram(
                 slot_id=slot_id,
                 payload=data,
                 epoch=self._epoch_provider(),
             )
         except RelayServerError as exc:
             self.last_error = _error_token(exc)
+            return
+        if revocation is not None:
+            self.last_error = revocation.reason_token
             return
         self.last_error = None
         if self._receipt_sink is not None:
@@ -634,6 +916,17 @@ def _verify_lifecycle_signature(
         raise RelayServerError("relay_lifecycle_signature_invalid")
 
 
+def _admission_ip_key(source_host: str) -> str:
+    return _require_admission_tracker_key(f"ip:{source_host}")
+
+
+def _admission_agent_key(value: object) -> str | None:
+    try:
+        return _require_agent_id(value, "relay_agent_id_invalid")
+    except RelayServerError:
+        return None
+
+
 def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:
     encoded = json.dumps(
         dict(payload),
@@ -708,6 +1001,17 @@ def _require_token(value: object, token: str) -> str:
     if any(char not in allowed for char in value):
         raise RelayServerError(token)
     return value
+
+
+def _require_admission_tracker_key(value: object) -> str:
+    if not isinstance(value, str) or not value or len(value) > _MAX_TEXT_CHARS:
+        raise RelayServerError("relay_admission_tracker_key_invalid")
+    if any(char.isspace() for char in value):
+        raise RelayServerError("relay_admission_tracker_key_invalid")
+    if value.startswith("ip:"):
+        _require_host(value[3:], "relay_admission_tracker_ip_invalid")
+        return value
+    return _require_agent_id(value, "relay_admission_tracker_agent_id_invalid")
 
 
 def _require_host(value: object, token: str) -> str:
@@ -790,10 +1094,12 @@ __all__ = [
     "RELAY_SERVER_NOT_ACTIVATED",
     "RELAY_SERVER_SCHEMA_VERSION",
     "RELAY_SERVER_TOKEN",
+    "RELAY_ABUSE_LIMITS_SCHEMA_VERSION",
     "RELAY_SLOT_KEEPALIVE_PATH",
     "RELAY_SLOT_RELEASE_PATH",
     "RelayForwardReceipt",
     "RelayRendezvousServer",
+    "RelayRevocationReceipt",
     "RelayServerConfig",
     "RelayServerError",
     "RelaySlotState",

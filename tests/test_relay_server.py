@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import hashlib
 from http.server import ThreadingHTTPServer
 import json
+from pathlib import Path
 import threading
 from typing import Any
 from urllib.error import HTTPError
@@ -28,7 +30,9 @@ from ilc_core.network.relay.relay_server import (
     RELAY_SERVER_TOKEN,
     RELAY_SLOT_KEEPALIVE_PATH,
     RELAY_SLOT_RELEASE_PATH,
+    RelayForwardReceipt,
     RelayRendezvousServer,
+    RelayRevocationReceipt,
     RelayServerConfig,
     RelayServerError,
     RelayUdpDatagramProtocol,
@@ -36,6 +40,14 @@ from ilc_core.network.relay.relay_server import (
     make_relay_http_handler,
     run_relay_http_server,
 )
+from ilc_core.network.relay.relay_server import (
+    _FailedAdmissionTracker,
+    _PacketRateBucket,
+    _MAX_FAILED_ADMISSION_ENTRIES,
+    _MAX_PACKETS_PER_WINDOW,
+    _PACKET_RATE_WINDOW_SECONDS,
+)
+import ilc_core.network.relay.relay_server as relay_server_module
 
 
 IKM_HEX = "44" * 32
@@ -443,12 +455,14 @@ def test_byte_budget_enforcement_revokes_slot() -> None:
     assert status == 200
     slot = RelaySlotGrant.from_dict(body["grant"])
     forwarder = RelayUdpForwarder(server)
-    assert forwarder.forward(slot_id=slot.slot_id, payload=b"1234", epoch=0).to_dict()[
-        "status"
-    ] == "forwarded"
+    receipt, revocation = forwarder.forward(slot_id=slot.slot_id, payload=b"1234", epoch=0)
+    assert receipt.to_dict()["status"] == "forwarded"
+    assert revocation is None
 
-    with pytest.raises(RelayServerError, match="relay_slot_revoked_budget_exceeded"):
-        forwarder.forward(slot_id=slot.slot_id, payload=b"56789", epoch=0)
+    receipt, revocation = forwarder.forward(slot_id=slot.slot_id, payload=b"56789", epoch=0)
+    assert receipt.status == "revoked"
+    assert revocation is not None
+    assert revocation.reason_token == "relay_slot_revoked_budget_exceeded"
 
     status, body = server.handle_json_request(
         method="POST",
@@ -663,10 +677,303 @@ def test_unknown_endpoint_rejected() -> None:
 def test_schema_token_and_canonical_receipt_are_stable() -> None:
     server = _server()
     _, _, slot = _grant(server)
-    receipt = server.forward_datagram(slot_id=slot.slot_id, payload=b"abc", epoch=0)
+    receipt, revocation = server.forward_datagram(slot_id=slot.slot_id, payload=b"abc", epoch=0)
 
     assert RELAY_SERVER_TOKEN == "relay_server_impl_committed_GAP_RELAY_SERVER_IMPL_00"
+    assert revocation is None
     assert receipt.to_canonical_json().startswith(b'{"agent_id":')
     assert b'"schema_version":"relay_server_GAP_RELAY_SERVER_IMPL_00.v0.1"' in (
         receipt.to_canonical_json()
     )
+
+
+def test_packet_rate_bucket_drops_on_exhaustion(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(relay_server_module.time, "monotonic", lambda: 100.0)
+    bucket = _PacketRateBucket(window_start=100.0)
+
+    assert all(bucket.allow() for _ in range(_MAX_PACKETS_PER_WINDOW))
+    assert bucket.allow() is False
+
+
+def test_packet_rate_bucket_resets_after_window(monkeypatch: pytest.MonkeyPatch) -> None:
+    now = {"value": 100.0}
+    monkeypatch.setattr(relay_server_module.time, "monotonic", lambda: now["value"])
+    bucket = _PacketRateBucket(window_start=100.0)
+    for _ in range(_MAX_PACKETS_PER_WINDOW):
+        assert bucket.allow() is True
+    assert bucket.allow() is False
+
+    now["value"] = 100.0 + _PACKET_RATE_WINDOW_SECONDS + 0.001
+
+    assert bucket.allow() is True
+    assert bucket.packet_count == 1
+
+
+def test_packet_rate_exceeded_revokes_slot_with_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(relay_server_module.time, "monotonic", lambda: 200.0)
+    server = _server()
+    _, agent_id, slot = _grant(server)
+
+    for _ in range(_MAX_PACKETS_PER_WINDOW):
+        receipt, revocation = server.forward_datagram(slot_id=slot.slot_id, payload=b"x", epoch=0)
+        assert receipt.status == "forwarded"
+        assert revocation is None
+
+    receipt, revocation = server.forward_datagram(slot_id=slot.slot_id, payload=b"x", epoch=0)
+
+    assert receipt.status == "revoked"
+    assert revocation is not None
+    assert revocation.agent_id == agent_id
+    assert revocation.reason_token == "relay_slot_revoked_packet_rate_exceeded"
+    assert slot.slot_id not in server._packet_rate_buckets
+
+
+def test_failed_admission_tracker_blocks_after_n_failures() -> None:
+    server = _server()
+    _, _agent_id, payload = _admission_request(signature="f" * 192)
+
+    for _ in range(5):
+        status, body = server.handle_json_request(
+            method="POST",
+            path=RELAY_ADMISSION_REQUEST_PATH,
+            payload=payload,
+            source_host="198.51.100.44",
+        )
+        assert status == 400
+        assert body["error"] == "relay_admission_signature_verification_failed"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.44",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_cooldown_active"
+
+
+def test_failed_admission_tracker_blocks_by_agent_id() -> None:
+    server = _server()
+    _, agent_id, payload = _admission_request(invite_pop="e" * 192)
+
+    for index in range(5):
+        status, body = server.handle_json_request(
+            method="POST",
+            path=RELAY_ADMISSION_REQUEST_PATH,
+            payload=payload,
+            source_host=f"198.51.100.{50 + index}",
+        )
+        assert status == 400
+        assert body["error"] == "relay_invite_pop_verification_failed"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.99",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_cooldown_active"
+    assert server._failed_admissions.failure_count(agent_id) == 5
+
+
+def test_failed_admission_tracker_fifo_eviction_at_cap() -> None:
+    tracker = _FailedAdmissionTracker(max_entries=3)
+
+    tracker.record_failure("ip:198.51.100.1")
+    tracker.record_failure("ip:198.51.100.2")
+    tracker.record_failure("ip:198.51.100.3")
+    tracker.record_failure("ip:198.51.100.4")
+
+    assert len(tracker._entries) == 3
+    assert "ip:198.51.100.1" not in tracker._entries
+    assert tracker._insertion_order == [
+        "ip:198.51.100.2",
+        "ip:198.51.100.3",
+        "ip:198.51.100.4",
+    ]
+    assert _MAX_FAILED_ADMISSION_ENTRIES == 65_536
+
+
+def test_failed_admission_valid_client_not_penalized() -> None:
+    server = _server()
+    _, agent_id, payload = _admission_request()
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.77",
+    )[0] == 200
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.77",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_slot_already_active"
+    assert server._failed_admissions.failure_count(agent_id) == 0
+    assert server._failed_admissions.failure_count("ip:198.51.100.77") == 0
+
+
+def test_revocation_receipt_is_self_certifying() -> None:
+    receipt = RelayRevocationReceipt.build(
+        slot_id="slot-test",
+        agent_id="77" * 48,
+        epoch=0,
+        reason_token="relay_slot_revoked_packet_rate_exceeded",
+        bytes_forwarded=123,
+    )
+    expected_payload = {
+        "agent_id": "77" * 48,
+        "bytes_forwarded": 123,
+        "epoch": 0,
+        "reason_token": "relay_slot_revoked_packet_rate_exceeded",
+        "slot_id": "slot-test",
+    }
+
+    expected = hashlib.sha256(
+        json.dumps(
+            expected_payload,
+            allow_nan=False,
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()
+
+    assert receipt.revocation_ref == expected
+    assert b'"schema_version":"relay_abuse_limits_GAP_RELAY_ABUSE_LIMITS_FIX1_00.v0.1"' in (
+        receipt.to_canonical_json()
+    )
+
+
+def test_no_quic_stream_parsing_in_relay_server() -> None:
+    source = Path("ilc_core/network/relay/relay_server.py").read_text()
+
+    forbidden = [
+        "stream_id",
+        "STREAM_LIMIT",
+        "parse_quic",
+        "quic_frame",
+        "quic_stream_count",
+    ]
+
+    for token in forbidden:
+        assert token not in source
+
+
+def test_no_global_reputation_penalty_on_revocation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(
+        "ilc_core.network.d2d.routing_reputation_runtime.record_serve_event",
+        lambda *_args, **_kwargs: calls.append("record_serve_event"),
+    )
+    monkeypatch.setattr(
+        "ilc_core.network.d2d.centrality_delta_gossip_runtime.accumulate_centrality_delta",
+        lambda *_args, **_kwargs: calls.append("accumulate_centrality_delta"),
+    )
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            max_bytes_per_epoch=1,
+        )
+    )
+    _, _, slot = _grant(server)
+
+    _receipt, revocation = server.forward_datagram(slot_id=slot.slot_id, payload=b"ab", epoch=0)
+
+    assert revocation is not None
+    assert calls == []
+
+
+def test_malformed_agent_id_records_ip_only() -> None:
+    server = _server()
+    _, _, payload = _admission_request()
+    payload["agent_id"] = "not-hex"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.88",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_agent_id_invalid"
+    assert server._failed_admissions.failure_count("ip:198.51.100.88") == 1
+
+
+def test_network_id_mismatch_does_not_increment_failed_admission_tracker() -> None:
+    server = _server()
+    secret_key, agent_id, payload = _admission_request()
+    payload["network_id"] = "other-rc"
+    admission_ref = relay_admission_payload_ref(
+        agent_id=agent_id,
+        invite_id=INVITE_ID,
+        invite_nullifier=INVITE_NULLIFIER,
+        invite_pop_payload_ref_value=invite_pop_payload_ref(
+            agent_id_hex=agent_id,
+            invite_nullifier=INVITE_NULLIFIER,
+            invite_id=INVITE_ID,
+            epoch=0,
+        ),
+        admission_epoch=0,
+        network_id="other-rc",
+        relay_base_url=_server_config().relay_base_url,
+        requested_internal_port=50151,
+        requested_protocol="quic",
+        software_version="0.4.5",
+    )
+    payload["relay_admission_payload_ref"] = admission_ref
+    payload["relay_admission_signature"] = sign_invite_pop_digest(secret_key, admission_ref)
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.89",
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_network_id_mismatch"
+    assert server._failed_admissions.failure_count(agent_id) == 0
+    assert server._failed_admissions.failure_count("ip:198.51.100.89") == 0
+
+
+def test_bucket_removed_on_release_expiry_and_revocation() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+    assert slot.slot_id in server._packet_rate_buckets
+    assert server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_RELEASE_PATH,
+        payload=_lifecycle_payload(
+            secret_key=secret_key,
+            agent_id=agent_id,
+            slot=slot,
+            action="release",
+            epoch=1,
+        ),
+    )[0] == 200
+    assert slot.slot_id not in server._packet_rate_buckets
+
+    _secret_key, _agent_id, slot = _grant(server)
+    assert slot.slot_id in server._packet_rate_buckets
+    server._expire_slot(slot.slot_id)
+    assert slot.slot_id not in server._packet_rate_buckets
+
+    _secret_key, _agent_id, slot = _grant(server)
+    assert slot.slot_id in server._packet_rate_buckets
+    server._revoke_slot(slot.slot_id, "relay_slot_revoked_operator_emergency")
+    assert slot.slot_id not in server._packet_rate_buckets

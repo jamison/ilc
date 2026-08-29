@@ -88840,6 +88840,216 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_server_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 prompt hardened before execution.",
+      "manual_read_summary": "Phase prompt specifies relay-server data-plane abuse hardening: packet-rate token bucket, bounded failed-admission cooldown tracker, self-certifying revocation receipts, DEPLOY-00 OS resource-limit guidance, required adversarial tests, non-activation non-claims, and canonical JSON hash discipline.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_relay_rendezvous_spec_GAP_RELAY_RENDEZVOUS_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "ilc_core/network/relay/relay_server.py"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "tests/test_relay_server.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_abuse_limits_fix1_00_g10_relay_abuse_limits.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 modified guarded relay server runtime without clearing activation guards.",
+      "manual_read_summary": "Relay server now implements RELAY_ABUSE_LIMITS_SCHEMA_VERSION, RelayRevocationReceipt, _PacketRateBucket, _FailedAdmissionTracker, packet-rate-first forwarding checks, byte-budget revocation receipts, failed-admission cooldown by AgentID and source IP, and bucket cleanup on release, expiry, and revocation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_relay_rendezvous_spec_GAP_RELAY_RENDEZVOUS_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "relay:packet_rate_bucket"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "relay:failed_admission_cooldown"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "relay:revocation_receipt"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/relay/relay_server.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 appended adversarial relay abuse-limit tests.",
+      "manual_read_summary": "Test file covers packet-rate bucket exhaustion and reset, packet-rate revocation receipt emission, failed-admission cooldown by source IP and AgentID, FIFO eviction, no penalty for duplicate active-slot attempts, self-certifying revocation hash, no QUIC stream parsing, no global reputation penalty, malformed AgentID IP-only tracking, network-ID mismatch non-penalty, and bucket cleanup.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/relay/relay_server.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:relay_no_quic_stream_parsing"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:relay_no_global_reputation_penalty_on_revocation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_relay_server.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 patched DEPLOY-00 to require relay abuse-limit hardening before live relay activation.",
+      "manual_read_summary": "Downstream relay deployment prompt now requires relay_abuse_limits_fix1_committed_GAP_RELAY_ABUSE_LIMITS_FIX1_00 as an input token and records OS/systemd resource-limit guidance for UFW, LimitNOFILE, MemoryMax, CPUQuota, and journald rate caps. The prompt remains SENSITIVE and does not execute in this phase.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "UPDATES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REQUIRES",
+        "SOURCE_TREE_MEMBER",
+        "UPDATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_deploy_00_g10_relay_server_deployment.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 patched PRE-RC-CONNECTIVITY-CLAIM-GATE-00 to check 21 prior Part 3l tokens.",
+      "manual_read_summary": "Connectivity closure gate prompt now includes relay_abuse_limits_fix1_committed_GAP_RELAY_ABUSE_LIMITS_FIX1_00 among the prior-token requirements and treats the claim-gate token as the 22nd Part 3l output. The prompt remains SENSITIVE and does not execute in this phase.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "UPDATES",
+          "target": "phase:GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REQUIRES",
+        "SOURCE_TREE_MEMBER",
+        "UPDATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_pre_rc_connectivity_claim_gate_00_g10_connectivity_closure_gate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1608_phase_GAP_RELAY_ABUSE_LIMITS_FIX1_00_relay_hardening",
+      "chronology_note": "2026-08-29 GAP-RELAY-ABUSE-LIMITS-FIX1-00 completed with exact verification outputs.",
+      "manual_read_summary": "Phase walkthrough records MemPalace results, direct-read context, prompt hardening, runtime deliverables, exact pytest and grep outputs, status block, graph-intake note, and non-activation non-claims for relay abuse-limit hardening.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_abuse_limits_fix1_00_g10_relay_abuse_limits.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_abuse_limits_fix1_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
