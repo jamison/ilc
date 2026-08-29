@@ -24,6 +24,12 @@ from py_ecc.optimized_bls12_381 import curve_order
 ILC_INVITE_POP_DST: Final[bytes] = (
     b"ILC_INVITE_POP_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
+ILC_RELAY_ADMISSION_DST: Final[bytes] = (
+    b"ILC_RELAY_ADMISSION_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
+)
+ILC_RELAY_LIFECYCLE_DST: Final[bytes] = (
+    b"ILC_RELAY_LIFECYCLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
+)
 ILC_RELAY_BOOTSTRAP_RECORD_DST: Final[bytes] = (
     b"ILC_RELAY_BOOTSTRAP_RECORD_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
@@ -43,6 +49,8 @@ _BLS_BACKEND_RUST: Final[str] = "rust"
 _BLS_BACKEND_AUTO: Final[str] = "auto"
 _BLS_VERIFY_TIMEOUT_SECONDS: Final[float] = 5.0
 _RUST_SUITE_INVITE_POP: Final[str] = "invite_pop"
+_RUST_SUITE_RELAY_ADMISSION: Final[str] = "relay_admission"
+_RUST_SUITE_RELAY_LIFECYCLE: Final[str] = "relay_lifecycle"
 _RUST_SUITE_RELAY_BOOTSTRAP_RECORD: Final[str] = "relay_bootstrap_record"
 _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE: Final[str] = "relay_bootstrap_capsule"
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
@@ -50,6 +58,14 @@ _REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 
 class _ILCInvitePoP(G2Basic):
     DST = ILC_INVITE_POP_DST
+
+
+class _ILCRelayAdmission(G2Basic):
+    DST = ILC_RELAY_ADMISSION_DST
+
+
+class _ILCRelayLifecycle(G2Basic):
+    DST = ILC_RELAY_LIFECYCLE_DST
 
 
 class _ILCRelayBootstrapRecord(G2Basic):
@@ -85,6 +101,32 @@ def sign_invite_pop_digest(secret_key_hex: str, digest_hex: str) -> str:
         private_key_token="onboarding_bls_private_key_invalid",
         digest_token="invite_pop_digest_invalid",
         signature_token="invite_pop_signature_invalid",
+    )
+
+
+def sign_relay_admission_digest(secret_key_hex: str, digest_hex: str) -> str:
+    """Sign a SHA-384 relay admission digest with relay-admission DST."""
+
+    return _sign_digest_with_ciphersuite(
+        secret_key_hex=secret_key_hex,
+        digest_hex=digest_hex,
+        ciphersuite=_ILCRelayAdmission,
+        private_key_token="relay_admission_private_key_invalid",
+        digest_token="relay_admission_payload_ref_invalid",
+        signature_token="relay_admission_signature_invalid",
+    )
+
+
+def sign_relay_lifecycle_digest(secret_key_hex: str, digest_hex: str) -> str:
+    """Sign a SHA-384 relay lifecycle digest with relay-lifecycle DST."""
+
+    return _sign_digest_with_ciphersuite(
+        secret_key_hex=secret_key_hex,
+        digest_hex=digest_hex,
+        ciphersuite=_ILCRelayLifecycle,
+        private_key_token="relay_lifecycle_private_key_invalid",
+        digest_token="relay_lifecycle_payload_ref_invalid",
+        signature_token="relay_lifecycle_signature_invalid",
     )
 
 
@@ -151,6 +193,46 @@ def verify_invite_pop_digest(
         public_key_token="identity_agent_id_invalid",
         digest_token="invite_pop_digest_invalid",
         signature_token="invite_pop_signature_invalid",
+    )
+
+
+def verify_relay_admission_digest(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+) -> bool:
+    """Verify a relay-admission signature against a compressed G1 public key."""
+
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCRelayAdmission,
+        rust_suite=_RUST_SUITE_RELAY_ADMISSION,
+        public_key_token="relay_agent_id_invalid",
+        digest_token="relay_admission_payload_ref_invalid",
+        signature_token="relay_admission_signature_invalid",
+    )
+
+
+def verify_relay_lifecycle_digest(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+) -> bool:
+    """Verify a relay lifecycle signature against a compressed G1 public key."""
+
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCRelayLifecycle,
+        rust_suite=_RUST_SUITE_RELAY_LIFECYCLE,
+        public_key_token="relay_lifecycle_agent_id_invalid",
+        digest_token="relay_lifecycle_payload_ref_invalid",
+        signature_token="relay_lifecycle_signature_invalid",
     )
 
 
@@ -306,6 +388,14 @@ def _try_verify_bls_signature_rust(
 
 
 def _resolve_bls_verify_command() -> list[str] | None:
+    """Return a prebuilt Rust verifier command, never ``cargo run``.
+
+    Runtime BLS verification must not turn a missing optional helper into
+    repeated compile attempts or subprocess timeouts. Operator and test flows
+    may build the helper explicitly; auto mode falls back to Python when no
+    prebuilt binary is discoverable.
+    """
+
     env_command = os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR)
     if env_command is not None and env_command.strip():
         command = shlex.split(env_command)
@@ -316,28 +406,14 @@ def _resolve_bls_verify_command() -> list[str] | None:
     debug_binary = _REPO_ROOT / "ilc_consensus" / "target" / "debug" / "bls_verify_digest"
     if debug_binary.exists():
         return [str(debug_binary)]
-    cargo = shutil.which("cargo")
-    if cargo is None:
-        home_cargo = Path.home() / ".cargo" / "bin" / "cargo"
-        cargo = str(home_cargo) if home_cargo.exists() else None
-    cargo_toml = _REPO_ROOT / "ilc_consensus" / "Cargo.toml"
-    if cargo is None or not cargo_toml.exists():
-        return None
-    return [
-        cargo,
-        "run",
-        "--quiet",
-        "--manifest-path",
-        str(cargo_toml),
-        "--bin",
-        "bls_verify_digest",
-        "--",
-    ]
+    return None
 
 
 def _require_rust_suite(value: str) -> str:
     if value not in {
         _RUST_SUITE_INVITE_POP,
+        _RUST_SUITE_RELAY_ADMISSION,
+        _RUST_SUITE_RELAY_LIFECYCLE,
         _RUST_SUITE_RELAY_BOOTSTRAP_RECORD,
         _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE,
     }:
@@ -357,14 +433,20 @@ def _is_valid_secret_key_int(value: int) -> bool:
 
 __all__ = [
     "ILC_INVITE_POP_DST",
+    "ILC_RELAY_ADMISSION_DST",
     "ILC_RELAY_BOOTSTRAP_CAPSULE_DST",
     "ILC_RELAY_BOOTSTRAP_RECORD_DST",
+    "ILC_RELAY_LIFECYCLE_DST",
     "keypair_from_ikm_hex",
     "sign_invite_pop_digest",
+    "sign_relay_admission_digest",
     "sign_relay_bootstrap_capsule_digest",
     "sign_relay_bootstrap_record_digest",
+    "sign_relay_lifecycle_digest",
     "verify_bls_signature_rust",
     "verify_invite_pop_digest",
+    "verify_relay_admission_digest",
     "verify_relay_bootstrap_capsule_digest",
     "verify_relay_bootstrap_record_digest",
+    "verify_relay_lifecycle_digest",
 ]

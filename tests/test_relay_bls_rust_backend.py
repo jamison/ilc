@@ -11,12 +11,16 @@ from ilc_core.identity import bls_backend
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_invite_pop_digest,
+    sign_relay_admission_digest,
     sign_relay_bootstrap_capsule_digest,
     sign_relay_bootstrap_record_digest,
+    sign_relay_lifecycle_digest,
     verify_bls_signature_rust,
     verify_invite_pop_digest,
+    verify_relay_admission_digest,
     verify_relay_bootstrap_capsule_digest,
     verify_relay_bootstrap_record_digest,
+    verify_relay_lifecycle_digest,
 )
 from ilc_core.network.relay.relay_server import (
     RelayServerConfig,
@@ -99,6 +103,52 @@ def test_rust_backend_verifies_valid_relay_record_signature(
         public_key_hex=agent_id,
         digest_hex=digest_hex,
         signature_hex=signature_hex,
+    )
+
+
+def test_rust_backend_verifies_relay_admission_and_lifecycle_domains(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret_key_hex, agent_id = _relay_keypair()
+    admission_digest = "b1" * 48
+    lifecycle_digest = "b2" * 48
+    admission_signature = sign_relay_admission_digest(secret_key_hex, admission_digest)
+    lifecycle_signature = sign_relay_lifecycle_digest(secret_key_hex, lifecycle_digest)
+    monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
+    monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", RUST_COMMAND)
+
+    assert verify_relay_admission_digest(
+        public_key_hex=agent_id,
+        digest_hex=admission_digest,
+        signature_hex=admission_signature,
+    )
+    assert verify_relay_lifecycle_digest(
+        public_key_hex=agent_id,
+        digest_hex=lifecycle_digest,
+        signature_hex=lifecycle_signature,
+    )
+
+
+def test_rust_backend_rejects_invite_signature_for_relay_domains(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret_key_hex, agent_id = _relay_keypair()
+    admission_digest = "b3" * 48
+    lifecycle_digest = "b4" * 48
+    wrong_admission_signature = sign_invite_pop_digest(secret_key_hex, admission_digest)
+    wrong_lifecycle_signature = sign_invite_pop_digest(secret_key_hex, lifecycle_digest)
+    monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
+    monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", RUST_COMMAND)
+
+    assert not verify_relay_admission_digest(
+        public_key_hex=agent_id,
+        digest_hex=admission_digest,
+        signature_hex=wrong_admission_signature,
+    )
+    assert not verify_relay_lifecycle_digest(
+        public_key_hex=agent_id,
+        digest_hex=lifecycle_digest,
+        signature_hex=wrong_lifecycle_signature,
     )
 
 
@@ -240,6 +290,55 @@ def test_verify_bls_signature_rust_returns_false_when_helper_missing(
         "a8" * 96,
         suite="relay_bootstrap_record",
     )
+
+
+def test_auto_backend_uses_available_rust_helper(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _secret_key_hex, agent_id = _relay_keypair()
+    helper = tmp_path / "fake_bls_verify"
+    helper.write_text("#!/bin/sh\nprintf 'true\\n'\n", encoding="utf-8")
+    helper.chmod(0o700)
+    monkeypatch.setenv("ILC_BLS_BACKEND", "auto")
+    monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", str(helper))
+
+    assert verify_relay_admission_digest(
+        public_key_hex=agent_id,
+        digest_hex="ba" * 48,
+        signature_hex="bb" * 96,
+    )
+
+
+def test_auto_backend_falls_back_to_python_when_helper_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    secret_key_hex, agent_id = _relay_keypair()
+    digest_hex = "bc" * 48
+    signature_hex = sign_relay_lifecycle_digest(secret_key_hex, digest_hex)
+    monkeypatch.setenv("ILC_BLS_BACKEND", "auto")
+    monkeypatch.delenv("ILC_BLS_VERIFY_COMMAND", raising=False)
+    monkeypatch.setattr(bls_backend, "_resolve_bls_verify_command", lambda: None)
+
+    assert verify_relay_lifecycle_digest(
+        public_key_hex=agent_id,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+    )
+
+
+def test_resolve_bls_verify_command_never_falls_back_to_cargo_run(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ILC_BLS_VERIFY_COMMAND", raising=False)
+    monkeypatch.setattr(
+        bls_backend.shutil,
+        "which",
+        lambda name: "/usr/bin/cargo" if name == "cargo" else None,
+    )
+    monkeypatch.setattr(bls_backend.Path, "exists", lambda _self: False)
+
+    assert bls_backend._resolve_bls_verify_command() is None
 
 
 def test_invalid_backend_name_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
