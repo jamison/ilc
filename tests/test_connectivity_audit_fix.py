@@ -144,6 +144,7 @@ def _grant(*, agent_id: str, granted_epoch: int = 4) -> RelaySlotGrant:
         max_bytes_per_epoch=64 * 1024 * 1024,
         max_concurrent_streams=8,
         admission_request_hash="0" * 64,
+        relay_slot_nonce="ab" * 32,
     )
 
 
@@ -358,6 +359,7 @@ def test_relay_grant_requires_admission_request_hash() -> None:
             max_bytes_per_epoch=64 * 1024 * 1024,
             max_concurrent_streams=8,
             admission_request_hash=None,
+            relay_slot_nonce="ab" * 32,
         )
 
 
@@ -384,6 +386,7 @@ def test_relay_client_rejects_grant_not_bound_to_request_hash() -> None:
                     max_bytes_per_epoch=64 * 1024 * 1024,
                     max_concurrent_streams=8,
                     admission_request_hash="f" * 64,
+                    relay_slot_nonce="ab" * 32,
                 ).to_dict()
             }
 

@@ -23,6 +23,7 @@ from ilc_core.identity.bls_backend import (
     sign_relay_bootstrap_record_digest,
 )
 from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
+import ilc_core.network.relay as relay_package
 from ilc_core.network.relay.relay_client import (
     RELAY_CLIENT_SCHEMA_VERSION,
     RelayClient,
@@ -30,6 +31,7 @@ from ilc_core.network.relay.relay_client import (
     RelaySlotGrant,
     relay_admission_payload_ref,
     relay_lifecycle_payload_ref,
+    relay_slot_claim_datagram,
 )
 from ilc_core.network.relay.relay_server import (
     RELAY_ADMISSION_REQUEST_PATH,
@@ -64,6 +66,7 @@ from ilc_core.network.relay.relay_server import (
     _MAX_FAILED_ADMISSION_ENTRIES,
     _MAX_PACKETS_PER_WINDOW,
     _PACKET_RATE_WINDOW_SECONDS,
+    _error_token,
 )
 import ilc_core.network.relay.relay_server as relay_server_module
 
@@ -235,6 +238,41 @@ def test_valid_admission_accepted() -> None:
     assert grant.max_bytes_per_epoch == 64 * 1024 * 1024
     assert grant.max_concurrent_streams == 8
     assert grant.relay_endpoint == RelayEndpoint(host=RELAY_HOST, port=52000)
+    assert len(bytes.fromhex(grant.relay_slot_nonce)) == 32
+
+
+def test_concurrent_admission_allocates_unique_ports() -> None:
+    server = _server()
+    results: list[int] = []
+    errors: list[BaseException] = []
+    lock = threading.Lock()
+
+    def admit(index: int) -> None:
+        try:
+            _, _agent_id, payload = _admission_request(ikm_hex=f"{0x50 + index:02x}" * 32)
+            status, body = server.handle_json_request(
+                method="POST",
+                path=RELAY_ADMISSION_REQUEST_PATH,
+                payload=payload,
+                source_host=f"198.51.100.{index + 1}",
+            )
+            assert status == 200, body
+            with lock:
+                results.append(RelaySlotGrant.from_dict(body["grant"]).relay_endpoint.port)
+        except BaseException as exc:
+            with lock:
+                errors.append(exc)
+
+    threads = [threading.Thread(target=admit, args=(index,)) for index in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=10)
+
+    assert errors == []
+    assert len(results) == 8
+    assert sorted(results) == list(range(52000, 52008))
+    assert server.active_slot_count == 8
 
 
 def test_invalid_bls_signature_rejected() -> None:
@@ -388,7 +426,7 @@ def test_keepalive_wrong_lifecycle_signature_rejected() -> None:
     )
 
     assert status == 400
-    assert body["error"] == "relay_lifecycle_signature_invalid"
+    assert body["error"] == "relay_lifecycle_signature_verification_failed"
 
 
 def test_release_frees_slot_so_same_agent_can_request_again() -> None:
@@ -495,6 +533,31 @@ def test_byte_budget_enforcement_revokes_slot() -> None:
     )
     assert status == 400
     assert body["error"] == "relay_slot_revoked_budget_exceeded"
+
+
+def test_data_plane_port_released_after_budget_revocation() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            max_bytes_per_epoch=1,
+        )
+    )
+    _, _agent_id, payload = _admission_request()
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )
+    assert status == 200
+    slot = RelaySlotGrant.from_dict(body["grant"])
+    before = server._port_pool.available_count
+
+    _receipt, revocation = server.forward_datagram(slot_id=slot.slot_id, payload=b"ab", epoch=0)
+
+    assert revocation is not None
+    assert server._port_pool.available_count == before + 1
 
 
 def test_asyncio_udp_protocol_accounts_bytes_without_parsing_payload() -> None:
@@ -809,12 +872,39 @@ def test_failed_admission_tracker_fifo_eviction_at_cap() -> None:
 
     assert len(tracker._entries) == 3
     assert "ip:198.51.100.1" not in tracker._entries
-    assert tracker._insertion_order == [
+    assert list(tracker._insertion_order) == [
         "ip:198.51.100.2",
         "ip:198.51.100.3",
         "ip:198.51.100.4",
     ]
     assert _MAX_FAILED_ADMISSION_ENTRIES == 65_536
+
+
+def test_failed_admission_tracker_cooldown_expiry_unblocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    now = {"value": 1000.0}
+    tracker = _FailedAdmissionTracker(now_provider=lambda: now["value"])
+    key = "ip:198.51.100.200"
+
+    for _ in range(5):
+        tracker.record_failure(key)
+    assert tracker.is_blocked(key) is True
+
+    now["value"] += 60.001
+
+    assert tracker.is_blocked(key) is False
+    assert key not in tracker._entries
+    assert key not in tracker._queued_keys
+
+
+def test_failed_admission_tracker_duplicate_key_reports_do_not_grow_fifo() -> None:
+    tracker = _FailedAdmissionTracker(max_entries=3)
+
+    for _ in range(20):
+        tracker.record_failure("ip:198.51.100.201")
+
+    assert tracker.failure_count("ip:198.51.100.201") == 20
+    assert list(tracker._insertion_order) == ["ip:198.51.100.201"]
+    assert tracker._queued_keys == {"ip:198.51.100.201"}
 
 
 def test_failed_admission_valid_client_not_penalized() -> None:
@@ -885,6 +975,35 @@ def test_no_quic_stream_parsing_in_relay_server() -> None:
 
     for token in forbidden:
         assert token not in source
+
+
+def test_public_relay_package_exports_current_helpers_only() -> None:
+    assert not hasattr(relay_package, "RelayUdpDatagramProtocol")
+    assert relay_package.RelayUdpPortForwarder is RelayUdpPortForwarder
+    assert relay_package.sign_relay_bootstrap_record is sign_relay_bootstrap_record
+    assert relay_package.verify_relay_bootstrap_record is verify_relay_bootstrap_record
+    assert relay_package.parse_relay_bootstrap_capsule is parse_relay_bootstrap_capsule
+    assert relay_package.relay_slot_claim_datagram is relay_slot_claim_datagram
+
+
+@pytest.mark.parametrize(
+    "exc",
+    [
+        ValueError(""),
+        ValueError("bad value with spaces"),
+        ValueError("/tmp/private/path"),
+        ValueError("line1\nline2"),
+        ValueError("x" * 129),
+    ],
+)
+def test_error_token_redacts_uncontrolled_exception_text(exc: Exception) -> None:
+    assert _error_token(exc) == "relay_internal_error"
+
+
+def test_error_token_preserves_controlled_tokens() -> None:
+    assert _error_token(ValueError("relay_slot_revoked_budget_exceeded")) == (
+        "relay_slot_revoked_budget_exceeded"
+    )
 
 
 def test_no_global_reputation_penalty_on_revocation(
@@ -1024,6 +1143,20 @@ def test_port_pool_consecutive_double_release_is_idempotent() -> None:
     assert pool.allocate() == first
 
 
+def test_port_pool_released_port_is_not_duplicated_after_interleaving() -> None:
+    pool = _RelayPortPool(52010, 52011)
+    first = pool.allocate()
+    second = pool.allocate()
+
+    pool.release(first)
+    pool.release(first)
+    assert pool.available_count == 1
+    assert pool.allocate() == first
+
+    pool.release(second)
+    assert pool.allocate() == second
+
+
 def test_port_pool_exhausted_raises() -> None:
     pool = _RelayPortPool(52010, 52010)
     assert pool.allocate() == 52010
@@ -1083,6 +1216,7 @@ def test_build_relay_bootstrap_record_payload_sha384() -> None:
         key: record[key]
         for key in (
             "control_url",
+            "control_port",
             "data_port_range",
             "expires_epoch",
             "issued_epoch",
@@ -1163,6 +1297,90 @@ def test_sign_and_verify_relay_bootstrap_record_recomputes_payload_hash() -> Non
     assert verify_relay_bootstrap_record(tampered) is False
 
 
+def test_bootstrap_record_rejects_control_url_host_mismatch() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(
+            relay_agent_id=relay_agent_id,
+            relay_host="relay.example",
+            ssl_certfile="/tmp/relay-cert.pem",
+            ssl_keyfile="/tmp/relay-key.pem",
+        ),
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="12" * 32,
+    )
+    tampered = {**unsigned, "control_url": "https://evil.example:51151"}
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_control_url_host_mismatch"):
+        sign_relay_bootstrap_record(
+            tampered,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+
+def test_bootstrap_record_rejects_control_url_port_mismatch() -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(
+            relay_agent_id=relay_agent_id,
+            relay_host="relay.example",
+            ssl_certfile="/tmp/relay-cert.pem",
+            ssl_keyfile="/tmp/relay-key.pem",
+        ),
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="12" * 32,
+    )
+    tampered = {**unsigned, "control_url": "https://relay.example:51152"}
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_control_url_port_mismatch"):
+        sign_relay_bootstrap_record(
+            tampered,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+
+@pytest.mark.parametrize(
+    ("control_url", "error_token"),
+    [
+        ("https://relay.example:51151/path", "relay_bootstrap_control_url_not_root"),
+        ("https://relay.example:51151?x=1", "relay_bootstrap_control_url_not_root"),
+        ("https://relay.example:51151#frag", "relay_bootstrap_control_url_not_root"),
+        (
+            "https://user:pass@relay.example:51151",
+            "relay_bootstrap_control_url_invalid_authority",
+        ),
+    ],
+)
+def test_bootstrap_record_rejects_non_root_control_url_authority(
+    control_url: str,
+    error_token: str,
+) -> None:
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(
+            relay_agent_id=relay_agent_id,
+            relay_host="relay.example",
+            ssl_certfile="/tmp/relay-cert.pem",
+            ssl_keyfile="/tmp/relay-key.pem",
+        ),
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="12" * 32,
+    )
+    tampered = {**unsigned, "control_url": control_url}
+
+    with pytest.raises(RelayServerError, match=error_token):
+        sign_relay_bootstrap_record(
+            tampered,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+
 def test_sign_relay_bootstrap_record_rejects_wrong_signing_key_id() -> None:
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
     _other_secret_key, other_agent_id = keypair_from_ikm_hex("46" * 32)
@@ -1177,6 +1395,23 @@ def test_sign_relay_bootstrap_record_rejects_wrong_signing_key_id() -> None:
             unsigned,
             relay_secret_key_hex=relay_secret_key,
             signing_key_id=other_agent_id,
+        )
+
+
+def test_sign_relay_bootstrap_record_rejects_mismatched_secret_key() -> None:
+    _relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+    other_secret_key, _other_agent_id = keypair_from_ikm_hex("46" * 32)
+    unsigned = build_relay_bootstrap_record(
+        RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
+        issued_epoch=0,
+        expires_epoch=4,
+    )
+
+    with pytest.raises(RelayServerError, match="relay_bootstrap_signature_self_check_failed"):
+        sign_relay_bootstrap_record(
+            unsigned,
+            relay_secret_key_hex=other_secret_key,
+            signing_key_id=relay_agent_id,
         )
 
 
@@ -1212,13 +1447,101 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
         "signing_key_id": genesis_agent_id,
     }
 
-    assert parse_relay_bootstrap_capsule(capsule, genesis_agent_id=genesis_agent_id) == (signed,)
+    assert parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    ) == (signed,)
 
     tampered_capsule = {**capsule, "network_id": "evil-rc"}
     assert parse_relay_bootstrap_capsule(
         tampered_capsule,
         genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=0,
     ) == ()
+
+
+def test_parse_relay_bootstrap_capsule_filters_scope_and_epochs() -> None:
+    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
+
+    def signed_record(
+        *,
+        network_id: str,
+        issued_epoch: int,
+        expires_epoch: int,
+    ) -> dict[str, Any]:
+        unsigned = build_relay_bootstrap_record(
+            RelayServerConfig(
+                relay_agent_id=relay_agent_id,
+                relay_host="127.0.0.1",
+                network_id=network_id,
+            ),
+            issued_epoch=issued_epoch,
+            expires_epoch=expires_epoch,
+        )
+        return sign_relay_bootstrap_record(
+            unsigned,
+            relay_secret_key_hex=relay_secret_key,
+            signing_key_id=relay_agent_id,
+        )
+
+    valid = signed_record(network_id="public-rc", issued_epoch=0, expires_epoch=4)
+    wrong_network = signed_record(network_id="other-rc", issued_epoch=0, expires_epoch=4)
+    expired_record = signed_record(network_id="public-rc", issued_epoch=0, expires_epoch=1)
+
+    def capsule_for(
+        *,
+        issued_epoch: int,
+        expires_epoch: int,
+        network_id: str = "public-rc",
+        records: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        payload = {
+            "expires_epoch": expires_epoch,
+            "issued_epoch": issued_epoch,
+            "network_id": network_id,
+            "relay_records": records or [valid],
+            "schema_version": "relay_bootstrap_capsule_v0.1",
+        }
+        payload_ref = relay_bootstrap_capsule_payload_ref(payload)
+        return {
+            **payload,
+            "payload_sha384": payload_ref,
+            "signature": sign_relay_bootstrap_capsule_digest(
+                secret_key_hex=genesis_secret_key,
+                digest_hex=payload_ref,
+            ),
+            "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+            "signing_key_id": genesis_agent_id,
+        }
+
+    assert parse_relay_bootstrap_capsule(
+        capsule_for(issued_epoch=0, expires_epoch=4),
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="other-rc",
+        current_epoch=0,
+    ) == ()
+    assert parse_relay_bootstrap_capsule(
+        capsule_for(issued_epoch=0, expires_epoch=4),
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=5,
+    ) == ()
+    assert parse_relay_bootstrap_capsule(
+        capsule_for(issued_epoch=2, expires_epoch=4),
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=1,
+    ) == ()
+    assert parse_relay_bootstrap_capsule(
+        capsule_for(records=[valid, wrong_network, expired_record], issued_epoch=0, expires_epoch=4),
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=2,
+    ) == (valid,)
 
 
 def test_sign_relay_bootstrap_record_rejects_payload_ref_mismatch() -> None:
@@ -1335,7 +1658,12 @@ def test_parse_relay_bootstrap_capsule_rejects_too_many_records() -> None:
         "signing_key_id": genesis_agent_id,
     }
 
-    assert parse_relay_bootstrap_capsule(capsule, genesis_agent_id=genesis_agent_id) == ()
+    assert parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_agent_id=genesis_agent_id,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    ) == ()
 
 
 def test_bootstrap_record_rejects_bad_relay_mode() -> None:
@@ -1495,6 +1823,7 @@ def test_udp_forwarder_client_to_target_real_socket() -> None:
     client = _udp_socket()
     server, grant = _data_plane_server_for_target(target.getsockname()[1])
     try:
+        client.sendto(relay_slot_claim_datagram(grant), ("127.0.0.1", grant.relay_endpoint.port))
         client.sendto(b"client-to-target", ("127.0.0.1", grant.relay_endpoint.port))
         data, _addr = target.recvfrom(1024)
     finally:
@@ -1511,6 +1840,7 @@ def test_udp_forwarder_target_to_client_real_socket() -> None:
     server, grant = _data_plane_server_for_target(target.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
         client.sendto(b"client-to-target", relay_addr)
         assert target.recvfrom(1024)[0] == b"client-to-target"
         target.sendto(b"target-to-client", relay_addr)
@@ -1530,6 +1860,7 @@ def test_udp_forwarder_unknown_source_dropped_real_socket() -> None:
     server, grant = _data_plane_server_for_target(target.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
         client.sendto(b"learn-client", relay_addr)
         assert target.recvfrom(1024)[0] == b"learn-client"
         stranger.sendto(b"stranger", relay_addr)
@@ -1558,6 +1889,7 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
         slot_id=slot.slot_id,
         target_host="127.0.0.1",
         target_port=50151,
+        relay_slot_nonce=slot.relay_slot_nonce,
         epoch_provider=lambda: 0,
         receipt_sink=lambda receipt, _addr: receipts.append(receipt),
     )
@@ -1572,6 +1904,7 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
 
     transport = FakeTransport()
     protocol.connection_made(transport)
+    protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), ("198.51.100.10", 50000))
     protocol.datagram_received(b"first", ("198.51.100.10", 50000))
     protocol.datagram_received(b"second", ("198.51.100.10", 50000))
 
@@ -1581,6 +1914,130 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
         (b"second", ("127.0.0.1", 50151)),
     ]
     assert [receipt.bytes_forwarded for receipt in receipts] == [5, 6]
+
+
+def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
+    receipts: list[RelayForwardReceipt] = []
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host="127.0.0.1",
+        target_port=50151,
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+        receipt_sink=lambda receipt, _addr: receipts.append(receipt),
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(relay_slot_claim_datagram(slot), ("198.51.100.10", 50000))
+
+    assert protocol.last_error is None
+    assert protocol.client_addr == ("198.51.100.10", 50000)
+    assert transport.sends == []
+    assert receipts == []
+
+
+def test_udp_forwarder_wrong_nonce_does_not_register_client() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host="127.0.0.1",
+        target_port=50151,
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def sendto(self, _data: bytes, _addr: tuple[str, int] | None = None) -> None:
+            raise AssertionError("wrong nonce must not forward")
+
+    protocol.connection_made(FakeTransport())
+    protocol.datagram_received(b"wrong-nonce", ("198.51.100.20", 50001))
+
+    assert protocol.last_error == "relay_udp_nonce_mismatch"
+    assert protocol.client_addr is None
+
+
+def test_udp_forwarder_preclaim_attacker_does_not_poison_nonce_state() -> None:
+    receipts: list[RelayForwardReceipt] = []
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host="127.0.0.1",
+        target_port=50151,
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+        receipt_sink=lambda receipt, _addr: receipts.append(receipt),
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(b"attacker-data", ("198.51.100.30", 50002))
+    assert protocol.last_error == "relay_udp_nonce_mismatch"
+    assert protocol.client_addr is None
+
+    client = ("198.51.100.31", 50003)
+    protocol.datagram_received(relay_slot_claim_datagram(slot), client)
+    protocol.datagram_received(b"client-payload", client)
+
+    assert protocol.client_addr == client
+    assert transport.sends == [(b"client-payload", ("127.0.0.1", 50151))]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [14]
+
+
+def test_udp_forwarder_nonce_prefixed_payload_forwards_stripped_payload() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host="127.0.0.1",
+        target_port=50151,
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(
+        relay_slot_claim_datagram(slot) + b"first-payload",
+        ("198.51.100.32", 50004),
+    )
+
+    assert protocol.last_error is None
+    assert protocol.client_addr == ("198.51.100.32", 50004)
+    assert transport.sends == [(b"first-payload", ("127.0.0.1", 50151))]
 
 
 def test_data_plane_start_stop_releases_port() -> None:
@@ -1599,6 +2056,7 @@ def test_data_plane_start_stop_releases_port() -> None:
         target_host="127.0.0.1",
         target_port=50151,
         allocated_port=allocated_port,
+        relay_slot_nonce="ab" * 32,
     )
     assert runtime.close_slot("slot-data-plane") == allocated_port
     pool.release(allocated_port)
@@ -1620,3 +2078,27 @@ def test_data_plane_duplicate_start_raises() -> None:
             runtime.start()
     finally:
         runtime.stop()
+
+
+def test_deploy_prompt_requires_audit_fix_and_topology_smoke_gate() -> None:
+    prompt = Path(
+        "docs/antigravity_tasks/"
+        "antigravity_prompt__phase_gap_relay_rendezvous_deploy_00_g10_relay_server_deployment.md"
+    ).read_text(encoding="utf-8")
+
+    assert "relay_audit_fix_committed_GAP_RELAY_AUDIT_FIX_00" in prompt
+    assert "3-socket topology smoke" in prompt
+    assert "guard clearance forbidden if this cannot be run" in prompt
+    assert "sufficient for relay-assisted peer connectivity" not in prompt
+
+
+def test_fix2_prompt_uses_current_data_port_range_flag_names() -> None:
+    prompt = Path(
+        "docs/antigravity_tasks/"
+        "antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md"
+    ).read_text(encoding="utf-8")
+
+    assert "--data-port-range-start" in prompt
+    assert "--data-port-range-end" in prompt
+    assert "--data-port-start" not in prompt
+    assert "--data-port-end" not in prompt

@@ -14,6 +14,7 @@ from ilc_core.network.connectivity_mode import ConnectivityMode
 from ilc_core.network.nat_probe import NatProbeEngine
 from ilc_core.network.relay import relay_client as relay_module
 from ilc_core.network.relay.relay_client import (
+    HttpsRelayClientTransport,
     RELAY_CLIENT_NOT_ACTIVATED,
     RELAY_CLIENT_SCHEMA_VERSION,
     RelayAdmissionRequest,
@@ -23,6 +24,7 @@ from ilc_core.network.relay.relay_client import (
     RelaySlotGrant,
     relay_admission_payload_ref,
     relay_lifecycle_payload_ref,
+    relay_slot_claim_datagram,
 )
 
 
@@ -251,6 +253,7 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
                         max_bytes_per_epoch=64 * 1024 * 1024,
                         max_concurrent_streams=8,
                         admission_request_hash=payload["canonical_request_hash"],
+                        relay_slot_nonce="ab" * 32,
                     ).to_dict()
                 }
             elif self.path == "/relay/slot/keepalive":
@@ -377,6 +380,7 @@ def test_grant_rejects_agent_mismatch() -> None:
                     max_bytes_per_epoch=64 * 1024 * 1024,
                     max_concurrent_streams=8,
                     admission_request_hash="0" * 64,
+                    relay_slot_nonce="ab" * 32,
                 ).to_dict()
             }
 
@@ -421,6 +425,7 @@ def test_keepalive_and_release_reject_foreign_slot() -> None:
         max_bytes_per_epoch=64 * 1024 * 1024,
         max_concurrent_streams=8,
         admission_request_hash="0" * 64,
+        relay_slot_nonce="ab" * 32,
     )
 
     with pytest.raises(RelayClientError, match="relay_slot_agent_id_mismatch"):
@@ -586,6 +591,7 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
                 max_bytes_per_epoch=64 * 1024 * 1024,
                 max_concurrent_streams=8,
                 admission_request_hash="0" * 64,
+                relay_slot_nonce="ab" * 32,
             )
 
     engine = NatProbeEngine(
@@ -609,3 +615,52 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
     assert unguarded.connectivity_receipt.mode is ConnectivityMode.RELAY_REACHABLE
     assert unguarded.connectivity_receipt.relay_endpoint == "relay.example:50151"
     assert calls == [2]
+
+
+@pytest.mark.parametrize("bad_nonce", ["ab" * 31, "ab" * 33, "AB" * 32, "zz" * 32, None])
+def test_relay_slot_claim_datagram_rejects_malformed_nonce_values(
+    bad_nonce: object,
+) -> None:
+    grant = RelaySlotGrant(
+        slot_id="slot-0001",
+        agent_id="a" * 96,
+        relay_endpoint=RelayEndpoint(host="relay.local", port=50151),
+        granted_epoch=0,
+        ttl_epochs=4,
+        target_internal_port=50151,
+        max_bytes_per_epoch=64 * 1024 * 1024,
+        max_concurrent_streams=8,
+        admission_request_hash="0" * 64,
+        relay_slot_nonce="ab" * 32,
+    )
+    object.__setattr__(grant, "relay_slot_nonce", bad_nonce)
+
+    with pytest.raises(RelayClientError, match="relay_slot_nonce_invalid"):
+        relay_slot_claim_datagram(grant)
+
+
+def test_relay_slot_claim_datagram_rejects_non_grant_object() -> None:
+    with pytest.raises(RelayClientError, match="relay_slot_grant_required"):
+        relay_slot_claim_datagram(object())  # type: ignore[arg-type]
+
+
+def test_https_transport_rejects_oversized_request_before_network() -> None:
+    transport = HttpsRelayClientTransport("http://127.0.0.1:9")
+
+    with pytest.raises(RelayClientError, match="relay_request_too_large"):
+        transport.post_json(
+            "/relay/admission/request",
+            {"x": "a" * 40_000},
+            timeout_seconds=0.1,
+        )
+
+
+def test_https_transport_rejects_nan_request_payload_before_network() -> None:
+    transport = HttpsRelayClientTransport("http://127.0.0.1:9")
+
+    with pytest.raises(RelayClientError, match="relay_request_payload_invalid"):
+        transport.post_json(
+            "/relay/admission/request",
+            {"x": float("nan")},
+            timeout_seconds=0.1,
+        )

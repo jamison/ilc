@@ -15,6 +15,7 @@ from ilc_core.network.relay.relay_client import (
     RelayKeepaliveReceipt,
     RelayReleaseReceipt,
     RelaySlotGrant,
+    relay_slot_claim_datagram,
 )
 from ilc_core.network.relay.relay_server import (
     RELAY_ABUSE_LIMITS_SCHEMA_VERSION,
@@ -27,10 +28,12 @@ from ilc_core.network.relay.relay_server import (
     RelayRevocationReceipt,
     RelayServerConfig,
     RelayServerError,
-    RelayUdpDatagramProtocol,
     RelayUdpForwarder,
     RelayUdpPortForwarder,
     build_relay_bootstrap_record,
+    parse_relay_bootstrap_capsule,
+    sign_relay_bootstrap_record,
+    verify_relay_bootstrap_record,
 )
 
 __all__ = [
@@ -52,9 +55,12 @@ __all__ = [
     "RelayRevocationReceipt",
     "RelayServerConfig",
     "RelayServerError",
-    "RelayUdpDatagramProtocol",
     "RelaySlotGrant",
+    "relay_slot_claim_datagram",
     "RelayUdpForwarder",
     "RelayUdpPortForwarder",
     "build_relay_bootstrap_record",
+    "parse_relay_bootstrap_capsule",
+    "sign_relay_bootstrap_record",
+    "verify_relay_bootstrap_record",
 ]
