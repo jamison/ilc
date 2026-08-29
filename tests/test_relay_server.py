@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import asyncio
 import hashlib
 from http.server import ThreadingHTTPServer
 import json
 from pathlib import Path
+import socket
 import threading
 from typing import Any
 from urllib.error import HTTPError
@@ -31,17 +33,21 @@ from ilc_core.network.relay.relay_server import (
     RELAY_SLOT_KEEPALIVE_PATH,
     RELAY_SLOT_RELEASE_PATH,
     RelayForwardReceipt,
+    RelayDataPlaneRuntime,
     RelayRendezvousServer,
     RelayRevocationReceipt,
     RelayServerConfig,
     RelayServerError,
     RelayUdpDatagramProtocol,
     RelayUdpForwarder,
+    RelayUdpPortForwarder,
+    build_relay_bootstrap_record,
     make_relay_http_handler,
     run_relay_http_server,
 )
 from ilc_core.network.relay.relay_server import (
     _FailedAdmissionTracker,
+    _RelayPortPool,
     _PacketRateBucket,
     _MAX_FAILED_ADMISSION_ENTRIES,
     _MAX_PACKETS_PER_WINDOW,
@@ -55,7 +61,7 @@ SECOND_IKM_HEX = "45" * 32
 INVITE_ID = "public-rc-relay-server-invite-00"
 INVITE_NULLIFIER = "55" * 32
 RELAY_AGENT_ID = "66" * 48
-RELAY_HOST = "relay.example"
+RELAY_HOST = "127.0.0.1"
 RELAY_PORT = 50151
 
 
@@ -216,7 +222,7 @@ def test_valid_admission_accepted() -> None:
     assert grant.ttl_epochs == 4
     assert grant.max_bytes_per_epoch == 64 * 1024 * 1024
     assert grant.max_concurrent_streams == 8
-    assert grant.relay_endpoint == RelayEndpoint(host=RELAY_HOST, port=RELAY_PORT)
+    assert grant.relay_endpoint == RelayEndpoint(host=RELAY_HOST, port=52000)
 
 
 def test_invalid_bls_signature_rejected() -> None:
@@ -977,3 +983,307 @@ def test_bucket_removed_on_release_expiry_and_revocation() -> None:
     assert slot.slot_id in server._packet_rate_buckets
     server._revoke_slot(slot.slot_id, "relay_slot_revoked_operator_emergency")
     assert slot.slot_id not in server._packet_rate_buckets
+
+
+def test_port_pool_allocates_lowest_first() -> None:
+    pool = _RelayPortPool(52010, 52012)
+
+    assert [pool.allocate(), pool.allocate(), pool.allocate()] == [52010, 52011, 52012]
+
+
+def test_port_pool_release_and_reallocate() -> None:
+    pool = _RelayPortPool(52010, 52012)
+
+    first = pool.allocate()
+    second = pool.allocate()
+    pool.release(first)
+
+    assert second == 52011
+    assert pool.allocate() == 52010
+
+
+def test_port_pool_consecutive_double_release_is_idempotent() -> None:
+    pool = _RelayPortPool(52010, 52010)
+    first = pool.allocate()
+    pool.release(first)
+    pool.release(first)
+
+    assert pool.available_count == 1
+    assert pool.allocate() == first
+
+
+def test_port_pool_exhausted_raises() -> None:
+    pool = _RelayPortPool(52010, 52010)
+    assert pool.allocate() == 52010
+
+    with pytest.raises(RelayServerError, match="relay_data_port_pool_exhausted"):
+        pool.allocate()
+
+
+def test_config_data_port_range_defaults() -> None:
+    config = _server_config()
+
+    assert config.data_port_range_start == 52000
+    assert config.data_port_range_end == 52999
+    assert config.control_port == 51151
+
+
+def test_config_control_port_overlap_raises() -> None:
+    with pytest.raises(RelayServerError, match="relay_control_port_overlaps_data_range"):
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host="127.0.0.1",
+            control_port=52001,
+        )
+
+
+def test_config_non_loopback_no_tls_raises() -> None:
+    with pytest.raises(RelayServerError, match="relay_non_loopback_requires_tls"):
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host="relay.example",
+        )
+
+
+def test_config_ssl_incomplete_raises() -> None:
+    with pytest.raises(RelayServerError, match="relay_ssl_config_incomplete"):
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host="127.0.0.1",
+            ssl_certfile="/tmp/relay-cert.pem",
+        )
+
+
+def test_build_relay_bootstrap_record_unsigned() -> None:
+    record = build_relay_bootstrap_record(_server_config(), issued_epoch=0, expires_epoch=4)
+
+    assert record["schema_version"] == "relay_bootstrap_record_v0.1"
+    assert record["signature"] is None
+    assert record["signing_key_id"] is None
+    assert record["relay_agent_id"] == RELAY_AGENT_ID
+    assert record["control_url"] == "https://127.0.0.1:51151"
+    assert record["data_port_range"] == {"end": 52999, "start": 52000}
+
+
+def test_build_relay_bootstrap_record_payload_sha384() -> None:
+    record = build_relay_bootstrap_record(_server_config(), issued_epoch=0, expires_epoch=4)
+    payload = {
+        key: record[key]
+        for key in (
+            "control_url",
+            "data_port_range",
+            "expires_epoch",
+            "issued_epoch",
+            "network_id",
+            "relay_agent_id",
+            "relay_host",
+            "relay_mode",
+            "schema_version",
+        )
+    }
+    expected = hashlib.sha384(
+        json.dumps(
+            payload,
+            allow_nan=False,
+            ensure_ascii=True,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()
+
+    assert len(record["payload_sha384"]) == 96
+    assert record["payload_sha384"] == expected
+
+
+def test_build_relay_bootstrap_record_epoch_invalid() -> None:
+    with pytest.raises(RelayServerError, match="relay_bootstrap_record_epoch_invalid"):
+        build_relay_bootstrap_record(_server_config(), issued_epoch=4, expires_epoch=4)
+
+
+def test_request_slot_returns_allocated_port() -> None:
+    _, _agent_id, payload = _admission_request()
+    status, body = _server().handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )
+
+    assert status == 200
+    grant = RelaySlotGrant.from_dict(body["grant"])
+    assert 52000 <= grant.relay_endpoint.port <= 52999
+    assert grant.relay_endpoint.port != RELAY_PORT
+
+
+def test_request_slot_port_released_on_data_plane_open_error() -> None:
+    class FailingDataPlane:
+        def open_slot(self, *_args: object, **_kwargs: object) -> None:
+            raise RelayServerError("relay_data_plane_open_failed")
+
+        def close_slot(self, _slot_id: str) -> int:
+            raise RelayServerError("relay_data_plane_slot_not_open")
+
+    server = _server()
+    server._data_plane = FailingDataPlane()  # type: ignore[assignment]
+    _, _agent_id, payload = _admission_request()
+
+    with pytest.raises(RelayServerError, match="relay_data_plane_open_failed"):
+        server.request_slot(payload)
+
+    assert server._port_pool.available_count == 1000
+
+
+def _udp_socket() -> socket.socket:
+    udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp.bind(("127.0.0.1", 0))
+    udp.settimeout(2.0)
+    return udp
+
+
+def _data_plane_server_for_target(target_port: int) -> tuple[RelayRendezvousServer, RelaySlotGrant]:
+    server = RelayRendezvousServer(
+        _server_config(),
+        enable_data_plane=True,
+        epoch_provider=lambda: 0,
+        data_plane_bind_host="127.0.0.1",
+    )
+    _, _agent_id, payload = _admission_request(requested_internal_port=target_port)
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="127.0.0.1",
+    )
+    assert status == 200
+    return server, RelaySlotGrant.from_dict(body["grant"])
+
+
+def test_udp_forwarder_client_to_target_real_socket() -> None:
+    target = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(target.getsockname()[1])
+    try:
+        client.sendto(b"client-to-target", ("127.0.0.1", grant.relay_endpoint.port))
+        data, _addr = target.recvfrom(1024)
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        target.close()
+        client.close()
+
+    assert data == b"client-to-target"
+
+
+def test_udp_forwarder_target_to_client_real_socket() -> None:
+    target = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(target.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(b"client-to-target", relay_addr)
+        assert target.recvfrom(1024)[0] == b"client-to-target"
+        target.sendto(b"target-to-client", relay_addr)
+        data, _addr = client.recvfrom(1024)
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        target.close()
+        client.close()
+
+    assert data == b"target-to-client"
+
+
+def test_udp_forwarder_unknown_source_dropped_real_socket() -> None:
+    target = _udp_socket()
+    client = _udp_socket()
+    stranger = _udp_socket()
+    server, grant = _data_plane_server_for_target(target.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(b"learn-client", relay_addr)
+        assert target.recvfrom(1024)[0] == b"learn-client"
+        stranger.sendto(b"stranger", relay_addr)
+        with pytest.raises(TimeoutError):
+            target.recvfrom(1024)
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        target.close()
+        client.close()
+        stranger.close()
+
+
+def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
+    receipts: list[RelayForwardReceipt] = []
+    server = _server()
+    _, _agent_id, payload = _admission_request()
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )
+    assert status == 200
+    slot = RelaySlotGrant.from_dict(body["grant"])
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host="127.0.0.1",
+        target_port=50151,
+        epoch_provider=lambda: 0,
+        receipt_sink=lambda receipt, _addr: receipts.append(receipt),
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(b"first", ("198.51.100.10", 50000))
+    protocol.datagram_received(b"second", ("198.51.100.10", 50000))
+
+    assert protocol.client_addr == ("198.51.100.10", 50000)
+    assert transport.sends == [
+        (b"first", ("127.0.0.1", 50151)),
+        (b"second", ("127.0.0.1", 50151)),
+    ]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [5, 6]
+
+
+def test_data_plane_start_stop_releases_port() -> None:
+    server = _server()
+    pool = _RelayPortPool(52020, 52020)
+    runtime = RelayDataPlaneRuntime(
+        server,
+        pool,
+        epoch_provider=lambda: 0,
+        bind_host="127.0.0.1",
+    )
+    runtime.start()
+    allocated_port = pool.allocate()
+    runtime.open_slot(
+        "slot-data-plane",
+        target_host="127.0.0.1",
+        target_port=50151,
+        allocated_port=allocated_port,
+    )
+    assert runtime.close_slot("slot-data-plane") == allocated_port
+    pool.release(allocated_port)
+    runtime.stop()
+
+    assert pool.available_count == 1
+
+
+def test_data_plane_duplicate_start_raises() -> None:
+    runtime = RelayDataPlaneRuntime(
+        _server(),
+        _RelayPortPool(52020, 52020),
+        epoch_provider=lambda: 0,
+        bind_host="127.0.0.1",
+    )
+    runtime.start()
+    try:
+        with pytest.raises(RelayServerError, match="relay_data_plane_already_running"):
+            runtime.start()
+    finally:
+        runtime.stop()
