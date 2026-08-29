@@ -17,11 +17,13 @@ from ilc_core.network.relay.relay_client import (
     RelaySlotGrant,
 )
 from ilc_core.network.relay.relay_server import (
+    RELAY_ABUSE_LIMITS_SCHEMA_VERSION,
     RELAY_SERVER_NOT_ACTIVATED,
     RELAY_SERVER_SCHEMA_VERSION,
     RELAY_SERVER_TOKEN,
     RelayForwardReceipt,
     RelayRendezvousServer,
+    RelayRevocationReceipt,
     RelayServerConfig,
     RelayServerError,
     RelayUdpDatagramProtocol,
@@ -31,6 +33,7 @@ from ilc_core.network.relay.relay_server import (
 __all__ = [
     "RELAY_CLIENT_NOT_ACTIVATED",
     "RELAY_CLIENT_SCHEMA_VERSION",
+    "RELAY_ABUSE_LIMITS_SCHEMA_VERSION",
     "RELAY_SERVER_NOT_ACTIVATED",
     "RELAY_SERVER_SCHEMA_VERSION",
     "RELAY_SERVER_TOKEN",
@@ -42,6 +45,7 @@ __all__ = [
     "RelayKeepaliveReceipt",
     "RelayReleaseReceipt",
     "RelayRendezvousServer",
+    "RelayRevocationReceipt",
     "RelayServerConfig",
     "RelayServerError",
     "RelayUdpDatagramProtocol",
