@@ -89127,6 +89127,88 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_walkthrough_fix1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_RELAY_TRANSPORT_DEPLOYABILITY_FIX1_00",
+      "chronology_note": "2026-08-29 GAP-RELAY-TRANSPORT-DEPLOYABILITY-FIX1-00 was inserted after DEPLOY-00 blocked on relay transport, TLS, port, and bootstrap-record deployability gaps.",
+      "manual_read_summary": "Phase prompt specifies the non-sensitive source fix that closes all four DEPLOY-00 blockers: deterministic per-slot UDP data-port allocation, real bidirectional asyncio DatagramProtocol forwarding without QUIC parsing, data-plane lifecycle runtime, fail-closed relay TLS/control-port configuration, unsigned canonical relay bootstrap records, DEPLOY-00 prompt patching, and claim-gate token-count patching.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-SERVER-IMPL-00"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        },
+        {
+          "edge_type": "UPDATES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_relay_guard_clearance_without_real_transport_tls_ports_and_bootstrap_records"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REQUIRES",
+        "UPDATES",
+        "SOURCE_TREE_MEMBER",
+        "REGRESSES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_transport_deployability_fix1_00_g10_relay_transport_deployability.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_RELAY_TRANSPORT_DEPLOYABILITY_FIX1_00",
+      "chronology_note": "2026-08-29 GAP-RELAY-TRANSPORT-DEPLOYABILITY-FIX1-00 completed as the non-sensitive source fix before retrying live relay deployment.",
+      "manual_read_summary": "Walkthrough records direct MemPalace/repo reads, prompt hardening, relay transport implementation details, actual validation output, DEPLOY-00 and CLAIM-GATE prompt patches, completion token, and non-claims. The phase did not deploy relay services or clear relay guards.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-TRANSPORT-DEPLOYABILITY-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_transport_deployability_fix1_00_g10_relay_transport_deployability.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_transport_deployability_fix1_committed_GAP_RELAY_TRANSPORT_DEPLOYABILITY_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_transport_deployability_fix1_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

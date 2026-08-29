@@ -21,6 +21,7 @@ from ilc_core.network.relay.relay_server import (
     RELAY_SERVER_NOT_ACTIVATED,
     RELAY_SERVER_SCHEMA_VERSION,
     RELAY_SERVER_TOKEN,
+    RelayDataPlaneRuntime,
     RelayForwardReceipt,
     RelayRendezvousServer,
     RelayRevocationReceipt,
@@ -28,6 +29,8 @@ from ilc_core.network.relay.relay_server import (
     RelayServerError,
     RelayUdpDatagramProtocol,
     RelayUdpForwarder,
+    RelayUdpPortForwarder,
+    build_relay_bootstrap_record,
 )
 
 __all__ = [
@@ -40,6 +43,7 @@ __all__ = [
     "RelayAdmissionRequest",
     "RelayClient",
     "RelayClientError",
+    "RelayDataPlaneRuntime",
     "RelayEndpoint",
     "RelayForwardReceipt",
     "RelayKeepaliveReceipt",
@@ -51,4 +55,6 @@ __all__ = [
     "RelayUdpDatagramProtocol",
     "RelaySlotGrant",
     "RelayUdpForwarder",
+    "RelayUdpPortForwarder",
+    "build_relay_bootstrap_record",
 ]
