@@ -9,7 +9,13 @@ invite-PoP DST using ``py_ecc``.
 
 from __future__ import annotations
 
+import math
+import os
+from pathlib import Path
 import re
+import shlex
+import shutil
+import subprocess
 from typing import Final
 
 from py_ecc.bls import G2Basic
@@ -30,6 +36,16 @@ _BLS_PUBLIC_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
 _BLS_SECRET_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{64}$")
 _BLS_SIGNATURE_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{192}$")
 _SHA384_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
+_BLS_BACKEND_ENV_VAR: Final[str] = "ILC_BLS_BACKEND"
+_BLS_VERIFY_COMMAND_ENV_VAR: Final[str] = "ILC_BLS_VERIFY_COMMAND"
+_BLS_BACKEND_PYTHON: Final[str] = "python"
+_BLS_BACKEND_RUST: Final[str] = "rust"
+_BLS_BACKEND_AUTO: Final[str] = "auto"
+_BLS_VERIFY_TIMEOUT_SECONDS: Final[float] = 5.0
+_RUST_SUITE_INVITE_POP: Final[str] = "invite_pop"
+_RUST_SUITE_RELAY_BOOTSTRAP_RECORD: Final[str] = "relay_bootstrap_record"
+_RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE: Final[str] = "relay_bootstrap_capsule"
+_REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 
 
 class _ILCInvitePoP(G2Basic):
@@ -126,19 +142,16 @@ def verify_invite_pop_digest(
 ) -> bool:
     """Verify an ILC invite-PoP signature against a compressed G1 public key."""
 
-    public_key = bytes.fromhex(
-        _require_hex(public_key_hex, _BLS_PUBLIC_KEY_RE, "identity_agent_id_invalid")
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCInvitePoP,
+        rust_suite=_RUST_SUITE_INVITE_POP,
+        public_key_token="identity_agent_id_invalid",
+        digest_token="invite_pop_digest_invalid",
+        signature_token="invite_pop_signature_invalid",
     )
-    digest = bytes.fromhex(_require_hex(digest_hex, _SHA384_RE, "invite_pop_digest_invalid"))
-    signature = bytes.fromhex(
-        _require_hex(signature_hex, _BLS_SIGNATURE_RE, "invite_pop_signature_invalid")
-    )
-    try:
-        if not _ILCInvitePoP.KeyValidate(public_key):
-            return False
-        return bool(_ILCInvitePoP.Verify(public_key, digest, signature))
-    except (AssertionError, ValueError):
-        return False
 
 
 def verify_relay_bootstrap_record_digest(
@@ -154,6 +167,7 @@ def verify_relay_bootstrap_record_digest(
         digest_hex=digest_hex,
         signature_hex=signature_hex,
         ciphersuite=_ILCRelayBootstrapRecord,
+        rust_suite=_RUST_SUITE_RELAY_BOOTSTRAP_RECORD,
         public_key_token="relay_bootstrap_signing_key_invalid",
         digest_token="relay_bootstrap_payload_ref_invalid",
         signature_token="relay_bootstrap_signature_invalid",
@@ -173,6 +187,7 @@ def verify_relay_bootstrap_capsule_digest(
         digest_hex=digest_hex,
         signature_hex=signature_hex,
         ciphersuite=_ILCRelayBootstrapCapsule,
+        rust_suite=_RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE,
         public_key_token="relay_bootstrap_capsule_signing_key_invalid",
         digest_token="relay_bootstrap_capsule_payload_ref_invalid",
         signature_token="relay_bootstrap_capsule_signature_invalid",
@@ -185,19 +200,149 @@ def _verify_digest_with_ciphersuite(
     digest_hex: str,
     signature_hex: str,
     ciphersuite: type[G2Basic],
+    rust_suite: str,
     public_key_token: str,
     digest_token: str,
     signature_token: str,
 ) -> bool:
-    public_key = bytes.fromhex(_require_hex(public_key_hex, _BLS_PUBLIC_KEY_RE, public_key_token))
-    digest = bytes.fromhex(_require_hex(digest_hex, _SHA384_RE, digest_token))
-    signature = bytes.fromhex(_require_hex(signature_hex, _BLS_SIGNATURE_RE, signature_token))
+    clean_public_key_hex = _require_hex(public_key_hex, _BLS_PUBLIC_KEY_RE, public_key_token)
+    clean_digest_hex = _require_hex(digest_hex, _SHA384_RE, digest_token)
+    clean_signature_hex = _require_hex(signature_hex, _BLS_SIGNATURE_RE, signature_token)
+    backend = os.environ.get(_BLS_BACKEND_ENV_VAR, _BLS_BACKEND_PYTHON).strip().lower()
+    if backend not in {_BLS_BACKEND_PYTHON, _BLS_BACKEND_RUST, _BLS_BACKEND_AUTO}:
+        raise ValueError("bls_backend_invalid")
+    if backend in {_BLS_BACKEND_RUST, _BLS_BACKEND_AUTO}:
+        rust_result = _try_verify_bls_signature_rust(
+            public_key_hex=clean_public_key_hex,
+            digest_hex=clean_digest_hex,
+            signature_hex=clean_signature_hex,
+            suite=rust_suite,
+        )
+        if rust_result is not None:
+            return rust_result
+    public_key = bytes.fromhex(clean_public_key_hex)
+    digest = bytes.fromhex(clean_digest_hex)
+    signature = bytes.fromhex(clean_signature_hex)
     try:
         if not ciphersuite.KeyValidate(public_key):
             return False
         return bool(ciphersuite.Verify(public_key, digest, signature))
     except (AssertionError, ValueError):
         return False
+
+
+def verify_bls_signature_rust(
+    pubkey_hex: str,
+    message_hex: str,
+    sig_hex: str,
+    *,
+    suite: str,
+) -> bool:
+    """Verify a BLS digest signature with the optional Rust ``blst`` helper."""
+
+    result = _try_verify_bls_signature_rust(
+        public_key_hex=_require_hex(
+            pubkey_hex,
+            _BLS_PUBLIC_KEY_RE,
+            "bls_rust_public_key_invalid",
+        ),
+        digest_hex=_require_hex(
+            message_hex,
+            _SHA384_RE,
+            "bls_rust_digest_invalid",
+        ),
+        signature_hex=_require_hex(
+            sig_hex,
+            _BLS_SIGNATURE_RE,
+            "bls_rust_signature_invalid",
+        ),
+        suite=_require_rust_suite(suite),
+    )
+    return bool(result)
+
+
+def _try_verify_bls_signature_rust(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+    suite: str,
+) -> bool | None:
+    """Return None when the optional Rust helper is unavailable or unusable."""
+
+    command = _resolve_bls_verify_command()
+    if command is None:
+        return None
+    timeout = _BLS_VERIFY_TIMEOUT_SECONDS
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("bls_rust_timeout_invalid")
+    try:
+        result = subprocess.run(
+            [
+                *command,
+                "--public-key-hex",
+                public_key_hex,
+                "--signature-hex",
+                signature_hex,
+                "--suite",
+                _require_rust_suite(suite),
+            ],
+            input=f"{digest_hex}\n",
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except (FileNotFoundError, OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    output = result.stdout.strip()
+    if output == "true":
+        return True
+    if output == "false":
+        return False
+    return False
+
+
+def _resolve_bls_verify_command() -> list[str] | None:
+    env_command = os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR)
+    if env_command is not None and env_command.strip():
+        command = shlex.split(env_command)
+        return command or None
+    path_binary = shutil.which("bls_verify_digest")
+    if path_binary is not None:
+        return [path_binary]
+    debug_binary = _REPO_ROOT / "ilc_consensus" / "target" / "debug" / "bls_verify_digest"
+    if debug_binary.exists():
+        return [str(debug_binary)]
+    cargo = shutil.which("cargo")
+    if cargo is None:
+        home_cargo = Path.home() / ".cargo" / "bin" / "cargo"
+        cargo = str(home_cargo) if home_cargo.exists() else None
+    cargo_toml = _REPO_ROOT / "ilc_consensus" / "Cargo.toml"
+    if cargo is None or not cargo_toml.exists():
+        return None
+    return [
+        cargo,
+        "run",
+        "--quiet",
+        "--manifest-path",
+        str(cargo_toml),
+        "--bin",
+        "bls_verify_digest",
+        "--",
+    ]
+
+
+def _require_rust_suite(value: str) -> str:
+    if value not in {
+        _RUST_SUITE_INVITE_POP,
+        _RUST_SUITE_RELAY_BOOTSTRAP_RECORD,
+        _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE,
+    }:
+        raise ValueError("bls_rust_suite_invalid")
+    return value
 
 
 def _require_hex(value: str, pattern: re.Pattern[str], token: str) -> str:
@@ -218,6 +363,7 @@ __all__ = [
     "sign_invite_pop_digest",
     "sign_relay_bootstrap_capsule_digest",
     "sign_relay_bootstrap_record_digest",
+    "verify_bls_signature_rust",
     "verify_invite_pop_digest",
     "verify_relay_bootstrap_capsule_digest",
     "verify_relay_bootstrap_record_digest",
