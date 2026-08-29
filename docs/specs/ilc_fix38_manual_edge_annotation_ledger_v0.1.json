@@ -89050,6 +89050,83 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_abuse_limits_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_RELAY_RENDEZVOUS_DEPLOY_00_blocked_transport_preflight",
+      "chronology_note": "2026-08-29 GAP-RELAY-RENDEZVOUS-DEPLOY-00 received exact GO but was blocked before live VPS mutation by hardened deployability preflight.",
+      "manual_read_summary": "Relay deploy prompt was hardened with four explicit preflight blockers: real non-terminating UDP forwarding, HTTPS control-plane compatibility, non-conflicting relay ports, and deterministic Genesis-signed relay bootstrap records. The prompt remains SENSITIVE and its completion token is not emitted.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-SERVER-IMPL-00"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "target": "phase:GAP-RELAY-ABUSE-LIMITS-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_relay_guard_clearance_without_real_transport_tls_ports_and_bootstrap_records"
+        },
+        {
+          "edge_type": "UPDATES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REQUIRES",
+        "SOURCE_TREE_MEMBER",
+        "REGRESSES",
+        "UPDATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_deploy_00_g10_relay_server_deployment.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_RELAY_RENDEZVOUS_DEPLOY_00_blocked_transport_preflight",
+      "chronology_note": "2026-08-29 GAP-RELAY-RENDEZVOUS-DEPLOY-00 recorded a new blocked checkpoint after the current relay-on-existing-validator-nodes architecture replaced the earlier separate-host premise.",
+      "manual_read_summary": "Blocked walkthrough records exact GO receipt, guard-state verification, direct source evidence that RelayUdpDatagramProtocol does not forward datagrams, stdlib HTTP versus HTTPS client-policy mismatch, live validator port conflicts, absent relay bootstrap record builder, blocker tokens, and non-claims. No live VPS mutation or guard clearance occurred.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_deploy_00_g10_relay_server_deployment.md"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_server_deployed_guard_cleared_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_walkthrough_fix1.md"
     }
   ],
   "phase": "1545p-Fix38",
