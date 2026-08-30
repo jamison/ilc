@@ -74307,6 +74307,145 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_validator_observer_default_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1613_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00_cdl112",
+      "chronology_note": "2026-08-30 GAP-PEER-CONNECTIVITY-ADVERTISEMENT-SPEC-00 opened CDL-112 after exact human GO phrase.",
+      "manual_read_summary": "CDL register updated with CDL-112 opened row for ConnectivityAdvertisement schema v0.1. Row preserves CDL-103 as unchanged authority and records no ratification, no runtime activation, no DHT, no relay incentives, no validator admission, and no public RC activation.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-SPEC-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-103"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0039"
+        },
+        {
+          "edge_type": "OPENS",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "schema:connectivity_advertisement_cdl112.v0.1"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:cdl_112_opened_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "OPENS",
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1613_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00_cdl112",
+      "chronology_note": "2026-08-30 new CDL-112 opening spec created for ConnectivityAdvertisement schema authority.",
+      "manual_read_summary": "Opening spec defines ConnectivityAdvertisement schema v0.1 with connectivity_mode, optional relay_endpoint, bounded candidate_list, probe_receipt_ref, relay_slot_ref, preserved CDL-103 invariants, authority split, ratification open questions, and non-claims.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-SPEC-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-103"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-078"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr:ADR-0039"
+        },
+        {
+          "edge_type": "OPENS",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "schema:connectivity_advertisement_cdl112.v0.1"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:cdl_112_opened_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "OPENS",
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_112_connectivity_advertisement_opening_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1613_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00_cdl112",
+      "chronology_note": "2026-08-30 walkthrough for GAP-PEER-CONNECTIVITY-ADVERTISEMENT-SPEC-00 completion.",
+      "manual_read_summary": "Walkthrough records human GO phrase, MemPalace and direct source reads, pre-execution token and CDL allocation audit, verification command output, graph delta, output token, and non-claims for CDL-112 opening.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-SPEC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_peer_connectivity_advertisement_spec_00_g10_cdl112_opening.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:cdl_112_opened_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_peer_connectivity_advertisement_spec_00_walkthrough.md"
     }
   ],
   "boundary": {
