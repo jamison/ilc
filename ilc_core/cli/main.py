@@ -30,6 +30,7 @@ QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
 BUNDLE_SCHEMA_VERSION = "303.v0.1"
 INSTALL_INVITE_MAX_BYTES = 1_048_576
+INSTALL_PROBE_OBSERVER_MAX_COUNT = 16
 UPDATE_MANIFEST_MAX_BYTES = 1_048_576
 UPDATE_HTTP_CHUNK_BYTES = 64 * 1024
 DEFAULT_UPDATE_MANIFEST_URL = "https://ilc.network/release/manifest.json"
@@ -3853,7 +3854,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 agent_id=agent_id,
                 epoch=current_epoch,
                 attempt_router_mapping=bool(getattr(args, "enable_upnp", False)),
-                observers=tuple(getattr(args, "probe_observer", []) or []),
+                observers=_install_probe_observers(args),
                 relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
                 relay_admission_material=_install_relay_admission_material(args),
             )
@@ -4111,15 +4112,24 @@ def _install_relay_admission_material(args: argparse.Namespace) -> dict[str, Any
     return _load_relay_admission_material(path_value)
 
 
+def _install_probe_observers(args: argparse.Namespace) -> tuple[str, ...]:
+    values = tuple(getattr(args, "probe_observer", []) or ())
+    if len(values) > INSTALL_PROBE_OBSERVER_MAX_COUNT:
+        raise ValueError("install_probe_observer_count_exceeded")
+    return values
+
+
 def _install_connectivity_receipt_fields(
     connectivity_receipt: dict[str, Any],
 ) -> dict[str, Any]:
     return {
+        "connectivity_evidence_status": connectivity_receipt["connectivity_evidence_status"],
         "connectivity_mode": connectivity_receipt["connectivity_mode"],
-        "connectivity_receipt_path": "~/.ilc/identity/connectivity_receipt.json",
+        "connectivity_receipt_path": connectivity_receipt["connectivity_receipt_path"],
         "connectivity_receipt_sha384": connectivity_receipt["connectivity_receipt_sha384"],
         "connectivity_summary": connectivity_receipt["connectivity_summary"],
         "firewall_mutation_attempted": connectivity_receipt["firewall_mutation_attempted"],
+        "firewall_mutation_status": connectivity_receipt["firewall_mutation_status"],
         "observed_endpoint": connectivity_receipt["observed_endpoint"],
         "relay_endpoint": connectivity_receipt["relay_endpoint"],
     }
