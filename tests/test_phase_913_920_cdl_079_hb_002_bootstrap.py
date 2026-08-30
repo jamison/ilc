@@ -76,6 +76,26 @@ class _RejectingOqsModule:
     Signature = _RejectingOqsSignature
 
 
+class _CapturingOqsSignature:
+    captured_signed_bytes: bytes | None = None
+
+    def __init__(self, _algorithm: str) -> None:
+        pass
+
+    def verify(
+        self,
+        signed_bytes: bytes,
+        _sig_bytes: bytes,
+        _pubkey_bytes: bytes,
+    ) -> bool:
+        type(self).captured_signed_bytes = signed_bytes
+        return True
+
+
+class _CapturingOqsModule:
+    Signature = _CapturingOqsSignature
+
+
 def _install_rejecting_oqs(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "oqs", _RejectingOqsModule())
 
@@ -159,6 +179,17 @@ def test_fetch_bootstrap_bundle_invalid_json_raises():
     assert "bootstrap_bundle_invalid_json" in exc_info.value.token
 
 
+def test_fetch_bootstrap_bundle_rejects_non_finite_json_constant():
+    """WANT-BLOCK JSON NaN/Infinity tokens are rejected at the wire parser."""
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
+        mock_wb.return_value = b'{"schema_version":NaN}'
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_float_not_allowed"
+
+
 def test_fetch_bootstrap_bundle_bad_seed_peer_raises():
     """Empty seed peer endpoint raises BootstrapBundleError."""
     with pytest.raises(BootstrapBundleError):
@@ -215,6 +246,23 @@ def test_verify_signature_env_bypass_not_accepted(monkeypatch):
     _install_rejecting_oqs(monkeypatch)
     result = verify_bootstrap_bundle_signature(VALID_BUNDLE, GENESIS_PUBKEY)
     assert result is False
+
+
+def test_verify_signature_uses_compact_canonical_json(monkeypatch):
+    _CapturingOqsSignature.captured_signed_bytes = None
+    monkeypatch.setitem(sys.modules, "oqs", _CapturingOqsModule())
+
+    result = verify_bootstrap_bundle_signature(VALID_BUNDLE, GENESIS_PUBKEY)
+
+    payload = {k: v for k, v in VALID_BUNDLE.items() if k != "signature"}
+    expected = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    assert result is True
+    assert _CapturingOqsSignature.captured_signed_bytes == expected
 
 
 # ---------------------------------------------------------------------------

@@ -317,6 +317,32 @@ def test_network_doctor_bootstrap_fetch_requires_complete_material() -> None:
         )
 
 
+def test_network_doctor_bootstrap_fetch_empty_pubkey_is_invalid_not_incomplete() -> None:
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_genesis_authority_pubkey_invalid",
+    ):
+        network_doctor.build_network_doctor_payload(
+            fetch_peers=True,
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+            bootstrap_bundle_cid="bafybootstrap",
+            genesis_authority_pubkey_hex="",
+        )
+
+
+def test_network_doctor_bootstrap_fetch_rejects_uppercase_pubkey() -> None:
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_genesis_authority_pubkey_invalid",
+    ):
+        network_doctor.build_network_doctor_payload(
+            fetch_peers=True,
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+            bootstrap_bundle_cid="bafybootstrap",
+            genesis_authority_pubkey_hex="B" * 3328,
+        )
+
+
 def test_network_doctor_bootstrap_fetch_verifies_before_extract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -352,6 +378,42 @@ def test_network_doctor_bootstrap_fetch_verifies_before_extract(
         )
 
     assert calls == ["verify"]
+
+
+def test_network_doctor_bootstrap_fetch_caps_peer_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: {"bundle_cid": "bafybootstrap"},
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_bootstrap_bundle_signature",
+        lambda _bundle, _pubkey: True,
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "extract_peer_endpoints",
+        lambda _bundle: [
+            f"https://peer-{index}.ilc.example:443"
+            for index in range(network_doctor.MAX_NETWORK_DOCTOR_BOOTSTRAP_FETCH_PEERS + 1)
+        ],
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_bootstrap_fetch_peer_endpoints_too_many",
+    ):
+        network_doctor.build_network_doctor_payload(
+            fetch_peers=True,
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+            bootstrap_bundle_cid="bafybootstrap",
+            genesis_authority_pubkey_hex="b" * 3328,
+        )
 
 
 def test_network_doctor_bootstrap_fetch_success(monkeypatch: pytest.MonkeyPatch) -> None:

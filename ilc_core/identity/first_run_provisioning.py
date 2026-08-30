@@ -57,6 +57,7 @@ INVITEE_INSTALL_RECEIPT_SCHEMA_VERSION = "invitee_install_receipt.v0.1"
 INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN = "ILC_INVITEE_INSTALL_RECEIPT_V1"
 MAX_KNOWN_PEER_HINTS = 8
 MIN_KNOWN_PEERS = 3
+MAX_BOOTSTRAP_FETCH_PEERS = 16
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
@@ -65,6 +66,9 @@ GENESIS_ROOT_ENVELOPE_HASH = (
 )
 ONBOARDING_BLS_KEYGEN_COMMAND_ENV = "ILC_ONBOARDING_BLS_KEYGEN_COMMAND"
 ONBOARDING_BLS_POP_COMMAND_ENV = "ILC_ONBOARDING_BLS_POP_COMMAND"
+BOOTSTRAP_FETCH_TRUSTED_GENESIS_PUBKEY_ENV = (
+    "ILC_BOOTSTRAP_FETCH_TRUSTED_GENESIS_AUTHORITY_PUBKEY_HEX"
+)
 
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _PRIVATE_KEY_RE = re.compile(rb"^[0-9a-f]{64}\n?$")
@@ -423,6 +427,17 @@ def record_invite_bootstrap_capsule_evidence(
     verified_bindings = _require_peer_hint_key_bindings(
         capsule_evidence.get("verified_peer_hint_key_bindings", {})
     )
+    fetch_evidence = _normalize_distributed_fetch_evidence(distributed_fetch_evidence)
+    pending_path = root / "invite_bootstrap_capsule_evidence.pending.json"
+    _atomic_write_json(
+        pending_path,
+        {
+            "agent_id": agent_id,
+            "current_epoch": current_epoch,
+            "schema_version": "invite_bootstrap_capsule_evidence_pending.v0.1",
+        },
+        mode=0o644,
+    )
     hints_path = root / "bootstrap_peer_hints.json"
     hints_payload: dict[str, Any] | None = None
     hints_sha384: str | None = None
@@ -440,7 +455,6 @@ def record_invite_bootstrap_capsule_evidence(
     fetch_payload: dict[str, Any] | None = None
     fetch_sha384: str | None = None
     fetch_peers_path = root / "bootstrap_fetch_peers.json"
-    fetch_evidence = _normalize_distributed_fetch_evidence(distributed_fetch_evidence)
     if fetch_evidence["bootstrap_fetch_status"] == "fetched":
         fetch_payload = {
             "bootstrap_fetch_bundle_cid": fetch_evidence["bootstrap_fetch_bundle_cid"],
@@ -505,6 +519,10 @@ def record_invite_bootstrap_capsule_evidence(
     }
     onboarding_receipt.update(evidence_fields)
     _atomic_write_json(onboarding_receipt_path, onboarding_receipt, mode=0o644)
+    try:
+        pending_path.unlink()
+    except FileNotFoundError:
+        pass
     return {
         "bootstrap_fetch_peers": fetch_payload,
         "bootstrap_peer_hints": hints_payload,
@@ -516,6 +534,8 @@ def record_invite_bootstrap_capsule_evidence(
 def fetch_distributed_release_peers(
     invite_bundle: Mapping[str, Any],
     capsule_evidence: Mapping[str, Any],
+    *,
+    trusted_genesis_authority_pubkey_hex: str | None = None,
 ) -> dict[str, Any]:
     """Fetch signed bootstrap peers when invite-carried hints are insufficient."""
 
@@ -534,6 +554,11 @@ def fetch_distributed_release_peers(
     if material is None:
         return _distributed_fetch_skipped("skipped_not_configured")
     seed_peer_endpoint, bundle_cid, genesis_authority_pubkey_hex = material
+    trusted_pubkey_hex = _trusted_bootstrap_fetch_genesis_pubkey_hex(
+        trusted_genesis_authority_pubkey_hex
+    )
+    if trusted_pubkey_hex != genesis_authority_pubkey_hex:
+        raise ValueError("bootstrap_fetch_trust_root_mismatch")
 
     from ilc_core.network.d2d.bootstrap_fetch_runtime import (
         BootstrapBundleError,
@@ -555,6 +580,8 @@ def fetch_distributed_release_peers(
     peer_endpoints = extract_peer_endpoints(bundle)
     if not peer_endpoints:
         raise ValueError("bootstrap_fetch_no_valid_peers")
+    if len(peer_endpoints) > MAX_BOOTSTRAP_FETCH_PEERS:
+        raise ValueError("bootstrap_fetch_peer_endpoints_too_many")
     return {
         "bootstrap_fetch_bundle_cid": bundle_cid,
         "bootstrap_fetch_genesis_authority_pubkey_hex": genesis_authority_pubkey_hex,
@@ -1236,11 +1263,18 @@ def _bootstrap_fetch_material(invite_bundle: Mapping[str, Any]) -> tuple[str, st
         return None
     if present != set(fields):
         raise ValueError("bootstrap_fetch_material_incomplete")
+    seed_peer_endpoint = _require_non_empty_string(
+        fields["bootstrap_fetch_seed_peer_endpoint"],
+        "bootstrap_fetch_seed_peer_endpoint_invalid",
+    )
+    from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+
+    try:
+        seed_peer_endpoint = validate_peer_endpoint(seed_peer_endpoint)
+    except Exception as exc:
+        raise ValueError("bootstrap_fetch_seed_peer_endpoint_invalid") from exc
     return (
-        _require_non_empty_string(
-            fields["bootstrap_fetch_seed_peer_endpoint"],
-            "bootstrap_fetch_seed_peer_endpoint_invalid",
-        ),
+        seed_peer_endpoint,
         _require_non_empty_string(
             fields["bootstrap_fetch_bundle_cid"],
             "bootstrap_fetch_bundle_cid_invalid",
@@ -1249,6 +1283,18 @@ def _bootstrap_fetch_material(invite_bundle: Mapping[str, Any]) -> tuple[str, st
             fields["bootstrap_fetch_genesis_authority_pubkey_hex"]
         ),
     )
+
+
+def _trusted_bootstrap_fetch_genesis_pubkey_hex(explicit_value: str | None) -> str:
+    value = explicit_value
+    if value is None:
+        value = os.environ.get(BOOTSTRAP_FETCH_TRUSTED_GENESIS_PUBKEY_ENV)
+    if value is None:
+        raise ValueError("bootstrap_fetch_trust_root_not_configured")
+    try:
+        return _require_genesis_authority_pubkey_hex(value)
+    except ValueError as exc:
+        raise ValueError("bootstrap_fetch_trust_root_invalid") from exc
 
 
 def _require_genesis_authority_pubkey_hex(value: Any) -> str:
@@ -1295,10 +1341,23 @@ def _normalize_distributed_fetch_evidence(
     endpoints = value.get("bootstrap_fetch_peer_endpoints")
     if not isinstance(endpoints, list) or not endpoints:
         raise ValueError("bootstrap_fetch_peer_endpoints_invalid")
-    normalized_endpoints = [
-        _require_non_empty_string(endpoint, "bootstrap_fetch_peer_endpoint_invalid")
-        for endpoint in endpoints
-    ]
+    if len(endpoints) > MAX_BOOTSTRAP_FETCH_PEERS:
+        raise ValueError("bootstrap_fetch_peer_endpoints_too_many")
+    from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+
+    normalized_endpoints = []
+    for endpoint in endpoints:
+        try:
+            normalized_endpoints.append(
+                validate_peer_endpoint(
+                    _require_non_empty_string(
+                        endpoint,
+                        "bootstrap_fetch_peer_endpoint_invalid",
+                    )
+                )
+            )
+        except Exception as exc:
+            raise ValueError("bootstrap_fetch_peer_endpoint_invalid") from exc
     count = _require_count(
         value.get("bootstrap_fetch_peers_count"),
         "bootstrap_fetch_peers_count_invalid",
@@ -1338,11 +1397,15 @@ def _reject_float(value: object, token: str) -> None:
 
 def _read_json_object(path: Path, token: str) -> dict[str, Any]:
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        payload = json.loads(
+            path.read_text(encoding="utf-8"),
+            parse_constant=lambda _constant: (_ for _ in ()).throw(ValueError(token)),
+        )
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
         raise ValueError(token) from exc
     if not isinstance(payload, dict):
         raise ValueError(token)
+    _reject_float(payload, token)
     return payload
 
 
@@ -1429,6 +1492,8 @@ __all__ = [
     "INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION",
     "INSTALL_CONNECTIVITY_RECEIPT_VERSION",
     "INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION",
+    "BOOTSTRAP_FETCH_TRUSTED_GENESIS_PUBKEY_ENV",
+    "MAX_BOOTSTRAP_FETCH_PEERS",
     "MAX_KNOWN_PEER_HINTS",
     "MIN_KNOWN_PEERS",
     "POP_DOMAIN",

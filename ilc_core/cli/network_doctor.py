@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 import tempfile
 from pathlib import Path
 from collections.abc import Mapping
@@ -19,6 +20,7 @@ from ilc_core.network.connectivity_mode import (
     ProbeResult,
     connectivity_mode_from_probe_result,
 )
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 
 
 NETWORK_DOCTOR_CLI_TOKEN = "network_doctor_cli_committed_GAP_INSTALL_NETWORK_DOCTOR_00"
@@ -35,6 +37,8 @@ UPNP_RELAY_TIP = (
     "shared/enterprise networks — use manual port forwarding instead."
 )
 MAX_RELAY_ADMISSION_MATERIAL_BYTES = 65_536
+MAX_NETWORK_DOCTOR_BOOTSTRAP_FETCH_PEERS = 16
+_LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
 
 
 def build_network_doctor_payload(
@@ -237,9 +241,9 @@ def _network_doctor_bootstrap_fetch(
         "genesis_authority_pubkey_hex": genesis_authority_pubkey_hex,
         "seed_peer_endpoint": bootstrap_seed_peer,
     }
-    present = {key for key, value in material.items() if value}
+    present = {key for key, value in material.items() if value is not None}
     if not fetch_peers:
-        if present:
+        if any(value not in (None, "") for value in material.values()):
             raise ValueError("network_doctor_bootstrap_fetch_flag_required")
         return {
             "peer_count": 0,
@@ -252,13 +256,18 @@ def _network_doctor_bootstrap_fetch(
         bootstrap_seed_peer,
         "network_doctor_bootstrap_seed_peer_invalid",
     )
+    from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
+
+    try:
+        seed_peer_endpoint = validate_peer_endpoint(seed_peer_endpoint)
+    except Exception as exc:
+        raise ValueError("network_doctor_bootstrap_seed_peer_invalid") from exc
     bundle_cid = _require_non_empty_string(
         bootstrap_bundle_cid,
         "network_doctor_bootstrap_bundle_cid_invalid",
     )
-    authority_pubkey_hex = _require_non_empty_string(
+    authority_pubkey_hex = _require_genesis_authority_pubkey_hex(
         genesis_authority_pubkey_hex,
-        "network_doctor_genesis_authority_pubkey_invalid",
     )
 
     from ilc_core.network.d2d.bootstrap_fetch_runtime import (
@@ -281,6 +290,8 @@ def _network_doctor_bootstrap_fetch(
     peer_endpoints = extract_peer_endpoints(bundle)
     if not peer_endpoints:
         raise ValueError("network_doctor_bootstrap_fetch_no_valid_peers")
+    if len(peer_endpoints) > MAX_NETWORK_DOCTOR_BOOTSTRAP_FETCH_PEERS:
+        raise ValueError("network_doctor_bootstrap_fetch_peer_endpoints_too_many")
     return {
         "bundle_cid": bundle_cid,
         "peer_count": len(peer_endpoints),
@@ -293,6 +304,16 @@ def _network_doctor_bootstrap_fetch(
 def _require_non_empty_string(value: object, token: str) -> str:
     if not isinstance(value, str) or not value or value.strip() != value:
         raise ValueError(token)
+    return value
+
+
+def _require_genesis_authority_pubkey_hex(value: object) -> str:
+    if (
+        not isinstance(value, str)
+        or len(value) != _MLDSA_PK_HEX_LENGTH
+        or _LOWER_HEX_RE.fullmatch(value) is None
+    ):
+        raise ValueError("network_doctor_genesis_authority_pubkey_invalid")
     return value
 
 

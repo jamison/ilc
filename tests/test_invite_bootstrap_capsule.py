@@ -14,6 +14,7 @@ from ilc_core.identity.bls_backend import verify_invitee_install_receipt_digest
 from ilc_core.identity.first_run_provisioning import (
     BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION,
     GENESIS_ROOT_ENVELOPE_HASH,
+    MAX_BOOTSTRAP_FETCH_PEERS,
     MIN_KNOWN_PEERS,
     fetch_distributed_release_peers,
     identity_root,
@@ -426,6 +427,7 @@ def test_fetch_distributed_release_peers_rejects_missing_bundle(
         fetch_distributed_release_peers(
             _fetch_bundle_material(),
             {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
         )
 
 
@@ -456,6 +458,7 @@ def test_fetch_distributed_release_peers_rejects_invalid_signature_before_extrac
         fetch_distributed_release_peers(
             _fetch_bundle_material(),
             {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
         )
 
     assert calls == ["verify"]
@@ -487,6 +490,7 @@ def test_fetch_distributed_release_peers_records_verified_endpoints(
     result = fetch_distributed_release_peers(
         _fetch_bundle_material(),
         {"known_peer_hints_verified": 0},
+        trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
     )
 
     assert calls == ["verify", "extract"]
@@ -549,3 +553,99 @@ def test_record_capsule_evidence_rejects_float_in_fetch_bundle(tmp_path: Path) -
             capsule_evidence=evidence,
             distributed_fetch_evidence=fetch_evidence,
         )
+
+
+def test_fetch_distributed_release_peers_rejects_unpinned_trust_root() -> None:
+    with pytest.raises(ValueError, match="bootstrap_fetch_trust_root_not_configured"):
+        fetch_distributed_release_peers(
+            _fetch_bundle_material(),
+            {"known_peer_hints_verified": 0},
+        )
+
+
+def test_fetch_distributed_release_peers_rejects_too_many_peers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: _bootstrap_bundle(),
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_bootstrap_bundle_signature",
+        lambda _bundle, _pubkey: True,
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "extract_peer_endpoints",
+        lambda _bundle: [
+            f"https://peer-{index}.ilc.example:443"
+            for index in range(MAX_BOOTSTRAP_FETCH_PEERS + 1)
+        ],
+    )
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_peer_endpoints_too_many"):
+        fetch_distributed_release_peers(
+            _fetch_bundle_material(),
+            {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
+        )
+
+
+def test_record_capsule_evidence_rejects_invalid_fetch_endpoint(tmp_path: Path) -> None:
+    agent = provision_new_identity(tmp_path, invite_id="invite-a", emit_warning=False)
+    evidence = validate_invite_bootstrap_capsule_fields({}, current_epoch=0)
+    fetch_evidence = {
+        **_fetch_bundle_material(),
+        "bootstrap_fetch_peer_endpoints": ["http://peer-a.ilc.example:443"],
+        "bootstrap_fetch_peers_count": 1,
+        "bootstrap_fetch_status": "fetched",
+        "verified_bootstrap_bundle": _bootstrap_bundle(),
+    }
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_peer_endpoint_invalid"):
+        record_invite_bootstrap_capsule_evidence(
+            tmp_path,
+            agent_id=agent["agent_id"],
+            current_epoch=0,
+            capsule_evidence=evidence,
+            distributed_fetch_evidence=fetch_evidence,
+        )
+
+
+def test_record_capsule_evidence_leaves_pending_marker_on_split_write_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    agent = provision_new_identity(tmp_path, invite_id="invite-a", emit_warning=False)
+    evidence = validate_invite_bootstrap_capsule_fields({}, current_epoch=0)
+    root = identity_root(tmp_path)
+    original_atomic_write_json = provisioning._atomic_write_json  # noqa: SLF001
+
+    def fail_on_onboarding_update(path: Path, payload: dict[str, Any], *, mode: int) -> None:
+        if path.name == "onboarding_receipt.json" and "bootstrap_fetch_status" in payload:
+            raise OSError("simulated split write")
+        original_atomic_write_json(path, payload, mode=mode)
+
+    monkeypatch.setattr(provisioning, "_atomic_write_json", fail_on_onboarding_update)
+
+    with pytest.raises(OSError, match="simulated split write"):
+        record_invite_bootstrap_capsule_evidence(
+            tmp_path,
+            agent_id=agent["agent_id"],
+            current_epoch=0,
+            capsule_evidence=evidence,
+        )
+
+    assert (root / "invite_bootstrap_capsule_evidence.pending.json").is_file()
+
+
+def test_read_json_object_rejects_non_finite_json(tmp_path: Path) -> None:
+    path = tmp_path / "bad.json"
+    path.write_text('{"agent_id":NaN}', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="onboarding_receipt_invalid"):
+        provisioning._read_json_object(path, "onboarding_receipt_invalid")  # noqa: SLF001
