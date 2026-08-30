@@ -526,7 +526,6 @@ def write_invitee_install_receipt(
             connectivity_receipt.get("connectivity_receipt_sha384"),
             "invitee_install_receipt_connectivity_sha384_invalid",
         ),
-        "created_at_unix": int(time.time()),
         "genesis_state_root": genesis_state_root,
         "install_epoch": install_epoch,
         "installed_release_artifact_id": installed_release_artifact_id,
@@ -551,6 +550,7 @@ def write_invitee_install_receipt(
         raise ValueError("invitee_install_receipt_signature_self_verify_failed")
     receipt = {
         **body,
+        "created_at_unix": int(time.time()),
         "signature": signature_hex,
         "signature_payload_ref": digest_hex,
     }

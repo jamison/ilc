@@ -64,6 +64,7 @@ def _connectivity_receipt() -> dict[str, Any]:
 
 def _receipt_digest(receipt: dict[str, Any]) -> str:
     body = dict(receipt)
+    body.pop("created_at_unix")
     body.pop("signature")
     body.pop("signature_payload_ref")
     return hashlib.sha384(
