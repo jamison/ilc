@@ -10,6 +10,7 @@ from typing import Any
 import pytest
 
 from ilc_core.cli import main as cli_main
+from ilc_core.cli.main import INSTALL_PROBE_OBSERVER_MAX_COUNT
 from ilc_core.identity import first_run_provisioning as provisioning
 from ilc_core.identity.first_run_provisioning import (
     identity_root,
@@ -189,14 +190,18 @@ def test_record_install_connectivity_receipt_success_updates_identity_files(
     assert calls[0]["observers"] == ("https://observer.ilc.example/probe",)
     assert calls[1] == {"attempt_router_mapping": True, "probe_epoch": 3}
     assert stored["connectivity_mode"] == "direct_public"
+    assert stored["connectivity_evidence_status"] == "probe_succeeded"
+    assert stored["connectivity_receipt_path"] == str(root / "connectivity_receipt.json")
     assert stored["observed_endpoint"] == "203.0.113.10:50151"
     assert stored["firewall_mutation_attempted"] is False
+    assert stored["firewall_mutation_status"] == "confirmed_not_mutated"
     assert stored["connectivity_summary"] == "Detected mode: direct_public at 203.0.113.10:50151"
+    assert onboarding["connectivity_receipt_path"] == str(root / "connectivity_receipt.json")
     assert onboarding["connectivity_receipt_sha384"] == stored["connectivity_receipt_sha384"]
     assert result["onboarding_receipt"]["connectivity_mode"] == "direct_public"
 
 
-def test_record_install_connectivity_receipt_probe_failure_falls_back_to_outbound_only(
+def test_record_install_connectivity_receipt_probe_failure_falls_back_to_local_only(
     tmp_path: Path,
     fake_keygen: list[str],
     monkeypatch: pytest.MonkeyPatch,
@@ -225,10 +230,12 @@ def test_record_install_connectivity_receipt_probe_failure_falls_back_to_outboun
     )
 
     receipt = result["connectivity_receipt"]
-    assert receipt["connectivity_mode"] == "outbound_only"
+    assert receipt["connectivity_mode"] == "local_only"
+    assert receipt["connectivity_evidence_status"] == "probe_failed_connectivity_unverified"
     assert receipt["observed_endpoint"] is None
     assert receipt["relay_endpoint"] is None
     assert receipt["firewall_mutation_attempted"] is False
+    assert receipt["firewall_mutation_status"] == "confirmed_not_mutated"
     assert receipt["nat_probe_report"]["warnings"] == [
         "connectivity_probe_failed:TimeoutError"
     ]
@@ -276,8 +283,9 @@ def test_record_install_connectivity_receipt_malformed_probe_report_falls_back(
     )
 
     receipt = result["connectivity_receipt"]
-    assert receipt["connectivity_mode"] == "outbound_only"
+    assert receipt["connectivity_mode"] == "local_only"
     assert receipt["firewall_mutation_attempted"] is False
+    assert receipt["firewall_mutation_status"] == "confirmed_not_mutated"
     assert receipt["nat_probe_report"]["warnings"] == [
         "connectivity_probe_failed:ValueError"
     ]
@@ -307,20 +315,28 @@ def test_install_from_invite_records_connectivity_without_router_mutation_by_def
         connectivity = {
             "agent_id": kwargs["agent_id"],
             "attempt_router_mapping": kwargs["attempt_router_mapping"],
+            "connectivity_evidence_status": "probe_succeeded",
             "connectivity_mode": "local_only",
+            "connectivity_receipt_path": str(
+                identity_root(install_dir) / "connectivity_receipt.json"
+            ),
             "connectivity_receipt_sha384": "d" * 96,
             "connectivity_summary": "Detected mode: local_only",
             "firewall_mutation_attempted": False,
+            "firewall_mutation_status": "confirmed_not_mutated",
             "observed_endpoint": None,
             "relay_endpoint": None,
             "schema_version": provisioning.INSTALL_CONNECTIVITY_RECEIPT_VERSION,
         }
         onboarding.update(
             {
+                "connectivity_evidence_status": "probe_succeeded",
                 "connectivity_mode": "local_only",
+                "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
                 "connectivity_receipt_sha384": "d" * 96,
                 "connectivity_summary": "Detected mode: local_only",
                 "firewall_mutation_attempted": False,
+                "firewall_mutation_status": "confirmed_not_mutated",
                 "observed_endpoint": None,
                 "relay_endpoint": None,
             }
@@ -382,15 +398,27 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
         connectivity = {
             "agent_id": kwargs["agent_id"],
             "attempt_router_mapping": True,
+            "connectivity_evidence_status": "probe_succeeded",
             "connectivity_mode": "relay_reachable",
+            "connectivity_receipt_path": str(
+                identity_root(install_dir) / "connectivity_receipt.json"
+            ),
             "connectivity_receipt_sha384": "e" * 96,
             "connectivity_summary": "Detected mode: relay_reachable via relay.example:51151",
             "firewall_mutation_attempted": False,
+            "firewall_mutation_status": "confirmed_not_mutated",
             "observed_endpoint": None,
             "relay_endpoint": "relay.example:51151",
             "schema_version": provisioning.INSTALL_CONNECTIVITY_RECEIPT_VERSION,
         }
-        onboarding.update({"connectivity_mode": "relay_reachable"})
+        onboarding.update(
+            {
+                "connectivity_evidence_status": "probe_succeeded",
+                "connectivity_mode": "relay_reachable",
+                "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
+                "firewall_mutation_status": "confirmed_not_mutated",
+            }
+        )
         return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
 
     monkeypatch.setattr(provisioning, "record_install_connectivity_receipt", fake_record)
@@ -413,3 +441,50 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
     assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
     assert calls[0]["relay_admission_material"] == {"agent_id": AGENT_ID_HEX}
     assert identity_root(install_home).exists()
+
+
+def test_install_probe_observers_rejects_unbounded_observer_fanout() -> None:
+    args = argparse.Namespace(
+        probe_observer=[
+            f"https://observer-{index}.ilc.example/probe"
+            for index in range(INSTALL_PROBE_OBSERVER_MAX_COUNT + 1)
+        ]
+    )
+
+    with pytest.raises(ValueError, match="install_probe_observer_count_exceeded"):
+        cli_main._install_probe_observers(args)
+
+
+def test_record_install_connectivity_receipt_upnp_failure_does_not_underclaim_mutation(
+    tmp_path: Path,
+    fake_keygen: list[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FailingNatProbeEngine:
+        def __init__(self, **_kwargs: Any) -> None:
+            pass
+
+        def run_probe(self, **_kwargs: Any) -> NatProbeReport:
+            raise TimeoutError("synthetic timeout")
+
+    import ilc_core.network.nat_probe as nat_probe
+
+    monkeypatch.setattr(nat_probe, "NatProbeEngine", FailingNatProbeEngine)
+    provision_new_identity(
+        tmp_path,
+        invite_id="invite-connectivity",
+        keygen_command=fake_keygen,
+        emit_warning=False,
+    )
+
+    result = record_install_connectivity_receipt(
+        tmp_path,
+        agent_id=AGENT_ID_HEX,
+        epoch=0,
+        attempt_router_mapping=True,
+    )
+
+    receipt = result["connectivity_receipt"]
+    assert receipt["firewall_mutation_attempted"] is False
+    assert receipt["firewall_mutation_status"] == "unknown_after_opt_in_probe_failure"
+    assert receipt["connectivity_evidence_status"] == "probe_failed_connectivity_unverified"

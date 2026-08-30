@@ -74190,6 +74190,123 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_audit_fix_00_g10_relay_audit_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_VALIDATOR_OBSERVER_DEFAULT_00_validator_wiring",
+      "chronology_note": "2026-08-30 GAP-VALIDATOR-OBSERVER-DEFAULT-00 phase prompt hardened before execution.",
+      "manual_read_summary": "Prompt was corrected to the current validator_participation_enabled line number, both dynamic peer discovery guard locations, candidate-only nat_traversed_direct semantics, computed connectivity receipt path hardening, bounded observer fanout checks, and STATUS.md token verification.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-OBSERVER-DEFAULT-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/README.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "runtime:validator_observer_default_wiring"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:validator_observer_default_wired_GAP_VALIDATOR_OBSERVER_DEFAULT_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_observer_default_00_g10_validator_on_by_default_wiring.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_VALIDATOR_OBSERVER_DEFAULT_00_validator_wiring",
+      "chronology_note": "2026-08-30 GAP-VALIDATOR-OBSERVER-DEFAULT-00 added regression tests for default-on validator observer connectivity wiring.",
+      "manual_read_summary": "Test file covers default validator participation, no-validator opt-out, validator observer relay/direct classifier paths, admitted relay/direct paths, NAT candidate-only behavior, and dynamic peer discovery guard state in both D2D surfaces.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-OBSERVER-DEFAULT-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:connectivity_mode_validator_role_mapping"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_observer_default_00_g10_validator_on_by_default_wiring.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:validator_observer_default_wired_GAP_VALIDATOR_OBSERVER_DEFAULT_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_validator_connectivity_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1609_phase_GAP_VALIDATOR_OBSERVER_DEFAULT_00_validator_wiring",
+      "chronology_note": "2026-08-30 GAP-VALIDATOR-OBSERVER-DEFAULT-00 completed validator observer default wiring verification and install connectivity receipt hardening.",
+      "manual_read_summary": "Walkthrough records MemPalace and direct source reads, prompt hardening, implementation changes, verification command output, carry-forward atomicity note, graph delta, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-OBSERVER-DEFAULT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_observer_default_00_g10_validator_on_by_default_wiring.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:validator_observer_default_wired_GAP_VALIDATOR_OBSERVER_DEFAULT_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_validator_observer_default_00_walkthrough.md"
     }
   ],
   "boundary": {

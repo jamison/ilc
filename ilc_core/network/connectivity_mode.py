@@ -41,6 +41,19 @@ class ConnectivityMode(str, Enum):
     VALIDATOR_RELAY = "validator_relay"
 
 
+CONNECTIVITY_MODE_VALIDATOR_ROLE_MAPPING = {
+    ConnectivityMode.LOCAL_ONLY: "local_agent_only",
+    ConnectivityMode.OUTBOUND_ONLY: "outbound_serving_peer_candidate",
+    ConnectivityMode.NAT_TRAVERSED_DIRECT: "candidate_direct_endpoint_external_verification_pending",
+    ConnectivityMode.RELAY_REACHABLE: "relay_reachable_serving_peer",
+    ConnectivityMode.DIRECT_PUBLIC: "direct_public_serving_peer",
+    ConnectivityMode.VALIDATOR_OBSERVER_RELAY: "validator_candidate_observer_via_relay",
+    ConnectivityMode.VALIDATOR_OBSERVER_DIRECT: "validator_candidate_observer_direct_public",
+    ConnectivityMode.VALIDATOR_DIRECT: "admitted_validator_direct_public",
+    ConnectivityMode.VALIDATOR_RELAY: "admitted_validator_via_pass_through_relay",
+}
+
+
 class ConnectivityModeValidationError(ValueError):
     """Raised when connectivity mode schema input is malformed."""
 
@@ -142,7 +155,12 @@ class ConnectivityReceipt:
 
 
 def connectivity_mode_from_probe_result(result: ProbeResult) -> ConnectivityMode:
-    """Classify probe evidence into exactly one canonical connectivity mode."""
+    """Classify probe evidence into exactly one canonical connectivity mode.
+
+    A router-mapping candidate is not treated as validator-direct. Validator
+    modes require either admitted validator state or default-on validator
+    observer state plus verified direct-public or relay evidence.
+    """
 
     if not isinstance(result, ProbeResult):
         raise ConnectivityModeValidationError("probe_result_required")
@@ -247,6 +265,7 @@ __all__ = [
     "CONNECTIVITY_MODE_RUNTIME_TOKEN",
     "CONNECTIVITY_MODE_RUNTIME_VERSION",
     "CONNECTIVITY_PROBE_RUNTIME_NOT_ACTIVATED",
+    "CONNECTIVITY_MODE_VALIDATOR_ROLE_MAPPING",
     "ConnectivityMode",
     "ConnectivityModeValidationError",
     "ConnectivityReceipt",

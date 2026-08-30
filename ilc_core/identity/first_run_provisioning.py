@@ -212,17 +212,38 @@ def record_install_connectivity_receipt(
         report_payload = _fallback_connectivity_report_payload(
             agent_id=agent_id,
             epoch=epoch,
+            attempt_router_mapping=attempt_router_mapping,
             error_type=type(exc).__name__,
         )
         connectivity_receipt = _require_connectivity_report_payload(report_payload)
         firewall_mutation_attempted = False
 
+    connectivity_evidence_status = report_payload.get(
+        "connectivity_evidence_status",
+        "probe_succeeded",
+    )
+    if not isinstance(connectivity_evidence_status, str) or not connectivity_evidence_status:
+        raise ValueError("connectivity_probe_report_evidence_status_invalid")
+    firewall_mutation_status = report_payload.get("firewall_mutation_status")
+    if firewall_mutation_status is None:
+        firewall_mutation_status = (
+            "confirmed_mutated"
+            if firewall_mutation_attempted
+            else "confirmed_not_mutated"
+        )
+    if not isinstance(firewall_mutation_status, str) or not firewall_mutation_status:
+        raise ValueError("connectivity_probe_report_firewall_mutation_status_invalid")
+
+    connectivity_receipt_path = root / "connectivity_receipt.json"
     payload = {
         "agent_id": agent_id,
         "attempt_router_mapping": attempt_router_mapping,
+        "connectivity_evidence_status": connectivity_evidence_status,
         "connectivity_mode": connectivity_receipt["mode"],
+        "connectivity_receipt_path": str(connectivity_receipt_path),
         "connectivity_summary": _format_connectivity_summary(connectivity_receipt),
         "firewall_mutation_attempted": firewall_mutation_attempted,
+        "firewall_mutation_status": firewall_mutation_status,
         "nat_probe_report": report_payload,
         "observed_endpoint": connectivity_receipt.get("observed_endpoint"),
         "probe_epoch": epoch,
@@ -231,7 +252,6 @@ def record_install_connectivity_receipt(
     }
     receipt_sha384 = _canonical_sha384(payload)
     payload["connectivity_receipt_sha384"] = receipt_sha384
-    connectivity_receipt_path = root / "connectivity_receipt.json"
     _atomic_write_json(connectivity_receipt_path, payload, mode=0o644)
 
     onboarding_receipt_path = root / "onboarding_receipt.json"
@@ -243,11 +263,13 @@ def record_install_connectivity_receipt(
         raise ValueError("onboarding_receipt_agent_id_mismatch")
     onboarding_receipt.update(
         {
+            "connectivity_evidence_status": payload["connectivity_evidence_status"],
             "connectivity_mode": payload["connectivity_mode"],
-            "connectivity_receipt_path": "~/.ilc/identity/connectivity_receipt.json",
+            "connectivity_receipt_path": payload["connectivity_receipt_path"],
             "connectivity_receipt_sha384": receipt_sha384,
             "connectivity_summary": payload["connectivity_summary"],
             "firewall_mutation_attempted": payload["firewall_mutation_attempted"],
+            "firewall_mutation_status": payload["firewall_mutation_status"],
             "observed_endpoint": payload["observed_endpoint"],
             "relay_endpoint": payload["relay_endpoint"],
         }
@@ -679,6 +701,7 @@ def _fallback_connectivity_report_payload(
     *,
     agent_id: str,
     epoch: int,
+    attempt_router_mapping: bool,
     error_type: str,
 ) -> dict[str, Any]:
     from ilc_core.network.connectivity_mode import (
@@ -688,7 +711,7 @@ def _fallback_connectivity_report_payload(
         ProbeResult,
     )
 
-    fallback_mode = "outbound_only"
+    fallback_mode = "local_only"
     receipt = ConnectivityReceipt(
         mode=ConnectivityMode(fallback_mode),
         observed_endpoint=None,
@@ -698,8 +721,14 @@ def _fallback_connectivity_report_payload(
     )
     return {
         "attempt_receipts": [],
+        "connectivity_evidence_status": "probe_failed_connectivity_unverified",
         "connectivity_receipt": receipt.to_dict(),
         "firewall_mutation_attempted": False,
+        "firewall_mutation_status": (
+            "unknown_after_opt_in_probe_failure"
+            if attempt_router_mapping
+            else "confirmed_not_mutated"
+        ),
         "nat_probe_failure": {
             "agent_id": agent_id,
             "error_type": error_type,
@@ -714,7 +743,7 @@ def _fallback_connectivity_report_payload(
                 observed_port=None,
                 relay_available=False,
                 validator_participation_enabled=False,
-                has_outbound_connectivity=True,
+                has_outbound_connectivity=False,
             ).__dict__,
         },
         "router_mapping": None,
