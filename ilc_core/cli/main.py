@@ -2078,6 +2078,30 @@ def _build_parser() -> JsonArgumentParser:
                 help="Path to relay admission material JSON for guarded relay probing",
             )
             network_doctor_parser.add_argument(
+                "--fetch-peers",
+                action="store_true",
+                help=(
+                    "Fetch and verify a signed CDL-079 bootstrap peer bundle for "
+                    "diagnostics. Requires --bootstrap-seed-peer, "
+                    "--bootstrap-bundle-cid, and --genesis-authority-pubkey-hex."
+                ),
+            )
+            network_doctor_parser.add_argument(
+                "--bootstrap-seed-peer",
+                default="",
+                help="Seed peer HTTPS endpoint used with --fetch-peers",
+            )
+            network_doctor_parser.add_argument(
+                "--bootstrap-bundle-cid",
+                default="",
+                help="Bootstrap bundle CID used with --fetch-peers",
+            )
+            network_doctor_parser.add_argument(
+                "--genesis-authority-pubkey-hex",
+                default="",
+                help="Genesis ML-DSA public key hex used to verify the bootstrap bundle",
+            )
+            network_doctor_parser.add_argument(
                 "--probe-epoch",
                 type=int,
                 default=0,
@@ -3167,6 +3191,16 @@ def _run_top_level_command(
             text=bool(getattr(args, "text", False)),
             output_path=str(getattr(args, "out", "") or "") or None,
             enable_upnp=bool(getattr(args, "enable_upnp", False)),
+            fetch_peers=bool(getattr(args, "fetch_peers", False)),
+            bootstrap_seed_peer=(
+                str(getattr(args, "bootstrap_seed_peer", "") or "") or None
+            ),
+            bootstrap_bundle_cid=(
+                str(getattr(args, "bootstrap_bundle_cid", "") or "") or None
+            ),
+            genesis_authority_pubkey_hex=(
+                str(getattr(args, "genesis_authority_pubkey_hex", "") or "") or None
+            ),
             probe_epoch=int(getattr(args, "probe_epoch", 0)),
             probe_observers=tuple(getattr(args, "probe_observer", []) or []),
             relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
@@ -3709,12 +3743,17 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
     current_epoch = _install_current_epoch(invite_bundle)
     invite_id = _install_invite_id(invite_bundle)
     from ilc_core.identity.first_run_provisioning import (
+        fetch_distributed_release_peers,
         validate_invite_bootstrap_capsule_fields,
     )
 
     invite_capsule_evidence = validate_invite_bootstrap_capsule_fields(
         invite_bundle,
         current_epoch=current_epoch,
+    )
+    distributed_fetch_evidence = fetch_distributed_release_peers(
+        invite_bundle,
+        invite_capsule_evidence,
     )
 
     from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
@@ -3875,6 +3914,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 agent_id=agent_id,
                 current_epoch=current_epoch,
                 capsule_evidence=invite_capsule_evidence,
+                distributed_fetch_evidence=distributed_fetch_evidence,
             )
             onboarding_receipt = dict(capsule_record["onboarding_receipt"])
             invitee_install_receipt = write_invitee_install_receipt(
@@ -3904,6 +3944,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             )
             _write_install_receipt_atomic(output_receipt, receipt)
             return {
+                "bootstrap_fetch_peers": capsule_record["bootstrap_fetch_peers"],
                 "bootstrap_peer_hints": capsule_record["bootstrap_peer_hints"],
                 "connectivity_receipt": connectivity_receipt,
                 "connectivity_summary": connectivity_receipt["connectivity_summary"],
@@ -4213,6 +4254,17 @@ def _install_invite_bootstrap_capsule_fields(
         "bootstrap_peer_hints_path": evidence["bootstrap_peer_hints_path"],
         "bootstrap_peer_hints_sha384": evidence["bootstrap_peer_hints_sha384"],
         "bootstrap_peer_hints_written": evidence["bootstrap_peer_hints_written"],
+        "bootstrap_fetch_bundle_cid": evidence["bootstrap_fetch_bundle_cid"],
+        "bootstrap_fetch_genesis_authority_pubkey_hex": evidence[
+            "bootstrap_fetch_genesis_authority_pubkey_hex"
+        ],
+        "bootstrap_fetch_peer_endpoints": evidence["bootstrap_fetch_peer_endpoints"],
+        "bootstrap_fetch_peers_count": evidence["bootstrap_fetch_peers_count"],
+        "bootstrap_fetch_peers_path": evidence["bootstrap_fetch_peers_path"],
+        "bootstrap_fetch_peers_sha384": evidence["bootstrap_fetch_peers_sha384"],
+        "bootstrap_fetch_peers_written": evidence["bootstrap_fetch_peers_written"],
+        "bootstrap_fetch_seed_peer_endpoint": evidence["bootstrap_fetch_seed_peer_endpoint"],
+        "bootstrap_fetch_status": evidence["bootstrap_fetch_status"],
         "genesis_state_root": evidence["genesis_state_root"],
         "genesis_state_root_status": evidence["genesis_state_root_status"],
         "invite_bootstrap_capsule_schema_version": evidence[
