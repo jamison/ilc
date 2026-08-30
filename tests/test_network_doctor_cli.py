@@ -31,6 +31,10 @@ def test_network_doctor_help_exits_zero() -> None:
     assert "--probe-observer" in result.stdout
     assert "--relay-url" in result.stdout
     assert "--relay-admission-material" in result.stdout
+    assert "--fetch-peers" in result.stdout
+    assert "--bootstrap-seed-peer" in result.stdout
+    assert "--bootstrap-bundle-cid" in result.stdout
+    assert "--genesis-authority-pubkey-hex" in result.stdout
     assert "--probe-epoch" in result.stdout
     assert "--enable-upnp" in result.stdout
     assert "UPnP IGD has no" in result.stdout
@@ -292,3 +296,94 @@ def test_network_doctor_rejects_finite_float_relay_admission_material(tmp_path) 
         match="network_doctor_relay_admission_material_float_forbidden",
     ):
         network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
+
+
+def test_network_doctor_bootstrap_fetch_requires_flag() -> None:
+    with pytest.raises(ValueError, match="network_doctor_bootstrap_fetch_flag_required"):
+        network_doctor.build_network_doctor_payload(
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+        )
+
+
+def test_network_doctor_bootstrap_fetch_requires_complete_material() -> None:
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_bootstrap_fetch_material_incomplete",
+    ):
+        network_doctor.build_network_doctor_payload(
+            fetch_peers=True,
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+            bootstrap_bundle_cid="bafybootstrap",
+        )
+
+
+def test_network_doctor_bootstrap_fetch_verifies_before_extract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: {"bundle_cid": "bafybootstrap"},
+    )
+
+    def fake_verify(_bundle: dict[str, object], _pubkey: str) -> bool:
+        calls.append("verify")
+        return False
+
+    def fake_extract(_bundle: dict[str, object]) -> list[str]:
+        calls.append("extract")
+        return ["https://peer-a.ilc.example:443"]
+
+    monkeypatch.setattr(bootstrap_fetch_runtime, "verify_bootstrap_bundle_signature", fake_verify)
+    monkeypatch.setattr(bootstrap_fetch_runtime, "extract_peer_endpoints", fake_extract)
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_bootstrap_bundle_signature_invalid",
+    ):
+        network_doctor.build_network_doctor_payload(
+            fetch_peers=True,
+            bootstrap_seed_peer="https://seed.ilc.example:443",
+            bootstrap_bundle_cid="bafybootstrap",
+            genesis_authority_pubkey_hex="b" * 3328,
+        )
+
+    assert calls == ["verify"]
+
+
+def test_network_doctor_bootstrap_fetch_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: {"bundle_cid": "bafybootstrap"},
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_bootstrap_bundle_signature",
+        lambda _bundle, _pubkey: True,
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "extract_peer_endpoints",
+        lambda _bundle: ["https://peer-a.ilc.example:443"],
+    )
+
+    payload = network_doctor.build_network_doctor_payload(
+        fetch_peers=True,
+        bootstrap_seed_peer="https://seed.ilc.example:443",
+        bootstrap_bundle_cid="bafybootstrap",
+        genesis_authority_pubkey_hex="b" * 3328,
+    )
+
+    assert payload["bootstrap_fetch"] == {
+        "bundle_cid": "bafybootstrap",
+        "peer_count": 1,
+        "peer_endpoints": ["https://peer-a.ilc.example:443"],
+        "seed_peer_endpoint": "https://seed.ilc.example:443",
+        "status": "fetched",
+    }

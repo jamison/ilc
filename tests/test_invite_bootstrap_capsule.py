@@ -12,7 +12,10 @@ from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH, _MLDSA_SIG
 from ilc_core.identity import first_run_provisioning as provisioning
 from ilc_core.identity.bls_backend import verify_invitee_install_receipt_digest
 from ilc_core.identity.first_run_provisioning import (
+    BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION,
     GENESIS_ROOT_ENVELOPE_HASH,
+    MIN_KNOWN_PEERS,
+    fetch_distributed_release_peers,
     identity_root,
     provision_new_identity,
     record_invite_bootstrap_capsule_evidence,
@@ -321,6 +324,15 @@ def test_install_receipt_records_resolved_invitee_receipt_path(
                 "bootstrap_peer_hints_path": None,
                 "bootstrap_peer_hints_sha384": None,
                 "bootstrap_peer_hints_written": False,
+                "bootstrap_fetch_bundle_cid": None,
+                "bootstrap_fetch_genesis_authority_pubkey_hex": None,
+                "bootstrap_fetch_peer_endpoints": [],
+                "bootstrap_fetch_peers_count": 0,
+                "bootstrap_fetch_peers_path": None,
+                "bootstrap_fetch_peers_sha384": None,
+                "bootstrap_fetch_peers_written": False,
+                "bootstrap_fetch_seed_peer_endpoint": None,
+                "bootstrap_fetch_status": "skipped_not_configured",
                 "genesis_state_root": GENESIS_ROOT_ENVELOPE_HASH,
                 "genesis_state_root_status": "absent_using_package_root",
                 "invite_bootstrap_capsule_schema_version": (
@@ -340,3 +352,200 @@ def test_install_receipt_records_resolved_invitee_receipt_path(
     assert receipt["invitee_install_receipt_path"] == str(
         tmp_path / ".ilc" / "identity" / "invitee_install_receipt.json"
     )
+
+
+def _bootstrap_bundle() -> dict[str, Any]:
+    return {
+        "bundle_cid": "bafybootstrap",
+        "cdl_version": "cdl_079_bootstrap_bundle_v1",
+        "genesis_cid": "bafygenesis",
+        "peers": [
+            {"endpoint": "https://peer-a.ilc.example:443", "node_id": "node-a"},
+            {"endpoint": "https://peer-b.ilc.example:443", "node_id": "node-b"},
+        ],
+        "schema_version": "bootstrap_bundle_v1",
+        "signature": "a" * _MLDSA_SIG_HEX_LENGTH,
+        "signed_by": MLDSA_PUBKEY_HEX,
+    }
+
+
+def _fetch_bundle_material() -> dict[str, Any]:
+    return {
+        "bootstrap_fetch_bundle_cid": "bafybootstrap",
+        "bootstrap_fetch_genesis_authority_pubkey_hex": MLDSA_PUBKEY_HEX,
+        "bootstrap_fetch_seed_peer_endpoint": "https://seed.ilc.example:443",
+    }
+
+
+def test_fetch_distributed_release_peers_skips_when_known_peer_threshold_met(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_fetch(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("fetch_bootstrap_bundle should not be called")
+
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(bootstrap_fetch_runtime, "fetch_bootstrap_bundle", fail_fetch)
+
+    result = fetch_distributed_release_peers(
+        {},
+        {"known_peer_hints_verified": MIN_KNOWN_PEERS},
+    )
+
+    assert result["bootstrap_fetch_status"] == "skipped_known_peers_sufficient"
+    assert result["bootstrap_fetch_peers_count"] == 0
+
+
+def test_fetch_distributed_release_peers_skips_when_not_configured() -> None:
+    result = fetch_distributed_release_peers({}, {"known_peer_hints_verified": 0})
+
+    assert result["bootstrap_fetch_status"] == "skipped_not_configured"
+    assert result["bootstrap_fetch_peer_endpoints"] == []
+
+
+def test_fetch_distributed_release_peers_rejects_partial_material() -> None:
+    with pytest.raises(ValueError, match="bootstrap_fetch_material_incomplete"):
+        fetch_distributed_release_peers(
+            {"bootstrap_fetch_bundle_cid": "bafybootstrap"},
+            {"known_peer_hints_verified": 0},
+        )
+
+
+def test_fetch_distributed_release_peers_rejects_missing_bundle(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: None,
+    )
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_bundle_not_found"):
+        fetch_distributed_release_peers(
+            _fetch_bundle_material(),
+            {"known_peer_hints_verified": 0},
+        )
+
+
+def test_fetch_distributed_release_peers_rejects_invalid_signature_before_extract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: _bootstrap_bundle(),
+    )
+
+    def fake_verify(_bundle: dict[str, Any], _pubkey: str) -> bool:
+        calls.append("verify")
+        return False
+
+    def fake_extract(_bundle: dict[str, Any]) -> list[str]:
+        calls.append("extract")
+        return ["https://peer-a.ilc.example:443"]
+
+    monkeypatch.setattr(bootstrap_fetch_runtime, "verify_bootstrap_bundle_signature", fake_verify)
+    monkeypatch.setattr(bootstrap_fetch_runtime, "extract_peer_endpoints", fake_extract)
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_bundle_signature_invalid"):
+        fetch_distributed_release_peers(
+            _fetch_bundle_material(),
+            {"known_peer_hints_verified": 0},
+        )
+
+    assert calls == ["verify"]
+
+
+def test_fetch_distributed_release_peers_records_verified_endpoints(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: _bootstrap_bundle(),
+    )
+
+    def fake_verify(_bundle: dict[str, Any], _pubkey: str) -> bool:
+        calls.append("verify")
+        return True
+
+    def fake_extract(_bundle: dict[str, Any]) -> list[str]:
+        calls.append("extract")
+        return ["https://peer-a.ilc.example:443", "https://peer-b.ilc.example:443"]
+
+    monkeypatch.setattr(bootstrap_fetch_runtime, "verify_bootstrap_bundle_signature", fake_verify)
+    monkeypatch.setattr(bootstrap_fetch_runtime, "extract_peer_endpoints", fake_extract)
+
+    result = fetch_distributed_release_peers(
+        _fetch_bundle_material(),
+        {"known_peer_hints_verified": 0},
+    )
+
+    assert calls == ["verify", "extract"]
+    assert result["bootstrap_fetch_status"] == "fetched"
+    assert result["bootstrap_fetch_peers_count"] == 2
+    assert result["bootstrap_fetch_peer_endpoints"] == [
+        "https://peer-a.ilc.example:443",
+        "https://peer-b.ilc.example:443",
+    ]
+
+
+def test_record_capsule_evidence_persists_distributed_fetch_peers(tmp_path: Path) -> None:
+    agent = provision_new_identity(tmp_path, invite_id="invite-a", emit_warning=False)
+    evidence = validate_invite_bootstrap_capsule_fields({}, current_epoch=0)
+    fetch_evidence = {
+        **_fetch_bundle_material(),
+        "bootstrap_fetch_peer_endpoints": ["https://peer-a.ilc.example:443"],
+        "bootstrap_fetch_peers_count": 1,
+        "bootstrap_fetch_status": "fetched",
+        "verified_bootstrap_bundle": _bootstrap_bundle(),
+    }
+
+    record = record_invite_bootstrap_capsule_evidence(
+        tmp_path,
+        agent_id=agent["agent_id"],
+        current_epoch=0,
+        capsule_evidence=evidence,
+        distributed_fetch_evidence=fetch_evidence,
+    )
+
+    root = identity_root(tmp_path)
+    fetch_path = root / "bootstrap_fetch_peers.json"
+    fetch_payload = json.loads(fetch_path.read_text(encoding="utf-8"))
+    onboarding = json.loads((root / "onboarding_receipt.json").read_text(encoding="utf-8"))
+    assert fetch_payload["schema_version"] == BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION
+    assert fetch_payload["peer_endpoints"] == ["https://peer-a.ilc.example:443"]
+    assert fetch_payload["bootstrap_fetch_peers_sha384"] == record[
+        "invite_bootstrap_capsule_evidence"
+    ]["bootstrap_fetch_peers_sha384"]
+    assert onboarding["bootstrap_fetch_status"] == "fetched"
+    assert onboarding["bootstrap_fetch_peers_path"] == str(fetch_path)
+
+
+def test_record_capsule_evidence_rejects_float_in_fetch_bundle(tmp_path: Path) -> None:
+    agent = provision_new_identity(tmp_path, invite_id="invite-a", emit_warning=False)
+    evidence = validate_invite_bootstrap_capsule_fields({}, current_epoch=0)
+    fetch_evidence = {
+        **_fetch_bundle_material(),
+        "bootstrap_fetch_peer_endpoints": ["https://peer-a.ilc.example:443"],
+        "bootstrap_fetch_peers_count": 1,
+        "bootstrap_fetch_status": "fetched",
+        "verified_bootstrap_bundle": {**_bootstrap_bundle(), "weight": 1.25},
+    }
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_bundle_float_not_allowed"):
+        record_invite_bootstrap_capsule_evidence(
+            tmp_path,
+            agent_id=agent["agent_id"],
+            current_epoch=0,
+            capsule_evidence=evidence,
+            distributed_fetch_evidence=fetch_evidence,
+        )

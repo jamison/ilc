@@ -90157,6 +90157,84 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_bootstrap_capsule_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_DISTRIBUTED_RELEASE_FETCH_00",
+      "chronology_note": "2026-08-30 GAP-DISTRIBUTED-RELEASE-FETCH-00 added focused distributed bootstrap fetch tests.",
+      "manual_read_summary": "Tests cover absent optional fetch material, known-peer threshold skip, partial triplet hard stop, signature failure before endpoint extraction, and verified endpoint fetch success.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-DISTRIBUTED-RELEASE-FETCH-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:distributed_release_fetch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.identity.first_run_provisioning.fetch_distributed_release_peers"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core.network.d2d.bootstrap_fetch_runtime"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "COVERS_SYMBOL",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_distributed_release_fetch.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_DISTRIBUTED_RELEASE_FETCH_00",
+      "chronology_note": "2026-08-30 GAP-DISTRIBUTED-RELEASE-FETCH-00 walkthrough recorded prompt hardening, implementation, verification output, graph delta, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough records direct reads, MemPalace context, optional distributed-fetch semantics, installer and network-doctor wiring, focused and adjacent verification output, graph delta, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-DISTRIBUTED-RELEASE-FETCH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_distributed_release_fetch_00_g10_bootstrap_fetch_wiring.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:distributed_release_fetch_committed_GAP_DISTRIBUTED_RELEASE_FETCH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_distributed_release_fetch_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

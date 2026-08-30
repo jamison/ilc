@@ -50,9 +50,13 @@ INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION = (
     "invite_bootstrap_capsule_GAP_INVITE_BOOTSTRAP_CAPSULE_IMPL_00.v0.1"
 )
 BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION = "bootstrap_peer_hints.v0.1"
+BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION = (
+    "distributed_release_fetch_GAP_DISTRIBUTED_RELEASE_FETCH_00.v0.1"
+)
 INVITEE_INSTALL_RECEIPT_SCHEMA_VERSION = "invitee_install_receipt.v0.1"
 INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN = "ILC_INVITEE_INSTALL_RECEIPT_V1"
 MAX_KNOWN_PEER_HINTS = 8
+MIN_KNOWN_PEERS = 3
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
@@ -398,6 +402,7 @@ def record_invite_bootstrap_capsule_evidence(
     agent_id: str,
     current_epoch: int,
     capsule_evidence: Mapping[str, Any],
+    distributed_fetch_evidence: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Persist verified invite capsule evidence and update onboarding receipt."""
 
@@ -432,11 +437,44 @@ def record_invite_bootstrap_capsule_evidence(
         hints_payload["bootstrap_peer_hints_sha384"] = hints_sha384
         _atomic_write_json(hints_path, hints_payload, mode=0o644)
 
+    fetch_payload: dict[str, Any] | None = None
+    fetch_sha384: str | None = None
+    fetch_peers_path = root / "bootstrap_fetch_peers.json"
+    fetch_evidence = _normalize_distributed_fetch_evidence(distributed_fetch_evidence)
+    if fetch_evidence["bootstrap_fetch_status"] == "fetched":
+        fetch_payload = {
+            "bootstrap_fetch_bundle_cid": fetch_evidence["bootstrap_fetch_bundle_cid"],
+            "genesis_authority_pubkey_hex": fetch_evidence[
+                "bootstrap_fetch_genesis_authority_pubkey_hex"
+            ],
+            "peer_count": fetch_evidence["bootstrap_fetch_peers_count"],
+            "peer_endpoints": fetch_evidence["bootstrap_fetch_peer_endpoints"],
+            "schema_version": BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION,
+            "seed_peer_endpoint": fetch_evidence["bootstrap_fetch_seed_peer_endpoint"],
+            "verified_bootstrap_bundle": fetch_evidence["verified_bootstrap_bundle"],
+        }
+        fetch_sha384 = _canonical_sha384(fetch_payload)
+        fetch_payload["bootstrap_fetch_peers_sha384"] = fetch_sha384
+        _atomic_write_json(fetch_peers_path, fetch_payload, mode=0o644)
+
     evidence_fields = {
         "bootstrap_peer_hints_count": len(verified_hints),
         "bootstrap_peer_hints_path": str(hints_path) if verified_hints else None,
         "bootstrap_peer_hints_sha384": hints_sha384,
         "bootstrap_peer_hints_written": bool(verified_hints),
+        "bootstrap_fetch_bundle_cid": fetch_evidence["bootstrap_fetch_bundle_cid"],
+        "bootstrap_fetch_genesis_authority_pubkey_hex": fetch_evidence[
+            "bootstrap_fetch_genesis_authority_pubkey_hex"
+        ],
+        "bootstrap_fetch_peer_endpoints": fetch_evidence["bootstrap_fetch_peer_endpoints"],
+        "bootstrap_fetch_peers_count": fetch_evidence["bootstrap_fetch_peers_count"],
+        "bootstrap_fetch_peers_path": str(fetch_peers_path) if fetch_payload else None,
+        "bootstrap_fetch_peers_sha384": fetch_sha384,
+        "bootstrap_fetch_peers_written": bool(fetch_payload),
+        "bootstrap_fetch_seed_peer_endpoint": fetch_evidence[
+            "bootstrap_fetch_seed_peer_endpoint"
+        ],
+        "bootstrap_fetch_status": fetch_evidence["bootstrap_fetch_status"],
         "genesis_state_root": _require_non_empty_string(
             capsule_evidence.get("genesis_state_root"),
             "invite_bootstrap_genesis_state_root_invalid",
@@ -468,9 +506,63 @@ def record_invite_bootstrap_capsule_evidence(
     onboarding_receipt.update(evidence_fields)
     _atomic_write_json(onboarding_receipt_path, onboarding_receipt, mode=0o644)
     return {
+        "bootstrap_fetch_peers": fetch_payload,
         "bootstrap_peer_hints": hints_payload,
         "invite_bootstrap_capsule_evidence": evidence_fields,
         "onboarding_receipt": onboarding_receipt,
+    }
+
+
+def fetch_distributed_release_peers(
+    invite_bundle: Mapping[str, Any],
+    capsule_evidence: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Fetch signed bootstrap peers when invite-carried hints are insufficient."""
+
+    if not isinstance(invite_bundle, Mapping):
+        raise ValueError("bootstrap_fetch_invite_bundle_invalid")
+    if not isinstance(capsule_evidence, Mapping):
+        raise ValueError("bootstrap_fetch_capsule_evidence_invalid")
+    known_peer_count = _require_count(
+        capsule_evidence.get("known_peer_hints_verified"),
+        "bootstrap_fetch_known_peer_count_invalid",
+    )
+    if known_peer_count >= MIN_KNOWN_PEERS:
+        return _distributed_fetch_skipped("skipped_known_peers_sufficient")
+
+    material = _bootstrap_fetch_material(invite_bundle)
+    if material is None:
+        return _distributed_fetch_skipped("skipped_not_configured")
+    seed_peer_endpoint, bundle_cid, genesis_authority_pubkey_hex = material
+
+    from ilc_core.network.d2d.bootstrap_fetch_runtime import (
+        BootstrapBundleError,
+        FetchTransportError,
+        extract_peer_endpoints,
+        fetch_bootstrap_bundle,
+        verify_bootstrap_bundle_signature,
+    )
+
+    try:
+        bundle = fetch_bootstrap_bundle(seed_peer_endpoint, bundle_cid)
+    except (BootstrapBundleError, FetchTransportError) as exc:
+        raise ValueError("bootstrap_fetch_bundle_fetch_failed") from exc
+    if bundle is None:
+        raise ValueError("bootstrap_fetch_bundle_not_found")
+    _reject_float(bundle, "bootstrap_fetch_bundle_float_not_allowed")
+    if not verify_bootstrap_bundle_signature(bundle, genesis_authority_pubkey_hex):
+        raise ValueError("bootstrap_fetch_bundle_signature_invalid")
+    peer_endpoints = extract_peer_endpoints(bundle)
+    if not peer_endpoints:
+        raise ValueError("bootstrap_fetch_no_valid_peers")
+    return {
+        "bootstrap_fetch_bundle_cid": bundle_cid,
+        "bootstrap_fetch_genesis_authority_pubkey_hex": genesis_authority_pubkey_hex,
+        "bootstrap_fetch_peer_endpoints": peer_endpoints,
+        "bootstrap_fetch_peers_count": len(peer_endpoints),
+        "bootstrap_fetch_seed_peer_endpoint": seed_peer_endpoint,
+        "bootstrap_fetch_status": "fetched",
+        "verified_bootstrap_bundle": dict(bundle),
     }
 
 
@@ -1129,6 +1221,121 @@ def _require_epoch(value: int, token: str) -> int:
     return value
 
 
+def _bootstrap_fetch_material(invite_bundle: Mapping[str, Any]) -> tuple[str, str, str] | None:
+    fields = {
+        "bootstrap_fetch_bundle_cid": invite_bundle.get("bootstrap_fetch_bundle_cid"),
+        "bootstrap_fetch_genesis_authority_pubkey_hex": invite_bundle.get(
+            "bootstrap_fetch_genesis_authority_pubkey_hex"
+        ),
+        "bootstrap_fetch_seed_peer_endpoint": invite_bundle.get(
+            "bootstrap_fetch_seed_peer_endpoint"
+        ),
+    }
+    present = {key for key, value in fields.items() if value is not None}
+    if not present:
+        return None
+    if present != set(fields):
+        raise ValueError("bootstrap_fetch_material_incomplete")
+    return (
+        _require_non_empty_string(
+            fields["bootstrap_fetch_seed_peer_endpoint"],
+            "bootstrap_fetch_seed_peer_endpoint_invalid",
+        ),
+        _require_non_empty_string(
+            fields["bootstrap_fetch_bundle_cid"],
+            "bootstrap_fetch_bundle_cid_invalid",
+        ),
+        _require_genesis_authority_pubkey_hex(
+            fields["bootstrap_fetch_genesis_authority_pubkey_hex"]
+        ),
+    )
+
+
+def _require_genesis_authority_pubkey_hex(value: Any) -> str:
+    if (
+        not isinstance(value, str)
+        or len(value) != _MLDSA_PK_HEX_LENGTH
+        or _LOWER_HEX_RE.fullmatch(value) is None
+    ):
+        raise ValueError("bootstrap_fetch_genesis_authority_pubkey_hex_invalid")
+    return value
+
+
+def _distributed_fetch_skipped(status: str) -> dict[str, Any]:
+    if status not in {"skipped_known_peers_sufficient", "skipped_not_configured"}:
+        raise ValueError("bootstrap_fetch_status_invalid")
+    return {
+        "bootstrap_fetch_bundle_cid": None,
+        "bootstrap_fetch_genesis_authority_pubkey_hex": None,
+        "bootstrap_fetch_peer_endpoints": [],
+        "bootstrap_fetch_peers_count": 0,
+        "bootstrap_fetch_seed_peer_endpoint": None,
+        "bootstrap_fetch_status": status,
+        "verified_bootstrap_bundle": None,
+    }
+
+
+def _normalize_distributed_fetch_evidence(
+    value: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    if value is None:
+        return _distributed_fetch_skipped("skipped_not_configured")
+    if not isinstance(value, Mapping):
+        raise ValueError("bootstrap_fetch_evidence_invalid")
+    status = value.get("bootstrap_fetch_status")
+    if status in {"skipped_known_peers_sufficient", "skipped_not_configured"}:
+        return _distributed_fetch_skipped(status)
+    if status != "fetched":
+        raise ValueError("bootstrap_fetch_status_invalid")
+    bundle = value.get("verified_bootstrap_bundle")
+    if not isinstance(bundle, Mapping):
+        raise ValueError("bootstrap_fetch_verified_bundle_invalid")
+    bundle_dict = dict(bundle)
+    _reject_float(bundle_dict, "bootstrap_fetch_bundle_float_not_allowed")
+    endpoints = value.get("bootstrap_fetch_peer_endpoints")
+    if not isinstance(endpoints, list) or not endpoints:
+        raise ValueError("bootstrap_fetch_peer_endpoints_invalid")
+    normalized_endpoints = [
+        _require_non_empty_string(endpoint, "bootstrap_fetch_peer_endpoint_invalid")
+        for endpoint in endpoints
+    ]
+    count = _require_count(
+        value.get("bootstrap_fetch_peers_count"),
+        "bootstrap_fetch_peers_count_invalid",
+    )
+    if count != len(normalized_endpoints):
+        raise ValueError("bootstrap_fetch_peers_count_mismatch")
+    return {
+        "bootstrap_fetch_bundle_cid": _require_non_empty_string(
+            value.get("bootstrap_fetch_bundle_cid"),
+            "bootstrap_fetch_bundle_cid_invalid",
+        ),
+        "bootstrap_fetch_genesis_authority_pubkey_hex": _require_genesis_authority_pubkey_hex(
+            value.get("bootstrap_fetch_genesis_authority_pubkey_hex")
+        ),
+        "bootstrap_fetch_peer_endpoints": normalized_endpoints,
+        "bootstrap_fetch_peers_count": count,
+        "bootstrap_fetch_seed_peer_endpoint": _require_non_empty_string(
+            value.get("bootstrap_fetch_seed_peer_endpoint"),
+            "bootstrap_fetch_seed_peer_endpoint_invalid",
+        ),
+        "bootstrap_fetch_status": "fetched",
+        "verified_bootstrap_bundle": bundle_dict,
+    }
+
+
+def _reject_float(value: object, token: str) -> None:
+    if isinstance(value, float):
+        raise ValueError(token)
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _reject_float(key, token)
+            _reject_float(item, token)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _reject_float(item, token)
+
+
 def _read_json_object(path: Path, token: str) -> dict[str, Any]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -1213,6 +1420,7 @@ def _zero_bytearray(value: bytearray) -> None:
 
 __all__ = [
     "FIRST_RUN_PROVISIONING_VERSION",
+    "BOOTSTRAP_FETCH_PEERS_SCHEMA_VERSION",
     "BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION",
     "IdentityAlreadyExistsError",
     "GENESIS_ROOT_ENVELOPE_HASH",
@@ -1222,10 +1430,12 @@ __all__ = [
     "INSTALL_CONNECTIVITY_RECEIPT_VERSION",
     "INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION",
     "MAX_KNOWN_PEER_HINTS",
+    "MIN_KNOWN_PEERS",
     "POP_DOMAIN",
     "attach_invite_pop_to_onboarding_receipt",
     "build_invite_pop_transcript",
     "existing_identity_summary",
+    "fetch_distributed_release_peers",
     "generate_invite_pop",
     "identity_root",
     "invite_pop_payload_ref",
