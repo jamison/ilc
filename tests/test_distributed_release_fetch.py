@@ -5,7 +5,10 @@ from typing import Any
 import pytest
 
 from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH, _MLDSA_SIG_HEX_LENGTH
-from ilc_core.identity.first_run_provisioning import fetch_distributed_release_peers
+from ilc_core.identity.first_run_provisioning import (
+    MAX_BOOTSTRAP_FETCH_PEERS,
+    fetch_distributed_release_peers,
+)
 
 
 MLDSA_PUBKEY_HEX = "b" * _MLDSA_PK_HEX_LENGTH
@@ -82,6 +85,7 @@ def test_distributed_release_fetch_rejects_bad_signature_before_extract(
         fetch_distributed_release_peers(
             _fetch_material(),
             {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
         )
 
     assert calls == ["verify"]
@@ -109,8 +113,72 @@ def test_distributed_release_fetch_success(monkeypatch: pytest.MonkeyPatch) -> N
     result = fetch_distributed_release_peers(
         _fetch_material(),
         {"known_peer_hints_verified": 0},
+        trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
     )
 
     assert result["bootstrap_fetch_status"] == "fetched"
     assert result["bootstrap_fetch_peers_count"] == 1
     assert result["bootstrap_fetch_peer_endpoints"] == ["https://peer-a.ilc.example:443"]
+
+
+def test_distributed_release_fetch_requires_pinned_trust_root() -> None:
+    with pytest.raises(ValueError, match="bootstrap_fetch_trust_root_not_configured"):
+        fetch_distributed_release_peers(
+            _fetch_material(),
+            {"known_peer_hints_verified": 0},
+        )
+
+
+def test_distributed_release_fetch_rejects_trust_root_mismatch() -> None:
+    with pytest.raises(ValueError, match="bootstrap_fetch_trust_root_mismatch"):
+        fetch_distributed_release_peers(
+            _fetch_material(),
+            {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex="c" * len(MLDSA_PUBKEY_HEX),
+        )
+
+
+def test_distributed_release_fetch_caps_peer_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.network.d2d import bootstrap_fetch_runtime
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "fetch_bootstrap_bundle",
+        lambda _seed, _cid: _bundle(),
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_bootstrap_bundle_signature",
+        lambda _bundle, _pubkey: True,
+    )
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "extract_peer_endpoints",
+        lambda _bundle: [
+            f"https://peer-{index}.ilc.example:443"
+            for index in range(MAX_BOOTSTRAP_FETCH_PEERS + 1)
+        ],
+    )
+
+    with pytest.raises(ValueError, match="bootstrap_fetch_peer_endpoints_too_many"):
+        fetch_distributed_release_peers(
+            _fetch_material(),
+            {"known_peer_hints_verified": 0},
+            trusted_genesis_authority_pubkey_hex=MLDSA_PUBKEY_HEX,
+        )
+
+
+def test_install_invite_fetch_happens_after_invite_and_manifest_verification() -> None:
+    import inspect
+    from ilc_core.cli import main as cli_main
+
+    source = inspect.getsource(cli_main._run_install_subcommand_locked)
+
+    assert source.index("verify_invite_bootstrap(") < source.index(
+        "fetch_distributed_release_peers("
+    )
+    assert source.index("verify_portable_manifest_witness(") < source.index(
+        "fetch_distributed_release_peers("
+    )

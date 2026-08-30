@@ -112,7 +112,7 @@ def fetch_bootstrap_bundle(
         return None
 
     try:
-        parsed = json.loads(raw)
+        parsed = json.loads(raw, parse_constant=_reject_json_constant)
     except (json.JSONDecodeError, ValueError) as exc:
         raise BootstrapBundleError(
             "bootstrap_bundle_invalid_json",
@@ -136,7 +136,12 @@ def verify_bootstrap_bundle_signature(
 
     Signed payload (canonical form):
         payload = {k: v for k, v in bundle.items() if k != "signature"}
-        signed_bytes = json.dumps(payload, sort_keys=True).encode("utf-8")
+        signed_bytes = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
 
     The `signed_by` field must match `genesis_authority_pubkey_hex`.
 
@@ -172,12 +177,17 @@ def verify_bootstrap_bundle_signature(
             return False
 
         # signed_by must match the genesis authority key
-        if signed_by.lower() != genesis_authority_pubkey_hex.lower():
+        if signed_by != genesis_authority_pubkey_hex:
             return False
 
         # Reconstruct signed payload (exclude signature field)
         payload = {k: v for k, v in bundle.items() if k != "signature"}
-        signed_bytes = json.dumps(payload, sort_keys=True).encode("utf-8")
+        signed_bytes = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
 
         # ML-DSA-65 signature verification via oqs. Some oqs Python builds try
         # to install liboqs at import time and may raise SystemExit; fail closed.
@@ -191,11 +201,18 @@ def verify_bootstrap_bundle_signature(
             pubkey_bytes = bytes.fromhex(genesis_authority_pubkey_hex)
             verifier = oqs.Signature("ML-DSA-65")
             return bool(verifier.verify(signed_bytes, sig_bytes, pubkey_bytes))
-        except (RuntimeError, ValueError):
+        except (RuntimeError, TypeError, ValueError):
             return False
 
     except Exception:  # noqa: BLE001
         return False  # best-effort — never propagate
+
+
+def _reject_json_constant(value: str) -> None:
+    raise BootstrapBundleError(
+        "bootstrap_bundle_float_not_allowed",
+        f"non-finite JSON constant rejected: {value}",
+    )
 
 
 def extract_peer_endpoints(bundle: dict[str, Any]) -> list[str]:

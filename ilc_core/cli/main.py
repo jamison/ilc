@@ -3751,10 +3751,6 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
         invite_bundle,
         current_epoch=current_epoch,
     )
-    distributed_fetch_evidence = fetch_distributed_release_peers(
-        invite_bundle,
-        invite_capsule_evidence,
-    )
 
     from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
     from ilc_core.sidecars.openclaw_invite_bootstrap import (
@@ -3791,6 +3787,10 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
         if manifest_verification.get("verified") is not True:
             token = manifest_verification.get("error") or "not_verified"
             raise ValueError(f"manifest_verification_failed:{token}")
+        distributed_fetch_evidence = fetch_distributed_release_peers(
+            invite_bundle,
+            invite_capsule_evidence,
+        )
 
         materialization_payload = _install_materialization_payload(invite_bundle, witness)
         target_dir = _install_target_dir(args, materialization_payload, witness)
