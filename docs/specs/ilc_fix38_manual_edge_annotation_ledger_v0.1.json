@@ -90374,6 +90374,161 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_distributed_release_fetch_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1614_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00",
+      "chronology_note": "2026-08-30 GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00 added the CDL-112 pre-ratification ConnectivityAdvertisement protocol sidecar.",
+      "manual_read_summary": "Runtime sidecar implements ConnectivityAdvertisement schema v0.1 with canonical JSON body signing, ML-DSA verification hooks, existing ConnectivityMode enum binding, candidate_list cap of 3, relay/direct endpoint consistency checks, explicit current_epoch validation, no wall-clock reads, and CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-112"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-103"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "schema:connectivity_advertisement_cdl112.v0.1"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_runtime_committed_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/sidecars/connectivity_advertisement.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1614_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00",
+      "chronology_note": "2026-08-30 GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00 added adversarial tests for the guarded connectivity advertisement runtime.",
+      "manual_read_summary": "Tests cover guard state, manifest record, stable canonical JSON, ML-DSA verification handoff, candidate cap and duplicate rejection, hidden relay_candidate rejection, relay/direct mode consistency, epoch future-skew and expiry rejection, receipt-derived advertisement construction, local-only rejection, guarded gossip registry insertion, sidecar registry integration, and no wall-clock imports.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core.sidecars.connectivity_advertisement"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.sidecars.connectivity_advertisement.ConnectivityAdvertisement"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_runtime_committed_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "COVERS_SYMBOL",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_connectivity_advertisement.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1614_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00",
+      "chronology_note": "2026-08-30 GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00 corrected the downstream 0.4.5 package prompt to use the sidecar module path.",
+      "manual_read_summary": "Existing package prompt now checks ilc_core/sidecars/connectivity_advertisement.py instead of stale d2d/connectivity_advertisement.py, preserving the CDL-112 sidecar placement decision for the next packaging phase.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PREVENTS_DRIFT",
+          "target": "path:ilc_core/sidecars/connectivity_advertisement.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PREVENTS_DRIFT"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1614_phase_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00",
+      "chronology_note": "2026-08-30 GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00 walkthrough recorded implementation, verification output, graph delta, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough records prompt and source reads, implementation scope, guard status, exact verification command output, graph delta, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PEER-CONNECTIVITY-ADVERTISEMENT-IMPL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_peer_connectivity_advertisement_impl_00_g10_connectivity_advertisement_runtime.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_runtime_committed_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_peer_connectivity_advertisement_impl_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

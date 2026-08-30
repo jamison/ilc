@@ -29,6 +29,12 @@ from ilc_core.network.d2d.peer_advertisement import (
     MAX_PEER_ADVERTISEMENT_EPOCH,
     PeerAdvertisement,
 )
+from ilc_core.sidecars.connectivity_advertisement import (
+    CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED,
+    CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT,
+    ConnectivityAdvertisement,
+    VerifiedConnectivityAdvertisement,
+)
 
 
 GOSSIP_PEER_REGISTRY_VERSION = "gossip_peer_registry_1571.v0.1"
@@ -275,6 +281,7 @@ class GossipPeerRegistry:
         self._entries_by_peer_id = entries_by_peer_id
         self._allow_private_address_literals = allow_private_address_literals
         self._dynamic_ad_table: dict[str, PeerAdvertisement] = {}
+        self._connectivity_ad_table: dict[str, ConnectivityAdvertisement] = {}
         self._vrf_introduction_table: dict[str, PeerAdvertisement] = {}
 
     def peer_count(self) -> int:
@@ -344,6 +351,79 @@ class GossipPeerRegistry:
         if current_epoch is not None:
             self.expire_ads(current_epoch)
         return sorted(self._dynamic_ad_table.values(), key=lambda item: item.agent_id)
+
+    def add_connectivity_advertisement(
+        self,
+        verified_ad: VerifiedConnectivityAdvertisement,
+        current_epoch: int,
+    ) -> bool:
+        """Add or replace a verified CDL-112 connectivity advertisement.
+
+        This table is separate from CDL-103 peer fanout and remains inaccessible
+        while CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is True.
+        """
+
+        if CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED:
+            raise RuntimeError("connectivity_advertisement_not_activated")
+        current = _require_epoch(
+            current_epoch,
+            "connectivity_advertisement_current_epoch_invalid",
+        )
+        if not isinstance(verified_ad, VerifiedConnectivityAdvertisement):
+            raise ValueError("connectivity_advertisement_requires_verified_envelope")
+        ad = verified_ad.advertisement
+        if not isinstance(ad, ConnectivityAdvertisement):
+            raise ValueError("connectivity_advertisement_invalid")
+        if verified_ad.verification_context != CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT:
+            raise ValueError("connectivity_advertisement_verification_context_invalid")
+        if ad.peer_timestamp_epoch > current + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
+            raise ValueError("connectivity_advertisement_timestamp_future_skew")
+        if ad.is_expired(current):
+            return False
+        existing = self._connectivity_ad_table.get(ad.agent_id)
+        if existing is None and len(self._connectivity_ad_table) >= N_MAX:
+            return False
+        advertised_urls = {ad.endpoint_url}
+        advertised_urls.update(endpoint.to_url() for endpoint in ad.candidate_list)
+        if ad.relay_endpoint is not None:
+            advertised_urls.add(ad.relay_endpoint.to_url())
+        for agent_id, existing_ad in self._connectivity_ad_table.items():
+            if agent_id == ad.agent_id:
+                continue
+            existing_urls = {existing_ad.endpoint_url}
+            existing_urls.update(endpoint.to_url() for endpoint in existing_ad.candidate_list)
+            if existing_ad.relay_endpoint is not None:
+                existing_urls.add(existing_ad.relay_endpoint.to_url())
+            if advertised_urls & existing_urls:
+                return False
+        if existing is not None and ad.peer_timestamp_epoch < existing.peer_timestamp_epoch:
+            return False
+        self._connectivity_ad_table[ad.agent_id] = ad
+        return True
+
+    def expire_connectivity_ads(self, current_epoch: int) -> int:
+        current = _require_epoch(
+            current_epoch,
+            "connectivity_advertisement_current_epoch_invalid",
+        )
+        expired_agent_ids = [
+            agent_id
+            for agent_id, ad in self._connectivity_ad_table.items()
+            if ad.is_expired(current)
+        ]
+        for agent_id in expired_agent_ids:
+            del self._connectivity_ad_table[agent_id]
+        return len(expired_agent_ids)
+
+    def get_connectivity_advertisements(
+        self,
+        current_epoch: int | None = None,
+    ) -> list[ConnectivityAdvertisement]:
+        if CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED:
+            return []
+        if current_epoch is not None:
+            self.expire_connectivity_ads(current_epoch)
+        return sorted(self._connectivity_ad_table.values(), key=lambda item: item.agent_id)
 
     def load_bootstrap_hints(self, path: Path | str, *, current_epoch: int) -> int:
         """Load locally persisted, self-verifiable invite bootstrap peer hints."""

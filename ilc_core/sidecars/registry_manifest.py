@@ -34,6 +34,9 @@ from ilc_core.sidecars.confidential_coordination_sealed_sender import (
 from ilc_core.sidecars.confidential_coordination_shard import (
     ccss_001_private_gated_shard_manifest,
 )
+from ilc_core.sidecars.connectivity_advertisement import (
+    connectivity_advertisement_sidecar_manifest,
+)
 from ilc_core.sidecars.local_graph_memory_projection import (
     local_graph_memory_projection_sidecar_manifest,
 )
@@ -226,6 +229,25 @@ _SIDECAR_DEFINITIONS = (
             "rollback_receipt_token",
         ),
         "sidecar_id": "upnp-router-mapping",
+        "wiring_modes": ("in_process_import",),
+    },
+    {
+        "authority_gate": (
+            "CDL-112 pre-ratification; CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True; "
+            "no gossip propagation until cleared"
+        ),
+        "component": "connectivity_advertisement_protocol_sidecar",
+        "implementation_status": (
+            "implemented_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00_guarded"
+        ),
+        "public_serving_enabled": False,
+        "required_capabilities": (
+            "candidate_endpoint_cap_3",
+            "connectivity_mode_binding",
+            "default_off_gossip_propagation",
+            "mldsa65_signature_verification",
+        ),
+        "sidecar_id": "connectivity-advertisement",
         "wiring_modes": ("in_process_import",),
     },
     {
@@ -441,6 +463,7 @@ def build_sidecar_registry_manifest() -> dict[str, Any]:
             "confidential_coordination_sealed_sender_manifest": ccss_003_sealed_sender_local_delivery_manifest(),
             "confidential_coordination_shard_manifest": ccss_001_private_gated_shard_manifest(),
             "confidential_coordination_profile_is_private_local_only": True,
+            "connectivity_advertisement_sidecar_manifest": connectivity_advertisement_sidecar_manifest(),
             "local_graph_memory_projection_sidecar_manifest": local_graph_memory_projection_sidecar_manifest(),
             "offline_claimability_verifier_manifest": claimability_receipt_verifier_manifest(),
             "openclaw_nemoclaw_are_hosts_not_protocol_substrates": True,
@@ -679,6 +702,7 @@ def _validate_package_profile_integrity(value: object) -> None:
     _validate_ccss_capability_manifest(integrity)
     _validate_ccss_sealed_sender_manifest(integrity)
     _validate_ccss_gossip_manifest(integrity)
+    _validate_connectivity_advertisement_manifest(integrity)
     _validate_offline_verifier_manifest(integrity)
     _validate_transport_principal_manifest(integrity)
     _validate_projection_manifest(integrity)
@@ -860,6 +884,40 @@ def _validate_ccss_gossip_manifest(integrity: Mapping[str, Any]) -> None:
             "phase_1328_ccss_private_droplet_reproducibility_next",
             "public_rc_remains_blocked_after_phase_1327",
         ],
+    )
+
+
+def _validate_connectivity_advertisement_manifest(integrity: Mapping[str, Any]) -> None:
+    manifest = _require_mapping(
+        integrity.get("connectivity_advertisement_sidecar_manifest"),
+        token=(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
+        ),
+    )
+    if manifest.get("contract_version") != (
+        "connectivity_advertisement_sidecar_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00.v0.1"
+    ):
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
+        )
+    if manifest.get("sidecar_id") != "connectivity-advertisement":
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
+        )
+    if manifest.get("candidate_endpoint_cap") != 3:
+        raise ValueError(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
+        )
+    _require_false_keys(
+        manifest,
+        (
+            "connectivity_advertisement_activated",
+            "public_gossip_propagation_enabled",
+            "public_serving_enabled",
+        ),
+        token=(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_authority_forbidden"
+        ),
     )
 
 
@@ -1182,6 +1240,7 @@ __all__ = [
     "canonical_sidecar_registry_manifest_json",
     "ccss_004_gossip_jitter_cover_policy_manifest",
     "claimability_receipt_verifier_manifest",
+    "connectivity_advertisement_sidecar_manifest",
     "export_sidecar_registry_manifest_json",
     "list_sidecars",
     "public_fetch_p2p_readiness_candidate_manifest",

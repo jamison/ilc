@@ -14,10 +14,10 @@ def test_sidecar_registry_manifest_imports_and_builds_cleanly() -> None:
     manifest = build_sidecar_registry_manifest()
 
     assert manifest["version"] == "graph_native_sidecar_registry_manifest_phase_1307.v0.1"
-    assert len(manifest["sidecars"]) == 15
+    assert len(manifest["sidecars"]) == 16
 
 
-def test_sidecar_registry_manifest_has_fifteen_sidecars() -> None:
+def test_sidecar_registry_manifest_has_sixteen_sidecars() -> None:
     manifest = build_sidecar_registry_manifest()
     sidecar_ids = {sidecar["sidecar_id"] for sidecar in manifest["sidecars"]}
 
@@ -27,6 +27,7 @@ def test_sidecar_registry_manifest_has_fifteen_sidecars() -> None:
         "confidential_coordination_local_preview",
         "confidential_coordination_private_gated_shard",
         "confidential_coordination_sealed_sender_local_delivery",
+        "connectivity-advertisement",
         "local_graph_memory_projection",
         "offline_claimability_receipt_verifier",
         "openclaw_nemoclaw_local_bridge",
