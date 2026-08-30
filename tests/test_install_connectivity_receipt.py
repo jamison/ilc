@@ -26,8 +26,8 @@ from ilc_core.network.nat_probe import NatProbeReport
 from ilc_core.sidecars.openclaw_invite_bootstrap import build_synthetic_invite_bundle
 
 
-AGENT_ID_HEX = "a" * 96
-SIGNING_KEY_HEX = "b" * 64
+AGENT_ID_HEX = "8e5a712e4cb2c51893c27ae19afb3455f3efcc66030dc25e13eb1afc2edf397317a0bb2d28a55513a32d7dcc404be3ba"
+SIGNING_KEY_HEX = "344dc8b38c3d76ded943ea518dfcd0184c8730f1d1a9a444e0bdd6ecc9742825"
 FIXTURE_MANIFEST = Path("tests/fixtures/starmap/core_public_rc_slice_fixture.json")
 
 
@@ -341,6 +341,10 @@ def test_install_from_invite_records_connectivity_without_router_mutation_by_def
                 "relay_endpoint": None,
             }
         )
+        onboarding_path.write_text(
+            json.dumps(onboarding, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
         return {
             "connectivity_receipt": connectivity,
             "onboarding_receipt": onboarding,
@@ -418,6 +422,10 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
                 "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
                 "firewall_mutation_status": "confirmed_not_mutated",
             }
+        )
+        (identity_root(install_dir) / "onboarding_receipt.json").write_text(
+            json.dumps(onboarding, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
         )
         return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
 

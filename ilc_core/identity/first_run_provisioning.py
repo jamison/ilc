@@ -18,13 +18,20 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
 from ilc_core import __version__ as ILC_CORE_VERSION
+from ilc_core.crypto.pq_signature_verify import (
+    _MLDSA_PK_HEX_LENGTH,
+    verify_mldsa65_signature,
+)
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
+    sign_invitee_install_receipt_digest,
     sign_invite_pop_digest,
+    verify_invitee_install_receipt_digest,
     verify_invite_pop_digest,
 )
 from ilc_core.validator.validator_key_derivation import (
@@ -39,6 +46,13 @@ INSTALL_CONNECTIVITY_RECEIPT_VERSION = (
 INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION = (
     "nat_probe_engine_GAP_AUTO_NAT_TRAVERSAL_IMPL_00.v0.1"
 )
+INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION = (
+    "invite_bootstrap_capsule_GAP_INVITE_BOOTSTRAP_CAPSULE_IMPL_00.v0.1"
+)
+BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION = "bootstrap_peer_hints.v0.1"
+INVITEE_INSTALL_RECEIPT_SCHEMA_VERSION = "invitee_install_receipt.v0.1"
+INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN = "ILC_INVITEE_INSTALL_RECEIPT_V1"
+MAX_KNOWN_PEER_HINTS = 8
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
@@ -51,7 +65,9 @@ ONBOARDING_BLS_POP_COMMAND_ENV = "ILC_ONBOARDING_BLS_POP_COMMAND"
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _PRIVATE_KEY_RE = re.compile(rb"^[0-9a-f]{64}\n?$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_SHA384_RE = re.compile(r"^[0-9a-f]{96}$")
 _BLS_SIGNATURE_RE = re.compile(r"^[0-9a-f]{192}$")
+_LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
 
 
 class IdentityAlreadyExistsError(ValueError):
@@ -279,6 +295,267 @@ def record_install_connectivity_receipt(
         "connectivity_receipt": payload,
         "onboarding_receipt": onboarding_receipt,
     }
+
+
+def validate_invite_bootstrap_capsule_fields(
+    invite_bundle: Mapping[str, Any],
+    *,
+    current_epoch: int,
+) -> dict[str, Any]:
+    """Validate optional invite bootstrap capsule fields without local side effects."""
+
+    if not isinstance(invite_bundle, Mapping):
+        raise ValueError("invite_bootstrap_capsule_bundle_invalid")
+    _require_epoch(current_epoch, "invite_bootstrap_current_epoch_invalid")
+
+    genesis_state_root = invite_bundle.get("genesis_state_root")
+    genesis_state_root_status = "absent_using_package_root"
+    if genesis_state_root is not None:
+        if not isinstance(genesis_state_root, str) or not genesis_state_root:
+            raise ValueError("invite_bootstrap_genesis_state_root_invalid")
+        if genesis_state_root != GENESIS_ROOT_ENVELOPE_HASH:
+            raise ValueError("invite_bootstrap_genesis_state_root_mismatch")
+        genesis_state_root_status = "matched_package_root"
+
+    inviter_connectivity_mode = invite_bundle.get("inviter_connectivity_mode")
+    if inviter_connectivity_mode is not None:
+        if not isinstance(inviter_connectivity_mode, str):
+            raise ValueError("invite_bootstrap_inviter_connectivity_mode_invalid")
+        try:
+            from ilc_core.network.connectivity_mode import ConnectivityMode
+
+            inviter_connectivity_mode = ConnectivityMode(inviter_connectivity_mode).value
+        except Exception as exc:
+            raise ValueError("invite_bootstrap_inviter_connectivity_mode_invalid") from exc
+
+    peer_hints = invite_bundle.get("known_peer_hints", [])
+    if peer_hints is None:
+        peer_hints = []
+    if not isinstance(peer_hints, list):
+        raise ValueError("invite_bootstrap_known_peer_hints_invalid")
+    if len(peer_hints) > MAX_KNOWN_PEER_HINTS:
+        raise ValueError("invite_bootstrap_known_peer_hints_too_many")
+
+    key_bindings = invite_bundle.get("known_peer_hint_key_bindings", {})
+    if key_bindings is None:
+        key_bindings = {}
+    if not isinstance(key_bindings, Mapping):
+        raise ValueError("invite_bootstrap_known_peer_hint_key_bindings_invalid")
+    normalized_key_bindings = {
+        _require_key_binding_ref(key): _require_mldsa_pubkey_hex(value)
+        for key, value in key_bindings.items()
+    }
+
+    from ilc_core.network.d2d.peer_advertisement import PeerAdvertisement
+
+    verified_hints: list[dict[str, Any]] = []
+    verified_bindings: dict[str, str] = {}
+    seen: set[tuple[str, str]] = set()
+    dropped_invalid = 0
+    dropped_expired = 0
+    dropped_unverifiable = 0
+    for raw_hint in peer_hints:
+        try:
+            ad = PeerAdvertisement.from_dict(raw_hint)
+        except Exception:
+            dropped_invalid += 1
+            continue
+        if ad.is_expired(current_epoch) or ad.peer_timestamp_epoch > current_epoch + 1:
+            dropped_expired += 1
+            continue
+        pubkey_hex = normalized_key_bindings.get(ad.key_binding_ref)
+        if pubkey_hex is None or not ad.verify(
+            verify_mldsa65_signature,
+            pubkey_hex=pubkey_hex,
+        ):
+            dropped_unverifiable += 1
+            continue
+        dedupe_key = (ad.agent_id, ad.endpoint_url)
+        if dedupe_key in seen:
+            continue
+        seen.add(dedupe_key)
+        verified_hints.append(ad.to_dict())
+        verified_bindings[ad.key_binding_ref] = pubkey_hex
+
+    return {
+        "bootstrap_capsule_schema_version": INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION,
+        "genesis_state_root": genesis_state_root or GENESIS_ROOT_ENVELOPE_HASH,
+        "genesis_state_root_status": genesis_state_root_status,
+        "inviter_connectivity_mode": inviter_connectivity_mode,
+        "known_peer_hints_dropped_expired": dropped_expired,
+        "known_peer_hints_dropped_invalid": dropped_invalid,
+        "known_peer_hints_dropped_unverifiable": dropped_unverifiable,
+        "known_peer_hints_offered": len(peer_hints),
+        "known_peer_hints_verified": len(verified_hints),
+        "verified_peer_hint_key_bindings": verified_bindings,
+        "verified_peer_hints": verified_hints,
+    }
+
+
+def record_invite_bootstrap_capsule_evidence(
+    install_dir: Path | str,
+    *,
+    agent_id: str,
+    current_epoch: int,
+    capsule_evidence: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Persist verified invite capsule evidence and update onboarding receipt."""
+
+    _require_agent_id(agent_id)
+    _require_epoch(current_epoch, "invite_bootstrap_current_epoch_invalid")
+    if not isinstance(capsule_evidence, Mapping):
+        raise ValueError("invite_bootstrap_capsule_evidence_invalid")
+    root = identity_root(install_dir)
+    onboarding_receipt_path = root / "onboarding_receipt.json"
+    onboarding_receipt = _read_json_object(
+        onboarding_receipt_path,
+        "onboarding_receipt_invalid",
+    )
+    if onboarding_receipt.get("agent_id") != agent_id:
+        raise ValueError("onboarding_receipt_agent_id_mismatch")
+
+    verified_hints = _require_peer_hint_list(capsule_evidence.get("verified_peer_hints", []))
+    verified_bindings = _require_peer_hint_key_bindings(
+        capsule_evidence.get("verified_peer_hint_key_bindings", {})
+    )
+    hints_path = root / "bootstrap_peer_hints.json"
+    hints_payload: dict[str, Any] | None = None
+    hints_sha384: str | None = None
+    if verified_hints:
+        hints_payload = {
+            "current_epoch": current_epoch,
+            "known_peer_hint_key_bindings": verified_bindings,
+            "known_peer_hints": verified_hints,
+            "schema_version": BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION,
+        }
+        hints_sha384 = _canonical_sha384(hints_payload)
+        hints_payload["bootstrap_peer_hints_sha384"] = hints_sha384
+        _atomic_write_json(hints_path, hints_payload, mode=0o644)
+
+    evidence_fields = {
+        "bootstrap_peer_hints_count": len(verified_hints),
+        "bootstrap_peer_hints_path": str(hints_path) if verified_hints else None,
+        "bootstrap_peer_hints_sha384": hints_sha384,
+        "bootstrap_peer_hints_written": bool(verified_hints),
+        "genesis_state_root": _require_non_empty_string(
+            capsule_evidence.get("genesis_state_root"),
+            "invite_bootstrap_genesis_state_root_invalid",
+        ),
+        "genesis_state_root_status": _require_non_empty_string(
+            capsule_evidence.get("genesis_state_root_status"),
+            "invite_bootstrap_genesis_state_root_status_invalid",
+        ),
+        "inviter_connectivity_mode": capsule_evidence.get("inviter_connectivity_mode"),
+        "known_peer_hints_dropped_expired": _require_count(
+            capsule_evidence.get("known_peer_hints_dropped_expired"),
+            "invite_bootstrap_known_peer_hints_dropped_expired_invalid",
+        ),
+        "known_peer_hints_dropped_invalid": _require_count(
+            capsule_evidence.get("known_peer_hints_dropped_invalid"),
+            "invite_bootstrap_known_peer_hints_dropped_invalid_invalid",
+        ),
+        "known_peer_hints_dropped_unverifiable": _require_count(
+            capsule_evidence.get("known_peer_hints_dropped_unverifiable"),
+            "invite_bootstrap_known_peer_hints_dropped_unverifiable_invalid",
+        ),
+        "known_peer_hints_offered": _require_count(
+            capsule_evidence.get("known_peer_hints_offered"),
+            "invite_bootstrap_known_peer_hints_offered_invalid",
+        ),
+        "known_peer_hints_verified": len(verified_hints),
+        "invite_bootstrap_capsule_schema_version": INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION,
+    }
+    onboarding_receipt.update(evidence_fields)
+    _atomic_write_json(onboarding_receipt_path, onboarding_receipt, mode=0o644)
+    return {
+        "bootstrap_peer_hints": hints_payload,
+        "invite_bootstrap_capsule_evidence": evidence_fields,
+        "onboarding_receipt": onboarding_receipt,
+    }
+
+
+def write_invitee_install_receipt(
+    install_dir: Path | str,
+    *,
+    agent_id: str,
+    invite_id: str,
+    invite_nullifier: str,
+    install_epoch: int,
+    genesis_state_root: str,
+    connectivity_receipt: Mapping[str, Any],
+    onboarding_receipt: Mapping[str, Any],
+    installed_release_artifact_id: str | None = None,
+    installed_release_canonical_hash: str | None = None,
+) -> dict[str, Any]:
+    """Write the invitee-signed bilateral install receipt."""
+
+    _require_agent_id(agent_id)
+    _require_non_empty_string(invite_id, "invitee_install_receipt_invite_id_invalid")
+    _require_sha256_hex(invite_nullifier, "invitee_install_receipt_nullifier_invalid")
+    _require_epoch(install_epoch, "invitee_install_receipt_epoch_invalid")
+    if genesis_state_root != GENESIS_ROOT_ENVELOPE_HASH:
+        raise ValueError("invitee_install_receipt_genesis_state_root_mismatch")
+    if not isinstance(connectivity_receipt, Mapping) or not isinstance(onboarding_receipt, Mapping):
+        raise ValueError("invitee_install_receipt_source_receipts_invalid")
+    if onboarding_receipt.get("agent_id") != agent_id:
+        raise ValueError("invitee_install_receipt_agent_id_mismatch")
+    if installed_release_artifact_id is not None:
+        installed_release_artifact_id = _require_non_empty_string(
+            installed_release_artifact_id,
+            "invitee_install_receipt_artifact_id_invalid",
+        )
+    if installed_release_canonical_hash is not None:
+        installed_release_canonical_hash = _require_non_empty_string(
+            installed_release_canonical_hash,
+            "invitee_install_receipt_canonical_hash_invalid",
+        )
+
+    root = identity_root(install_dir)
+    signing_key_path = root / "signing_key.hex"
+    try:
+        secret_key_hex = signing_key_path.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ValueError("onboarding_bls_private_key_unreadable") from exc
+    body = {
+        "agent_id": agent_id,
+        "connectivity_mode": _require_non_empty_string(
+            connectivity_receipt.get("connectivity_mode"),
+            "invitee_install_receipt_connectivity_mode_invalid",
+        ),
+        "connectivity_receipt_sha384": _require_sha384_hex(
+            connectivity_receipt.get("connectivity_receipt_sha384"),
+            "invitee_install_receipt_connectivity_sha384_invalid",
+        ),
+        "created_at_unix": int(time.time()),
+        "genesis_state_root": genesis_state_root,
+        "install_epoch": install_epoch,
+        "installed_release_artifact_id": installed_release_artifact_id,
+        "installed_release_canonical_hash": installed_release_canonical_hash,
+        "invite_id": invite_id,
+        "invite_nullifier": invite_nullifier,
+        "onboarding_receipt_sha384": _canonical_sha384(dict(onboarding_receipt)),
+        "schema_version": INVITEE_INSTALL_RECEIPT_SCHEMA_VERSION,
+        "signature_domain": INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN,
+        "software_version": ONBOARDING_SOFTWARE_VERSION,
+    }
+    digest_hex = hashlib.sha384(_canonical_json_bytes(body)).hexdigest()
+    signature_hex = _require_bls_signature_hex(
+        sign_invitee_install_receipt_digest(secret_key_hex, digest_hex),
+        "invitee_install_receipt_signature_invalid",
+    )
+    if not verify_invitee_install_receipt_digest(
+        public_key_hex=agent_id,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+    ):
+        raise ValueError("invitee_install_receipt_signature_self_verify_failed")
+    receipt = {
+        **body,
+        "signature": signature_hex,
+        "signature_payload_ref": digest_hex,
+    }
+    _atomic_write_json(root / "invitee_install_receipt.json", receipt, mode=0o644)
+    return receipt
 
 
 def migrate_identity_schema_if_needed(install_dir: Path | str) -> dict[str, Any]:
@@ -804,6 +1081,36 @@ def _require_sha256_hex(value: str, token: str) -> str:
     return value
 
 
+def _require_sha384_hex(value: Any, token: str) -> str:
+    if not isinstance(value, str) or _SHA384_RE.fullmatch(value) is None:
+        raise ValueError(token)
+    return value
+
+
+def _require_count(value: Any, token: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(token)
+    return value
+
+
+def _require_key_binding_ref(value: Any) -> str:
+    if not isinstance(value, str) or not value or value.strip() != value:
+        raise ValueError("invite_bootstrap_peer_key_binding_ref_invalid")
+    if len(value) > 256 or any(char.isspace() for char in value):
+        raise ValueError("invite_bootstrap_peer_key_binding_ref_invalid")
+    return value
+
+
+def _require_mldsa_pubkey_hex(value: Any) -> str:
+    if (
+        not isinstance(value, str)
+        or len(value) != _MLDSA_PK_HEX_LENGTH
+        or _LOWER_HEX_RE.fullmatch(value) is None
+    ):
+        raise ValueError("invite_bootstrap_peer_mldsa_pubkey_hex_invalid")
+    return value
+
+
 def _require_bls_signature_hex(value: str, token: str) -> str:
     if not isinstance(value, str) or _BLS_SIGNATURE_RE.fullmatch(value) is None:
         raise ValueError(token)
@@ -830,6 +1137,30 @@ def _read_json_object(path: Path, token: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError(token)
     return payload
+
+
+def _require_peer_hint_list(value: Any) -> list[dict[str, Any]]:
+    if value is None:
+        return []
+    if not isinstance(value, list) or len(value) > MAX_KNOWN_PEER_HINTS:
+        raise ValueError("invite_bootstrap_verified_peer_hints_invalid")
+    hints: list[dict[str, Any]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            raise ValueError("invite_bootstrap_verified_peer_hint_invalid")
+        hints.append(dict(item))
+    return hints
+
+
+def _require_peer_hint_key_bindings(value: Any) -> dict[str, str]:
+    if value is None:
+        return {}
+    if not isinstance(value, Mapping):
+        raise ValueError("invite_bootstrap_verified_peer_hint_key_bindings_invalid")
+    return {
+        _require_key_binding_ref(key): _require_mldsa_pubkey_hex(binding)
+        for key, binding in value.items()
+    }
 
 
 def _atomic_write_json(path: Path, payload: dict[str, Any], *, mode: int) -> None:
@@ -882,10 +1213,16 @@ def _zero_bytearray(value: bytearray) -> None:
 
 __all__ = [
     "FIRST_RUN_PROVISIONING_VERSION",
+    "BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION",
     "IdentityAlreadyExistsError",
-    "POP_DOMAIN",
+    "GENESIS_ROOT_ENVELOPE_HASH",
+    "INVITEE_INSTALL_RECEIPT_SCHEMA_VERSION",
+    "INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN",
+    "INVITE_BOOTSTRAP_CAPSULE_SCHEMA_VERSION",
     "INSTALL_CONNECTIVITY_RECEIPT_VERSION",
     "INSTALL_CONNECTIVITY_NAT_PROBE_SCHEMA_VERSION",
+    "MAX_KNOWN_PEER_HINTS",
+    "POP_DOMAIN",
     "attach_invite_pop_to_onboarding_receipt",
     "build_invite_pop_transcript",
     "existing_identity_summary",
@@ -895,5 +1232,8 @@ __all__ = [
     "migrate_identity_schema_if_needed",
     "provision_new_identity",
     "record_install_connectivity_receipt",
+    "record_invite_bootstrap_capsule_evidence",
+    "validate_invite_bootstrap_capsule_fields",
     "verify_invite_pop",
+    "write_invitee_install_receipt",
 ]

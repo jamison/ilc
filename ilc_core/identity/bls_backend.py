@@ -36,6 +36,9 @@ ILC_RELAY_BOOTSTRAP_RECORD_DST: Final[bytes] = (
 ILC_RELAY_BOOTSTRAP_CAPSULE_DST: Final[bytes] = (
     b"ILC_RELAY_BOOTSTRAP_CAPSULE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
+ILC_INVITEE_INSTALL_RECEIPT_DST: Final[bytes] = (
+    b"ILC_INVITEE_INSTALL_RECEIPT_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
+)
 
 _IKM_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{64}$")
 _BLS_PUBLIC_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
@@ -53,6 +56,7 @@ _RUST_SUITE_RELAY_ADMISSION: Final[str] = "relay_admission"
 _RUST_SUITE_RELAY_LIFECYCLE: Final[str] = "relay_lifecycle"
 _RUST_SUITE_RELAY_BOOTSTRAP_RECORD: Final[str] = "relay_bootstrap_record"
 _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE: Final[str] = "relay_bootstrap_capsule"
+_RUST_SUITE_INVITEE_INSTALL_RECEIPT: Final[str] = "invitee_install_receipt"
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 
 
@@ -74,6 +78,10 @@ class _ILCRelayBootstrapRecord(G2Basic):
 
 class _ILCRelayBootstrapCapsule(G2Basic):
     DST = ILC_RELAY_BOOTSTRAP_CAPSULE_DST
+
+
+class _ILCInviteeInstallReceipt(G2Basic):
+    DST = ILC_INVITEE_INSTALL_RECEIPT_DST
 
 
 def keypair_from_ikm_hex(ikm_hex: str) -> tuple[str, str]:
@@ -153,6 +161,19 @@ def sign_relay_bootstrap_capsule_digest(secret_key_hex: str, digest_hex: str) ->
         private_key_token="relay_bootstrap_capsule_private_key_invalid",
         digest_token="relay_bootstrap_capsule_payload_ref_invalid",
         signature_token="relay_bootstrap_capsule_signature_invalid",
+    )
+
+
+def sign_invitee_install_receipt_digest(secret_key_hex: str, digest_hex: str) -> str:
+    """Sign a SHA-384 invitee install receipt digest with the invitee AgentID key."""
+
+    return _sign_digest_with_ciphersuite(
+        secret_key_hex=secret_key_hex,
+        digest_hex=digest_hex,
+        ciphersuite=_ILCInviteeInstallReceipt,
+        private_key_token="invitee_install_receipt_private_key_invalid",
+        digest_token="invitee_install_receipt_digest_invalid",
+        signature_token="invitee_install_receipt_signature_invalid",
     )
 
 
@@ -273,6 +294,26 @@ def verify_relay_bootstrap_capsule_digest(
         public_key_token="relay_bootstrap_capsule_signing_key_invalid",
         digest_token="relay_bootstrap_capsule_payload_ref_invalid",
         signature_token="relay_bootstrap_capsule_signature_invalid",
+    )
+
+
+def verify_invitee_install_receipt_digest(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+) -> bool:
+    """Verify an invitee install receipt BLS signature against a G1 public key."""
+
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCInviteeInstallReceipt,
+        rust_suite=_RUST_SUITE_INVITEE_INSTALL_RECEIPT,
+        public_key_token="invitee_install_receipt_agent_id_invalid",
+        digest_token="invitee_install_receipt_digest_invalid",
+        signature_token="invitee_install_receipt_signature_invalid",
     )
 
 
@@ -416,6 +457,7 @@ def _require_rust_suite(value: str) -> str:
         _RUST_SUITE_RELAY_LIFECYCLE,
         _RUST_SUITE_RELAY_BOOTSTRAP_RECORD,
         _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE,
+        _RUST_SUITE_INVITEE_INSTALL_RECEIPT,
     }:
         raise ValueError("bls_rust_suite_invalid")
     return value
@@ -433,18 +475,21 @@ def _is_valid_secret_key_int(value: int) -> bool:
 
 __all__ = [
     "ILC_INVITE_POP_DST",
+    "ILC_INVITEE_INSTALL_RECEIPT_DST",
     "ILC_RELAY_ADMISSION_DST",
     "ILC_RELAY_BOOTSTRAP_CAPSULE_DST",
     "ILC_RELAY_BOOTSTRAP_RECORD_DST",
     "ILC_RELAY_LIFECYCLE_DST",
     "keypair_from_ikm_hex",
     "sign_invite_pop_digest",
+    "sign_invitee_install_receipt_digest",
     "sign_relay_admission_digest",
     "sign_relay_bootstrap_capsule_digest",
     "sign_relay_bootstrap_record_digest",
     "sign_relay_lifecycle_digest",
     "verify_bls_signature_rust",
     "verify_invite_pop_digest",
+    "verify_invitee_install_receipt_digest",
     "verify_relay_admission_digest",
     "verify_relay_bootstrap_capsule_digest",
     "verify_relay_bootstrap_record_digest",

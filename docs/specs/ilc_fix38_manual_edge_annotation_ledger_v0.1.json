@@ -90080,6 +90080,83 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_bootstrap_capsule_spec_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_INVITE_BOOTSTRAP_CAPSULE_IMPL_00_extensions",
+      "chronology_note": "2026-08-30 GAP-INVITE-BOOTSTRAP-CAPSULE-IMPL-00 added focused invite bootstrap capsule implementation tests.",
+      "manual_read_summary": "Tests cover genesis_state_root mismatch, known_peer_hints cap enforcement, ML-DSA key-binding verification, expired/unverifiable hint disposition, persisted bootstrap hint re-verification, and invitee install receipt BLS signature verification.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-BOOTSTRAP-CAPSULE-IMPL-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:invite_bootstrap_capsule_extension"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.identity.first_run_provisioning.validate_invite_bootstrap_capsule_fields"
+        },
+        {
+          "edge_type": "COVERS_SYMBOL",
+          "target": "ilc_core.network.d2d.gossip_peer_registry.GossipPeerRegistry.load_bootstrap_hints"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "COVERS_SYMBOL"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_invite_bootstrap_capsule.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_INVITE_BOOTSTRAP_CAPSULE_IMPL_00_extensions",
+      "chronology_note": "2026-08-30 GAP-INVITE-BOOTSTRAP-CAPSULE-IMPL-00 walkthrough recorded implementation, verification output, graph delta, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough records direct reads, prompt hardening, invite capsule implementation details, BLS DST verification, focused and adjacent test outputs, unavailable Rust cargo check, interrupted full-suite boundary, graph delta, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-BOOTSTRAP-CAPSULE-IMPL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_invite_bootstrap_capsule_spec_GAP_INVITE_BOOTSTRAP_CAPSULE_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:invite_bootstrap_capsule_impl_complete_GAP_INVITE_BOOTSTRAP_CAPSULE_IMPL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_invite_bootstrap_capsule_impl_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
