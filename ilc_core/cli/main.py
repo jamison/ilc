@@ -3708,6 +3708,14 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
     expected_profile = _install_expected_profile(invite_bundle)
     current_epoch = _install_current_epoch(invite_bundle)
     invite_id = _install_invite_id(invite_bundle)
+    from ilc_core.identity.first_run_provisioning import (
+        validate_invite_bootstrap_capsule_fields,
+    )
+
+    invite_capsule_evidence = validate_invite_bootstrap_capsule_fields(
+        invite_bundle,
+        current_epoch=current_epoch,
+    )
 
     from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
     from ilc_core.sidecars.openclaw_invite_bootstrap import (
@@ -3783,7 +3791,9 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             existing_identity_summary,
             identity_root,
             provision_new_identity,
+            record_invite_bootstrap_capsule_evidence,
             record_install_connectivity_receipt,
+            write_invitee_install_receipt,
         )
 
         had_existing_identity = (identity_root(Path.home()) / "signing_key.hex").exists()
@@ -3860,12 +3870,48 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             )
             connectivity_receipt = dict(connectivity_result["connectivity_receipt"])
             onboarding_receipt = dict(connectivity_result["onboarding_receipt"])
+            capsule_record = record_invite_bootstrap_capsule_evidence(
+                Path.home(),
+                agent_id=agent_id,
+                current_epoch=current_epoch,
+                capsule_evidence=invite_capsule_evidence,
+            )
+            onboarding_receipt = dict(capsule_record["onboarding_receipt"])
+            invitee_install_receipt = write_invitee_install_receipt(
+                Path.home(),
+                agent_id=agent_id,
+                invite_id=invite_id,
+                invite_nullifier=str(decision.redemption_nullifier),
+                install_epoch=current_epoch,
+                genesis_state_root=str(invite_capsule_evidence["genesis_state_root"]),
+                connectivity_receipt=connectivity_receipt,
+                onboarding_receipt=onboarding_receipt,
+                installed_release_artifact_id=_install_slice_id(
+                    materialization_payload,
+                    witness,
+                ),
+                installed_release_canonical_hash=_install_release_canonical_hash(
+                    materialization_payload,
+                    witness,
+                ),
+            )
             receipt.update(_install_connectivity_receipt_fields(connectivity_receipt))
+            receipt.update(
+                _install_invite_bootstrap_capsule_fields(
+                    capsule_record,
+                    invitee_install_receipt,
+                )
+            )
             _write_install_receipt_atomic(output_receipt, receipt)
             return {
+                "bootstrap_peer_hints": capsule_record["bootstrap_peer_hints"],
                 "connectivity_receipt": connectivity_receipt,
                 "connectivity_summary": connectivity_receipt["connectivity_summary"],
                 "identity_provisioning": identity_provisioning,
+                "invite_bootstrap_capsule_evidence": capsule_record[
+                    "invite_bootstrap_capsule_evidence"
+                ],
+                "invitee_install_receipt": invitee_install_receipt,
                 "invite_redemption_record": redemption_record,
                 "invite_verification": invite_verification,
                 "manifest_verification": manifest_verification,
@@ -4084,6 +4130,23 @@ def _install_slice_id(materialization_payload: dict[str, Any], witness: dict[str
     return "unknown_slice"
 
 
+def _install_release_canonical_hash(
+    materialization_payload: dict[str, Any],
+    witness: dict[str, Any],
+) -> str | None:
+    for payload in (materialization_payload, witness):
+        for key in (
+            "canonical_hash",
+            "manifest_canonical_hash",
+            "content_hash",
+            "source_manifest_sha256",
+        ):
+            value = payload.get(key)
+            if isinstance(value, str) and value:
+                return value
+    return None
+
+
 def _install_target_dir(
     args: argparse.Namespace,
     materialization_payload: dict[str, Any],
@@ -4132,6 +4195,46 @@ def _install_connectivity_receipt_fields(
         "firewall_mutation_status": connectivity_receipt["firewall_mutation_status"],
         "observed_endpoint": connectivity_receipt["observed_endpoint"],
         "relay_endpoint": connectivity_receipt["relay_endpoint"],
+    }
+
+
+def _install_invite_bootstrap_capsule_fields(
+    capsule_record: dict[str, Any],
+    invitee_install_receipt: dict[str, Any],
+) -> dict[str, Any]:
+    evidence = capsule_record.get("invite_bootstrap_capsule_evidence")
+    if not isinstance(evidence, dict):
+        raise ValueError("install_invite_bootstrap_capsule_evidence_invalid")
+    invitee_install_receipt_path = (
+        Path.home() / ".ilc" / "identity" / "invitee_install_receipt.json"
+    )
+    return {
+        "bootstrap_peer_hints_count": evidence["bootstrap_peer_hints_count"],
+        "bootstrap_peer_hints_path": evidence["bootstrap_peer_hints_path"],
+        "bootstrap_peer_hints_sha384": evidence["bootstrap_peer_hints_sha384"],
+        "bootstrap_peer_hints_written": evidence["bootstrap_peer_hints_written"],
+        "genesis_state_root": evidence["genesis_state_root"],
+        "genesis_state_root_status": evidence["genesis_state_root_status"],
+        "invite_bootstrap_capsule_schema_version": evidence[
+            "invite_bootstrap_capsule_schema_version"
+        ],
+        "invitee_install_receipt_path": str(invitee_install_receipt_path),
+        "invitee_install_receipt_sha384": hashlib.sha384(
+            json.dumps(
+                invitee_install_receipt,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest(),
+        "inviter_connectivity_mode": evidence["inviter_connectivity_mode"],
+        "known_peer_hints_dropped_expired": evidence["known_peer_hints_dropped_expired"],
+        "known_peer_hints_dropped_invalid": evidence["known_peer_hints_dropped_invalid"],
+        "known_peer_hints_dropped_unverifiable": evidence[
+            "known_peer_hints_dropped_unverifiable"
+        ],
+        "known_peer_hints_offered": evidence["known_peer_hints_offered"],
+        "known_peer_hints_verified": evidence["known_peer_hints_verified"],
     }
 
 

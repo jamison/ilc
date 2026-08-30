@@ -9,6 +9,8 @@ const ILC_RELAY_BOOTSTRAP_RECORD_DST: &[u8] =
     b"ILC_RELAY_BOOTSTRAP_RECORD_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
 const ILC_RELAY_BOOTSTRAP_CAPSULE_DST: &[u8] =
     b"ILC_RELAY_BOOTSTRAP_CAPSULE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
+const ILC_INVITEE_INSTALL_RECEIPT_DST: &[u8] =
+    b"ILC_INVITEE_INSTALL_RECEIPT_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_";
 
 fn main() {
     if let Err(err) = run() {
@@ -94,6 +96,7 @@ fn dst_for_suite(suite: &str) -> Result<&'static [u8], String> {
         "relay_lifecycle" => Ok(ILC_RELAY_LIFECYCLE_DST),
         "relay_bootstrap_record" => Ok(ILC_RELAY_BOOTSTRAP_RECORD_DST),
         "relay_bootstrap_capsule" => Ok(ILC_RELAY_BOOTSTRAP_CAPSULE_DST),
+        "invitee_install_receipt" => Ok(ILC_INVITEE_INSTALL_RECEIPT_DST),
         _ => Err("unknown BLS verification suite".to_string()),
     }
 }

@@ -9,14 +9,17 @@ a listener, enable public sidecar serving, or authorize DHT discovery.
 from __future__ import annotations
 
 import ipaddress
+import json
 import socket
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 from urllib.parse import urlsplit
 
 from ilc_core.crypto.pq_signature_verify import (
     CDL_101_SIGNED_ENVELOPE_DEPENDENCY,
     _MLDSA_PK_HEX_LENGTH,
+    verify_mldsa65_signature,
 )
 from ilc_core.network.d2d.gossip_transport import (
     GOSSIP_TRANSPORT_RUNTIME_VERSION as _GOSSIP_TRANSPORT_CHECK,
@@ -40,6 +43,9 @@ LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
 MAX_PEERS = 16
 N_MAX = 1000
 MAX_INTRODUCTION_CANDIDATES = N_MAX
+MAX_BOOTSTRAP_HINTS = 8
+MAX_BOOTSTRAP_HINTS_FILE_BYTES = 1_048_576
+BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION = "bootstrap_peer_hints.v0.1"
 PRIVATE_PEER_ENDPOINT_TOKEN = "peer_endpoint_private_address_forbidden_phase_1332_fix4"
 _LOCALHOST_NAMES = frozenset({"localhost", "localhost.localdomain"})
 _NONSTANDARD_IPV4_LITERAL_CHARS = frozenset("0123456789abcdefABCDEFxX.")
@@ -338,6 +344,64 @@ class GossipPeerRegistry:
         if current_epoch is not None:
             self.expire_ads(current_epoch)
         return sorted(self._dynamic_ad_table.values(), key=lambda item: item.agent_id)
+
+    def load_bootstrap_hints(self, path: Path | str, *, current_epoch: int) -> int:
+        """Load locally persisted, self-verifiable invite bootstrap peer hints."""
+
+        current = _require_epoch(current_epoch, "bootstrap_peer_hints_current_epoch_invalid")
+        if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:
+            raise RuntimeError("dynamic_peer_discovery_not_activated")
+        hints_path = Path(path).expanduser()
+        try:
+            if hints_path.stat().st_size > MAX_BOOTSTRAP_HINTS_FILE_BYTES:
+                raise ValueError("bootstrap_peer_hints_file_too_large")
+            payload = json.loads(hints_path.read_text(encoding="utf-8"))
+        except ValueError:
+            raise
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValueError("bootstrap_peer_hints_file_invalid") from exc
+        if not isinstance(payload, Mapping):
+            raise ValueError("bootstrap_peer_hints_file_invalid")
+        if payload.get("schema_version") != BOOTSTRAP_PEER_HINTS_SCHEMA_VERSION:
+            raise ValueError("bootstrap_peer_hints_schema_version_invalid")
+
+        raw_hints = payload.get("known_peer_hints")
+        if not isinstance(raw_hints, list) or len(raw_hints) > MAX_BOOTSTRAP_HINTS:
+            raise ValueError("bootstrap_peer_hints_invalid")
+        key_bindings = payload.get("known_peer_hint_key_bindings")
+        if not isinstance(key_bindings, Mapping):
+            raise ValueError("bootstrap_peer_hint_key_bindings_invalid")
+        normalized_bindings = {
+            _require_peer_string(key, "bootstrap_peer_hint_key_binding_ref_invalid", 256):
+            _require_mldsa_pubkey_hex(value)
+            for key, value in key_bindings.items()
+        }
+
+        loaded = 0
+        for raw_hint in raw_hints:
+            try:
+                ad = PeerAdvertisement.from_dict(
+                    raw_hint,
+                    allow_private_address_literals=self._allow_private_address_literals,
+                )
+            except Exception as exc:
+                raise ValueError("bootstrap_peer_hint_invalid") from exc
+            if ad.peer_timestamp_epoch > current + MAX_PEER_TIMESTAMP_FUTURE_SKEW_EPOCHS:
+                continue
+            if ad.is_expired(current):
+                continue
+            pubkey_hex = normalized_bindings.get(ad.key_binding_ref)
+            if pubkey_hex is None or not ad.verify(
+                verify_mldsa65_signature,
+                pubkey_hex=pubkey_hex,
+            ):
+                raise ValueError("bootstrap_peer_hint_signature_invalid")
+            if self.add_peer_advertisement(
+                VerifiedPeerAdvertisement(advertisement=ad),
+                current,
+            ):
+                loaded += 1
+        return loaded
 
     def add_introduction_entries(self, ads: Iterable[PeerAdvertisement]) -> None:
         if DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED:

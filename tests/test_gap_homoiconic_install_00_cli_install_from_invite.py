@@ -68,8 +68,8 @@ def _isolated_install_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> N
             [
                 "import pathlib, sys",
                 "out = pathlib.Path(sys.argv[sys.argv.index('--out') + 1])",
-                "out.write_text('" + ("b" * 64) + "\\n', encoding='utf-8')",
-                "print('" + ("a" * 96) + "')",
+                "out.write_text('344dc8b38c3d76ded943ea518dfcd0184c8730f1d1a9a444e0bdd6ecc9742825\\n', encoding='utf-8')",
+                "print('8e5a712e4cb2c51893c27ae19afb3455f3efcc66030dc25e13eb1afc2edf397317a0bb2d28a55513a32d7dcc404be3ba')",
             ]
         )
         + "\n",

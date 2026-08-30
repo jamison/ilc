@@ -71,6 +71,19 @@ authority, validator admission, serving credit, economic credit, wallet
 authority, or public sidecar activation. They also do not supersede static
 Genesis-signed bootstrap seeds.
 
+### 4.1.1 `known_peer_hint_key_bindings`
+
+`known_peer_hint_key_bindings` is an optional map from each peer hint's
+`key_binding_ref` to the ML-DSA-65 public key hex used to verify that hint.
+CDL-103 `PeerAdvertisement` records carry `key_binding_ref` and
+`ml_dsa_signature`, not an embedded public key, so an invite capsule with peer
+hints must provide this bounded key-binding map or those hints are dropped as
+unverifiable.
+
+Installers persist only verified hints plus the public key bindings needed to
+re-verify them locally. The persisted `bootstrap_peer_hints.json` object is
+self-verifiable by the local peer registry; it is not an unsigned raw peer list.
+
 ### 4.2 `genesis_state_root`
 
 `genesis_state_root` is a required string in the extended capsule. It carries the
