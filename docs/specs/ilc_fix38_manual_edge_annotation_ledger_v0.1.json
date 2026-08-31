@@ -86182,6 +86182,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_rendezvous_impl_00_g10_relay_client_and_admission_handshake.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_connectivity_upgrade_00_2026_08_31",
+      "chronology_note": "2026-08-31 GAP-VPS-CONNECTIVITY-UPGRADE-00 receipt records the live 0.4.6 in-place validator package upgrade.",
+      "manual_read_summary": "Machine-readable receipt confirms four public-RC validator slots upgraded to ilc-core 0.4.6 while preserving AgentIDs, invite/onboarding receipts, endpoint assertion context, LMDB epoch-0 sentinel state, active/enabled services, and settlement_path=none.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-CONNECTIVITY-UPGRADE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:vps_validators_upgraded_to_046_GAP_VPS_CONNECTIVITY_UPGRADE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_vps_connectivity_upgrade_00/validator_046_upgrade_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_connectivity_upgrade_00_2026_08_31",
+      "chronology_note": "2026-08-31 GAP-VPS-CONNECTIVITY-UPGRADE-00 walkthrough records live command evidence and non-claims.",
+      "manual_read_summary": "Walkthrough records input reads, MemPalace/repo discovery, sudo preflight, stop/install/restart evidence, post-upgrade CLI checks, public gRPC reachability, UDP listener checks, journal observations, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-CONNECTIVITY-UPGRADE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:vps_validators_upgraded_to_046_GAP_VPS_CONNECTIVITY_UPGRADE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_connectivity_upgrade_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_connectivity_upgrade_00_2026_08_31",
+      "chronology_note": "2026-08-31 GAP-VPS-CONNECTIVITY-UPGRADE-00 STATUS entry emits completion token and updates current phase chronology.",
+      "manual_read_summary": "STATUS.md records the 0.4.6 VPS validator upgrade, preserved identity/epoch/settlement invariants, relay import availability, public endpoint reachability, operational journal observation, completion token, and non-claims.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-CONNECTIVITY-UPGRADE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:vps_validators_upgraded_to_046_GAP_VPS_CONNECTIVITY_UPGRADE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "nodes": [
