@@ -2701,7 +2701,7 @@ until CDL-SIGMA-01 ratification determines its final disposition.
 
 ### D.3  Peer-to-Peer Applications: The Web2 Replacement Layer
 
-ILC's architecture enables a class of confidential peer-to-peer applications that replace centralized Web2 services. Three canonical examples follow.
+ILC's architecture enables a class of confidential peer-to-peer applications that replace centralized Web2 services. Four canonical examples follow.
 
 **Architecture overview:**
 ```
@@ -2720,12 +2720,12 @@ ILC's architecture enables a class of confidential peer-to-peer applications tha
                     │  PoIL verification                │
                     └────────────┬─────────────────────┘
                                  │
-          ┌──────────────────────┼──────────────────────┐
-          │                      │                      │
-   ┌──────┴───────┐    ┌─────────┴──────┐    ┌─────────┴──────┐
-   │  Prediction  │    │  Confidential  │    │    ILC Wallet  │
-   │   Market     │    │    Comms L3    │    │                │
-   └──────────────┘    └────────────────┘    └────────────────┘
+     ┌───────────────────────────┼──────────────────────────┐
+     │                │                      │              │
+┌────┴─────┐  ┌───────┴──────┐  ┌───────────┴──┐  ┌───────┴──────┐
+│Prediction│  │ Confidential │  │  ILC Wallet  │  │  Relay and   │
+│  Market  │  │  Comms L3    │  │              │  │ Connectivity │
+└──────────┘  └──────────────┘  └──────────────┘  └──────────────┘
 ```
 
 ---
@@ -2853,9 +2853,102 @@ ILC's architecture enables a class of confidential peer-to-peer applications tha
 
 ---
 
+**Application 4: Protocol-Native Relay and Connectivity Layer**
+
+Autonomous agents require a transport substrate that matches the trust architecture of the protocol itself. The ILC network provides a **relay layer** whose trust flows entirely from the epistemic graph — no certificate authority, no DNS registrar, no cloud provider, and no operator with unilateral key custody over the communication channel.
+
+Every relay endpoint is a **signed graph object**: a structured record committed to the hypergraph as a content-addressed node, signed by the relay operator's BLS key derived from their AgentID. The relay endpoint record encodes the full connection surface — host, control port, data port range, TLS mode, and TLS certificate fingerprint — together with issuance and expiry epochs, network membership identifier, and a canonical payload digest that commits all mutable fields:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│              RELAY ENDPOINT RECORD (signed graph object)           │
+│                                                                     │
+│  relay_agent_id      : BLS AgentID of relay operator               │
+│  relay_host          : advertised IP or hostname                    │
+│  control_port        : HTTPS admission endpoint                     │
+│  data_port_range     : [base, base+N) — one UDP port per slot      │
+│                                                                     │
+│  tls_mode            : "pinned_der_sha256"                          │
+│  tls_cert_der_sha256 : hex SHA-256 of DER-encoded leaf cert        │
+│                        (self-signed; no CA required)               │
+│                                                                     │
+│  issued_epoch        : issuance epoch (CDL-027)                    │
+│  expires_epoch       : expiry epoch                                 │
+│  network_id          : network membership scope                     │
+│                                                                     │
+│  payload_sha384      : SHA-384 of canonical JSON of above fields   │
+│  signature           : BLS signature over payload_sha384           │
+│  signing_key_id      : AgentID of signing key                      │
+│                                                                     │
+│  TRUST SOURCE: BLS signature + AgentID → graph inclusion           │
+│  NOT: certificate authority, DNS, or any external registrar        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+A **bootstrap capsule** collects one or more relay endpoint records into a signed bundle. The Genesis Agent (transitioning post-RC to a community quorum) signs the capsule with a second BLS key, producing a two-layer signing structure: the relay operator attests its own endpoint; the capsule authority attests the set of admitted relays. A client verifying a relay endpoint recomputes the canonical JSON payload from its fields, checks the SHA-384 digest, verifies the relay operator's BLS signature, and separately verifies the capsule signature — no step can be short-circuited without breaking cryptographic commitment.
+
+**Connectivity mechanics:**
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   ILC RELAY CONNECTIVITY                           │
+│                                                                     │
+│  Client A (NAT)          Relay Operator           Client B (NAT)  │
+│  ┌──────────┐            ┌──────────────┐         ┌──────────────┐ │
+│  │          │ HTTPS      │ ADMISSION    │ HTTPS   │              │ │
+│  │  admit   │ ─────────► │ control      │ ◄─────  │  admit       │ │
+│  │          │            │ plane        │         │              │ │
+│  └────┬─────┘            └──────┬───────┘         └──────┬───────┘ │
+│       │                         │                         │        │
+│       │   UDP port α            │  UDP port β             │        │
+│       │ ◄──────────────────────►│◄────────────────────────►        │
+│       │                         │                         │        │
+│  QUIC STREAM (end-to-end encrypted — relay sees UDP datagrams      │
+│               only; no decryption, no frame parsing,               │
+│               no re-signing — ADR-0039 non-termination invariant)  │
+│                                                                     │
+│  SLOT ISOLATION: one UDP port per admitted slot (kernel-level      │
+│  demultiplexing; no application-layer inspection of QUIC bytes)    │
+│                                                                     │
+│  RELAY OPERATOR EARNS: Werner credit per slot per epoch            │
+│  proportional to data forwarded (CDL-078 relay fee schedule)       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+The relay operator learns nothing about the content exchanged. The admission control plane verifies that both parties hold valid invite proofs of participation (PoPs) derived from admitted AgentIDs. Slot allocation is per-admission; each admitted pair receives a dedicated UDP port range, so the relay's forwarding function is a kernel-level table lookup — no parsing of QUIC connection IDs, no decryption, no application-layer framing. This is the **non-termination invariant** (ADR-0039): the relay does not terminate, originate, or re-sign any QUIC stream. It is a transparent opaque conduit whose only protocol-visible action is forwarding UDP datagrams by port.
+
+**TLS without a certificate authority.** The relay's HTTPS control plane presents a self-signed certificate. Clients do not validate against a public CA root; they compare the server certificate's SHA-256 DER fingerprint against `tls_cert_der_sha256` from the relay endpoint record. The relay endpoint record is trusted because it carries a valid BLS signature from an admitted AgentID included in a Genesis-signed bootstrap capsule. The chain of trust is: `genesis_signature → capsule → relay_record → bls_signature → tls_cert_fingerprint`. Certificate rotation requires issuing a new endpoint record and publishing an updated capsule; there is no ACME protocol, no registrar expiry, no CA chain to renew.
+
+This architecture eliminates the dependency on any external PKI hierarchy. An agent operating in a jurisdiction that blocks commercial CA services, or on hardware that cannot maintain a synchronized certificate trust store, connects to the relay layer using only the bootstrap capsule loaded from the protocol graph at startup.
+
+**Economic grounding.** Relay operators earn Werner credit — the protocol-native measure of infrastructure contribution — at the rate defined by CDL-078. Credit accrues per slot per epoch, denominated in ECU, and converts to ILC at the epoch boundary price P_e. This creates a self-sustaining relay market: relay operators are economically incentivized to maintain high-availability endpoints without a central operator paying for infrastructure. The relay market grows organically as admitted agent population grows, because more agents mean more slots, more Werner credit opportunity, and therefore more relay operators competing on availability and throughput.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   RELAY TRUST CHAIN SUMMARY                        │
+│                                                                     │
+│  Genesis BLS key                                                    │
+│      └── signs bootstrap capsule                                   │
+│               └── contains relay endpoint records                  │
+│                       └── each signed by relay operator BLS key    │
+│                               └── derived from operator AgentID    │
+│                                       └── AgentID committed to     │
+│                                           epoch chain at admission │
+│                                                                     │
+│  TLS fingerprint in record → cert presented at handshake           │
+│  SHA-256(DER cert) == tls_cert_der_sha256 → connection accepted    │
+│  Mismatch → connection rejected (no exception, no fallback)        │
+│                                                                     │
+│  NO DNS. NO CA. NO CLOUD PROVIDER. NO CENTRAL OPERATOR.           │
+│  TRUST FLOWS FROM THE GRAPH, NOT FROM EXTERNAL INFRASTRUCTURE.    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ### D.4  The Cryptographic-Economic Coupling
 
-The three applications above share a common architectural constraint: public legitimacy cannot be decoupled from the economic layer. A fork that strips ECU/ILC attribution and settlement mechanics may retain the gossip stack and the graph substrate, but it loses:
+The four applications above share a common architectural constraint: public legitimacy cannot be decoupled from the economic layer. A fork that strips ECU/ILC attribution and settlement mechanics may retain the gossip stack and the graph substrate, but it loses:
 
 - canonical public admission authority (ledger-backed activation receipt required),
 - canonical public quorum eligibility (stake-root proof required for panel selection),
@@ -5312,6 +5405,67 @@ ILC's structural response is the **four-layer independence requirement**: for a 
 4. **Protocol independence**: the agent's identity and history are resolvable from the genesis-rooted graph, not from any operator-controlled registry; the operator cannot revoke or reassign identity
 
 An agent satisfying all four layers is Engram-resistant: even if the operator modifies the external memory substrate between interactions, the agent's committed epistemic history in the ILC graph remains tamper-evident and operator-independent. The graph is the ground truth; the external memory is advisory.
+
+---
+
+### G.6  ILC-Native Relay Trust via Signed Graph Objects
+
+The ILC relay layer constitutes a novel contribution to distributed systems trust architecture distinct from both the WebPKI/DNS model and from overlay-network approaches such as onion routing or VPN-as-infrastructure. The contribution is not the relay mechanism itself — UDP forwarding and NAT traversal are well-understood — but the **locus of trust** and the elimination of external infrastructure dependencies.
+
+**Prior approaches and their dependencies.** WebPKI grounds TLS trust in a hierarchy of certificate authorities: browsers, operating systems, and server software ship trust stores populated by commercial CAs whose root certificates are distributed through supply chains (OS updates, browser releases) controlled by a small number of organizations. DNS grounds hostname resolution in a hierarchy controlled by IANA, TLDs, and registrars. Both hierarchies introduce parties external to the protocol whose cooperation is necessary for correct operation and who can, unilaterally or under state coercion, disrupt service. Overlay approaches such as Tor replace the CA/DNS dependency with an onion routing directory authority — a different external coordinator, not an eliminated one.
+
+**The ILC relay trust model.** Relay endpoints are committed to the hypergraph as BLS-signed content-addressed nodes. The trust chain is internal to the protocol:
+
+```
+  genesis_bls_key
+      └─ signs bootstrap_capsule (payload_sha384 over relay record set)
+              └─ contains relay_endpoint_record (per relay operator)
+                      └─ signed by relay_operator_bls_key
+                              └─ derived from relay_operator AgentID
+                                      └─ admitted by genesis_invite_pop
+                                              └─ committed to epoch chain
+```
+
+No step in this chain references a certificate authority, a DNS registrar, a hostname, or any entity external to the ILC protocol. The relay's TLS certificate is self-signed; clients accept it by comparing the SHA-256 DER fingerprint against `tls_cert_der_sha256` carried in the relay endpoint record. Certificate rotation is a protocol operation — issue a new endpoint record, publish an updated bootstrap capsule — not a CA interaction.
+
+**Formal security property.** Let R be a relay endpoint record with fields (h, cp, dp, fp, i, e, n), where h is the advertised relay host, cp is the control port, dp is the data port range, fp is the TLS certificate DER fingerprint, i is the issued epoch, e is the expiry epoch, and n is the network identifier. Define the canonical payload:
+
+```
+  σ_R = SHA-384(canonical_json({h, cp, dp, fp, i, e, n}))
+```
+
+The relay operator's BLS public key K_op satisfies:
+
+```
+  BLS.Verify(K_op, σ_R, sig_R) = true
+```
+
+A client receiving R recomputes σ_R from the record fields before verifying the signature. This prevents a substitution attack in which an adversary modifies h (the relay host) while leaving sig_R unchanged — the recomputed digest will not match the committed `payload_sha384`, and the signature verification will fail even before the BLS check. The two-step verification (digest recompute → BLS verify) is a necessary consequence of the commitment structure: if clients trusted the embedded `payload_sha384` without recomputing it, the digest field itself becomes an attack surface.
+
+The bootstrap capsule adds a second signature layer:
+
+```
+  σ_C = SHA-384(canonical_json(relay_record_set))
+  BLS.Verify(K_genesis, σ_C, sig_C) = true
+```
+
+Accepting a relay endpoint record requires both layers to verify independently. A relay operator cannot self-promote a record into the protocol-trusted set by signing it alone; the bootstrap authority's capsule signature is required. This models the governance principle that relay admission is a protocol act, not a unilateral operator assertion.
+
+**Non-termination invariant (ADR-0039).** The relay's data plane is constitutionally prohibited from decrypting, re-signing, rewriting, or re-originating any QUIC content. Slot demultiplexing is by UDP port number — a kernel-level operation that requires no application-layer inspection. This invariant has two consequences: (i) the relay operator has zero protocol visibility into the content of sessions it forwards, eliminating the relay as a surveillance point; (ii) session confidentiality is guaranteed by the end-to-end QUIC encryption layer regardless of relay operator behavior or coercion.
+
+**Substitution pattern.** The relay contribution generalizes the broader ILC design principle of **Web2 substitution via graph-native trust**: external infrastructure dependencies are replaced one-for-one with protocol-internal equivalents.
+
+| Web2 component | External dependency | ILC-native replacement |
+|---|---|---|
+| TLS certificate authority | CA root store, OS/browser supply chain | BLS-signed relay endpoint record in hypergraph |
+| DNS hostname resolution | IANA, TLD registrars, registrars | CDL-103/CDL-112 peer discovery gossip |
+| Software package registry | PyPI, npm, OS package managers | Graph-native CID-addressed package artifacts |
+| CA-signed server certificate | CA issuance, ACME protocol, renewal automation | `tls_cert_der_sha256` in BLS-signed bootstrap record |
+| Certificate revocation (CRL/OCSP) | CA infrastructure, OCSP responders | Epoch expiry + updated bootstrap capsule |
+
+Each substitution reduces the attack surface available to adversaries operating through external infrastructure — state actors, CA compromises, registrar coercion, supply chain attacks — and replaces it with a surface whose trust is grounded in the same BLS cryptography and epoch commitment chain that secures all other protocol operations.
+
+**Implications for agent populations.** An autonomous digital agent operating at scale requires connectivity infrastructure whose availability and integrity cannot be disrupted by entities external to the agent's principal hierarchy. WebPKI root store manipulation — adding or removing CA certificates via OS updates — can silently alter the set of TLS connections an agent will accept. DNS hijacking can redirect agent connections to adversarial endpoints without the agent's knowledge. The ILC relay trust model eliminates both attack vectors for sessions conducted through the relay layer: the only trust anchor is the bootstrap capsule rooted in the Genesis BLS key, and capsule authenticity is verifiable by any party holding the public key without contacting any external service.
 
 ---
 
