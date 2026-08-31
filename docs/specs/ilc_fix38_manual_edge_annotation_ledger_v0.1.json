@@ -91116,6 +91116,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_rendezvous_deploy_00_blocked_guard_package_conflict_2026_08_31",
+      "chronology_note": "2026-08-31 GAP-RELAY-RENDEZVOUS-DEPLOY-00 retry blocked before live mutation after the 0.4.6 VPS package prerequisite was resolved.",
+      "manual_read_summary": "Walkthrough records the fresh GO phrase, direct prompt/source/VPS reads, 0.4.6 relay package importability, closed installed relay guards, relay_server_not_activated start preflight, TLS fingerprint and port preflight, focused relay test pass, and non-claims. The new blocker is package-visible guard activation: DEPLOY-00 forbids test-only guarded start and private source/site-packages deployment.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:relay_server_deployed_guard_cleared_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "blocker:relay_guard_package_activation_conflict_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "BLOCKS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_guard_package_conflict.md"
     }
   ],
   "phase": "1545p-Fix38",
