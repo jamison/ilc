@@ -90529,6 +90529,244 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_peer_connectivity_advertisement_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a bumped ilc-core package metadata from 0.4.4 to 0.4.5 for the Part 3l connectivity release lane.",
+      "manual_read_summary": "pyproject.toml records the 0.4.5 version and explicitly includes ilc_core.network.relay in setuptools package discovery so relay client/server code is included in the wheel.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PREVENTS_DRIFT",
+          "target": "path:ilc_core/network/relay"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "PREVENTS_DRIFT"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "pyproject.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a aligned the import-visible package version constant with pyproject.toml.",
+      "manual_read_summary": "ilc_core.__version__ now reports 0.4.5; clean Python 3.12 wheel install smoke confirmed the installed package version from site-packages.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PREVENTS_DRIFT",
+          "target": "package:ilc-core@0.4.5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "PREVENTS_DRIFT"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a added a packaging regression assertion for the relay subpackage.",
+      "manual_read_summary": "The package manifest test now asserts that pyproject.toml includes ilc_core.network.relay, preventing future wheels from omitting the relay client/server package.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "path:pyproject.toml"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PREVENTS_DRIFT",
+          "target": "path:ilc_core/network/relay"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "PREVENTS_DRIFT"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_install_01_installable_release_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a produced the local 0.4.5 wheel artifact for subsequent PyPI upload phase review.",
+      "manual_read_summary": "Wheel artifact dist/ilc_core-0.4.5-py3-none-any.whl was built locally; SHA-256 and byte size are recorded in the phase receipt.",
+      "node_kind": "release_artifact",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONTAINS",
+          "target": "package:ilc-core@0.4.5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CONTAINS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "dist/ilc_core-0.4.5-py3-none-any.whl"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a produced the local 0.4.5 source distribution artifact for subsequent PyPI upload phase review.",
+      "manual_read_summary": "Source distribution dist/ilc_core-0.4.5.tar.gz was built locally; SHA-256 and byte size are recorded in the phase receipt. Boundary scan found no docs/out/tests/tools private tree paths.",
+      "node_kind": "release_artifact",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONTAINS",
+          "target": "package:ilc-core@0.4.5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CONTAINS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "dist/ilc_core-0.4.5.tar.gz"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a build receipt records the 0.4.5 local artifact hashes, sizes, verification gates, and non-claims.",
+      "manual_read_summary": "Receipt records local-only build status, wheel/sdist SHA-256 and byte sizes, clean Python 3.12 venv install smoke, relay subpackage inclusion check, twine check, and no-upload non-claims.",
+      "node_kind": "evidence_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00a_local_build_complete_GAP_CONNECTIVITY_PACKAGE_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1615_phase_GAP_CONNECTIVITY_PACKAGE_00A_build_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00a walkthrough records local build execution, package hardening, verification output, graph delta, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough records prompt/context reads, MemPalace/broad search results, focused and partial full-suite test evidence, local artifact hashes and sizes, clean venv install smoke, and the relay package inclusion fix.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00a_local_build_complete_GAP_CONNECTIVITY_PACKAGE_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_connectivity_package_00a_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

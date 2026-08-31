@@ -243,4 +243,6 @@ def test_schema_doc_extends_1213_without_mutating_it() -> None:
 
 
 def test_pyproject_packages_release_module() -> None:
-    assert '"ilc_core.release"' in PYPROJECT_PATH.read_text(encoding="utf-8")
+    pyproject = PYPROJECT_PATH.read_text(encoding="utf-8")
+    assert '"ilc_core.release"' in pyproject
+    assert '"ilc_core.network.relay"' in pyproject
