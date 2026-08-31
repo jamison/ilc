@@ -90767,6 +90767,268 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_connectivity_package_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b hardened the sensitive PyPI upload prompt before execution.",
+      "manual_read_summary": "Prompt now uses PyPI JSON for pre-upload visibility checks, records the accepted operator GO phrase, verifies output token presence in STATUS.md, and preserves the PATCH-07 deferral for release-signing/version/mirror retargeting.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00b_g10_pypi_upload_045.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b retargeted install.sh to the verified ilc-core 0.4.5 PyPI wheel.",
+      "manual_read_summary": "install.sh now embeds the PyPI JSON-derived 0.4.5 wheel URL, SHA-256, byte size, and installer version; dry-run output confirms the embedded constants.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_045_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:install_sh_targets_ilc_core_0_4_5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tools/install.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b upload receipt records PyPI upload, fetchback verification, 0.4.4 yank verification, and non-claims.",
+      "manual_read_summary": "Receipt records the 0.4.5 PyPI project URL, JSON-derived wheel/sdist URLs, SHA-256 and size matches against the 00a build receipt, twine yank limitation, human yank verification, and no-signing/no-deployment non-claims.",
+      "node_kind": "evidence_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_CONNECTIVITY_PACKAGE_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b created the 0.4.5 installable release manifest from PyPI fetchback metadata.",
+      "manual_read_summary": "Manifest records the 0.4.5 wheel and sdist artifact IDs, JSON-derived download URLs, canonical SHA-256 hashes, byte sizes, unsigned signing status, and no-activation non-claims.",
+      "node_kind": "release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONTAINS",
+          "target": "package:ilc-core@0.4.5"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "CONTAINS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_045_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b walkthrough records sensitive PyPI upload execution and closure evidence.",
+      "manual_read_summary": "Walkthrough records pre-upload artifact checks, twine upload output, PyPI JSON propagation, fetchback hash/size verification, CLI yank limitation, human yank verification, install.sh dry-run output, focused tests, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00b_g10_pypi_upload_045.md"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_connectivity_package_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b planning update marks the 0.4.5 PyPI upload complete and routes next work to relay deployment.",
+      "manual_read_summary": "PLANNING_INDEX.md and the forward plan now record 0.4.5 as uploaded and active, 0.4.4 as yanked, install.sh as updated, and GAP-RELAY-RENDEZVOUS-DEPLOY-00 as the next SENSITIVE gate.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b STATUS entry emits the completion token and records verification summary.",
+      "manual_read_summary": "STATUS.md records the 0.4.5 PyPI upload, fetchback verification, 0.4.4 yank verification, install.sh update, focused test pass, walkthrough path, completion token, and non-claims.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1616_phase_GAP_CONNECTIVITY_PACKAGE_00B_pypi_045",
+      "chronology_note": "2026-08-31 GAP-CONNECTIVITY-PACKAGE-00b forward-plan update marks package 00a/00b complete and preserves downstream relay deployment sequencing.",
+      "manual_read_summary": "Forward plan Part 3l rows now record CONNECTIVITY-PACKAGE-00a and 00b as COMPLETE, with 0.4.5 hashes, PyPI publication, install.sh retargeting, and 0.4.4 yank evidence.",
+      "node_kind": "forward_plan",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CONNECTIVITY-PACKAGE-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:connectivity_package_00b_pypi_upload_complete_GAP_CONNECTIVITY_PACKAGE_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",

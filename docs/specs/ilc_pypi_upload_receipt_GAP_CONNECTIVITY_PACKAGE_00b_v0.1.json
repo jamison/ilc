@@ -1,0 +1,66 @@
+{
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.5.tar.gz",
+      "path": "/tmp/ilc_045_fetchback/ilc_core-0.4.5.tar.gz",
+      "sha256": "795d0ee36fc61c6231a30e90c2c449c3107ab46db3944890962b06de55df9711",
+      "sha256_matches_build_receipt": true,
+      "size_bytes": 1163718,
+      "size_matches_build_receipt": true,
+      "url": "https://files.pythonhosted.org/packages/96/19/08d72e6dba7997408eb317d432f29a8d3f1100c13175cbb9f7a3dd55eda2/ilc_core-0.4.5.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.5-py3-none-any.whl",
+      "path": "/tmp/ilc_045_fetchback/ilc_core-0.4.5-py3-none-any.whl",
+      "sha256": "76744445638379015cac8a81ddb37081b165e9a8b8cdc11a5be41a7de2fb1857",
+      "sha256_matches_build_receipt": true,
+      "size_bytes": 1430689,
+      "size_matches_build_receipt": true,
+      "url": "https://files.pythonhosted.org/packages/42/8b/78624d4da8d10070213ad78bcde0f10055a1c58922444fb3904ef9bfb489/ilc_core-0.4.5-py3-none-any.whl"
+    }
+  },
+  "go_phrase_received": "GO GAP-CONNECTIVITY-PACKAGE-00b PYPI-045-UPLOAD",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_guard_clearance",
+    "no_relay_deployment",
+    "no_vps_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-CONNECTIVITY-PACKAGE-00b",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.5/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.5/",
+  "pypi_upload": {
+    "command": ".venv/bin/twine upload --non-interactive dist/ilc_core-0.4.5-py3-none-any.whl dist/ilc_core-0.4.5.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.5/"
+  },
+  "pypi_yank": {
+    "attempted_by_codex": true,
+    "blocked_reason": "twine_6_2_0_has_no_yank_command",
+    "final_yanked_state": {
+      "0.4.4": {
+        "all_files_yanked": true,
+        "reason": "Pre-release connectivity artifact superseded by ilc-core==0.4.5; relay package inclusion and Part 3l connectivity lane require 0.4.5"
+      },
+      "0.4.5": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "manual_yank_verified_via": [
+      "https://pypi.org/pypi/ilc-core/json",
+      "https://pypi.org/pypi/ilc-core/0.4.4/json"
+    ],
+    "required_manual_action": "Yank ilc-core==0.4.4 with reason: Pre-release connectivity artifact superseded by ilc-core==0.4.5; relay package inclusion and Part 3l connectivity lane require 0.4.5.",
+    "verified_complete": true
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_CONNECTIVITY_PACKAGE_00b.v0.1",
+  "version": "0.4.5"
+}
