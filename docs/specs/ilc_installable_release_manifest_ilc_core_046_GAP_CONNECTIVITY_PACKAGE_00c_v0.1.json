@@ -1,0 +1,51 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-046@phase-1617",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:db87ab7ab2fa7db8065860d5b1cd57313a0f61969a18be8a793305c72914ea0c",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/a9/45/485563871e708c1c87bf3d3f45cb7b6212b396ec4718a6d6d56a1cd3f416/ilc_core-0.4.6-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1617,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1431018
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-046@phase-1617",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:ec6f8d009ae5ade36818b8cb36fa42b80b402a081072127238084f3c6b556583",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/31/be/4fe79c0ea29c7c4fbbaed45279c84da7f6f20d75cd634cd7f7c7cbdd87e5/ilc_core-0.4.6.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1617,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1163960
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1617,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_guard_clearance",
+    "no_relay_deployment",
+    "no_vps_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "release_id": "ilc-core-0.4.6"
+}
