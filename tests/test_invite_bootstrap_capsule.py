@@ -265,6 +265,21 @@ def test_gossip_registry_rejects_tampered_bootstrap_hint_signature(
         GossipPeerRegistry([]).load_bootstrap_hints(hints_path, current_epoch=0)
 
 
+def test_gossip_registry_rejects_oversized_bootstrap_hints_with_bounded_read(
+    tmp_path: Path,
+) -> None:
+    hints_path = tmp_path / "bootstrap_peer_hints.json"
+    hints_path.write_bytes(
+        b"{"
+        + b'"schema_version":"bootstrap_peer_hints.v0.1","known_peer_hints":[],"pad":"'
+        + (b"x" * gossip_peer_registry.MAX_BOOTSTRAP_HINTS_FILE_BYTES)
+        + b'"}'
+    )
+
+    with pytest.raises(ValueError, match="bootstrap_peer_hints_file_too_large"):
+        GossipPeerRegistry([]).load_bootstrap_hints(hints_path, current_epoch=0)
+
+
 def test_write_invitee_install_receipt_signs_without_secret_echo(tmp_path: Path) -> None:
     agent = provision_new_identity(tmp_path, invite_id="invite-a", emit_warning=False)
     root = identity_root(tmp_path)
@@ -292,6 +307,18 @@ def test_write_invitee_install_receipt_signs_without_secret_echo(tmp_path: Path)
         signature_hex=receipt["signature"],
     )
     assert (root / "invitee_install_receipt.json").is_file()
+
+
+def test_bootstrap_fetch_float_rejection_has_depth_cap() -> None:
+    nested: object = 0
+    for _ in range(provisioning.MAX_BOOTSTRAP_FETCH_JSON_DEPTH + 2):
+        nested = [nested]
+
+    with pytest.raises(
+        ValueError,
+        match="bootstrap_fetch_bundle_float_not_allowed:max_depth_exceeded",
+    ):
+        provisioning._reject_float(nested, "bootstrap_fetch_bundle_float_not_allowed")
 
 
 def test_write_invitee_install_receipt_rejects_blank_release_fields(tmp_path: Path) -> None:

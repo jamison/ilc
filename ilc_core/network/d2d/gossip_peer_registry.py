@@ -433,12 +433,14 @@ class GossipPeerRegistry:
             raise RuntimeError("dynamic_peer_discovery_not_activated")
         hints_path = Path(path).expanduser()
         try:
-            if hints_path.stat().st_size > MAX_BOOTSTRAP_HINTS_FILE_BYTES:
+            with hints_path.open("rb") as handle:
+                raw = handle.read(MAX_BOOTSTRAP_HINTS_FILE_BYTES + 1)
+            if len(raw) > MAX_BOOTSTRAP_HINTS_FILE_BYTES:
                 raise ValueError("bootstrap_peer_hints_file_too_large")
-            payload = json.loads(hints_path.read_text(encoding="utf-8"))
+            payload = json.loads(raw.decode("utf-8"))
         except ValueError:
             raise
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
             raise ValueError("bootstrap_peer_hints_file_invalid") from exc
         if not isinstance(payload, Mapping):
             raise ValueError("bootstrap_peer_hints_file_invalid")

@@ -684,7 +684,12 @@ def _require_string(value: object, token: str, *, max_chars: int) -> str:
     if not isinstance(value, str):
         raise ConnectivityAdvertisementValidationError(token)
     normalized = value.strip()
-    if not normalized or len(normalized) > max_chars or any(char.isspace() for char in normalized):
+    if (
+        value != normalized
+        or not normalized
+        or len(normalized) > max_chars
+        or any(char.isspace() for char in normalized)
+    ):
         raise ConnectivityAdvertisementValidationError(token)
     return normalized
 

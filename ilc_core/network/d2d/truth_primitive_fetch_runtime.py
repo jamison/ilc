@@ -220,7 +220,19 @@ def want_have(node_id: str, peer_endpoint: str) -> dict[str, Any]:
                     "fetch_want_have_invalid_response",
                     f"peer {peer_endpoint} returned unexpected body",
                 )
-            return {"have": bool(parsed["have"]), "node_id": str(parsed.get("node_id", node_id))}
+            have = parsed["have"]
+            if not isinstance(have, bool):
+                raise FetchTransportError(
+                    "fetch_want_have_invalid_response",
+                    f"peer {peer_endpoint} returned non-boolean have field",
+                )
+            response_node_id = parsed.get("node_id", node_id)
+            if not isinstance(response_node_id, str):
+                raise FetchTransportError(
+                    "fetch_want_have_invalid_response",
+                    f"peer {peer_endpoint} returned non-string node_id field",
+                )
+            return {"have": have, "node_id": response_node_id}
     except FetchTransportError:
         raise
     except urllib.error.HTTPError as exc:

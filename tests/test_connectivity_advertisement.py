@@ -172,6 +172,34 @@ def test_connectivity_advertisement_rejects_non_iterable_candidate_list() -> Non
         )
 
 
+def test_connectivity_advertisement_direct_constructor_rejects_untrimmed_protocol_strings() -> None:
+    base = {
+        "agent_id": AGENT_ID,
+        "transport_endpoint": _endpoint(),
+        "protocol_version": "ilc-d2d-gossip.v1",
+        "installed_slices_digest": DIGEST,
+        "content_availability_count": 7,
+        "peer_timestamp_epoch": 10,
+        "ttl_epochs": 4,
+        "connectivity_mode": ConnectivityMode.RELAY_REACHABLE,
+        "relay_endpoint": _endpoint("relay.example.com", 51151),
+        "candidate_list": (),
+        "probe_receipt_ref": PROBE_REF,
+        "relay_slot_ref": "slot-001",
+        "ml_dsa_signature": SIG_HEX,
+        "key_binding_ref": "key-binding-a",
+    }
+    for field, token in (
+        ("protocol_version", "protocol_version_invalid"),
+        ("key_binding_ref", "key_binding_ref_invalid"),
+        ("relay_slot_ref", "relay_slot_ref_invalid"),
+    ):
+        kwargs = dict(base)
+        kwargs[field] = f" {kwargs[field]} "
+        with pytest.raises(ConnectivityAdvertisementValidationError, match=token):
+            ConnectivityAdvertisement(**kwargs)
+
+
 def test_connectivity_advertisement_rejects_duplicate_candidates_and_primary() -> None:
     duplicate = [_endpoint("dup.example.com", 443).to_dict()] * 2
     with pytest.raises(

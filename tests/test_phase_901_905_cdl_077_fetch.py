@@ -188,6 +188,57 @@ def test_rate_limiter_caps_bucket_count_with_fifo_eviction():
     assert "agent-a" not in limiter._buckets
 
 
+class _FakeHttpResponse:
+    status = 200
+
+    def __init__(self, payload: bytes) -> None:
+        self._payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def read(self, _size: int = -1) -> bytes:
+        return self._payload
+
+
+class _FakeOpener:
+    def __init__(self, payload: bytes) -> None:
+        self._payload = payload
+
+    def open(self, _req, timeout: float):
+        assert timeout > 0
+        return _FakeHttpResponse(self._payload)
+
+
+def test_want_have_rejects_non_bool_have_field(monkeypatch):
+    monkeypatch.setattr(
+        urllib.request,
+        "build_opener",
+        lambda *_args: _FakeOpener(b'{"have":"false","node_id":"bafytest001"}'),
+    )
+
+    with pytest.raises(FetchTransportError) as exc_info:
+        want_have("bafytest001", "https://peer1.example.com")
+
+    assert exc_info.value.token == "fetch_want_have_invalid_response"
+
+
+def test_want_have_rejects_non_string_node_id_field(monkeypatch):
+    monkeypatch.setattr(
+        urllib.request,
+        "build_opener",
+        lambda *_args: _FakeOpener(b'{"have":true,"node_id":123}'),
+    )
+
+    with pytest.raises(FetchTransportError) as exc_info:
+        want_have("bafytest001", "https://peer1.example.com")
+
+    assert exc_info.value.token == "fetch_want_have_invalid_response"
+
+
 # ---------------------------------------------------------------------------
 # Group 4: Server — handle_want_have_request
 # ---------------------------------------------------------------------------

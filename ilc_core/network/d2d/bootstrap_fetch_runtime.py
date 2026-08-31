@@ -140,6 +140,7 @@ def verify_bootstrap_bundle_signature(
             payload,
             sort_keys=True,
             separators=(",", ":"),
+            ensure_ascii=True,
             allow_nan=False,
         ).encode("utf-8")
 
@@ -257,6 +258,40 @@ def validate_bootstrap_bundle_schema(bundle: dict[str, Any]) -> bool:
     """
     if not isinstance(bundle, dict):
         return False
-    required = {"schema_version", "bundle_cid", "genesis_cid", "peers",
-                "signed_by", "signature", "cdl_version"}
-    return required.issubset(bundle.keys())
+    required = {
+        "schema_version",
+        "bundle_cid",
+        "genesis_cid",
+        "peers",
+        "signed_by",
+        "signature",
+        "cdl_version",
+    }
+    if not required.issubset(bundle.keys()):
+        return False
+    if bundle.get("schema_version") != BOOTSTRAP_BUNDLE_SCHEMA_VERSION:
+        return False
+    if bundle.get("cdl_version") != BOOTSTRAP_BUNDLE_CDL_VERSION:
+        return False
+    for field in ("bundle_cid", "genesis_cid", "signed_by", "signature"):
+        value = bundle.get(field)
+        if not isinstance(value, str) or not value.strip() or value.strip() != value:
+            return False
+    peers = bundle.get("peers")
+    if not isinstance(peers, list):
+        return False
+    for peer in peers:
+        if not isinstance(peer, dict):
+            return False
+        endpoint = peer.get("endpoint")
+        node_id = peer.get("node_id")
+        if (
+            not isinstance(endpoint, str)
+            or not endpoint.strip()
+            or endpoint.strip() != endpoint
+            or not isinstance(node_id, str)
+            or not node_id.strip()
+            or node_id.strip() != node_id
+        ):
+            return False
+    return True

@@ -58,6 +58,7 @@ INVITEE_INSTALL_RECEIPT_SIGNATURE_DOMAIN = "ILC_INVITEE_INSTALL_RECEIPT_V1"
 MAX_KNOWN_PEER_HINTS = 8
 MIN_KNOWN_PEERS = 3
 MAX_BOOTSTRAP_FETCH_PEERS = 16
+MAX_BOOTSTRAP_FETCH_JSON_DEPTH = 128
 POP_DOMAIN = "ilc-invite-pop-v1"
 KEY_STORE_PROFILE_FILE_0600 = "file_0600_unencrypted"
 ONBOARDING_SOFTWARE_VERSION = ILC_CORE_VERSION
@@ -1383,16 +1384,18 @@ def _normalize_distributed_fetch_evidence(
     }
 
 
-def _reject_float(value: object, token: str) -> None:
+def _reject_float(value: object, token: str, *, _depth: int = 0) -> None:
+    if _depth > MAX_BOOTSTRAP_FETCH_JSON_DEPTH:
+        raise ValueError(f"{token}:max_depth_exceeded")
     if isinstance(value, float):
         raise ValueError(token)
     if isinstance(value, Mapping):
         for key, item in value.items():
-            _reject_float(key, token)
-            _reject_float(item, token)
+            _reject_float(key, token, _depth=_depth + 1)
+            _reject_float(item, token, _depth=_depth + 1)
     elif isinstance(value, (list, tuple)):
         for item in value:
-            _reject_float(item, token)
+            _reject_float(item, token, _depth=_depth + 1)
 
 
 def _read_json_object(path: Path, token: str) -> dict[str, Any]:

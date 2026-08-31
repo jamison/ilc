@@ -259,10 +259,32 @@ def test_verify_signature_uses_compact_canonical_json(monkeypatch):
         payload,
         sort_keys=True,
         separators=(",", ":"),
+        ensure_ascii=True,
         allow_nan=False,
     ).encode("utf-8")
     assert result is True
     assert _CapturingOqsSignature.captured_signed_bytes == expected
+
+
+def test_verify_signature_uses_ascii_escaped_canonical_json(monkeypatch):
+    _CapturingOqsSignature.captured_signed_bytes = None
+    monkeypatch.setitem(sys.modules, "oqs", _CapturingOqsModule())
+    bundle = dict(VALID_BUNDLE)
+    bundle["description"] = "naive-cafe-\u00e9"
+
+    result = verify_bootstrap_bundle_signature(bundle, GENESIS_PUBKEY)
+
+    payload = {k: v for k, v in bundle.items() if k != "signature"}
+    expected = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+    assert result is True
+    assert _CapturingOqsSignature.captured_signed_bytes == expected
+    assert b"\\u00e9" in expected
 
 
 # ---------------------------------------------------------------------------
@@ -311,6 +333,23 @@ def test_validate_bundle_schema_valid():
 
 def test_validate_bundle_schema_missing_field():
     bundle = {k: v for k, v in VALID_BUNDLE.items() if k != "genesis_cid"}
+    assert validate_bootstrap_bundle_schema(bundle) is False
+
+
+@pytest.mark.parametrize(
+    "peers",
+    [
+        "not-a-list",
+        {"endpoint": "https://peer.ilc.example", "node_id": "node"},
+        None,
+        [1],
+        [{"endpoint": " https://peer.ilc.example", "node_id": "node"}],
+        [{"endpoint": "https://peer.ilc.example", "node_id": ""}],
+    ],
+)
+def test_validate_bundle_schema_rejects_malformed_peer_list(peers):
+    bundle = dict(VALID_BUNDLE)
+    bundle["peers"] = peers
     assert validate_bootstrap_bundle_schema(bundle) is False
 
 
