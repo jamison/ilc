@@ -1,0 +1,133 @@
+{
+  "artifact_boundary_checks": {
+    "sdist_private_tree_contamination_scan": {
+      "command": "tar -tf dist/ilc_core-0.4.5.tar.gz | rg '^(ilc_core-0\\.4\\.5/(docs|out|tests|tools|Z_Past_Chats)/|ilc_core-0\\.4\\.5/(CLAUDE|WHITEPAPER))' || true",
+      "result": "PASS",
+      "stdout": ""
+    },
+    "wheel_relay_subpackage_present": {
+      "command": "unzip -l dist/ilc_core-0.4.5-py3-none-any.whl | rg 'ilc_core/network/relay/(|__init__\\.py|relay_client\\.py|relay_server\\.py)'",
+      "result": "PASS"
+    }
+  },
+  "build_command": ".venv/bin/python -m build",
+  "build_frontend": "build 1.5.0 (/Users/jamison/Documents/ILC_Main/01_Current/.venv/lib/python3.14/site-packages/build)",
+  "build_log": {
+    "line_count": 2192,
+    "path": "/tmp/gap_connectivity_package_00a_build.log",
+    "terminal_tail": [
+      "adding 'ilc_core/validator/__init__.py'",
+      "adding 'ilc_core/validator/admission_ejection_runtime.py'",
+      "adding 'ilc_core/validator/endpoint_rotation_runtime.py'",
+      "adding 'ilc_core/validator/network_id_validation.py'",
+      "adding 'ilc_core/validator/re_admission_runtime.py'",
+      "adding 'ilc_core/validator/staking_liveness_runtime.py'",
+      "adding 'ilc_core/validator/topology_shuffle_runtime.py'",
+      "adding 'ilc_core/validator/trust_tier_runtime.py'",
+      "adding 'ilc_core/validator/validator_admission_ejection_production_path.py'",
+      "adding 'ilc_core/validator/validator_eligibility_certificate.py'",
+      "adding 'ilc_core/validator/validator_key_derivation.py'",
+      "adding 'ilc_core/work/task_queue.py'",
+      "adding 'ilc_core-0.4.5.dist-info/licenses/LICENSE'",
+      "adding 'ilc_core-0.4.5.dist-info/METADATA'",
+      "adding 'ilc_core-0.4.5.dist-info/WHEEL'",
+      "adding 'ilc_core-0.4.5.dist-info/entry_points.txt'",
+      "adding 'ilc_core-0.4.5.dist-info/top_level.txt'",
+      "adding 'ilc_core-0.4.5.dist-info/RECORD'",
+      "removing build/bdist.macosx-15.0-x86_64/wheel",
+      "Successfully built ilc_core-0.4.5.tar.gz and ilc_core-0.4.5-py3-none-any.whl"
+    ]
+  },
+  "clean_venv_install_smoke": {
+    "command": "rm -rf /tmp/ilc-045-test && /usr/local/bin/python3.12 -m venv /tmp/ilc-045-test && /tmp/ilc-045-test/bin/python -m pip install --upgrade pip && cd /tmp && /tmp/ilc-045-test/bin/python -m pip install --quiet /Users/jamison/Documents/ILC_Main/01_Current/dist/ilc_core-0.4.5-py3-none-any.whl && /tmp/ilc-045-test/bin/python - <<'PY'\nimport ilc_core\nimport ilc_core.network.connectivity_mode\nimport ilc_core.network.nat_probe\nimport ilc_core.network.relay.relay_client\nimport ilc_core.network.relay.relay_server\nimport ilc_core.sidecars.connectivity_advertisement\nprint(ilc_core.__version__)\nprint(ilc_core.__file__)\nprint('site_packages_confirmed', 'site-packages' in ilc_core.__file__)\nprint('connectivity_imports_ok')\nPY",
+    "python": "Python 3.12.13",
+    "result": "PASS",
+    "stdout_tail": [
+      "Successfully installed pip-26.2.1",
+      "0.4.5",
+      "/private/tmp/ilc-045-test/lib/python3.12/site-packages/ilc_core/__init__.py",
+      "site_packages_confirmed True",
+      "connectivity_imports_ok"
+    ]
+  },
+  "local_source_hardening": {
+    "package_include_fix": "Added ilc_core.network.relay to [tool.setuptools.packages.find].include after clean-wheel smoke showed ModuleNotFoundError for ilc_core.network.relay.",
+    "regression_test": "tests/test_gap_public_install_01_installable_release_manifest.py now asserts ilc_core.network.relay is included in pyproject.toml."
+  },
+  "non_claims": [
+    "no_pypi_upload",
+    "no_install_sh_update",
+    "no_release_manifest_publication",
+    "no_manifest_signing",
+    "no_cdl_mutation",
+    "no_guard_clearance",
+    "no_relay_deployment",
+    "no_vps_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "package_scope": "local_build_only",
+  "phase": "GAP-CONNECTIVITY-PACKAGE-00a",
+  "post_build_checks": {
+    "package_metadata_tests": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_gap_public_install_00_distribution_reconciliation.py tests/test_gap_public_install_01_installable_release_manifest.py tests/test_package_hygiene_phase_1005.py",
+      "result": "PASS",
+      "stdout": "...........................................                              [100%]\n43 passed in 3.21s"
+    },
+    "twine_check": {
+      "command": ".venv/bin/python -m twine check dist/ilc_core-0.4.5-py3-none-any.whl dist/ilc_core-0.4.5.tar.gz",
+      "result": "PASS",
+      "stdout": "Checking dist/ilc_core-0.4.5-py3-none-any.whl: PASSED\nChecking dist/ilc_core-0.4.5.tar.gz: PASSED"
+    }
+  },
+  "pre_build_gates": {
+    "contradiction_scan": {
+      "command": "rg -rn \"0\\.4\\.5.*blocked|version.*0\\.4\\.5.*deferred|version.bump.*not authorized\" docs/ pyproject.toml 2>/dev/null || true",
+      "result": "PASS_WITH_HISTORICAL_OR_PROMPT_SYNTAX_HITS",
+      "summary": "No live blocking authority found. Hits were prompt/planning text and stale escaped regex artifacts."
+    },
+    "full_suite_attempt": {
+      "command": ".venv/bin/python -m pytest tests/ -q --tb=short",
+      "result": "INTERRUPTED_NOT_CLAIMED_AS_PASS",
+      "stdout_tail": "708 passed, 1 warning in 142.06s"
+    },
+    "focused_release_connectivity_suite": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_connectivity_mode.py tests/test_network_doctor_cli.py tests/test_install_connectivity_receipt.py tests/test_validator_connectivity_wiring.py tests/test_invite_bootstrap_capsule.py tests/test_relay_client.py tests/test_relay_server.py tests/test_relay_bls_rust_backend.py tests/test_connectivity_audit_fix.py tests/test_connectivity_advertisement.py tests/test_gap_public_install_02_install_sh.py tests/test_gap_public_install_03_ilc_update.py tests/test_gap_public_install_04_e2e.py tests/test_gap_homoiconic_install_00_cli_install_from_invite.py",
+      "result": "PASS",
+      "stdout": "...................................................s................ [100%]\n359 passed, 1 skipped in 291.42s (0:04:51)"
+    },
+    "prompt_validation": {
+      "command": "python3 tools/validate_phase_prompt.py docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md",
+      "result": "PASS",
+      "stdout": "VALID: docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_package_00a_g10_local_build_045.md"
+    },
+    "system_python_build_frontend": {
+      "command": "python3 -m build --version",
+      "result": "UNAVAILABLE",
+      "stdout": "/Library/Developer/CommandLineTools/usr/bin/python3: No module named build.__main__; 'build' is a package and cannot be directly executed"
+    },
+    "venv_available": {
+      "command": "python3 -m venv --help",
+      "result": "PASS"
+    }
+  },
+  "predecessor_version": "0.4.4",
+  "pypi_upload_phase": "GAP-CONNECTIVITY-PACKAGE-00b",
+  "pypi_upload_status": "deferred",
+  "sdist": {
+    "filename": "ilc_core-0.4.5.tar.gz",
+    "path": "dist/ilc_core-0.4.5.tar.gz",
+    "sha256": "795d0ee36fc61c6231a30e90c2c449c3107ab46db3944890962b06de55df9711",
+    "size_bytes": 1163718
+  },
+  "version": "0.4.5",
+  "wheel": {
+    "filename": "ilc_core-0.4.5-py3-none-any.whl",
+    "path": "dist/ilc_core-0.4.5-py3-none-any.whl",
+    "sha256": "76744445638379015cac8a81ddb37081b165e9a8b8cdc11a5be41a7de2fb1857",
+    "size_bytes": 1430689
+  }
+}
