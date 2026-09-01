@@ -1,0 +1,112 @@
+{
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.10.tar.gz",
+      "path": "/tmp/fetchback-ilc_core-0.4.10.tar.gz",
+      "sha256": "6f6b97f7a4a819ab30ab0a26da19159db4eb64ccb05e842697e4f4cc5a39e327",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1166990,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/d5/0d/db5b0f6dee5e263c73e82e4740fcc2f941bf5143945a8b42e9a2fd5654b4/ilc_core-0.4.10.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.10-py3-none-any.whl",
+      "path": "/tmp/fetchback-ilc_core-0.4.10-py3-none-any.whl",
+      "sha256": "3d848cdcddddcbc4d5fe5a0579cd75aa98bcfaa13d19b6fe018ec2f9b5987b55",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1433920,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/f6/46/c39091a5685f779950b3a724a753e72a872bb5472d5329f5e83a4a6376ba/ilc_core-0.4.10-py3-none-any.whl"
+    }
+  },
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.10.tar.gz",
+      "sha256": "6f6b97f7a4a819ab30ab0a26da19159db4eb64ccb05e842697e4f4cc5a39e327",
+      "size_bytes": 1166990
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.10-py3-none-any.whl",
+      "sha256": "3d848cdcddddcbc4d5fe5a0579cd75aa98bcfaa13d19b6fe018ec2f9b5987b55",
+      "size_bytes": 1433920
+    }
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.10/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.10/",
+  "pypi_upload": {
+    "command": ".venv/bin/twine upload --non-interactive dist/ilc_core-0.4.10-py3-none-any.whl dist/ilc_core-0.4.10.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.10/"
+  },
+  "pypi_yank": {
+    "0.4.9_yank_reason": "Pre-release relay artifact superseded by ilc-core==0.4.10; final relay audit hardening fixes required before public RC.",
+    "attempted_by_codex": false,
+    "blocked_reason": "twine 6.2.0 in this environment supports register/upload/check only; no yank command is available.",
+    "final_yanked_state": {
+      "0.4.9": {
+        "all_files_yanked": true,
+        "reason": "Pre-release relay artifact superseded by ilc-core==0.4.10; final relay audit hardening fixes required before public RC."
+      },
+      "0.4.10": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "manual_yank_confirmed_by_operator": true,
+    "verified_complete": true
+  },
+  "relay_host_upgrade": {
+    "ilc-node-2": {
+      "connectivity_advertisement_guard": true,
+      "ilc_core_version": "0.4.10",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_pinned_der_path_package_visible": true,
+      "udp_request_bound_target_path_package_visible": true
+    },
+    "ilc-node-3": {
+      "connectivity_advertisement_guard": true,
+      "ilc_core_version": "0.4.10",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_pinned_der_path_package_visible": true,
+      "udp_request_bound_target_path_package_visible": true
+    },
+    "ilc-node-6": {
+      "connectivity_advertisement_guard": true,
+      "ilc_core_version": "0.4.10",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_pinned_der_path_package_visible": true,
+      "udp_request_bound_target_path_package_visible": true
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00b.v0.1",
+  "source_private_commit_at_build": "efab7ca09d7615bd507fc9a210b85639d78b6c3b",
+  "source_private_commit_at_upload": "b40ec92e82cf25f420bfc42df75da9920afb5d51",
+  "source_tree_delta_at_build": [
+    "pyproject.toml version=0.4.10",
+    "ilc_core/__init__.py __version__=0.4.10",
+    "includes relay final-audit hardening commit efab7ca09",
+    "tools/install.sh targets ilc-core 0.4.10 after PyPI fetchback"
+  ],
+  "timestamp_utc": "2026-09-01T19:06:42Z",
+  "version": "0.4.10"
+}

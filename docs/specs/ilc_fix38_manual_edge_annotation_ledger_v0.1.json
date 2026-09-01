@@ -91548,6 +91548,123 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_audit_hardening_package_00b_g10_0410_pypi_upload_and_relay_venv_upgrade.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_audit_hardening_package_0410_00b_execution_2026_09_01",
+      "chronology_note": "2026-09-01 installable release manifest for ilc-core 0.4.10 produced by GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b.",
+      "manual_read_summary": "Manifest records canonical PyPI wheel and sdist URLs for ilc-core 0.4.10, SHA-256 hashes and sizes verified by fetchback, unsigned signing status, no connectivity advertisement activation, no validator slot venv mutation, and no public-RC activation.",
+      "node_kind": "release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "package:ilc-core-0.4.10"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-RELAY-AUDIT-HARDENING-PACKAGE-0410-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:relay_audit_hardening_package_0410_published_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:manifest_signed_in_gap_relay_audit_hardening_package_00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0410_GAP_RELAY_AUDIT_HARDENING_PACKAGE_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_audit_hardening_package_0410_00b_execution_2026_09_01",
+      "chronology_note": "2026-09-01 PyPI upload and relay venv upgrade receipt for GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b.",
+      "manual_read_summary": "Receipt records PyPI upload, fetchback equality for wheel and sdist, manual 0.4.9 yank verification, 0.4.10 active state, /opt/ilc-relay/venv upgrades on ilc-node-2/3/6, package-visible relay guard and behavioral checks, validator slot venv non-mutation, and non-claims.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:relay_audit_hardening_package_0410_published_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:validator_slot_venv_mutation_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_bootstrap_capsule_signed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_audit_hardening_package_0410_00b_execution_2026_09_01",
+      "chronology_note": "2026-09-01 walkthrough for GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b.",
+      "manual_read_summary": "Walkthrough records GO phrase, preflight token checks, local verification gates, PyPI upload output, fetchback hashes and canonical URLs, operator 0.4.9 yank verification, relay host upgrade commands, per-host guard and behavioral verification, validator slot venv non-mutation, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:relay_audit_hardening_package_0410_published_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:validator_slot_venv_mutation_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_audit_hardening_package_0410_00b_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

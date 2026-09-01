@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-RELAY-RENDEZVOUS-DEPLOY-00-049"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/bf/a0/720346ee0d39c90a9bf98dfc37b116b983d1abd80ae024d3fd1d2f4701bd/ilc_core-0.4.9-py3-none-any.whl"
-RC_WHEEL_SHA256="3775574ea92b5e3131c6b2c984cf9828e543b34b31daa95c505e78b7fe04375e"
-RC_WHEEL_SIZE="1432246"
+INSTALLER_VERSION="GAP-RELAY-AUDIT-HARDENING-PACKAGE-00b-0410"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/f6/46/c39091a5685f779950b3a724a753e72a872bb5472d5329f5e83a4a6376ba/ilc_core-0.4.10-py3-none-any.whl"
+RC_WHEEL_SHA256="3d848cdcddddcbc4d5fe5a0579cd75aa98bcfaa13d19b6fe018ec2f9b5987b55"
+RC_WHEEL_SIZE="1433920"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
