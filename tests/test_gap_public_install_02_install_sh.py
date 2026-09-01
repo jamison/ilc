@@ -16,15 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_046_GAP_CONNECTIVITY_PACKAGE_00c_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_047_GAP_RELAY_GUARD_ACTIVATION_BRIDGE_00_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/a9/45/"
-    "485563871e708c1c87bf3d3f45cb7b6212b396ec4718a6d6d56a1cd3f416/"
-    "ilc_core-0.4.6-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/12/b8/"
+    "95f43b053413607d64cb7ebb69b245810b4707c493879838098653e6dc01/"
+    "ilc_core-0.4.7-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "db87ab7ab2fa7db8065860d5b1cd57313a0f61969a18be8a793305c72914ea0c"
-EXPECTED_SIZE = "1431018"
+EXPECTED_SHA256 = "7f13dba05042c4914aa048a7e1827b656d458c2d3ef989a635ff576a014c746d"
+EXPECTED_SIZE = "1431058"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -145,7 +145,7 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
 
 
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.6-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.7-py3-none-any.whl"
     payload.write_bytes(b"not a wheel")
     invite = tmp_path / "invite.json"
     invite.write_text("{}", encoding="utf-8")

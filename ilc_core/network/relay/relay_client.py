@@ -35,7 +35,7 @@ from ilc_core.identity.first_run_provisioning import (
 )
 
 
-RELAY_CLIENT_NOT_ACTIVATED = True
+RELAY_CLIENT_NOT_ACTIVATED = False
 RELAY_CLIENT_SCHEMA_VERSION = "relay_client_GAP_RELAY_RENDEZVOUS_IMPL_00.v0.1"
 RELAY_CLIENT_TOKEN = "relay_client_committed_GAP_RELAY_RENDEZVOUS_IMPL_00"
 RELAY_ADMISSION_DOMAIN = "ilc-relay-rendezvous-admission-v1"
