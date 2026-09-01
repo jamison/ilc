@@ -2340,11 +2340,13 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
     )
     assert status == 200
     slot = RelaySlotGrant.from_dict(body["grant"])
+    client = ("198.51.100.10", 50000)
+    peer = ("198.51.100.11", 50001)
     protocol = RelayUdpPortForwarder(
         server,
         slot_id=slot.slot_id,
-        target_host="127.0.0.1",
-        target_port=50151,
+        target_host=peer[0],
+        target_port=peer[1],
         relay_slot_nonce=slot.relay_slot_nonce,
         epoch_provider=lambda: 0,
         receipt_sink=lambda receipt, _addr: receipts.append(receipt),
@@ -2360,8 +2362,6 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
 
     transport = FakeTransport()
     protocol.connection_made(transport)
-    client = ("198.51.100.10", 50000)
-    peer = ("198.51.100.11", 50001)
     protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), client)
     protocol.datagram_received(b"peer-first", peer)
     protocol.datagram_received(b"client-second", client)
@@ -2378,11 +2378,12 @@ def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
     receipts: list[RelayForwardReceipt] = []
     server = _server()
     _secret_key, _agent_id, slot = _grant(server)
+    peer = ("198.51.100.11", 50001)
     protocol = RelayUdpPortForwarder(
         server,
         slot_id=slot.slot_id,
-        target_host="127.0.0.1",
-        target_port=50151,
+        target_host=peer[0],
+        target_port=peer[1],
         relay_slot_nonce=slot.relay_slot_nonce,
         epoch_provider=lambda: 0,
         receipt_sink=lambda receipt, _addr: receipts.append(receipt),
@@ -2433,11 +2434,12 @@ def test_udp_forwarder_preclaim_attacker_does_not_poison_nonce_state() -> None:
     receipts: list[RelayForwardReceipt] = []
     server = _server()
     _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.33", 50005)
     protocol = RelayUdpPortForwarder(
         server,
         slot_id=slot.slot_id,
-        target_host="127.0.0.1",
-        target_port=50151,
+        target_host=target[0],
+        target_port=target[1],
         relay_slot_nonce=slot.relay_slot_nonce,
         epoch_provider=lambda: 0,
         receipt_sink=lambda receipt, _addr: receipts.append(receipt),
@@ -2458,24 +2460,24 @@ def test_udp_forwarder_preclaim_attacker_does_not_poison_nonce_state() -> None:
     assert protocol.client_addr is None
 
     client = ("198.51.100.31", 50003)
-    peer = ("198.51.100.33", 50005)
     protocol.datagram_received(relay_slot_claim_datagram(slot), client)
-    protocol.datagram_received(b"peer-payload", peer)
+    protocol.datagram_received(b"peer-payload", target)
     protocol.datagram_received(b"client-payload", client)
 
     assert protocol.client_addr == client
-    assert transport.sends == [(b"peer-payload", client), (b"client-payload", peer)]
+    assert transport.sends == [(b"peer-payload", client), (b"client-payload", target)]
     assert [receipt.bytes_forwarded for receipt in receipts] == [12, 14]
 
 
-def test_udp_forwarder_nonce_prefixed_payload_waits_for_peer_binding() -> None:
+def test_udp_forwarder_nonce_prefixed_payload_forwards_to_request_bound_target() -> None:
     server = _server()
     _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.40", 50151)
     protocol = RelayUdpPortForwarder(
         server,
         slot_id=slot.slot_id,
-        target_host="127.0.0.1",
-        target_port=50151,
+        target_host=target[0],
+        target_port=target[1],
         relay_slot_nonce=slot.relay_slot_nonce,
         epoch_provider=lambda: 0,
     )
@@ -2495,9 +2497,45 @@ def test_udp_forwarder_nonce_prefixed_payload_waits_for_peer_binding() -> None:
         ("198.51.100.32", 50004),
     )
 
-    assert protocol.last_error == "relay_udp_peer_not_bound"
+    assert protocol.last_error is None
     assert protocol.client_addr == ("198.51.100.32", 50004)
-    assert transport.sends == []
+    assert transport.sends == [(b"first-payload", target)]
+
+
+def test_udp_forwarder_rejects_unbound_target_source() -> None:
+    receipts: list[RelayForwardReceipt] = []
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    client = ("198.51.100.50", 53032)
+    target = ("198.51.100.51", 53031)
+    stranger = ("198.51.100.52", 53031)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+        receipt_sink=lambda receipt, _addr: receipts.append(receipt),
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(relay_slot_claim_datagram(slot), client)
+    protocol.datagram_received(b"stranger-tries-to-bind", stranger)
+    protocol.datagram_received(b"target-to-client", target)
+
+    assert protocol.last_error is None
+    assert transport.sends == [(b"target-to-client", client)]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [16]
 
 
 def test_data_plane_start_stop_releases_port() -> None:
@@ -2548,7 +2586,7 @@ def test_deploy_prompt_requires_audit_fix_and_topology_smoke_gate() -> None:
 
     assert "relay_audit_fix_committed_GAP_RELAY_AUDIT_FIX_00" in prompt
     assert "3-socket topology smoke" in prompt
-    assert "guard clearance forbidden if this cannot be run" in prompt
+    assert "completion forbidden if this cannot be run" in prompt
     assert "sufficient for relay-assisted peer connectivity" not in prompt
 
 

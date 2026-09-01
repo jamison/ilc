@@ -1136,14 +1136,14 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
     ) -> None:
         self._server = server
         self._slot_id = _require_token(slot_id, "relay_udp_slot_id_invalid")
-        _require_host(target_host, "relay_udp_target_host_invalid")
-        _require_port(target_port, "relay_udp_target_port_invalid")
+        clean_target_host = _require_host(target_host, "relay_udp_target_host_invalid")
+        clean_target_port = _require_port(target_port, "relay_udp_target_port_invalid")
+        self._target_addr = (clean_target_host, clean_target_port)
         self._nonce = _require_relay_slot_nonce_bytes(relay_slot_nonce)
         self._nonce_verified = False
         self._epoch_provider = epoch_provider
         self._receipt_sink = receipt_sink
         self._client_addr: tuple[str, int] | None = None
-        self._peer_addr: tuple[str, int] | None = None
         self._client_addr_lock = threading.Lock()
         self._last_error_lock = threading.Lock()
         self._transport: asyncio.DatagramTransport | None = None
@@ -1214,11 +1214,8 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
             if self._client_addr is None:
                 return None
             if sender == self._client_addr:
-                return self._peer_addr
-            if self._peer_addr is None:
-                self._peer_addr = sender
-                return self._client_addr
-            if sender == self._peer_addr:
+                return self._target_addr
+            if sender == self._target_addr:
                 return self._client_addr
         return None
 
