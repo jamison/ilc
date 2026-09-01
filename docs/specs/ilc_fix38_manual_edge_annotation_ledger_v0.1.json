@@ -86316,6 +86316,175 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1623_phase_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_relay_048",
+      "chronology_note": "2026-09-01 GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00 prompt hardened and executed to package ilc-core 0.4.8 with request-bound UDP dataplane fix.",
+      "manual_read_summary": "Prompt authorizes 0.4.8 packaging, PyPI upload, 0.4.7 yank verification, relay-only VPS venv upgrades, host behavioral verification, and explicit non-claims. The verification harness was hardened to use an asyncio.DatagramTransport test double.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:relay_udp_dataplane_fix_packaged_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "commit:7d21114cf"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_live_udp_dataplane_fix_00_g10_relay_048_package.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1623_phase_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_relay_048",
+      "chronology_note": "2026-09-01 GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00 walkthrough records build, PyPI, installer, host upgrade, and verification evidence.",
+      "manual_read_summary": "Walkthrough records GO phrase, prompt validation, preflight reads, 0.4.8 build hashes and sizes, local outside-repo behavioral verification, PyPI upload/fetchback, human 0.4.7 yank verification, install.sh sync, relay host verification, validator slot non-mutation, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_udp_dataplane_fix_packaged_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_live_udp_dataplane_fix_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1623_phase_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_relay_048",
+      "chronology_note": "2026-09-01 ilc-core 0.4.8 installable release manifest added after PyPI fetchback verification.",
+      "manual_read_summary": "Manifest binds the 0.4.8 wheel and sdist artifact IDs, canonical SHA-256 hashes, sizes, PyPI URLs, unsigned status, and non-claims for the relay UDP dataplane fix package.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:ilc-core-0.4.8-wheel"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:ilc-core-0.4.8-sdist"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_udp_dataplane_fix_packaged_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_048_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1623_phase_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_relay_048",
+      "chronology_note": "2026-09-01 PyPI upload receipt records 0.4.8 upload, fetchback, 0.4.7 yank verification, and relay host venv upgrades.",
+      "manual_read_summary": "Receipt records local build hashes and sizes, PyPI fetchback equality for wheel and sdist, human 0.4.7 yank completion, 0.4.8 active state, relay VPS venv versions, behavioral verification, validator slot venv non-mutation, source tree delta, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_048_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_udp_dataplane_fix_packaged_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_1623_phase_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00_relay_048",
+      "chronology_note": "2026-09-01 STATUS entry emits GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00 completion token.",
+      "manual_read_summary": "STATUS.md records the 0.4.8 PyPI publication, 0.4.7 yank verification, relay host upgrade verification, validator venv non-mutation, artifacts, completion token, and non-claims.",
+      "node_kind": "phase_status_log",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "claim:relay_udp_dataplane_fix_packaged_GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "nodes": [
