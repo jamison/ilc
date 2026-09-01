@@ -1,0 +1,51 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-049@phase-1624",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:3775574ea92b5e3131c6b2c984cf9828e543b34b31daa95c505e78b7fe04375e",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/bf/a0/720346ee0d39c90a9bf98dfc37b116b983d1abd80ae024d3fd1d2f4701bd/ilc_core-0.4.9-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1624,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1432246
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-049@phase-1624",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:17885a7cda44417353655597ce26925983ba8d39607c8d27eca7836d9f1720a4",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/20/65/47a0140a94559d3b6f91561075efa9097b082c5b9bf3e2d25fe22d1a69c8/ilc_core-0.4.9.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1624,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1165185
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1624,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "release_id": "ilc-core-0.4.9"
+}
