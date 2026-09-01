@@ -91458,6 +91458,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_live_udp_dataplane.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_rendezvous_deploy_00_048_udp_blocked_2026_09_01",
+      "chronology_note": "2026-09-01 blocked walkthrough for GAP-RELAY-RENDEZVOUS-DEPLOY-00 retry against ilc-core 0.4.8.",
+      "manual_read_summary": "Walkthrough records human GO phrase, DigitalOcean firewall mutation and rollback, relay service activation from /opt/ilc-relay/venv, public TCP/HTTPS/TLS success, failed three-host UDP smoke, one-way nonce+payload timeout, installed-code inspection, rollback verification, blocked token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:relay_server_deployed_guard_cleared_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELAY-DATAPLANE-OBSERVABILITY-FIX-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "blocker:relay_048_live_udp_dataplane_no_forward_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_service_left_running_after_blocked_048_deploy"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_firewall_left_open_after_blocked_048_deploy"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "BLOCKS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_048_live_udp_dataplane.md"
     }
   ],
   "phase": "1545p-Fix38",
