@@ -64,6 +64,7 @@ RELAY_ADMISSION_REQUEST_PATH = "/relay/admission/request"
 RELAY_SLOT_KEEPALIVE_PATH = "/relay/slot/keepalive"
 RELAY_SLOT_RELEASE_PATH = "/relay/slot/release"
 RELAY_HEALTH_PATH = "/relay/health"
+RELAY_DEBUG_SLOTS_PATH = "/relay/debug/slots"
 
 _DEFAULT_NETWORK_ID = "public-rc"
 _DEFAULT_RELAY_PORT = 50151
@@ -93,6 +94,18 @@ _MAX_FAILED_ADMISSION_ENTRIES = 65_536
 _MAX_RELAY_RECORDS_PER_CAPSULE = 8
 _TOMBSTONE_RETENTION_EPOCHS = 8
 _MAX_TOMBSTONES = _MAX_ACTIVE_SLOTS * (_TOMBSTONE_RETENTION_EPOCHS + 1)
+_UDP_FORWARDER_COUNTER_KEYS = (
+    "client_to_target_forwarded",
+    "claim_only_datagrams",
+    "datagrams_received",
+    "nonce_claims_accepted",
+    "nonce_mismatch_drops",
+    "nonce_prefixed_payloads",
+    "sendto_failures",
+    "sendto_successes",
+    "target_to_client_forwarded",
+    "unknown_sender_drops",
+)
 _CONTROLLED_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 _RELAY_BOOTSTRAP_RECORD_PAYLOAD_KEYS = frozenset(
     {
@@ -584,8 +597,14 @@ class RelayRendezvousServer:
 
     def health(self) -> dict[str, Any]:
         with self._state_lock:
+            data_plane = (
+                self._data_plane.summary_snapshot()
+                if self._data_plane is not None
+                else {"enabled": False}
+            )
             return {
                 "active_slot_count": self._active_slot_count,
+                "data_plane": data_plane,
                 "data_port_range_end": self.config.data_port_range_end,
                 "data_port_range_start": self.config.data_port_range_start,
                 "ilc_core_version": ILC_CORE_VERSION,
@@ -593,6 +612,20 @@ class RelayRendezvousServer:
                 "schema_version": RELAY_SERVER_SCHEMA_VERSION,
                 "server_guard_active": RELAY_SERVER_NOT_ACTIVATED,
             }
+
+    def debug_slots(self, *, source_host: str) -> dict[str, Any]:
+        source_host = _require_host(source_host, "relay_debug_source_host_invalid")
+        if not _host_is_loopback(source_host):
+            raise RelayServerError("relay_debug_loopback_required")
+        if self._data_plane is None:
+            return {
+                "data_plane": {"enabled": False},
+                "schema_version": RELAY_SERVER_SCHEMA_VERSION,
+            }
+        return {
+            "data_plane": self._data_plane.debug_snapshot(include_addresses=True),
+            "schema_version": RELAY_SERVER_SCHEMA_VERSION,
+        }
 
     def request_slot(
         self,
@@ -876,6 +909,8 @@ class RelayRendezvousServer:
         try:
             if method == "GET" and path == RELAY_HEALTH_PATH:
                 return 200, self.health()
+            if method == "GET" and path == RELAY_DEBUG_SLOTS_PATH:
+                return 200, self.debug_slots(source_host=source_host)
             if method != "POST":
                 return 405, {"error": "relay_method_not_allowed"}
             body = _require_mapping(payload, "relay_request_body_must_be_object")
@@ -1146,6 +1181,8 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         self._client_addr: tuple[str, int] | None = None
         self._client_addr_lock = threading.Lock()
         self._last_error_lock = threading.Lock()
+        self._stats_lock = threading.Lock()
+        self._stats = dict.fromkeys(_UDP_FORWARDER_COUNTER_KEYS, 0)
         self._transport: asyncio.DatagramTransport | None = None
         self._closed = False
         self._last_error: str | None = None
@@ -1163,17 +1200,22 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         if self._transport is None:
             self._set_last_error("relay_udp_transport_not_ready")
             return
+        self._bump("datagrams_received")
         try:
             sender = _require_socket_addr(addr, "relay_udp_sender_addr_invalid")
             payload = data
             if not self._is_nonce_verified():
                 payload = self._claim_client_addr(sender, payload)
                 if payload is None:
+                    if self._is_nonce_verified():
+                        self._bump("claim_only_datagrams")
                     return
             destination = self._destination_for_sender(sender)
             if destination is None:
+                self._bump("unknown_sender_drops")
                 self._set_last_error("relay_udp_peer_not_bound")
                 return
+            sender_role = self._sender_role(sender)
             receipt, revocation = self._server.forward_datagram(
                 slot_id=self._slot_id,
                 payload=payload,
@@ -1184,7 +1226,17 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
                 self._closed = True
                 self._transport.close()
                 return
-            self._transport.sendto(payload, destination)
+            try:
+                self._transport.sendto(payload, destination)
+            except (OSError, RuntimeError) as exc:
+                self._bump("sendto_failures")
+                self._set_last_error(_error_token(exc))
+                return
+            self._bump("sendto_successes")
+            if sender_role == "client":
+                self._bump("client_to_target_forwarded")
+            elif sender_role == "target":
+                self._bump("target_to_client_forwarded")
         except RelayServerError as exc:
             self._set_last_error(_error_token(exc))
             return
@@ -1219,18 +1271,29 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
                 return self._client_addr
         return None
 
+    def _sender_role(self, sender: tuple[str, int]) -> str | None:
+        with self._client_addr_lock:
+            if sender == self._client_addr:
+                return "client"
+            if sender == self._target_addr:
+                return "target"
+        return None
+
     def _claim_client_addr(self, sender: tuple[str, int], data: bytes) -> bytes | None:
         if not data.startswith(self._nonce):
+            self._bump("nonce_mismatch_drops")
             self._set_last_error("relay_udp_nonce_mismatch")
             return None
         with self._client_addr_lock:
             if self._client_addr is None:
                 self._client_addr = sender
                 self._nonce_verified = True
+                self._bump("nonce_claims_accepted")
         payload = data[len(self._nonce):]
         if not payload:
             self._set_last_error(None)
             return None
+        self._bump("nonce_prefixed_payloads")
         return payload
 
     def _is_nonce_verified(self) -> bool:
@@ -1240,6 +1303,31 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
     def _set_last_error(self, value: str | None) -> None:
         with self._last_error_lock:
             self._last_error = value
+
+    def _bump(self, key: str) -> None:
+        with self._stats_lock:
+            self._stats[key] = self._stats.get(key, 0) + 1
+
+    def snapshot(self, *, include_addresses: bool = False) -> dict[str, Any]:
+        with self._stats_lock:
+            counters = dict(self._stats)
+        with self._client_addr_lock:
+            client_addr = self._client_addr
+            target_addr = self._target_addr
+            nonce_verified = self._nonce_verified
+        with self._last_error_lock:
+            last_error = self._last_error
+        payload: dict[str, Any] = {
+            "closed": self._closed,
+            "counters": counters,
+            "last_error": last_error,
+            "nonce_verified": nonce_verified,
+            "slot_id": self._slot_id,
+        }
+        if include_addresses:
+            payload["client_addr"] = _socket_addr_to_debug_dict(client_addr)
+            payload["target_addr"] = _socket_addr_to_debug_dict(target_addr)
+        return payload
 
 
 class RelayDataPlaneRuntime:
@@ -1355,6 +1443,42 @@ class RelayDataPlaneRuntime:
     def active_slot_ports(self) -> dict[str, int]:
         with self._lock:
             return {slot_id: port for slot_id, (port, _transport, _protocol) in self._slots.items()}
+
+    def summary_snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            snapshots = [protocol.snapshot() for _port, _transport, protocol in self._slots.values()]
+            active_slot_count = len(snapshots)
+            active_udp_ports = [port for port, _transport, _protocol in self._slots.values()]
+        counters = dict.fromkeys(_UDP_FORWARDER_COUNTER_KEYS, 0)
+        last_errors: dict[str, int] = {}
+        for snapshot in snapshots:
+            for key, value in snapshot["counters"].items():
+                counters[key] = counters.get(key, 0) + value
+            last_error = snapshot.get("last_error")
+            if isinstance(last_error, str):
+                last_errors[last_error] = last_errors.get(last_error, 0) + 1
+        return {
+            "active_slot_count": active_slot_count,
+            "active_udp_ports": sorted(active_udp_ports),
+            "enabled": True,
+            "last_error_counts": last_errors,
+            "total_counters": counters,
+        }
+
+    def debug_snapshot(self, *, include_addresses: bool = False) -> dict[str, Any]:
+        with self._lock:
+            slots = {
+                slot_id: {
+                    "port": port,
+                    **protocol.snapshot(include_addresses=include_addresses),
+                }
+                for slot_id, (port, _transport, protocol) in self._slots.items()
+            }
+        return {
+            "active_slot_count": len(slots),
+            "enabled": True,
+            "slots": slots,
+        }
 
     async def _open_slot(
         self,
@@ -2199,6 +2323,13 @@ def _host_is_loopback(host: str) -> bool:
         return False
 
 
+def _socket_addr_to_debug_dict(value: tuple[str, int] | None) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    host, port = value
+    return {"host": host, "port": port}
+
+
 def _require_network_id(value: object) -> str:
     if not isinstance(value, str) or len(value) < 2 or len(value) > 63:
         raise RelayServerError("relay_network_id_invalid")
@@ -2263,6 +2394,7 @@ def _error_token(exc: BaseException) -> str:
 
 __all__ = [
     "RELAY_ADMISSION_REQUEST_PATH",
+    "RELAY_DEBUG_SLOTS_PATH",
     "RELAY_HEALTH_PATH",
     "RELAY_SERVER_NOT_ACTIVATED",
     "RELAY_SERVER_SCHEMA_VERSION",
