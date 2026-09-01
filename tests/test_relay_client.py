@@ -102,8 +102,8 @@ def _relay_lifecycle_signature(
     return payload_ref, sign_relay_lifecycle_digest(secret_key, payload_ref)
 
 
-def test_relay_client_guard_defaults_closed() -> None:
-    assert RELAY_CLIENT_NOT_ACTIVATED is True
+def test_relay_client_guard_is_activation_cleared() -> None:
+    assert RELAY_CLIENT_NOT_ACTIVATED is False
     secret_key, agent_id, invite_pop = _pop_material()
     _, admission_signature = _relay_admission_signature(
         secret_key,
@@ -119,7 +119,7 @@ def test_relay_client_guard_defaults_closed() -> None:
         relay_admission_signature=admission_signature,
     )
 
-    with pytest.raises(RelayClientError, match="relay_client_not_activated"):
+    with pytest.raises(RelayClientError):
         client.request_slot(admission_epoch=0)
 
 
@@ -564,7 +564,7 @@ def test_relay_client_tls_pin_verifier_rejects_missing_cert() -> None:
         relay_module._verify_response_tls_pin(FakeResponse(), "12" * 32)
 
 
-def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
+def test_nat_probe_requests_relay_after_guard_activation() -> None:
     secret_key, agent_id, invite_pop = _pop_material()
     _, admission_signature = _relay_admission_signature(
         secret_key,
@@ -611,11 +611,6 @@ def test_nat_probe_requests_relay_only_after_guard_cleared(monkeypatch) -> None:
         },
         relay_client_factory=FakeClient,
     )
-    guarded = engine.run_probe(probe_epoch=2)
-    assert guarded.connectivity_receipt.mode is ConnectivityMode.LOCAL_ONLY
-    assert calls == []
-
-    monkeypatch.setattr(relay_module, "RELAY_CLIENT_NOT_ACTIVATED", False)
     unguarded = engine.run_probe(probe_epoch=2)
     assert unguarded.connectivity_receipt.mode is ConnectivityMode.RELAY_REACHABLE
     assert unguarded.connectivity_receipt.relay_endpoint == "relay.example:50151"

@@ -221,7 +221,7 @@ def test_health_endpoint_returns_correct_fields() -> None:
     assert body["relay_agent_id"] == RELAY_AGENT_ID
     assert body["schema_version"] == RELAY_SERVER_SCHEMA_VERSION
     assert body["active_slot_count"] == 0
-    assert body["server_guard_active"] is True
+    assert body["server_guard_active"] is False
 
 
 def test_valid_admission_accepted() -> None:
@@ -682,14 +682,8 @@ def test_duplicate_release_replay_rejected() -> None:
     assert body["error"] == "relay_slot_released"
 
 
-def test_relay_server_guard_blocks_start() -> None:
-    assert RELAY_SERVER_NOT_ACTIVATED is True
-    with pytest.raises(RelayServerError, match="relay_server_not_activated"):
-        run_relay_http_server(
-            config=_server_config(),
-            bind_host="127.0.0.1",
-            bind_port=0,
-        )
+def test_relay_server_guard_is_activation_cleared() -> None:
+    assert RELAY_SERVER_NOT_ACTIVATED is False
 
 
 def test_byte_budget_enforcement_revokes_slot() -> None:

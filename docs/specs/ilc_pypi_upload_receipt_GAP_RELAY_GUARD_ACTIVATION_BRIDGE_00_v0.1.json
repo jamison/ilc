@@ -1,0 +1,81 @@
+{
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.7.tar.gz",
+      "path": "/tmp/ilc_047_fetchback_sdist/ilc_core-0.4.7.tar.gz",
+      "sha256": "8779fde9fbd37fdf706321d760684a7dc413fea09b8cf10cbdbf16127b447b36",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1164030,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/6a/9d/61847ad11c302ff1278cc4eaa570a80076a92a34e531aeaf0107f24361ef/ilc_core-0.4.7.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.7-py3-none-any.whl",
+      "path": "/tmp/ilc_047_fetchback/ilc_core-0.4.7-py3-none-any.whl",
+      "sha256": "7f13dba05042c4914aa048a7e1827b656d458c2d3ef989a635ff576a014c746d",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1431058,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/12/b8/95f43b053413607d64cb7ebb69b245810b4707c493879838098653e6dc01/ilc_core-0.4.7-py3-none-any.whl"
+    }
+  },
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.7.tar.gz",
+      "sha256": "8779fde9fbd37fdf706321d760684a7dc413fea09b8cf10cbdbf16127b447b36",
+      "size_bytes": 1164030
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.7-py3-none-any.whl",
+      "sha256": "7f13dba05042c4914aa048a7e1827b656d458c2d3ef989a635ff576a014c746d",
+      "size_bytes": 1431058
+    }
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_service_deployment",
+    "no_firewall_mutation",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-RELAY-GUARD-ACTIVATION-BRIDGE-00",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.7/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.7/",
+  "pypi_upload": {
+    "command": ".venv/bin/twine upload --non-interactive dist/ilc_core-0.4.7-py3-none-any.whl dist/ilc_core-0.4.7.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.7/"
+  },
+  "pypi_yank": {
+    "0.4.6_yank_reason": "Pre-release relay guard bridge artifact superseded by ilc-core==0.4.7; relay guard activation package required for DEPLOY-00.",
+    "attempted_by_codex": false,
+    "completed_by_human": true,
+    "final_yanked_state": {
+      "0.4.6": {
+        "all_files_yanked": true,
+        "reason": "Pre-release relay guard bridge artifact superseded by ilc-core==0.4.7; relay guard activation package required for DEPLOY-00."
+      },
+      "0.4.7": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "verified_complete": true
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_GUARD_ACTIVATION_BRIDGE_00.v0.1",
+  "source_private_commit": "a1df9b2884d0e36768b58c3afc687311e52f6b93",
+  "source_tree_delta_at_build": [
+    "ilc_core/network/relay/relay_server.py RELAY_SERVER_NOT_ACTIVATED=False",
+    "ilc_core/network/relay/relay_client.py RELAY_CLIENT_NOT_ACTIVATED=False",
+    "pyproject.toml version=0.4.7",
+    "ilc_core/__init__.py __version__=0.4.7"
+  ],
+  "version": "0.4.7"
+}

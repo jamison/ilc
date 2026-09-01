@@ -11,8 +11,9 @@ UDP forwarding only. General third-party NAT traversal, arbitrary peer relay
 reachability, and validator-grade relay readiness require DEPLOY-00 topology
 smoke evidence across distinct hosts or network namespaces.
 
-This module is source-only until GAP-RELAY-RENDEZVOUS-DEPLOY-00 clears
-``RELAY_SERVER_NOT_ACTIVATED`` and starts it on live validator hosts.
+This module is package-visible for relay deployment after
+GAP-RELAY-GUARD-ACTIVATION-BRIDGE-00 clears ``RELAY_SERVER_NOT_ACTIVATED``.
+RELAY-RENDEZVOUS-DEPLOY-00 starts it on live relay hosts.
 """
 
 from __future__ import annotations
@@ -54,7 +55,7 @@ from ilc_core.network.relay.relay_client import (
 )
 
 
-RELAY_SERVER_NOT_ACTIVATED = True
+RELAY_SERVER_NOT_ACTIVATED = False
 RELAY_SERVER_SCHEMA_VERSION = "relay_server_GAP_RELAY_SERVER_IMPL_00.v0.1"
 RELAY_SERVER_TOKEN = "relay_server_impl_committed_GAP_RELAY_SERVER_IMPL_00"
 RELAY_ABUSE_LIMITS_SCHEMA_VERSION = "relay_abuse_limits_GAP_RELAY_ABUSE_LIMITS_FIX1_00.v0.1"
