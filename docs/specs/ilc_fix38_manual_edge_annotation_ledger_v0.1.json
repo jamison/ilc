@@ -77106,6 +77106,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_onboarding_package_044_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1607_phase_GAP_RELAY_RENDEZVOUS_DEPLOY_00_blocked_cloud_firewall_access",
+      "chronology_note": "2026-09-01 GAP-RELAY-RENDEZVOUS-DEPLOY-00 retry against ilc-core 0.4.8 blocked after host-local activation because DigitalOcean cloud firewall access was unavailable to Codex.",
+      "manual_read_summary": "Walkthrough records prompt hardening from 0.4.7 to 0.4.8, relay venv guard preflight, service-template /opt/ilc-relay/venv/bin/ilc path, temporary UFW and systemd activation, local HTTPS health success, unsigned endpoint candidate fact generation, public TLS timeout on all three public IPs, absent doctl/DO token environment, rollback of systemd and UFW state, and non-emission of the DEPLOY-00 completion token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-RENDEZVOUS-DEPLOY-00"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:relay_server_deployed_guard_cleared_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "external:digitalocean_cloud_firewall_access"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "POSITIVE_ASSERTS",
+          "target": "blocker:relay_deploy_cloud_firewall_access_blocked_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_server_deployed_guard_cleared_GAP_RELAY_RENDEZVOUS_DEPLOY_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_service_left_running_after_blocked_deploy"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "BLOCKS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "POSITIVE_ASSERTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_cloud_firewall_access.md"
     }
   ],
   "manual_annotations": [
