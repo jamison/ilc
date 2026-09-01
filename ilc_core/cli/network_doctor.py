@@ -38,6 +38,8 @@ UPNP_RELAY_TIP = (
 )
 MAX_RELAY_ADMISSION_MATERIAL_BYTES = 65_536
 MAX_NETWORK_DOCTOR_BOOTSTRAP_FETCH_PEERS = 16
+MAX_NETWORK_DOCTOR_JSON_DEPTH = 64
+MAX_NETWORK_DOCTOR_JSON_NODES = 4096
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
 
 
@@ -211,9 +213,11 @@ def _load_relay_admission_material(path_value: str) -> dict[str, Any]:
     if not isinstance(path_value, str) or not path_value.strip():
         raise ValueError("network_doctor_relay_admission_material_path_invalid")
     path = Path(path_value).expanduser().resolve()
-    raw = path.read_bytes()
-    if len(raw) > MAX_RELAY_ADMISSION_MATERIAL_BYTES:
-        raise ValueError("network_doctor_relay_admission_material_too_large")
+    raw = _read_bounded_file(
+        path,
+        max_bytes=MAX_RELAY_ADMISSION_MATERIAL_BYTES,
+        too_large_token="network_doctor_relay_admission_material_too_large",
+    )
     try:
         payload = json.loads(
             raw.decode("utf-8"),
@@ -227,6 +231,14 @@ def _load_relay_admission_material(path_value: str) -> dict[str, Any]:
         raise ValueError("network_doctor_relay_admission_material_must_be_object")
     _reject_non_protocol_numbers(payload)
     return payload
+
+
+def _read_bounded_file(path: Path, *, max_bytes: int, too_large_token: str) -> bytes:
+    with path.open("rb") as handle:
+        raw = handle.read(max_bytes + 1)
+    if len(raw) > max_bytes:
+        raise ValueError(too_large_token)
+    return raw
 
 
 def _network_doctor_bootstrap_fetch(
@@ -318,29 +330,40 @@ def _require_genesis_authority_pubkey_hex(value: object) -> str:
 
 
 def _reject_non_protocol_numbers(value: object) -> None:
-    if isinstance(value, bool) or value is None or isinstance(value, str):
-        return
-    if isinstance(value, int):
-        return
-    if isinstance(value, float):
-        if not math.isfinite(value):
-            raise ValueError("network_doctor_relay_admission_material_json_invalid")
-        raise ValueError("network_doctor_relay_admission_material_float_forbidden")
-    if isinstance(value, list):
-        for item in value:
-            _reject_non_protocol_numbers(item)
-        return
-    if isinstance(value, dict):
-        for item in value.values():
-            _reject_non_protocol_numbers(item)
-        return
-    raise ValueError("network_doctor_relay_admission_material_json_invalid")
+    node_count = 0
+
+    def visit(item: object, depth: int) -> None:
+        nonlocal node_count
+        node_count += 1
+        if node_count > MAX_NETWORK_DOCTOR_JSON_NODES or depth > MAX_NETWORK_DOCTOR_JSON_DEPTH:
+            raise ValueError("network_doctor_relay_admission_material_json_too_deep")
+        if isinstance(item, bool) or item is None or isinstance(item, str):
+            return
+        if isinstance(item, int):
+            return
+        if isinstance(item, float):
+            if not math.isfinite(item):
+                raise ValueError("network_doctor_relay_admission_material_json_invalid")
+            raise ValueError("network_doctor_relay_admission_material_float_forbidden")
+        if isinstance(item, list):
+            for child in item:
+                visit(child, depth + 1)
+            return
+        if isinstance(item, dict):
+            for child in item.values():
+                visit(child, depth + 1)
+            return
+        raise ValueError("network_doctor_relay_admission_material_json_invalid")
+
+    visit(value, 0)
 
 
 __all__ = [
     "NETWORK_DOCTOR_CLI_TOKEN",
     "NETWORK_DOCTOR_STUB_WARNING",
     "MAX_RELAY_ADMISSION_MATERIAL_BYTES",
+    "MAX_NETWORK_DOCTOR_JSON_DEPTH",
+    "MAX_NETWORK_DOCTOR_JSON_NODES",
     "UPNP_RELAY_TIP",
     "build_network_doctor_payload",
 ]

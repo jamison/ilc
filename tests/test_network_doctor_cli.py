@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import json
 import subprocess
 import sys
@@ -257,6 +258,28 @@ def test_network_doctor_rejects_oversized_relay_admission_material(tmp_path) -> 
         network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
 
 
+def test_network_doctor_relay_admission_material_uses_bounded_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    reads: list[int] = []
+
+    class BoundedBytesIO(io.BytesIO):
+        def read(self, size: int = -1) -> bytes:
+            reads.append(size)
+            return b'{"agent_id":"%s"}' % (b"a" * 96)
+
+    def fake_open(self: object, mode: str = "r", *_args: object, **_kwargs: object) -> BoundedBytesIO:
+        assert mode == "rb"
+        return BoundedBytesIO()
+
+    monkeypatch.setattr(network_doctor.Path, "open", fake_open)
+
+    assert network_doctor._load_relay_admission_material("relay_material.json") == {
+        "agent_id": "a" * 96,
+    }
+    assert reads == [network_doctor.MAX_RELAY_ADMISSION_MATERIAL_BYTES + 1]
+
+
 @pytest.mark.parametrize("payload", ["[]", "1", "true", '"string"'])
 def test_network_doctor_rejects_non_object_relay_admission_material(
     tmp_path,
@@ -294,6 +317,17 @@ def test_network_doctor_rejects_finite_float_relay_admission_material(tmp_path) 
     with pytest.raises(
         ValueError,
         match="network_doctor_relay_admission_material_float_forbidden",
+    ):
+        network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
+
+
+def test_network_doctor_rejects_deeply_nested_relay_admission_material(tmp_path) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text('{"nested":' + "[" * 80 + "0" + "]" * 80 + "}", encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="network_doctor_relay_admission_material_json_too_deep",
     ):
         network_doctor._load_relay_admission_material(str(material_path))  # noqa: SLF001
 

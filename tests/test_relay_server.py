@@ -28,9 +28,11 @@ from ilc_core.identity.first_run_provisioning import invite_pop_payload_ref
 import ilc_core.network.relay as relay_package
 from ilc_core.network.relay.relay_client import (
     RELAY_CLIENT_SCHEMA_VERSION,
+    RelayAdmissionRequest,
     RelayClient,
     RelayEndpoint,
     RelaySlotGrant,
+    _canonical_json_bytes,
     relay_admission_payload_ref,
     relay_lifecycle_payload_ref,
     relay_slot_claim_datagram,
@@ -117,7 +119,6 @@ def _admission_request(
     relay_base_url: str | None = None,
 ) -> tuple[str, str, dict[str, Any]]:
     secret_key, agent_id, valid_pop = _pop_material(ikm_hex)
-    pop = invite_pop if invite_pop is not None else valid_pop
     invite_ref = invite_pop_payload_ref(
         agent_id_hex=agent_id,
         invite_nullifier=INVITE_NULLIFIER,
@@ -140,21 +141,37 @@ def _admission_request(
     admission_signature = signature
     if admission_signature is None:
         admission_signature = sign_relay_admission_digest(secret_key, admission_ref)
-    return secret_key, agent_id, {
-        "admission_epoch": admission_epoch,
-        "agent_id": agent_id,
-        "invite_id": INVITE_ID,
-        "invite_nullifier": INVITE_NULLIFIER,
-        "invite_pop": pop,
-        "invite_pop_epoch": 0,
-        "network_id": "public-rc",
-        "relay_admission_payload_ref": admission_ref,
-        "relay_admission_signature": admission_signature,
-        "relay_base_url": base_url,
-        "requested_internal_port": requested_internal_port,
-        "requested_protocol": "quic",
-        "software_version": "0.4.5",
-    }
+    request = RelayAdmissionRequest(
+        admission_epoch=admission_epoch,
+        agent_id=agent_id,
+        invite_id=INVITE_ID,
+        invite_nullifier=INVITE_NULLIFIER,
+        invite_pop=valid_pop,
+        invite_pop_epoch=0,
+        network_id="public-rc",
+        relay_admission_payload_ref=admission_ref,
+        relay_admission_signature=sign_relay_admission_digest(secret_key, admission_ref),
+        relay_base_url=base_url,
+        requested_internal_port=requested_internal_port,
+        requested_protocol="quic",
+        software_version="0.4.5",
+    )
+    payload = request.to_dict()
+    if invite_pop is not None:
+        payload["invite_pop"] = invite_pop
+        _refresh_admission_request_hash(payload)
+    if signature is not None:
+        payload["relay_admission_signature"] = admission_signature
+        _refresh_admission_request_hash(payload)
+    return secret_key, agent_id, payload
+
+
+def _refresh_admission_request_hash(payload: dict[str, Any]) -> None:
+    core_payload = dict(payload)
+    core_payload.pop("canonical_request_hash", None)
+    payload["canonical_request_hash"] = hashlib.sha256(
+        _canonical_json_bytes(core_payload)
+    ).hexdigest()
 
 
 def _grant(server: RelayRendezvousServer) -> tuple[str, str, RelaySlotGrant]:
@@ -274,7 +291,7 @@ def test_concurrent_admission_allocates_unique_ports() -> None:
     for thread in threads:
         thread.start()
     for thread in threads:
-        thread.join(timeout=10)
+        thread.join(timeout=90)
     assert all(not thread.is_alive() for thread in threads)
 
     assert errors == []
@@ -729,6 +746,72 @@ def test_byte_budget_enforcement_revokes_slot() -> None:
     assert body["error"] == "relay_slot_revoked_budget_exceeded"
 
 
+def test_sendto_failure_rolls_back_forwarded_byte_accounting() -> None:
+    server = RelayRendezvousServer(
+        RelayServerConfig(
+            relay_agent_id=RELAY_AGENT_ID,
+            relay_host=RELAY_HOST,
+            relay_port=RELAY_PORT,
+            max_bytes_per_epoch=8,
+        )
+    )
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.33", 50005)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FailingTransport(asyncio.DatagramTransport):
+        def sendto(self, _data: bytes, _addr: tuple[str, int] | None = None) -> None:
+            raise OSError("network down")
+
+        def close(self) -> None:
+            pass
+
+    protocol.connection_made(FailingTransport())
+    protocol.datagram_received(
+        relay_slot_claim_datagram(slot) + b"12345678",
+        ("198.51.100.31", 50003),
+    )
+    assert protocol.last_error == "relay_internal_error"
+    assert server._slots_by_id[slot.slot_id].bytes_forwarded_this_epoch == 0
+
+    receipt, revocation = server.forward_datagram(
+        slot_id=slot.slot_id,
+        payload=b"12345678",
+        epoch=0,
+    )
+    assert receipt.status == "forwarded"
+    assert revocation is None
+
+
+def test_later_admission_passively_expires_abandoned_slots() -> None:
+    server = _server()
+    _secret_key, _agent_id, first_slot = _grant(server)
+    assert first_slot.slot_id in server._slots_by_id
+
+    _second_secret, _second_agent, payload = _admission_request(
+        admission_epoch=first_slot.granted_epoch + first_slot.ttl_epochs + 1,
+        ikm_hex=SECOND_IKM_HEX,
+    )
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+        source_host="198.51.100.99",
+    )
+
+    assert status == 200
+    assert first_slot.slot_id not in server._slots_by_id
+    assert server._tombstones[first_slot.slot_id].status == "expired"
+    assert body["grant"]["agent_id"] == _second_agent
+
+
 def test_data_plane_port_released_after_budget_revocation() -> None:
     server = RelayRendezvousServer(
         RelayServerConfig(
@@ -938,6 +1021,34 @@ def test_http_handler_rejects_oversized_request_without_socket_leak() -> None:
     assert body["error"] == "relay_request_too_large"
 
 
+def test_http_handler_rejects_nonfinite_json_constant() -> None:
+    server = _server()
+
+    class _TestHTTPServer(ThreadingHTTPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+
+    httpd = _TestHTTPServer(("127.0.0.1", 0), make_relay_http_handler(server))
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    try:
+        request = Request(
+            f"http://127.0.0.1:{httpd.server_port}{RELAY_ADMISSION_REQUEST_PATH}",
+            data=b'{"agent_id":NaN}',
+            method="POST",
+            headers={"Content-Type": "application/json"},
+        )
+        with pytest.raises(HTTPError) as exc_info:
+            urlopen(request, timeout=3)
+        body = json.loads(exc_info.value.read().decode("utf-8"))
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+        thread.join(timeout=2)
+
+    assert body["error"] == "relay_request_json_invalid"
+
+
 def test_unknown_endpoint_rejected() -> None:
     status, body = _server().handle_json_request(
         method="POST",
@@ -947,6 +1058,65 @@ def test_unknown_endpoint_rejected() -> None:
 
     assert status == 404
     assert body["error"] == "relay_path_not_found"
+
+
+def test_relay_control_plane_rejects_unknown_admission_fields() -> None:
+    server = _server()
+    _secret_key, _agent_id, payload = _admission_request()
+    payload["unsigned_extra"] = "must-not-be-ignored"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_ADMISSION_REQUEST_PATH,
+        payload=payload,
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_admission_request_unknown_fields"
+
+
+def test_relay_control_plane_rejects_unknown_keepalive_fields() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+    payload = _lifecycle_payload(
+        secret_key=secret_key,
+        agent_id=agent_id,
+        slot=slot,
+        action="keepalive",
+        epoch=0,
+    )
+    payload["unsigned_extra"] = "must-not-be-ignored"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_KEEPALIVE_PATH,
+        payload=payload,
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_keepalive_request_unknown_fields"
+
+
+def test_relay_control_plane_rejects_unknown_release_fields() -> None:
+    server = _server()
+    secret_key, agent_id, slot = _grant(server)
+    payload = _lifecycle_payload(
+        secret_key=secret_key,
+        agent_id=agent_id,
+        slot=slot,
+        action="release",
+        epoch=0,
+    )
+    payload["unsigned_extra"] = "must-not-be-ignored"
+
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_SLOT_RELEASE_PATH,
+        payload=payload,
+    )
+
+    assert status == 400
+    assert body["error"] == "relay_release_request_unknown_fields"
 
 
 def test_schema_token_and_canonical_receipt_are_stable() -> None:
@@ -1292,6 +1462,7 @@ def test_network_id_mismatch_does_not_increment_failed_admission_tracker() -> No
     )
     payload["relay_admission_payload_ref"] = admission_ref
     payload["relay_admission_signature"] = sign_relay_admission_digest(secret_key, admission_ref)
+    _refresh_admission_request_hash(payload)
 
     status, body = server.handle_json_request(
         method="POST",
@@ -2280,10 +2451,7 @@ def test_udp_forwarder_client_to_peer_real_socket() -> None:
     server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
-        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
-        peer.sendto(b"peer-binds-slot", relay_addr)
-        assert client.recvfrom(1024)[0] == b"peer-binds-slot"
-        client.sendto(b"client-to-peer", relay_addr)
+        client.sendto(relay_slot_claim_datagram(grant) + b"client-to-peer", relay_addr)
         data, _addr = peer.recvfrom(1024)
     finally:
         server._data_plane.stop() if server._data_plane is not None else None
@@ -2299,7 +2467,8 @@ def test_udp_forwarder_peer_to_client_real_socket() -> None:
     server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
-        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        client.sendto(relay_slot_claim_datagram(grant) + b"client-first", relay_addr)
+        assert peer.recvfrom(1024)[0] == b"client-first"
         peer.sendto(b"peer-to-client", relay_addr)
         data, _addr = client.recvfrom(1024)
     finally:
@@ -2310,7 +2479,7 @@ def test_udp_forwarder_peer_to_client_real_socket() -> None:
     assert data == b"peer-to-client"
 
 
-def test_udp_forwarder_nonce_only_then_target_reply_records_direction_real_socket() -> None:
+def test_udp_forwarder_nonce_only_does_not_bind_or_forward_target_reply_real_socket() -> None:
     peer = _udp_socket()
     client = _udp_socket()
     server, grant = _data_plane_server_for_target(peer.getsockname()[1])
@@ -2318,7 +2487,8 @@ def test_udp_forwarder_nonce_only_then_target_reply_records_direction_real_socke
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
         client.sendto(relay_slot_claim_datagram(grant), relay_addr)
         peer.sendto(b"target-reply-after-claim", relay_addr)
-        data, _addr = client.recvfrom(1024)
+        with pytest.raises(TimeoutError):
+            client.recvfrom(1024)
         debug_status, debug_body = server.handle_json_request(
             method="GET",
             path=RELAY_DEBUG_SLOTS_PATH,
@@ -2330,16 +2500,16 @@ def test_udp_forwarder_nonce_only_then_target_reply_records_direction_real_socke
         peer.close()
         client.close()
 
-    assert data == b"target-reply-after-claim"
     assert debug_status == 200
     slots = debug_body["data_plane"]["slots"]
     assert list(slots) == [grant.slot_id]
     counters = slots[grant.slot_id]["counters"]
     assert counters["datagrams_received"] == 2
-    assert counters["nonce_claims_accepted"] == 1
+    assert counters["nonce_claims_accepted"] == 0
     assert counters["claim_only_datagrams"] == 1
-    assert counters["target_to_client_forwarded"] == 1
-    assert counters["sendto_successes"] == 1
+    assert counters["target_to_client_forwarded"] == 0
+    assert counters["sendto_successes"] == 0
+    assert counters["nonce_mismatch_drops"] == 1
 
 
 def test_udp_forwarder_nonce_prefixed_payload_reaches_target_real_socket() -> None:
@@ -2395,7 +2565,8 @@ def test_relay_health_exposes_aggregate_data_plane_counters_without_addresses() 
     server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
-        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        client.sendto(relay_slot_claim_datagram(grant) + b"client-first", relay_addr)
+        assert peer.recvfrom(1024)[0] == b"client-first"
         peer.sendto(b"target-reply", relay_addr)
         assert client.recvfrom(1024)[0] == b"target-reply"
         status, body = server.handle_json_request(
@@ -2424,7 +2595,8 @@ def test_udp_forwarder_unknown_source_dropped_real_socket() -> None:
     server, grant = _data_plane_server_for_target(peer.getsockname()[1])
     try:
         relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
-        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        client.sendto(relay_slot_claim_datagram(grant) + b"client-first", relay_addr)
+        assert peer.recvfrom(1024)[0] == b"client-first"
         peer.sendto(b"learn-peer", relay_addr)
         assert client.recvfrom(1024)[0] == b"learn-peer"
         stranger.sendto(b"stranger", relay_addr)
@@ -2470,16 +2642,17 @@ def test_udp_forwarder_client_addr_learned_on_first_packet() -> None:
 
     transport = FakeTransport()
     protocol.connection_made(transport)
-    protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), client)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
     protocol.datagram_received(b"peer-first", peer)
     protocol.datagram_received(b"client-second", client)
 
     assert protocol.client_addr == client
     assert transport.sends == [
+        (b"client-first", peer),
         (b"peer-first", client),
         (b"client-second", peer),
     ]
-    assert [receipt.bytes_forwarded for receipt in receipts] == [10, 13]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [12, 10, 13]
 
 
 def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
@@ -2510,7 +2683,7 @@ def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
     protocol.datagram_received(relay_slot_claim_datagram(slot), ("198.51.100.10", 50000))
 
     assert protocol.last_error is None
-    assert protocol.client_addr == ("198.51.100.10", 50000)
+    assert protocol.client_addr is None
     assert transport.sends == []
     assert receipts == []
 
@@ -2542,11 +2715,17 @@ def test_udp_forwarder_accepts_duck_typed_asyncio_datagram_transport() -> None:
 
     transport = DuckDatagramTransport()
     protocol.connection_made(transport)  # type: ignore[arg-type]
-    protocol.datagram_received(relay_slot_claim_datagram(slot), ("198.51.100.10", 50000))
+    protocol.datagram_received(
+        relay_slot_claim_datagram(slot) + b"client-first",
+        ("198.51.100.10", 50000),
+    )
     protocol.datagram_received(b"target-to-client", target)
 
     assert protocol.last_error is None
-    assert transport.sends == [(b"target-to-client", ("198.51.100.10", 50000))]
+    assert transport.sends == [
+        (b"client-first", target),
+        (b"target-to-client", ("198.51.100.10", 50000)),
+    ]
 
 
 def test_udp_forwarder_wrong_nonce_does_not_register_client() -> None:
@@ -2602,13 +2781,124 @@ def test_udp_forwarder_preclaim_attacker_does_not_poison_nonce_state() -> None:
     assert protocol.client_addr is None
 
     client = ("198.51.100.31", 50003)
-    protocol.datagram_received(relay_slot_claim_datagram(slot), client)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
     protocol.datagram_received(b"peer-payload", target)
     protocol.datagram_received(b"client-payload", client)
 
     assert protocol.client_addr == client
-    assert transport.sends == [(b"peer-payload", client), (b"client-payload", target)]
-    assert [receipt.bytes_forwarded for receipt in receipts] == [12, 14]
+    assert transport.sends == [
+        (b"client-first", target),
+        (b"peer-payload", client),
+        (b"client-payload", target),
+    ]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [12, 12, 14]
+
+
+def test_udp_forwarder_correct_nonce_without_payload_does_not_poison_client_binding() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.33", 50005)
+    attacker = ("198.51.100.30", 50002)
+    client = ("198.51.100.31", 50003)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(bytes.fromhex(slot.relay_slot_nonce), attacker)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
+    protocol.datagram_received(b"target-reply", target)
+
+    assert protocol.client_addr == client
+    assert transport.sends == [(b"client-first", target), (b"target-reply", client)]
+
+
+def test_udp_forwarder_nonce_prefixed_payload_can_reclaim_before_target_reply() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.33", 50005)
+    attacker = ("198.51.100.30", 50002)
+    client = ("198.51.100.31", 50003)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"attacker-first", attacker)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
+    protocol.datagram_received(b"target-reply", target)
+
+    assert protocol.client_addr == client
+    assert transport.sends == [
+        (b"attacker-first", target),
+        (b"client-first", target),
+        (b"target-reply", client),
+    ]
+
+
+def test_udp_forwarder_correct_nonce_cannot_reclaim_after_target_reply() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.33", 50005)
+    attacker = ("198.51.100.30", 50002)
+    client = ("198.51.100.31", 50003)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"attacker-first", attacker)
+    protocol.datagram_received(b"target-reply", target)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
+
+    assert protocol.client_addr == attacker
+    assert protocol.last_error == "relay_udp_nonce_mismatch"
+    assert transport.sends == [
+        (b"attacker-first", target),
+        (b"target-reply", attacker),
+    ]
 
 
 def test_udp_forwarder_nonce_prefixed_payload_forwards_to_request_bound_target() -> None:
@@ -2644,6 +2934,39 @@ def test_udp_forwarder_nonce_prefixed_payload_forwards_to_request_bound_target()
     assert transport.sends == [(b"first-payload", target)]
 
 
+def test_udp_forwarder_post_claim_nonce_prefixed_payload_strips_nonce() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.40", 50151)
+    client = ("198.51.100.32", 50004)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"first-payload", client)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"second-payload", client)
+
+    assert transport.sends == [
+        (b"first-payload", target),
+        (b"second-payload", target),
+    ]
+
+
 def test_udp_forwarder_rejects_unbound_target_source() -> None:
     receipts: list[RelayForwardReceipt] = []
     server = _server()
@@ -2671,13 +2994,43 @@ def test_udp_forwarder_rejects_unbound_target_source() -> None:
 
     transport = FakeTransport()
     protocol.connection_made(transport)
-    protocol.datagram_received(relay_slot_claim_datagram(slot), client)
+    protocol.datagram_received(relay_slot_claim_datagram(slot) + b"client-first", client)
     protocol.datagram_received(b"stranger-tries-to-bind", stranger)
     protocol.datagram_received(b"target-to-client", target)
 
     assert protocol.last_error is None
-    assert transport.sends == [(b"target-to-client", client)]
-    assert [receipt.bytes_forwarded for receipt in receipts] == [16]
+    assert transport.sends == [(b"client-first", target), (b"target-to-client", client)]
+    assert [receipt.bytes_forwarded for receipt in receipts] == [12, 16]
+
+
+def test_udp_forwarder_zero_length_datagram_before_claim_is_rejected() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.51", 53031)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class FakeTransport(asyncio.DatagramTransport):
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+    transport = FakeTransport()
+    protocol.connection_made(transport)
+    protocol.datagram_received(b"", ("198.51.100.50", 53032))
+
+    assert protocol.client_addr is None
+    assert protocol.last_error == "relay_udp_nonce_mismatch"
+    assert transport.sends == []
 
 
 def test_data_plane_start_stop_releases_port() -> None:

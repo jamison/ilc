@@ -99,15 +99,16 @@
     "blocked_reason": "twine 6.2.0 in this environment supports register/upload/check only; no yank command is available.",
     "final_yanked_state": {
       "0.4.8": {
-        "all_files_yanked": false,
-        "reason": null
+        "all_files_yanked": true,
+        "reason": "asyncio UDP transport portability bug — relay data plane non-functional. Use 0.4.9"
       },
       "0.4.9": {
         "all_files_yanked": false,
         "reason": null
       }
     },
-    "verified_complete": false
+    "manual_yank_confirmed_by_operator": true,
+    "verified_complete": true
   },
   "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_RENDEZVOUS_DEPLOY_00.v0.1",
   "source_private_commit_at_build": "4ae4821b6bcd28f63c4d2391bec1b861fedaacac",
