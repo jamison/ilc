@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -136,3 +137,94 @@ def test_router_mapping_called_only_when_requested(monkeypatch) -> None:
     assert with_mapping.attempt_receipts[0].method == "upnp_igd"
     assert with_mapping.attempt_receipts[0].firewall_mutation_attempted is True
     assert "router_mapping_created_external_verification_pending" in with_mapping.warnings
+
+
+def test_relay_admission_material_cli_shape_does_not_duplicate_client_kwargs(
+    monkeypatch,
+) -> None:
+    from ilc_core.network.relay import relay_client as relay_module
+
+    monkeypatch.setattr(relay_module, "RELAY_CLIENT_NOT_ACTIVATED", False)
+    captured: dict[str, object] = {}
+
+    class FakeRelayClient:
+        def __init__(self, **kwargs: object) -> None:
+            captured["kwargs"] = kwargs
+
+        def request_slot(
+            self,
+            *,
+            admission_epoch: int,
+            relay_admission_signature: str | None,
+        ) -> object:
+            captured["admission_epoch"] = admission_epoch
+            captured["relay_admission_signature"] = relay_admission_signature
+            return SimpleNamespace(
+                relay_endpoint=SimpleNamespace(
+                    as_host_port=lambda: "relay.example:52000",
+                ),
+            )
+
+    engine = NatProbeEngine(
+        relay_server_url="https://relay.example:51151",
+        relay_admission_material={
+            "admission_epoch": 0,
+            "agent_id": AGENT_ID,
+            "invite_id": "invite-1",
+            "invite_nullifier": "b" * 64,
+            "invite_pop": "c" * 192,
+            "invite_pop_epoch": 0,
+            "network_id": "public-rc",
+            "relay_admission_payload_ref": "d" * 96,
+            "relay_admission_signature": "e" * 192,
+            "relay_base_url": "https://relay.example:51151",
+            "requested_internal_port": 50151,
+            "requested_protocol": "quic",
+            "software_version": "0.4.10",
+            "tls_cert_der_sha256": "f" * 64,
+        },
+        relay_client_factory=FakeRelayClient,
+    )
+
+    report = engine.run_probe(probe_epoch=0)
+
+    assert report.connectivity_receipt.mode is ConnectivityMode.RELAY_REACHABLE
+    assert report.connectivity_receipt.relay_endpoint == "relay.example:52000"
+    assert captured["admission_epoch"] == 0
+    assert captured["relay_admission_signature"] == "e" * 192
+    assert captured["kwargs"] == {
+        "agent_id": AGENT_ID,
+        "invite_id": "invite-1",
+        "invite_nullifier": "b" * 64,
+        "invite_pop": "c" * 192,
+        "invite_pop_epoch": 0,
+        "network_id": "public-rc",
+        "relay_base_url": "https://relay.example:51151",
+        "requested_internal_port": 50151,
+        "software_version": "0.4.10",
+        "timeout_seconds": 3.0,
+        "tls_cert_der_sha256": "f" * 64,
+    }
+
+
+def test_relay_admission_material_base_url_mismatch_fails_closed(monkeypatch) -> None:
+    from ilc_core.network.relay import relay_client as relay_module
+
+    monkeypatch.setattr(relay_module, "RELAY_CLIENT_NOT_ACTIVATED", False)
+
+    engine = NatProbeEngine(
+        relay_server_url="https://relay.example:51151",
+        relay_admission_material={
+            "agent_id": AGENT_ID,
+            "invite_id": "invite-1",
+            "invite_nullifier": "b" * 64,
+            "invite_pop": "c" * 192,
+            "invite_pop_epoch": 0,
+            "relay_base_url": "https://other-relay.example:51151",
+        },
+    )
+
+    report = engine.run_probe(probe_epoch=0)
+
+    assert report.connectivity_receipt.mode is ConnectivityMode.LOCAL_ONLY
+    assert "relay_slot_request_failed:RelayClientError" in report.warnings

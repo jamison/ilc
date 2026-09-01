@@ -86533,6 +86533,43 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1617_phase_GAP_INSTALL_CONNECTIVITY_SMOKE_00_smoke",
+      "chronology_note": "2026-09-01 blocked walkthrough for GAP-INSTALL-CONNECTIVITY-SMOKE-00 against ilc-core 0.4.10.",
+      "manual_read_summary": "Walkthrough records a clean Linux fresh install from the 0.4.10 public wheel, validator-on-by-default success, local_only first-run connectivity, absent invite peer hints/bootstrap fetch material, 0.4.10 relay material duplicate-kwarg crash, trimmed-material relay diagnostic success, node2 relay-slot cleanup, source regression fix, tests, blocked token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-CONNECTIVITY-SMOKE-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:connectivity_smoke_blocked_0410_workflow_gaps_GAP_INSTALL_CONNECTIVITY_SMOKE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:connectivity_smoke_passed_GAP_INSTALL_CONNECTIVITY_SMOKE_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_0410_workflow_gaps.md"
     }
   ],
   "nodes": [

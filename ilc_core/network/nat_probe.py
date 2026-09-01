@@ -48,6 +48,18 @@ _ATTEMPT_METHODS = frozenset(
     {"ilc_observer_detection", "pcp", "nat_pmp", "upnp_igd", "relay_fallback"}
 )
 _ATTEMPT_RESULTS = frozenset({"success", "failure", "not_attempted", "skipped_no_opt_in"})
+_RELAY_CLIENT_INIT_FIELDS = frozenset(
+    {
+        "agent_id",
+        "invite_id",
+        "invite_nullifier",
+        "invite_pop",
+        "invite_pop_epoch",
+        "network_id",
+        "software_version",
+        "tls_cert_der_sha256",
+    }
+)
 
 
 class NatProbeError(ValueError):
@@ -447,9 +459,10 @@ class NatProbeEngine:
             return None
         try:
             factory = self._relay_client_factory or relay_module.RelayClient
-            relay_material = dict(self.relay_admission_material)
-            admission_signature = relay_material.pop("relay_admission_signature", None)
-            relay_material.pop("relay_admission_payload_ref", None)
+            relay_material, admission_signature = self._relay_client_material(
+                relay_module,
+                probe_epoch=probe_epoch,
+            )
             client = factory(
                 relay_base_url=self.relay_server_url,
                 requested_internal_port=self.internal_port,
@@ -464,6 +477,32 @@ class NatProbeEngine:
         except (relay_module.RelayClientError, OSError, TimeoutError) as exc:
             warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
             return None
+
+    def _relay_client_material(
+        self,
+        relay_module: Any,
+        *,
+        probe_epoch: int,
+    ) -> tuple[dict[str, Any], str | None]:
+        relay_material = dict(self.relay_admission_material)
+        admission_signature = relay_material.pop("relay_admission_signature", None)
+        relay_material.pop("relay_admission_payload_ref", None)
+        material_base_url = relay_material.pop("relay_base_url", None)
+        if material_base_url is not None and material_base_url != self.relay_server_url:
+            raise relay_module.RelayClientError("relay_material_base_url_mismatch")
+        material_port = relay_material.pop("requested_internal_port", None)
+        if material_port is not None and material_port != self.internal_port:
+            raise relay_module.RelayClientError("relay_material_internal_port_mismatch")
+        material_protocol = relay_material.pop("requested_protocol", None)
+        if material_protocol is not None and material_protocol != "quic":
+            raise relay_module.RelayClientError("relay_material_protocol_mismatch")
+        material_epoch = relay_material.pop("admission_epoch", None)
+        if material_epoch is not None and material_epoch != probe_epoch:
+            raise relay_module.RelayClientError("relay_material_admission_epoch_mismatch")
+        unknown_fields = sorted(set(relay_material) - _RELAY_CLIENT_INIT_FIELDS)
+        if unknown_fields:
+            raise relay_module.RelayClientError("relay_material_unknown_fields")
+        return relay_material, admission_signature
 
     def _attempt_router_mapping(self, warnings: list[str]) -> Any:
         try:
