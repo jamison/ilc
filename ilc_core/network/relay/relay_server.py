@@ -1183,12 +1183,14 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         self._last_error_lock = threading.Lock()
         self._stats_lock = threading.Lock()
         self._stats = dict.fromkeys(_UDP_FORWARDER_COUNTER_KEYS, 0)
-        self._transport: asyncio.DatagramTransport | None = None
+        self._transport: Any | None = None
         self._closed = False
         self._last_error: str | None = None
 
     def connection_made(self, transport: asyncio.BaseTransport) -> None:
-        if not isinstance(transport, asyncio.DatagramTransport):
+        if not callable(getattr(transport, "sendto", None)) or not callable(
+            getattr(transport, "close", None)
+        ):
             self._set_last_error("relay_udp_transport_invalid")
             return
         self._transport = transport

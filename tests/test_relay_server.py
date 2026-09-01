@@ -2515,6 +2515,40 @@ def test_udp_forwarder_claim_only_nonce_does_not_forward() -> None:
     assert receipts == []
 
 
+def test_udp_forwarder_accepts_duck_typed_asyncio_datagram_transport() -> None:
+    server = _server()
+    _secret_key, _agent_id, slot = _grant(server)
+    target = ("198.51.100.11", 50001)
+    protocol = RelayUdpPortForwarder(
+        server,
+        slot_id=slot.slot_id,
+        target_host=target[0],
+        target_port=target[1],
+        relay_slot_nonce=slot.relay_slot_nonce,
+        epoch_provider=lambda: 0,
+    )
+
+    class DuckDatagramTransport:
+        def __init__(self) -> None:
+            self.sends: list[tuple[bytes, tuple[str, int]]] = []
+            self.closed = False
+
+        def sendto(self, data: bytes, addr: tuple[str, int] | None = None) -> None:
+            assert addr is not None
+            self.sends.append((data, addr))
+
+        def close(self) -> None:
+            self.closed = True
+
+    transport = DuckDatagramTransport()
+    protocol.connection_made(transport)  # type: ignore[arg-type]
+    protocol.datagram_received(relay_slot_claim_datagram(slot), ("198.51.100.10", 50000))
+    protocol.datagram_received(b"target-to-client", target)
+
+    assert protocol.last_error is None
+    assert transport.sends == [(b"target-to-client", ("198.51.100.10", 50000))]
+
+
 def test_udp_forwarder_wrong_nonce_does_not_register_client() -> None:
     server = _server()
     _secret_key, _agent_id, slot = _grant(server)
