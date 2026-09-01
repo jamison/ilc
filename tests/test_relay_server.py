@@ -2174,6 +2174,8 @@ def test_relay_service_template_uses_committed_cli_entrypoint() -> None:
     template = Path("tools/relay_service_template.service").read_text(encoding="utf-8")
 
     assert "ilc relay serve" in template
+    assert "User=ilcops" in template
+    assert "Group=ilcops" in template
     assert "--relay-host ${ILC_RELAY_HOST}" in template
     assert "--bind-host ${ILC_RELAY_BIND_HOST}" in template
     assert "NoNewPrivileges=true" in template
