@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-048-00"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/7a/ac/280c6d0119b735d1b7ed94fb0ccb0c57e270681946d5d5aa6b6a4d455eb7/ilc_core-0.4.8-py3-none-any.whl"
-RC_WHEEL_SHA256="7cad0d267ab1c6ee136787ad5012214fcf901182803de179e3ec435977d8bdf4"
-RC_WHEEL_SIZE="1431037"
+INSTALLER_VERSION="GAP-RELAY-RENDEZVOUS-DEPLOY-00-049"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/bf/a0/720346ee0d39c90a9bf98dfc37b116b983d1abd80ae024d3fd1d2f4701bd/ilc_core-0.4.9-py3-none-any.whl"
+RC_WHEEL_SHA256="3775574ea92b5e3131c6b2c984cf9828e543b34b31daa95c505e78b7fe04375e"
+RC_WHEEL_SIZE="1432246"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"

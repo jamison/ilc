@@ -1,0 +1,125 @@
+{
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.9.tar.gz",
+      "path": "/tmp/ilc049_pypi_fetchback/ilc_core-0.4.9.tar.gz",
+      "sha256": "17885a7cda44417353655597ce26925983ba8d39607c8d27eca7836d9f1720a4",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1165185,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/20/65/47a0140a94559d3b6f91561075efa9097b082c5b9bf3e2d25fe22d1a69c8/ilc_core-0.4.9.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.9-py3-none-any.whl",
+      "path": "/tmp/ilc049_pypi_fetchback/ilc_core-0.4.9-py3-none-any.whl",
+      "sha256": "3775574ea92b5e3131c6b2c984cf9828e543b34b31daa95c505e78b7fe04375e",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1432246,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/bf/a0/720346ee0d39c90a9bf98dfc37b116b983d1abd80ae024d3fd1d2f4701bd/ilc_core-0.4.9-py3-none-any.whl"
+    }
+  },
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.9.tar.gz",
+      "sha256": "17885a7cda44417353655597ce26925983ba8d39607c8d27eca7836d9f1720a4",
+      "size_bytes": 1165185
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.9-py3-none-any.whl",
+      "sha256": "3775574ea92b5e3131c6b2c984cf9828e543b34b31daa95c505e78b7fe04375e",
+      "size_bytes": 1432246
+    }
+  },
+  "live_deployment": {
+    "control_plane": {
+      "public_https_health": "PASS",
+      "public_tcp_51151": "PASS",
+      "tls_pinned_der_sha256": "PASS"
+    },
+    "data_plane": {
+      "client_to_target_forwarded": 1,
+      "datagrams_received": 3,
+      "nonce_claims_accepted": 1,
+      "sendto_failures": 0,
+      "sendto_successes": 2,
+      "target_to_client_forwarded": 1,
+      "three_host_udp_smoke": "PASS"
+    },
+    "network_doctor": {
+      "ilc-node-2": "relay_reachable",
+      "ilc-node-3": "relay_reachable",
+      "ilc-node-6": "relay_reachable"
+    },
+    "relay_hosts": {
+      "ilc-node-2": {
+        "ilc_core_version": "0.4.9",
+        "relay_agent_id": "b04db7ea3767813769789bf48f9bbb128c12495137854f84f961ce72b0d1d7280ef15ac7bdd2a81c81a39ab1c6e6d8dc",
+        "relay_endpoint": "164.90.201.11:51151",
+        "tls_cert_der_sha256": "0df2319d4f86eae84288f3e3155b9e0264b7d7ed65594296b149878386e5c52b"
+      },
+      "ilc-node-3": {
+        "ilc_core_version": "0.4.9",
+        "relay_agent_id": "829316f5202c81e16a9f70e1687aa1588a7a3c385b873191453b9af6304017f98aae26f13cd5f4d2a32a13ea34516cdc",
+        "relay_endpoint": "64.227.70.134:51151",
+        "tls_cert_der_sha256": "1572d8c01f433c1cded1b77f4187bd7cc2bd85b62de53e1114751a97d1d281b9"
+      },
+      "ilc-node-6": {
+        "ilc_core_version": "0.4.9",
+        "relay_agent_id": "8227692815f26f96fd17964c29cc38e72450bed4953f63d0ebb756f653d5300cd0f2a6a8f9039ba3347fca11435016f8",
+        "relay_endpoint": "167.99.45.238:51151",
+        "tls_cert_der_sha256": "87a6cece5ba70093d59e9bc0fbc502cdefb90d000c69962a080c1676b9550996"
+      }
+    }
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-RELAY-RENDEZVOUS-DEPLOY-00",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.9/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.9/",
+  "pypi_upload": {
+    "command": ".venv/bin/twine upload --non-interactive dist/ilc_core-0.4.9-py3-none-any.whl dist/ilc_core-0.4.9.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.9/"
+  },
+  "pypi_yank": {
+    "0.4.8_yank_reason": "Pre-release relay artifact superseded by ilc-core==0.4.9; fixes asyncio UDP transport portability and live relay diagnostics.",
+    "attempted_by_codex": true,
+    "blocked_reason": "twine 6.2.0 in this environment supports register/upload/check only; no yank command is available.",
+    "final_yanked_state": {
+      "0.4.8": {
+        "all_files_yanked": false,
+        "reason": null
+      },
+      "0.4.9": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "verified_complete": false
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_RENDEZVOUS_DEPLOY_00.v0.1",
+  "source_private_commit_at_build": "4ae4821b6bcd28f63c4d2391bec1b861fedaacac",
+  "source_tree_delta_at_build": [
+    "pyproject.toml version=0.4.9",
+    "ilc_core/__init__.py __version__=0.4.9",
+    "ilc_core/network/relay/relay_server.py RelayUdpPortForwarder accepts real asyncio UDP transports structurally",
+    "ilc_core/network/relay/relay_server.py live data-plane diagnostics exposed in aggregate health and loopback-only debug endpoint",
+    "tools/install.sh targets ilc-core 0.4.9 after PyPI fetchback"
+  ],
+  "validator_slot_venv_non_mutation": {
+    "claim": "validator slot venvs remain at ilc-core==0.4.6; only /opt/ilc-relay/venv was upgraded to 0.4.9 during this phase"
+  },
+  "version": "0.4.9"
+}
