@@ -1,0 +1,112 @@
+{
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.8.tar.gz",
+      "path": "/tmp/ilc_048_fetchback/ilc_core-0.4.8.tar.gz",
+      "sha256": "a8e2e6723567102dc7b52a60045374dfea37ffec6ca4562fce051abe38ce28d7",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1163985,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/36/e8/719b81850827d4016b73a931dae9db3488d10317f738146d47784bd83264/ilc_core-0.4.8.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.8-py3-none-any.whl",
+      "path": "/tmp/ilc_048_fetchback/ilc_core-0.4.8-py3-none-any.whl",
+      "sha256": "7cad0d267ab1c6ee136787ad5012214fcf901182803de179e3ec435977d8bdf4",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1431037,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/7a/ac/280c6d0119b735d1b7ed94fb0ccb0c57e270681946d5d5aa6b6a4d455eb7/ilc_core-0.4.8-py3-none-any.whl"
+    }
+  },
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.8.tar.gz",
+      "sha256": "a8e2e6723567102dc7b52a60045374dfea37ffec6ca4562fce051abe38ce28d7",
+      "size_bytes": 1163985
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.8-py3-none-any.whl",
+      "sha256": "7cad0d267ab1c6ee136787ad5012214fcf901182803de179e3ec435977d8bdf4",
+      "size_bytes": 1431037
+    }
+  },
+  "local_behavioral_verification": {
+    "guard_checks": "PASS",
+    "request_bound_udp_forwarder": "PASS",
+    "version": "0.4.8"
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_service_deployment",
+    "no_firewall_mutation",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-RELAY-LIVE-UDP-DATAPLANE-FIX-00",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.8/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.8/",
+  "pypi_upload": {
+    "command": ".venv/bin/twine upload --non-interactive dist/ilc_core-0.4.8-py3-none-any.whl dist/ilc_core-0.4.8.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.8/"
+  },
+  "pypi_yank": {
+    "0.4.7_yank_reason": "RelayUdpPortForwarder discards admitted target address -- UDP forwarding non-functional. Use 0.4.8",
+    "attempted_by_codex": false,
+    "completed_by_human": true,
+    "final_yanked_state": {
+      "0.4.7": {
+        "all_files_yanked": true,
+        "reason": "RelayUdpPortForwarder discards admitted target address -- UDP forwarding non-functional. Use 0.4.8"
+      },
+      "0.4.8": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "verified_complete": true
+  },
+  "relay_vps_upgrades": {
+    "ilc-node-2": {
+      "behavioral_verification": "PASS",
+      "relay_venv_version": "0.4.8"
+    },
+    "ilc-node-3": {
+      "behavioral_verification": "PASS",
+      "relay_venv_version": "0.4.8"
+    },
+    "ilc-node-6": {
+      "behavioral_verification": "PASS",
+      "relay_venv_version": "0.4.8"
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_LIVE_UDP_DATAPLANE_FIX_00.v0.1",
+  "source_private_commit": "f7adf9bf88d76c1ff29bc30906bb23695f00d6f9",
+  "source_tree_delta_at_build": [
+    "pyproject.toml version=0.4.8",
+    "ilc_core/__init__.py __version__=0.4.8",
+    "ilc_core/network/relay/relay_server.py RelayUdpPortForwarder stores request-bound _target_addr from admitted target_host:target_port",
+    "tools/install.sh targets ilc-core 0.4.8 after PyPI fetchback"
+  ],
+  "validator_slot_venv_non_mutation": {
+    "ilc-node-2": {
+      "/var/lib/ilc/rc01/validator_1/venv": "0.4.6",
+      "/var/lib/ilc/rc01/validator_2/venv": "0.4.6"
+    },
+    "ilc-node-3": {
+      "/var/lib/ilc/rc01/validator_3/venv": "0.4.6"
+    },
+    "ilc-node-6": {
+      "/var/lib/ilc/rc01/validator_4/venv": "0.4.6"
+    }
+  },
+  "version": "0.4.8"
+}
