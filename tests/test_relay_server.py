@@ -37,6 +37,7 @@ from ilc_core.network.relay.relay_client import (
 )
 from ilc_core.network.relay.relay_server import (
     RELAY_ADMISSION_REQUEST_PATH,
+    RELAY_DEBUG_SLOTS_PATH,
     RELAY_HEALTH_PATH,
     RELAY_SERVER_NOT_ACTIVATED,
     RELAY_SERVER_SCHEMA_VERSION,
@@ -2307,6 +2308,113 @@ def test_udp_forwarder_peer_to_client_real_socket() -> None:
         client.close()
 
     assert data == b"peer-to-client"
+
+
+def test_udp_forwarder_nonce_only_then_target_reply_records_direction_real_socket() -> None:
+    peer = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        peer.sendto(b"target-reply-after-claim", relay_addr)
+        data, _addr = client.recvfrom(1024)
+        debug_status, debug_body = server.handle_json_request(
+            method="GET",
+            path=RELAY_DEBUG_SLOTS_PATH,
+            payload=None,
+            source_host="127.0.0.1",
+        )
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        peer.close()
+        client.close()
+
+    assert data == b"target-reply-after-claim"
+    assert debug_status == 200
+    slots = debug_body["data_plane"]["slots"]
+    assert list(slots) == [grant.slot_id]
+    counters = slots[grant.slot_id]["counters"]
+    assert counters["datagrams_received"] == 2
+    assert counters["nonce_claims_accepted"] == 1
+    assert counters["claim_only_datagrams"] == 1
+    assert counters["target_to_client_forwarded"] == 1
+    assert counters["sendto_successes"] == 1
+
+
+def test_udp_forwarder_nonce_prefixed_payload_reaches_target_real_socket() -> None:
+    peer = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant) + b"client-first-payload", relay_addr)
+        data, _addr = peer.recvfrom(1024)
+        debug_status, debug_body = server.handle_json_request(
+            method="GET",
+            path=RELAY_DEBUG_SLOTS_PATH,
+            payload=None,
+            source_host="127.0.0.1",
+        )
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        peer.close()
+        client.close()
+
+    assert data == b"client-first-payload"
+    assert debug_status == 200
+    counters = debug_body["data_plane"]["slots"][grant.slot_id]["counters"]
+    assert counters["nonce_claims_accepted"] == 1
+    assert counters["nonce_prefixed_payloads"] == 1
+    assert counters["client_to_target_forwarded"] == 1
+    assert counters["sendto_successes"] == 1
+
+
+def test_relay_debug_slots_requires_loopback_source() -> None:
+    peer = _udp_socket()
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
+    try:
+        status, body = server.handle_json_request(
+            method="GET",
+            path=RELAY_DEBUG_SLOTS_PATH,
+            payload=None,
+            source_host="198.51.100.10",
+        )
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        peer.close()
+
+    assert status == 400
+    assert body["error"] == "relay_debug_loopback_required"
+    assert grant.slot_id
+
+
+def test_relay_health_exposes_aggregate_data_plane_counters_without_addresses() -> None:
+    peer = _udp_socket()
+    client = _udp_socket()
+    server, grant = _data_plane_server_for_target(peer.getsockname()[1])
+    try:
+        relay_addr = ("127.0.0.1", grant.relay_endpoint.port)
+        client.sendto(relay_slot_claim_datagram(grant), relay_addr)
+        peer.sendto(b"target-reply", relay_addr)
+        assert client.recvfrom(1024)[0] == b"target-reply"
+        status, body = server.handle_json_request(
+            method="GET",
+            path=RELAY_HEALTH_PATH,
+            payload=None,
+            source_host="198.51.100.10",
+        )
+    finally:
+        server._data_plane.stop() if server._data_plane is not None else None
+        peer.close()
+        client.close()
+
+    assert status == 200
+    data_plane = body["data_plane"]
+    assert data_plane["enabled"] is True
+    assert data_plane["total_counters"]["target_to_client_forwarded"] == 1
+    assert "client_addr" not in json.dumps(data_plane)
+    assert "target_addr" not in json.dumps(data_plane)
 
 
 def test_udp_forwarder_unknown_source_dropped_real_socket() -> None:
