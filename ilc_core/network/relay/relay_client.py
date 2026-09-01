@@ -13,6 +13,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 import hashlib
+import hmac
+import http.client
 import ipaddress
 import json
 import math
@@ -1106,16 +1108,12 @@ def _urlopen_no_redirect(
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
-    response = build_opener(HTTPSHandler(context=context), _NoRedirect).open(
+    return _open_pinned_https_no_redirect(
         request,
-        timeout=timeout_seconds,
+        timeout_seconds,
+        context=context,
+        tls_cert_der_sha256=tls_cert_der_sha256,
     )
-    try:
-        _verify_response_tls_pin(response, tls_cert_der_sha256)
-    except BaseException:
-        response.close()
-        raise
-    return response
 
 
 def _verify_response_tls_pin(response: Any, tls_cert_der_sha256: str) -> None:
@@ -1125,7 +1123,7 @@ def _verify_response_tls_pin(response: Any, tls_cert_der_sha256: str) -> None:
     )
     cert_der = _extract_response_cert_der(response)
     actual = hashlib.sha256(cert_der).hexdigest()
-    if actual != expected:
+    if not hmac.compare_digest(actual, expected):
         raise RelayClientError("relay_tls_cert_der_sha256_mismatch")
 
 
@@ -1138,6 +1136,95 @@ def _extract_response_cert_der(response: Any) -> bytes:
     if not isinstance(cert_der, bytes) or not cert_der:
         raise RelayClientError("relay_tls_cert_unavailable")
     return cert_der
+
+
+class _PinnedHTTPSConnection(http.client.HTTPSConnection):
+    """HTTPSConnection that validates the DER pin before request bytes are sent."""
+
+    def __init__(
+        self,
+        host: str,
+        port: int,
+        *,
+        context: ssl.SSLContext,
+        timeout: float,
+        tls_cert_der_sha256: str,
+    ) -> None:
+        super().__init__(host, port=port, timeout=timeout, context=context)
+        self._expected_der_sha256 = _require_sha256_hex(
+            tls_cert_der_sha256,
+            "relay_tls_cert_der_sha256_invalid",
+        )
+
+    def connect(self) -> None:
+        super().connect()
+        if self.sock is None:
+            raise RelayClientError("relay_tls_cert_unavailable")
+        cert_der = self.sock.getpeercert(binary_form=True)
+        if not isinstance(cert_der, bytes) or not cert_der:
+            self.close()
+            raise RelayClientError("relay_tls_cert_unavailable")
+        actual = hashlib.sha256(cert_der).hexdigest()
+        if not hmac.compare_digest(actual, self._expected_der_sha256):
+            self.close()
+            raise RelayClientError("relay_tls_cert_der_sha256_mismatch")
+
+
+class _PinnedHTTPResponse:
+    """Small response wrapper that closes the owning connection deterministically."""
+
+    def __init__(self, connection: _PinnedHTTPSConnection, response: http.client.HTTPResponse) -> None:
+        self._connection = connection
+        self._response = response
+        self.status = response.status
+
+    def read(self, amount: int = -1) -> bytes:
+        return self._response.read(amount)
+
+    def close(self) -> None:
+        self._response.close()
+        self._connection.close()
+
+
+def _open_pinned_https_no_redirect(
+    request: Request,
+    timeout_seconds: float,
+    *,
+    context: ssl.SSLContext,
+    tls_cert_der_sha256: str,
+) -> _PinnedHTTPResponse:
+    parsed = urlparse(request.full_url)
+    if parsed.scheme != "https" or parsed.hostname is None:
+        raise RelayClientError("relay_tls_pin_requires_https")
+    path = parsed.path or "/"
+    if parsed.query:
+        path = f"{path}?{parsed.query}"
+    connection = _PinnedHTTPSConnection(
+        parsed.hostname,
+        parsed.port or 443,
+        context=context,
+        timeout=timeout_seconds,
+        tls_cert_der_sha256=tls_cert_der_sha256,
+    )
+    try:
+        connection.request(
+            request.get_method(),
+            path,
+            body=request.data,
+            headers=dict(request.header_items()),
+        )
+        response = connection.getresponse()
+    except RelayClientError:
+        connection.close()
+        raise
+    except (OSError, http.client.HTTPException) as exc:
+        connection.close()
+        raise URLError(exc) from exc
+    if 300 <= response.status < 400:
+        response.close()
+        connection.close()
+        raise RelayClientError("relay_redirect_forbidden")
+    return _PinnedHTTPResponse(connection, response)
 
 
 def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:

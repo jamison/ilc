@@ -25,6 +25,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 import heapq
 import hashlib
+import hmac
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import ipaddress
 import json
@@ -45,6 +46,8 @@ from ilc_core.identity.bls_backend import (
     verify_relay_lifecycle_digest,
 )
 from ilc_core.network.relay.relay_client import (
+    POP_DOMAIN,
+    RELAY_ADMISSION_DOMAIN,
     RELAY_CLIENT_SCHEMA_VERSION,
     RELAY_MODE_PASS_THROUGH_CONSENSUS_QUIC,
     RelayAdmissionRequest,
@@ -153,6 +156,50 @@ _ADMISSION_FAILURE_TOKENS = frozenset(
         "relay_requested_internal_port_out_of_range",
         "relay_requested_protocol_must_be_quic",
         "relay_software_version_invalid",
+    }
+)
+_RELAY_ADMISSION_REQUEST_KEYS = frozenset(
+    {
+        "admission_epoch",
+        "agent_id",
+        "canonical_request_hash",
+        "domain",
+        "invite_id",
+        "invite_nullifier",
+        "invite_pop",
+        "invite_pop_domain",
+        "invite_pop_epoch",
+        "invite_pop_payload_ref",
+        "network_id",
+        "relay_admission_payload_ref",
+        "relay_admission_signature",
+        "relay_base_url",
+        "requested_internal_port",
+        "requested_protocol",
+        "schema_version",
+        "software_version",
+    }
+)
+_RELAY_KEEPALIVE_REQUEST_KEYS = frozenset(
+    {
+        "agent_id",
+        "keepalive_epoch",
+        "previous_grant_hash",
+        "relay_lifecycle_payload_ref",
+        "relay_lifecycle_signature",
+        "schema_version",
+        "slot_id",
+    }
+)
+_RELAY_RELEASE_REQUEST_KEYS = frozenset(
+    {
+        "agent_id",
+        "previous_grant_hash",
+        "relay_lifecycle_payload_ref",
+        "relay_lifecycle_signature",
+        "release_epoch",
+        "schema_version",
+        "slot_id",
     }
 )
 
@@ -663,6 +710,7 @@ class RelayRendezvousServer:
                 raise RelayServerError("relay_admission_network_id_mismatch")
             if request.relay_base_url != self.config.relay_base_url:
                 raise RelayServerError("relay_admission_base_url_mismatch")
+            self._expire_active_slots_for_epoch(request.admission_epoch)
             if request.agent_id in self._active_slot_by_agent:
                 raise RelayServerError("relay_slot_already_active")
             slot_id = f"slot-{secrets.token_hex(16)}"
@@ -716,6 +764,11 @@ class RelayRendezvousServer:
 
     def keepalive(self, payload: Mapping[str, Any]) -> dict[str, Any]:
         with self._state_lock:
+            _require_exact_fields(
+                payload,
+                _RELAY_KEEPALIVE_REQUEST_KEYS,
+                "relay_keepalive_request",
+            )
             slot = self._require_active_slot(payload.get("slot_id"))
             agent_id = _require_agent_id(
                 payload.get("agent_id"),
@@ -779,6 +832,11 @@ class RelayRendezvousServer:
 
     def release(self, payload: Mapping[str, Any]) -> dict[str, Any]:
         with self._state_lock:
+            _require_exact_fields(
+                payload,
+                _RELAY_RELEASE_REQUEST_KEYS,
+                "relay_release_request",
+            )
             slot = self._require_active_slot(payload.get("slot_id"))
             agent_id = _require_agent_id(payload.get("agent_id"), "relay_release_agent_id_invalid")
             if agent_id != slot.grant.agent_id:
@@ -896,6 +954,38 @@ class RelayRendezvousServer:
                     epoch=epoch,
                 ),
                 None,
+            )
+
+    def rollback_forward_datagram(
+        self,
+        *,
+        slot_id: str,
+        bytes_forwarded: int,
+        epoch: int,
+    ) -> None:
+        """Undo byte accounting when the OS rejects a UDP send after authorization."""
+
+        clean_slot_id = _require_token(slot_id, "relay_slot_id_invalid")
+        clean_bytes = _require_uint_range(
+            bytes_forwarded,
+            "relay_datagram_rollback_bytes_invalid",
+            0,
+            _MAX_DATAGRAM_BYTES,
+        )
+        clean_epoch = _require_epoch(epoch, "relay_forward_epoch_invalid")
+        if clean_bytes == 0:
+            return
+        with self._state_lock:
+            slot = self._slots_by_id.get(clean_slot_id)
+            if slot is None or slot.current_epoch != clean_epoch:
+                return
+            next_total = max(0, slot.bytes_forwarded_this_epoch - clean_bytes)
+            self._slots_by_id[clean_slot_id] = RelaySlotState(
+                grant=slot.grant,
+                target_host=slot.target_host,
+                allocated_data_port=slot.allocated_data_port,
+                bytes_forwarded_this_epoch=next_total,
+                current_epoch=slot.current_epoch,
             )
 
     def handle_json_request(
@@ -1086,6 +1176,16 @@ class RelayRendezvousServer:
                 self._drop_tombstone(slot_id)
         self._trim_tombstones_to_cap()
 
+    def _expire_active_slots_for_epoch(self, current_epoch: int) -> None:
+        clean_epoch = _require_epoch(current_epoch, "relay_active_slot_gc_epoch_invalid")
+        expired = [
+            slot_id
+            for slot_id, slot in self._slots_by_id.items()
+            if clean_epoch > slot.grant.granted_epoch + slot.grant.ttl_epochs
+        ]
+        for slot_id in expired:
+            self._expire_slot(slot_id, terminated_epoch=clean_epoch)
+
     def _track_tombstone(self, tombstone: _RelayTombstone) -> None:
         if tombstone.slot_id not in self._tombstones:
             self._tombstone_order.append(tombstone.slot_id)
@@ -1206,22 +1306,25 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         try:
             sender = _require_socket_addr(addr, "relay_udp_sender_addr_invalid")
             payload = data
-            if not self._is_nonce_verified():
+            if sender != self._target_addr and self._has_nonce_prefix(data):
                 payload = self._claim_client_addr(sender, payload)
                 if payload is None:
-                    if self._is_nonce_verified():
-                        self._bump("claim_only_datagrams")
                     return
+            elif not self._is_nonce_verified():
+                self._bump("nonce_mismatch_drops")
+                self._set_last_error("relay_udp_nonce_mismatch")
+                return
             destination = self._destination_for_sender(sender)
             if destination is None:
                 self._bump("unknown_sender_drops")
                 self._set_last_error("relay_udp_peer_not_bound")
                 return
             sender_role = self._sender_role(sender)
+            epoch = self._epoch_provider()
             receipt, revocation = self._server.forward_datagram(
                 slot_id=self._slot_id,
                 payload=payload,
-                epoch=self._epoch_provider(),
+                epoch=epoch,
             )
             if revocation is not None:
                 self._set_last_error(revocation.reason_token)
@@ -1231,6 +1334,11 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
             try:
                 self._transport.sendto(payload, destination)
             except (OSError, RuntimeError) as exc:
+                self._server.rollback_forward_datagram(
+                    slot_id=self._slot_id,
+                    bytes_forwarded=receipt.bytes_forwarded,
+                    epoch=epoch,
+                )
                 self._bump("sendto_failures")
                 self._set_last_error(_error_token(exc))
                 return
@@ -1282,21 +1390,48 @@ class RelayUdpPortForwarder(asyncio.DatagramProtocol):
         return None
 
     def _claim_client_addr(self, sender: tuple[str, int], data: bytes) -> bytes | None:
-        if not data.startswith(self._nonce):
+        if not self._has_nonce_prefix(data):
             self._bump("nonce_mismatch_drops")
             self._set_last_error("relay_udp_nonce_mismatch")
             return None
+        payload = data[len(self._nonce):]
+        if not payload:
+            self._bump("claim_only_datagrams")
+            self._set_last_error(None)
+            return None
+        target_to_client_forwarded = self._target_to_client_forward_count()
+        accepted_claim = False
+        mismatch = False
         with self._client_addr_lock:
             if self._client_addr is None:
                 self._client_addr = sender
                 self._nonce_verified = True
-                self._bump("nonce_claims_accepted")
-        payload = data[len(self._nonce):]
-        if not payload:
-            self._set_last_error(None)
+                accepted_claim = True
+            elif self._client_addr != sender:
+                if target_to_client_forwarded > 0:
+                    mismatch = True
+                else:
+                    self._client_addr = sender
+                    self._nonce_verified = True
+                    accepted_claim = True
+        if mismatch:
+            self._bump("nonce_mismatch_drops")
+            self._set_last_error("relay_udp_nonce_mismatch")
             return None
+        if accepted_claim:
+            self._bump("nonce_claims_accepted")
         self._bump("nonce_prefixed_payloads")
         return payload
+
+    def _has_nonce_prefix(self, data: bytes) -> bool:
+        return len(data) >= len(self._nonce) and hmac.compare_digest(
+            data[:len(self._nonce)],
+            self._nonce,
+        )
+
+    def _target_to_client_forward_count(self) -> int:
+        with self._stats_lock:
+            return int(self._stats.get("target_to_client_forwarded", 0))
 
     def _is_nonce_verified(self) -> bool:
         with self._client_addr_lock:
@@ -1506,6 +1641,9 @@ class RelayDataPlaneRuntime:
         if not isinstance(protocol, RelayUdpPortForwarder):
             transport.close()
             raise RelayServerError("relay_data_plane_protocol_invalid")
+        if protocol.last_error == "relay_udp_transport_invalid":
+            transport.close()
+            raise RelayServerError("relay_udp_transport_invalid")
         with self._lock:
             if slot_id in self._cancelled_slots:
                 self._cancelled_slots.discard(slot_id)
@@ -1594,7 +1732,12 @@ def make_relay_http_handler(
         def do_POST(self) -> None:  # noqa: N802
             try:
                 raw = self._read_request_body()
-                payload = json.loads(raw.decode("utf-8"))
+                payload = json.loads(
+                    raw.decode("utf-8"),
+                    parse_constant=lambda _constant: (_ for _ in ()).throw(
+                        RelayServerError("relay_request_json_invalid")
+                    ),
+                )
             except RelayServerError as exc:
                 self._send_json(400, {"error": _error_token(exc)})
                 return
@@ -2129,7 +2272,12 @@ def _require_relay_base_url_for_record(
 
 
 def _coerce_admission_request(payload: Mapping[str, Any]) -> RelayAdmissionRequest:
-    return RelayAdmissionRequest(
+    _require_exact_fields(
+        payload,
+        _RELAY_ADMISSION_REQUEST_KEYS,
+        "relay_admission_request",
+    )
+    request = RelayAdmissionRequest(
         agent_id=payload.get("agent_id"),
         invite_id=payload.get("invite_id"),
         invite_nullifier=payload.get("invite_nullifier"),
@@ -2144,6 +2292,34 @@ def _coerce_admission_request(payload: Mapping[str, Any]) -> RelayAdmissionReque
         relay_admission_payload_ref=payload.get("relay_admission_payload_ref"),
         relay_admission_signature=payload.get("relay_admission_signature"),
     )
+    supplied_hash = _require_sha256_hex(
+        payload.get("canonical_request_hash"),
+        "relay_admission_request_hash_invalid",
+    )
+    if supplied_hash != request.canonical_request_hash:
+        raise RelayServerError("relay_admission_request_hash_mismatch")
+    if payload.get("domain") != RELAY_ADMISSION_DOMAIN:
+        raise RelayServerError("relay_admission_domain_mismatch")
+    if payload.get("schema_version") != RELAY_CLIENT_SCHEMA_VERSION:
+        raise RelayServerError("relay_admission_schema_version_mismatch")
+    if payload.get("invite_pop_domain") != POP_DOMAIN:
+        raise RelayServerError("relay_invite_pop_domain_mismatch")
+    if payload.get("invite_pop_payload_ref") != request.invite_pop_payload_ref:
+        raise RelayServerError("relay_invite_pop_payload_ref_mismatch")
+    return request
+
+
+def _require_exact_fields(
+    payload: Mapping[str, Any],
+    expected: frozenset[str],
+    prefix: str,
+) -> None:
+    missing = sorted(expected.difference(payload))
+    if missing:
+        raise RelayServerError(f"{prefix}_missing_fields")
+    extra = sorted(set(payload).difference(expected))
+    if extra:
+        raise RelayServerError(f"{prefix}_unknown_fields")
 
 
 def _verify_lifecycle_signature(

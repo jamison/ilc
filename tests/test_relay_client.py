@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import threading
@@ -562,6 +563,49 @@ def test_relay_client_tls_pin_verifier_rejects_missing_cert() -> None:
 
     with pytest.raises(RelayClientError, match="relay_tls_cert_unavailable"):
         relay_module._verify_response_tls_pin(FakeResponse(), "12" * 32)
+
+
+def test_pinned_https_connection_rejects_wrong_pin_during_connect(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeSock:
+        def getpeercert(self, *, binary_form: bool = False) -> bytes:
+            assert binary_form is True
+            return b"wrong-cert-der"
+
+        def close(self) -> None:
+            return
+
+    def fake_connect(self: object) -> None:
+        self.sock = FakeSock()  # type: ignore[attr-defined]
+
+    monkeypatch.setattr(http.client.HTTPSConnection, "connect", fake_connect)
+    connection = relay_module._PinnedHTTPSConnection(  # noqa: SLF001
+        "relay.example",
+        443,
+        context=relay_module.ssl.SSLContext(relay_module.ssl.PROTOCOL_TLS_CLIENT),
+        timeout=1.0,
+        tls_cert_der_sha256="12" * 32,
+    )
+
+    with pytest.raises(RelayClientError, match="relay_tls_cert_der_sha256_mismatch"):
+        connection.connect()
+
+
+def test_pinned_https_transport_requires_https_before_sending_body() -> None:
+    request = relay_module.Request(
+        "http://127.0.0.1:9/relay/admission/request",
+        data=b'{"invite_pop":"secret"}',
+        method="POST",
+    )
+
+    with pytest.raises(RelayClientError, match="relay_tls_pin_requires_https"):
+        relay_module._open_pinned_https_no_redirect(  # noqa: SLF001
+            request,
+            1.0,
+            context=relay_module.ssl.SSLContext(relay_module.ssl.PROTOCOL_TLS_CLIENT),
+            tls_cert_der_sha256="12" * 32,
+        )
 
 
 def test_nat_probe_requests_relay_after_guard_activation() -> None:
