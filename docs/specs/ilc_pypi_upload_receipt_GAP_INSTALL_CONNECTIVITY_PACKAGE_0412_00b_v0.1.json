@@ -1,0 +1,107 @@
+{
+  "artifacts": {
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/3b/49/5de676aa54d3e68c93470737d392e0a225457da9f609d0cf30bc7c8ccdb8/ilc_core-0.4.12.tar.gz",
+      "filename": "ilc_core-0.4.12.tar.gz",
+      "fetchback_sha256": "75441b9b193f3e42890974fb86a9992531b0b8a7c0c12d19ed7c4442db3d32df",
+      "fetchback_size_bytes": 1170802,
+      "local_sha256": "75441b9b193f3e42890974fb86a9992531b0b8a7c0c12d19ed7c4442db3d32df",
+      "local_size_bytes": 1170802,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/11/8a/364bdcd727200c4e3280b0feb3bd400e62e3a3056c6d4b7092f00e434ca5/ilc_core-0.4.12-py3-none-any.whl",
+      "filename": "ilc_core-0.4.12-py3-none-any.whl",
+      "fetchback_sha256": "8e1d48f9f096fb802e8dfe2f034a638d0a61174354c797e18bc3d9ed1c702c9c",
+      "fetchback_size_bytes": 1438193,
+      "local_sha256": "8e1d48f9f096fb802e8dfe2f034a638d0a61174354c797e18bc3d9ed1c702c9c",
+      "local_size_bytes": 1438193,
+      "pypi_yanked": false
+    }
+  },
+  "build_receipt": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00a_v0.1.json",
+  "connectivity_advertisement_not_activated": true,
+  "fetchback_verification": "pass",
+  "go_phrase": "GO Phase GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b CONNECTIVITY-PACKAGE-0412-UPLOAD-AUTHORIZED",
+  "install_sh": {
+    "installer_version": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b",
+    "rc_wheel_sha256": "8e1d48f9f096fb802e8dfe2f034a638d0a61174354c797e18bc3d9ed1c702c9c",
+    "rc_wheel_size": "1438193",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/11/8a/364bdcd727200c4e3280b0feb3bd400e62e3a3056c6d4b7092f00e434ca5/ilc_core-0.4.12-py3-none-any.whl"
+  },
+  "non_claims": [
+    "no_release_artifact_signing",
+    "no_downstream_signing_version_mirror_prompt_cascade",
+    "no_validator_slot_venv_mutation",
+    "no_cdl_mutation",
+    "no_cdl112_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_connectivity_smoke_execution",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.12/",
+  "pypi_upload_status": "uploaded",
+  "pypi_yank_status": {
+    "0.4.9": {
+      "all_yanked": true
+    },
+    "0.4.10": {
+      "all_yanked": true
+    },
+    "0.4.11": {
+      "all_yanked": true,
+      "reason": "Pre-release connectivity artifact superseded by ilc-core==0.4.12; centralized bootstrap ML-DSA verification and smoke blocker fixes required."
+    },
+    "0.4.12": {
+      "all_active": true,
+      "all_yanked": false
+    }
+  },
+  "relay_vps_upgrade": {
+    "ilc-node-2": {
+      "connectivity_advertisement_not_activated": true,
+      "network_id": "public-rc",
+      "relay_client_not_activated": false,
+      "relay_server_not_activated": false,
+      "service_active": true,
+      "validator_slot_versions": {
+        "validator_1": "0.4.6",
+        "validator_2": "0.4.6"
+      },
+      "version": "0.4.12"
+    },
+    "ilc-node-3": {
+      "connectivity_advertisement_not_activated": true,
+      "network_id": "public-rc",
+      "relay_client_not_activated": false,
+      "relay_server_not_activated": false,
+      "service_active": true,
+      "validator_slot_versions": {
+        "validator_3": "0.4.6"
+      },
+      "version": "0.4.12"
+    },
+    "ilc-node-6": {
+      "connectivity_advertisement_not_activated": true,
+      "network_id": "public-rc",
+      "relay_client_not_activated": false,
+      "relay_server_not_activated": false,
+      "service_active": true,
+      "validator_slot_versions": {
+        "validator_4": "0.4.6"
+      },
+      "version": "0.4.12"
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b.v0.1",
+  "smoke_prompt_retarget_status": "validated_for_0.4.12",
+  "source_private_commit_at_upload_start": "8a45633eb2c04eb8a78ab2a6324ccdd438fce267",
+  "timestamp_utc": "2026-09-02T21:29:00Z",
+  "twine_upload_status": "pass",
+  "version": "0.4.12"
+}
