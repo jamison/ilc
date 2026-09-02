@@ -15,6 +15,10 @@ from ilc_core.ledger.backend import InMemoryLedgerBackend
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.bootstrap_fetch_runtime import verify_bootstrap_bundle_signature
+from ilc_core.crypto.pq_signature_verify import (
+    _MLDSA_PK_HEX_LENGTH,
+    _MLDSA_SIG_HEX_LENGTH,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -143,15 +147,15 @@ def test_bootstrap_signature_env_bypass_is_not_present(monkeypatch: pytest.Monke
         "bundle_cid": "bafyreiabc001",
         "genesis_cid": "bafyreigenesis",
         "peers": [],
-        "signed_by": "aabbcc" * 20,
-        "signature": "ddeeff" * 20,
+        "signed_by": "a" * _MLDSA_PK_HEX_LENGTH,
+        "signature": "b" * _MLDSA_SIG_HEX_LENGTH,
         "cdl_version": "cdl_079_bootstrap_bundle_v1",
     }
 
     monkeypatch.setenv("ILC_BOOTSTRAP_SKIP_SIG_VERIFY", "1")
     monkeypatch.setitem(sys.modules, "oqs", _RejectingOqsModule())
 
-    assert verify_bootstrap_bundle_signature(bundle, "aabbcc" * 20) is False
+    assert verify_bootstrap_bundle_signature(bundle, "a" * _MLDSA_PK_HEX_LENGTH) is False
     assert "ILC_BOOTSTRAP_SKIP_SIG_VERIFY" not in BOOTSTRAP_RUNTIME.read_text(
         encoding="utf-8"
     )

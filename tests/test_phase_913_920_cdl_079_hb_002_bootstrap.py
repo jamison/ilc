@@ -20,7 +20,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
 
+import ilc_core.network.d2d.bootstrap_fetch_runtime as bootstrap_fetch_runtime
+from ilc_core.crypto.pq_signature_verify import (
+    _MLDSA_PK_HEX_LENGTH,
+    _MLDSA_SIG_HEX_LENGTH,
+)
 from ilc_core.network.d2d.bootstrap_fetch_runtime import (
     BOOTSTRAP_FETCH_RUNTIME_VERSION,
     CDL_073_DEPENDENCY,
@@ -43,8 +49,8 @@ PHASE_917_COMMIT_SUBJECT = "feat(g8): phase 914-917 cdl-079 hb-002 bootstrap dis
 RUNTIME_PATH = Path("ilc_core/network/d2d/bootstrap_fetch_runtime.py")
 CDL_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 
-# Minimal valid bootstrap bundle (signature verification bypassed in tests)
-GENESIS_PUBKEY = "aabbcc" * 20   # fake pubkey hex
+# Minimal valid-shaped bootstrap bundle (signature verification patched in tests)
+GENESIS_PUBKEY = "a" * _MLDSA_PK_HEX_LENGTH
 VALID_BUNDLE = {
     "schema_version": "bootstrap_bundle_v1",
     "bundle_cid": "bafyreiabc001",
@@ -54,7 +60,7 @@ VALID_BUNDLE = {
         {"endpoint": "https://peer2.ilc.example", "node_id": "bafyreipeer2"},
     ],
     "signed_by": GENESIS_PUBKEY,
-    "signature": "ddeeff" * 20,
+    "signature": "b" * _MLDSA_SIG_HEX_LENGTH,
     "cdl_version": "cdl_079_bootstrap_bundle_v1",
 }
 
@@ -74,26 +80,6 @@ class _RejectingOqsSignature:
 
 class _RejectingOqsModule:
     Signature = _RejectingOqsSignature
-
-
-class _CapturingOqsSignature:
-    captured_signed_bytes: bytes | None = None
-
-    def __init__(self, _algorithm: str) -> None:
-        pass
-
-    def verify(
-        self,
-        signed_bytes: bytes,
-        _sig_bytes: bytes,
-        _pubkey_bytes: bytes,
-    ) -> bool:
-        type(self).captured_signed_bytes = signed_bytes
-        return True
-
-
-class _CapturingOqsModule:
-    Signature = _CapturingOqsSignature
 
 
 def _install_rejecting_oqs(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -210,7 +196,7 @@ def test_fetch_bootstrap_bundle_bad_bundle_cid_raises():
 def test_verify_signature_wrong_signed_by_returns_false():
     """signed_by does not match genesis_authority_pubkey → False."""
     bundle = dict(VALID_BUNDLE)
-    bundle["signed_by"] = "000000" * 20  # different key
+    bundle["signed_by"] = "0" * _MLDSA_PK_HEX_LENGTH
     result = verify_bootstrap_bundle_signature(bundle, GENESIS_PUBKEY)
     assert result is False
 
@@ -249,8 +235,19 @@ def test_verify_signature_env_bypass_not_accepted(monkeypatch):
 
 
 def test_verify_signature_uses_compact_canonical_json(monkeypatch):
-    _CapturingOqsSignature.captured_signed_bytes = None
-    monkeypatch.setitem(sys.modules, "oqs", _CapturingOqsModule())
+    captured: dict[str, object] = {}
+
+    def fake_verify(signed_bytes: bytes, signature_hex: str, pubkey_hex: str) -> bool:
+        captured["signed_bytes"] = signed_bytes
+        captured["signature_hex"] = signature_hex
+        captured["pubkey_hex"] = pubkey_hex
+        return True
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_mldsa65_signature",
+        fake_verify,
+    )
 
     result = verify_bootstrap_bundle_signature(VALID_BUNDLE, GENESIS_PUBKEY)
 
@@ -263,12 +260,27 @@ def test_verify_signature_uses_compact_canonical_json(monkeypatch):
         allow_nan=False,
     ).encode("utf-8")
     assert result is True
-    assert _CapturingOqsSignature.captured_signed_bytes == expected
+    assert captured == {
+        "signed_bytes": expected,
+        "signature_hex": VALID_BUNDLE["signature"],
+        "pubkey_hex": GENESIS_PUBKEY,
+    }
 
 
 def test_verify_signature_uses_ascii_escaped_canonical_json(monkeypatch):
-    _CapturingOqsSignature.captured_signed_bytes = None
-    monkeypatch.setitem(sys.modules, "oqs", _CapturingOqsModule())
+    captured: dict[str, object] = {}
+
+    def fake_verify(signed_bytes: bytes, signature_hex: str, pubkey_hex: str) -> bool:
+        captured["signed_bytes"] = signed_bytes
+        captured["signature_hex"] = signature_hex
+        captured["pubkey_hex"] = pubkey_hex
+        return True
+
+    monkeypatch.setattr(
+        bootstrap_fetch_runtime,
+        "verify_mldsa65_signature",
+        fake_verify,
+    )
     bundle = dict(VALID_BUNDLE)
     bundle["description"] = "naive-cafe-\u00e9"
 
@@ -283,8 +295,34 @@ def test_verify_signature_uses_ascii_escaped_canonical_json(monkeypatch):
         allow_nan=False,
     ).encode("utf-8")
     assert result is True
-    assert _CapturingOqsSignature.captured_signed_bytes == expected
+    assert captured == {
+        "signed_bytes": expected,
+        "signature_hex": bundle["signature"],
+        "pubkey_hex": GENESIS_PUBKEY,
+    }
     assert b"\\u00e9" in expected
+
+
+def test_verify_signature_accepts_real_cryptography_mldsa65_signature():
+    private_key = MLDSA65PrivateKey.generate()
+    public_key_hex = private_key.public_key().public_bytes_raw().hex()
+    bundle = dict(VALID_BUNDLE)
+    bundle["signed_by"] = public_key_hex
+    bundle["signature"] = private_key.sign(
+        json.dumps(
+            {k: v for k, v in bundle.items() if k != "signature"},
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hex()
+
+    assert verify_bootstrap_bundle_signature(bundle, public_key_hex) is True
+
+    tampered = dict(bundle)
+    tampered["bundle_cid"] = "bafyreiabc002"
+    assert verify_bootstrap_bundle_signature(tampered, public_key_hex) is False
 
 
 # ---------------------------------------------------------------------------

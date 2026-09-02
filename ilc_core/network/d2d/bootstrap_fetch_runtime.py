@@ -21,7 +21,7 @@ Trust chain: genesis_authority_key (CDL-073) → bundle signature → peer list.
 
 Scope:
     - Curated model: explicit-promotion only; no DHT; no swarm discovery.
-    - ML-DSA-65 signature verification via oqs (pq crypto library).
+    - ML-DSA-65 signature verification via centralized verifier.
     - fetch_bootstrap_bundle() reuses CDL-077 want_have / want_block client.
     - verify_bootstrap_bundle_signature() is best-effort (never raises).
     - extract_peer_endpoints() skips invalid entries silently.
@@ -32,6 +32,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
 from ilc_core.network.d2d.truth_primitive_fetch_runtime import (
     TRUTH_PRIMITIVE_FETCH_RUNTIME_VERSION as _CDL_077_CHECK,
     FetchTransportError,
@@ -187,23 +188,15 @@ def verify_bootstrap_bundle_signature(
             payload,
             sort_keys=True,
             separators=(",", ":"),
+            ensure_ascii=True,
             allow_nan=False,
         ).encode("utf-8")
 
-        # ML-DSA-65 signature verification via oqs. Some oqs Python builds try
-        # to install liboqs at import time and may raise SystemExit; fail closed.
-        try:
-            import oqs  # type: ignore[import]
-        except (ImportError, RuntimeError, SystemExit):
-            return False
-
-        try:
-            sig_bytes = bytes.fromhex(signature_hex)
-            pubkey_bytes = bytes.fromhex(genesis_authority_pubkey_hex)
-            verifier = oqs.Signature("ML-DSA-65")
-            return bool(verifier.verify(signed_bytes, sig_bytes, pubkey_bytes))
-        except (RuntimeError, TypeError, ValueError):
-            return False
+        return verify_mldsa65_signature(
+            signed_bytes,
+            signature_hex,
+            genesis_authority_pubkey_hex,
+        )
 
     except Exception:  # noqa: BLE001
         return False  # best-effort — never propagate

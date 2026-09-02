@@ -164,7 +164,7 @@ def _iter_python_files(spec: ImportBoundarySpec) -> list[Path]:
 def _module_package_for_path(path: Path) -> tuple[str, ...]:
     if path.name == "__init__.py":
         return path.parent.parts
-    return path.parent.parts
+    return path.parent.parts  # same result; __init__ exits early above
 
 
 def _resolve_import_from_module(path: Path, node: ast.ImportFrom) -> str:
