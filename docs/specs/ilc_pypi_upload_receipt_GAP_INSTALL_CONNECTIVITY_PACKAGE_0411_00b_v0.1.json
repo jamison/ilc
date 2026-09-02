@@ -1,0 +1,101 @@
+{
+  "blocked_reason": "pypi_0_4_10_yank_not_verified",
+  "fetchback": {
+    "sdist": {
+      "filename": "ilc_core-0.4.11.tar.gz",
+      "path": "/tmp/fetchback-ilc_core-0.4.11.tar.gz",
+      "sha256": "02a275125e893db6325af0f8fe6e1ce640b215e009b971466c23aa984d1c10f8",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1170791,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/d5/39/2ede6bd8dd72b676130ec823499ddc730abd70643f2132d696e69d70c647/ilc_core-0.4.11.tar.gz"
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.11-py3-none-any.whl",
+      "path": "/tmp/fetchback-ilc_core-0.4.11-py3-none-any.whl",
+      "sha256": "b09147c0e1f5fd37c4d3c9a86d3d8c605fefa292e0b40e08f6ab148dfc4a75c0",
+      "sha256_matches_local_build": true,
+      "size_bytes": 1438168,
+      "size_matches_local_build": true,
+      "url": "https://files.pythonhosted.org/packages/4e/24/88f5c206ee5c0c977cb9d5a2ba17da4d04774a1a94860de65af993da76d5/ilc_core-0.4.11-py3-none-any.whl"
+    }
+  },
+  "install_sh_update": {
+    "result": "NOT_RUN",
+    "reason": "blocked_until_pypi_0_4_10_yank_verified"
+  },
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.11.tar.gz",
+      "sha256": "02a275125e893db6325af0f8fe6e1ce640b215e009b971466c23aa984d1c10f8",
+      "size_bytes": 1170791
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.11-py3-none-any.whl",
+      "sha256": "b09147c0e1f5fd37c4d3c9a86d3d8c605fefa292e0b40e08f6ab148dfc4a75c0",
+      "size_bytes": 1438168
+    }
+  },
+  "non_claims": [
+    "no_completion_token",
+    "no_install_sh_update_to_0411",
+    "no_relay_venv_upgrade",
+    "no_relay_service_restart",
+    "no_validator_slot_venv_mutation",
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0411-00b",
+  "phase_status": "BLOCKED_AFTER_UPLOAD_AND_FETCHBACK_PENDING_0_4_10_YANK",
+  "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.11/json",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.11/",
+  "pypi_upload": {
+    "command": ".venv/bin/python -m twine upload --non-interactive dist/ilc_core-0.4.11-py3-none-any.whl dist/ilc_core-0.4.11.tar.gz",
+    "result": "PASS",
+    "url": "https://pypi.org/project/ilc-core/0.4.11/"
+  },
+  "pypi_yank": {
+    "0.4.10_yank_reason": "Pre-release connectivity bootstrap artifact superseded by ilc-core==0.4.11; relay admission material normalization and connectivity bootstrap hardening fixes required before public RC.",
+    "attempted_by_codex": false,
+    "blocked_reason": "twine 6.2.0 in this environment supports register/upload/check only; no yank command is available.",
+    "final_yanked_state": {
+      "0.4.9": {
+        "all_files_yanked": true,
+        "reason": "Pre-release relay artifact superseded by ilc-core==0.4.10; final relay audit hardening fixes required before public RC"
+      },
+      "0.4.10": {
+        "all_files_yanked": false,
+        "reason": null
+      },
+      "0.4.11": {
+        "all_files_yanked": false,
+        "reason": null
+      }
+    },
+    "manual_yank_confirmed_by_operator": false,
+    "verified_complete": false
+  },
+  "relay_host_upgrade": {
+    "result": "NOT_RUN",
+    "reason": "blocked_until_pypi_0_4_10_yank_verified"
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b.v0.1",
+  "source_private_commit_at_build": "e7cc748f30b1e340e6c612b36713fb84df2aa66c",
+  "source_private_commit_at_upload": "859e7955ce807c88797fa4f2545e1c4f5f4570f4",
+  "source_tree_delta_at_build": [
+    "pyproject.toml version=0.4.11",
+    "ilc_core/__init__.py __version__=0.4.11",
+    "includes connectivity bootstrap hardening commits 64daa12a7, 6ebd51303, f4f68ac5c, and relay admission material race-condition fix e7cc748f3",
+    "tools/install.sh remains at ilc-core 0.4.10 until pypi_0_4_10_yank_verified"
+  ],
+  "timestamp_utc": "2026-09-02T13:51:21Z",
+  "version": "0.4.11"
+}
