@@ -7,7 +7,10 @@ from types import SimpleNamespace
 import pytest
 
 from ilc_core.crypto import pq_signature_verify
-from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
+from ilc_core.crypto.pq_signature_verify import (
+    _MLDSA_PK_HEX_LENGTH,
+    verify_mldsa65_signature,
+)
 from ilc_core.network.d2d.gossip_peer_registry import (
     MAX_PEERS,
     GOSSIP_PEER_REGISTRY_VERSION,
@@ -15,7 +18,7 @@ from ilc_core.network.d2d.gossip_peer_registry import (
 )
 
 
-PUBKEY_HEX = "a" * 3328
+PUBKEY_HEX = "a" * _MLDSA_PK_HEX_LENGTH
 SIG_HEX = "b" * 6618
 
 
@@ -57,7 +60,7 @@ def _structured_peer(
         (b"message", "z" * 6618, PUBKEY_HEX),
         (b"message", SIG_HEX, ""),
         (b"message", SIG_HEX, "a" * 10),
-        (b"message", SIG_HEX, "z" * 3328),
+        (b"message", SIG_HEX, "z" * _MLDSA_PK_HEX_LENGTH),
     ],
 )
 def test_verify_mldsa65_signature_invalid_inputs_fail_closed(
@@ -106,6 +109,28 @@ def test_verify_mldsa65_signature_wrong_signature_false_when_oqs_available() -> 
     signer = oqs.Signature("ML-DSA-65")
     public_key = signer.generate_keypair()
     signature = signer.sign(b"original")
+
+    assert verify_mldsa65_signature(b"tampered", signature.hex(), public_key.hex()) is False
+
+
+def test_verify_mldsa65_signature_valid_signature_true_with_cryptography_backend() -> None:
+    from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
+
+    private_key = MLDSA65PrivateKey.generate()
+    public_key = private_key.public_key().public_bytes_raw()
+    message = b"phase-1571-cryptography-mldsa-verification"
+    signature = private_key.sign(message)
+
+    assert len(public_key.hex()) == _MLDSA_PK_HEX_LENGTH
+    assert verify_mldsa65_signature(message, signature.hex(), public_key.hex()) is True
+
+
+def test_verify_mldsa65_signature_wrong_message_false_with_cryptography_backend() -> None:
+    from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
+
+    private_key = MLDSA65PrivateKey.generate()
+    public_key = private_key.public_key().public_bytes_raw()
+    signature = private_key.sign(b"original")
 
     assert verify_mldsa65_signature(b"tampered", signature.hex(), public_key.hex()) is False
 

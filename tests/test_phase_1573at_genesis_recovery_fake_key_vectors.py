@@ -33,8 +33,8 @@ DOMAIN_HEX = "696c632d67656e657369732d726f6f742d73756363657373696f6e2d76313a"
 
 _SEED = bytes(range(32))
 _SEED_B = bytes(range(1, 33))
-_OLD_PK = "ab" * 1664
-_NEW_PK = "cd" * 1664
+_OLD_PK = "ab" * 1952
+_NEW_PK = "cd" * 1952
 
 
 @pytest.fixture(scope="session")
@@ -111,7 +111,7 @@ def test_wrong_sig_rejected(vector: dict[str, Any]) -> None:
 
 def test_wrong_old_root_pk_rejected() -> None:
     record, tx = _record_and_tx()
-    tx.old_canonical_root_pk = "ef" * 1664
+    tx.old_canonical_root_pk = "ef" * 1952
 
     with pytest.raises(GenesisRecordError) as exc:
         tx.validate_against_record(record, _SEED, current_epoch=500)

@@ -22,6 +22,7 @@ from cryptography.x509.oid import NameOID
 
 from ilc_core.consensus.validator_endpoint_assertion import ValidatorEndpointAssertion
 from ilc_core.node.operator_init_runtime import (
+    MLDSA65_PUBLIC_KEY_HEX_LENGTH,
     atomic_write_json,
     check_node_config,
     generate_node_init_material,
@@ -111,7 +112,7 @@ def test_node_init_generates_validator_keypair(tmp_path: Path) -> None:
     assert public_key.is_file()
     assert secret_key.is_file()
     assert bls_secret_key.is_file()
-    assert len(public_key.read_text(encoding="utf-8").strip()) == 3328
+    assert len(public_key.read_text(encoding="utf-8").strip()) == MLDSA65_PUBLIC_KEY_HEX_LENGTH
     assert stat.S_IMODE(secret_key.stat().st_mode) == 0o600
     assert stat.S_IMODE(bls_secret_key.stat().st_mode) == 0o600
 

@@ -7,6 +7,7 @@ import pytest
 
 import ilc_core.network.d2d.gossip_peer_registry as registry_module
 import ilc_core.network.d2d.peer_discovery_manager as manager_module
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
 from ilc_core.network.d2d.gossip_peer_registry import VerifiedPeerAdvertisement
 from ilc_core.network.d2d.peer_advertisement import (
@@ -29,7 +30,7 @@ PUBLIC_PREFLIGHT = ROOT / "ilc_core/graph/sidecar_public_path_preflight.py"
 TRANSPORT_ADMISSION = ROOT / "ilc_core/sidecars/transport_principal_admission.py"
 GOSSIP_POLICY = ROOT / "ilc_core/sidecars/confidential_coordination_gossip_policy.py"
 
-PUBKEY_HEX = "a" * 3328
+PUBKEY_HEX = "a" * _MLDSA_PK_HEX_LENGTH
 SIG_HEX = "b" * 6618
 AGENT_A = "1" * 96
 DIGEST_A = "3" * 96

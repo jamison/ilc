@@ -37,8 +37,8 @@ _PLATE3_WORDS = (
 
 # 96-char hex agent_id (SHA-384 output — Tier 3, 48 bytes)
 _FIXTURE_AGENT_ID = "a" * 96
-# 3328-char hex ML-DSA-65 pk
-_FIXTURE_MLDSA_PK = "b" * 3328
+# 3904-char hex ML-DSA-65 pk
+_FIXTURE_MLDSA_PK = "b" * 3904
 # 32-char hex SPHINCS+ pk (SLH-DSA-SHA2-128s pk = 32 bytes)
 _FIXTURE_SPHINCS_PK = "c" * 64
 # 96-char hex commitments

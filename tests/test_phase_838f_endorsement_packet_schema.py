@@ -30,11 +30,12 @@ from ilc_core.identity.endorsement_packet_schema import (
     check_endorsement_window,
     derive_liveness_assertion,
     verify_liveness_assertion,
+    _MLDSA_PK_HEX_LENGTH,
 )
 
 _AGENT_ID = "a0" * 48          # 96 hex chars
 _EPHEMERAL_PK = "b1" * 48      # 96 hex chars (BLS G1)
-_MLDSA_PK = "cd" * 1664        # 3328 hex chars
+_MLDSA_PK = "cd" * (_MLDSA_PK_HEX_LENGTH // 2)
 _CID = "bafy2bzaceab3wcn"
 
 

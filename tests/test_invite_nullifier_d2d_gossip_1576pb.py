@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from ilc_core.genesis import invite_enforcement
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 from ilc_core.genesis.invitation_provenance_record import (
     build_invite_batch_record,
     build_invite_redemption_record,
@@ -47,7 +48,7 @@ PROFILE = "openclaw_public_rc_bootstrap"
 IDENTITY_SEED_HEX = "22" * 32
 REDEEMER_AGENT_ID = derive_agent_id_from_identity_seed(IDENTITY_SEED_HEX)
 _SIG_VALID = "c" * 6618
-_PUBKEY_VALID = "a" * 3328
+_PUBKEY_VALID = "a" * _MLDSA_PK_HEX_LENGTH
 _PEER_ID = "peer-a"
 _KEY_ID = "key-a"
 _CLAIMED_ACTOR = "agent-alpha"
@@ -455,7 +456,7 @@ def test_invite_nullifier_transport_fanout_uses_signed_send_path(monkeypatch: py
                 "authorized_actor_ids": [_CLAIMED_ACTOR],
                 "endpoint": "https://b.example.org",
                 "key_id": "key-b",
-                "mldsa_pubkey_hex": "b" * 3328,
+                "mldsa_pubkey_hex": "b" * _MLDSA_PK_HEX_LENGTH,
                 "peer_id": "peer-b",
                 "valid_from_epoch": 0,
             },

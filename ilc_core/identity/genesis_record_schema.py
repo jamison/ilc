@@ -40,7 +40,7 @@ _IDENTITY_SEED_COMMIT_DOMAIN: bytes = b"ilc-seed-commit-v1:"
 # Field length constants
 _IDENTITY_SEED_LENGTH: int = 32
 _COMMITMENT_HEX_LENGTH: int = 96    # SHA-384 = 48 bytes = 96 hex chars
-_MLDSA_PK_HEX_LENGTH: int = 3328   # ML-DSA-65 pk = 1664 bytes = 3328 hex chars
+_MLDSA_PK_HEX_LENGTH: int = 3904   # ML-DSA-65 pk = 1952 bytes = 3904 hex chars
 
 
 class GenesisRecordError(ValueError):
@@ -150,7 +150,7 @@ class GenesisRecord:
     """CDL-069 §2a four-field genesis record.
 
     All commitment fields are 96-char SHA-384 hex strings (Tier 3, permanent).
-    canonical_root_pk is the ML-DSA-65 public key hex (3328 chars).
+    canonical_root_pk is the ML-DSA-65 public key hex (3904 chars).
     """
     identity_seed_commitment: str    # sha384("ilc-seed-commit-v1:" || identity_seed)
     canonical_root_pk: str           # ML-DSA-65 pk hex — necessarily public

@@ -8,6 +8,7 @@ import sys
 import pytest
 
 from ilc_core.cli import network_doctor
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 from ilc_core.network.connectivity_mode import ConnectivityMode, ConnectivityReceipt
 from ilc_core.network.nat_probe import NatProbeReport
 
@@ -373,7 +374,7 @@ def test_network_doctor_bootstrap_fetch_rejects_uppercase_pubkey() -> None:
             fetch_peers=True,
             bootstrap_seed_peer="https://seed.ilc.example:443",
             bootstrap_bundle_cid="bafybootstrap",
-            genesis_authority_pubkey_hex="B" * 3328,
+            genesis_authority_pubkey_hex="B" * _MLDSA_PK_HEX_LENGTH,
         )
 
 
@@ -408,7 +409,7 @@ def test_network_doctor_bootstrap_fetch_verifies_before_extract(
             fetch_peers=True,
             bootstrap_seed_peer="https://seed.ilc.example:443",
             bootstrap_bundle_cid="bafybootstrap",
-            genesis_authority_pubkey_hex="b" * 3328,
+            genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
         )
 
     assert calls == ["verify"]
@@ -446,7 +447,7 @@ def test_network_doctor_bootstrap_fetch_caps_peer_count(
             fetch_peers=True,
             bootstrap_seed_peer="https://seed.ilc.example:443",
             bootstrap_bundle_cid="bafybootstrap",
-            genesis_authority_pubkey_hex="b" * 3328,
+            genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
         )
 
 
@@ -473,7 +474,7 @@ def test_network_doctor_bootstrap_fetch_success(monkeypatch: pytest.MonkeyPatch)
         fetch_peers=True,
         bootstrap_seed_peer="https://seed.ilc.example:443",
         bootstrap_bundle_cid="bafybootstrap",
-        genesis_authority_pubkey_hex="b" * 3328,
+        genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
     )
 
     assert payload["bootstrap_fetch"] == {

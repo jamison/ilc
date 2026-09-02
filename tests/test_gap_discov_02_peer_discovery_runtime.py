@@ -6,6 +6,7 @@ import pytest
 
 import ilc_core.network.d2d.gossip_peer_registry as registry_module
 import ilc_core.network.d2d.peer_discovery_manager as manager_module
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
 from ilc_core.network.d2d.gossip_peer_registry import VerifiedPeerAdvertisement
 from ilc_core.network.d2d.peer_advertisement import (
@@ -16,7 +17,7 @@ from ilc_core.network.d2d.peer_advertisement import (
 from ilc_core.network.d2d.peer_discovery_manager import PeerDiscoveryManager
 
 
-PUBKEY_HEX = "a" * 3328
+PUBKEY_HEX = "a" * _MLDSA_PK_HEX_LENGTH
 SIG_HEX = "b" * 6618
 AGENT_A = "1" * 96
 AGENT_B = "2" * 96

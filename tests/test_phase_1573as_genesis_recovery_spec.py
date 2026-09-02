@@ -24,9 +24,9 @@ SPEC_PATH = Path("docs/specs/ilc_genesis_recovery_transaction_spec_1573as_v0.1.m
 STATUS_PATH = Path("docs/phases/STATUS.md")
 
 _SEED = bytes(range(32))
-_OLD_PK = "ab" * 1664
-_NEW_PK = "cd" * 1664
-_OTHER_PK = "ef" * 1664
+_OLD_PK = "ab" * 1952
+_NEW_PK = "cd" * 1952
+_OTHER_PK = "ef" * 1952
 
 
 def _record_and_tx(freeze_from_epoch: int | None = None) -> tuple[GenesisRecord, RecoveryTransaction]:
