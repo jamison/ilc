@@ -19,14 +19,14 @@
     "sdist": {
       "filename": "ilc_core-0.4.12.tar.gz",
       "path": "dist/ilc_core-0.4.12.tar.gz",
-      "sha256": "21955dc7669d06ea696c1fccc1e516d09dbb32254812b8d3dfab70cf506f0e38",
-      "size_bytes": 1170831
+      "sha256": "75441b9b193f3e42890974fb86a9992531b0b8a7c0c12d19ed7c4442db3d32df",
+      "size_bytes": 1170802
     },
     "wheel": {
       "filename": "ilc_core-0.4.12-py3-none-any.whl",
       "path": "dist/ilc_core-0.4.12-py3-none-any.whl",
-      "sha256": "c778fa657624d84d6cb255889615a542241e75e82290e52765fe83464e5d4a7e",
-      "size_bytes": 1438319
+      "sha256": "8e1d48f9f096fb802e8dfe2f034a638d0a61174354c797e18bc3d9ed1c702c9c",
+      "size_bytes": 1438193
     }
   },
   "non_claims": [
@@ -79,6 +79,21 @@
       "result": "PASS",
       "stdout": "97 passed, 2 skipped in 24.80s"
     },
+    "post_audit_bootstrap_central_verifier_refresh": {
+      "command": ".venv/bin/python -m pytest tests/test_phase_913_920_cdl_079_hb_002_bootstrap.py tests/test_phase_1331_fix1_pre_1332_security_hardening.py tests/test_phase_1571_peer_registry_and_pq_verify.py tests/test_duplicate_definitions.py -q --tb=short",
+      "result": "PASS",
+      "stdout": "67 passed, 16 skipped in 46.14s"
+    },
+    "post_audit_distributed_fetch_consumer_refresh": {
+      "command": ".venv/bin/python -m pytest tests/test_distributed_release_fetch.py tests/test_network_doctor_cli.py tests/test_invite_bootstrap_capsule.py -q --tb=short",
+      "result": "PASS",
+      "stdout": "63 passed in 8.16s"
+    },
+    "post_audit_clean_wheel_install_refresh": {
+      "command": "rm -rf /tmp/ilc-0412-local-test-final && .venv/bin/python -m venv /tmp/ilc-0412-local-test-final && cd /tmp && /tmp/ilc-0412-local-test-final/bin/pip install --quiet /Users/jamison/Documents/ILC_Main/01_Current/dist/ilc_core-0.4.12-py3-none-any.whl && /tmp/ilc-0412-local-test-final/bin/python <bootstrap_bundle_verify_smoke>",
+      "result": "PASS",
+      "stdout": "version 0.4.12\nrelay_client_guard False\nrelay_server_guard False\nconnectivity_ad_guard True\ncryptography_mldsa_verify True\nbootstrap_bundle_verify True\noqs_installed False\nforwarder_has_target_addr True"
+    },
     "relay_connectivity_focus": {
       "command": ".venv/bin/python -m pytest tests/test_relay_server.py tests/test_relay_client.py tests/test_relay_bls_rust_backend.py tests/test_nat_probe.py tests/test_install_connectivity_receipt.py tests/test_validator_connectivity_wiring.py tests/test_connectivity_mode.py tests/test_connectivity_audit_fix.py -q --tb=short",
       "result": "PASS",
@@ -94,14 +109,16 @@
   "pypi_upload_phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b",
   "pypi_upload_status": "deferred_requires_sensitive_go",
   "schema_version": "ilc.package_build_receipt.GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00a.v0.1",
-  "source_private_commit_at_build": "1141dade26d5aca065945b4b6e69990c85ace87d",
+  "source_private_commit_at_build": "3aaee751ade33a231f1e388716f7d34f76989fcf",
   "source_tree_delta_at_build": [
     "pyproject.toml version=0.4.12",
     "ilc_core/__init__.py __version__=0.4.12",
     "includes connectivity smoke blocker fixes from 1141dade2: relay network_id public-rc deployment alignment, ML-DSA-65 1952-byte public key verification through cryptography without oqs, and smoke prompt validator-status correction",
+    "includes bootstrap bundle verifier centralization from 53a96c136: bootstrap_fetch_runtime now routes ML-DSA-65 verification through ilc_core.crypto.pq_signature_verify and has a real cryptography-signed bootstrap bundle regression test",
+    "includes SMOKE-00 prompt retarget from 3aaee751a: 0.4.11/0411 references moved to 0.4.12/0412 with 00b-produced manifest placeholder",
     "fixes duplicate MLDSA65PrivateKey test import exposed by the full-suite duplicate-definition canary",
     "tools/install.sh intentionally remains at the current uploaded 0.4.11 artifact until the sensitive 0.4.12 upload phase produces canonical PyPI URLs"
   ],
-  "timestamp_utc": "2026-09-02T17:45:11Z",
+  "timestamp_utc": "2026-09-02T20:01:08Z",
   "version": "0.4.12"
 }
