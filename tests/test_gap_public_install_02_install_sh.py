@@ -67,6 +67,47 @@ def test_install_sh_dry_run_exits_zero() -> None:
     assert "invite_bundle=/tmp/example-invite.json" in result.stdout
 
 
+def test_install_sh_dry_run_records_connectivity_options() -> None:
+    result = _run_install_sh(
+        "--channel",
+        "rc",
+        "--dry-run",
+        "--invite-bundle",
+        "/tmp/example-invite.json",
+        "--relay-url",
+        "https://relay.ilc.example:51151",
+        "--relay-tls-cert-der-sha256",
+        "a" * 64,
+        "--relay-network-id",
+        "public-rc",
+        "--relay-internal-port",
+        "50152",
+        "--probe-observer",
+        "https://observer.ilc.example/probe",
+        "--enable-upnp",
+    )
+
+    assert result.returncode == 0
+    assert "relay_url=https://relay.ilc.example:51151" in result.stdout
+    assert f"relay_tls_cert_der_sha256={'a' * 64}" in result.stdout
+    assert "relay_network_id=public-rc" in result.stdout
+    assert "relay_internal_port=50152" in result.stdout
+    assert "probe_observer=https://observer.ilc.example/probe" in result.stdout
+    assert "enable_upnp=true" in result.stdout
+
+
+def test_install_sh_rejects_missing_connectivity_option_values() -> None:
+    result = _run_install_sh(
+        "--dry-run",
+        "--invite-bundle",
+        "/tmp/example-invite.json",
+        "--relay-url",
+    )
+
+    assert result.returncode == 2
+    assert "install_sh_missing_relay_url_value" in result.stderr
+
+
 def test_install_sh_unsupported_channel_exits_error() -> None:
     result = _run_install_sh("--channel", "stable")
     assert result.returncode == 1
@@ -227,6 +268,10 @@ def test_install_sh_executes_invite_onboarding_after_verified_install() -> None:
     assert hash_check < onboard
     assert "--from-invite" in text
     assert "--output-receipt" in text
+    assert "--relay-url" in text
+    assert "--relay-tls-cert-der-sha256" in text
+    assert "--relay-network-id" in text
+    assert "--probe-observer" in text
     assert "install_sh_invite_onboard_complete" in text
 
 
