@@ -96,6 +96,13 @@ def test_install_sh_dry_run_records_connectivity_options() -> None:
     assert "enable_upnp=true" in result.stdout
 
 
+def test_install_sh_usage_lists_relay_internal_port() -> None:
+    result = _run_install_sh("--help")
+
+    assert result.returncode == 0
+    assert "--relay-internal-port PORT" in result.stderr
+
+
 def test_install_sh_rejects_missing_connectivity_option_values() -> None:
     result = _run_install_sh(
         "--dry-run",

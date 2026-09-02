@@ -13,6 +13,7 @@ from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_relay_bootstrap_capsule_digest,
 )
+from ilc_core.identity.first_run_provisioning import GENESIS_ROOT_ENVELOPE_HASH
 from ilc_core.network.relay.relay_server import (
     RelayServerConfig,
     build_relay_bootstrap_record,
@@ -166,7 +167,7 @@ def test_identity_invite_bundle_can_attach_signed_bootstrap_material(
             bootstrap_fetch_genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
             bootstrap_fetch_seed_peer_endpoint="https://seed.ilc.example:443",
             enable_invites=True,
-            genesis_state_root="sha256:" + ("c" * 64),
+            genesis_state_root=GENESIS_ROOT_ENVELOPE_HASH,
             identity_invite_subcommand="bundle",
             intended_epoch=0,
             intended_profile="public_rc_validator_bootstrap",
@@ -179,7 +180,7 @@ def test_identity_invite_bundle_can_attach_signed_bootstrap_material(
         )
     )["output"]
 
-    assert result["genesis_state_root"] == "sha256:" + ("c" * 64)
+    assert result["genesis_state_root"] == GENESIS_ROOT_ENVELOPE_HASH
     assert result["inviter_connectivity_mode"] == "relay_reachable"
     assert len(result["known_peer_hints"]) == 1
     assert result["known_peer_hint_key_bindings"] == {
@@ -232,6 +233,86 @@ def test_identity_invite_bundle_rejects_partial_bootstrap_fetch_material(
                 output="",
                 relay_bootstrap_capsule_path="",
                 starmap_path="",
+            )
+        )
+
+
+def test_identity_invite_bundle_rejects_invalid_genesis_state_root() -> None:
+    with pytest.raises(ValueError, match="invite_bundle_genesis_state_root_mismatch"):
+        cli_main._invite_bundle_optional_bootstrap_fields(
+            argparse.Namespace(
+                bootstrap_fetch_bundle_cid="",
+                bootstrap_fetch_genesis_authority_pubkey_hex="",
+                bootstrap_fetch_seed_peer_endpoint="",
+                genesis_state_root="sha256:" + ("0" * 64),
+                inviter_connectivity_mode="",
+                known_peer_hints_path="",
+                relay_bootstrap_capsule_path="",
+            )
+        )
+
+
+def test_identity_invite_bundle_rejects_invalid_inviter_connectivity_mode() -> None:
+    with pytest.raises(ValueError, match="invite_bundle_inviter_connectivity_mode_invalid"):
+        cli_main._invite_bundle_optional_bootstrap_fields(
+            argparse.Namespace(
+                bootstrap_fetch_bundle_cid="",
+                bootstrap_fetch_genesis_authority_pubkey_hex="",
+                bootstrap_fetch_seed_peer_endpoint="",
+                genesis_state_root="",
+                inviter_connectivity_mode="not-a-mode",
+                known_peer_hints_path="",
+                relay_bootstrap_capsule_path="",
+            )
+        )
+
+
+def test_identity_invite_bundle_rejects_invalid_bootstrap_fetch_semantics() -> None:
+    with pytest.raises(
+        ValueError,
+        match="invite_bundle_bootstrap_fetch_seed_peer_endpoint_invalid",
+    ):
+        cli_main._invite_bundle_optional_bootstrap_fields(
+            argparse.Namespace(
+                bootstrap_fetch_bundle_cid="bafybootstrap",
+                bootstrap_fetch_genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
+                bootstrap_fetch_seed_peer_endpoint="ftp://seed.ilc.example/bootstrap",
+                genesis_state_root="",
+                inviter_connectivity_mode="",
+                known_peer_hints_path="",
+                relay_bootstrap_capsule_path="",
+            )
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="invite_bundle_bootstrap_fetch_bundle_cid_invalid",
+    ):
+        cli_main._invite_bundle_optional_bootstrap_fields(
+            argparse.Namespace(
+                bootstrap_fetch_bundle_cid="bad cid",
+                bootstrap_fetch_genesis_authority_pubkey_hex="b" * _MLDSA_PK_HEX_LENGTH,
+                bootstrap_fetch_seed_peer_endpoint="https://seed.ilc.example:443",
+                genesis_state_root="",
+                inviter_connectivity_mode="",
+                known_peer_hints_path="",
+                relay_bootstrap_capsule_path="",
+            )
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="invite_bundle_bootstrap_fetch_genesis_authority_pubkey_hex_invalid",
+    ):
+        cli_main._invite_bundle_optional_bootstrap_fields(
+            argparse.Namespace(
+                bootstrap_fetch_bundle_cid="bafybootstrap",
+                bootstrap_fetch_genesis_authority_pubkey_hex="B" * _MLDSA_PK_HEX_LENGTH,
+                bootstrap_fetch_seed_peer_endpoint="https://seed.ilc.example:443",
+                genesis_state_root="",
+                inviter_connectivity_mode="",
+                known_peer_hints_path="",
+                relay_bootstrap_capsule_path="",
             )
         )
 

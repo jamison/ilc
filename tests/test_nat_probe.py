@@ -227,4 +227,38 @@ def test_relay_admission_material_base_url_mismatch_fails_closed(monkeypatch) ->
     report = engine.run_probe(probe_epoch=0)
 
     assert report.connectivity_receipt.mode is ConnectivityMode.LOCAL_ONLY
-    assert "relay_slot_request_failed:RelayClientError" in report.warnings
+    assert "relay_slot_request_failed:relay_material_base_url_mismatch" in report.warnings
+
+
+def test_relay_admission_material_epoch_mismatch_surfaces_specific_warning(
+    monkeypatch,
+) -> None:
+    from ilc_core.network.relay import relay_client as relay_module
+
+    monkeypatch.setattr(relay_module, "RELAY_CLIENT_NOT_ACTIVATED", False)
+
+    engine = NatProbeEngine(
+        relay_server_url="https://relay.example:51151",
+        relay_admission_material={
+            "admission_epoch": 0,
+            "agent_id": AGENT_ID,
+            "invite_id": "invite-1",
+            "invite_nullifier": "b" * 64,
+            "invite_pop": "c" * 192,
+            "invite_pop_epoch": 0,
+            "network_id": "public-rc",
+            "relay_admission_signature": "e" * 192,
+            "relay_base_url": "https://relay.example:51151",
+            "requested_internal_port": 50151,
+            "requested_protocol": "quic",
+            "software_version": "0.4.10",
+            "tls_cert_der_sha256": "f" * 64,
+        },
+    )
+
+    report = engine.run_probe(probe_epoch=1)
+
+    assert (
+        "relay_slot_request_failed:relay_material_admission_epoch_mismatch"
+        in report.warnings
+    )
