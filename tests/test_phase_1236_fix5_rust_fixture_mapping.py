@@ -108,10 +108,10 @@ def test_cidv1root_rust_layout_maps_to_72_hex_chars():
     assert len(STATE_ROOT_HEX) == 72
 
 
-def test_validator_id_rust_layout_maps_to_non_negative_python_ints():
+def test_agent_id_rust_layout_and_legacy_projection_signer_ints_are_stable():
     types_rs, _ = _rust_sources()
 
-    assert "pub struct ValidatorID(pub u32)" in types_rs
+    assert "pub struct AgentID(pub [u8; 48])" in types_rs
     projection = build_quorum_proof_projection(
         epoch_sequence=12,
         state_root_cidv1_hex=STATE_ROOT_HEX,
@@ -139,7 +139,7 @@ def test_stored_checkpoint_rust_fields_match_projection_material():
     assert "pub struct StoredCheckpoint" in epoch_settlement_rs
     assert "pub record: EpochSettlementRecord" in epoch_settlement_rs
     assert "pub agg_sig_bytes: Vec<u8>" in epoch_settlement_rs
-    assert "pub signers: Vec<ValidatorID>" in epoch_settlement_rs
+    assert "pub signers: Vec<AgentID>" in epoch_settlement_rs
 
 
 def test_testnet_fault_sim_empty_agg_sig_is_not_adapter_eligible():

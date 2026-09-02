@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Validator for GAP-PUBLIC-INSTALL-01 installable release manifests."""
 
 from __future__ import annotations

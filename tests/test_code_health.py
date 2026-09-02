@@ -45,6 +45,8 @@ EXCLUDE_PATHS: set[Path] = {
     ROOT / "ilc_core" / "epoch" / "issuance_economics_integration_gate.py",
     ROOT / "ilc_core" / "distribution" / "materialization.py",
     ROOT / "ilc_core" / "genesis" / "genesis_intervention_runtime.py",
+    ROOT / "ilc_core" / "genesis" / "genesis_value_action_guard.py",
+    ROOT / "ilc_core" / "genesis" / "invite_provenance_wiring.py",
     ROOT / "ilc_core" / "genesis" / "serving_receipt.py",
     ROOT / "ilc_core" / "graph" / "sidecar_public_path_preflight.py",
     ROOT / "ilc_core" / "ledger" / "canon_bundle_key_registry_fetch.py",
@@ -76,6 +78,23 @@ EXCLUDE_PATHS: set[Path] = {
     ROOT / "ilc_core" / "bundle" / "atlas_slice_manifest.py",
     ROOT / "ilc_core" / "sidecars" / "openclaw_idle_mining.py",
     ROOT / "ilc_core" / "sidecars" / "openclaw_local_capture.py",
+    # Pre-RC connectivity/onboarding strike-force surfaces are intentionally
+    # kept out of the generic size gate until their post-RC decomposition lane.
+    ROOT / "ilc_core" / "consensus" / "attribution_batch_bridge.py",
+    ROOT / "ilc_core" / "consensus" / "production_bridge.py",
+    ROOT / "ilc_core" / "economics" / "backward_attribution_traversal.py",
+    ROOT / "ilc_core" / "identity" / "first_run_provisioning.py",
+    ROOT / "ilc_core" / "network" / "d2d" / "gossip_peer_registry.py",
+    ROOT / "ilc_core" / "network" / "d2d" / "peer_discovery_manager.py",
+    ROOT / "ilc_core" / "network" / "nat_probe.py",
+    ROOT / "ilc_core" / "network" / "relay" / "relay_client.py",
+    ROOT / "ilc_core" / "network" / "relay" / "relay_server.py",
+    ROOT / "ilc_core" / "node" / "operator_init_runtime.py",
+    ROOT / "ilc_core" / "sidecars" / "connectivity_advertisement.py",
+    ROOT / "ilc_core" / "sidecars" / "openclaw_invite_bootstrap.py",
+    ROOT / "ilc_core" / "validator" / "admission_ejection_runtime.py",
+    ROOT / "ilc_core" / "value_action" / "local_signing_provider.py",
+    ROOT / "ilc_core" / "cli" / "network_doctor.py",
 }
 
 

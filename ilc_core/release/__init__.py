@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Release manifest validation helpers."""
 
 from ilc_core.release.installable_release_manifest import (

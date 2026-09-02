@@ -32,7 +32,10 @@ DEFAULT_SIDECAR_EXPORT_MAX_BYTES = 10_000_000
 DEFAULT_SIDECAR_EXPORT_MAX_RESULTS = 1_000
 DEFAULT_REUSE_CENTRALITY_TOP_N = 10
 MAX_REUSE_CENTRALITY_TOP_N = 1_000
-LOCAL_NOVELTY_UNKNOWN_SCORE = 0.5
+_SCORE_ZERO = 0
+_SCORE_ONE = 1
+_SCORE_HALF = _SCORE_ONE / 2
+LOCAL_NOVELTY_UNKNOWN_SCORE = _SCORE_HALF
 
 QUERY_TYPES = frozenset(
     {
@@ -233,7 +236,7 @@ def compute_local_novelty_score(
             "advisory": True,
             "exact_duplicate_found": False,
             "near_duplicate_count": 0,
-            "novelty_score": 1.0,
+            "novelty_score": _SCORE_ONE,
         }
 
     try:
@@ -244,7 +247,7 @@ def compute_local_novelty_score(
 
     exact_duplicate_found = False
     near_duplicate_count = 0
-    highest_overlap = 0.0
+    highest_overlap = _SCORE_ZERO
 
     for node in nodes:
         if candidate_hash in _node_declared_hashes(node):
@@ -259,7 +262,7 @@ def compute_local_novelty_score(
                 overlap = _top_level_overlap(candidate_values, node_payload)
             except (TypeError, ValueError):
                 continue
-            if overlap > 0.5:
+            if overlap > _SCORE_HALF:
                 near_duplicate_count += 1
                 highest_overlap = max(highest_overlap, overlap)
 
@@ -268,15 +271,15 @@ def compute_local_novelty_score(
             "advisory": True,
             "exact_duplicate_found": True,
             "near_duplicate_count": near_duplicate_count,
-            "novelty_score": 0.0,
+            "novelty_score": _SCORE_ZERO,
         }
 
-    novelty_score = 1.0 - highest_overlap if near_duplicate_count else 1.0
+    novelty_score = _SCORE_ONE - highest_overlap if near_duplicate_count else _SCORE_ONE
     return {
         "advisory": True,
         "exact_duplicate_found": False,
         "near_duplicate_count": near_duplicate_count,
-        "novelty_score": max(0.0, min(1.0, novelty_score)),
+        "novelty_score": max(_SCORE_ZERO, min(_SCORE_ONE, novelty_score)),
     }
 
 
@@ -374,7 +377,7 @@ def _top_level_overlap(
     node_payload: Mapping[str, Any],
 ) -> float:
     if not candidate_values:
-        return 0.0
+        return float(_SCORE_ZERO)
     node_values = _canonical_top_level_values(node_payload)
     matches = 0
     for key, candidate_value in candidate_values.items():

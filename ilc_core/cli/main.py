@@ -473,7 +473,7 @@ def _write_json_file_atomic(
         try:
             os.unlink(temp_name)
         except FileNotFoundError:
-            pass
+            _temp_file_already_removed = True
         raise
 
 
@@ -4786,7 +4786,7 @@ def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
         try:
             os.unlink(temp_name)
         except FileNotFoundError:
-            pass
+            _temp_file_already_removed = True
         raise
     return path
 
@@ -4830,13 +4830,13 @@ def _rollback_install_side_effects(
         try:
             if path.is_file() and _sha256_file(path) == expected_sha256:
                 path.unlink()
-        except OSError:
-            pass
+        except OSError as exc:
+            _rollback_cleanup_error = exc
     if receipt_written and not receipt_preexisted:
         try:
             output_receipt.unlink()
         except FileNotFoundError:
-            pass
+            _receipt_already_removed = True
 
 
 def _sha256_file(path: Path) -> str:

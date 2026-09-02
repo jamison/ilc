@@ -1,0 +1,135 @@
+{
+  "artifact_boundary_checks": {
+    "clean_local_wheel_install": {
+      "command": "rm -rf /tmp/ilc-0411-local-test && .venv/bin/python -m venv /tmp/ilc-0411-local-test && /tmp/ilc-0411-local-test/bin/python -m pip install --upgrade pip && cd /tmp && /tmp/ilc-0411-local-test/bin/pip install --quiet /Users/jamison/Documents/ILC_Main/01_Current/dist/ilc_core-0.4.11-py3-none-any.whl && /tmp/ilc-0411-local-test/bin/python - <<'PY'\nimport ilc_core\nfrom ilc_core.network.relay.relay_client import RELAY_CLIENT_NOT_ACTIVATED\nfrom ilc_core.network.relay.relay_server import RELAY_SERVER_NOT_ACTIVATED, RelayUdpPortForwarder\nfrom ilc_core.sidecars.connectivity_advertisement import CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED\nprint('version', ilc_core.__version__)\nprint('relay_client_guard', RELAY_CLIENT_NOT_ACTIVATED)\nprint('relay_server_guard', RELAY_SERVER_NOT_ACTIVATED)\nprint('connectivity_ad_guard', CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED)\nprint('forwarder_has_target_addr', '_target_addr' in RelayUdpPortForwarder.__init__.__code__.co_names)\nPY",
+      "python": "Python 3.14.3",
+      "result": "PASS",
+      "stdout": "version 0.4.11\nrelay_client_guard False\nrelay_server_guard False\nconnectivity_ad_guard True\nforwarder_has_target_addr True"
+    },
+    "python312_release_gate": {
+      "availability": "unavailable_in_current_shell",
+      "command": "command -v python3.12",
+      "fallback_used": "Python 3.14.3 project virtualenv and outside-repo venv",
+      "result": "NOT_RUN"
+    },
+    "source_allowlist_export": {
+      "command": ".venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
+      "counts": {
+        "blocked_ambiguities": 0,
+        "dependency_hits": 0,
+        "excluded_files": 7532,
+        "included_files": 532,
+        "legacy_untagged_default_excluded": 7532,
+        "legacy_untagged_included_reviewed": 505,
+        "legacy_untagged_review_required_blocked": 0,
+        "marker_hits": 0
+      },
+      "result": "PASS"
+    },
+    "wheel_required_relay_modules_present": {
+      "files": {
+        "ilc_core/cli/network_doctor.py": true,
+        "ilc_core/network/relay/__init__.py": true,
+        "ilc_core/network/relay/relay_client.py": true,
+        "ilc_core/network/relay/relay_server.py": true
+      },
+      "result": "PASS"
+    }
+  },
+  "build_command": ".venv/bin/python -m build",
+  "build_scope": "local_build_only",
+  "local_build": {
+    "sdist": {
+      "filename": "ilc_core-0.4.11.tar.gz",
+      "path": "dist/ilc_core-0.4.11.tar.gz",
+      "sha256": "02a275125e893db6325af0f8fe6e1ce640b215e009b971466c23aa984d1c10f8",
+      "size_bytes": 1170791
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.11-py3-none-any.whl",
+      "path": "dist/ilc_core-0.4.11-py3-none-any.whl",
+      "sha256": "b09147c0e1f5fd37c4d3c9a86d3d8c605fefa292e0b40e08f6ab148dfc4a75c0",
+      "size_bytes": 1438168
+    }
+  },
+  "non_claims": [
+    "no_pypi_upload",
+    "no_install_sh_update_to_0411",
+    "no_pypi_yank",
+    "no_fetchback_verification",
+    "no_release_manifest_publication",
+    "no_manifest_signing",
+    "no_release_signing_prompt_cascade",
+    "no_cdl_mutation",
+    "no_connectivity_advertisement_activation",
+    "no_relay_bootstrap_capsule_signing",
+    "no_relay_service_restart",
+    "no_relay_venv_upgrade",
+    "no_vps_mutation",
+    "no_validator_slot_venv_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0411-00a",
+  "post_build_checks": {
+    "full_suite": {
+      "command": ".venv/bin/python -m pytest -q --tb=short",
+      "duration": "4303.14s (1:11:43)",
+      "result": "NON_BLOCKING_HISTORICAL_FAILURES_RECORDED",
+      "summary": "14378 passed, 2244 skipped, 91 failed, 5 errors, 1 warning",
+      "triage": [
+        "Direct source-export script import-path error fixed after the full-suite run and confirmed by focused source-export and phase-1575a checks.",
+        "AGPL header allowlist failures fixed after the full-suite run and confirmed by the focused phase-1443/1575e/1575a group.",
+        "Historical PLANNING_INDEX current-marker, stale prompt-text, activation-guard, economic-soak, old Rust hook, wallet, and public-RC guard tests remain outside this local package build scope.",
+        "The phase-316 canary recursion hang was fixed by adding ILC_PHASE_316_GATE_SELFTEST to the nested phase-317 closure path."
+      ]
+    },
+    "installer_sync_sentinels": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_gap_public_install_02_install_sh.py tests/test_gap_public_rc_package_refresh_00b.py",
+      "result": "PASS",
+      "stdout": "54 passed in 11.57s"
+    },
+    "package_connectivity_focus": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_nat_probe.py tests/test_relay_client.py tests/test_relay_server.py tests/test_install_connectivity_receipt.py tests/test_distributed_release_fetch.py tests/test_gap_public_install_01_installable_release_manifest.py",
+      "result": "PASS",
+      "stdout": "218 passed in 484.22s (0:08:04)"
+    },
+    "public_rc_exclude_import_scanner": {
+      "command": ".venv/bin/python tools/check_public_rc_exclude_imports.py ilc_core/ --json",
+      "result": "PASS",
+      "summary": "top_level_violation_count=0; lazy_violation_count=10; token=public_rc_exclude_import_closure_clean_phase_1573al"
+    },
+    "public_rc_source_export_focus": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_phase_1575a_activation_surface_closure.py",
+      "result": "PASS",
+      "stdout": "4 passed in 54.40s"
+    },
+    "source_export_license_focus": {
+      "command": ".venv/bin/python -m pytest -q --tb=short tests/test_phase_1443_agpl_license_header_audit_allowlist.py tests/test_phase_1575e_public_release_propagation_workflow.py tests/test_phase_1575a_activation_surface_closure.py",
+      "result": "PARTIAL_THEN_FIXED",
+      "stdout": "Initial rerun after AGPL/direct-script fixes produced 19 passed, 1 failed because top-level activation-surface imports were exposed after PUBLIC_RC_EXCLUDE marker restoration. epoch_distribution_writer.py now lazy-loads the two excluded activation constants; the exact phase-1575a follow-up passed."
+    },
+    "twine_check": {
+      "command": ".venv/bin/python -m twine check dist/ilc_core-0.4.11-py3-none-any.whl dist/ilc_core-0.4.11.tar.gz",
+      "result": "PASS",
+      "stdout": "Checking dist/ilc_core-0.4.11-py3-none-any.whl: PASSED\nChecking dist/ilc_core-0.4.11.tar.gz: PASSED"
+    }
+  },
+  "predecessor_version": "0.4.10",
+  "pypi_upload_phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0411-00b",
+  "pypi_upload_status": "deferred_requires_sensitive_go",
+  "schema_version": "ilc.package_build_receipt.GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00a.v0.1",
+  "source_private_commit_at_build": "e7cc748f30b1e340e6c612b36713fb84df2aa66c",
+  "source_tree_delta_at_build": [
+    "pyproject.toml version=0.4.11",
+    "ilc_core/__init__.py __version__=0.4.11",
+    "includes connectivity bootstrap hardening commits 64daa12a7, 6ebd51303, f4f68ac5c, and the relay admission material race-condition fix",
+    "includes focused audit hardening for public-RC source export, license headers, mutation canary recursion, duplicate-definition allowlists, and exact numeric defaults",
+    "tools/install.sh intentionally remains at the current uploaded 0.4.10 artifact until the sensitive 0.4.11 upload phase produces canonical PyPI URLs"
+  ],
+  "timestamp_utc": "2026-09-02T12:57:53Z",
+  "version": "0.4.11"
+}

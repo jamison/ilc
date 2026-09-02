@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Sync checks between tools/install.sh and the committed installable manifest."""
 
 from __future__ import annotations

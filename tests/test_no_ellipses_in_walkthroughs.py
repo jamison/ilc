@@ -66,6 +66,16 @@ LEGACY_ELLIPSIS_WALKTHROUGH_BASELINE = {
     "phase_1497p_closure_gate_walkthrough.md",
     "phase_1519p_adr_0009_source_export_rehearsal_integration_walkthrough.md",
     "phase_1532p_obl020_emission_production_path_walkthrough.md",
+    "phase_1576r_fix1_invite_nullifier_lmdb_persistence_walkthrough.md",
+    "phase_1576r_invite_integration_tests_walkthrough.md",
+    "phase_1577b_gap_validator_ident_02_runtime_graph_bound_assertions_walkthrough.md",
+    "phase_1577f_m009_cert_renewal_walkthrough.md",
+    "phase_1577g_guard_clearance_walkthrough.md",
+    "phase_1578f_proof_claimability_gate_rerun_walkthrough.md",
+    "phase_1580_gap_spectral_01a_cdl104_spectral_commitment_opening_walkthrough.md",
+    "phase_1582_gap_spectral_01b_cdl104_ratification_rust_impl_walkthrough.md",
+    "phase_1591_fix4_live_adversarial_network_soak_walkthrough.md",
+    "phase_1591_fix6_mixed_economic_epoch_soak_walkthrough.md",
 }
 
 

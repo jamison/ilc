@@ -7,6 +7,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+
 from ilc_core.epoch import EPOCH_SNAPSHOT_RUNTIME_VERSION
 from ilc_core.genesis import GENESIS_BUNDLE_RUNTIME_VERSION
 from ilc_core.schema import SCHEMA_BASELINE_VERSION
@@ -17,6 +19,7 @@ SNAPSHOT_PATH = Path("out/monitoring/infrastructure_risk_snapshot_phase_316.json
 D2E_BASELINE_PATH = Path("out/monitoring/d2e_risk_snapshot_phase_306.json")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 PHASE_316_COMMIT_SUBJECT = "feat(g8): phase 316 infrastructure composed preflight schema-genesis-epoch"
+SELFTEST_MODE = os.environ.get("ILC_PHASE_316_GATE_SELFTEST") == "1"
 
 
 def _run_gate(args: list[str], env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -60,6 +63,8 @@ def test_gate_cli_contract_dry_run_help_unknown_arg() -> None:
 
 
 def test_gate_full_run_emits_snapshot_metadata_and_kpis() -> None:
+    if SELFTEST_MODE:
+        pytest.skip("selftest guard: avoid recursive Phase 316 gate execution")
     result = _run_gate([])
     assert result.returncode == 0
     assert SNAPSHOT_PATH.exists()
@@ -114,6 +119,8 @@ def test_gate_full_run_emits_snapshot_metadata_and_kpis() -> None:
 
 
 def test_conditional_and_blocked_simulation_use_snapshot_override_path(tmp_path: Path) -> None:
+    if SELFTEST_MODE:
+        pytest.skip("selftest guard: avoid recursive Phase 316 gate execution")
     canonical_before = SNAPSHOT_PATH.read_bytes() if SNAPSHOT_PATH.exists() else None
 
     conditional_path = tmp_path / "snapshot_conditional.json"

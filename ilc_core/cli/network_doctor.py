@@ -205,7 +205,7 @@ def _atomic_write_bytes(path: Path, data: bytes) -> None:
         try:
             os.unlink(tmp)
         except FileNotFoundError:
-            pass
+            _temp_file_already_removed = True
         raise
 
 

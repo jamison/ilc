@@ -148,7 +148,7 @@ PROBES = (
     ),
     Probe(
         name="centrality_delta_gossip_version_guard",
-        path=Path("ilc_core/network/d2d/centrality_delta_gossip_runtime.py"),
+        path=Path("ilc_core/network/d2d/centrality_delta_gossip_constants.py"),
         old_token=_CDL060_GOSSIP_VERSION_LINE,
         new_token=_CDL060_GOSSIP_VERSION_MUTANT,
         command=(

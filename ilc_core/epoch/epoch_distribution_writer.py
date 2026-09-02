@@ -25,7 +25,6 @@ from ilc_core.epoch.allocation_distributor_runtime import (
     EpochAllocationDistributionQuote,
     build_allocation_distribution_quote,
 )
-from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
 from ilc_core.epoch.epoch_emission_runtime import (
     C_MAX_ILC,
     ILC_QUANTUM,
@@ -47,9 +46,6 @@ from ilc_core.epoch.pool_carry_forward_runtime import (
     mark_carry_forward_consumed,
 )
 from ilc_core.epoch.protocol_reserve_destination import PROTOCOL_RESERVE_ACCOUNT_ID
-from ilc_core.epoch.treasury_validator_reward_production_path import (
-    TREASURY_DISTRIBUTION_NOT_ACTIVATED,
-)
 from ilc_core.epoch.validator_reward_pool_routing_runtime import (
     VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
 )
@@ -336,7 +332,7 @@ def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
         raise ValueError("epoch_distribution_input_required")
     if inputs.genesis_cumulative_accrual_ilc is None:
         raise ValueError("genesis_cumulative_accrual_ilc_required")
-    if TREASURY_DISTRIBUTION_NOT_ACTIVATED is not True:
+    if _treasury_distribution_not_activated() is not True:
         raise ValueError("treasury_distribution_guard_cleared_without_writer_update")
     issuance_epoch = _require_epoch(inputs.issuance_epoch, "issuance_epoch")
     allow_default_source_settlement_root = _require_bool(
@@ -470,9 +466,24 @@ def _require_prior_record_container(value: object) -> tuple[PoolCarryForwardReco
 
 
 def _genesis_remaining_allowance(genesis_cumulative_accrual_ilc: Decimal) -> Decimal:
-    if genesis_cumulative_accrual_ilc > GENESIS_FIXED_TRANCHE_ILC:
+    genesis_fixed_tranche_ilc = _genesis_fixed_tranche_ilc()
+    if genesis_cumulative_accrual_ilc > genesis_fixed_tranche_ilc:
         raise ValueError("genesis_cumulative_accrual_exceeds_fixed_tranche")
-    return GENESIS_FIXED_TRANCHE_ILC - genesis_cumulative_accrual_ilc
+    return genesis_fixed_tranche_ilc - genesis_cumulative_accrual_ilc
+
+
+def _genesis_fixed_tranche_ilc() -> Decimal:
+    from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
+
+    return GENESIS_FIXED_TRANCHE_ILC
+
+
+def _treasury_distribution_not_activated() -> bool:
+    from ilc_core.epoch.treasury_validator_reward_production_path import (
+        TREASURY_DISTRIBUTION_NOT_ACTIVATED,
+    )
+
+    return TREASURY_DISTRIBUTION_NOT_ACTIVATED
 
 
 def _require_prior_carry_forward_records(

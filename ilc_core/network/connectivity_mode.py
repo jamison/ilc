@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: AGPL-3.0-only
 """Pure connectivity mode schema and classifier.
 
 This module records local connectivity evidence. It does not perform network
