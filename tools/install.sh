@@ -10,9 +10,15 @@ RC_MIN_PYTHON_MINOR="10"
 CHANNEL="rc"
 INVITE_BUNDLE=""
 TARGET_DIR=""
+RELAY_URL=""
+RELAY_TLS_CERT_DER_SHA256=""
+RELAY_NETWORK_ID=""
+RELAY_INTERNAL_PORT=""
+ENABLE_UPNP="0"
 DRY_RUN="0"
 TMP_DIR=""
 TMP_WHEEL=""
+PROBE_OBSERVERS=()
 
 cleanup() {
   if [[ -n "${TMP_DIR}" && -d "${TMP_DIR}" ]]; then
@@ -25,11 +31,13 @@ trap cleanup EXIT
 
 usage() {
   cat >&2 <<'USAGE'
-usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--dry-run]
+usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--probe-observer URL] [--enable-upnp] [--dry-run]
 
 Installs the ilc-core Python wheel after SHA-256 verification and completes
 invite-based onboarding with the supplied Genesis invite bundle.
 Defaults to an ILC-managed venv at ~/.ilc/venv unless --target-dir is supplied.
+Relay probing is optional but, when supplied, is handled by the installed CLI
+with locally generated relay-admission proof from the fresh AgentID key.
 Channels stable and dev are reserved but not embedded in this installer yet.
 USAGE
 }
@@ -57,6 +65,35 @@ while [[ "$#" -gt 0 ]]; do
       [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_target_dir_value"
       TARGET_DIR="$2"
       shift 2
+      ;;
+    --relay-url)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_relay_url_value"
+      RELAY_URL="$2"
+      shift 2
+      ;;
+    --relay-tls-cert-der-sha256)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_relay_tls_cert_der_sha256_value"
+      RELAY_TLS_CERT_DER_SHA256="$2"
+      shift 2
+      ;;
+    --relay-network-id)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_relay_network_id_value"
+      RELAY_NETWORK_ID="$2"
+      shift 2
+      ;;
+    --relay-internal-port)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_relay_internal_port_value"
+      RELAY_INTERNAL_PORT="$2"
+      shift 2
+      ;;
+    --probe-observer)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_probe_observer_value"
+      PROBE_OBSERVERS+=("$2")
+      shift 2
+      ;;
+    --enable-upnp)
+      ENABLE_UPNP="1"
+      shift
       ;;
     --dry-run)
       DRY_RUN="1"
@@ -93,6 +130,24 @@ if [[ "${DRY_RUN}" == "1" ]]; then
     printf 'target_dir=%s\n' "${TARGET_DIR}"
   fi
   printf 'invite_bundle=%s\n' "${INVITE_BUNDLE}"
+  if [[ -n "${RELAY_URL}" ]]; then
+    printf 'relay_url=%s\n' "${RELAY_URL}"
+  fi
+  if [[ -n "${RELAY_TLS_CERT_DER_SHA256}" ]]; then
+    printf 'relay_tls_cert_der_sha256=%s\n' "${RELAY_TLS_CERT_DER_SHA256}"
+  fi
+  if [[ -n "${RELAY_NETWORK_ID}" ]]; then
+    printf 'relay_network_id=%s\n' "${RELAY_NETWORK_ID}"
+  fi
+  if [[ -n "${RELAY_INTERNAL_PORT}" ]]; then
+    printf 'relay_internal_port=%s\n' "${RELAY_INTERNAL_PORT}"
+  fi
+  if [[ "${ENABLE_UPNP}" == "1" ]]; then
+    printf 'enable_upnp=true\n'
+  fi
+  for observer in "${PROBE_OBSERVERS[@]}"; do
+    printf 'probe_observer=%s\n' "${observer}"
+  done
   exit 0
 fi
 
@@ -208,9 +263,29 @@ printf 'install_target_dir=%s\n' "${TARGET_DIR}"
 
 INSTALL_SLICE_DIR="${HOME}/.ilc/installed_slices"
 INSTALL_RECEIPT="${INSTALL_SLICE_DIR}/install_receipt.json"
-printf 'install_sh_running_invite_onboard\n'
-"${TARGET_DIR}/bin/python" -m ilc_core.cli.main install \
-  --from-invite "${INVITE_BUNDLE}" \
-  --target-dir "${INSTALL_SLICE_DIR}" \
+INSTALL_ARGS=(
+  --from-invite "${INVITE_BUNDLE}"
+  --target-dir "${INSTALL_SLICE_DIR}"
   --output-receipt "${INSTALL_RECEIPT}"
+)
+if [[ -n "${RELAY_URL}" ]]; then
+  INSTALL_ARGS+=(--relay-url "${RELAY_URL}")
+fi
+if [[ -n "${RELAY_TLS_CERT_DER_SHA256}" ]]; then
+  INSTALL_ARGS+=(--relay-tls-cert-der-sha256 "${RELAY_TLS_CERT_DER_SHA256}")
+fi
+if [[ -n "${RELAY_NETWORK_ID}" ]]; then
+  INSTALL_ARGS+=(--relay-network-id "${RELAY_NETWORK_ID}")
+fi
+if [[ -n "${RELAY_INTERNAL_PORT}" ]]; then
+  INSTALL_ARGS+=(--relay-internal-port "${RELAY_INTERNAL_PORT}")
+fi
+if [[ "${ENABLE_UPNP}" == "1" ]]; then
+  INSTALL_ARGS+=(--enable-upnp)
+fi
+for observer in "${PROBE_OBSERVERS[@]}"; do
+  INSTALL_ARGS+=(--probe-observer "${observer}")
+done
+printf 'install_sh_running_invite_onboard\n'
+"${TARGET_DIR}/bin/python" -m ilc_core.cli.main install "${INSTALL_ARGS[@]}"
 printf 'install_sh_invite_onboard_complete\n'

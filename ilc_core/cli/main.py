@@ -30,7 +30,11 @@ QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
 BUNDLE_SCHEMA_VERSION = "303.v0.1"
 INSTALL_INVITE_MAX_BYTES = 1_048_576
+INSTALL_BOOTSTRAP_ATTACHMENT_MAX_BYTES = 1_048_576
+INSTALL_KNOWN_PEER_HINTS_MAX_COUNT = 8
 INSTALL_PROBE_OBSERVER_MAX_COUNT = 16
+INSTALL_RELAY_DEFAULT_INTERNAL_PORT = 50151
+INSTALL_RELAY_DEFAULT_NETWORK_ID = "public-rc"
 UPDATE_MANIFEST_MAX_BYTES = 1_048_576
 UPDATE_HTTP_CHUNK_BYTES = 64 * 1024
 DEFAULT_UPDATE_MANIFEST_URL = "https://ilc.network/release/manifest.json"
@@ -485,6 +489,32 @@ def _read_local_json_file(path: str) -> dict[str, Any]:
     return data
 
 
+def _read_local_json_file_bounded(
+    path: str,
+    *,
+    max_bytes: int,
+    too_large_token: str,
+    invalid_token: str,
+    object_token: str,
+) -> dict[str, Any]:
+    target = Path(path)
+    try:
+        with target.open("rb") as handle:
+            raw = handle.read(max_bytes + 1)
+    except OSError as exc:
+        raise ValueError(invalid_token) from exc
+    if len(raw) > max_bytes:
+        raise ValueError(too_large_token)
+    try:
+        data = _loads_json_no_constants(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise ValueError(invalid_token) from exc
+    if not isinstance(data, dict):
+        raise ValueError(object_token)
+    _reject_float(data, f"{invalid_token}:float_not_allowed")
+    return data
+
+
 def _read_json_object(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
@@ -606,10 +636,67 @@ def _run_identity_invite_bundle_subcommand(args: argparse.Namespace) -> dict[str
         "private_invite_nonce": nonces[nonce_index].hex(),
         "starmap_manifest_payload": starmap_payload,
     }
+    output.update(_invite_bundle_optional_bootstrap_fields(args))
     output_path = getattr(args, "output", "") or ""
     if output_path:
         return {"action": "invite-bundle", "output_path": _write_local_json_file(output_path, output)}
     return {"action": "invite-bundle", "output": output}
+
+
+def _invite_bundle_optional_bootstrap_fields(args: argparse.Namespace) -> dict[str, Any]:
+    fields: dict[str, Any] = {}
+    genesis_state_root = str(getattr(args, "genesis_state_root", "") or "")
+    if genesis_state_root:
+        fields["genesis_state_root"] = genesis_state_root
+    inviter_connectivity_mode = str(getattr(args, "inviter_connectivity_mode", "") or "")
+    if inviter_connectivity_mode:
+        fields["inviter_connectivity_mode"] = inviter_connectivity_mode
+
+    peer_hints_path = str(getattr(args, "known_peer_hints_path", "") or "")
+    if peer_hints_path:
+        hints_payload = _read_local_json_file_bounded(
+            peer_hints_path,
+            max_bytes=INSTALL_BOOTSTRAP_ATTACHMENT_MAX_BYTES,
+            too_large_token="invite_bundle_known_peer_hints_too_large",
+            invalid_token="invite_bundle_known_peer_hints_json_invalid",
+            object_token="invite_bundle_known_peer_hints_payload_invalid",
+        )
+        hints = hints_payload.get("known_peer_hints")
+        bindings = hints_payload.get("known_peer_hint_key_bindings")
+        if not isinstance(hints, list):
+            raise ValueError("invite_bundle_known_peer_hints_invalid")
+        if len(hints) > INSTALL_KNOWN_PEER_HINTS_MAX_COUNT:
+            raise ValueError("invite_bundle_known_peer_hints_too_many")
+        if any(not isinstance(hint, dict) for hint in hints):
+            raise ValueError("invite_bundle_known_peer_hint_invalid")
+        if not isinstance(bindings, dict):
+            raise ValueError("invite_bundle_known_peer_hint_key_bindings_invalid")
+        if any(
+            not isinstance(key, str) or not isinstance(value, str)
+            for key, value in bindings.items()
+        ):
+            raise ValueError("invite_bundle_known_peer_hint_key_bindings_invalid")
+        fields["known_peer_hints"] = hints
+        fields["known_peer_hint_key_bindings"] = bindings
+
+    fetch_fields = {
+        "bootstrap_fetch_bundle_cid": str(
+            getattr(args, "bootstrap_fetch_bundle_cid", "") or ""
+        ),
+        "bootstrap_fetch_genesis_authority_pubkey_hex": str(
+            getattr(args, "bootstrap_fetch_genesis_authority_pubkey_hex", "") or ""
+        ),
+        "bootstrap_fetch_seed_peer_endpoint": str(
+            getattr(args, "bootstrap_fetch_seed_peer_endpoint", "") or ""
+        ),
+    }
+    present_fetch = {key for key, value in fetch_fields.items() if value}
+    if present_fetch and present_fetch != set(fetch_fields):
+        raise ValueError("invite_bundle_bootstrap_fetch_material_incomplete")
+    if present_fetch:
+        fields.update(fetch_fields)
+    _reject_float(fields, "invite_bundle_optional_bootstrap_float_not_allowed")
+    return fields
 
 
 def _invite_bundle_nonce_bytes(value: object) -> bytes:
@@ -1724,6 +1811,25 @@ def _build_parser() -> JsonArgumentParser:
                 "--relay-admission-material",
                 default="",
                 help="Path to relay admission material JSON for guarded first-run relay probing",
+            )
+            install_parser.add_argument(
+                "--relay-tls-cert-der-sha256",
+                default="",
+                help=(
+                    "Pinned relay TLS certificate DER SHA-256 for ILC-native relay trust. "
+                    "Required when --relay-url is used without --relay-admission-material."
+                ),
+            )
+            install_parser.add_argument(
+                "--relay-network-id",
+                default=INSTALL_RELAY_DEFAULT_NETWORK_ID,
+                help="Network identifier bound into auto-generated relay admission material",
+            )
+            install_parser.add_argument(
+                "--relay-internal-port",
+                type=int,
+                default=INSTALL_RELAY_DEFAULT_INTERNAL_PORT,
+                help="Local validator/observer QUIC port requested in relay admission",
             )
             install_parser.add_argument(
                 "--enable-upnp",
@@ -3048,6 +3154,39 @@ def _build_parser() -> JsonArgumentParser:
             help="Expected invite bootstrap profile",
         )
         p_invite_bundle.add_argument(
+            "--known-peer-hints-path",
+            default="",
+            help=(
+                "Optional bootstrap_peer_hints.json carrying signed PeerAdvertisement "
+                "records plus known_peer_hint_key_bindings"
+            ),
+        )
+        p_invite_bundle.add_argument(
+            "--genesis-state-root",
+            default="",
+            help="Optional Genesis state-root envelope hash to bind into the invite bundle",
+        )
+        p_invite_bundle.add_argument(
+            "--inviter-connectivity-mode",
+            default="",
+            help="Optional inviter connectivity mode copied into the invite bundle",
+        )
+        p_invite_bundle.add_argument(
+            "--bootstrap-fetch-seed-peer-endpoint",
+            default="",
+            help="Optional seed peer endpoint for signed distributed bootstrap fetch",
+        )
+        p_invite_bundle.add_argument(
+            "--bootstrap-fetch-bundle-cid",
+            default="",
+            help="Optional signed bootstrap bundle CID for distributed fetch",
+        )
+        p_invite_bundle.add_argument(
+            "--bootstrap-fetch-genesis-authority-pubkey-hex",
+            default="",
+            help="Optional trusted Genesis authority ML-DSA pubkey for bootstrap fetch",
+        )
+        p_invite_bundle.add_argument(
             "--output",
             default="",
             help="Path to write one install-ready invite bundle JSON",
@@ -3905,7 +4044,18 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 attempt_router_mapping=bool(getattr(args, "enable_upnp", False)),
                 observers=_install_probe_observers(args),
                 relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
-                relay_admission_material=_install_relay_admission_material(args),
+                relay_admission_material=_install_relay_admission_material(
+                    args,
+                    agent_id=agent_id,
+                    invite_id=invite_id,
+                    invite_nullifier=str(decision.redemption_nullifier),
+                    invite_pop=str(onboarding_receipt["invite_pop"]),
+                    invite_pop_payload_ref_value=str(
+                        onboarding_receipt["invite_pop_payload_ref"]
+                    ),
+                    invite_pop_epoch=current_epoch,
+                ),
+                internal_port=_install_relay_internal_port(args),
             )
             connectivity_receipt = dict(connectivity_result["connectivity_receipt"])
             onboarding_receipt = dict(connectivity_result["onboarding_receipt"])
@@ -4207,13 +4357,113 @@ def _install_receipt_path(args: argparse.Namespace, target_dir: Path) -> Path:
     return target_dir / "install_receipt.json"
 
 
-def _install_relay_admission_material(args: argparse.Namespace) -> dict[str, Any] | None:
+def _install_relay_admission_material(
+    args: argparse.Namespace,
+    *,
+    agent_id: str,
+    invite_id: str,
+    invite_nullifier: str,
+    invite_pop: str,
+    invite_pop_payload_ref_value: str,
+    invite_pop_epoch: int,
+) -> dict[str, Any] | None:
     path_value = str(getattr(args, "relay_admission_material", "") or "")
-    if not path_value:
-        return None
-    from ilc_core.cli.network_doctor import _load_relay_admission_material
+    if path_value:
+        from ilc_core.cli.network_doctor import _load_relay_admission_material
 
-    return _load_relay_admission_material(path_value)
+        return _load_relay_admission_material(path_value)
+
+    relay_base_url = str(getattr(args, "relay_url", "") or "")
+    if not relay_base_url:
+        return None
+
+    tls_cert_der_sha256 = str(getattr(args, "relay_tls_cert_der_sha256", "") or "")
+    if not tls_cert_der_sha256:
+        raise ValueError("install_relay_tls_cert_der_sha256_required")
+
+    from ilc_core import __version__ as ilc_core_version
+    from ilc_core.identity.bls_backend import sign_relay_admission_digest
+    from ilc_core.identity.first_run_provisioning import (
+        identity_root,
+        verify_invite_pop,
+    )
+    from ilc_core.network.relay.relay_client import (
+        RelayClientError,
+        RelayAdmissionRequest,
+        relay_admission_payload_ref,
+    )
+
+    if not verify_invite_pop(
+        agent_id_hex=agent_id,
+        invite_nullifier=invite_nullifier,
+        invite_id=invite_id,
+        epoch=invite_pop_epoch,
+        invite_pop=invite_pop,
+    ):
+        raise ValueError("install_relay_invite_pop_verification_failed")
+
+    network_id = str(
+        getattr(args, "relay_network_id", "") or INSTALL_RELAY_DEFAULT_NETWORK_ID
+    )
+    internal_port = _install_relay_internal_port(args)
+    try:
+        payload_ref = relay_admission_payload_ref(
+            agent_id=agent_id,
+            invite_id=invite_id,
+            invite_nullifier=invite_nullifier,
+            invite_pop_payload_ref_value=invite_pop_payload_ref_value,
+            admission_epoch=invite_pop_epoch,
+            network_id=network_id,
+            relay_base_url=relay_base_url,
+            requested_internal_port=internal_port,
+            requested_protocol="quic",
+            software_version=ilc_core_version,
+        )
+    except RelayClientError as exc:
+        raise ValueError(str(exc)) from exc
+
+    signing_key_path = identity_root(Path.home()) / "signing_key.hex"
+    try:
+        secret_key_hex = signing_key_path.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ValueError("install_relay_signing_key_unreadable") from exc
+    relay_admission_signature = sign_relay_admission_digest(secret_key_hex, payload_ref)
+    material = {
+        "admission_epoch": invite_pop_epoch,
+        "agent_id": agent_id,
+        "invite_id": invite_id,
+        "invite_nullifier": invite_nullifier,
+        "invite_pop": invite_pop,
+        "invite_pop_epoch": invite_pop_epoch,
+        "network_id": network_id,
+        "relay_admission_payload_ref": payload_ref,
+        "relay_admission_signature": relay_admission_signature,
+        "relay_base_url": relay_base_url,
+        "requested_internal_port": internal_port,
+        "requested_protocol": "quic",
+        "software_version": ilc_core_version,
+        "tls_cert_der_sha256": tls_cert_der_sha256,
+    }
+    try:
+        request_material = {
+            key: value
+            for key, value in material.items()
+            if key != "tls_cert_der_sha256"
+        }
+        RelayAdmissionRequest(**request_material)
+    except RelayClientError as exc:
+        raise ValueError(str(exc)) from exc
+    return material
+
+
+def _install_relay_internal_port(args: argparse.Namespace) -> int:
+    value = getattr(args, "relay_internal_port", INSTALL_RELAY_DEFAULT_INTERNAL_PORT)
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError("install_relay_internal_port_invalid")
+    if value < 1 or value > 65535:
+        raise ValueError("install_relay_internal_port_invalid")
+    return value
+
 
 
 def _install_probe_observers(args: argparse.Namespace) -> tuple[str, ...]:

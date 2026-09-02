@@ -14,9 +14,15 @@ from ilc_core.cli.main import INSTALL_PROBE_OBSERVER_MAX_COUNT
 from ilc_core.identity import first_run_provisioning as provisioning
 from ilc_core.identity.first_run_provisioning import (
     identity_root,
+    invite_pop_payload_ref,
     provision_new_identity,
     record_install_connectivity_receipt,
 )
+from ilc_core.identity.bls_backend import (
+    keypair_from_ikm_hex,
+    sign_invite_pop_digest,
+)
+from ilc_core.network.relay.relay_client import RelayAdmissionRequest
 from ilc_core.network.connectivity_mode import (
     ConnectivityMode,
     ConnectivityReceipt,
@@ -83,6 +89,9 @@ def _args(invite: Path, target: Path, receipt: Path, **overrides: object) -> arg
         "output_receipt": str(receipt),
         "probe_observer": [],
         "relay_admission_material": "",
+        "relay_internal_port": 50151,
+        "relay_network_id": "public-rc",
+        "relay_tls_cert_der_sha256": "",
         "relay_url": "",
         "target_dir": str(target),
     }
@@ -449,6 +458,155 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
     assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
     assert calls[0]["relay_admission_material"] == {"agent_id": AGENT_ID_HEX}
     assert identity_root(install_home).exists()
+
+
+def test_install_builds_relay_admission_material_from_fresh_identity(
+    tmp_path: Path,
+    install_home: Path,
+) -> None:
+    secret_key_hex, agent_id = keypair_from_ikm_hex("12" * 32)
+    root = identity_root(install_home)
+    root.mkdir(parents=True)
+    (root / "signing_key.hex").write_text(f"{secret_key_hex}\n", encoding="utf-8")
+    (root / "agent_id").write_text(f"{agent_id}\n", encoding="utf-8")
+    invite_id = "install-relay-auto-admission-test"
+    invite_nullifier = "ab" * 32
+    invite_pop_ref = invite_pop_payload_ref(
+        agent_id_hex=agent_id,
+        invite_nullifier=invite_nullifier,
+        invite_id=invite_id,
+        epoch=0,
+    )
+    invite_pop = sign_invite_pop_digest(secret_key_hex, invite_pop_ref)
+    args = argparse.Namespace(
+        relay_admission_material="",
+        relay_internal_port=50152,
+        relay_network_id="public-rc",
+        relay_tls_cert_der_sha256="cd" * 32,
+        relay_url="https://relay.ilc.example:51151",
+    )
+
+    material = cli_main._install_relay_admission_material(
+        args,
+        agent_id=agent_id,
+        invite_id=invite_id,
+        invite_nullifier=invite_nullifier,
+        invite_pop=invite_pop,
+        invite_pop_payload_ref_value=invite_pop_ref,
+        invite_pop_epoch=0,
+    )
+
+    assert material is not None
+    assert material["agent_id"] == agent_id
+    assert material["requested_internal_port"] == 50152
+    assert material["tls_cert_der_sha256"] == "cd" * 32
+    assert len(str(material["relay_admission_signature"])) == 192
+    request_material = {
+        key: value for key, value in material.items() if key != "tls_cert_der_sha256"
+    }
+    RelayAdmissionRequest(**request_material)
+
+
+def test_install_from_invite_auto_generates_relay_material_for_connectivity_probe(
+    tmp_path: Path,
+    install_home: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    calls: list[dict[str, Any]] = []
+
+    def fake_record(install_dir: Path, **kwargs: Any) -> dict[str, Any]:
+        calls.append(kwargs)
+        material = kwargs["relay_admission_material"]
+        request_material = {
+            key: value
+            for key, value in material.items()
+            if key != "tls_cert_der_sha256"
+        }
+        RelayAdmissionRequest(**request_material)
+        onboarding_path = identity_root(install_dir) / "onboarding_receipt.json"
+        onboarding = json.loads(onboarding_path.read_text(encoding="utf-8"))
+        connectivity = {
+            "agent_id": kwargs["agent_id"],
+            "attempt_router_mapping": False,
+            "connectivity_evidence_status": "probe_succeeded",
+            "connectivity_mode": "relay_reachable",
+            "connectivity_receipt_path": str(
+                identity_root(install_dir) / "connectivity_receipt.json"
+            ),
+            "connectivity_receipt_sha384": "e" * 96,
+            "connectivity_summary": "Detected mode: relay_reachable via relay.example:52000",
+            "firewall_mutation_attempted": False,
+            "firewall_mutation_status": "confirmed_not_mutated",
+            "observed_endpoint": None,
+            "relay_endpoint": "relay.example:52000",
+            "schema_version": provisioning.INSTALL_CONNECTIVITY_RECEIPT_VERSION,
+        }
+        onboarding.update(
+            {
+                "connectivity_evidence_status": "probe_succeeded",
+                "connectivity_mode": "relay_reachable",
+                "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
+                "connectivity_receipt_sha384": connectivity["connectivity_receipt_sha384"],
+                "connectivity_summary": connectivity["connectivity_summary"],
+                "firewall_mutation_attempted": False,
+                "firewall_mutation_status": "confirmed_not_mutated",
+                "observed_endpoint": None,
+                "relay_endpoint": "relay.example:52000",
+            }
+        )
+        onboarding_path.write_text(
+            json.dumps(onboarding, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
+
+    monkeypatch.setattr(provisioning, "record_install_connectivity_receipt", fake_record)
+    invite_path = _write_bundle(tmp_path / "invite.json")
+
+    result = cli_main._run_install_subcommand(
+        _args(
+            invite_path,
+            tmp_path / "target",
+            tmp_path / "install_receipt.json",
+            relay_network_id="public-rc",
+            relay_tls_cert_der_sha256="cd" * 32,
+            relay_url="https://relay.ilc.example:51151",
+        )
+    )
+
+    material = calls[0]["relay_admission_material"]
+    assert result["connectivity_receipt"]["connectivity_mode"] == "relay_reachable"
+    assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
+    assert calls[0]["internal_port"] == 50151
+    assert material["agent_id"] == result["identity_provisioning"]["agent_id"]
+    assert material["relay_base_url"] == "https://relay.ilc.example:51151"
+    assert material["tls_cert_der_sha256"] == "cd" * 32
+    assert len(material["relay_admission_signature"]) == 192
+
+
+def test_install_relay_url_without_tls_pin_fails_closed(tmp_path: Path) -> None:
+    args = argparse.Namespace(
+        relay_admission_material="",
+        relay_url="https://relay.ilc.example:51151",
+    )
+
+    with pytest.raises(ValueError, match="install_relay_tls_cert_der_sha256_required"):
+        cli_main._install_relay_admission_material(
+            args,
+            agent_id=AGENT_ID_HEX,
+            invite_id="invite-1",
+            invite_nullifier="ab" * 32,
+            invite_pop="c" * 192,
+            invite_pop_payload_ref_value="d" * 96,
+            invite_pop_epoch=0,
+        )
 
 
 def test_install_probe_observers_rejects_unbounded_observer_fanout() -> None:
