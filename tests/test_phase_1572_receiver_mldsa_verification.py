@@ -5,10 +5,11 @@ import json
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import GossipPeerRegistry
 from ilc_core.network.d2d import http_gossip_transport_runtime as runtime
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 
 
-_PUBKEY_A = "a" * 3328
-_PUBKEY_B = "b" * 3328
+_PUBKEY_A = "a" * _MLDSA_PK_HEX_LENGTH
+_PUBKEY_B = "b" * _MLDSA_PK_HEX_LENGTH
 _SIG_VALID = "c" * 6618
 _SIG_INVALID = "d" * 6618
 

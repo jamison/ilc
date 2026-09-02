@@ -17,7 +17,7 @@ for the epoch endorsement packet defined in CDL-069 §2b.
 
 **Optional fields:**
   - supersedes_epoch_id — u64, present when overriding a prior packet
-  - canonical_root_pk   — ML-DSA-65 pk hex (3328 chars); included for new agents
+  - canonical_root_pk   — ML-DSA-65 pk hex (3904 chars); included for new agents
                           or after rotation; validators cache from prior packet
   - capability_declaration — str, what agent offers this epoch
   - stake_position      — str, current stake (avoids separate validator lookup)
@@ -52,7 +52,7 @@ CURRENT_PROTOCOL_VERSION: int = 1
 
 # Field length constants
 _AGENT_ID_HEX_LENGTH: int = 96         # SHA-384 = 48 bytes = 96 hex chars
-_MLDSA_PK_HEX_LENGTH: int = 3328       # ML-DSA-65 pk = 1664 bytes = 3328 hex chars
+_MLDSA_PK_HEX_LENGTH: int = 3904       # ML-DSA-65 pk = 1952 bytes = 3904 hex chars
 _BLS_PK_HEX_LENGTH: int = 96           # BLS12-381 G1 pk = 48 bytes = 96 hex chars
 _SHA256_HEX_LENGTH: int = 64           # SHA-256 = 32 bytes = 64 hex chars
 
@@ -134,7 +134,7 @@ class EndorsementPacket:
 
     # Optional fields
     supersedes_epoch_id: Optional[int] = None    # present when overriding prior packet
-    canonical_root_pk: Optional[str] = None      # ML-DSA-65 pk hex, 3328 chars
+    canonical_root_pk: Optional[str] = None      # ML-DSA-65 pk hex, 3904 chars
     capability_declaration: Optional[str] = None # what agent offers this epoch
     stake_position: Optional[str] = None         # current stake
     next_epoch_intent: Optional[str] = None      # capability hint for epoch N+1

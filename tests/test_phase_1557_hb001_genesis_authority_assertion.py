@@ -19,7 +19,7 @@ from ilc_core.genesis.genesis_authority_assertion import (
 AGENT_ID = "a" * 96
 VALIDATOR_KEY_1 = "b" * 96
 VALIDATOR_KEY_2 = "c" * 96
-ML_DSA_PUBLIC_KEY = "d" * 3328
+ML_DSA_PUBLIC_KEY = "d" * 3904
 
 
 def fixture_config() -> dict:
@@ -115,7 +115,7 @@ def test_builder_rejects_invalid_authority_public_key_hex_with_structured_error(
 
 def test_builder_rejects_invalid_authority_public_key_hex_when_key_id_supplied():
     config = fixture_config()
-    config["genesis_authority_key"]["public_key_hex"] = "g" * 3328
+    config["genesis_authority_key"]["public_key_hex"] = "g" * 3904
     config["genesis_authority_key"]["key_id"] = "a" * 16
     with pytest.raises(GenesisAssertionError) as exc_info:
         build_genesis_authority_assertions(config)

@@ -30,11 +30,12 @@ from ilc_core.identity.genesis_record_schema import (
     compute_recovery_commitment,
     derive_blinding_factor,
     encode_recovery_spec,
+    _MLDSA_PK_HEX_LENGTH,
 )
 
 _SEED_32 = bytes(range(32))
 _SEED_32_B = bytes(range(1, 33))
-_FAKE_MLDSA_PK = "ab" * 1664  # 3328 hex chars
+_FAKE_MLDSA_PK = "ab" * (_MLDSA_PK_HEX_LENGTH // 2)
 
 
 # ---------------------------------------------------------------------------
@@ -190,7 +191,7 @@ def test_recovery_spec_type_enum_values() -> None:
 
 
 def test_encode_recovery_spec_returns_bytes() -> None:
-    result = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_MLDSA, pk_hex="ab" * 1664)
+    result = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_MLDSA, pk_hex=_FAKE_MLDSA_PK)
     assert isinstance(result, bytes)
 
 
@@ -253,7 +254,7 @@ def _make_record(seed: bytes = _SEED_32) -> GenesisRecord:
 def test_genesis_record_from_identity_seed_fields_present() -> None:
     rec = _make_record()
     assert len(rec.identity_seed_commitment) == 96
-    assert len(rec.canonical_root_pk) == 3328
+    assert len(rec.canonical_root_pk) == _MLDSA_PK_HEX_LENGTH
     assert len(rec.recovery_commitment) == 96
     assert rec.personhood_commitment is None
 
@@ -340,7 +341,7 @@ def test_genesis_record_validate_rejects_bad_pk_length() -> None:
 
 def test_genesis_record_validate_rejects_uppercase_pk() -> None:
     rec = _make_record()
-    rec.canonical_root_pk = "AB" * 1664  # uppercase
+    rec.canonical_root_pk = "AB" * (_MLDSA_PK_HEX_LENGTH // 2)  # uppercase
     with pytest.raises(GenesisRecordError) as exc:
         rec.validate()
     assert "cdl_069_genesis_invalid_canonical_root_pk" in exc.value.token
@@ -405,7 +406,7 @@ def _make_recovery_tx(
 ) -> RecoveryTransaction:
     return RecoveryTransaction(
         old_canonical_root_pk=genesis_record.canonical_root_pk,
-        new_canonical_root_pk=new_pk or ("cd" * 1664),
+        new_canonical_root_pk=new_pk or ("cd" * (_MLDSA_PK_HEX_LENGTH // 2)),
         identity_seed_commitment=genesis_record.identity_seed_commitment,
         recovery_spec=recovery_spec_bytes,
         authorization=b"mock-authorization",
@@ -536,8 +537,8 @@ def test_recovery_transaction_old_pk_mismatch_rejected() -> None:
     spec_bytes = encode_recovery_spec(RecoverySpecType.SINGLE_KEY_SPHINCS, pk_hex="aa" * 32)
     rec = GenesisRecord.from_identity_seed(_SEED_32, _FAKE_MLDSA_PK, spec_bytes)
     tx = RecoveryTransaction(
-        old_canonical_root_pk="ef" * 1664,  # wrong — not the key in the genesis record
-        new_canonical_root_pk="cd" * 1664,
+        old_canonical_root_pk="ef" * (_MLDSA_PK_HEX_LENGTH // 2),  # wrong — not the key in the genesis record
+        new_canonical_root_pk="cd" * (_MLDSA_PK_HEX_LENGTH // 2),
         identity_seed_commitment=rec.identity_seed_commitment,
         recovery_spec=spec_bytes,
         authorization=b"mock",
@@ -553,7 +554,7 @@ def test_recovery_transaction_old_pk_matches_passes() -> None:
     rec = GenesisRecord.from_identity_seed(_SEED_32, _FAKE_MLDSA_PK, spec_bytes)
     tx = RecoveryTransaction(
         old_canonical_root_pk=_FAKE_MLDSA_PK,  # correct match
-        new_canonical_root_pk="cd" * 1664,
+        new_canonical_root_pk="cd" * (_MLDSA_PK_HEX_LENGTH // 2),
         identity_seed_commitment=rec.identity_seed_commitment,
         recovery_spec=spec_bytes,
         authorization=b"mock",

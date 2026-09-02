@@ -28,6 +28,7 @@ from ilc_core.genesis.assertion_schema import (
     encode_genesis_assertion_payload,
     verify_genesis_assertion_schema,
 )
+from ilc_core.crypto.pq_signature_verify import _MLDSA_PK_HEX_LENGTH
 from ilc_core.node.node_schema_core_runtime_360 import (
     ALLOWED_PRIMITIVE_TYPES,
     SYSTEM_PRIMITIVE_TYPES,
@@ -39,7 +40,7 @@ from ilc_core.node.node_schema_core_runtime_360 import (
 # Test fixtures
 # ---------------------------------------------------------------------------
 
-_FAKE_MLDSA_PK_HEX = "a" * 3328
+_FAKE_MLDSA_PK_HEX = "a" * _MLDSA_PK_HEX_LENGTH
 _FAKE_KEY_ID = "b" * 16
 _FAKE_AGENT_ID = "c" * 96
 _FAKE_VALIDATOR_KEY = "d" * 96
@@ -349,7 +350,7 @@ def test_genesis_authority_key_short_hex_rejected():
 
 
 def test_genesis_authority_key_non_hex_rejected():
-    key = _make_authority_key(public_key_hex="g" * 3328)
+    key = _make_authority_key(public_key_hex="g" * _MLDSA_PK_HEX_LENGTH)
     with pytest.raises(GenesisAssertionError) as exc_info:
         key.validate()
     assert "authority_key_hex_invalid" in exc_info.value.token

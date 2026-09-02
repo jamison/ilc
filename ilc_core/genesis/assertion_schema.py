@@ -42,8 +42,8 @@ GENESIS_AUTHORITY_ASSERTION_EPISTEMIC_TYPE: str = "objective"
 GENESIS_AUTHORITY_KEY_ALGORITHM: str = "ML-DSA-65"
 
 # ML-DSA-65 public key length (bytes and hex string)
-_MLDSA_PK_BYTES: int = 1664
-_MLDSA_PK_HEX_LENGTH: int = 3328   # 1664 bytes = 3328 hex chars
+_MLDSA_PK_BYTES: int = 1952
+_MLDSA_PK_HEX_LENGTH: int = 3904   # 1952 bytes = 3904 hex chars
 
 # key_id is derived as the first 16 hex chars of sha256(public_key_bytes)
 _KEY_ID_HEX_LENGTH: int = 16
@@ -139,7 +139,7 @@ class GenesisAuthorityKey:
     Token: hb_001_genesis_authority_key_schema
     """
     algorithm: str          # must be "ML-DSA-65"
-    public_key_hex: str     # 3328-char hex (1664 bytes)
+    public_key_hex: str     # 3904-char hex (1952 bytes)
     key_id: str             # 16-char hex prefix of sha256(public_key_bytes)
 
     def validate(self) -> None:
