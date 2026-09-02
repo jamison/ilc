@@ -5,6 +5,7 @@ import sys
 from types import SimpleNamespace
 
 import pytest
+from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
 
 from ilc_core.crypto import pq_signature_verify
 from ilc_core.crypto.pq_signature_verify import (
@@ -114,8 +115,6 @@ def test_verify_mldsa65_signature_wrong_signature_false_when_oqs_available() -> 
 
 
 def test_verify_mldsa65_signature_valid_signature_true_with_cryptography_backend() -> None:
-    from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
-
     private_key = MLDSA65PrivateKey.generate()
     public_key = private_key.public_key().public_bytes_raw()
     message = b"phase-1571-cryptography-mldsa-verification"
@@ -126,8 +125,6 @@ def test_verify_mldsa65_signature_valid_signature_true_with_cryptography_backend
 
 
 def test_verify_mldsa65_signature_wrong_message_false_with_cryptography_backend() -> None:
-    from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
-
     private_key = MLDSA65PrivateKey.generate()
     public_key = private_key.public_key().public_bytes_raw()
     signature = private_key.sign(b"original")
