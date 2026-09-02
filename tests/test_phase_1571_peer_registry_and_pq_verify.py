@@ -72,7 +72,11 @@ def test_verify_mldsa65_signature_invalid_inputs_fail_closed(
     assert verify_mldsa65_signature(message, signature, pubkey) is False  # type: ignore[arg-type]
 
 
-def test_verify_mldsa65_signature_oqs_unavailable_returns_false(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_verify_mldsa65_signature_garbage_inputs_return_false_when_oqs_patched_away(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # cryptography backend runs first; garbage inputs must still fail closed
+    # regardless of oqs availability.
     real_import = builtins.__import__
 
     def fake_import(name: str, *args: object, **kwargs: object) -> object:
