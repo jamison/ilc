@@ -33,6 +33,7 @@ INSTALL_INVITE_MAX_BYTES = 1_048_576
 INSTALL_BOOTSTRAP_ATTACHMENT_MAX_BYTES = 1_048_576
 INSTALL_KNOWN_PEER_HINTS_MAX_COUNT = 8
 INSTALL_PROBE_OBSERVER_MAX_COUNT = 16
+INSTALL_RELAY_BOOTSTRAP_RECORD_MAX_COUNT = 8
 INSTALL_RELAY_DEFAULT_INTERNAL_PORT = 50151
 INSTALL_RELAY_DEFAULT_NETWORK_ID = "public-rc"
 UPDATE_MANIFEST_MAX_BYTES = 1_048_576
@@ -678,6 +679,16 @@ def _invite_bundle_optional_bootstrap_fields(args: argparse.Namespace) -> dict[s
             raise ValueError("invite_bundle_known_peer_hint_key_bindings_invalid")
         fields["known_peer_hints"] = hints
         fields["known_peer_hint_key_bindings"] = bindings
+
+    relay_capsule_path = str(getattr(args, "relay_bootstrap_capsule_path", "") or "")
+    if relay_capsule_path:
+        fields["relay_bootstrap_capsule"] = _read_local_json_file_bounded(
+            relay_capsule_path,
+            max_bytes=INSTALL_BOOTSTRAP_ATTACHMENT_MAX_BYTES,
+            too_large_token="invite_bundle_relay_bootstrap_capsule_too_large",
+            invalid_token="invite_bundle_relay_bootstrap_capsule_json_invalid",
+            object_token="invite_bundle_relay_bootstrap_capsule_invalid",
+        )
 
     fetch_fields = {
         "bootstrap_fetch_bundle_cid": str(
@@ -3187,6 +3198,14 @@ def _build_parser() -> JsonArgumentParser:
             help="Optional trusted Genesis authority ML-DSA pubkey for bootstrap fetch",
         )
         p_invite_bundle.add_argument(
+            "--relay-bootstrap-capsule-path",
+            default="",
+            help=(
+                "Optional Genesis-signed relay bootstrap capsule. When present, "
+                "ilc install can derive relay URL and DER pin without manual flags."
+            ),
+        )
+        p_invite_bundle.add_argument(
             "--output",
             default="",
             help="Path to write one install-ready invite bundle JSON",
@@ -4037,15 +4056,25 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                     raise ValueError("invite_nullifier_already_used_for_enrollment")
             invite_verification["nullifier_status"] = "recorded"
             invite_verification["enrollment_nullifier_status"] = "recorded"
+            relay_selection = _install_relay_bootstrap_selection(
+                args,
+                invite_bundle=invite_bundle,
+                current_epoch=current_epoch,
+            )
             connectivity_result = record_install_connectivity_receipt(
                 Path.home(),
                 agent_id=agent_id,
                 epoch=current_epoch,
                 attempt_router_mapping=bool(getattr(args, "enable_upnp", False)),
                 observers=_install_probe_observers(args),
-                relay_server_url=str(getattr(args, "relay_url", "") or "") or None,
+                relay_server_url=(
+                    None
+                    if relay_selection is None
+                    else str(relay_selection["relay_base_url"])
+                ),
                 relay_admission_material=_install_relay_admission_material(
                     args,
+                    relay_selection=relay_selection,
                     agent_id=agent_id,
                     invite_id=invite_id,
                     invite_nullifier=str(decision.redemption_nullifier),
@@ -4360,6 +4389,7 @@ def _install_receipt_path(args: argparse.Namespace, target_dir: Path) -> Path:
 def _install_relay_admission_material(
     args: argparse.Namespace,
     *,
+    relay_selection: dict[str, Any] | None = None,
     agent_id: str,
     invite_id: str,
     invite_nullifier: str,
@@ -4373,11 +4403,19 @@ def _install_relay_admission_material(
 
         return _load_relay_admission_material(path_value)
 
-    relay_base_url = str(getattr(args, "relay_url", "") or "")
+    relay_base_url = (
+        str(getattr(args, "relay_url", "") or "")
+        if relay_selection is None
+        else str(relay_selection["relay_base_url"])
+    )
     if not relay_base_url:
         return None
 
-    tls_cert_der_sha256 = str(getattr(args, "relay_tls_cert_der_sha256", "") or "")
+    tls_cert_der_sha256 = (
+        str(getattr(args, "relay_tls_cert_der_sha256", "") or "")
+        if relay_selection is None
+        else str(relay_selection["tls_cert_der_sha256"])
+    )
     if not tls_cert_der_sha256:
         raise ValueError("install_relay_tls_cert_der_sha256_required")
 
@@ -4454,6 +4492,105 @@ def _install_relay_admission_material(
     except RelayClientError as exc:
         raise ValueError(str(exc)) from exc
     return material
+
+
+def _install_relay_bootstrap_selection(
+    args: argparse.Namespace,
+    *,
+    invite_bundle: dict[str, Any],
+    current_epoch: int,
+) -> dict[str, Any] | None:
+    explicit_relay_url = str(getattr(args, "relay_url", "") or "")
+    explicit_tls_pin = str(getattr(args, "relay_tls_cert_der_sha256", "") or "")
+    prebuilt_material_path = str(getattr(args, "relay_admission_material", "") or "")
+    network_id = str(
+        getattr(args, "relay_network_id", "") or INSTALL_RELAY_DEFAULT_NETWORK_ID
+    )
+    capsule = invite_bundle.get("relay_bootstrap_capsule")
+    verified_records = _install_verified_relay_bootstrap_records(
+        capsule,
+        expected_network_id=network_id,
+        current_epoch=current_epoch,
+    )
+
+    if explicit_relay_url:
+        if prebuilt_material_path and not verified_records:
+            return {
+                "relay_base_url": explicit_relay_url,
+                "tls_cert_der_sha256": explicit_tls_pin,
+            }
+        if verified_records:
+            matches = [
+                record
+                for record in verified_records
+                if record.get("control_url") == explicit_relay_url
+            ]
+            if not matches:
+                raise ValueError("install_relay_bootstrap_control_url_mismatch")
+            selected = matches[0]
+            selected_tls_pin = _install_relay_record_tls_pin(selected)
+            if explicit_tls_pin and explicit_tls_pin != selected_tls_pin:
+                raise ValueError("install_relay_bootstrap_tls_pin_mismatch")
+            return {
+                "relay_base_url": explicit_relay_url,
+                "tls_cert_der_sha256": selected_tls_pin,
+            }
+        if not explicit_tls_pin:
+            raise ValueError("install_relay_tls_cert_der_sha256_required")
+        return {
+            "relay_base_url": explicit_relay_url,
+            "tls_cert_der_sha256": explicit_tls_pin,
+        }
+
+    if not verified_records:
+        if capsule is not None:
+            raise ValueError("install_relay_bootstrap_capsule_no_verified_records")
+        return None
+    selected = sorted(
+        verified_records,
+        key=lambda record: (
+            str(record.get("control_url")),
+            str(record.get("relay_agent_id")),
+        ),
+    )[0]
+    return {
+        "relay_base_url": str(selected["control_url"]),
+        "tls_cert_der_sha256": _install_relay_record_tls_pin(selected),
+    }
+
+
+def _install_verified_relay_bootstrap_records(
+    capsule: object,
+    *,
+    expected_network_id: str,
+    current_epoch: int,
+) -> tuple[dict[str, Any], ...]:
+    if capsule is None:
+        return ()
+    if not isinstance(capsule, dict):
+        raise ValueError("install_relay_bootstrap_capsule_invalid")
+
+    from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+    from ilc_core.network.relay.relay_server import parse_relay_bootstrap_capsule
+
+    records = parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_agent_id=GENESIS_AGENT1_AGENT_ID,
+        expected_network_id=expected_network_id,
+        current_epoch=current_epoch,
+    )
+    if len(records) > INSTALL_RELAY_BOOTSTRAP_RECORD_MAX_COUNT:
+        raise ValueError("install_relay_bootstrap_capsule_too_many_records")
+    return tuple(dict(record) for record in records)
+
+
+def _install_relay_record_tls_pin(record: dict[str, Any]) -> str:
+    value = record.get("tls_cert_der_sha256")
+    if not isinstance(value, str) or len(value) != 64:
+        raise ValueError("install_relay_bootstrap_tls_pin_invalid")
+    if any(char not in "0123456789abcdef" for char in value):
+        raise ValueError("install_relay_bootstrap_tls_pin_invalid")
+    return value
 
 
 def _install_relay_internal_port(args: argparse.Namespace) -> int:

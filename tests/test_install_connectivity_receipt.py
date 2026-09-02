@@ -21,6 +21,13 @@ from ilc_core.identity.first_run_provisioning import (
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_invite_pop_digest,
+    sign_relay_bootstrap_capsule_digest,
+)
+from ilc_core.network.relay.relay_server import (
+    RelayServerConfig,
+    build_relay_bootstrap_record,
+    relay_bootstrap_capsule_payload_ref,
+    sign_relay_bootstrap_record,
 )
 from ilc_core.network.relay.relay_client import RelayAdmissionRequest
 from ilc_core.network.connectivity_mode import (
@@ -79,6 +86,57 @@ def _write_bundle(path: Path) -> Path:
         encoding="utf-8",
     )
     return path
+
+
+def _write_bundle_payload(path: Path, payload: dict[str, object]) -> Path:
+    path.write_text(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _signed_relay_bootstrap_capsule() -> tuple[dict[str, object], str]:
+    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    relay_secret_key, relay_agent_id = keypair_from_ikm_hex("45" * 32)
+    record = build_relay_bootstrap_record(
+        RelayServerConfig(
+            relay_agent_id=relay_agent_id,
+            relay_host="relay.ilc.example",
+            ssl_certfile="/tmp/relay-cert.pem",
+            ssl_keyfile="/tmp/relay-key.pem",
+        ),
+        issued_epoch=0,
+        expires_epoch=4,
+        tls_cert_der_sha256="cd" * 32,
+    )
+    signed_record = sign_relay_bootstrap_record(
+        record,
+        relay_secret_key_hex=relay_secret_key,
+        signing_key_id=relay_agent_id,
+    )
+    payload = {
+        "expires_epoch": 4,
+        "issued_epoch": 0,
+        "network_id": "public-rc",
+        "relay_records": [signed_record],
+        "schema_version": "relay_bootstrap_capsule_v0.1",
+    }
+    payload_ref = relay_bootstrap_capsule_payload_ref(payload)
+    return (
+        {
+            **payload,
+            "payload_sha384": payload_ref,
+            "signature": sign_relay_bootstrap_capsule_digest(
+                secret_key_hex=genesis_secret_key,
+                digest_hex=payload_ref,
+            ),
+            "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+            "signing_key_id": genesis_agent_id,
+        },
+        genesis_agent_id,
+    )
 
 
 def _args(invite: Path, target: Path, receipt: Path, **overrides: object) -> argparse.Namespace:
@@ -589,6 +647,104 @@ def test_install_from_invite_auto_generates_relay_material_for_connectivity_prob
     assert material["relay_base_url"] == "https://relay.ilc.example:51151"
     assert material["tls_cert_der_sha256"] == "cd" * 32
     assert len(material["relay_admission_signature"]) == 192
+
+
+def test_install_from_invite_uses_signed_relay_bootstrap_capsule_without_manual_flags(
+    tmp_path: Path,
+    install_home: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+    from ilc_core.epoch import genesis_settlement_destination as genesis_destination
+
+    capsule, genesis_agent_id = _signed_relay_bootstrap_capsule()
+    monkeypatch.setattr(genesis_destination, "GENESIS_AGENT1_AGENT_ID", genesis_agent_id)
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    calls: list[dict[str, Any]] = []
+
+    def fake_record(install_dir: Path, **kwargs: Any) -> dict[str, Any]:
+        calls.append(kwargs)
+        material = kwargs["relay_admission_material"]
+        request_material = {
+            key: value
+            for key, value in material.items()
+            if key != "tls_cert_der_sha256"
+        }
+        RelayAdmissionRequest(**request_material)
+        onboarding_path = identity_root(install_dir) / "onboarding_receipt.json"
+        onboarding = json.loads(onboarding_path.read_text(encoding="utf-8"))
+        connectivity = {
+            "agent_id": kwargs["agent_id"],
+            "attempt_router_mapping": False,
+            "connectivity_evidence_status": "probe_succeeded",
+            "connectivity_mode": "relay_reachable",
+            "connectivity_receipt_path": str(
+                identity_root(install_dir) / "connectivity_receipt.json"
+            ),
+            "connectivity_receipt_sha384": "e" * 96,
+            "connectivity_summary": "Detected mode: relay_reachable via relay.ilc.example:52000",
+            "firewall_mutation_attempted": False,
+            "firewall_mutation_status": "confirmed_not_mutated",
+            "observed_endpoint": None,
+            "relay_endpoint": "relay.ilc.example:52000",
+            "schema_version": provisioning.INSTALL_CONNECTIVITY_RECEIPT_VERSION,
+        }
+        onboarding.update(
+            {
+                "connectivity_evidence_status": "probe_succeeded",
+                "connectivity_mode": "relay_reachable",
+                "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
+                "connectivity_receipt_sha384": connectivity["connectivity_receipt_sha384"],
+                "connectivity_summary": connectivity["connectivity_summary"],
+                "firewall_mutation_attempted": False,
+                "firewall_mutation_status": "confirmed_not_mutated",
+                "observed_endpoint": None,
+                "relay_endpoint": "relay.ilc.example:52000",
+            }
+        )
+        onboarding_path.write_text(
+            json.dumps(onboarding, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
+
+    monkeypatch.setattr(provisioning, "record_install_connectivity_receipt", fake_record)
+    bundle = _bundle()
+    bundle["relay_bootstrap_capsule"] = capsule
+    invite_path = _write_bundle_payload(tmp_path / "invite.json", bundle)
+
+    result = cli_main._run_install_subcommand(
+        _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
+    )
+
+    material = calls[0]["relay_admission_material"]
+    assert result["connectivity_receipt"]["connectivity_mode"] == "relay_reachable"
+    assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
+    assert material["relay_base_url"] == "https://relay.ilc.example:51151"
+    assert material["tls_cert_der_sha256"] == "cd" * 32
+
+
+def test_install_rejects_untrusted_relay_bootstrap_capsule(tmp_path: Path) -> None:
+    capsule, _genesis_agent_id = _signed_relay_bootstrap_capsule()
+    args = argparse.Namespace(
+        relay_network_id="public-rc",
+        relay_tls_cert_der_sha256="",
+        relay_url="",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="install_relay_bootstrap_capsule_no_verified_records",
+    ):
+        cli_main._install_relay_bootstrap_selection(
+            args,
+            invite_bundle={"relay_bootstrap_capsule": capsule},
+            current_epoch=0,
+        )
 
 
 def test_install_relay_url_without_tls_pin_fails_closed(tmp_path: Path) -> None:
