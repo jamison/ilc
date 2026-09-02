@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Pure helpers for the GAP-PUBLIC-INSTALL-03 ``ilc update`` command."""
 
 from __future__ import annotations

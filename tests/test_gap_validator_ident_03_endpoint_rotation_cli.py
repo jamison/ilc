@@ -32,6 +32,7 @@ from ilc_core.validator.endpoint_rotation_runtime import (
 )
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
 AGENT = "a" * 96
 BLS_KEY = "b" * 96
 SIGNATURE = "c" * 192
@@ -63,6 +64,12 @@ class EdgeAtlas:
 def _run_cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["ILC_VALIDATOR_ENDPOINT_ROTATION_ALLOW_TEST_STUB_SIGNATURE"] = "1"
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        str(REPO_ROOT)
+        if not existing_pythonpath
+        else f"{REPO_ROOT}{os.pathsep}{existing_pythonpath}"
+    )
     return subprocess.run(
         [sys.executable, "-m", "ilc_core.cli", *args],
         stdout=subprocess.PIPE,

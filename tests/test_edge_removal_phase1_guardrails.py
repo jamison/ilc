@@ -19,7 +19,11 @@ EDGE_ATTRIBUTE_USAGE_ALLOWLIST = {
     "ilc_core/cli/d2e_submit_cli.py",
     "ilc_core/epistemic/truth_primitive_graph_store.py",
     "tests/test_graph_edges.py",
+    "tests/test_gap_validator_ident_03_endpoint_rotation_cli.py",
+    "tests/test_invite_chain_integration_1576r.py",
+    "tests/test_invite_provenance_wiring_1576q.py",
     "tests/test_phase_865_872_cdl_074_truth_primitive_runtime.py",
+    "tests/test_validator_endpoint_assertion_1577b.py",
 }
 
 DIRECT_APPEND_PATTERN = re.compile(r"\.edges\.append\(")

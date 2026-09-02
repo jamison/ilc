@@ -60,8 +60,8 @@ def _validate_refutation_criterion(criterion: dict[str, Any]) -> None:
             claim_form=criterion["claim_form"],
             has_falsifiable_test=criterion["has_falsifiable_test"],
             is_inadmissible_counterexample=criterion.get("is_inadmissible_counterexample", False),
-            agreement_score=criterion.get("agreement_score", 1.0),
-            reproducibility_threshold=criterion.get("reproducibility_threshold", 0.85),
+            agreement_score=criterion.get("agreement_score", "1.0"),
+            reproducibility_threshold=criterion.get("reproducibility_threshold", "0.85"),
         )
     except PopperianGateValidationError as exc:
         raise EpistemicSubmissionError(
