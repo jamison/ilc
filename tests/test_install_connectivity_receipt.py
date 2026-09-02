@@ -811,6 +811,10 @@ def test_install_prebuilt_relay_material_supplies_selection_without_manual_pin(
 
     assert selection == {
         "relay_base_url": "https://relay.ilc.example:51151",
+        "relay_admission_material": {
+            "relay_base_url": "https://relay.ilc.example:51151",
+            "tls_cert_der_sha256": "cd" * 32,
+        },
         "tls_cert_der_sha256": "cd" * 32,
     }
 
@@ -866,6 +870,112 @@ def test_install_relay_url_without_tls_pin_fails_closed(tmp_path: Path) -> None:
             invite_pop_payload_ref_value="d" * 96,
             invite_pop_epoch=0,
         )
+
+
+def test_install_from_invite_reuses_validated_prebuilt_relay_material(
+    tmp_path: Path,
+    install_home: Path,
+    fake_keygen: list[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+    import ilc_core.cli.network_doctor as network_doctor
+
+    _fake_pop_command(tmp_path, monkeypatch)
+    monkeypatch.setenv("ILC_ONBOARDING_BLS_KEYGEN_COMMAND", " ".join(fake_keygen))
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    material = {
+        "agent_id": AGENT_ID_HEX,
+        "relay_base_url": "https://relay.ilc.example:51151",
+        "tls_cert_der_sha256": "cd" * 32,
+    }
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(
+        json.dumps(material, sort_keys=True, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    load_count = 0
+    real_load_material = network_doctor._load_relay_admission_material
+
+    def counted_load(path_value: str) -> dict[str, Any]:
+        nonlocal load_count
+        load_count += 1
+        if load_count > 1:
+            material_path.write_text(
+                json.dumps(
+                    {
+                        "agent_id": AGENT_ID_HEX,
+                        "relay_base_url": "https://changed-relay.ilc.example:51151",
+                        "tls_cert_der_sha256": "ef" * 32,
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ),
+                encoding="utf-8",
+            )
+        return real_load_material(path_value)
+
+    monkeypatch.setattr(network_doctor, "_load_relay_admission_material", counted_load)
+    calls: list[dict[str, Any]] = []
+
+    def fake_record(install_dir: Path, **kwargs: Any) -> dict[str, Any]:
+        calls.append(kwargs)
+        onboarding_path = identity_root(install_dir) / "onboarding_receipt.json"
+        onboarding = json.loads(onboarding_path.read_text(encoding="utf-8"))
+        connectivity = {
+            "agent_id": kwargs["agent_id"],
+            "attempt_router_mapping": False,
+            "connectivity_evidence_status": "probe_succeeded",
+            "connectivity_mode": "relay_reachable",
+            "connectivity_receipt_path": str(
+                identity_root(install_dir) / "connectivity_receipt.json"
+            ),
+            "connectivity_receipt_sha384": "e" * 96,
+            "connectivity_summary": "Detected mode: relay_reachable via relay.ilc.example:52000",
+            "firewall_mutation_attempted": False,
+            "firewall_mutation_status": "confirmed_not_mutated",
+            "observed_endpoint": None,
+            "relay_endpoint": "relay.ilc.example:52000",
+            "schema_version": provisioning.INSTALL_CONNECTIVITY_RECEIPT_VERSION,
+        }
+        onboarding.update(
+            {
+                "connectivity_evidence_status": "probe_succeeded",
+                "connectivity_mode": "relay_reachable",
+                "connectivity_receipt_path": connectivity["connectivity_receipt_path"],
+                "connectivity_receipt_sha384": connectivity["connectivity_receipt_sha384"],
+                "connectivity_summary": connectivity["connectivity_summary"],
+                "firewall_mutation_attempted": False,
+                "firewall_mutation_status": "confirmed_not_mutated",
+                "observed_endpoint": None,
+                "relay_endpoint": "relay.ilc.example:52000",
+            }
+        )
+        onboarding_path.write_text(
+            json.dumps(onboarding, sort_keys=True, separators=(",", ":")),
+            encoding="utf-8",
+        )
+        return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
+
+    monkeypatch.setattr(provisioning, "record_install_connectivity_receipt", fake_record)
+    invite_path = _write_bundle(tmp_path / "invite.json")
+
+    cli_main._run_install_subcommand(
+        _args(
+            invite_path,
+            tmp_path / "target",
+            tmp_path / "install_receipt.json",
+            relay_admission_material=str(material_path),
+        )
+    )
+
+    assert load_count == 1
+    assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
+    assert calls[0]["relay_admission_material"] == material
 
 
 def test_load_install_invite_bundle_uses_bounded_path_reader(

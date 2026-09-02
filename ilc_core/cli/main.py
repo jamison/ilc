@@ -4448,6 +4448,11 @@ def _install_relay_admission_material(
 ) -> dict[str, Any] | None:
     path_value = str(getattr(args, "relay_admission_material", "") or "")
     if path_value:
+        if relay_selection is not None and "relay_admission_material" in relay_selection:
+            relay_material = relay_selection["relay_admission_material"]
+            if not isinstance(relay_material, dict):
+                raise ValueError("install_relay_prebuilt_material_invalid")
+            return dict(relay_material)
         from ilc_core.cli.network_doctor import _load_relay_admission_material
 
         return _load_relay_admission_material(path_value)
@@ -4632,6 +4637,7 @@ def _install_prebuilt_relay_bootstrap_selection(
             raise ValueError("install_relay_bootstrap_tls_pin_mismatch")
     return {
         "relay_base_url": material_relay_url,
+        "relay_admission_material": dict(material),
         "tls_cert_der_sha256": material_tls_pin,
     }
 
