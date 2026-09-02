@@ -1,5 +1,5 @@
 {
-  "blocked_reason": "pypi_0_4_10_yank_not_verified",
+  "blocked_reason": null,
   "fetchback": {
     "sdist": {
       "filename": "ilc_core-0.4.11.tar.gz",
@@ -21,8 +21,11 @@
     }
   },
   "install_sh_update": {
-    "result": "NOT_RUN",
-    "reason": "blocked_until_pypi_0_4_10_yank_verified"
+    "installer_version": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0411-00b",
+    "rc_wheel_sha256": "b09147c0e1f5fd37c4d3c9a86d3d8c605fefa292e0b40e08f6ab148dfc4a75c0",
+    "rc_wheel_size": "1438168",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/4e/24/88f5c206ee5c0c977cb9d5a2ba17da4d04774a1a94860de65af993da76d5/ilc_core-0.4.11-py3-none-any.whl",
+    "result": "PASS"
   },
   "local_build": {
     "sdist": {
@@ -37,10 +40,6 @@
     }
   },
   "non_claims": [
-    "no_completion_token",
-    "no_install_sh_update_to_0411",
-    "no_relay_venv_upgrade",
-    "no_relay_service_restart",
     "no_validator_slot_venv_mutation",
     "no_manifest_signing",
     "no_release_signing_prompt_cascade",
@@ -54,7 +53,7 @@
     "no_ilc_minting"
   ],
   "phase": "GAP-INSTALL-CONNECTIVITY-PACKAGE-0411-00b",
-  "phase_status": "BLOCKED_AFTER_UPLOAD_AND_FETCHBACK_PENDING_0_4_10_YANK",
+  "phase_status": "COMPLETE",
   "pypi_json_url": "https://pypi.org/pypi/ilc-core/0.4.11/json",
   "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.11/",
   "pypi_upload": {
@@ -72,20 +71,57 @@
         "reason": "Pre-release relay artifact superseded by ilc-core==0.4.10; final relay audit hardening fixes required before public RC"
       },
       "0.4.10": {
-        "all_files_yanked": false,
-        "reason": null
+        "all_files_yanked": true,
+        "reason": "Pre-release connectivity bootstrap artifact superseded by ilc-core==0.4.11; relay admission material normalization and connectivity bootstrap hardening fixes required before public RC."
       },
       "0.4.11": {
         "all_files_yanked": false,
         "reason": null
       }
     },
-    "manual_yank_confirmed_by_operator": false,
-    "verified_complete": false
+    "manual_yank_confirmed_by_operator": true,
+    "verified_complete": true
   },
   "relay_host_upgrade": {
-    "result": "NOT_RUN",
-    "reason": "blocked_until_pypi_0_4_10_yank_verified"
+    "ilc-node-2": {
+      "connectivity_advertisement_guard": true,
+      "forwarder_has_target_addr": true,
+      "ilc_core_version": "0.4.11",
+      "network_doctor_ok": true,
+      "public_health_status": "HTTP/1.1 200 OK",
+      "public_health_version": "0.4.11",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_der_sha256": "0df2319d4f86eae84288f3e3155b9e0264b7d7ed65594296b149878386e5c52b",
+      "udp_request_bound_target_path_package_visible": true
+    },
+    "ilc-node-3": {
+      "connectivity_advertisement_guard": true,
+      "forwarder_has_target_addr": true,
+      "ilc_core_version": "0.4.11",
+      "network_doctor_ok": true,
+      "public_health_status": "HTTP/1.1 200 OK",
+      "public_health_version": "0.4.11",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_der_sha256": "1572d8c01f433c1cded1b77f4187bd7cc2bd85b62de53e1114751a97d1d281b9",
+      "udp_request_bound_target_path_package_visible": true
+    },
+    "ilc-node-6": {
+      "connectivity_advertisement_guard": true,
+      "forwarder_has_target_addr": true,
+      "ilc_core_version": "0.4.11",
+      "network_doctor_ok": true,
+      "public_health_status": "HTTP/1.1 200 OK",
+      "public_health_version": "0.4.11",
+      "relay_client_guard": false,
+      "relay_server_guard": false,
+      "service_active": true,
+      "tls_der_sha256": "87a6cece5ba70093d59e9bc0fbc502cdefb90d000c69962a080c1676b9550996",
+      "udp_request_bound_target_path_package_visible": true
+    }
   },
   "schema_version": "ilc.pypi_upload_receipt.GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b.v0.1",
   "source_private_commit_at_build": "e7cc748f30b1e340e6c612b36713fb84df2aa66c",
@@ -94,8 +130,8 @@
     "pyproject.toml version=0.4.11",
     "ilc_core/__init__.py __version__=0.4.11",
     "includes connectivity bootstrap hardening commits 64daa12a7, 6ebd51303, f4f68ac5c, and relay admission material race-condition fix e7cc748f3",
-    "tools/install.sh remains at ilc-core 0.4.10 until pypi_0_4_10_yank_verified"
+    "tools/install.sh targets ilc-core 0.4.11 after PyPI fetchback and pypi_0_4_10_yank_verified"
   ],
-  "timestamp_utc": "2026-09-02T13:51:21Z",
+  "timestamp_utc": "2026-09-02T14:36:31Z",
   "version": "0.4.11"
 }
