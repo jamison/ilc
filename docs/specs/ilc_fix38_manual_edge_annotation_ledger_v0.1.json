@@ -91811,6 +91811,126 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_package_0412_00b_g10_pypi_upload_and_relay_venv_upgrade.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_connectivity_package_0412_00b_artifacts_2026_09_02",
+      "chronology_note": "2026-09-02 installable release manifest for ilc-core 0.4.12 after PyPI upload and fetchback verification.",
+      "manual_read_summary": "Release manifest records canonical PyPI wheel and sdist URLs, SHA-256 hashes, byte sizes, rc channel, unsigned signing status, and non-claims for GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b. It does not claim release signing, mirror push, public RC activation, epoch transition, settlement, or minting.",
+      "node_kind": "release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:connectivity_package_0412_published_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00B"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.12-py3-none-any.whl"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.12.tar.gz"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:release_signing_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0412_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_connectivity_package_0412_00b_artifacts_2026_09_02",
+      "chronology_note": "2026-09-02 PyPI upload receipt for ilc-core 0.4.12 and relay-only VPS venv upgrade.",
+      "manual_read_summary": "Receipt records 0.4.12 PyPI upload status, canonical wheel and sdist fetchback hashes and sizes, 0.4.11 yank verification, tools/install.sh retarget, relay host /opt/ilc-relay/venv upgrades on ilc-node-2/3/6, and validator slot venv non-mutation.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:connectivity_package_0412_published_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:validator_slot_venv_mutation_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_connectivity_package_0412_00b_artifacts_2026_09_02",
+      "chronology_note": "2026-09-02 walkthrough for GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b.",
+      "manual_read_summary": "Walkthrough records GO phrase, artifact hash checks, twine upload output, PyPI fetchback verification, 0.4.11 yank verification, relay-only venv upgrade commands, public HTTPS DER pin health checks, network-doctor output, installer tests, SMOKE-00 prompt validation, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-CONNECTIVITY-PACKAGE-0412-00b"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:connectivity_package_0412_published_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_mirror_push_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activation_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_install_connectivity_package_0412_00b_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
