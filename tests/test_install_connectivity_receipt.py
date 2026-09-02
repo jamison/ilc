@@ -454,7 +454,15 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
     )
     material_path = tmp_path / "relay_material.json"
     material_path.write_text(
-        json.dumps({"agent_id": AGENT_ID_HEX}, sort_keys=True),
+        json.dumps(
+            {
+                "agent_id": AGENT_ID_HEX,
+                "relay_base_url": "https://relay.ilc.example:51151",
+                "tls_cert_der_sha256": "cd" * 32,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
         encoding="utf-8",
     )
     calls: list[dict[str, Any]] = []
@@ -514,7 +522,11 @@ def test_install_from_invite_passes_explicit_probe_and_relay_options(
     assert calls[0]["attempt_router_mapping"] is True
     assert calls[0]["observers"] == ("https://observer.ilc.example/probe",)
     assert calls[0]["relay_server_url"] == "https://relay.ilc.example:51151"
-    assert calls[0]["relay_admission_material"] == {"agent_id": AGENT_ID_HEX}
+    assert calls[0]["relay_admission_material"] == {
+        "agent_id": AGENT_ID_HEX,
+        "relay_base_url": "https://relay.ilc.example:51151",
+        "tls_cert_der_sha256": "cd" * 32,
+    }
     assert identity_root(install_home).exists()
 
 
@@ -747,6 +759,97 @@ def test_install_rejects_untrusted_relay_bootstrap_capsule(tmp_path: Path) -> No
         )
 
 
+def test_install_rejects_untrusted_relay_bootstrap_capsule_even_with_manual_relay_flags(
+    tmp_path: Path,
+) -> None:
+    capsule, _genesis_agent_id = _signed_relay_bootstrap_capsule()
+    args = argparse.Namespace(
+        relay_admission_material="",
+        relay_network_id="public-rc",
+        relay_tls_cert_der_sha256="cd" * 32,
+        relay_url="https://relay.ilc.example:51151",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="install_relay_bootstrap_capsule_no_verified_records",
+    ):
+        cli_main._install_relay_bootstrap_selection(
+            args,
+            invite_bundle={"relay_bootstrap_capsule": capsule},
+            current_epoch=0,
+        )
+
+
+def test_install_prebuilt_relay_material_supplies_selection_without_manual_pin(
+    tmp_path: Path,
+) -> None:
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(
+        json.dumps(
+            {
+                "relay_base_url": "https://relay.ilc.example:51151",
+                "tls_cert_der_sha256": "cd" * 32,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        encoding="utf-8",
+    )
+    args = argparse.Namespace(
+        relay_admission_material=str(material_path),
+        relay_network_id="public-rc",
+        relay_tls_cert_der_sha256="",
+        relay_url="",
+    )
+
+    selection = cli_main._install_relay_bootstrap_selection(
+        args,
+        invite_bundle={},
+        current_epoch=0,
+    )
+
+    assert selection == {
+        "relay_base_url": "https://relay.ilc.example:51151",
+        "tls_cert_der_sha256": "cd" * 32,
+    }
+
+
+def test_install_prebuilt_relay_material_must_match_valid_capsule(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.epoch import genesis_settlement_destination as genesis_destination
+
+    capsule, genesis_agent_id = _signed_relay_bootstrap_capsule()
+    monkeypatch.setattr(genesis_destination, "GENESIS_AGENT1_AGENT_ID", genesis_agent_id)
+    material_path = tmp_path / "relay_material.json"
+    material_path.write_text(
+        json.dumps(
+            {
+                "relay_base_url": "https://other-relay.ilc.example:51151",
+                "tls_cert_der_sha256": "cd" * 32,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        encoding="utf-8",
+    )
+    args = argparse.Namespace(
+        relay_admission_material=str(material_path),
+        relay_network_id="public-rc",
+        relay_tls_cert_der_sha256="",
+        relay_url="",
+    )
+
+    with pytest.raises(ValueError, match="install_relay_bootstrap_control_url_mismatch"):
+        cli_main._install_relay_bootstrap_selection(
+            args,
+            invite_bundle={"relay_bootstrap_capsule": capsule},
+            current_epoch=0,
+        )
+
+
 def test_install_relay_url_without_tls_pin_fails_closed(tmp_path: Path) -> None:
     args = argparse.Namespace(
         relay_admission_material="",
@@ -763,6 +866,30 @@ def test_install_relay_url_without_tls_pin_fails_closed(tmp_path: Path) -> None:
             invite_pop_payload_ref_value="d" * 96,
             invite_pop_epoch=0,
         )
+
+
+def test_load_install_invite_bundle_uses_bounded_path_reader(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json")
+
+    def fail_read_bytes(self: Path) -> bytes:
+        raise AssertionError("read_bytes_must_not_be_used_for_install_invite_bundle")
+
+    monkeypatch.setattr(Path, "read_bytes", fail_read_bytes)
+
+    loaded = cli_main._load_install_invite_bundle(str(invite_path))
+
+    assert loaded["private_invite_nonce"] == _bundle()["private_invite_nonce"]
+
+
+def test_load_install_invite_bundle_rejects_oversized_path(tmp_path: Path) -> None:
+    invite_path = tmp_path / "oversized_invite.json"
+    invite_path.write_bytes(b"{" + (b'"x":' + b'"a"' * 600_000) + b"}")
+
+    with pytest.raises(ValueError, match="install_invite_bundle_too_large"):
+        cli_main._load_install_invite_bundle(str(invite_path))
 
 
 def test_install_probe_observers_rejects_unbounded_observer_fanout() -> None:

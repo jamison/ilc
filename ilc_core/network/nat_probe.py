@@ -475,7 +475,8 @@ class NatProbeEngine:
             )
             return grant.relay_endpoint.as_host_port()
         except (relay_module.RelayClientError, OSError, TimeoutError) as exc:
-            warnings.append(f"relay_slot_request_failed:{type(exc).__name__}")
+            error = str(exc) or type(exc).__name__
+            warnings.append(f"relay_slot_request_failed:{error}")
             return None
 
     def _relay_client_material(

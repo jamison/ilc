@@ -31,7 +31,7 @@ trap cleanup EXIT
 
 usage() {
   cat >&2 <<'USAGE'
-usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--probe-observer URL] [--enable-upnp] [--dry-run]
+usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--relay-internal-port PORT] [--probe-observer URL] [--enable-upnp] [--dry-run]
 
 Installs the ilc-core Python wheel after SHA-256 verification and completes
 invite-based onboarding with the supplied Genesis invite bundle.
