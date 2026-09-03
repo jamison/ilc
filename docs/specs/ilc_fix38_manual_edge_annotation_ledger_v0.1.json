@@ -92277,6 +92277,119 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_spec_00_2026_09_03",
+      "chronology_note": "2026-09-03 phase prompt for GAP-INVITE-SHORTCODE-SPEC-00.",
+      "manual_read_summary": "Prompt directs Codex to write the relay-hosted invite-code protocol spec, including MemPalace/repo search, relay control-plane endpoint constraints, BLS signer-key-to-inviter binding, checksum correction, aggregate request-size bounds, non-claims, validation, and phase closure artifacts.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-SPEC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_spec_committed_GAP_INVITE_SHORTCODE_SPEC_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_runtime_activated"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_spec_00_g10_relay_invite_code_protocol_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_spec_00_2026_09_03",
+      "chronology_note": "2026-09-03 relay-hosted invite-code protocol spec.",
+      "manual_read_summary": "Spec defines the ILC shortcode display format and checksum, relay store/fetch/status endpoints, inviting-agent CLI, installer --invite-code flow, BLS verifier-key separation from inviter AgentID, slot burn semantics, privacy boundaries, rate limits, size bounds, CDL authority scope, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-SPEC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_spec_committed_GAP_INVITE_SHORTCODE_SPEC_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_shortcode_endpoint_activated"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_referral_reward_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_relay_invite_code_spec_GAP_INVITE_SHORTCODE_SPEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_spec_00_2026_09_03",
+      "chronology_note": "2026-09-03 walkthrough for GAP-INVITE-SHORTCODE-SPEC-00.",
+      "manual_read_summary": "Walkthrough records direct-read and MemPalace searches, cryptographic/key-binding corrections, produced spec sections, validation outputs, checksum verification, STATUS token closure, and non-claims for the relay-hosted invite-code spec phase.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-SPEC-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:invite_shortcode_spec_committed_GAP_INVITE_SHORTCODE_SPEC_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_launch_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_invite_shortcode_spec_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
