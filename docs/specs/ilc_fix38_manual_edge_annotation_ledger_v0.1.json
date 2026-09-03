@@ -91931,6 +91931,80 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_install_connectivity_package_0412_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1618_phase_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00_closure",
+      "chronology_note": "2026-09-03 closure verdict for GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00.",
+      "manual_read_summary": "Verdict records human GO, all 29 input tokens present, output token absent before execution, relay health on all three public relay hosts, guard states PROBE=False/RELAY=False/CA=True, 0.4.12 smoke evidence with relay_reachable mode, CDL-112 opened-but-guarded status, and non-claims.",
+      "node_kind": "phase_verdict",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:pre_rc_connectivity_claim_gate_passed_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:cdl_112_ratification_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_launch_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_connectivity_lane_closure_verdict_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1618_phase_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00_closure",
+      "chronology_note": "2026-09-03 walkthrough for GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00.",
+      "manual_read_summary": "Walkthrough records prompt and MemPalace reads, token audit output, sanitized output-token absence scan, runtime guard checks, relay health output, taxonomy verification, CDL-112 register row, 0.4.12 smoke evidence, emitted token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PRE-RC-CONNECTIVITY-CLAIM-GATE-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:pre_rc_connectivity_claim_gate_passed_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:connectivity_advertisement_activation_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:production_minting_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_pre_rc_connectivity_claim_gate_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
