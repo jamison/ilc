@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 import asyncio
 import hashlib
+import importlib.resources as importlib_resources
 from http.server import ThreadingHTTPServer
 import json
 from pathlib import Path
@@ -2097,6 +2098,46 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
         expected_network_id="public-rc",
         current_epoch=0,
     ) == ()
+    assert parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_capsule_pk_hex="",
+        expected_network_id="public-rc",
+        current_epoch=0,
+    ) == ()
+
+
+def test_bundled_relay_bootstrap_capsule_verifies_with_committed_key() -> None:
+    from ilc_core.epoch.genesis_settlement_destination import (
+        GENESIS_CAPSULE_SIGNING_PK_HEX,
+    )
+
+    capsule_resource = (
+        importlib_resources.files("ilc_core.data") / "relay_bootstrap_capsule.json"
+    )
+    capsule = json.loads(capsule_resource.read_text(encoding="utf-8"))
+
+    records = parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_capsule_pk_hex=GENESIS_CAPSULE_SIGNING_PK_HEX,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    )
+
+    assert capsule["signing_key_id"] == GENESIS_CAPSULE_SIGNING_PK_HEX
+    assert len(records) == 3
+    assert {record["relay_host"] for record in records} == {
+        "164.90.201.11",
+        "64.227.70.134",
+        "167.99.45.238",
+    }
+
+
+def test_bundled_relay_bootstrap_capsule_source_file_is_public_readable() -> None:
+    capsule_resource = (
+        importlib_resources.files("ilc_core.data") / "relay_bootstrap_capsule.json"
+    )
+    with importlib_resources.as_file(capsule_resource) as capsule_path:
+        assert capsule_path.stat().st_mode & 0o444 == 0o444
 
 
 def test_parse_relay_bootstrap_capsule_filters_scope_and_epochs() -> None:

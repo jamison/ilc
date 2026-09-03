@@ -1,0 +1,73 @@
+{
+  "artifacts": {
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/11/d4/29a6f3f3cf87fc544aad76bd1cd543bdfb0f80b730fc3b2526c2f1a8fca7/ilc_core-0.4.13.tar.gz",
+      "filename": "ilc_core-0.4.13.tar.gz",
+      "fetchback_sha256": "ff484f719f794f46934df40488bd580cc80220a397aa042dd48b37e65c77af6f",
+      "fetchback_size_bytes": 1174828,
+      "local_sha256": "ff484f719f794f46934df40488bd580cc80220a397aa042dd48b37e65c77af6f",
+      "local_size_bytes": 1174828,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/8e/7f/1f03433a9fbe0621f82af9bad2a820a283f5bf8e42f4a6ff2ebd8d9fcec3/ilc_core-0.4.13-py3-none-any.whl",
+      "filename": "ilc_core-0.4.13-py3-none-any.whl",
+      "fetchback_sha256": "dba05b1536ddb5330f8483ae976f294e1e4ea2279ef7457b20fe26518e9a7609",
+      "fetchback_size_bytes": 1442131,
+      "local_sha256": "dba05b1536ddb5330f8483ae976f294e1e4ea2279ef7457b20fe26518e9a7609",
+      "local_size_bytes": 1442131,
+      "pypi_yanked": false
+    }
+  },
+  "bundled_capsule": {
+    "genesis_capsule_signing_key_id_prefix": "b0059ca041482603",
+    "network_id": "public-rc",
+    "path": "ilc_core/data/relay_bootstrap_capsule.json",
+    "payload_sha384": "fb459c1ebc0e60343336779a3f53b6a5643ef024a2b1ba400a35356cedf9b5d03a54ab816a741aaa2cf1cdaceb21d6b1",
+    "relay_record_count": 3,
+    "schema_version": "relay_bootstrap_capsule_v0.1",
+    "verified_relay_records": 3
+  },
+  "fetchback_verification": "pass",
+  "go_phrase": "GO Phase GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00 RELAY-CAPSULE-SIGN-AUTHORIZED",
+  "install_sh": {
+    "installer_version": "GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-0413-00",
+    "rc_wheel_sha256": "dba05b1536ddb5330f8483ae976f294e1e4ea2279ef7457b20fe26518e9a7609",
+    "rc_wheel_size": "1442131",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/8e/7f/1f03433a9fbe0621f82af9bad2a820a283f5bf8e42f4a6ff2ebd8d9fcec3/ilc_core-0.4.13-py3-none-any.whl"
+  },
+  "non_claims": [
+    "no_release_artifact_signing",
+    "no_downstream_signing_version_mirror_prompt_cascade",
+    "no_validator_slot_venv_mutation",
+    "no_relay_vps_venv_mutation",
+    "no_cdl_mutation",
+    "no_cdl112_connectivity_advertisement_activation",
+    "no_connectivity_smoke_execution",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.13/",
+  "pypi_upload_status": "uploaded",
+  "pypi_yank_status": {
+    "0.4.12": {
+      "all_yanked": true,
+      "reason": "Pre-release artifact superseded by ilc-core==0.4.13; relay bootstrap capsule added for zero-flag invite generation."
+    },
+    "0.4.13": {
+      "all_active": true,
+      "all_yanked": false
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00.v0.1",
+  "source_private_commit_at_upload_start": "b4d948363b98db8ace343ec659b7c1abb2ee6a29",
+  "source_tree_dirty_at_upload_start": true,
+  "source_tree_dirty_explanation": "The 0.4.13 artifacts were built from the uncommitted CAPSULE-SIGN-00 phase tree containing the Genesis capsule public key, bundled relay_bootstrap_capsule.json, pyproject.toml 0.4.13 package-data updates, installer retargeting, and phase receipt files. The final scoped closure commit records that source state; source_private_commit_at_upload_start is not by itself a complete artifact provenance pointer.",
+  "timestamp_utc": "2026-09-03T15:43:26Z",
+  "twine_upload_status": "pass",
+  "version": "0.4.13"
+}
