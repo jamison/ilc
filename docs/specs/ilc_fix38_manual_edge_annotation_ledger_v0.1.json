@@ -92005,6 +92005,44 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_pre_rc_connectivity_claim_gate_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_prompt_hardening_2026_09_03",
+      "chronology_note": "2026-09-03 hardened prompt for GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00.",
+      "manual_read_summary": "Prompt defines the SENSITIVE Genesis relay bootstrap capsule signing and 0.4.13 publication phase. Codex hardening corrected relay-side signing to use /opt/ilc-relay/venv without sys.path manipulation, require TLS cert/key environment values for public RelayServerConfig construction, keep relay BLS secrets on-host, avoid logging Genesis secret material, verify the capsule is physically packaged in the wheel, run clean-install checks from /tmp to avoid source-tree shadowing, fetch canonical PyPI URLs from PyPI JSON, and verify both wheel and sdist SHA-256 and size.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        },
+        {
+          "edge_type": "REQUIRES",
+          "target": "claim:pre_rc_connectivity_claim_gate_passed_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_secret_key_extraction_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_launch_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REQUIRES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_bootstrap_capsule_sign_00_g10_genesis_relay_capsule_signing.md"
     }
   ],
   "phase": "1545p-Fix38",
