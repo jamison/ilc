@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import base64
+from collections import deque
 import json
 import threading
+import time
 from typing import Any
 
 import pytest
@@ -22,6 +24,7 @@ from ilc_core.network.relay.relay_server import (
     RELAY_INVITE_STORE_PATH,
     RelayRendezvousServer,
     RelayServerConfig,
+    RelayServerError,
     attach_shortcode_invite_bundle_auth,
     encode_shortcode_invite_bundle,
     relay_invite_store_payload_ref,
@@ -446,6 +449,104 @@ def test_get_rate_limit() -> None:
     assert body["error"] == "relay_invite_status_rate_limited"
 
 
+def test_fetch_and_status_share_get_rate_limit() -> None:
+    server = _server()
+    bundles = [_signed_bundle(index)[3] for index in range(11)]
+    status, stored = server.handle_json_request(
+        method="POST",
+        path=RELAY_INVITE_STORE_PATH,
+        payload=_store_request(bundles),
+        source_host="198.51.100.10",
+    )
+    assert status == 200
+    for _ in range(5):
+        status, _body = server.handle_json_request(
+            method="GET",
+            path=f"{RELAY_INVITE_PATH_PREFIX}{stored['code']}",
+            payload=None,
+            source_host="198.51.100.100",
+        )
+        assert status == 200
+    for _ in range(5):
+        status, _body = server.handle_json_request(
+            method="GET",
+            path=f"{RELAY_INVITE_PATH_PREFIX}{stored['code']}/status",
+            payload=None,
+            source_host="198.51.100.100",
+        )
+        assert status == 200
+    status, body = server.handle_json_request(
+        method="GET",
+        path=f"{RELAY_INVITE_PATH_PREFIX}{stored['code']}/status",
+        payload=None,
+        source_host="198.51.100.100",
+    )
+    assert status == 429
+    assert body["error"] == "relay_invite_status_rate_limited"
+
+
+def test_invite_batch_storage_cap_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(relay_server_module, "_MAX_INVITE_BATCH_ENTRIES", 1)
+    server = _server()
+    server._invite_batches["ILC-H7K2-X9P4"] = relay_server_module._InviteCodeBatch(
+        code="ILC-H7K2-X9P4",
+        bundles_b64=deque(["e30="]),
+        expires_at_unix=time.time() + 3600,
+        inviting_agent_id="a" * 96,
+        inviting_bls_public_key_hex="a" * 96,
+        slots_total=1,
+    )
+    with pytest.raises(RelayServerError, match="invite_code_storage_capacity_exhausted"):
+        with server._state_lock:
+            server._allocate_invite_code_locked()
+
+
+def test_invite_batch_storage_cap_sweeps_expired(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(relay_server_module, "_MAX_INVITE_BATCH_ENTRIES", 1)
+    server = _server()
+    server._invite_batches["ILC-H7K2-X9P4"] = relay_server_module._InviteCodeBatch(
+        code="ILC-H7K2-X9P4",
+        bundles_b64=deque(["e30="]),
+        expires_at_unix=time.time() - 1,
+        inviting_agent_id="a" * 96,
+        inviting_bls_public_key_hex="a" * 96,
+        slots_total=1,
+    )
+    with server._state_lock:
+        code = server._allocate_invite_code_locked()
+    assert validate_code(code)
+    assert "ILC-H7K2-X9P4" not in server._invite_batches
+
+
+def test_invite_rate_limiter_is_thread_safe() -> None:
+    limiter = relay_server_module._InviteRateLimiter(
+        limit=10,
+        window_seconds=60.0,
+        now_provider=lambda: 1000.0,
+    )
+    results: list[bool] = []
+    results_lock = threading.Lock()
+
+    def attempt() -> None:
+        allowed = limiter.allow("ip:198.51.100.101:get")
+        with results_lock:
+            results.append(allowed)
+
+    threads = [threading.Thread(target=attempt) for _ in range(50)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert results.count(True) == 10
+    assert results.count(False) == 40
+
+
+def test_shortcode_bundle_payload_ref_rejects_non_string_keys() -> None:
+    with pytest.raises(RelayServerError, match="relay_invite_bundle_key_invalid"):
+        shortcode_invite_bundle_payload_ref({1: "value"})
+
+
 def test_guard_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(relay_server_module, "INVITE_SHORTCODE_NOT_ACTIVATED", True)
     status, body = _server().handle_json_request(
@@ -465,6 +566,85 @@ def test_invite_generate_no_capsule_no_relay_url(monkeypatch: pytest.MonkeyPatch
         )
 
 
+def test_invite_generate_stdout_upload_conflict_fails_before_capsule_load(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_if_loaded() -> tuple[dict[str, Any], ...]:
+        raise AssertionError("capsule loader must not run before flag conflict check")
+
+    monkeypatch.setattr(cli_main, "_load_bundled_relay_records_for_generate", fail_if_loaded)
+    with pytest.raises(ValueError, match="invite_generate_stdout_upload_conflict"):
+        cli_main._run_identity_invite_generate_subcommand(
+            argparse.Namespace(slots=1, ttl="24h", stdout=True, upload=True)
+        )
+
+
+def test_invite_generate_corrupt_bundled_capsule_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(cli_main, "_load_bundled_relay_capsule_payload", lambda: {"bad": "capsule"})
+    monkeypatch.setattr(cli_main, "_install_verified_relay_bootstrap_records", lambda *_args, **_kwargs: ())
+    with pytest.raises(ValueError, match="invite_generate_bundled_capsule_no_verified_records"):
+        cli_main._load_bundled_relay_records_for_generate()
+
+
+def test_invite_generate_explicit_relay_install_command_includes_pin(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Any,
+) -> None:
+    secret_key, public_key = keypair_from_ikm_hex(IKM_HEX)
+    identity_dir = tmp_path / "identity"
+    identity_dir.mkdir()
+    (identity_dir / "signing_key.hex").write_text(f"{secret_key}\n", encoding="utf-8")
+    (identity_dir / "agent_id").write_text(f"{public_key}\n", encoding="utf-8")
+
+    def fake_hint(args: argparse.Namespace) -> dict[str, Any]:
+        output = {
+            "known_peer_hint_key_bindings": {},
+            "known_peer_hints": [],
+            "schema_version": "bootstrap_peer_hints.v0.1",
+        }
+        cli_main.Path(str(args.output)).write_text(json.dumps(output), encoding="utf-8")
+        return {"action": "peer_hint_created"}
+
+    monkeypatch.setattr(cli_main, "_load_bundled_relay_records_for_generate", lambda: ())
+    monkeypatch.setattr(cli_main, "_load_bundled_relay_capsule_payload", lambda: {"schema_version": "test"})
+    monkeypatch.setattr(cli_main, "_run_identity_invite_hint_subcommand", fake_hint)
+    monkeypatch.setattr(
+        "ilc_core.identity.first_run_provisioning.identity_root",
+        lambda _home: identity_dir,
+    )
+    monkeypatch.setattr(
+        cli_main,
+        "_post_invite_store_request",
+        lambda **_kwargs: {
+            "code": "ILC-H7K2-X9P4",
+            "schema_version": "relay_invite_code_store_response.v0.1",
+            "slots": 1,
+            "status_url": "https://relay.example:51151/relay/invite/ILC-H7K2-X9P4/status",
+        },
+    )
+
+    result = cli_main._run_identity_invite_generate_subcommand(
+        argparse.Namespace(
+            batch_id="batch-a",
+            emit_store_request=False,
+            intended_profile="public_rc_invitee_bootstrap",
+            output="",
+            relay_tls_cert_der_sha256="b" * 64,
+            relay_url="https://relay.example:51151",
+            slots=1,
+            stdout=False,
+            ttl="24h",
+            upload=True,
+        )
+    )
+
+    assert "--invite-code ILC-H7K2-X9P4" in result["install_command"]
+    assert "--relay-url https://relay.example:51151" in result["install_command"]
+    assert f"--relay-tls-cert-der-sha256 {'b' * 64}" in result["install_command"]
+
+
 def test_invite_generate_parser_has_zero_required_flags() -> None:
     parser = cli_main._build_parser()
     args = parser.parse_args(["identity", "invite", "generate"])
@@ -481,5 +661,7 @@ def test_install_sh_no_redirect() -> None:
     assert "HTTPRedirectHandler" not in text
     assert "http.client.HTTPSConnection" in text
     assert "getpeercert(binary_form=True)" in text
+    assert "ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)" in text
+    assert "ssl._create_unverified_context" not in text
     assert "--location" not in text
     assert "--location-trusted" not in text

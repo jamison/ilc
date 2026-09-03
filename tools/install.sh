@@ -322,7 +322,9 @@ if parsed.scheme != "https" or parsed.query or parsed.fragment or parsed.usernam
     raise SystemExit("install_sh_invite_code_relay_url_invalid")
 port = parsed.port or 443
 path = f"/relay/invite/{code}"
-context = ssl._create_unverified_context()
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+context.check_hostname = False
+context.verify_mode = ssl.CERT_NONE
 conn = http.client.HTTPSConnection(parsed.hostname, port, context=context, timeout=30)
 try:
     conn.connect()

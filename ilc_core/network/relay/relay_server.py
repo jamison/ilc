@@ -92,6 +92,7 @@ _MAX_INVITE_STORE_REQUEST_BYTES = 16 * 1024 * 1024
 _MAX_RESPONSE_BYTES = 65_536
 _MAX_INVITE_BUNDLE_BYTES = 32_768
 _MAX_INVITE_BUNDLES_PER_CODE = 10_000
+_MAX_INVITE_BATCH_ENTRIES = 65_536
 _MAX_INVITE_CODE_COLLISION_ATTEMPTS = 8
 _MAX_INVITE_TTL_SECONDS = 30 * 24 * 60 * 60
 _INVITE_FETCH_RATE_LIMIT = 10
@@ -637,21 +638,23 @@ class _InviteRateLimiter:
         self._now_provider = now_provider
         self._entries: dict[str, _InviteRateEntry] = {}
         self._order: deque[str] = deque()
+        self._lock = threading.Lock()
 
     def allow(self, key: str) -> bool:
         clean_key = _require_rate_key(key)
         now = self._now()
-        entry = self._entries.get(clean_key)
-        if entry is None or now - entry.window_start >= self._window_seconds:
-            if entry is None:
-                self._evict_if_needed()
-                self._order.append(clean_key)
-            self._entries[clean_key] = _InviteRateEntry(window_start=now, count=1)
+        with self._lock:
+            entry = self._entries.get(clean_key)
+            if entry is None or now - entry.window_start >= self._window_seconds:
+                if entry is None:
+                    self._evict_if_needed()
+                    self._order.append(clean_key)
+                self._entries[clean_key] = _InviteRateEntry(window_start=now, count=1)
+                return True
+            if entry.count >= self._limit:
+                return False
+            entry.count += 1
             return True
-        if entry.count >= self._limit:
-            return False
-        entry.count += 1
-        return True
 
     def _evict_if_needed(self) -> None:
         while len(self._entries) >= self._max_entries and self._order:
@@ -1198,7 +1201,7 @@ class RelayRendezvousServer:
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
         clean_code = _require_invite_code(code)
-        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:fetch"):
+        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:get"):
             raise RelayServerError("relay_invite_fetch_rate_limited")
         with self._state_lock:
             batch = self._require_invite_batch_locked(clean_code)
@@ -1217,7 +1220,7 @@ class RelayRendezvousServer:
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
         clean_code = _require_invite_code(code)
-        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:status"):
+        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:get"):
             raise RelayServerError("relay_invite_status_rate_limited")
         with self._state_lock:
             batch = self._require_invite_batch_locked(clean_code)
@@ -1235,12 +1238,24 @@ class RelayRendezvousServer:
 
     def _allocate_invite_code_locked(self) -> str:
         now = time.time()
+        self._sweep_expired_invite_batches_locked(now)
+        if len(self._invite_batches) >= _MAX_INVITE_BATCH_ENTRIES:
+            raise RelayServerError("invite_code_storage_capacity_exhausted")
         for _attempt in range(_MAX_INVITE_CODE_COLLISION_ATTEMPTS):
             code = generate_code()
             batch = self._invite_batches.get(code)
             if batch is None or batch.expires_at_unix <= now:
                 return code
         raise RelayServerError("invite_code_generation_exhausted")
+
+    def _sweep_expired_invite_batches_locked(self, now: float) -> None:
+        expired = [
+            code
+            for code, batch in self._invite_batches.items()
+            if batch.expires_at_unix <= now
+        ]
+        for code in expired:
+            self._invite_batches.pop(code, None)
 
     def _require_invite_batch_locked(self, code: str) -> _InviteCodeBatch:
         batch = self._invite_batches.get(code)
@@ -2297,11 +2312,12 @@ def shortcode_invite_bundle_payload_ref(bundle: Mapping[str, Any]) -> str:
     """Return the SHA-384 digest for an invite bundle excluding shortcode auth."""
 
     clean_bundle = _require_mapping(bundle, "relay_invite_bundle_must_be_object")
-    payload = {
-        str(key): value
-        for key, value in clean_bundle.items()
-        if key != "shortcode_auth"
-    }
+    payload: dict[str, Any] = {}
+    for key, value in clean_bundle.items():
+        if not isinstance(key, str):
+            raise RelayServerError("relay_invite_bundle_key_invalid")
+        if key != "shortcode_auth":
+            payload[key] = value
     if not payload:
         raise RelayServerError("relay_invite_bundle_payload_empty")
     return hashlib.sha384(

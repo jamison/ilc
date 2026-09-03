@@ -802,6 +802,7 @@ def _run_identity_invite_bundle_subcommand(args: argparse.Namespace) -> dict[str
 def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     """Generate local or relay-hosted invite bundles with zero required flags."""
 
+    import shlex
     import secrets
     import tempfile
 
@@ -823,10 +824,15 @@ def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[s
         min_value=1,
         max_value=10_000,
     )
+    stdout_requested = bool(getattr(args, "stdout", False))
+    upload_requested = bool(getattr(args, "upload", False))
+    if stdout_requested and upload_requested:
+        raise ValueError("invite_generate_stdout_upload_conflict")
     ttl_seconds = _parse_invite_duration_seconds(str(getattr(args, "ttl", "24h")))
     relay_url = str(getattr(args, "relay_url", "") or "").strip()
     relay_tls_pin = str(getattr(args, "relay_tls_cert_der_sha256", "") or "").strip()
     bundled_records = _load_bundled_relay_records_for_generate()
+    relay_requires_explicit_install_flags = False
     if relay_url:
         matches = [
             record for record in bundled_records if record.get("control_url") == relay_url
@@ -838,6 +844,8 @@ def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[s
             relay_tls_pin = bundled_tls_pin
         elif not relay_tls_pin:
             raise ValueError("invite_generate_relay_tls_cert_der_sha256_required")
+        else:
+            relay_requires_explicit_install_flags = True
     elif bundled_records:
         selected = sorted(
             bundled_records,
@@ -928,7 +936,7 @@ def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[s
         relay_invite_store_payload_ref(store_request),
     )
     output_path = str(getattr(args, "output", "") or "")
-    if bool(getattr(args, "stdout", False)):
+    if stdout_requested:
         return {"action": "invite-generate", "output": bundles[0] if slots == 1 else {"bundles": bundles}}
     if output_path:
         payload = bundles[0] if slots == 1 else {"bundles": bundles}
@@ -952,7 +960,20 @@ def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[s
             store_request=store_request,
         )
         result["code"] = store_response["code"]
-        result["install_command"] = f"curl -fsSL https://ilc.network/install.sh | bash -s -- --invite-code {store_response['code']}"
+        install_args = ["--invite-code", str(store_response["code"])]
+        if relay_requires_explicit_install_flags:
+            install_args.extend(
+                [
+                    "--relay-url",
+                    relay_url,
+                    "--relay-tls-cert-der-sha256",
+                    relay_tls_pin,
+                ]
+            )
+        quoted_args = " ".join(shlex.quote(value) for value in install_args)
+        result["install_command"] = (
+            f"curl -fsSL https://ilc.network/install.sh | bash -s -- {quoted_args}"
+        )
         result["status_url"] = store_response.get("status_url", "")
         result["store_response"] = store_response
     return result
@@ -991,15 +1012,20 @@ def _load_bundled_relay_capsule_payload() -> dict[str, Any]:
 def _load_bundled_relay_records_for_generate() -> tuple[dict[str, Any], ...]:
     try:
         capsule = _load_bundled_relay_capsule_payload()
-        if not isinstance(capsule, dict):
-            return ()
-        return _install_verified_relay_bootstrap_records(
-            capsule,
-            expected_network_id=INSTALL_RELAY_DEFAULT_NETWORK_ID,
-            current_epoch=0,
-        )
-    except (FileNotFoundError, ValueError):
+    except (FileNotFoundError, ModuleNotFoundError):
         return ()
+    except ValueError as exc:
+        raise ValueError("invite_generate_bundled_capsule_invalid") from exc
+    if not isinstance(capsule, dict):
+        raise ValueError("invite_generate_bundled_capsule_invalid")
+    records = _install_verified_relay_bootstrap_records(
+        capsule,
+        expected_network_id=INSTALL_RELAY_DEFAULT_NETWORK_ID,
+        current_epoch=0,
+    )
+    if not records:
+        raise ValueError("invite_generate_bundled_capsule_no_verified_records")
+    return records
 
 
 def _post_invite_store_request(
