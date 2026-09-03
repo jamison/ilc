@@ -90,9 +90,19 @@ Request body:
 }
 ```
 
-`request_signature` is computed over `sha384(canonical_json(body_without_request_signature))` and verified with `inviting_bls_public_key_hex`.
+`request_signature` is computed over `sha384(canonical_json(body_without_request_signature))` and verified with `inviting_bls_public_key_hex` under this exact domain separation tag:
+
+```text
+ILC_RELAY_INVITE_STORE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_
+```
 
 The legacy `InviteBatchRecord.inviter_sig` field is not sufficient by itself for shortcode storage. Historical invite runtime only required that field to be non-empty. The shortcode CDL/implementation must either replace it with a real BLS signature field for deposited bundles or bind it explicitly to the new `inviting_bls_public_key_hex` verifier contract.
+
+Bundle-level invite authenticity is new work for the shortcode lane. The implementation must not treat legacy non-empty `inviter_sig` validation as cryptographic verification. Any new bundle-level BLS signature added for shortcode storage or installer verification must use this distinct domain separation tag:
+
+```text
+ILC_RELAY_INVITE_BUNDLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_
+```
 
 The relay must enforce all of these rules before storage:
 
@@ -165,21 +175,21 @@ Both use HTTP `410 Gone`.
 
 ### GET /relay/invite/{code}/status
 
-This endpoint exposes bounded public status for a code:
+This endpoint exposes bounded public status for a code. The pre-RC default is redacted status: it does not expose the raw inviting BLS public key. Under the current CDL-017 provisioning profile, an AgentID may itself be a BLS public key, so raw inviter identity exposure is also privacy-relevant and must be a conscious CDL decision rather than an accidental status-field leak.
 
 ```json
 {
   "code": "ILC-H7K2-X9P4",
   "expires_at": "2026-09-04T14:00:00Z",
-  "inviting_agent_id": "<96-char lowercase hex>",
-  "inviting_bls_public_key_hex": "<96-char lowercase hex>",
+  "inviting_agent_ref": "<sha256 fingerprint of inviting_agent_id>",
+  "inviting_bls_public_key_ref": "<sha256 fingerprint of inviting_bls_public_key_hex>",
   "schema_version": "relay_invite_code_status_response.v0.1",
   "slots_remaining": 499,
   "slots_total": 500
 }
 ```
 
-The status endpoint is public and unauthenticated. It must not expose private invite nonces, invite nullifiers, bundle JSON, relay admission material, IP history, requester identity, or per-slot redemption timestamps. Expired or exhausted codes return the same `410 Gone` error bodies as the fetch endpoint.
+The status endpoint is public and unauthenticated. It must not expose private invite nonces, invite nullifiers, bundle JSON, raw inviting BLS public keys, raw inviting AgentIDs unless explicitly authorized by the CDL, relay admission material, IP history, requester identity, or per-slot redemption timestamps. Expired or exhausted codes return the same `410 Gone` error bodies as the fetch endpoint.
 
 ## 4. Inviting Agent CLI: ilc identity invite generate
 
@@ -235,7 +245,7 @@ Installer flow for `--invite-code`:
 2. Resolve relay endpoint and TLS trust material from the bundled relay bootstrap capsule in the installed wheel metadata or from explicit `--relay-url` / TLS-pin overrides.
 3. Fetch `GET https://<relay>:51151/relay/invite/<code>` with pinned-DER TLS verification, no redirect following, explicit timeout, response status checking, and a 32 KiB decoded bundle cap.
 4. Decode `bundle_b64` into a temporary file in a private temp directory.
-5. Verify the fetched bundle's inviting-agent BLS signature and key-binding before invoking onboarding.
+5. Verify the fetched bundle's new shortcode-lane inviting-agent BLS signature and key-binding before invoking onboarding. This verification is not present in legacy `InviteBatchRecord.inviter_sig` validation and must be implemented fresh in the shortcode implementation phase.
 6. On verification failure, stop with `install_sh_invite_code_bundle_signature_invalid`.
 7. On `410 {"error":"code_exhausted"}`, stop with `install_sh_invite_code_exhausted`.
 8. On `410 {"error":"code_expired"}`, stop with `install_sh_invite_code_expired`.
@@ -251,6 +261,7 @@ Security properties:
 - Bundle authenticity: each bundle is signed by the inviting BLS key; both relay store and installer fetch paths verify it.
 - Legacy boundary: historical `InviteBatchRecord.inviter_sig` placeholder semantics do not satisfy bundle authenticity unless amended into a verified signature contract by the shortcode CDL/implementation phase.
 - Store authentication: `POST /relay/invite/store` is signed by the inviting BLS key over canonical request JSON.
+- Domain separation: store-request signatures use `ILC_RELAY_INVITE_STORE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_`; bundle-authenticity signatures use `ILC_RELAY_INVITE_BUNDLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_`.
 - Identity binding: the spec separates `inviting_agent_id` from `inviting_bls_public_key_hex`; future non-BLS AgentID profiles require explicit key-binding rather than verifier-key overloading.
 - Single-use relay distribution: fetch atomically burns one relay-hosted slot. This prevents double serving by the relay but does not replace invite nullifier registration.
 - Nullifier authority unchanged: invite nullifier registration remains in the existing install/onboarding path and durable registry.
@@ -269,8 +280,9 @@ The next SENSITIVE CDL phase must open or amend authority for this exact surface
 
 - Invite code format, alphabet, grouping, checksum algorithm, and collision behavior.
 - `POST /relay/invite/store` request/response schema and BLS request authentication.
+- Exact BLS DST strings for store-request signing and bundle-authenticity signing.
 - `GET /relay/invite/{code}` unauthenticated retrieval schema and atomic slot burn semantics.
-- `GET /relay/invite/{code}/status` public status schema and redaction boundaries.
+- `GET /relay/invite/{code}/status` public status schema and redaction boundaries, including whether raw inviter AgentIDs or BLS public keys may be exposed. The pre-RC default is fingerprint-only status.
 - `inviting_agent_id` and `inviting_bls_public_key_hex` as distinct fields, including future key-binding requirements if AgentID is not the BLS verifier key.
 - Bundle-level signature verification by the relay before storage and by the installer before onboarding.
 - TTL limits, exhaustion behavior, HTTP status semantics, and stable error tokens.
