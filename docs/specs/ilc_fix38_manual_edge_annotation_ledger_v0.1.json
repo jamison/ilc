@@ -92600,6 +92600,100 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_deploy_00_g10_live_relay_guard_clearance.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_cdl_00_2026_09_03",
+      "chronology_note": "2026-09-03 sensitive CDL opening for relay-hosted invite shortcode authority.",
+      "manual_read_summary": "CDL-113 opens the relay invite-code protocol authority lane at OPENED/not-ratified status. It authorizes the ILC-XXXX-XXXX code format, the three relay invite control-plane HTTPS endpoints, fingerprint-only public status, atomic slot burn semantics, rate/TTL/size ceilings, canonical JSON signing discipline, and two new BLS DSTs for store-request and bundle-authenticity signatures. It explicitly rejects legacy non-empty InviteBatchRecord.inviter_sig as sufficient cryptographic verification and keeps inviting_agent_id separate from inviting_bls_public_key_hex. It does not implement runtime or clear INVITE_SHORTCODE_NOT_ACTIVATED.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_cdl_authority_committed_GAP_INVITE_SHORTCODE_CDL_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "spec:ilc_relay_invite_code_spec_GAP_INVITE_SHORTCODE_SPEC_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "runtime:ilc_core.network.relay.relay_server.INVITE_SHORTCODE_NOT_ACTIVATED"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:legacy_inviter_sig_cryptographic_verification_exists"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:raw_inviter_bls_key_public_status_default"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared_GAP_INVITE_SHORTCODE_CDL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_cdl_00_2026_09_03",
+      "chronology_note": "2026-09-03 walkthrough for sensitive CDL-113 invite shortcode opening.",
+      "manual_read_summary": "Walkthrough records the exact GO phrase, MemPalace query, token audit, CDL inventory, prior relay/invite CDL search, BLS DST inventory, legacy inviter_sig source evidence, relay guard source check, claim verification table, produced artifacts, verification command outputs, and non-claims for GAP-INVITE-SHORTCODE-CDL-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_cdl_authority_committed_GAP_INVITE_SHORTCODE_CDL_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "cdl:CDL-113"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_INVITE_SHORTCODE_CDL_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:runtime_code_changed_GAP_INVITE_SHORTCODE_CDL_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_invite_shortcode_cdl_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
