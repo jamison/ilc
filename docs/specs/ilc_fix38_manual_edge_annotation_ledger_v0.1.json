@@ -92080,6 +92080,159 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_fix_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_00_2026_09_03",
+      "chronology_note": "2026-09-03 signed relay bootstrap capsule bundled into ilc-core 0.4.13.",
+      "manual_read_summary": "Runtime data package marker added so ilc_core.data can carry the Genesis-signed relay bootstrap capsule inside the wheel through importlib.resources.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/data/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_00_2026_09_03",
+      "chronology_note": "2026-09-03 signed relay bootstrap capsule bundled into ilc-core 0.4.13.",
+      "manual_read_summary": "Genesis-signed relay bootstrap capsule for public-rc relay auto-discovery. Contains three self-signed relay records, the dedicated Genesis capsule BLS public signing key identifier, payload SHA-384, signature, public relay endpoints, and TLS DER pins. No private key or invite nonce material is included.",
+      "node_kind": "runtime_data",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:relay_bootstrap_capsule_signed_bundled_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/network/relay/relay_server.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/data/relay_bootstrap_capsule.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_00_2026_09_03",
+      "chronology_note": "2026-09-03 installable release manifest for ilc-core 0.4.13.",
+      "manual_read_summary": "Installable release manifest records canonical PyPI URLs, SHA-256 hashes, sizes, unsigned release-artifact status, and non-claims for the 0.4.13 wheel and sdist containing the relay bootstrap capsule.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.13"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0413_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_00_2026_09_03",
+      "chronology_note": "2026-09-03 PyPI upload receipt for ilc-core 0.4.13.",
+      "manual_read_summary": "PyPI upload receipt records upload, fetchback SHA-256 and size verification, installer retarget values, capsule verification summary, current predecessor yank state, and non-claims for GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.13"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_00_2026_09_03",
+      "chronology_note": "2026-09-03 walkthrough for GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00.",
+      "manual_read_summary": "Walkthrough records the sensitive Genesis capsule-signing ceremony, on-host relay record signing without off-host relay secret extraction, dedicated Genesis capsule BLS key use, capsule bundling, package build, PyPI upload, fetchback verification, installer retarget, tests, predecessor yank gate, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:relay_bootstrap_capsule_signed_bundled_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_secret_key_extraction_authorized"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_launch_authorized"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

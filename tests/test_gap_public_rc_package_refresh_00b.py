@@ -70,6 +70,10 @@ MANIFEST_0412 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_0412_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json"
 )
+MANIFEST_0413 = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0413_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json"
+)
 MANIFEST_020 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_020_GAP_PUBLIC_INSTALL_01_v0.1.json"
@@ -310,6 +314,19 @@ def test_manifest_0412_validates_and_targets_ilc_core_0412() -> None:
     }
 
 
+def test_manifest_0413_validates_and_targets_ilc_core_0413() -> None:
+    manifest = _load_json(MANIFEST_0413)
+
+    validate_installable_release_manifest(manifest)
+
+    assert manifest["release_id"] == "ilc-core-0.4.13"
+    assert manifest["channel"] == "rc"
+    assert {artifact["artifact_type"] for artifact in manifest["artifacts"]} == {
+        "python_sdist",
+        "python_wheel",
+    }
+
+
 def test_manifest_040_remains_valid_after_041_supersession() -> None:
     validate_installable_release_manifest(_load_json(MANIFEST_040))
 
@@ -318,8 +335,8 @@ def test_manifest_041_remains_valid_after_042_supersession() -> None:
     validate_installable_release_manifest(_load_json(MANIFEST_041))
 
 
-def test_install_sh_is_synced_to_current_0412_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0412)
+def test_install_sh_is_synced_to_current_0413_manifest() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0413)
 
 
 def test_old_manifest_still_valid_and_unmodified_by_supersession() -> None:

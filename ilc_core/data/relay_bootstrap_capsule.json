@@ -1,0 +1,75 @@
+{
+  "expires_epoch": 10000000,
+  "issued_epoch": 0,
+  "network_id": "public-rc",
+  "payload_sha384": "fb459c1ebc0e60343336779a3f53b6a5643ef024a2b1ba400a35356cedf9b5d03a54ab816a741aaa2cf1cdaceb21d6b1",
+  "relay_records": [
+    {
+      "control_port": 51151,
+      "control_url": "https://164.90.201.11:51151",
+      "data_port_range": {
+        "end": 52999,
+        "start": 52000
+      },
+      "expires_epoch": 10000000,
+      "issued_epoch": 0,
+      "network_id": "public-rc",
+      "payload_sha384": "011f81fd35544056b361a5888498dcb1c3f798774192a3580aeb1b8d33b44b051d0f835e6ac4ca9f7e2b8c75dbad1100",
+      "relay_agent_id": "b04db7ea3767813769789bf48f9bbb128c12495137854f84f961ce72b0d1d7280ef15ac7bdd2a81c81a39ab1c6e6d8dc",
+      "relay_host": "164.90.201.11",
+      "relay_mode": "pass_through_consensus_quic",
+      "schema_version": "relay_bootstrap_record_v0.1",
+      "signature": "b43b1e9f76b64d926d33b5eb24b2b57c0c19397cce6c998ad522bf253aa5a4b61f14c6feb40da507c022b2f3449b2a3b00c3731043544e728caf958bf0f934d60efddfdff92f5a9a4968740c5260365da5a59d78c8c603840ae3f0ac217461b8",
+      "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+      "signing_key_id": "b04db7ea3767813769789bf48f9bbb128c12495137854f84f961ce72b0d1d7280ef15ac7bdd2a81c81a39ab1c6e6d8dc",
+      "tls_cert_der_sha256": "0df2319d4f86eae84288f3e3155b9e0264b7d7ed65594296b149878386e5c52b",
+      "tls_mode": "pinned_der_sha256"
+    },
+    {
+      "control_port": 51151,
+      "control_url": "https://64.227.70.134:51151",
+      "data_port_range": {
+        "end": 52999,
+        "start": 52000
+      },
+      "expires_epoch": 10000000,
+      "issued_epoch": 0,
+      "network_id": "public-rc",
+      "payload_sha384": "736a7f5bf3c37dcc0b61cf144dbf4d60496294997c6eb60059c5017fb2fb7b4850195673fc75db3b1c0bdc511d44517d",
+      "relay_agent_id": "829316f5202c81e16a9f70e1687aa1588a7a3c385b873191453b9af6304017f98aae26f13cd5f4d2a32a13ea34516cdc",
+      "relay_host": "64.227.70.134",
+      "relay_mode": "pass_through_consensus_quic",
+      "schema_version": "relay_bootstrap_record_v0.1",
+      "signature": "887205f7da17d07bcba930c42edf4897313c38244983556b5eed7ecffadb75a7c1ca99b0d404a03ae7b494d310214fec067c1623c6f17c3fe7abd189d4c1165ab067b5f5884652a7f3e4f7d59c0ffd5d89dece70c7cca2202709f4aff585c3c1",
+      "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+      "signing_key_id": "829316f5202c81e16a9f70e1687aa1588a7a3c385b873191453b9af6304017f98aae26f13cd5f4d2a32a13ea34516cdc",
+      "tls_cert_der_sha256": "1572d8c01f433c1cded1b77f4187bd7cc2bd85b62de53e1114751a97d1d281b9",
+      "tls_mode": "pinned_der_sha256"
+    },
+    {
+      "control_port": 51151,
+      "control_url": "https://167.99.45.238:51151",
+      "data_port_range": {
+        "end": 52999,
+        "start": 52000
+      },
+      "expires_epoch": 10000000,
+      "issued_epoch": 0,
+      "network_id": "public-rc",
+      "payload_sha384": "06532077c69159f6f1e08b73b93e4f0c879402057306d7e87461f8ee33a145998baf560803746b70dc286ad9259cd256",
+      "relay_agent_id": "8227692815f26f96fd17964c29cc38e72450bed4953f63d0ebb756f653d5300cd0f2a6a8f9039ba3347fca11435016f8",
+      "relay_host": "167.99.45.238",
+      "relay_mode": "pass_through_consensus_quic",
+      "schema_version": "relay_bootstrap_record_v0.1",
+      "signature": "8b47055a74fb1b39f46f131c0b847d67b49d769d74524ea41bde28e24e3b180c5791d4c4a2bc3afd09bbbd41fc1bf8c21635df7b7c17b0419954cb9b3f2d4ea1e419749fa942ff4ed26305e0b0d14c9e75e3e6e0d5c64a3b5eb7d423f48f2337",
+      "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+      "signing_key_id": "8227692815f26f96fd17964c29cc38e72450bed4953f63d0ebb756f653d5300cd0f2a6a8f9039ba3347fca11435016f8",
+      "tls_cert_der_sha256": "87a6cece5ba70093d59e9bc0fbc502cdefb90d000c69962a080c1676b9550996",
+      "tls_mode": "pinned_der_sha256"
+    }
+  ],
+  "schema_version": "relay_bootstrap_capsule_v0.1",
+  "signature": "a5d93461dceb8d700337c7c366af0ab531b78737492cc0357424836598a7547c20ce49b3532cfe9cd4980704a153fa7c0f10282165778ef2e7fab806d3e7c0f1ca59a273665b82142246eeeb185d0f5b85c6e5454c443f4dde71e8f5590c3db7",
+  "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
+  "signing_key_id": "b0059ca0414826031257a556bcbfe2013224dc408c532893591a9b6973a267012b2989b9453e88c92e277aff66fdbd85"
+}

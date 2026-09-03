@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ilc-core"
-version = "0.4.12"
+version = "0.4.13"
 description = "ILC Protocol Core Library"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -163,6 +163,7 @@ include = [
     "ilc_core.cli",
     "ilc_core.consensus",
     "ilc_core.crypto",
+    "ilc_core.data",
     "ilc_core.distribution",
     "ilc_core.economics",
     "ilc_core.encoding",
@@ -201,6 +202,7 @@ include = [
 "ilc_core.mcp.schemas" = ["*.json"]
 "ilc_core.genesis" = ["*.json"]
 "ilc_core.protocol.schemas" = ["*.json"]
+"ilc_core.data" = ["*.json"]
 
 [tool.ilc.genesis-package-membership]
 fix82_public_protocol_graph_additions = [

@@ -38,7 +38,9 @@ GENESIS_AGENT1_PUBKEY_RECORD_CEREMONY = "838a"
 # SHA-384 identity commitment and not a BLS public key. The value is populated
 # by GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00 after the local Genesis capsule-key
 # ceremony; the corresponding secret key must never be committed.
-GENESIS_CAPSULE_SIGNING_PK_HEX = ""
+GENESIS_CAPSULE_SIGNING_PK_HEX = (
+    "b0059ca0414826031257a556bcbfe2013224dc408c532893591a9b6973a267012b2989b9453e88c92e277aff66fdbd85"
+)
 
 # The CDL-028 genesis_burn_pool is NOT routed to this agent. As amended in
 # GAP-PUBLIC-RC-CDL028-AMENDMENT-00, it is a non-circulating protocol reserve
