@@ -533,8 +533,10 @@ def _require_invite_cli_enabled(args: argparse.Namespace) -> None:
 
 
 def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
-    _require_invite_cli_enabled(args)
     invite_subcommand = getattr(args, "identity_invite_subcommand", None)
+    if invite_subcommand == "generate":
+        return _run_identity_invite_generate_subcommand(args)
+    _require_invite_cli_enabled(args)
     if invite_subcommand == "hint":
         return _run_identity_invite_hint_subcommand(args)
     if invite_subcommand == "bundle":
@@ -795,6 +797,327 @@ def _run_identity_invite_bundle_subcommand(args: argparse.Namespace) -> dict[str
     if output_path:
         return {"action": "invite-bundle", "output_path": _write_local_json_file(output_path, output)}
     return {"action": "invite-bundle", "output": output}
+
+
+def _run_identity_invite_generate_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    """Generate local or relay-hosted invite bundles with zero required flags."""
+
+    import secrets
+    import tempfile
+
+    from ilc_core.genesis.invitation_provenance_record import build_invite_batch_record
+    from ilc_core.identity.bls_backend import (
+        public_key_from_secret_key_hex,
+        sign_relay_invite_store_digest,
+    )
+    from ilc_core.identity.first_run_provisioning import identity_root
+    from ilc_core.network.relay.relay_server import (
+        attach_shortcode_invite_bundle_auth,
+        encode_shortcode_invite_bundle,
+        relay_invite_store_payload_ref,
+    )
+
+    slots = _require_uint_arg(
+        getattr(args, "slots", 1),
+        "invite_generate_slots_invalid",
+        min_value=1,
+        max_value=10_000,
+    )
+    ttl_seconds = _parse_invite_duration_seconds(str(getattr(args, "ttl", "24h")))
+    relay_url = str(getattr(args, "relay_url", "") or "").strip()
+    relay_tls_pin = str(getattr(args, "relay_tls_cert_der_sha256", "") or "").strip()
+    bundled_records = _load_bundled_relay_records_for_generate()
+    if relay_url:
+        matches = [
+            record for record in bundled_records if record.get("control_url") == relay_url
+        ]
+        if matches:
+            bundled_tls_pin = _install_relay_record_tls_pin(matches[0])
+            if relay_tls_pin and relay_tls_pin != bundled_tls_pin:
+                raise ValueError("invite_generate_relay_tls_pin_mismatch")
+            relay_tls_pin = bundled_tls_pin
+        elif not relay_tls_pin:
+            raise ValueError("invite_generate_relay_tls_cert_der_sha256_required")
+    elif bundled_records:
+        selected = sorted(
+            bundled_records,
+            key=lambda record: (
+                str(record.get("control_url")),
+                str(record.get("relay_agent_id")),
+            ),
+        )[0]
+        relay_url = str(selected.get("control_url") or "")
+        relay_tls_pin = _install_relay_record_tls_pin(selected)
+    if not relay_url:
+        raise ValueError("invite_generate_no_relay_url_and_no_bundled_capsule")
+
+    root = identity_root(Path.home())
+    signing_key_path = root / "signing_key.hex"
+    agent_id_path = root / "agent_id"
+    try:
+        secret_key_hex = signing_key_path.read_text(encoding="utf-8").strip()
+        inviting_agent_id = agent_id_path.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ValueError("invite_generate_identity_required") from exc
+    inviting_bls_public_key_hex = public_key_from_secret_key_hex(secret_key_hex)
+    if not _AGENT_ID_HEX_RE.fullmatch(inviting_agent_id):
+        raise ValueError("invite_generate_inviting_agent_id_invalid")
+
+    batch_id = str(getattr(args, "batch_id", "") or f"invite-generate-{secrets.token_hex(8)}")
+    record, private_nonces = build_invite_batch_record(
+        inviter_cid=inviting_agent_id,
+        batch_id=batch_id,
+        count=slots,
+        created_epoch=0,
+        inviter_sig="shortcode-bundle-auth-required",
+    )
+    bundles: list[dict[str, Any]] = []
+    with tempfile.TemporaryDirectory(prefix="ilc-invite-generate-") as tmp:
+        tmp_path = Path(tmp)
+        hints_path = tmp_path / "bootstrap_peer_hints.json"
+        _run_identity_invite_hint_subcommand(
+            argparse.Namespace(
+                relay_url=relay_url,
+                output=str(hints_path),
+                peer_epoch=0,
+                ttl_epochs=4,
+                protocol_version="ilc.v0.4",
+                label="invite-generate",
+            )
+        )
+        relay_capsule = _load_bundled_relay_capsule_payload()
+        for index, nonce in enumerate(private_nonces):
+            proof = _build_invite_generate_nonce_proof(private_nonces, index)
+            bundle = {
+                "atlas_slice_manifest_witness": _default_public_rc_starmap_witness(),
+                "intended_epoch": 0,
+                "intended_profile": str(
+                    getattr(args, "intended_profile", "public_rc_invitee_bootstrap")
+                    or "public_rc_invitee_bootstrap"
+                ),
+                "invite_batch_record": record.to_dict(),
+                "invite_id": record.batch_id,
+                "known_peer_hint_key_bindings": _read_local_json_file(str(hints_path))[
+                    "known_peer_hint_key_bindings"
+                ],
+                "known_peer_hints": _read_local_json_file(str(hints_path))[
+                    "known_peer_hints"
+                ],
+                "nonce_membership_proof": [dict(item) for item in proof],
+                "private_invite_nonce": nonce,
+                "relay_bootstrap_capsule": relay_capsule,
+                "starmap_manifest_payload": _default_public_rc_starmap_payload(),
+            }
+            bundles.append(
+                attach_shortcode_invite_bundle_auth(
+                    bundle,
+                    inviting_agent_id=inviting_agent_id,
+                    inviting_bls_public_key_hex=inviting_bls_public_key_hex,
+                    inviting_bls_secret_key_hex=secret_key_hex,
+                )
+            )
+
+    store_request = {
+        "bundles": [encode_shortcode_invite_bundle(bundle) for bundle in bundles],
+        "inviting_agent_id": inviting_agent_id,
+        "inviting_bls_public_key_hex": inviting_bls_public_key_hex,
+        "ttl_seconds": ttl_seconds,
+    }
+    store_request["request_signature"] = sign_relay_invite_store_digest(
+        secret_key_hex,
+        relay_invite_store_payload_ref(store_request),
+    )
+    output_path = str(getattr(args, "output", "") or "")
+    if bool(getattr(args, "stdout", False)):
+        return {"action": "invite-generate", "output": bundles[0] if slots == 1 else {"bundles": bundles}}
+    if output_path:
+        payload = bundles[0] if slots == 1 else {"bundles": bundles}
+        _write_json_file_atomic(Path(output_path).expanduser(), payload, indent=2, mode=0o600)
+    result: dict[str, Any] = {
+        "action": "invite-generate",
+        "bundle_count": slots,
+        "inviting_agent_id": inviting_agent_id,
+        "inviting_bls_public_key_hex": inviting_bls_public_key_hex,
+        "output_path": output_path or "",
+        "relay_url": relay_url,
+        "store_request": store_request if bool(getattr(args, "emit_store_request", False)) else None,
+        "upload": bool(getattr(args, "upload", False)),
+    }
+    if bool(getattr(args, "upload", False)):
+        if not relay_tls_pin:
+            raise ValueError("invite_generate_relay_tls_cert_der_sha256_required")
+        store_response = _post_invite_store_request(
+            relay_url=relay_url,
+            tls_cert_der_sha256=relay_tls_pin,
+            store_request=store_request,
+        )
+        result["code"] = store_response["code"]
+        result["install_command"] = f"curl -fsSL https://ilc.network/install.sh | bash -s -- --invite-code {store_response['code']}"
+        result["status_url"] = store_response.get("status_url", "")
+        result["store_response"] = store_response
+    return result
+
+
+def _require_uint_arg(value: object, token: str, *, min_value: int, max_value: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(token)
+    if value < min_value or value > max_value:
+        raise ValueError(token)
+    return value
+
+
+def _parse_invite_duration_seconds(value: str) -> int:
+    text = value.strip().lower()
+    match = re.fullmatch(r"([1-9][0-9]*)([smhd])", text)
+    if match is None:
+        raise ValueError("invite_generate_ttl_invalid")
+    amount = int(match.group(1))
+    multiplier = {"s": 1, "m": 60, "h": 3600, "d": 86400}[match.group(2)]
+    seconds = amount * multiplier
+    if seconds > 30 * 24 * 60 * 60:
+        raise ValueError("invite_generate_ttl_invalid")
+    return seconds
+
+
+def _load_bundled_relay_capsule_payload() -> dict[str, Any]:
+    import importlib.resources as importlib_resources
+
+    resource = importlib_resources.files("ilc_core.data").joinpath(
+        "relay_bootstrap_capsule.json"
+    )
+    return _loads_json_no_constants(resource.read_text(encoding="utf-8"))
+
+
+def _load_bundled_relay_records_for_generate() -> tuple[dict[str, Any], ...]:
+    try:
+        capsule = _load_bundled_relay_capsule_payload()
+        if not isinstance(capsule, dict):
+            return ()
+        return _install_verified_relay_bootstrap_records(
+            capsule,
+            expected_network_id=INSTALL_RELAY_DEFAULT_NETWORK_ID,
+            current_epoch=0,
+        )
+    except (FileNotFoundError, ValueError):
+        return ()
+
+
+def _post_invite_store_request(
+    *,
+    relay_url: str,
+    tls_cert_der_sha256: str,
+    store_request: dict[str, Any],
+) -> dict[str, Any]:
+    import http.client
+    import ssl
+
+    from ilc_core.network.relay.relay_server import RELAY_INVITE_STORE_PATH
+
+    parsed = urlparse(relay_url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise ValueError("invite_generate_relay_url_invalid")
+    if parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ValueError("invite_generate_relay_url_invalid")
+    if parsed.path not in ("", "/"):
+        raise ValueError("invite_generate_relay_url_invalid")
+    clean_tls_pin = _install_relay_tls_pin(
+        tls_cert_der_sha256,
+        "invite_generate_relay_tls_cert_der_sha256_invalid",
+    )
+    body = json.dumps(
+        store_request,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+    if len(body) > 16 * 1024 * 1024:
+        raise ValueError("invite_generate_store_request_too_large")
+
+    context = ssl._create_unverified_context()
+    conn = http.client.HTTPSConnection(
+        parsed.hostname,
+        port=parsed.port or 443,
+        timeout=15,
+        context=context,
+    )
+    try:
+        conn.connect()
+        if conn.sock is None:
+            raise ValueError("invite_generate_relay_tls_connection_failed")
+        cert_der = conn.sock.getpeercert(binary_form=True)
+        actual_pin = hashlib.sha256(cert_der).hexdigest()
+        if actual_pin != clean_tls_pin:
+            raise ValueError("invite_generate_relay_tls_pin_mismatch")
+        conn.request(
+            "POST",
+            RELAY_INVITE_STORE_PATH,
+            body=body,
+            headers={
+                "Accept": "application/json",
+                "Content-Length": str(len(body)),
+                "Content-Type": "application/json",
+                "User-Agent": "ilc-invite-generate/1",
+            },
+        )
+        response = conn.getresponse()
+        raw = response.read(65_537)
+        if len(raw) > 65_536:
+            raise ValueError("invite_generate_store_response_too_large")
+        try:
+            payload = _loads_json_no_constants(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise ValueError("invite_generate_store_response_invalid") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("invite_generate_store_response_invalid")
+        if response.status != 200:
+            token = payload.get("error")
+            if not isinstance(token, str) or not token:
+                token = "invite_generate_store_failed"
+            raise ValueError(f"invite_generate_store_failed:{response.status}:{token}")
+        code = payload.get("code")
+        if not isinstance(code, str) or not code:
+            raise ValueError("invite_generate_store_response_code_missing")
+        return dict(payload)
+    finally:
+        conn.close()
+
+
+def _load_first_bundled_relay_url() -> str:
+    records = _load_bundled_relay_records_for_generate()
+    if not records:
+        return ""
+    selected = sorted(records, key=lambda record: str(record.get("control_url")))[0]
+    return str(selected.get("control_url") or "")
+
+
+def _default_public_rc_starmap_payload() -> dict[str, Any]:
+    from ilc_core.bundle.default_public_rc_starmap import (
+        build_default_public_rc_starmap_payload,
+    )
+
+    return build_default_public_rc_starmap_payload()
+
+
+def _default_public_rc_starmap_witness() -> dict[str, Any]:
+    from ilc_core.bundle.default_public_rc_starmap import (
+        build_default_public_rc_starmap_payload,
+        build_default_public_rc_starmap_witness,
+    )
+
+    return build_default_public_rc_starmap_witness(
+        build_default_public_rc_starmap_payload()
+    )
+
+
+def _build_invite_generate_nonce_proof(
+    private_nonces: tuple[str, ...],
+    nonce_index: int,
+) -> tuple[dict[str, str], ...]:
+    from ilc_core.genesis.invitation_provenance_record import build_nonce_membership_proof
+
+    nonces = tuple(bytes.fromhex(value) for value in private_nonces)
+    return build_nonce_membership_proof(nonces=nonces, nonce_index=nonce_index)
 
 
 def _invite_bundle_optional_bootstrap_fields(args: argparse.Namespace) -> dict[str, Any]:
@@ -3451,6 +3774,61 @@ def _build_parser() -> JsonArgumentParser:
             action="store_true",
             help="Explicitly enable default-off invite CLI plumbing",
         )
+        p_invite_generate = invite_subparsers.add_parser(
+            "generate",
+            help="Generate relay-hosted invite-code material with zero required flags",
+        )
+        p_invite_generate.add_argument(
+            "--slots",
+            type=int,
+            default=1,
+            help="Number of invite slots to generate (default: 1; max: 10000)",
+        )
+        p_invite_generate.add_argument(
+            "--ttl",
+            default="24h",
+            help="Invite-code TTL such as 30m, 24h, or 7d (default: 24h; max: 30d)",
+        )
+        p_invite_generate.add_argument(
+            "--relay-url",
+            default="",
+            help="Override relay HTTPS URL; otherwise use the bundled relay capsule",
+        )
+        p_invite_generate.add_argument(
+            "--relay-tls-cert-der-sha256",
+            default="",
+            help="TLS certificate DER SHA-256 pin for --relay-url overrides outside the bundled capsule",
+        )
+        p_invite_generate.add_argument(
+            "--output",
+            default="~/.ilc/invite_bundle.json",
+            help="Path to write generated bundle material (default: ~/.ilc/invite_bundle.json)",
+        )
+        p_invite_generate.add_argument(
+            "--upload",
+            action="store_true",
+            help="Upload signed invite bundles to the selected relay and print the invite code",
+        )
+        p_invite_generate.add_argument(
+            "--stdout",
+            action="store_true",
+            help="Write generated bundle material to stdout JSON",
+        )
+        p_invite_generate.add_argument(
+            "--emit-store-request",
+            action="store_true",
+            help="Include the signed relay store request in JSON output",
+        )
+        p_invite_generate.add_argument(
+            "--batch-id",
+            default="",
+            help="Optional deterministic batch id; omitted generates a random id",
+        )
+        p_invite_generate.add_argument(
+            "--intended-profile",
+            default="public_rc_invitee_bootstrap",
+            help="Invite bundle intended profile",
+        )
 
         identity_subparsers.add_parser("show", help="Show local identity state")
 
@@ -4435,6 +4813,11 @@ def _load_install_invite_bundle(source: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("install_invite_bundle_not_object")
     _reject_float(payload, "install_invite_float_not_allowed")
+    if "shortcode_auth" in payload:
+        from ilc_core.network.relay.relay_server import verify_shortcode_invite_bundle
+
+        if not verify_shortcode_invite_bundle(payload):
+            raise ValueError("install_sh_invite_code_bundle_signature_invalid")
     return payload
 
 

@@ -136,7 +136,7 @@ def test_install_sh_dev_channel_exits_error() -> None:
 def test_install_sh_missing_invite_bundle_required() -> None:
     result = _run_install_sh("--dry-run")
     assert result.returncode == 2
-    assert "install_sh_invite_bundle_required" in result.stderr
+    assert "install_sh_invite_bundle_or_code_required" in result.stderr
 
 
 def test_install_sh_no_onboard_flag_is_not_public_install_bypass() -> None:

@@ -39,6 +39,12 @@ ILC_RELAY_BOOTSTRAP_CAPSULE_DST: Final[bytes] = (
 ILC_INVITEE_INSTALL_RECEIPT_DST: Final[bytes] = (
     b"ILC_INVITEE_INSTALL_RECEIPT_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
+ILC_RELAY_INVITE_STORE_DST: Final[bytes] = (
+    b"ILC_RELAY_INVITE_STORE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
+)
+ILC_RELAY_INVITE_BUNDLE_DST: Final[bytes] = (
+    b"ILC_RELAY_INVITE_BUNDLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
+)
 
 _IKM_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{64}$")
 _BLS_PUBLIC_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
@@ -57,6 +63,8 @@ _RUST_SUITE_RELAY_LIFECYCLE: Final[str] = "relay_lifecycle"
 _RUST_SUITE_RELAY_BOOTSTRAP_RECORD: Final[str] = "relay_bootstrap_record"
 _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE: Final[str] = "relay_bootstrap_capsule"
 _RUST_SUITE_INVITEE_INSTALL_RECEIPT: Final[str] = "invitee_install_receipt"
+_RUST_SUITE_RELAY_INVITE_STORE: Final[str] = "relay_invite_store"
+_RUST_SUITE_RELAY_INVITE_BUNDLE: Final[str] = "relay_invite_bundle"
 _REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[2]
 
 
@@ -84,6 +92,14 @@ class _ILCInviteeInstallReceipt(G2Basic):
     DST = ILC_INVITEE_INSTALL_RECEIPT_DST
 
 
+class _ILCRelayInviteStore(G2Basic):
+    DST = ILC_RELAY_INVITE_STORE_DST
+
+
+class _ILCRelayInviteBundle(G2Basic):
+    DST = ILC_RELAY_INVITE_BUNDLE_DST
+
+
 def keypair_from_ikm_hex(ikm_hex: str) -> tuple[str, str]:
     """Return ``(secret_key_hex, public_key_hex)`` from a 32-byte IKM hex string."""
 
@@ -97,6 +113,23 @@ def keypair_from_ikm_hex(ikm_hex: str) -> tuple[str, str]:
     public_key_hex = bytes(G2Basic.SkToPk(secret_key_int)).hex()
     _require_hex(public_key_hex, _BLS_PUBLIC_KEY_RE, "identity_agent_id_invalid")
     return secret_key_hex, public_key_hex
+
+
+def public_key_from_secret_key_hex(secret_key_hex: str) -> str:
+    """Return a compressed G1 public key hex string for a BLS secret key."""
+
+    secret_key_int = int(
+        _require_hex(
+            secret_key_hex,
+            _BLS_SECRET_KEY_RE,
+            "bls_private_key_invalid",
+        ),
+        16,
+    )
+    if not _is_valid_secret_key_int(secret_key_int):
+        raise ValueError("bls_private_key_invalid")
+    public_key_hex = bytes(G2Basic.SkToPk(secret_key_int)).hex()
+    return _require_hex(public_key_hex, _BLS_PUBLIC_KEY_RE, "bls_public_key_invalid")
 
 
 def sign_invite_pop_digest(secret_key_hex: str, digest_hex: str) -> str:
@@ -174,6 +207,32 @@ def sign_invitee_install_receipt_digest(secret_key_hex: str, digest_hex: str) ->
         private_key_token="invitee_install_receipt_private_key_invalid",
         digest_token="invitee_install_receipt_digest_invalid",
         signature_token="invitee_install_receipt_signature_invalid",
+    )
+
+
+def sign_relay_invite_store_digest(secret_key_hex: str, digest_hex: str) -> str:
+    """Sign a relay invite-code store request digest."""
+
+    return _sign_digest_with_ciphersuite(
+        secret_key_hex=secret_key_hex,
+        digest_hex=digest_hex,
+        ciphersuite=_ILCRelayInviteStore,
+        private_key_token="relay_invite_store_private_key_invalid",
+        digest_token="relay_invite_store_payload_ref_invalid",
+        signature_token="relay_invite_store_signature_invalid",
+    )
+
+
+def sign_relay_invite_bundle_digest(secret_key_hex: str, digest_hex: str) -> str:
+    """Sign a shortcode invite-bundle digest."""
+
+    return _sign_digest_with_ciphersuite(
+        secret_key_hex=secret_key_hex,
+        digest_hex=digest_hex,
+        ciphersuite=_ILCRelayInviteBundle,
+        private_key_token="relay_invite_bundle_private_key_invalid",
+        digest_token="relay_invite_bundle_payload_ref_invalid",
+        signature_token="relay_invite_bundle_signature_invalid",
     )
 
 
@@ -314,6 +373,46 @@ def verify_invitee_install_receipt_digest(
         public_key_token="invitee_install_receipt_agent_id_invalid",
         digest_token="invitee_install_receipt_digest_invalid",
         signature_token="invitee_install_receipt_signature_invalid",
+    )
+
+
+def verify_relay_invite_store_digest(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+) -> bool:
+    """Verify a relay invite-code store request signature."""
+
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCRelayInviteStore,
+        rust_suite=_RUST_SUITE_RELAY_INVITE_STORE,
+        public_key_token="relay_invite_store_public_key_invalid",
+        digest_token="relay_invite_store_payload_ref_invalid",
+        signature_token="relay_invite_store_signature_invalid",
+    )
+
+
+def verify_relay_invite_bundle_digest(
+    *,
+    public_key_hex: str,
+    digest_hex: str,
+    signature_hex: str,
+) -> bool:
+    """Verify a shortcode invite-bundle authenticity signature."""
+
+    return _verify_digest_with_ciphersuite(
+        public_key_hex=public_key_hex,
+        digest_hex=digest_hex,
+        signature_hex=signature_hex,
+        ciphersuite=_ILCRelayInviteBundle,
+        rust_suite=_RUST_SUITE_RELAY_INVITE_BUNDLE,
+        public_key_token="relay_invite_bundle_public_key_invalid",
+        digest_token="relay_invite_bundle_payload_ref_invalid",
+        signature_token="relay_invite_bundle_signature_invalid",
     )
 
 
@@ -458,6 +557,8 @@ def _require_rust_suite(value: str) -> str:
         _RUST_SUITE_RELAY_BOOTSTRAP_RECORD,
         _RUST_SUITE_RELAY_BOOTSTRAP_CAPSULE,
         _RUST_SUITE_INVITEE_INSTALL_RECEIPT,
+        _RUST_SUITE_RELAY_INVITE_STORE,
+        _RUST_SUITE_RELAY_INVITE_BUNDLE,
     }:
         raise ValueError("bls_rust_suite_invalid")
     return value
@@ -479,13 +580,18 @@ __all__ = [
     "ILC_RELAY_ADMISSION_DST",
     "ILC_RELAY_BOOTSTRAP_CAPSULE_DST",
     "ILC_RELAY_BOOTSTRAP_RECORD_DST",
+    "ILC_RELAY_INVITE_BUNDLE_DST",
+    "ILC_RELAY_INVITE_STORE_DST",
     "ILC_RELAY_LIFECYCLE_DST",
     "keypair_from_ikm_hex",
+    "public_key_from_secret_key_hex",
     "sign_invite_pop_digest",
     "sign_invitee_install_receipt_digest",
     "sign_relay_admission_digest",
     "sign_relay_bootstrap_capsule_digest",
     "sign_relay_bootstrap_record_digest",
+    "sign_relay_invite_bundle_digest",
+    "sign_relay_invite_store_digest",
     "sign_relay_lifecycle_digest",
     "verify_bls_signature_rust",
     "verify_invite_pop_digest",
@@ -493,5 +599,7 @@ __all__ = [
     "verify_relay_admission_digest",
     "verify_relay_bootstrap_capsule_digest",
     "verify_relay_bootstrap_record_digest",
+    "verify_relay_invite_bundle_digest",
+    "verify_relay_invite_store_digest",
     "verify_relay_lifecycle_digest",
 ]

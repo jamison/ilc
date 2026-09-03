@@ -19,6 +19,7 @@ RELAY-RENDEZVOUS-DEPLOY-00 starts it on live relay hosts.
 from __future__ import annotations
 
 import asyncio
+import base64
 from concurrent.futures import TimeoutError as FutureTimeoutError
 from collections import deque
 from collections.abc import Mapping
@@ -41,10 +42,14 @@ from urllib.parse import urlparse
 from ilc_core import __version__ as ILC_CORE_VERSION
 from ilc_core.identity.bls_backend import (
     sign_relay_bootstrap_record_digest,
+    sign_relay_invite_bundle_digest,
     verify_relay_bootstrap_capsule_digest,
     verify_relay_bootstrap_record_digest,
+    verify_relay_invite_bundle_digest,
+    verify_relay_invite_store_digest,
     verify_relay_lifecycle_digest,
 )
+from ilc_core.network.relay.invite_code import generate_code, validate_code
 from ilc_core.network.relay.relay_client import (
     POP_DOMAIN,
     RELAY_ADMISSION_DOMAIN,
@@ -59,6 +64,7 @@ from ilc_core.network.relay.relay_client import (
 
 
 RELAY_SERVER_NOT_ACTIVATED = False
+INVITE_SHORTCODE_NOT_ACTIVATED = True
 RELAY_SERVER_SCHEMA_VERSION = "relay_server_GAP_RELAY_SERVER_IMPL_00.v0.1"
 RELAY_SERVER_TOKEN = "relay_server_impl_committed_GAP_RELAY_SERVER_IMPL_00"
 RELAY_ABUSE_LIMITS_SCHEMA_VERSION = "relay_abuse_limits_GAP_RELAY_ABUSE_LIMITS_FIX1_00.v0.1"
@@ -68,6 +74,8 @@ RELAY_SLOT_KEEPALIVE_PATH = "/relay/slot/keepalive"
 RELAY_SLOT_RELEASE_PATH = "/relay/slot/release"
 RELAY_HEALTH_PATH = "/relay/health"
 RELAY_DEBUG_SLOTS_PATH = "/relay/debug/slots"
+RELAY_INVITE_STORE_PATH = "/relay/invite/store"
+RELAY_INVITE_PATH_PREFIX = "/relay/invite/"
 
 _DEFAULT_NETWORK_ID = "public-rc"
 _DEFAULT_RELAY_PORT = 50151
@@ -80,7 +88,18 @@ _RELAY_BOOTSTRAP_SIGNATURE_ALG = "BLS12-381-G2-SHA-256-SSWU-RO"
 _TLS_MODE_PINNED_DER_SHA256 = "pinned_der_sha256"
 _TLS_MODE_LOOPBACK_ONLY = "loopback_only"
 _MAX_REQUEST_BYTES = 32_768
+_MAX_INVITE_STORE_REQUEST_BYTES = 16 * 1024 * 1024
 _MAX_RESPONSE_BYTES = 65_536
+_MAX_INVITE_BUNDLE_BYTES = 32_768
+_MAX_INVITE_BUNDLES_PER_CODE = 10_000
+_MAX_INVITE_CODE_COLLISION_ATTEMPTS = 8
+_MAX_INVITE_TTL_SECONDS = 30 * 24 * 60 * 60
+_INVITE_FETCH_RATE_LIMIT = 10
+_INVITE_FETCH_RATE_WINDOW_SECONDS = 60.0
+_INVITE_STORE_RATE_LIMIT = 5
+_INVITE_STORE_RATE_WINDOW_SECONDS = 60.0 * 60.0
+_INVITE_STORE_SOURCE_RATE_LIMIT = 60
+_INVITE_RATE_LIMIT_MAX_ENTRIES = 65_536
 _MAX_DATAGRAM_BYTES = 65_535
 _DATA_PLANE_OPERATION_TIMEOUT_SECONDS = 5.0
 _MAX_EPOCH = (1 << 64) - 1
@@ -110,6 +129,27 @@ _UDP_FORWARDER_COUNTER_KEYS = (
     "unknown_sender_drops",
 )
 _CONTROLLED_TOKEN_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
+_INVITE_STORE_REQUEST_KEYS = frozenset(
+    {
+        "bundles",
+        "inviting_agent_id",
+        "inviting_bls_public_key_hex",
+        "request_signature",
+        "ttl_seconds",
+    }
+)
+_INVITE_STORE_SIGNED_KEYS = _INVITE_STORE_REQUEST_KEYS - frozenset({"request_signature"})
+_SHORTCODE_AUTH_SCHEMA_VERSION = "relay_invite_code_bundle_auth.v0.1"
+_SHORTCODE_AUTH_KEYS = frozenset(
+    {
+        "bundle_payload_sha384",
+        "inviting_agent_id",
+        "inviting_bls_public_key_hex",
+        "schema_version",
+        "signature",
+        "signature_alg",
+    }
+)
 _RELAY_BOOTSTRAP_RECORD_PAYLOAD_KEYS = frozenset(
     {
         "control_port",
@@ -561,6 +601,81 @@ class _FailedAdmissionTracker:
         return now
 
 
+@dataclass
+class _InviteRateEntry:
+    window_start: float
+    count: int = 0
+
+
+class _InviteRateLimiter:
+    """Bounded fixed-window limiter for shortcode control-plane endpoints."""
+
+    def __init__(
+        self,
+        *,
+        limit: int,
+        window_seconds: float,
+        max_entries: int = _INVITE_RATE_LIMIT_MAX_ENTRIES,
+        now_provider: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self._limit = _require_uint_range(
+            limit,
+            "invite_rate_limit_invalid",
+            1,
+            10_000,
+        )
+        self._window_seconds = _require_positive_finite_seconds(
+            window_seconds,
+            "invite_rate_window_invalid",
+        )
+        self._max_entries = _require_uint_range(
+            max_entries,
+            "invite_rate_max_entries_invalid",
+            1,
+            _INVITE_RATE_LIMIT_MAX_ENTRIES,
+        )
+        self._now_provider = now_provider
+        self._entries: dict[str, _InviteRateEntry] = {}
+        self._order: deque[str] = deque()
+
+    def allow(self, key: str) -> bool:
+        clean_key = _require_rate_key(key)
+        now = self._now()
+        entry = self._entries.get(clean_key)
+        if entry is None or now - entry.window_start >= self._window_seconds:
+            if entry is None:
+                self._evict_if_needed()
+                self._order.append(clean_key)
+            self._entries[clean_key] = _InviteRateEntry(window_start=now, count=1)
+            return True
+        if entry.count >= self._limit:
+            return False
+        entry.count += 1
+        return True
+
+    def _evict_if_needed(self) -> None:
+        while len(self._entries) >= self._max_entries and self._order:
+            self._entries.pop(self._order.popleft(), None)
+        if len(self._entries) >= self._max_entries:
+            self._entries.clear()
+
+    def _now(self) -> float:
+        now = self._now_provider()
+        if not math.isfinite(now):
+            raise RelayServerError("invite_rate_clock_invalid")
+        return now
+
+
+@dataclass
+class _InviteCodeBatch:
+    code: str
+    bundles_b64: deque[str]
+    expires_at_unix: float
+    inviting_agent_id: str
+    inviting_bls_public_key_hex: str
+    slots_total: int
+
+
 class _RelayPortPool:
     """Thread-safe lowest-free allocator for per-slot UDP data ports."""
 
@@ -618,6 +733,19 @@ class RelayRendezvousServer:
         self._active_slot_by_agent: dict[str, str] = {}
         self._packet_rate_buckets: dict[str, _PacketRateBucket] = {}
         self._failed_admissions = _FailedAdmissionTracker()
+        self._invite_batches: dict[str, _InviteCodeBatch] = {}
+        self._invite_fetch_limiter = _InviteRateLimiter(
+            limit=_INVITE_FETCH_RATE_LIMIT,
+            window_seconds=_INVITE_FETCH_RATE_WINDOW_SECONDS,
+        )
+        self._invite_store_limiter = _InviteRateLimiter(
+            limit=_INVITE_STORE_RATE_LIMIT,
+            window_seconds=_INVITE_STORE_RATE_WINDOW_SECONDS,
+        )
+        self._invite_store_source_limiter = _InviteRateLimiter(
+            limit=_INVITE_STORE_SOURCE_RATE_LIMIT,
+            window_seconds=_INVITE_STORE_RATE_WINDOW_SECONDS,
+        )
         self._tombstones: dict[str, _RelayTombstone] = {}
         self._tombstone_order: deque[str] = deque()
         self._state_lock = threading.RLock()
@@ -988,6 +1116,143 @@ class RelayRendezvousServer:
                 current_epoch=slot.current_epoch,
             )
 
+    def store_invite_bundles(
+        self,
+        payload: Mapping[str, Any],
+        *,
+        source_host: str = "127.0.0.1",
+    ) -> dict[str, Any]:
+        body = _require_mapping(payload, "relay_invite_store_request_must_be_object")
+        _require_exact_fields(
+            body,
+            _INVITE_STORE_REQUEST_KEYS,
+            "relay_invite_store_request",
+        )
+        inviting_agent_id = _require_agent_id(
+            body.get("inviting_agent_id"),
+            "relay_invite_store_inviting_agent_id_invalid",
+        )
+        inviting_bls_public_key_hex = _require_agent_id(
+            body.get("inviting_bls_public_key_hex"),
+            "relay_invite_store_inviting_bls_public_key_invalid",
+        )
+        _require_shortcode_inviter_key_binding(
+            inviting_agent_id,
+            inviting_bls_public_key_hex,
+        )
+        if not self._invite_store_source_limiter.allow(f"ip:{source_host}:store"):
+            raise RelayServerError("relay_invite_store_source_rate_limited")
+        ttl_seconds = _require_uint_range(
+            body.get("ttl_seconds"),
+            "relay_invite_store_ttl_seconds_invalid",
+            1,
+            _MAX_INVITE_TTL_SECONDS,
+        )
+        signature = _require_bls_signature_hex(
+            body.get("request_signature"),
+            "relay_invite_store_signature_invalid",
+        )
+        payload_ref = relay_invite_store_payload_ref(body)
+        if not verify_relay_invite_store_digest(
+            public_key_hex=inviting_bls_public_key_hex,
+            digest_hex=payload_ref,
+            signature_hex=signature,
+        ):
+            raise RelayServerError("relay_invite_store_signature_verification_failed")
+        if not self._invite_store_limiter.allow(f"agent:{inviting_agent_id}"):
+            raise RelayServerError("relay_invite_store_rate_limited")
+        bundles = _require_invite_bundle_b64_list(body.get("bundles"))
+        verified_bundles: list[str] = []
+        for encoded in bundles:
+            bundle = decode_shortcode_invite_bundle(encoded)
+            if not verify_shortcode_invite_bundle(
+                bundle,
+                inviting_agent_id=inviting_agent_id,
+                inviting_bls_public_key_hex=inviting_bls_public_key_hex,
+            ):
+                raise RelayServerError("relay_invite_bundle_signature_verification_failed")
+            verified_bundles.append(encoded)
+        with self._state_lock:
+            code = self._allocate_invite_code_locked()
+            expires_at_unix = time.time() + ttl_seconds
+            self._invite_batches[code] = _InviteCodeBatch(
+                code=code,
+                bundles_b64=deque(verified_bundles),
+                expires_at_unix=expires_at_unix,
+                inviting_agent_id=inviting_agent_id,
+                inviting_bls_public_key_hex=inviting_bls_public_key_hex,
+                slots_total=len(verified_bundles),
+            )
+        return {
+            "code": code,
+            "expires_at": _format_unix_utc(expires_at_unix),
+            "schema_version": "relay_invite_code_store_response.v0.1",
+            "slots": len(verified_bundles),
+            "status_url": f"{self.config.relay_base_url}{RELAY_INVITE_PATH_PREFIX}{code}/status",
+        }
+
+    def fetch_invite_bundle(
+        self,
+        code: str,
+        *,
+        source_host: str = "127.0.0.1",
+    ) -> dict[str, Any]:
+        clean_code = _require_invite_code(code)
+        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:fetch"):
+            raise RelayServerError("relay_invite_fetch_rate_limited")
+        with self._state_lock:
+            batch = self._require_invite_batch_locked(clean_code)
+            bundle_b64 = batch.bundles_b64.popleft()
+            slots_remaining = len(batch.bundles_b64)
+        return {
+            "bundle_b64": bundle_b64,
+            "schema_version": "relay_invite_code_fetch_response.v0.1",
+            "slots_remaining": slots_remaining,
+        }
+
+    def invite_status(
+        self,
+        code: str,
+        *,
+        source_host: str = "127.0.0.1",
+    ) -> dict[str, Any]:
+        clean_code = _require_invite_code(code)
+        if not self._invite_fetch_limiter.allow(f"ip:{source_host}:status"):
+            raise RelayServerError("relay_invite_status_rate_limited")
+        with self._state_lock:
+            batch = self._require_invite_batch_locked(clean_code)
+            return {
+                "code": batch.code,
+                "expires_at": _format_unix_utc(batch.expires_at_unix),
+                "inviting_agent_ref": _sha256_text(batch.inviting_agent_id),
+                "inviting_bls_public_key_ref": _sha256_text(
+                    batch.inviting_bls_public_key_hex
+                ),
+                "schema_version": "relay_invite_code_status_response.v0.1",
+                "slots_remaining": len(batch.bundles_b64),
+                "slots_total": batch.slots_total,
+            }
+
+    def _allocate_invite_code_locked(self) -> str:
+        now = time.time()
+        for _attempt in range(_MAX_INVITE_CODE_COLLISION_ATTEMPTS):
+            code = generate_code()
+            batch = self._invite_batches.get(code)
+            if batch is None or batch.expires_at_unix <= now:
+                return code
+        raise RelayServerError("invite_code_generation_exhausted")
+
+    def _require_invite_batch_locked(self, code: str) -> _InviteCodeBatch:
+        batch = self._invite_batches.get(code)
+        if batch is None:
+            raise RelayServerError("relay_invite_code_not_found")
+        if batch.expires_at_unix <= time.time():
+            self._invite_batches.pop(code, None)
+            raise RelayServerError("code_expired")
+        if not batch.bundles_b64:
+            raise RelayServerError("code_exhausted")
+        return batch
+
     def handle_json_request(
         self,
         *,
@@ -1001,6 +1266,28 @@ class RelayRendezvousServer:
                 return 200, self.health()
             if method == "GET" and path == RELAY_DEBUG_SLOTS_PATH:
                 return 200, self.debug_slots(source_host=source_host)
+            invite_route = _parse_invite_route(method, path)
+            if invite_route is not None:
+                if INVITE_SHORTCODE_NOT_ACTIVATED:
+                    return 404, {"error": "invite_shortcode_not_activated"}
+                action, code = invite_route
+                if action == "store":
+                    if method != "POST":
+                        return 405, {"error": "relay_method_not_allowed"}
+                    body = _require_mapping(
+                        payload,
+                        "relay_invite_store_request_must_be_object",
+                    )
+                    return 200, self.store_invite_bundles(
+                        body,
+                        source_host=source_host,
+                    )
+                if method != "GET":
+                    return 405, {"error": "relay_method_not_allowed"}
+                if action == "fetch":
+                    return 200, self.fetch_invite_bundle(code, source_host=source_host)
+                if action == "status":
+                    return 200, self.invite_status(code, source_host=source_host)
             if method != "POST":
                 return 405, {"error": "relay_method_not_allowed"}
             body = _require_mapping(payload, "relay_request_body_must_be_object")
@@ -1012,7 +1299,8 @@ class RelayRendezvousServer:
                 return 200, self.release(body)
             return 404, {"error": "relay_path_not_found"}
         except (RelayClientError, RelayServerError, ValueError) as exc:
-            return 400, {"error": _error_token(exc)}
+            token = _error_token(exc)
+            return _status_for_error_token(token), {"error": token}
 
     def _verify_lifecycle_payload_ref(
         self,
@@ -1731,7 +2019,12 @@ def make_relay_http_handler(
 
         def do_POST(self) -> None:  # noqa: N802
             try:
-                raw = self._read_request_body()
+                max_bytes = (
+                    _MAX_INVITE_STORE_REQUEST_BYTES
+                    if urlparse(self.path).path == RELAY_INVITE_STORE_PATH
+                    else _MAX_REQUEST_BYTES
+                )
+                raw = self._read_request_body(max_bytes=max_bytes)
                 payload = json.loads(
                     raw.decode("utf-8"),
                     parse_constant=lambda _constant: (_ for _ in ()).throw(
@@ -1752,14 +2045,14 @@ def make_relay_http_handler(
         def log_message(self, *_args: object) -> None:
             return
 
-        def _read_request_body(self) -> bytes:
+        def _read_request_body(self, *, max_bytes: int) -> bytes:
             self.connection.settimeout(request_timeout)
             length_header = self.headers.get("Content-Length")
             try:
                 length = int(length_header or "0")
             except ValueError as exc:
                 raise RelayServerError("relay_content_length_invalid") from exc
-            if length < 0 or length > _MAX_REQUEST_BYTES:
+            if length < 0 or length > max_bytes:
                 raise RelayServerError("relay_request_too_large")
             raw = self.rfile.read(length)
             if len(raw) != length:
@@ -1977,6 +2270,195 @@ def relay_bootstrap_capsule_payload_ref(capsule: Mapping[str, Any]) -> str:
 
     payload = _relay_bootstrap_capsule_payload(capsule)
     return hashlib.sha384(_canonical_json_bytes(payload)).hexdigest()
+
+
+def relay_invite_store_payload_ref(request: Mapping[str, Any]) -> str:
+    """Return the SHA-384 digest signed for shortcode store authentication."""
+
+    body = _require_mapping(request, "relay_invite_store_request_must_be_object")
+    _require_exact_keys(
+        body,
+        allowed_key_sets=(_INVITE_STORE_REQUEST_KEYS, _INVITE_STORE_SIGNED_KEYS),
+        token="relay_invite_store_request_keys_invalid",
+    )
+    signed_body = {
+        key: body[key]
+        for key in sorted(_INVITE_STORE_SIGNED_KEYS)
+    }
+    return hashlib.sha384(
+        _canonical_json_bytes(
+            signed_body,
+            max_bytes=_MAX_INVITE_STORE_REQUEST_BYTES,
+        )
+    ).hexdigest()
+
+
+def shortcode_invite_bundle_payload_ref(bundle: Mapping[str, Any]) -> str:
+    """Return the SHA-384 digest for an invite bundle excluding shortcode auth."""
+
+    clean_bundle = _require_mapping(bundle, "relay_invite_bundle_must_be_object")
+    payload = {
+        str(key): value
+        for key, value in clean_bundle.items()
+        if key != "shortcode_auth"
+    }
+    if not payload:
+        raise RelayServerError("relay_invite_bundle_payload_empty")
+    return hashlib.sha384(
+        _canonical_json_bytes(payload, max_bytes=_MAX_INVITE_BUNDLE_BYTES)
+    ).hexdigest()
+
+
+def attach_shortcode_invite_bundle_auth(
+    bundle: Mapping[str, Any],
+    *,
+    inviting_agent_id: str,
+    inviting_bls_public_key_hex: str,
+    inviting_bls_secret_key_hex: str,
+) -> dict[str, Any]:
+    """Return an install-ready invite bundle with shortcode BLS authenticity."""
+
+    clean_inviting_agent_id = _require_agent_id(
+        inviting_agent_id,
+        "relay_invite_bundle_inviting_agent_id_invalid",
+    )
+    clean_inviting_bls_public_key_hex = _require_agent_id(
+        inviting_bls_public_key_hex,
+        "relay_invite_bundle_inviting_bls_public_key_invalid",
+    )
+    _require_shortcode_inviter_key_binding(
+        clean_inviting_agent_id,
+        clean_inviting_bls_public_key_hex,
+    )
+    signed_bundle = dict(_require_mapping(bundle, "relay_invite_bundle_must_be_object"))
+    signed_bundle.pop("shortcode_auth", None)
+    payload_ref = shortcode_invite_bundle_payload_ref(signed_bundle)
+    auth = {
+        "bundle_payload_sha384": payload_ref,
+        "inviting_agent_id": clean_inviting_agent_id,
+        "inviting_bls_public_key_hex": clean_inviting_bls_public_key_hex,
+        "schema_version": _SHORTCODE_AUTH_SCHEMA_VERSION,
+        "signature": sign_relay_invite_bundle_digest(
+            secret_key_hex=inviting_bls_secret_key_hex,
+            digest_hex=payload_ref,
+        ),
+        "signature_alg": _RELAY_BOOTSTRAP_SIGNATURE_ALG,
+    }
+    signed_bundle["shortcode_auth"] = auth
+    if not verify_shortcode_invite_bundle(
+        signed_bundle,
+        inviting_agent_id=clean_inviting_agent_id,
+        inviting_bls_public_key_hex=clean_inviting_bls_public_key_hex,
+    ):
+        raise RelayServerError("relay_invite_bundle_signature_self_check_failed")
+    return signed_bundle
+
+
+def verify_shortcode_invite_bundle(
+    bundle: Mapping[str, Any],
+    *,
+    inviting_agent_id: str | None = None,
+    inviting_bls_public_key_hex: str | None = None,
+) -> bool:
+    """Verify shortcode bundle authenticity and optional inviter context."""
+
+    try:
+        clean_bundle = _require_mapping(bundle, "relay_invite_bundle_must_be_object")
+        auth = _require_mapping(
+            clean_bundle.get("shortcode_auth"),
+            "relay_invite_bundle_auth_missing",
+        )
+        _require_exact_keys(
+            auth,
+            allowed_key_sets=(_SHORTCODE_AUTH_KEYS,),
+            token="relay_invite_bundle_auth_keys_invalid",
+        )
+        if auth.get("schema_version") != _SHORTCODE_AUTH_SCHEMA_VERSION:
+            return False
+        if auth.get("signature_alg") != _RELAY_BOOTSTRAP_SIGNATURE_ALG:
+            return False
+        auth_agent_id = _require_agent_id(
+            auth.get("inviting_agent_id"),
+            "relay_invite_bundle_inviting_agent_id_invalid",
+        )
+        auth_bls_pk = _require_agent_id(
+            auth.get("inviting_bls_public_key_hex"),
+            "relay_invite_bundle_inviting_bls_public_key_invalid",
+        )
+        _require_shortcode_inviter_key_binding(auth_agent_id, auth_bls_pk)
+        if inviting_agent_id is not None and auth_agent_id != _require_agent_id(
+            inviting_agent_id,
+            "relay_invite_bundle_inviting_agent_id_invalid",
+        ):
+            return False
+        if inviting_bls_public_key_hex is not None and auth_bls_pk != _require_agent_id(
+            inviting_bls_public_key_hex,
+            "relay_invite_bundle_inviting_bls_public_key_invalid",
+        ):
+            return False
+        payload_ref = shortcode_invite_bundle_payload_ref(clean_bundle)
+        if auth.get("bundle_payload_sha384") != payload_ref:
+            return False
+        signature = _require_bls_signature_hex(
+            auth.get("signature"),
+            "relay_invite_bundle_signature_invalid",
+        )
+        return verify_relay_invite_bundle_digest(
+            public_key_hex=auth_bls_pk,
+            digest_hex=payload_ref,
+            signature_hex=signature,
+        )
+    except (RelayClientError, RelayServerError, ValueError):
+        return False
+
+
+def encode_shortcode_invite_bundle(bundle: Mapping[str, Any]) -> str:
+    """Return canonical base64 encoding for a shortcode invite bundle."""
+
+    raw = _canonical_json_bytes(
+        dict(_require_mapping(bundle, "relay_invite_bundle_must_be_object")),
+        max_bytes=_MAX_INVITE_BUNDLE_BYTES,
+    )
+    return base64.b64encode(raw).decode("ascii")
+
+
+def _require_shortcode_inviter_key_binding(
+    inviting_agent_id: str,
+    inviting_bls_public_key_hex: str,
+) -> None:
+    # CDL-017 public-RC identities are BLS G1 public keys. Future non-BLS AgentID
+    # profiles need a ratified explicit key-binding field before relay shortcodes
+    # may accept distinct inviter identity and verifier key values.
+    if inviting_agent_id != inviting_bls_public_key_hex:
+        raise RelayServerError("relay_invite_inviter_key_binding_unsupported")
+
+
+def decode_shortcode_invite_bundle(bundle_b64: str) -> dict[str, Any]:
+    """Decode a bounded base64 shortcode invite bundle into a JSON object."""
+
+    if not isinstance(bundle_b64, str) or not bundle_b64:
+        raise RelayServerError("relay_invite_bundle_b64_invalid")
+    if len(bundle_b64) > ((_MAX_INVITE_BUNDLE_BYTES + 2) // 3) * 4 + 4:
+        raise RelayServerError("relay_invite_bundle_too_large")
+    try:
+        raw = base64.b64decode(bundle_b64.encode("ascii"), validate=True)
+    except (UnicodeEncodeError, ValueError) as exc:
+        raise RelayServerError("relay_invite_bundle_b64_invalid") from exc
+    if len(raw) > _MAX_INVITE_BUNDLE_BYTES:
+        raise RelayServerError("relay_invite_bundle_too_large")
+    try:
+        payload = json.loads(
+            raw.decode("utf-8"),
+            parse_constant=lambda _constant: (_ for _ in ()).throw(
+                RelayServerError("relay_invite_bundle_json_invalid")
+            ),
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, RelayServerError) as exc:
+        raise RelayServerError("relay_invite_bundle_json_invalid") from exc
+    if not isinstance(payload, dict):
+        raise RelayServerError("relay_invite_bundle_must_be_object")
+    _reject_float(payload, "relay_invite_bundle_float_not_allowed")
+    return payload
 
 
 def parse_relay_bootstrap_capsule(
@@ -2357,7 +2839,11 @@ def _admission_agent_key(value: object) -> str | None:
         return None
 
 
-def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:
+def _canonical_json_bytes(
+    payload: Mapping[str, Any],
+    *,
+    max_bytes: int = _MAX_RESPONSE_BYTES,
+) -> bytes:
     encoded = json.dumps(
         dict(payload),
         allow_nan=False,
@@ -2365,9 +2851,95 @@ def _canonical_json_bytes(payload: Mapping[str, Any]) -> bytes:
         separators=(",", ":"),
         sort_keys=True,
     ).encode("utf-8")
-    if len(encoded) > _MAX_RESPONSE_BYTES:
+    if len(encoded) > max_bytes:
         raise RelayServerError("relay_canonical_payload_too_large")
     return encoded
+
+
+def _reject_float(value: object, token: str, *, depth: int = 0) -> None:
+    if depth > 64:
+        raise RelayServerError(token)
+    if isinstance(value, float):
+        raise RelayServerError(token)
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            _reject_float(key, token, depth=depth + 1)
+            _reject_float(item, token, depth=depth + 1)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _reject_float(item, token, depth=depth + 1)
+
+
+def _require_invite_bundle_b64_list(value: object) -> tuple[str, ...]:
+    if not isinstance(value, list) or not value:
+        raise RelayServerError("relay_invite_store_bundles_invalid")
+    if len(value) > _MAX_INVITE_BUNDLES_PER_CODE:
+        raise RelayServerError("relay_invite_store_too_many_bundles")
+    bundles: list[str] = []
+    for item in value:
+        if not isinstance(item, str) or not item:
+            raise RelayServerError("relay_invite_bundle_b64_invalid")
+        bundles.append(item)
+    return tuple(bundles)
+
+
+def _require_invite_code(value: object) -> str:
+    if not isinstance(value, str) or not validate_code(value):
+        raise RelayServerError("relay_invite_code_invalid")
+    return value
+
+
+def _parse_invite_route(method: str, path: str) -> tuple[str, str] | None:
+    parsed = urlparse(path)
+    clean_path = parsed.path
+    if parsed.query or parsed.fragment:
+        return None
+    if clean_path == RELAY_INVITE_STORE_PATH:
+        return "store", ""
+    if not clean_path.startswith(RELAY_INVITE_PATH_PREFIX):
+        return None
+    suffix = clean_path[len(RELAY_INVITE_PATH_PREFIX):]
+    if suffix.endswith("/status"):
+        code = suffix.removesuffix("/status")
+        return "status", code
+    return "fetch", suffix
+
+
+def _status_for_error_token(token: str) -> int:
+    if token in {"code_exhausted", "code_expired"}:
+        return 410
+    if token.endswith("_rate_limited"):
+        return 429
+    if "too_large" in token or "too_many" in token:
+        return 413
+    return 400
+
+
+def _format_unix_utc(value: float) -> str:
+    if not math.isfinite(value):
+        raise RelayServerError("relay_invite_expiry_invalid")
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(value))
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _require_positive_finite_seconds(value: object, token: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RelayServerError(token)
+    seconds = float(value)
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise RelayServerError(token)
+    return seconds
+
+
+def _require_rate_key(value: object) -> str:
+    if not isinstance(value, str) or not value or len(value) > _MAX_TEXT_CHARS:
+        raise RelayServerError("invite_rate_key_invalid")
+    if any(char.isspace() for char in value):
+        raise RelayServerError("invite_rate_key_invalid")
+    return value
 
 
 def _require_mapping(value: object, token: str) -> Mapping[str, Any]:
@@ -2573,9 +3145,12 @@ def _error_token(exc: BaseException) -> str:
 
 
 __all__ = [
+    "INVITE_SHORTCODE_NOT_ACTIVATED",
     "RELAY_ADMISSION_REQUEST_PATH",
     "RELAY_DEBUG_SLOTS_PATH",
     "RELAY_HEALTH_PATH",
+    "RELAY_INVITE_PATH_PREFIX",
+    "RELAY_INVITE_STORE_PATH",
     "RELAY_SERVER_NOT_ACTIVATED",
     "RELAY_SERVER_SCHEMA_VERSION",
     "RELAY_SERVER_TOKEN",
@@ -2591,12 +3166,18 @@ __all__ = [
     "RelaySlotState",
     "RelayUdpForwarder",
     "RelayUdpPortForwarder",
+    "attach_shortcode_invite_bundle_auth",
     "build_relay_bootstrap_record",
+    "decode_shortcode_invite_bundle",
+    "encode_shortcode_invite_bundle",
     "make_relay_http_handler",
     "parse_relay_bootstrap_capsule",
     "relay_bootstrap_capsule_payload_ref",
     "relay_bootstrap_record_payload_ref",
+    "relay_invite_store_payload_ref",
     "run_relay_http_server",
     "sign_relay_bootstrap_record",
+    "shortcode_invite_bundle_payload_ref",
+    "verify_shortcode_invite_bundle",
     "verify_relay_bootstrap_record",
 ]

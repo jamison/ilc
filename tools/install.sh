@@ -9,6 +9,7 @@ RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
 INVITE_BUNDLE=""
+INVITE_CODE=""
 TARGET_DIR=""
 RELAY_URL=""
 RELAY_TLS_CERT_DER_SHA256=""
@@ -31,10 +32,10 @@ trap cleanup EXIT
 
 usage() {
   cat >&2 <<'USAGE'
-usage: install.sh [--channel rc] --invite-bundle PATH [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--relay-internal-port PORT] [--probe-observer URL] [--enable-upnp] [--dry-run]
+usage: install.sh [--channel rc] (--invite-bundle PATH | --invite-code CODE) [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--relay-internal-port PORT] [--probe-observer URL] [--enable-upnp] [--dry-run]
 
 Installs the ilc-core Python wheel after SHA-256 verification and completes
-invite-based onboarding with the supplied Genesis invite bundle.
+invite-based onboarding with the supplied Genesis invite bundle or relay invite code.
 Defaults to an ILC-managed venv at ~/.ilc/venv unless --target-dir is supplied.
 Relay probing is optional but, when supplied, is handled by the installed CLI
 with locally generated relay-admission proof from the fresh AgentID key.
@@ -59,6 +60,11 @@ while [[ "$#" -gt 0 ]]; do
     --invite-bundle)
       [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_invite_bundle_value"
       INVITE_BUNDLE="$2"
+      shift 2
+      ;;
+    --invite-code)
+      [[ "$#" -ge 2 ]] || die 2 "install_sh_missing_invite_code_value"
+      INVITE_CODE="$2"
       shift 2
       ;;
     --target-dir)
@@ -114,8 +120,11 @@ if [[ "${CHANNEL}" != "rc" ]]; then
   die 1 "install_sh_channel_not_embedded:${CHANNEL}"
 fi
 
-if [[ -z "${INVITE_BUNDLE}" ]]; then
-  die 2 "install_sh_invite_bundle_required"
+if [[ -z "${INVITE_BUNDLE}" && -z "${INVITE_CODE}" ]]; then
+  die 2 "install_sh_invite_bundle_or_code_required"
+fi
+if [[ -n "${INVITE_BUNDLE}" && -n "${INVITE_CODE}" ]]; then
+  die 2 "install_sh_invite_bundle_and_code_mutually_exclusive"
 fi
 
 if [[ "${DRY_RUN}" == "1" ]]; then
@@ -130,6 +139,9 @@ if [[ "${DRY_RUN}" == "1" ]]; then
     printf 'target_dir=%s\n' "${TARGET_DIR}"
   fi
   printf 'invite_bundle=%s\n' "${INVITE_BUNDLE}"
+  if [[ -n "${INVITE_CODE}" ]]; then
+    printf 'invite_code=%s\n' "${INVITE_CODE}"
+  fi
   if [[ -n "${RELAY_URL}" ]]; then
     printf 'relay_url=%s\n' "${RELAY_URL}"
   fi
@@ -151,7 +163,7 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   exit 0
 fi
 
-if [[ ! -f "${INVITE_BUNDLE}" ]]; then
+if [[ -n "${INVITE_BUNDLE}" && ! -f "${INVITE_BUNDLE}" ]]; then
   die 1 "install_sh_invite_bundle_not_found:${INVITE_BUNDLE}"
 fi
 
@@ -257,6 +269,105 @@ fi
 python3 -m venv "${TARGET_DIR}"
 "${TARGET_DIR}/bin/python" -m pip install --quiet "${TMP_WHEEL}"
 "${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+
+if [[ -n "${INVITE_CODE}" ]]; then
+  INVITE_BUNDLE="${TMP_DIR}/invite_code_bundle.json"
+  "${TARGET_DIR}/bin/python" - "${INVITE_CODE}" "${RELAY_URL}" "${RELAY_TLS_CERT_DER_SHA256}" "${INVITE_BUNDLE}" <<'PY'
+import base64
+import hashlib
+import http.client
+import importlib.resources
+import json
+import ssl
+import sys
+from urllib.parse import urlparse
+
+from ilc_core.epoch.genesis_settlement_destination import GENESIS_CAPSULE_SIGNING_PK_HEX
+from ilc_core.network.relay.invite_code import validate_code
+from ilc_core.network.relay.relay_server import parse_relay_bootstrap_capsule, verify_shortcode_invite_bundle
+
+code, relay_url_arg, tls_pin_arg, output_path = sys.argv[1:5]
+if not validate_code(code):
+    raise SystemExit("install_sh_invite_code_invalid")
+
+def load_capsule_records():
+    try:
+        raw = importlib.resources.files("ilc_core.data").joinpath("relay_bootstrap_capsule.json").read_text(encoding="utf-8")
+        capsule = json.loads(raw)
+    except Exception:
+        return ()
+    return parse_relay_bootstrap_capsule(
+        capsule,
+        genesis_capsule_pk_hex=GENESIS_CAPSULE_SIGNING_PK_HEX,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    )
+
+records = load_capsule_records()
+if relay_url_arg:
+    relay_url = relay_url_arg
+    matches = [record for record in records if record.get("control_url") == relay_url]
+    tls_pin = tls_pin_arg or (matches[0].get("tls_cert_der_sha256") if matches else "")
+else:
+    if not records:
+        raise SystemExit("install_sh_invite_code_no_relay_url_and_no_bundled_capsule")
+    selected = sorted(records, key=lambda item: str(item.get("control_url")))[0]
+    relay_url = str(selected["control_url"])
+    tls_pin = str(selected["tls_cert_der_sha256"])
+if not isinstance(tls_pin, str) or len(tls_pin) != 64 or any(char not in "0123456789abcdef" for char in tls_pin):
+    raise SystemExit("install_sh_invite_code_tls_pin_invalid")
+
+parsed = urlparse(relay_url)
+if parsed.scheme != "https" or parsed.query or parsed.fragment or parsed.username or parsed.password or not parsed.hostname:
+    raise SystemExit("install_sh_invite_code_relay_url_invalid")
+port = parsed.port or 443
+path = f"/relay/invite/{code}"
+context = ssl._create_unverified_context()
+conn = http.client.HTTPSConnection(parsed.hostname, port, context=context, timeout=30)
+try:
+    conn.connect()
+    der = conn.sock.getpeercert(binary_form=True) if conn.sock is not None else b""
+    actual_pin = hashlib.sha256(der).hexdigest()
+    if actual_pin != tls_pin:
+        raise SystemExit("install_sh_invite_code_tls_pin_mismatch")
+    conn.request("GET", path, headers={"User-Agent": "ilc-install/invite-code"})
+    response = conn.getresponse()
+    raw = response.read(65537)
+finally:
+    conn.close()
+if response.status in {301, 302, 303, 307, 308}:
+    raise SystemExit("install_sh_invite_code_redirect_forbidden")
+if response.status == 410:
+    try:
+        error = json.loads(raw.decode("utf-8")).get("error")
+    except Exception:
+        error = ""
+    if error == "code_expired":
+        raise SystemExit("install_sh_invite_code_expired")
+    if error == "code_exhausted":
+        raise SystemExit("install_sh_invite_code_exhausted")
+    raise SystemExit("install_sh_invite_code_gone")
+if response.status != 200:
+    raise SystemExit(f"install_sh_invite_code_fetch_failed:{response.status}")
+if len(raw) > 65536:
+    raise SystemExit("install_sh_invite_code_response_too_large")
+try:
+    payload = json.loads(raw.decode("utf-8"))
+    bundle_raw = base64.b64decode(payload["bundle_b64"].encode("ascii"), validate=True)
+except Exception:
+    raise SystemExit("install_sh_invite_code_response_invalid")
+if len(bundle_raw) > 32768:
+    raise SystemExit("install_sh_invite_code_bundle_too_large")
+try:
+    bundle = json.loads(bundle_raw.decode("utf-8"))
+except Exception:
+    raise SystemExit("install_sh_invite_code_bundle_json_invalid")
+if not isinstance(bundle, dict) or not verify_shortcode_invite_bundle(bundle):
+    raise SystemExit("install_sh_invite_code_bundle_signature_invalid")
+with open(output_path, "wb") as handle:
+    handle.write(bundle_raw)
+PY
+fi
 
 printf 'install_sh_success version=%s channel=%s\n' "${INSTALLER_VERSION}" "${CHANNEL}"
 printf 'install_target_dir=%s\n' "${TARGET_DIR}"
