@@ -74600,6 +74600,127 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_07_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
+      "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
+      "repo_path": "ilc_core/network/relay/invite_code.py",
+      "manual_read_summary": "Runtime module added by GAP-INVITE-SHORTCODE-IMPL-00. Defines the human-readable ILC-XXXX-XXXX invite code alphabet, weighted modulo-32 checksum over seven payload characters, strict validation, and secrets-backed code generation used by the relay-hosted invite-code implementation. The module is load-bearing runtime code and keeps code formatting independent from relay storage or installer transport.",
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-113"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_impl_committed_GAP_INVITE_SHORTCODE_IMPL_00"
+        },
+        {
+          "edge_type": "TESTED_BY",
+          "target": "tests/test_relay_invite_shortcode.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
+      "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
+      "repo_path": "tests/test_relay_invite_shortcode.py",
+      "manual_read_summary": "Test file added by GAP-INVITE-SHORTCODE-IMPL-00. Covers invite-code checksum and alphabet rules, guarded relay invite endpoints, BLS store-request domain separation, bundle-authentication domain separation, legacy inviter_sig insufficiency, current-profile inviter key-binding fail-closed behavior, atomic retrieval, TTL/rate/size bounds, status redaction, pre-auth quota hardening, CLI parser shape, and install.sh no-redirect/pinned-DER source invariants.",
+      "recommended_graph_action": "support_only",
+      "proposed_trace_roles": [
+        "TESTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "cdl:CDL-113"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/relay/invite_code.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/relay/relay_server.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/main.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/install.sh"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_impl_committed_GAP_INVITE_SHORTCODE_IMPL_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
+      "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
+      "repo_path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md",
+      "manual_read_summary": "Walkthrough added by GAP-INVITE-SHORTCODE-IMPL-00. Records direct-read and MemPalace coverage, exact verification outputs, prompt-hardening correction for code-body alphabet checking, pre-auth store-quota hardening, current-profile inviter key-binding fail-closed behavior, guard-closed state, output token, and non-claims for no live relay activation, no PyPI upload, no mirror push, and no public-RC activation.",
+      "recommended_graph_action": "support_only",
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_impl_committed_GAP_INVITE_SHORTCODE_IMPL_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_endpoint_activated_GAP_INVITE_SHORTCODE_IMPL_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:pypi_upload_GAP_INVITE_SHORTCODE_IMPL_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ]
     }
   ],
   "boundary": {
