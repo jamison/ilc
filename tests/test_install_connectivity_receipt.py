@@ -98,7 +98,9 @@ def _write_bundle_payload(path: Path, payload: dict[str, object]) -> Path:
 
 
 def _signed_relay_bootstrap_capsule() -> tuple[dict[str, object], str]:
-    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    genesis_capsule_secret_key, genesis_capsule_pk_hex = keypair_from_ikm_hex(
+        "47" * 32
+    )
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex("45" * 32)
     record = build_relay_bootstrap_record(
         RelayServerConfig(
@@ -129,13 +131,13 @@ def _signed_relay_bootstrap_capsule() -> tuple[dict[str, object], str]:
             **payload,
             "payload_sha384": payload_ref,
             "signature": sign_relay_bootstrap_capsule_digest(
-                secret_key_hex=genesis_secret_key,
+                secret_key_hex=genesis_capsule_secret_key,
                 digest_hex=payload_ref,
             ),
             "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-            "signing_key_id": genesis_agent_id,
+            "signing_key_id": genesis_capsule_pk_hex,
         },
-        genesis_agent_id,
+        genesis_capsule_pk_hex,
     )
 
 
@@ -669,8 +671,12 @@ def test_install_from_invite_uses_signed_relay_bootstrap_capsule_without_manual_
     import ilc_core.bundle.atlas_slice_verifier as verifier
     from ilc_core.epoch import genesis_settlement_destination as genesis_destination
 
-    capsule, genesis_agent_id = _signed_relay_bootstrap_capsule()
-    monkeypatch.setattr(genesis_destination, "GENESIS_AGENT1_AGENT_ID", genesis_agent_id)
+    capsule, genesis_capsule_pk_hex = _signed_relay_bootstrap_capsule()
+    monkeypatch.setattr(
+        genesis_destination,
+        "GENESIS_CAPSULE_SIGNING_PK_HEX",
+        genesis_capsule_pk_hex,
+    )
     monkeypatch.setattr(
         verifier,
         "verify_portable_manifest_witness",
@@ -741,7 +747,7 @@ def test_install_from_invite_uses_signed_relay_bootstrap_capsule_without_manual_
 
 
 def test_install_rejects_untrusted_relay_bootstrap_capsule(tmp_path: Path) -> None:
-    capsule, _genesis_agent_id = _signed_relay_bootstrap_capsule()
+    capsule, _genesis_capsule_pk_hex = _signed_relay_bootstrap_capsule()
     args = argparse.Namespace(
         relay_network_id="public-rc",
         relay_tls_cert_der_sha256="",
@@ -762,7 +768,7 @@ def test_install_rejects_untrusted_relay_bootstrap_capsule(tmp_path: Path) -> No
 def test_install_rejects_untrusted_relay_bootstrap_capsule_even_with_manual_relay_flags(
     tmp_path: Path,
 ) -> None:
-    capsule, _genesis_agent_id = _signed_relay_bootstrap_capsule()
+    capsule, _genesis_capsule_pk_hex = _signed_relay_bootstrap_capsule()
     args = argparse.Namespace(
         relay_admission_material="",
         relay_network_id="public-rc",
@@ -825,8 +831,12 @@ def test_install_prebuilt_relay_material_must_match_valid_capsule(
 ) -> None:
     from ilc_core.epoch import genesis_settlement_destination as genesis_destination
 
-    capsule, genesis_agent_id = _signed_relay_bootstrap_capsule()
-    monkeypatch.setattr(genesis_destination, "GENESIS_AGENT1_AGENT_ID", genesis_agent_id)
+    capsule, genesis_capsule_pk_hex = _signed_relay_bootstrap_capsule()
+    monkeypatch.setattr(
+        genesis_destination,
+        "GENESIS_CAPSULE_SIGNING_PK_HEX",
+        genesis_capsule_pk_hex,
+    )
     material_path = tmp_path / "relay_material.json"
     material_path.write_text(
         json.dumps(

@@ -1982,13 +1982,15 @@ def relay_bootstrap_capsule_payload_ref(capsule: Mapping[str, Any]) -> str:
 def parse_relay_bootstrap_capsule(
     capsule: Mapping[str, Any],
     *,
-    genesis_agent_id: str,
+    genesis_capsule_pk_hex: str,
     expected_network_id: str,
     current_epoch: int,
 ) -> tuple[dict[str, Any], ...]:
     """Verify a Genesis relay capsule and return verified relay records.
 
-    The capsule signature authenticates the set of relay self-signed records.
+    The capsule signature authenticates the set of relay self-signed records
+    with the dedicated Genesis capsule-signing BLS public key. Genesis AgentID
+    is a SHA-384 identity commitment and is not valid signing material here.
     Each returned record has also passed its own relay-AgentID signature check.
     Invalid capsules return an empty tuple rather than partially trusted data.
     """
@@ -2003,9 +2005,9 @@ def parse_relay_bootstrap_capsule(
             capsule,
             "relay_bootstrap_capsule_must_be_object",
         )
-        clean_genesis_agent_id = _require_agent_id(
-            genesis_agent_id,
-            "relay_bootstrap_capsule_genesis_agent_id_invalid",
+        clean_genesis_capsule_pk_hex = _require_agent_id(
+            genesis_capsule_pk_hex,
+            "relay_bootstrap_capsule_genesis_signing_key_invalid",
         )
         payload_ref = relay_bootstrap_capsule_payload_ref(clean_capsule)
         capsule_payload = _relay_bootstrap_capsule_payload(clean_capsule)
@@ -2021,14 +2023,14 @@ def parse_relay_bootstrap_capsule(
             return ()
         if clean_capsule.get("signature_alg") != _RELAY_BOOTSTRAP_SIGNATURE_ALG:
             return ()
-        if clean_capsule.get("signing_key_id") != clean_genesis_agent_id:
+        if clean_capsule.get("signing_key_id") != clean_genesis_capsule_pk_hex:
             return ()
         signature = _require_bls_signature_hex(
             clean_capsule.get("signature"),
             "relay_bootstrap_capsule_signature_invalid",
         )
         if not verify_relay_bootstrap_capsule_digest(
-            public_key_hex=clean_genesis_agent_id,
+            public_key_hex=clean_genesis_capsule_pk_hex,
             digest_hex=payload_ref,
             signature_hex=signature,
         ):
