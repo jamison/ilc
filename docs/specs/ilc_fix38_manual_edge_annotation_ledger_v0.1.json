@@ -92474,6 +92474,132 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_impl_00_g10_relay_invite_code_implementation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_remaining_prompts_2026_09_03",
+      "chronology_note": "2026-09-03 package prompt for relay-hosted invite shortcode 0.4.14 local build lane.",
+      "manual_read_summary": "Prompt directs the NON-SENSITIVE GAP-INSTALL-SHORTCODE-PACKAGE-00a local build phase. It bumps source to ilc-core 0.4.14 only after shortcode implementation closes, verifies INVITE_SHORTCODE_NOT_ACTIVATED remains closed, confirms relay bootstrap capsule packaging via importlib resources, checks invite_code.py is included in the wheel, runs package/install tests and outside-repo resolver smoke, and records non-claims for no PyPI upload, no VPS mutation, no install.sh retarget, and no guard activation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_built_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.14"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:pypi_upload_performed_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00a_g10_local_build_0414.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_remaining_prompts_2026_09_03",
+      "chronology_note": "2026-09-03 PyPI upload prompt for relay-hosted invite shortcode 0.4.14 package lane.",
+      "manual_read_summary": "Prompt directs the SENSITIVE GAP-INSTALL-SHORTCODE-PACKAGE-00b upload phase. It uploads the 0.4.14 wheel and sdist only after a human GO, fetchback-verifies PyPI artifacts by SHA-256 and size, yanks ilc-core 0.4.13, writes the 0.4.14 installable release manifest and upload receipt, updates tools/install.sh to the canonical PyPI wheel URL, and explicitly defers shortcode guard clearance, VPS mutation, relay deployment, and public-RC activation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_published_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.14"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_vps_mutated_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00b_g10_pypi_upload_0414.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_remaining_prompts_2026_09_03",
+      "chronology_note": "2026-09-03 live deployment prompt for relay-hosted invite shortcode guard clearance.",
+      "manual_read_summary": "Prompt directs the SENSITIVE GAP-INVITE-SHORTCODE-DEPLOY-00 live deployment phase. It clears INVITE_SHORTCODE_NOT_ACTIVATED only after human GO, packages and publishes ilc-core 0.4.15, yanks 0.4.14, upgrades only /opt/ilc-relay/venv on ilc-node-2/3/6, verifies relay health with SSH-local Python using the relay cafile from systemd rather than bare curl, performs shortcode store/status/fetch and clean install smoke, and preserves non-claims for no validator-slot mutation, no CDL-112 ratification, no public-RC activation, and no consensus/economic activation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-DEPLOY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_deploy_guard_cleared_GAP_INVITE_SHORTCODE_DEPLOY_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.15"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:validator_slot_venv_mutated_GAP_INVITE_SHORTCODE_DEPLOY_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_INVITE_SHORTCODE_DEPLOY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_deploy_00_g10_live_relay_guard_clearance.md"
     }
   ],
   "phase": "1545p-Fix38",
