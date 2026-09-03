@@ -92043,6 +92043,43 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_bootstrap_capsule_sign_00_g10_genesis_relay_capsule_signing.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_relay_bootstrap_capsule_sign_fix_00_2026_09_03",
+      "chronology_note": "2026-09-03 walkthrough for GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-FIX-00.",
+      "manual_read_summary": "Walkthrough records the non-sensitive fix separating Genesis AgentID from relay-bootstrap capsule BLS signing authority. It documents the new GENESIS_CAPSULE_SIGNING_PK_HEX placeholder, the parse_relay_bootstrap_capsule genesis_capsule_pk_hex API, install-time verification retargeting, regression tests preventing Genesis AgentID from being accepted as a BLS key, prompt hardening for ILC_GENESIS_CAPSULE_BLS_SK, verification output, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-FIX-00"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:relay_bootstrap_capsule_signing_key_separated_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:genesis_agent_id_is_bls_public_key"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_bootstrap_capsule_signed_bundled_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_fix_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

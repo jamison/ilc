@@ -27,7 +27,9 @@ INSTALL_SH = ROOT / "tools" / "install.sh"
 
 
 def _relay_bootstrap_capsule() -> dict[str, object]:
-    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    genesis_capsule_secret_key, genesis_capsule_pk_hex = keypair_from_ikm_hex(
+        "47" * 32
+    )
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex("45" * 32)
     record = build_relay_bootstrap_record(
         RelayServerConfig(
@@ -57,11 +59,11 @@ def _relay_bootstrap_capsule() -> dict[str, object]:
         **payload,
         "payload_sha384": payload_ref,
         "signature": sign_relay_bootstrap_capsule_digest(
-            secret_key_hex=genesis_secret_key,
+            secret_key_hex=genesis_capsule_secret_key,
             digest_hex=payload_ref,
         ),
         "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-        "signing_key_id": genesis_agent_id,
+        "signing_key_id": genesis_capsule_pk_hex,
     }
 
 

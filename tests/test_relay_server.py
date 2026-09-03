@@ -2033,7 +2033,9 @@ def test_sign_relay_bootstrap_record_rejects_mismatched_secret_key() -> None:
 
 
 def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -> None:
-    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    genesis_capsule_secret_key, genesis_capsule_pk_hex = keypair_from_ikm_hex(
+        "47" * 32
+    )
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
     unsigned = build_relay_bootstrap_record(
         RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
@@ -2057,16 +2059,16 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
         **capsule_payload,
         "payload_sha384": payload_ref,
         "signature": sign_relay_bootstrap_capsule_digest(
-            secret_key_hex=genesis_secret_key,
+            secret_key_hex=genesis_capsule_secret_key,
             digest_hex=payload_ref,
         ),
         "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-        "signing_key_id": genesis_agent_id,
+        "signing_key_id": genesis_capsule_pk_hex,
     }
 
     assert parse_relay_bootstrap_capsule(
         capsule,
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=0,
     ) == (signed,)
@@ -2074,7 +2076,7 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
     with_extra_field = {**capsule, "unsigned_extra": "must-not-ride-along"}
     assert parse_relay_bootstrap_capsule(
         with_extra_field,
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=0,
     ) == ()
@@ -2082,14 +2084,25 @@ def test_parse_relay_bootstrap_capsule_verifies_genesis_and_relay_signatures() -
     tampered_capsule = {**capsule, "network_id": "evil-rc"}
     assert parse_relay_bootstrap_capsule(
         tampered_capsule,
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
+        expected_network_id="public-rc",
+        current_epoch=0,
+    ) == ()
+
+    from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+
+    assert parse_relay_bootstrap_capsule(
+        {**capsule, "signing_key_id": GENESIS_AGENT1_AGENT_ID},
+        genesis_capsule_pk_hex=GENESIS_AGENT1_AGENT_ID,
         expected_network_id="public-rc",
         current_epoch=0,
     ) == ()
 
 
 def test_parse_relay_bootstrap_capsule_filters_scope_and_epochs() -> None:
-    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    genesis_capsule_secret_key, genesis_capsule_pk_hex = keypair_from_ikm_hex(
+        "47" * 32
+    )
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
 
     def signed_record(
@@ -2136,34 +2149,39 @@ def test_parse_relay_bootstrap_capsule_filters_scope_and_epochs() -> None:
             **payload,
             "payload_sha384": payload_ref,
             "signature": sign_relay_bootstrap_capsule_digest(
-                secret_key_hex=genesis_secret_key,
+                secret_key_hex=genesis_capsule_secret_key,
                 digest_hex=payload_ref,
             ),
             "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-            "signing_key_id": genesis_agent_id,
+            "signing_key_id": genesis_capsule_pk_hex,
         }
 
     assert parse_relay_bootstrap_capsule(
         capsule_for(issued_epoch=0, expires_epoch=4),
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="other-rc",
         current_epoch=0,
     ) == ()
     assert parse_relay_bootstrap_capsule(
         capsule_for(issued_epoch=0, expires_epoch=4),
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=5,
     ) == ()
     assert parse_relay_bootstrap_capsule(
         capsule_for(issued_epoch=2, expires_epoch=4),
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=1,
     ) == ()
+    mixed_scope_capsule = capsule_for(
+        records=[valid, wrong_network, expired_record],
+        issued_epoch=0,
+        expires_epoch=4,
+    )
     assert parse_relay_bootstrap_capsule(
-        capsule_for(records=[valid, wrong_network, expired_record], issued_epoch=0, expires_epoch=4),
-        genesis_agent_id=genesis_agent_id,
+        mixed_scope_capsule,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=2,
     ) == (valid,)
@@ -2244,7 +2262,9 @@ def test_verify_relay_bootstrap_record_rejects_non_matching_signing_key() -> Non
 
 
 def test_parse_relay_bootstrap_capsule_rejects_too_many_records() -> None:
-    genesis_secret_key, genesis_agent_id = keypair_from_ikm_hex("47" * 32)
+    genesis_capsule_secret_key, genesis_capsule_pk_hex = keypair_from_ikm_hex(
+        "47" * 32
+    )
     relay_secret_key, relay_agent_id = keypair_from_ikm_hex(SECOND_IKM_HEX)
     unsigned = build_relay_bootstrap_record(
         RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
@@ -2276,16 +2296,16 @@ def test_parse_relay_bootstrap_capsule_rejects_too_many_records() -> None:
         **payload,
         "payload_sha384": payload_ref,
         "signature": sign_relay_bootstrap_capsule_digest(
-            secret_key_hex=genesis_secret_key,
+            secret_key_hex=genesis_capsule_secret_key,
             digest_hex=payload_ref,
         ),
         "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-        "signing_key_id": genesis_agent_id,
+        "signing_key_id": genesis_capsule_pk_hex,
     }
 
     assert parse_relay_bootstrap_capsule(
         capsule,
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=0,
     ) == ()

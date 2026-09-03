@@ -33,6 +33,13 @@ GENESIS_AGENT1_AGENT_ID = (
 GENESIS_AGENT1_PUBKEY_RECORD_PATH = "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
 GENESIS_AGENT1_PUBKEY_RECORD_CEREMONY = "838a"
 
+# Dedicated BLS G1 public key for Genesis relay-bootstrap capsule signing.
+# This is intentionally distinct from GENESIS_AGENT1_AGENT_ID, which is a
+# SHA-384 identity commitment and not a BLS public key. The value is populated
+# by GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00 after the local Genesis capsule-key
+# ceremony; the corresponding secret key must never be committed.
+GENESIS_CAPSULE_SIGNING_PK_HEX = ""
+
 # The CDL-028 genesis_burn_pool is NOT routed to this agent. As amended in
 # GAP-PUBLIC-RC-CDL028-AMENDMENT-00, it is a non-circulating protocol reserve
 # distinct from the CDL-029 Genesis 5% tranche.
@@ -118,6 +125,7 @@ __all__ = [
     "GENESIS_AGENT1_AGENT_ID",
     "GENESIS_AGENT1_PUBKEY_RECORD_CEREMONY",
     "GENESIS_AGENT1_PUBKEY_RECORD_PATH",
+    "GENESIS_CAPSULE_SIGNING_PK_HEX",
     "GENESIS_BURN_POOL_NOT_ROUTED_TO_GENESIS_AGENT_TOKEN",
     "GENESIS_DESTINATION_BINDING_TOKEN",
     "GENESIS_MINTING_AUTHORIZED",

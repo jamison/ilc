@@ -4846,12 +4846,14 @@ def _install_verified_relay_bootstrap_records(
     if not isinstance(capsule, dict):
         raise ValueError("install_relay_bootstrap_capsule_invalid")
 
-    from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+    from ilc_core.epoch.genesis_settlement_destination import (
+        GENESIS_CAPSULE_SIGNING_PK_HEX,
+    )
     from ilc_core.network.relay.relay_server import parse_relay_bootstrap_capsule
 
     records = parse_relay_bootstrap_capsule(
         capsule,
-        genesis_agent_id=GENESIS_AGENT1_AGENT_ID,
+        genesis_capsule_pk_hex=GENESIS_CAPSULE_SIGNING_PK_HEX,
         expected_network_id=expected_network_id,
         current_epoch=current_epoch,
     )

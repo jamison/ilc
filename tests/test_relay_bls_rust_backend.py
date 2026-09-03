@@ -232,7 +232,7 @@ def test_python_backend_verifies_invite_pop(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_relay_capsule_verifies_with_rust_backend(monkeypatch: pytest.MonkeyPatch) -> None:
-    genesis_secret_key_hex, genesis_agent_id = _genesis_keypair()
+    genesis_secret_key_hex, genesis_capsule_pk_hex = _genesis_keypair()
     relay_secret_key_hex, relay_agent_id = _relay_keypair()
     unsigned_record = build_relay_bootstrap_record(
         RelayServerConfig(relay_agent_id=relay_agent_id, relay_host="127.0.0.1"),
@@ -260,19 +260,19 @@ def test_relay_capsule_verifies_with_rust_backend(monkeypatch: pytest.MonkeyPatc
             digest_hex=payload_ref,
         ),
         "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO",
-        "signing_key_id": genesis_agent_id,
+        "signing_key_id": genesis_capsule_pk_hex,
     }
     monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
     monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", RUST_COMMAND)
 
     assert verify_relay_bootstrap_capsule_digest(
-        public_key_hex=genesis_agent_id,
+        public_key_hex=genesis_capsule_pk_hex,
         digest_hex=payload_ref,
         signature_hex=capsule["signature"],
     )
     assert parse_relay_bootstrap_capsule(
         capsule,
-        genesis_agent_id=genesis_agent_id,
+        genesis_capsule_pk_hex=genesis_capsule_pk_hex,
         expected_network_id="public-rc",
         current_epoch=0,
     ) == (signed_record,)
