@@ -92390,6 +92390,90 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_shortcode_spec_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_prompt_hardening_2026_09_03",
+      "chronology_note": "2026-09-03 sensitive CDL prompt for relay-hosted invite shortcode authority, hardened after cryptographic review.",
+      "manual_read_summary": "Prompt directs the SENSITIVE GAP-INVITE-SHORTCODE-CDL-00 opening phase. Hardened to require exact BLS DST locks for store-request and bundle-authenticity signatures, fingerprint-only public status by default, explicit separation of inviter AgentID from BLS verifier key, and an explicit statement that legacy non-empty InviteBatchRecord.inviter_sig is not cryptographic verification.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_cdl_authority_committed_GAP_INVITE_SHORTCODE_CDL_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:legacy_inviter_sig_cryptographic_verification_exists"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:raw_inviter_bls_key_public_status_default"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_00_g10_relay_invite_code_cdl_authority.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_invite_shortcode_prompt_hardening_2026_09_03",
+      "chronology_note": "2026-09-03 implementation prompt for relay-hosted invite shortcode runtime, hardened after cryptographic review.",
+      "manual_read_summary": "Prompt directs the NON-SENSITIVE GAP-INVITE-SHORTCODE-IMPL-00 implementation phase. Hardened to add new BLS helper functions and tests for distinct store-request and bundle-authenticity DSTs, use inviting_bls_public_key_hex rather than inviting_agent_id as the verifier key, keep shortcode endpoints behind INVITE_SHORTCODE_NOT_ACTIVATED, redact public status by default, and implement fresh bundle-level BLS verification rather than relying on legacy inviter_sig non-empty validation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-IMPL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_impl_committed_GAP_INVITE_SHORTCODE_IMPL_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "spec:ilc_relay_invite_code_spec_GAP_INVITE_SHORTCODE_SPEC_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_endpoint_activated"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_admission_dst_reused_for_shortcode_store"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_impl_00_g10_relay_invite_code_implementation.md"
     }
   ],
   "phase": "1545p-Fix38",
