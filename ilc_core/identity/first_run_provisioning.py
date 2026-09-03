@@ -19,10 +19,17 @@ import subprocess
 import sys
 import tempfile
 import time
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
-from ilc_core import __version__ as ILC_CORE_VERSION
+try:
+    from ilc_core import __version__ as ILC_CORE_VERSION
+except ImportError:
+    try:
+        ILC_CORE_VERSION = version("ilc-core")
+    except PackageNotFoundError:
+        ILC_CORE_VERSION = "0+unknown"
 from ilc_core.crypto.pq_signature_verify import (
     _MLDSA_PK_HEX_LENGTH,
     verify_mldsa65_signature,

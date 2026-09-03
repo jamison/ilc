@@ -535,6 +535,8 @@ def _require_invite_cli_enabled(args: argparse.Namespace) -> None:
 def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     _require_invite_cli_enabled(args)
     invite_subcommand = getattr(args, "identity_invite_subcommand", None)
+    if invite_subcommand == "hint":
+        return _run_identity_invite_hint_subcommand(args)
     if invite_subcommand == "bundle":
         return _run_identity_invite_bundle_subcommand(args)
     if invite_subcommand != "create":
@@ -561,6 +563,156 @@ def _run_identity_invite_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     if output_path:
         return {"action": "invite-create", "output_path": _write_local_json_file(output_path, output)}
     return {"action": "invite-create", "output": output}
+
+
+def _run_identity_invite_hint_subcommand(args: argparse.Namespace) -> dict[str, Any]:
+    """Generate a signed bootstrap peer-hints file for invite-bundle assembly."""
+
+    import secrets
+    from urllib.parse import urlsplit
+
+    from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
+
+    from ilc_core.crypto.pq_signature_verify import verify_mldsa65_signature
+    from ilc_core.network.d2d.peer_advertisement import (
+        MAX_PEER_ADVERTISEMENT_EPOCH,
+        MAX_TTL_EPOCHS,
+        PEER_ADVERTISEMENT_SCHEMA_VERSION,
+        PeerAdvertisement,
+        TransportEndpoint,
+    )
+
+    def require_uint_arg(value: object, token: str, *, min_value: int, max_value: int) -> int:
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ValueError(token)
+        if value < min_value or value > max_value:
+            raise ValueError(token)
+        return value
+
+    relay_url = (getattr(args, "relay_url", None) or "").strip()
+    if not relay_url:
+        raise ValueError("peer_hint_relay_url_required")
+    output_path_str = (getattr(args, "output", None) or "").strip()
+    if not output_path_str:
+        raise ValueError("peer_hint_output_required")
+
+    peer_epoch = require_uint_arg(
+        getattr(args, "peer_epoch", 0),
+        "peer_hint_peer_epoch_invalid",
+        min_value=0,
+        max_value=MAX_PEER_ADVERTISEMENT_EPOCH,
+    )
+    ttl_epochs = require_uint_arg(
+        getattr(args, "ttl_epochs", MAX_TTL_EPOCHS),
+        "peer_hint_ttl_epochs_out_of_range",
+        min_value=1,
+        max_value=MAX_TTL_EPOCHS,
+    )
+    protocol_version = (getattr(args, "protocol_version", None) or "ilc.v0.4").strip()
+    if (
+        not protocol_version
+        or len(protocol_version) > 64
+        or any(char.isspace() for char in protocol_version)
+    ):
+        raise ValueError("peer_hint_protocol_version_invalid")
+    label = (getattr(args, "label", None) or "bootstrap-hint").strip()
+    if (
+        not label
+        or len(label) > 64
+        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]*", label) is None
+    ):
+        raise ValueError("peer_hint_label_invalid")
+
+    parsed = urlsplit(relay_url)
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise ValueError("peer_hint_relay_url_invalid") from exc
+    if (
+        parsed.scheme != "https"
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in ("", "/")
+        or not parsed.hostname
+        or port is None
+    ):
+        if parsed.scheme != "https":
+            raise ValueError("peer_hint_relay_url_must_be_https")
+        raise ValueError("peer_hint_relay_url_invalid")
+
+    endpoint = TransportEndpoint.from_mapping(
+        {
+            "host": parsed.hostname.lower(),
+            "port": port,
+            "scheme": "https",
+        },
+        allow_private_address_literals=True,
+    )
+
+    private_key = MLDSA65PrivateKey.generate()
+    public_key = private_key.public_key().public_bytes_raw()
+    pubkey_hex = public_key.hex()
+    key_binding_ref = f"{label}-{secrets.token_hex(8)}"
+    agent_id = hashlib.sha384(
+        b"bootstrap_peer_hint_agent_pubkey:" + public_key
+    ).hexdigest()
+    installed_slices_digest = hashlib.sha384(
+        b"bootstrap_peer_hint_installed_slices:" + protocol_version.encode("utf-8")
+    ).hexdigest()
+    body_for_signing: dict[str, Any] = {
+        "agent_id": agent_id,
+        "content_availability_count": 0,
+        "installed_slices_digest": installed_slices_digest,
+        "peer_timestamp_epoch": peer_epoch,
+        "protocol_version": protocol_version,
+        "transport_endpoint": endpoint.to_dict(),
+        "ttl_epochs": ttl_epochs,
+    }
+    body_bytes = json.dumps(
+        body_for_signing,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+    sig_hex = private_key.sign(body_bytes).hex()
+    advert = PeerAdvertisement(
+        agent_id=agent_id,
+        transport_endpoint=endpoint,
+        protocol_version=protocol_version,
+        installed_slices_digest=installed_slices_digest,
+        content_availability_count=0,
+        peer_timestamp_epoch=peer_epoch,
+        ttl_epochs=ttl_epochs,
+        ml_dsa_signature=sig_hex,
+        key_binding_ref=key_binding_ref,
+        schema_version=PEER_ADVERTISEMENT_SCHEMA_VERSION,
+    )
+    if advert.to_canonical_json() != body_bytes:
+        raise ValueError("peer_hint_internal_body_mismatch")
+    if not advert.verify(verify_mldsa65_signature, pubkey_hex=pubkey_hex):
+        raise ValueError("peer_hint_internal_signature_verification_failed")
+
+    hints_payload: dict[str, Any] = {
+        "known_peer_hint_key_bindings": {key_binding_ref: pubkey_hex},
+        "known_peer_hints": [advert.to_dict()],
+        "schema_version": "bootstrap_peer_hints.v0.1",
+    }
+    output_path = Path(output_path_str).expanduser()
+    _write_json_file_atomic(output_path, hints_payload, indent=2, mode=0o644)
+
+    return {
+        "action": "peer_hint_created",
+        "agent_id": agent_id,
+        "key_binding_ref": key_binding_ref,
+        "mldsa_pubkey_hex": pubkey_hex,
+        "output_path": str(output_path),
+        "peer_timestamp_epoch": peer_epoch,
+        "transport_endpoint": endpoint.to_url(),
+        "ttl_epochs": ttl_epochs,
+    }
 
 
 def _run_identity_invite_bundle_subcommand(args: argparse.Namespace) -> dict[str, Any]:
@@ -3254,6 +3406,47 @@ def _build_parser() -> JsonArgumentParser:
             help="Path to write one install-ready invite bundle JSON",
         )
         p_invite_bundle.add_argument(
+            "--enable-invites",
+            action="store_true",
+            help="Explicitly enable default-off invite CLI plumbing",
+        )
+        p_invite_hint = invite_subparsers.add_parser(
+            "hint",
+            help="Create a signed bootstrap peer hint file for inclusion in an invite bundle",
+        )
+        p_invite_hint.add_argument(
+            "--relay-url",
+            required=True,
+            help="Relay HTTPS URL to advertise (e.g. https://host:port)",
+        )
+        p_invite_hint.add_argument(
+            "--output",
+            required=True,
+            help="Output path for bootstrap_peer_hints.json",
+        )
+        p_invite_hint.add_argument(
+            "--peer-epoch",
+            type=int,
+            default=0,
+            help="Peer advertisement timestamp epoch (default: 0)",
+        )
+        p_invite_hint.add_argument(
+            "--ttl-epochs",
+            type=int,
+            default=4,
+            help="Peer advertisement TTL in epochs (default: 4, max: 4)",
+        )
+        p_invite_hint.add_argument(
+            "--protocol-version",
+            default="ilc.v0.4",
+            help="Protocol version string (default: ilc.v0.4)",
+        )
+        p_invite_hint.add_argument(
+            "--label",
+            default="bootstrap-hint",
+            help="Key binding reference prefix (default: bootstrap-hint)",
+        )
+        p_invite_hint.add_argument(
             "--enable-invites",
             action="store_true",
             help="Explicitly enable default-off invite CLI plumbing",
