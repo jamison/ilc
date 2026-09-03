@@ -74556,6 +74556,50 @@
         "CLASSIFIED_BY"
       ],
       "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_07_2026_09_03",
+      "chronology_note": "2026-09-03 walkthrough for GAP-RELEASE-SIGN-PROMPT-PATCH-07 completion.",
+      "manual_read_summary": "Walkthrough records PATCH-07 prompt hardening, input-token verification, downstream release/sign/version/mirror/publish/install/VPS prompt retargeting to the 0.4.13 capsule package, residual old-version classification, prompt validation, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-07"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/phases/STATUS.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:relay_bootstrap_capsule_signed_bundled_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00"
+        },
+        {
+          "edge_type": "EMITS",
+          "target": "claim:release_sign_prompts_patched_for_0413_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DESCRIBES_PHASE",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-07"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "EMITS",
+        "SOURCE_TREE_MEMBER",
+        "DESCRIBES_PHASE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_07_walkthrough.md"
     }
   ],
   "boundary": {
