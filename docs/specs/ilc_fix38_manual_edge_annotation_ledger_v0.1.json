@@ -93284,6 +93284,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_shortcode_deploy_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_08_2026_09_04",
+      "chronology_note": "2026-09-04 prompt cascade to final ilc-core 0.4.15 shortcode-deploy package target.",
+      "manual_read_summary": "Phase prompt records the authorized non-sensitive cascade from historical 0.4.13 capsule-sign targets to final 0.4.15 shortcode-deploy targets across release-signing, version-consistency, mirror, publish, validator teardown/reprovision, install-smoke, and planning surfaces.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-08"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_sign_prompts_patched_for_0415_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:release_signing_performed_GAP_RELEASE_SIGN_PROMPT_PATCH_08"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_08_g10_0415_version_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_08_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-RELEASE-SIGN-PROMPT-PATCH-08.",
+      "manual_read_summary": "Walkthrough records prompt validation, token preflight, version-surface checks, 0.4.15 manifest verification, residual scan classification, output token, and non-claims for the non-sensitive prompt cascade.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-08"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_sign_prompts_patched_for_0415_direct_patch"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_RELEASE_SIGN_PROMPT_PATCH_08"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_08_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
