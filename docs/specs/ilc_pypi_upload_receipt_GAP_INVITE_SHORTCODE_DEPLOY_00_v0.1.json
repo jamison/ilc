@@ -46,15 +46,39 @@
       "all_yanked": true
     },
     "0.4.14": {
-      "all_yanked": false,
-      "status": "pending_manual_yank"
+      "all_yanked": true,
+      "status": "operator_yanked_verified",
+      "yank_reason": "superseded by 0.4.15 which activates relay invite-code endpoints"
     },
     "0.4.15": {
       "all_active": true,
       "all_yanked": false
     }
   },
+  "relay_venv_upgrade": {
+    "hosts": [
+      "ilc-node-2",
+      "ilc-node-3",
+      "ilc-node-6"
+    ],
+    "invite_shortcode_guard": false,
+    "relay_client_guard": false,
+    "relay_server_guard": false,
+    "status": "pass",
+    "version": "0.4.15"
+  },
   "schema_version": "ilc.pypi_upload_receipt.GAP_INVITE_SHORTCODE_DEPLOY_00.v0.1",
+  "shortcode_smoke": {
+    "bootstrap_peer_hint_count": 1,
+    "bootstrap_peer_key_binding_count": 1,
+    "connectivity_mode": "relay_reachable",
+    "invite_code": "ILC-NBMR-7FHM",
+    "known_peer_hints_verified": 1,
+    "linux_host": "ilc-node-6",
+    "relay_endpoint": "164.90.201.11:52000",
+    "result": "pass",
+    "software_version": "0.4.15"
+  },
   "source_private_commit_at_upload_start": "1c56c654031a7b5f04f393b2dabd7ea447c68e62",
   "timestamp_utc": "2026-09-04T06:46:44Z",
   "twine_upload_status": "pass",
