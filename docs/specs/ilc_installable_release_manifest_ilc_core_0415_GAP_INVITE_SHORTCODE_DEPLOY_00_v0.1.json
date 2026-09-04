@@ -1,0 +1,48 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0415@phase-1627",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1627,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1451016
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0415@phase-1627",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/06/1e/351517b9b0ec7f7da3c2c3f3a1de835f563dba7e4207f56eedc32cc6f421/ilc_core-0.4.15.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1627,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 1183400
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1627,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting",
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED_remains_True"
+  ],
+  "release_id": "ilc-core-0.4.15"
+}

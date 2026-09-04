@@ -1,0 +1,45 @@
+{
+  "artifacts": {
+    "sdist": {
+      "filename": "ilc_core-0.4.15.tar.gz",
+      "sha256": "3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e",
+      "size_bytes": 1183400
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.15-py3-none-any.whl",
+      "sha256": "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+      "size_bytes": 1451016
+    }
+  },
+  "clean_install_probe": {
+    "bundled_relay_records": 3,
+    "connectivity_advertisement_guard": true,
+    "invite_shortcode_guard": false,
+    "relay_client_guard": false,
+    "relay_server_guard": false,
+    "result": "PASS",
+    "version": "0.4.15"
+  },
+  "directed_tests": {
+    "relay_client_server": "156 passed in 433.01s",
+    "relay_invite_shortcode": "28 passed in 74.53s"
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting",
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED_remains_True",
+    "no_vps_mutation_before_package_commit"
+  ],
+  "phase": "GAP-INVITE-SHORTCODE-DEPLOY-00",
+  "predecessor_version": "0.4.14",
+  "schema_version": "ilc.package_build_receipt.GAP_INVITE_SHORTCODE_DEPLOY_00.v0.1",
+  "source_base_commit_before_phase": "1c56c654031a7b5f04f393b2dabd7ea447c68e62",
+  "timestamp_utc": "2026-09-04T06:46:44Z",
+  "twine_check": "PASS",
+  "version": "0.4.15"
+}
