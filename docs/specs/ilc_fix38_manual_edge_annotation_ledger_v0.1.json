@@ -74914,6 +74914,142 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00b_2026_09_04",
+      "chronology_note": "2026-09-04 release signature envelope schema for GAP-RELEASE-SIGN-00b.",
+      "manual_read_summary": "Spec defines the detached installable release signature envelope schema for 0.4.15, including release-id/domain-bound preimage construction, fixed non-wall-clock signed_at, Ed25519 structural fields, and manifest coverage semantics.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signature_envelope_schema_committed_GAP_RELEASE_SIGN_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "claim:release_signing_authority_reconciled_GAP_RELEASE_SIGN_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00b_2026_09_04",
+      "chronology_note": "2026-09-04 runtime module for release signature envelope skeletons and validation.",
+      "manual_read_summary": "Module implements deterministic canonical JSON, signed preimage SHA-256 computation, unsigned envelope skeleton construction, strict signed-envelope validation, explicit unsigned-placeholder mode, and optional manifest-bound envelope-set validation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:signature_envelope_builder_module_committed_GAP_RELEASE_SIGN_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/installable_release_signature.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00b_2026_09_04",
+      "chronology_note": "2026-09-04 tests for GAP-RELEASE-SIGN-00b envelope schema.",
+      "manual_read_summary": "Focused tests cover skeleton fields, deterministic/canonical preimage hashing, domain and release-id binding, strict placeholder behavior, malformed fields, digest mismatch, manifest coverage, and static schema constants.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signature_envelope_schema_committed_GAP_RELEASE_SIGN_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/release/installable_release_signature.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00b_signature_schema.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00b_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-RELEASE-SIGN-00b.",
+      "manual_read_summary": "Walkthrough records prompt hardening, token audit, MemPalace/source searches, produced artifacts, verification output, non-sensitive implementation notes, and stop-before-00c boundary.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:signature_envelope_builder_module_committed_GAP_RELEASE_SIGN_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:release_signing_performed_GAP_RELEASE_SIGN_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_00b_walkthrough.md"
     }
   ],
   "boundary": {
