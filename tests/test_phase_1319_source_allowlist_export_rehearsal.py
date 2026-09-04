@@ -107,6 +107,14 @@ def test_phase_1319_docstring_public_rc_exclude_marker_fails_closed(
     _write(
         tmp_path / "src/marked.py",
         '"""Private helper.\n\n'
+        "Line 3\n"
+        "Line 4\n"
+        "Line 5\n"
+        "Line 6\n"
+        "Line 7\n"
+        "Line 8\n"
+        "Line 9\n"
+        "Line 10\n"
         "PUBLIC_RC_EXCLUDE: synthetic_docstring_marker\n"
         '"""\n'
         "VALUE = 1\n",
@@ -230,16 +238,12 @@ def test_phase_1319_required_included_paths_reject_traversal(tmp_path: Path) -> 
 def test_phase_1319_public_rc_exclude_late_comment_is_not_header_marker(
     tmp_path: Path,
 ) -> None:
+    padding = "".join(f"# Line {line}\n" for line in range(3, 65))
     _write(
         tmp_path / "src/script.sh",
         "#!/usr/bin/env bash\n"
         "# Usage: script\n"
-        "# Line 3\n"
-        "# Line 4\n"
-        "# Line 5\n"
-        "# Line 6\n"
-        "# Line 7\n"
-        "# Line 8\n"
+        f"{padding}"
         "# PUBLIC_RC_EXCLUDE: prose_reference_not_header\n"
         "echo ok\n",
     )
