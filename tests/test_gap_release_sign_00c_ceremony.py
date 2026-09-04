@@ -73,7 +73,7 @@ def test_manifest_signing_status_is_signed() -> None:
 def test_manifest_has_envelope_ref() -> None:
     assert (
         _manifest()["release_envelope_ref"]
-        == "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        == "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
     )
 
 

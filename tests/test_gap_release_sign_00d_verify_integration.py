@@ -343,6 +343,10 @@ def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path:
         f'RC_WHEEL_URL="{payload.as_uri()}"',
     )
     script = script.replace(
+        'RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
+        f'RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
+    )
+    script = script.replace(
         'RC_WHEEL_SHA256="058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"',
         f'RC_WHEEL_SHA256="{digest}"',
     )
@@ -410,6 +414,10 @@ def test_install_sh_verify_signature_runs_without_preinstalled_ilc_core(
     script = script.replace(
         'RC_WHEEL_URL="https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl"',
         f'RC_WHEEL_URL="{payload.as_uri()}"',
+    )
+    script = script.replace(
+        'RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
+        f'RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
     )
     script_path = tmp_path / "install.sh"
     script_path.write_text(script, encoding="utf-8")
