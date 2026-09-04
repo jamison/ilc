@@ -190,10 +190,10 @@
   "counts": {
     "blocked_ambiguities": 0,
     "dependency_hits": 0,
-    "excluded_files": 7532,
-    "included_files": 532,
-    "legacy_untagged_default_excluded": 7532,
-    "legacy_untagged_included_reviewed": 505,
+    "excluded_files": 7590,
+    "included_files": 536,
+    "legacy_untagged_default_excluded": 7590,
+    "legacy_untagged_included_reviewed": 510,
     "legacy_untagged_review_required_blocked": 0,
     "marker_hits": 0
   },
@@ -333,36 +333,6 @@
         "edge_type": "python_ast_import",
         "source": "ilc-graphics-sidecar/ilc_graph_viz/__main__.py",
         "target": "time"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "__future__"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "html"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "ilc_core.bundle.atlas_local_registry"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "ilc_core.graph.atlas_bounded_query_runtime"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "pathlib"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-        "target": "typing"
       },
       {
         "edge_type": "python_ast_import",
@@ -3117,6 +3087,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "cryptography.hazmat.primitives.asymmetric.mldsa"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "datetime"
       },
       {
@@ -3133,6 +3108,11 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
         "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "http.client"
       },
       {
         "edge_type": "python_ast_import",
@@ -3262,6 +3242,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.network.d2d.peer_advertisement"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "ilc_core.network.relay.relay_client"
       },
       {
@@ -3307,6 +3292,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "ilc_core.release.update_signature_verifier"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "ilc_core.sidecars.openclaw_invite_bootstrap"
       },
       {
@@ -3337,6 +3327,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "importlib.resources"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "importlib.util"
       },
       {
@@ -3362,7 +3357,22 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/cli/main.py",
+        "target": "secrets"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "shlex"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
         "target": "shutil"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/cli/main.py",
+        "target": "ssl"
       },
       {
         "edge_type": "python_ast_import",
@@ -4128,6 +4138,16 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/crypto/pq_signature_verify.py",
         "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/crypto/pq_signature_verify.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/crypto/pq_signature_verify.py",
+        "target": "cryptography.hazmat.primitives.asymmetric.mldsa"
       },
       {
         "edge_type": "python_ast_import",
@@ -6532,6 +6552,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/identity/first_run_provisioning.py",
+        "target": "importlib.metadata"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/identity/first_run_provisioning.py",
         "target": "json"
       },
       {
@@ -8077,6 +8102,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
+        "target": "ilc_core.crypto.pq_signature_verify"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
         "target": "ilc_core.network.d2d.gossip_peer_registry"
       },
       {
@@ -8088,11 +8118,6 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
         "target": "json"
-      },
-      {
-        "edge_type": "python_ast_import",
-        "source": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
-        "target": "oqs"
       },
       {
         "edge_type": "python_ast_import",
@@ -9291,6 +9316,26 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/invite_code.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/invite_code.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/invite_code.py",
+        "target": "secrets"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/invite_code.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/network/relay/relay_client.py",
         "target": "__future__"
       },
@@ -9392,6 +9437,11 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/relay/relay_server.py",
+        "target": "base64"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/relay_server.py",
         "target": "collections"
       },
       {
@@ -9438,6 +9488,11 @@
         "edge_type": "python_ast_import",
         "source": "ilc_core/network/relay/relay_server.py",
         "target": "ilc_core.identity.bls_backend"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/network/relay/relay_server.py",
+        "target": "ilc_core.network.relay.invite_code"
       },
       {
         "edge_type": "python_ast_import",
@@ -11557,7 +11612,17 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/release/__init__.py",
+        "target": "ilc_core.release.installable_release_signature"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/__init__.py",
         "target": "ilc_core.release.update_runtime"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/__init__.py",
+        "target": "ilc_core.release.update_signature_verifier"
       },
       {
         "edge_type": "python_ast_import",
@@ -11611,6 +11676,36 @@
       },
       {
         "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_manifest.py",
+        "target": "urllib.parse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_signature.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_signature.py",
+        "target": "hashlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_signature.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_signature.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/installable_release_signature.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
         "source": "ilc_core/release/update_runtime.py",
         "target": "__future__"
       },
@@ -11647,6 +11742,56 @@
       {
         "edge_type": "python_ast_import",
         "source": "ilc_core/release/update_runtime.py",
+        "target": "urllib.parse"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "__future__"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "cryptography.exceptions"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "cryptography.hazmat.primitives.asymmetric.ed25519"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "ilc_core.release.installable_release_signature"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "json"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "pathlib"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "re"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "requests"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
+        "target": "typing"
+      },
+      {
+        "edge_type": "python_ast_import",
+        "source": "ilc_core/release/update_signature_verifier.py",
         "target": "urllib.parse"
       },
       {
@@ -26319,6 +26464,20 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_package_0411_00b_g10_pypi_upload_and_relay_venv_upgrade.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_package_0412_00b_g10_pypi_upload_and_relay_venv_upgrade.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_receipt_00_g10_first_run_connectivity_probe.md",
       "review_required_before_public_export": true
     },
@@ -26347,6 +26506,20 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00a_g10_local_build_0414.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00b_g10_pypi_upload_0414.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md",
       "review_required_before_public_export": true
     },
@@ -26362,6 +26535,48 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_bootstrap_capsule_spec_00_g10_invite_bundle_extensions.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_00_g10_relay_invite_code_cdl_authority.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_ratify_00_g10_cdl_113_ratification.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_deploy_00_g10_live_relay_guard_clearance.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_impl_00_g10_relay_invite_code_implementation.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_spec_00_g10_relay_invite_code_protocol_spec.md",
       "review_required_before_public_export": true
     },
     {
@@ -26760,6 +26975,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_bootstrap_capsule_sign_00_g10_genesis_relay_capsule_signing.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md",
       "review_required_before_public_export": true
     },
@@ -26894,6 +27116,13 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_07_g10_046_version_patch.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_08_g10_0415_version_patch.md",
       "review_required_before_public_export": true
     },
     {
@@ -41705,6 +41934,20 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_package_0411_00b_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_package_0412_00b_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_install_connectivity_receipt_00_walkthrough.md",
       "review_required_before_public_export": true
     },
@@ -41719,6 +41962,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_0411_peer_bootstrap.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_046_preflight.md",
       "review_required_before_public_export": true
     },
@@ -41726,7 +41976,42 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_smoke_00_fix_0411_blockers.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_smoke_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_connectivity_smoke_00a_peer_hint_cli_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_install_network_doctor_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_shortcode_package_00a_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_install_shortcode_package_00b_walkthrough.md",
       "review_required_before_public_export": true
     },
     {
@@ -41741,6 +42026,41 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_invite_bootstrap_capsule_spec_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_invite_shortcode_cdl_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_invite_shortcode_cdl_ratify_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_invite_shortcode_deploy_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_invite_shortcode_spec_00_walkthrough.md",
       "review_required_before_public_export": true
     },
     {
@@ -41818,6 +42138,13 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_peer_connectivity_advertisement_spec_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_pre_rc_connectivity_claim_gate_00_walkthrough.md",
       "review_required_before_public_export": true
     },
     {
@@ -41999,6 +42326,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_public_rc_version_consistency_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_relay_abuse_limits_fix1_00_walkthrough.md",
       "review_required_before_public_export": true
     },
@@ -42035,6 +42369,20 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_relay_bls_rust_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_00_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_fix_00_walkthrough.md",
       "review_required_before_public_export": true
     },
     {
@@ -42160,6 +42508,34 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_00a_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_00b_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_00c_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_00d_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_release_sign_prompt_patch_02_walkthrough.md",
       "review_required_before_public_export": true
     },
@@ -42189,6 +42565,20 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/phases/phase_gap_release_sign_prompt_patch_06_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_prompt_patch_07_walkthrough.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/phases/phase_gap_release_sign_prompt_patch_08_walkthrough.md",
       "review_required_before_public_export": true
     },
     {
@@ -49888,6 +50278,20 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_ratification_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_cdl_candidates_p2p_and_coupling_post_299_v0.1.md",
       "review_required_before_public_export": true
     },
@@ -50490,6 +50894,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_connectivity_lane_closure_verdict_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md",
       "review_required_before_public_export": true
     },
@@ -50617,6 +51028,13 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_copyright_counsel_disposition_1420_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json",
       "review_required_before_public_export": true
     },
     {
@@ -53619,6 +54037,41 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0411_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0412_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0413_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0414_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0415_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_installable_release_manifest_ilc_core_041_GAP_ONBOARDING_PACKAGE_FIX1_00a_v0.1.json",
       "review_required_before_public_export": true
     },
@@ -54950,6 +55403,34 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00a_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00a_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00a_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_package_build_receipt_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
       "review_required_before_public_export": true
     },
     {
@@ -57343,6 +57824,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_public_rc_version_consistency_gate_report_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_public_receipt_representation_cluster_lock_586_v0.1.md",
       "review_required_before_public_export": true
     },
@@ -57427,6 +57915,34 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_PACKAGE_REFRESH_00b_v0.1.json",
       "review_required_before_public_export": true
     },
@@ -57435,6 +57951,13 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00b_v0.1.json",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json",
       "review_required_before_public_export": true
     },
     {
@@ -57651,6 +58174,13 @@
       "blocked": false,
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_relay_invite_code_spec_GAP_INVITE_SHORTCODE_SPEC_00_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_relay_native_trust_and_connectivity_architecture_vision_v0.1.md",
       "review_required_before_public_export": true
     },
@@ -57764,6 +58294,20 @@
       "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "docs/specs/ilc_release_publication_signing_authorization_preflight_1287_v0.1.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.2.md",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
+      "exclusion_rule": "docs_tree_default_excluded_pending_public_manifest_review",
+      "marker_status": "not_scanned_default_root_excluded",
+      "path": "docs/specs/ilc_release_signing_authority_reconciliation_GAP_RELEASE_SIGN_00a_v0.1.md",
       "review_required_before_public_export": true
     },
     {
@@ -62584,6 +63128,13 @@
     },
     {
       "blocked": false,
+      "exclusion_rule": "public_rc_exclude_marker_default_excluded",
+      "marker_status": "hit",
+      "path": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
+      "review_required_before_public_export": true
+    },
+    {
+      "blocked": false,
       "exclusion_rule": "timecapsule_sidecar_pre_cdl_default_excluded",
       "marker_status": "not_scanned_default_root_excluded",
       "path": "ilc-timecapsule-sidecar/.gitignore",
@@ -67149,17 +67700,17 @@
   ],
   "excluded_roots": [
     {
-      "count": 6818,
+      "count": 6875,
       "reason": "docs_tree_default_excluded_pending_public_manifest_review",
       "root": "docs"
     },
     {
-      "count": 1785,
+      "count": 1797,
       "reason": "private_phase_prompt_history_default_excluded",
       "root": "docs/antigravity_tasks"
     },
     {
-      "count": 2120,
+      "count": 2143,
       "reason": "private_phase_walkthrough_history_default_excluded",
       "root": "docs/phases"
     },
@@ -67169,7 +67720,7 @@
       "root": "docs/research"
     },
     {
-      "count": 49709,
+      "count": 49749,
       "reason": "generated_mempalace_and_local_output_default_excluded",
       "root": "out"
     },
@@ -67189,12 +67740,12 @@
       "root": "Z_Past_Chats"
     },
     {
-      "count": 182657,
+      "count": 186468,
       "reason": "generated_rust_build_output_default_excluded",
       "root": "ilc_consensus/target"
     },
     {
-      "count": 1870,
+      "count": 1875,
       "reason": "private_phase_regression_tests_default_excluded",
       "root": "tests"
     },
@@ -67264,7 +67815,7 @@
       "root": "tools"
     },
     {
-      "count": 474,
+      "count": 478,
       "reason": "python_build_dist_artifacts_default_excluded",
       "root": "build"
     },
@@ -67550,14 +68101,6 @@
     },
     {
       "allowlist_reason": "explicit_allowlist_candidate_phase_1319",
-      "byte_size": 8176,
-      "hash_sha256": "4f5e6b8d5a61197f12517604d7723c699f500ae1e6c586557a37dda8cf993190",
-      "marker_status": "absent",
-      "path": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
-      "scanner_status": "included_for_rehearsal_scan"
-    },
-    {
-      "allowlist_reason": "explicit_allowlist_candidate_phase_1319",
       "byte_size": 190,
       "hash_sha256": "f167fb8ab86352225ea72dcbbad8ab731188335b2d23619522f5e2e0c98caeae",
       "marker_status": "absent",
@@ -67718,8 +68261,8 @@
     },
     {
       "allowlist_reason": "rust_consensus_source_package_profile_candidate_phase_1319",
-      "byte_size": 4907,
-      "hash_sha256": "76eda8de45c1606cc6124de58deae4509f38386105017cb66c423adfaf67ef9a",
+      "byte_size": 5255,
+      "hash_sha256": "5aa7404a3a04815d7af83aa537d761551dac0f7aaf708a33ab8f7e26f290ccba",
       "marker_status": "absent",
       "path": "ilc_consensus/src/bls_verify_digest_main.rs",
       "scanner_status": "included_for_rehearsal_scan"
@@ -67887,7 +68430,7 @@
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 134,
-      "hash_sha256": "fd61b034a48bd622398c17d96986a8a3eeefaf09eb2fe587bc6de376a2970739",
+      "hash_sha256": "3931e8c475d34b4bd6f66650be0846925c7664e6ddaec0ad208593df8c5beb69",
       "marker_status": "absent",
       "path": "ilc_core/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -68558,8 +69101,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 200950,
-      "hash_sha256": "017a7c4166a3decb2b1adb6239b59c812528ce1119c9eece52603d388382897e",
+      "byte_size": 227543,
+      "hash_sha256": "bf2496cd17be75d51f889e4ef5f20a947f5dfa35b0525f4d7891dceade511259",
       "marker_status": "absent",
       "path": "ilc_core/cli/main.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -68742,10 +69285,26 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1953,
-      "hash_sha256": "c2130d69fe4e2ee2b949ad6354b74e129713bd823cc0ded77f4d5a8d14878cd6",
+      "byte_size": 2553,
+      "hash_sha256": "defcf3cb4f0d3b11cf0070d0524025e5243097855b131af2ae7c5599befe8cb2",
       "marker_status": "absent",
       "path": "ilc_core/crypto/pq_signature_verify.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 86,
+      "hash_sha256": "494faf6d45e1afdf196d92df060e0353fd8aeb227dde0545e4f1c05ba36daa23",
+      "marker_status": "absent",
+      "path": "ilc_core/data/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 4219,
+      "hash_sha256": "b006052fb36060d0f7d4172a0e49bac7bc195519c864b33d02f0af673489ed91",
+      "marker_status": "absent",
+      "path": "ilc_core/data/relay_bootstrap_capsule.json",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -69166,8 +69725,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 5271,
-      "hash_sha256": "53d412d5d59f96ac6b027e18ffd8b3d966d53c3036c5b8e36d4800753d532757",
+      "byte_size": 5821,
+      "hash_sha256": "2a80d38e761743489c11e9860406c901a0b7d15add52dca09fbf9d9e3cda9c6d",
       "marker_status": "absent",
       "path": "ilc_core/epoch/genesis_settlement_destination.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69271,7 +69830,7 @@
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 21176,
-      "hash_sha256": "c181132df28eaee5cebf17a26d8cce0dc6dcf800b701cdb07a2e8e19f130501c",
+      "hash_sha256": "dc39ae3c7c514666b289a6c6eb0f5cad1c3dc140452f2835f19a2f538b7e8df7",
       "marker_status": "absent",
       "path": "ilc_core/genesis/assertion_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69430,8 +69989,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 16929,
-      "hash_sha256": "f4948cc2e88f0bea64af66912eeeb20f9a0fa38ff965379ffd0ae96294fa7920",
+      "byte_size": 20789,
+      "hash_sha256": "311f4fab6c93772a4d28c527133c3816c36871e8ba5bb7cab3e855de5ae4aff5",
       "marker_status": "absent",
       "path": "ilc_core/identity/bls_backend.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69439,7 +69998,7 @@
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 15402,
-      "hash_sha256": "47c91b44865a57ec926bf32a64e5a04ab0f1ee55daddf726e1dc3963ddd7fa0f",
+      "hash_sha256": "d65b59dab24da3f757f39669f86530c3c809ad733399c90c6fc325efcc4b3bac",
       "marker_status": "absent",
       "path": "ilc_core/identity/endorsement_packet_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69454,8 +70013,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 57574,
-      "hash_sha256": "01f2fe6cfb09bd369158ea45a594270da9260721e206b28572363ce5d5265b82",
+      "byte_size": 57792,
+      "hash_sha256": "6aff26131a5ce2fa17aca0ffbb8a7c574c45853ecbfde3d47dd8538e92ac6752",
       "marker_status": "absent",
       "path": "ilc_core/identity/first_run_provisioning.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69463,7 +70022,7 @@
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 14220,
-      "hash_sha256": "49680bad6eb984280c9277bb9aaec093e50028e5cb3e8f03a97666d94ba69cf1",
+      "hash_sha256": "c660d6f8e1f05ab7a41f2653b981aab1758a5eda28505812242b655b21112794",
       "marker_status": "absent",
       "path": "ilc_core/identity/genesis_record_schema.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -69862,8 +70421,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 10265,
-      "hash_sha256": "ad151f22962f524eab327c31ebe20d3d1f66a4bb317f6023ea30c8ae358441c1",
+      "byte_size": 9863,
+      "hash_sha256": "86d13341020387d321d83055c463beeb43c0cbaee9b8b2ab4ef9ff047af0273c",
       "marker_status": "absent",
       "path": "ilc_core/network/d2d/bootstrap_fetch_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -70110,10 +70669,18 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 1883,
-      "hash_sha256": "7fb3b75b390e19f066f5b402a6bfbe93824c5e86fdca92c174c07c062be9c457",
+      "byte_size": 2543,
+      "hash_sha256": "92a8ec5ae7314225f8c555e2dfcc16d4456c19132c2ade0ca3ca1fe5fd179dcf",
       "marker_status": "absent",
       "path": "ilc_core/network/relay/__init__.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 1760,
+      "hash_sha256": "1787c7b96fb7757a4df2ebff8b0f6eb34ab135e9ed57467a03af6c5fe315ac15",
+      "marker_status": "absent",
+      "path": "ilc_core/network/relay/invite_code.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -70126,8 +70693,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 100041,
-      "hash_sha256": "5eb9942c8fe18dc696450a48ec380ab93a2f6bbec621a8dd4b0ab5126d151c46",
+      "byte_size": 124466,
+      "hash_sha256": "de197f84e2296d037b1d477501fe80bd8e1e80a8807015f6d418bf9e5ffbb373",
       "marker_status": "absent",
       "path": "ilc_core/network/relay/relay_server.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -70231,7 +70798,7 @@
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
       "byte_size": 32268,
-      "hash_sha256": "4ad042bcb51fda401ed02721f8bb766e7259c0d29297c92e432ae96dc0e8f9d7",
+      "hash_sha256": "4fe5309d8e712100eefb20dc71ec9f83a9d1019070f6ebdd0a94a5d79997abe6",
       "marker_status": "absent",
       "path": "ilc_core/node/operator_init_runtime.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -70790,8 +71357,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 12029,
-      "hash_sha256": "356c9a693f430d389a1fe87bbdc5ebcb605cfd58f2423bd4df35280128103af1",
+      "byte_size": 12072,
+      "hash_sha256": "6294757fd4061c8c1e20e001bb1a10ab8e3590faebcbe3492b20fb2e38f45a80",
       "marker_status": "absent",
       "path": "ilc_core/rc/package_boundary_inventory.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -70822,8 +71389,8 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 899,
-      "hash_sha256": "52615ad3d83df496d491763c92dcd477bf9aac78564419b00f9a88210947c57d",
+      "byte_size": 1703,
+      "hash_sha256": "f0346fe9a50389b984c6a1f0214ce1d023b33a7976e097cf09177b3b8d4e0be2",
       "marker_status": "absent",
       "path": "ilc_core/release/__init__.py",
       "scanner_status": "included_for_rehearsal_scan"
@@ -70838,10 +71405,18 @@
     },
     {
       "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
-      "byte_size": 9703,
-      "hash_sha256": "6131df852a8fc94cf0c6e2e4c548062c8829ec041d18a44b63951b42ae22e9d3",
+      "byte_size": 10721,
+      "hash_sha256": "42ada87e230fc868baa954739a8f4a1ce8833f9285919ec796dfb41caa924d30",
       "marker_status": "absent",
       "path": "ilc_core/release/installable_release_manifest.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 17651,
+      "hash_sha256": "dd9b725e3e7ec84982c2d4f1a818bd9ca874ee92d2b8580c3e15d672430b25f3",
+      "marker_status": "absent",
+      "path": "ilc_core/release/installable_release_signature.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -70850,6 +71425,14 @@
       "hash_sha256": "c431bec917e4ef14520cb3dabee999d15f620b09c3117dc6ea745a5feaf769c1",
       "marker_status": "absent",
       "path": "ilc_core/release/update_runtime.py",
+      "scanner_status": "included_for_rehearsal_scan"
+    },
+    {
+      "allowlist_reason": "python_source_package_profile_candidate_phase_1319",
+      "byte_size": 7361,
+      "hash_sha256": "ffda227d4541a972aa03ffc7a2eaaa5c8a06d70f0cc840cda6cfe67f23d2b683",
+      "marker_status": "absent",
+      "path": "ilc_core/release/update_signature_verifier.py",
       "scanner_status": "included_for_rehearsal_scan"
     },
     {
@@ -71454,8 +72037,8 @@
     },
     {
       "allowlist_reason": "reviewed_package_metadata_candidate_phase_1319",
-      "byte_size": 6338,
-      "hash_sha256": "58b074d5262b80f46666dc320b472460110ac9c59c9847a99dd912921a8157f0",
+      "byte_size": 6388,
+      "hash_sha256": "ad9f1c6da98252b8219bfa4990f06332dc9c99bf2f3f1a734f8f179d4f1af571",
       "marker_status": "absent",
       "path": "pyproject.toml",
       "scanner_status": "included_for_rehearsal_scan"
@@ -78357,6 +78940,14 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_package_0411_00b_g10_pypi_upload_and_relay_venv_upgrade.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_package_0412_00b_g10_pypi_upload_and_relay_venv_upgrade.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_connectivity_receipt_00_g10_first_run_connectivity_probe.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -78373,6 +78964,14 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00a_g10_local_build_0414.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_shortcode_package_00b_g10_pypi_upload_0414.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_ux_01_g10_guided_nontechnical_onboarding.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -78382,6 +78981,30 @@
       },
       {
         "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_bootstrap_capsule_spec_00_g10_invite_bundle_extensions.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_00_g10_relay_invite_code_cdl_authority.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_ratify_00_g10_cdl_113_ratification.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_deploy_00_g10_live_relay_guard_clearance.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_impl_00_g10_relay_invite_code_implementation.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_spec_00_g10_relay_invite_code_protocol_spec.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -78609,6 +79232,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_bootstrap_capsule_sign_00_g10_genesis_relay_capsule_signing.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_relay_deploy_surface_fix2_00_g10_relay_deploy_surface.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -78686,6 +79313,10 @@
       },
       {
         "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_07_g10_046_version_patch.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_08_g10_0415_version_patch.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -87149,6 +87780,14 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_install_connectivity_package_0411_00b_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_install_connectivity_package_0412_00b_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_install_connectivity_receipt_00_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -87157,11 +87796,35 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_0411_peer_bootstrap.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_046_preflight.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_install_connectivity_smoke_00_fix_0411_blockers.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_install_connectivity_smoke_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_install_connectivity_smoke_00a_peer_hint_cli_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_install_network_doctor_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_install_shortcode_package_00a_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_install_shortcode_package_00b_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -87170,6 +87833,26 @@
       },
       {
         "path": "docs/phases/phase_gap_invite_bootstrap_capsule_spec_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_invite_shortcode_cdl_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_invite_shortcode_cdl_ratify_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_invite_shortcode_deploy_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_invite_shortcode_spec_00_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -87214,6 +87897,10 @@
       },
       {
         "path": "docs/phases/phase_gap_peer_connectivity_advertisement_spec_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_pre_rc_connectivity_claim_gate_00_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -87317,6 +88004,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_public_rc_version_consistency_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_relay_abuse_limits_fix1_00_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -87338,6 +88029,14 @@
       },
       {
         "path": "docs/phases/phase_gap_relay_bls_rust_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_00_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_relay_bootstrap_capsule_sign_fix_00_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -87409,6 +88108,22 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/phases/phase_gap_release_sign_00a_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_release_sign_00b_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_release_sign_00c_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_release_sign_00d_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/phases/phase_gap_release_sign_prompt_patch_02_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -87426,6 +88141,14 @@
       },
       {
         "path": "docs/phases/phase_gap_release_sign_prompt_patch_06_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_release_sign_prompt_patch_07_walkthrough.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/phases/phase_gap_release_sign_prompt_patch_08_walkthrough.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -91825,6 +92548,14 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_ratification_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_cdl_candidates_p2p_and_coupling_post_299_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -92169,6 +92900,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_connectivity_lane_closure_verdict_GAP_PRE_RC_CONNECTIVITY_CLAIM_GATE_00_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_connectivity_path_taxonomy_GAP_CONNECTIVITY_RECONCILE_00_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -92242,6 +92977,10 @@
       },
       {
         "path": "docs/specs/ilc_copyright_counsel_disposition_1420_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -93957,6 +94696,26 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0411_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0412_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0413_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0414_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0415_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_installable_release_manifest_ilc_core_041_GAP_ONBOARDING_PACKAGE_FIX1_00a_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -94718,6 +95477,22 @@
       },
       {
         "path": "docs/specs/ilc_package_build_receipt_GAP_CONNECTIVITY_PACKAGE_00a_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00a_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00a_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00a_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_package_build_receipt_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -96085,6 +96860,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_public_rc_version_consistency_gate_report_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_public_receipt_representation_cluster_lock_586_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -96133,11 +96912,31 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0411_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_CONNECTIVITY_PACKAGE_0412_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_pypi_upload_receipt_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_PACKAGE_REFRESH_00b_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
         "path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_AUDIT_HARDENING_PACKAGE_0410_00b_v0.1.json",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_pypi_upload_receipt_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -96261,6 +97060,10 @@
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
+        "path": "docs/specs/ilc_relay_invite_code_spec_GAP_INVITE_SHORTCODE_SPEC_00_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
         "path": "docs/specs/ilc_relay_native_trust_and_connectivity_architecture_vision_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
@@ -96326,6 +97129,14 @@
       },
       {
         "path": "docs/specs/ilc_release_publication_signing_authorization_preflight_1287_v0.1.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.2.md",
+        "reason": "docs_tree_default_excluded_pending_public_manifest_review"
+      },
+      {
+        "path": "docs/specs/ilc_release_signing_authority_reconciliation_GAP_RELEASE_SIGN_00a_v0.1.md",
         "reason": "docs_tree_default_excluded_pending_public_manifest_review"
       },
       {
@@ -99079,6 +99890,10 @@
       {
         "path": "ilc-ccss-sidecar/tools/check_sensitive_runtime_coding_taboos.py",
         "reason": "ccss_sidecar_private_local_default_excluded"
+      },
+      {
+        "path": "ilc-graphics-sidecar/ilc_graph_viz/bounded_query.py",
+        "reason": "public_rc_exclude_marker_default_excluded"
       },
       {
         "path": "ilc-timecapsule-sidecar/.gitignore",
@@ -102331,6 +103146,14 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/data/__init__.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/data/relay_bootstrap_capsule.json",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/distribution/__init__.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -103015,6 +103838,10 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/network/relay/invite_code.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/network/relay/relay_client.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
@@ -103379,7 +104206,15 @@
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
+        "path": "ilc_core/release/installable_release_signature.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
         "path": "ilc_core/release/update_runtime.py",
+        "reason": "source_code_allowlist_reviewed_phase_1319"
+      },
+      {
+        "path": "ilc_core/release/update_signature_verifier.py",
         "reason": "source_code_allowlist_reviewed_phase_1319"
       },
       {
@@ -103715,7 +104550,7 @@
   },
   "marker_scan": {
     "exact_marker": "PUBLIC_RC_EXCLUDE",
-    "file_count_scanned": 532,
+    "file_count_scanned": 536,
     "hit_count": 0,
     "hits": [],
     "result": "pass",
@@ -103832,7 +104667,7 @@
   "rerun": {
     "command": "./.venv/bin/python -m ilc_core.rc.source_allowlist_export_rehearsal --json-out docs/specs/ilc_deterministic_source_allowlist_export_rehearsal_1319_v0.1.json",
     "determinism": "manifest_hash_must_match_expected_manifest_hash_on_unchanged_inputs",
-    "expected_manifest_hash": "668d3ffab3b8ad69bfc2efe414ffd7c8bbd793d720b4693252d7ce3b7b38392b"
+    "expected_manifest_hash": "19e5ec480afa00809afb124552bfb12add5bf321b35d88f302262d846413e980"
   },
   "result": "pass",
   "scanner_limitations": [

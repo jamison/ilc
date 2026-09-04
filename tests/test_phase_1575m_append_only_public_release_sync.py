@@ -194,6 +194,27 @@ def test_tool_rejects_public_rc_exclude_marker(tmp_path: Path) -> None:
         )
 
 
+def test_tool_rejects_docstring_public_rc_exclude_marker(tmp_path: Path) -> None:
+    module = _load_tool_module()
+    public_repo = _make_repo(tmp_path / "public")
+    sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
+    (sanitized_tree / "private_runtime.py").write_text(
+        '"""Private helper.\n\n'
+        "PUBLIC_RC_EXCLUDE: synthetic_docstring_marker\n"
+        '"""\n',
+        encoding="utf-8",
+    )
+    _git(["add", "private_runtime.py"], sanitized_tree)
+    _git(["commit", "-q", "-m", "add excluded marker"], sanitized_tree)
+    with pytest.raises(ValueError, match="public_rc_exclude_marker_found_in_sanitized_tree"):
+        module.build_receipt(
+            public_repo=public_repo,
+            sanitized_tree=sanitized_tree,
+            source_private_commit=SOURCE_COMMIT,
+            dry_run=True,
+        )
+
+
 @pytest.mark.parametrize("term", ["ilcops@proton.me", "Genesis operator", "jurisdiction_redacted"])
 def test_tool_rejects_denylist_term(tmp_path: Path, term: str) -> None:
     module = _load_tool_module()
