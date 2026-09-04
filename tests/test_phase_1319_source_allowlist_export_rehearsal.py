@@ -141,6 +141,33 @@ def test_phase_1319_required_included_paths_pass_when_marker_free(tmp_path: Path
     }
 
 
+def test_phase_1319_optional_sidecar_include_roots_may_be_absent(tmp_path: Path) -> None:
+    _write(tmp_path / "src/runtime.py", "VALUE = 1\n")
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src", "ilc-ccss-sidecar"),
+        excluded_roots=(),
+    )
+
+    assert manifest["result"] == "pass"
+    assert {
+        "allowlist_reason": "explicit_allowlist_candidate_phase_1319",
+        "exists": False,
+        "root": "ilc-ccss-sidecar",
+    } in manifest["candidate_roots"]
+    assert [record["path"] for record in manifest["included_files"]] == ["src/runtime.py"]
+
+
+def test_phase_1319_non_optional_missing_include_root_fails_closed(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="phase_1319_include_root_missing"):
+        build_source_allowlist_export_rehearsal(
+            repo_root=tmp_path,
+            include_roots=("missing-runtime-root",),
+            excluded_roots=(),
+        )
+
+
 def test_phase_1319_required_included_paths_fail_closed_when_excluded(tmp_path: Path) -> None:
     _write(tmp_path / "src/runtime.py", "# PUBLIC_RC_EXCLUDE: synthetic\nVALUE = 1\n")
 
