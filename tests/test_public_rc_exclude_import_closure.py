@@ -37,8 +37,23 @@ def test_public_rc_exclude_import_closure_lazy_violations_are_named_allowances()
             "lazy",
         ),
         (
-            "ilc_core/epistemic/jury_assignment_runtime.py",
-            "ilc_core/epistemic/vrf_proof_verifier.py",
+            "ilc_core/cli/main.py",
+            "ilc_core/genesis/invitation_provenance_record.py",
+            "lazy",
+        ),
+        (
+            "ilc_core/epoch/epoch_distribution_writer.py",
+            "ilc_core/epoch/treasury_validator_reward_production_path.py",
+            "lazy",
+        ),
+        (
+            "ilc_core/epoch/epoch_distribution_writer.py",
+            "ilc_core/epoch/epoch_emission_production_path.py",
+            "lazy",
+        ),
+        (
+            "ilc_core/genesis/invite_enforcement.py",
+            "ilc_core/genesis/invitation_provenance_record.py",
             "lazy",
         ),
     }

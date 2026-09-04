@@ -1,4 +1,4 @@
-# ILC Release Signature Envelope Schema GAP-RELEASE-SIGN-00b v0.1
+# ILC Release Signature Envelope Schema GAP-RELEASE-SIGN-00b v0.2
 
 **Phase:** GAP-RELEASE-SIGN-00b
 **Date:** 2026-09-04
@@ -32,7 +32,7 @@ One envelope JSON object signs one installable manifest artifact record.
   "prior_release_envelope_ref": "none:first-public-rc-release",
   "release_id": "ilc-core-0.4.15",
   "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
-  "schema_version": "GAP_RELEASE_SIGN_00b_v0.1",
+  "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
   "signature_hex": "<128-char lowercase Ed25519 signature hex>",
   "signed_at": "1970-01-01T00:00:00Z",
   "signed_preimage_algorithm": "sha256_of_canonical_json",
@@ -45,7 +45,7 @@ One envelope JSON object signs one installable manifest artifact record.
 
 Mandatory constraints:
 
-- `schema_version` is exactly `GAP_RELEASE_SIGN_00b_v0.1`.
+- `schema_version` is exactly `GAP_RELEASE_SIGN_00b_v0.2`.
 - `release_id` is exactly the release identifier whose manifest contains the
   artifact, for example `ilc-core-0.4.15`.
 - `artifact_id` matches one manifest artifact id.
@@ -86,7 +86,7 @@ JSON payload:
   "prior_release_envelope_ref": "none:first-public-rc-release",
   "release_id": "<release-id>",
   "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
-  "schema_version": "GAP_RELEASE_SIGN_00b_v0.1",
+  "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
   "signed_at": "1970-01-01T00:00:00Z",
   "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
   "signing_algorithm": "Ed25519"
@@ -120,7 +120,7 @@ GAP-RELEASE-SIGN-00c.
       "...": "one envelope object"
     }
   },
-  "schema_version": "GAP_RELEASE_SIGN_00b_v0.1",
+  "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
   "version": "0.4.15"
 }
 ```

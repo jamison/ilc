@@ -351,5 +351,5 @@ def test_canonical_envelope_json_sort_keys() -> None:
 
 
 def test_constants_are_public_rc_release_schema_values() -> None:
-    assert SCHEMA_VERSION == "GAP_RELEASE_SIGN_00b_v0.1"
+    assert SCHEMA_VERSION == "GAP_RELEASE_SIGN_00b_v0.2"
     assert SIGNING_ALGORITHM == "Ed25519"

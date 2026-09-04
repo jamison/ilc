@@ -13,7 +13,7 @@ class InstallableReleaseSignatureError(ValueError):
     """Raised when a release signature envelope is malformed."""
 
 
-SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.1"
+SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
 SIGNED_PREIMAGE_DOMAIN = "ILC_RELEASE_ARTIFACT_SIGNATURE_V1"
 SIGNING_ALGORITHM = "Ed25519"
 SIGNED_AT_EPOCH_ZERO = "1970-01-01T00:00:00Z"

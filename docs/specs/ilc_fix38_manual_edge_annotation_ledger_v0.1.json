@@ -74947,7 +74947,7 @@
         "IMPLEMENTS"
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
-      "repo_path": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.1.md"
+      "repo_path": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.2.md"
     },
     {
       "annotation_batch": "manual_batch_gap_release_sign_00b_2026_09_04",
@@ -74971,7 +74971,7 @@
         },
         {
           "edge_type": "IMPLEMENTS",
-          "target": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.1.md"
+          "target": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.2.md"
         }
       ],
       "proposed_trace_roles": [
