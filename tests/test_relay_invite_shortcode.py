@@ -38,13 +38,14 @@ OTHER_IKM_HEX = "72" * 32
 RELAY_AGENT_ID = "8" * 96
 
 
-def _server() -> RelayRendezvousServer:
+def _server(*, now_provider: Any | None = None) -> RelayRendezvousServer:
     return RelayRendezvousServer(
         RelayServerConfig(
             relay_agent_id=RELAY_AGENT_ID,
             relay_host="127.0.0.1",
             control_port=51151,
-        )
+        ),
+        now_provider=now_provider,
     )
 
 
@@ -192,10 +193,9 @@ def test_store_and_retrieve_atomic() -> None:
     assert results.count(410) == 3
 
 
-def test_ttl_expiry_410(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_ttl_expiry_410() -> None:
     now = [1000.0]
-    monkeypatch.setattr(relay_server_module.time, "time", lambda: now[0])
-    server = _server()
+    server = _server(now_provider=lambda: now[0])
     bundle = _signed_bundle()[3]
     request = _store_request([bundle])
     request["ttl_seconds"] = 1
@@ -518,6 +518,35 @@ def test_invite_batch_storage_cap_sweeps_expired(monkeypatch: pytest.MonkeyPatch
     assert "ILC-H7K2-X9P4" not in server._invite_batches
 
 
+def test_invite_batch_expiry_heap_removes_only_matching_generation() -> None:
+    server = _server(now_provider=lambda: 2000.0)
+    with server._state_lock:
+        server._invite_batches["ILC-H7K2-X9P4"] = relay_server_module._InviteCodeBatch(
+            code="ILC-H7K2-X9P4",
+            bundles_b64=deque(["e30="]),
+            expires_at_unix=3000.0,
+            inviting_agent_id="a" * 96,
+            inviting_bls_public_key_hex="a" * 96,
+            slots_total=1,
+        )
+        server._invite_expiry_heap.append((1000.0, "ILC-H7K2-X9P4"))
+        server._sweep_expired_invite_batches_locked(2000.0)
+    assert "ILC-H7K2-X9P4" in server._invite_batches
+
+
+def test_invite_store_rejects_colon_delimited_source_host() -> None:
+    server = _server()
+    bundle = _signed_bundle()[3]
+    status, body = server.handle_json_request(
+        method="POST",
+        path=RELAY_INVITE_STORE_PATH,
+        payload=_store_request([bundle]),
+        source_host="198.51.100.10:agent:evil",
+    )
+    assert status == 400
+    assert body["error"] == "relay_invite_store_source_host_invalid"
+
+
 def test_invite_rate_limiter_is_thread_safe() -> None:
     limiter = relay_server_module._InviteRateLimiter(
         limit=10,
@@ -665,3 +694,11 @@ def test_install_sh_no_redirect() -> None:
     assert "ssl._create_unverified_context" not in text
     assert "--location" not in text
     assert "--location-trusted" not in text
+
+
+def test_invite_generate_cli_uses_public_tls_context() -> None:
+    text = (cli_main.Path(__file__).resolve().parents[1] / "ilc_core/cli/main.py").read_text(
+        encoding="utf-8"
+    )
+    assert "ssl.create_default_context()" in text
+    assert "ssl._create_unverified_context" not in text

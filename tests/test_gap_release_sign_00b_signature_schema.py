@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
 from ilc_core.release.installable_release_signature import (
+    DEFAULT_GENESIS_LINEAGE_REF,
+    DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
+    DEFAULT_RELEASE_KEY_REGISTRATION_REF,
     SCHEMA_VERSION,
     SIGNED_AT_EPOCH_ZERO,
     SIGNED_PREIMAGE_DOMAIN,
@@ -19,6 +23,7 @@ from ilc_core.release.installable_release_signature import (
 )
 
 
+ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
 ARTIFACT_SHA256 = "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"
 RELEASE_ID = "ilc-core-0.4.15"
@@ -75,6 +80,9 @@ def test_build_skeleton_has_required_fields() -> None:
         "release_id",
         "artifact_id",
         "artifact_sha256",
+        "genesis_lineage_ref",
+        "prior_release_envelope_ref",
+        "release_key_registration_ref",
         "signing_algorithm",
         "signer_public_key_hex",
         "signature_hex",
@@ -144,6 +152,24 @@ def test_preimage_includes_domain_and_release_id() -> None:
     )
     assert payload["signed_preimage_domain"] == SIGNED_PREIMAGE_DOMAIN
     assert payload["release_id"] == RELEASE_ID
+    assert payload["release_key_registration_ref"] == DEFAULT_RELEASE_KEY_REGISTRATION_REF
+    assert payload["genesis_lineage_ref"] == DEFAULT_GENESIS_LINEAGE_REF
+    assert payload["prior_release_envelope_ref"] == DEFAULT_PRIOR_RELEASE_ENVELOPE_REF
+
+
+def test_preimage_changes_when_authority_refs_change() -> None:
+    default = compute_signed_preimage_sha256(
+        release_id=RELEASE_ID,
+        artifact_id=ARTIFACT_ID,
+        artifact_sha256=ARTIFACT_SHA256,
+    )
+    changed = compute_signed_preimage_sha256(
+        release_id=RELEASE_ID,
+        artifact_id=ARTIFACT_ID,
+        artifact_sha256=ARTIFACT_SHA256,
+        release_key_registration_ref="adr-0036:alternate-release-key",
+    )
+    assert changed != default
 
 
 def test_validate_envelope_accepts_signed_shape() -> None:
@@ -206,9 +232,52 @@ def test_validate_envelope_rejects_wrong_domain() -> None:
         validate_envelope(envelope)
 
 
+def test_build_skeleton_rejects_non_string_artifact_hash_with_stable_token() -> None:
+    with pytest.raises(
+        InstallableReleaseSignatureError,
+        match="release_envelope_artifact_sha256_invalid",
+    ):
+        build_envelope_skeleton(
+            release_id=RELEASE_ID,
+            artifact_id=ARTIFACT_ID,
+            artifact_sha256=None,  # type: ignore[arg-type]
+        )
+
+
+def test_validate_envelope_rejects_bad_authority_ref() -> None:
+    envelope = _signed_envelope()
+    envelope["release_key_registration_ref"] = "bad ref with whitespace"
+    with pytest.raises(InstallableReleaseSignatureError, match="release_envelope_invalid_ref"):
+        validate_envelope(envelope)
+
+
 def test_validate_envelope_set_rejects_empty_envelopes() -> None:
     with pytest.raises(InstallableReleaseSignatureError, match="release_envelope_set_envelopes_invalid"):
         validate_envelope_set({"schema_version": SCHEMA_VERSION, "version": "0.4.15", "envelopes": {}})
+
+
+def test_validate_envelope_set_rejects_invalid_version_string() -> None:
+    envelope = _signed_envelope()
+    with pytest.raises(InstallableReleaseSignatureError, match="release_envelope_set_version_invalid"):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.15\n",
+                "envelopes": {ARTIFACT_ID: envelope},
+            },
+        )
+
+
+def test_validate_envelope_set_rejects_release_id_mismatch_without_manifest() -> None:
+    envelope = _signed_envelope()
+    with pytest.raises(InstallableReleaseSignatureError, match="release_envelope_release_id_mismatch"):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.14",
+                "envelopes": {ARTIFACT_ID: envelope},
+            },
+        )
 
 
 def test_validate_envelope_set_checks_manifest_coverage() -> None:
@@ -220,6 +289,45 @@ def test_validate_envelope_set_checks_manifest_coverage() -> None:
             "envelopes": {ARTIFACT_ID: envelope},
         },
         manifest=_manifest(),
+    )
+
+
+def test_validate_envelope_set_rejects_duplicate_manifest_artifact_id() -> None:
+    envelope = _signed_envelope()
+    manifest = _manifest()
+    manifest["artifacts"].append(dict(manifest["artifacts"][0]))  # type: ignore[index, union-attr]
+    with pytest.raises(
+        InstallableReleaseSignatureError,
+        match="release_envelope_manifest_duplicate_artifact_id",
+    ):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.15",
+                "envelopes": {ARTIFACT_ID: envelope},
+            },
+            manifest=manifest,
+        )
+
+
+def test_validate_envelope_set_accepts_current_0415_manifest_placeholders() -> None:
+    manifest_path = (
+        ROOT
+        / "docs/specs/ilc_installable_release_manifest_ilc_core_0415_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json"
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    envelopes = {}
+    for artifact in manifest["artifacts"]:
+        envelope = build_envelope_skeleton(
+            release_id=manifest["release_id"],
+            artifact_id=artifact["artifact_id"],
+            artifact_sha256=artifact["canonical_hash"],
+        )
+        envelopes[artifact["artifact_id"]] = envelope
+    validate_envelope_set(
+        {"schema_version": SCHEMA_VERSION, "version": "0.4.15", "envelopes": envelopes},
+        manifest=manifest,
+        allow_unsigned_placeholders=True,
     )
 
 

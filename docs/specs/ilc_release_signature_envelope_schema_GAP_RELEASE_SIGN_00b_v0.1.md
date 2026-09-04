@@ -28,7 +28,10 @@ One envelope JSON object signs one installable manifest artifact record.
 {
   "artifact_id": "ilc-artifact:ilc-core-python-wheel-0415@phase-1627",
   "artifact_sha256": "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+  "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+  "prior_release_envelope_ref": "none:first-public-rc-release",
   "release_id": "ilc-core-0.4.15",
+  "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
   "schema_version": "GAP_RELEASE_SIGN_00b_v0.1",
   "signature_hex": "<128-char lowercase Ed25519 signature hex>",
   "signed_at": "1970-01-01T00:00:00Z",
@@ -48,6 +51,13 @@ Mandatory constraints:
 - `artifact_id` matches one manifest artifact id.
 - `artifact_sha256` matches the manifest artifact `canonical_hash` without the
   `sha256:` prefix.
+- `release_key_registration_ref` binds the signature to the ADR-0036 operational
+  release-key registration authority.
+- `genesis_lineage_ref` binds the signature to the ADR-0037 Genesis canonical
+  lineage contract.
+- `prior_release_envelope_ref` binds the signature to the previous release
+  envelope hash, or to the explicit first-release sentinel
+  `none:first-public-rc-release`.
 - `signing_algorithm` is exactly `Ed25519`.
 - `signer_public_key_hex` is 64 lowercase hex characters for signed envelopes.
 - `signature_hex` is 128 lowercase hex characters for signed envelopes.
@@ -72,7 +82,10 @@ JSON payload:
 {
   "artifact_id": "<artifact-id>",
   "artifact_sha256": "<64-char lowercase sha256>",
+  "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+  "prior_release_envelope_ref": "none:first-public-rc-release",
   "release_id": "<release-id>",
+  "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
   "schema_version": "GAP_RELEASE_SIGN_00b_v0.1",
   "signed_at": "1970-01-01T00:00:00Z",
   "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
@@ -89,9 +102,10 @@ json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, al
 Then `sha256(canonical_bytes).digest()` is the ceremony signing input, and
 `sha256(canonical_bytes).hexdigest()` is stored as `signed_preimage_sha256`.
 
-The explicit domain and release-id binding prevent an artifact hash signature
-from being silently replayed as a different release-signing surface or in a
-different release set.
+The explicit domain, release-id, release-key-registration, Genesis-lineage, and
+prior-envelope bindings prevent an artifact hash signature from being silently
+replayed as a different release-signing surface, release set, authority chain,
+or release lineage.
 
 ## §4 - Envelope Set Format
 

@@ -729,6 +729,7 @@ class RelayRendezvousServer:
         *,
         enable_data_plane: bool = False,
         epoch_provider: Callable[[], int] | None = None,
+        now_provider: Callable[[], float] | None = None,
         receipt_sink: Callable[[RelayForwardReceipt, tuple[str, int]], None] | None = None,
         data_plane_bind_host: str = "0.0.0.0",
     ) -> None:
@@ -738,6 +739,8 @@ class RelayRendezvousServer:
         self._packet_rate_buckets: dict[str, _PacketRateBucket] = {}
         self._failed_admissions = _FailedAdmissionTracker()
         self._invite_batches: dict[str, _InviteCodeBatch] = {}
+        self._invite_expiry_heap: list[tuple[float, str]] = []
+        self._now_provider = now_provider or time.time
         self._invite_fetch_limiter = _InviteRateLimiter(
             limit=_INVITE_FETCH_RATE_LIMIT,
             window_seconds=_INVITE_FETCH_RATE_WINDOW_SECONDS,
@@ -1127,6 +1130,7 @@ class RelayRendezvousServer:
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
         body = _require_mapping(payload, "relay_invite_store_request_must_be_object")
+        source_host = _require_host(source_host, "relay_invite_store_source_host_invalid")
         _require_exact_fields(
             body,
             _INVITE_STORE_REQUEST_KEYS,
@@ -1178,7 +1182,7 @@ class RelayRendezvousServer:
             verified_bundles.append(encoded)
         with self._state_lock:
             code = self._allocate_invite_code_locked()
-            expires_at_unix = time.time() + ttl_seconds
+            expires_at_unix = self._unix_now() + ttl_seconds
             self._invite_batches[code] = _InviteCodeBatch(
                 code=code,
                 bundles_b64=deque(verified_bundles),
@@ -1187,6 +1191,7 @@ class RelayRendezvousServer:
                 inviting_bls_public_key_hex=inviting_bls_public_key_hex,
                 slots_total=len(verified_bundles),
             )
+            heapq.heappush(self._invite_expiry_heap, (expires_at_unix, code))
         return {
             "code": code,
             "expires_at": _format_unix_utc(expires_at_unix),
@@ -1202,6 +1207,7 @@ class RelayRendezvousServer:
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
         clean_code = _require_invite_code(code)
+        source_host = _require_host(source_host, "relay_invite_fetch_source_host_invalid")
         if not self._invite_fetch_limiter.allow(f"ip:{source_host}:get"):
             raise RelayServerError("relay_invite_fetch_rate_limited")
         with self._state_lock:
@@ -1221,6 +1227,7 @@ class RelayRendezvousServer:
         source_host: str = "127.0.0.1",
     ) -> dict[str, Any]:
         clean_code = _require_invite_code(code)
+        source_host = _require_host(source_host, "relay_invite_status_source_host_invalid")
         if not self._invite_fetch_limiter.allow(f"ip:{source_host}:get"):
             raise RelayServerError("relay_invite_status_rate_limited")
         with self._state_lock:
@@ -1238,7 +1245,7 @@ class RelayRendezvousServer:
             }
 
     def _allocate_invite_code_locked(self) -> str:
-        now = time.time()
+        now = self._unix_now()
         self._sweep_expired_invite_batches_locked(now)
         if len(self._invite_batches) >= _MAX_INVITE_BATCH_ENTRIES:
             raise RelayServerError("invite_code_storage_capacity_exhausted")
@@ -1250,24 +1257,37 @@ class RelayRendezvousServer:
         raise RelayServerError("invite_code_generation_exhausted")
 
     def _sweep_expired_invite_batches_locked(self, now: float) -> None:
-        expired = [
-            code
-            for code, batch in self._invite_batches.items()
-            if batch.expires_at_unix <= now
-        ]
-        for code in expired:
-            self._invite_batches.pop(code, None)
+        if not self._invite_expiry_heap:
+            expired = [
+                code
+                for code, batch in self._invite_batches.items()
+                if batch.expires_at_unix <= now
+            ]
+            for code in expired:
+                self._invite_batches.pop(code, None)
+            return
+        while self._invite_expiry_heap and self._invite_expiry_heap[0][0] <= now:
+            expires_at_unix, code = heapq.heappop(self._invite_expiry_heap)
+            batch = self._invite_batches.get(code)
+            if batch is not None and batch.expires_at_unix == expires_at_unix:
+                self._invite_batches.pop(code, None)
 
     def _require_invite_batch_locked(self, code: str) -> _InviteCodeBatch:
         batch = self._invite_batches.get(code)
         if batch is None:
             raise RelayServerError("relay_invite_code_not_found")
-        if batch.expires_at_unix <= time.time():
+        if batch.expires_at_unix <= self._unix_now():
             self._invite_batches.pop(code, None)
             raise RelayServerError("code_expired")
         if not batch.bundles_b64:
             raise RelayServerError("code_exhausted")
         return batch
+
+    def _unix_now(self) -> float:
+        now = self._now_provider()
+        if not isinstance(now, (int, float)) or isinstance(now, bool) or not math.isfinite(now):
+            raise RelayServerError("relay_invite_clock_invalid")
+        return float(now)
 
     def handle_json_request(
         self,
@@ -3054,7 +3074,7 @@ def _require_host(value: object, token: str) -> str:
         raise RelayServerError(token)
     if (
         len(value) > _MAX_TEXT_CHARS
-        or any(char in value for char in "/?#@")
+        or any(char in value for char in "/?#@:")
         or any(char.isspace() for char in value)
     ):
         raise RelayServerError(token)

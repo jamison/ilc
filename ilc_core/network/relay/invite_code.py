@@ -15,7 +15,11 @@ INVITE_CODE_RE: Final[re.Pattern[str]] = re.compile(
 
 
 def checksum_char(payload: str) -> str:
-    """Return the checksum character for a seven-character payload."""
+    """Return the typo-detection checksum character for a seven-character payload.
+
+    The weighted mod-32 checksum is not a cryptographic MAC or authenticity
+    proof; bundle signatures provide the security boundary.
+    """
 
     if not isinstance(payload, str) or len(payload) != 7:
         raise ValueError("invite_code_payload_invalid")

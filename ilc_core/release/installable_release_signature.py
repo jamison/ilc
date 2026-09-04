@@ -18,11 +18,17 @@ SIGNED_PREIMAGE_DOMAIN = "ILC_RELEASE_ARTIFACT_SIGNATURE_V1"
 SIGNING_ALGORITHM = "Ed25519"
 SIGNED_AT_EPOCH_ZERO = "1970-01-01T00:00:00Z"
 SIGNED_PREIMAGE_ALGORITHM = "sha256_of_canonical_json"
+DEFAULT_RELEASE_KEY_REGISTRATION_REF = "adr-0036:public-rc-operational-release-key-registration"
+DEFAULT_GENESIS_LINEAGE_REF = "adr-0037:genesis-canonical-lineage-contract"
+DEFAULT_PRIOR_RELEASE_ENVELOPE_REF = "none:first-public-rc-release"
 
-_HEX_32_RE = re.compile(r"^[0-9a-f]{64}$")
-_HEX_64_RE = re.compile(r"^[0-9a-f]{128}$")
+# Names encode byte length; the regex width is hex-character length.
+_HEX_32_BYTES_RE = re.compile(r"^[0-9a-f]{64}$")
+_HEX_64_BYTES_RE = re.compile(r"^[0-9a-f]{128}$")
 _ARTIFACT_ID_RE = re.compile(r"^ilc-artifact:[a-z0-9][a-z0-9-]*@phase-[1-9][0-9]*$")
 _RELEASE_ID_RE = re.compile(r"^ilc-core-[0-9]+\.[0-9]+\.[0-9]+$")
+_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
+_CONTROLLED_REF_RE = re.compile(r"^[A-Za-z0-9._:/@-]+$")
 _MAX_STRING_CHARS = 512
 _MAX_ENVELOPES = 32
 _MAX_DEPTH = 8
@@ -33,6 +39,9 @@ _ENVELOPE_FIELDS = frozenset(
         "release_id",
         "artifact_id",
         "artifact_sha256",
+        "genesis_lineage_ref",
+        "prior_release_envelope_ref",
+        "release_key_registration_ref",
         "signing_algorithm",
         "signer_public_key_hex",
         "signature_hex",
@@ -85,6 +94,13 @@ def _require_string(value: Any, *, field: str, max_chars: int = _MAX_STRING_CHAR
     return value
 
 
+def _require_controlled_ref(value: Any, *, field: str) -> str:
+    text = _require_string(value, field=field, max_chars=260)
+    if _CONTROLLED_REF_RE.fullmatch(text) is None or text.startswith("http://"):
+        _fail(f"release_envelope_invalid_ref:{field}")
+    return text
+
+
 def _require_literal(value: Any, *, field: str, expected: str, token: str) -> str:
     text = _require_string(value, field=field)
     if text != expected:
@@ -110,10 +126,12 @@ def _require_hex(
     return text
 
 
-def _normalize_artifact_sha256(artifact_sha256: str) -> str:
+def _normalize_artifact_sha256(artifact_sha256: Any) -> str:
+    if not isinstance(artifact_sha256, str):
+        _fail("release_envelope_artifact_sha256_invalid")
     if artifact_sha256.startswith("sha256:"):
         artifact_sha256 = artifact_sha256.removeprefix("sha256:")
-    if _HEX_32_RE.fullmatch(artifact_sha256) is None:
+    if _HEX_32_BYTES_RE.fullmatch(artifact_sha256) is None:
         _fail("release_envelope_artifact_sha256_invalid")
     return artifact_sha256
 
@@ -135,6 +153,9 @@ def signed_preimage_payload(
     release_id: str,
     artifact_id: str,
     artifact_sha256: str,
+    release_key_registration_ref: str = DEFAULT_RELEASE_KEY_REGISTRATION_REF,
+    genesis_lineage_ref: str = DEFAULT_GENESIS_LINEAGE_REF,
+    prior_release_envelope_ref: str = DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
 ) -> dict[str, str]:
     """Build the canonical payload whose SHA-256 digest is signed in 00c."""
 
@@ -145,10 +166,25 @@ def signed_preimage_payload(
     if _ARTIFACT_ID_RE.fullmatch(artifact_id) is None:
         _fail("release_envelope_artifact_id_invalid")
     artifact_sha256 = _normalize_artifact_sha256(artifact_sha256)
+    release_key_registration_ref = _require_controlled_ref(
+        release_key_registration_ref,
+        field="release_key_registration_ref",
+    )
+    genesis_lineage_ref = _require_controlled_ref(
+        genesis_lineage_ref,
+        field="genesis_lineage_ref",
+    )
+    prior_release_envelope_ref = _require_controlled_ref(
+        prior_release_envelope_ref,
+        field="prior_release_envelope_ref",
+    )
     return {
         "artifact_id": artifact_id,
         "artifact_sha256": artifact_sha256,
+        "genesis_lineage_ref": genesis_lineage_ref,
+        "prior_release_envelope_ref": prior_release_envelope_ref,
         "release_id": release_id,
+        "release_key_registration_ref": release_key_registration_ref,
         "schema_version": SCHEMA_VERSION,
         "signed_at": SIGNED_AT_EPOCH_ZERO,
         "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
@@ -161,6 +197,9 @@ def compute_signed_preimage_sha256(
     release_id: str,
     artifact_id: str,
     artifact_sha256: str,
+    release_key_registration_ref: str = DEFAULT_RELEASE_KEY_REGISTRATION_REF,
+    genesis_lineage_ref: str = DEFAULT_GENESIS_LINEAGE_REF,
+    prior_release_envelope_ref: str = DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
 ) -> str:
     """Return SHA-256 of the canonical signed-preimage payload."""
 
@@ -168,6 +207,9 @@ def compute_signed_preimage_sha256(
         release_id=release_id,
         artifact_id=artifact_id,
         artifact_sha256=artifact_sha256,
+        release_key_registration_ref=release_key_registration_ref,
+        genesis_lineage_ref=genesis_lineage_ref,
+        prior_release_envelope_ref=prior_release_envelope_ref,
     )
     return hashlib.sha256(canonical_envelope_json(payload).encode("utf-8")).hexdigest()
 
@@ -177,6 +219,9 @@ def build_envelope_skeleton(
     release_id: str,
     artifact_id: str,
     artifact_sha256: str,
+    release_key_registration_ref: str = DEFAULT_RELEASE_KEY_REGISTRATION_REF,
+    genesis_lineage_ref: str = DEFAULT_GENESIS_LINEAGE_REF,
+    prior_release_envelope_ref: str = DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
 ) -> dict[str, str]:
     """Return an unsigned envelope skeleton for GAP-RELEASE-SIGN-00c ceremony input."""
 
@@ -185,11 +230,26 @@ def build_envelope_skeleton(
         release_id=release_id,
         artifact_id=artifact_id,
         artifact_sha256=artifact_sha256,
+        release_key_registration_ref=release_key_registration_ref,
+        genesis_lineage_ref=genesis_lineage_ref,
+        prior_release_envelope_ref=prior_release_envelope_ref,
     )
     return {
         "artifact_id": artifact_id,
         "artifact_sha256": artifact_sha256,
+        "genesis_lineage_ref": _require_controlled_ref(
+            genesis_lineage_ref,
+            field="genesis_lineage_ref",
+        ),
+        "prior_release_envelope_ref": _require_controlled_ref(
+            prior_release_envelope_ref,
+            field="prior_release_envelope_ref",
+        ),
         "release_id": release_id,
+        "release_key_registration_ref": _require_controlled_ref(
+            release_key_registration_ref,
+            field="release_key_registration_ref",
+        ),
         "schema_version": SCHEMA_VERSION,
         "signature_hex": "",
         "signed_at": SIGNED_AT_EPOCH_ZERO,
@@ -231,8 +291,20 @@ def validate_envelope(
     artifact_sha256 = _require_hex(
         envelope["artifact_sha256"],
         field="artifact_sha256",
-        pattern=_HEX_32_RE,
+        pattern=_HEX_32_BYTES_RE,
         token="release_envelope_artifact_sha256_invalid",
+    )
+    release_key_registration_ref = _require_controlled_ref(
+        envelope["release_key_registration_ref"],
+        field="release_key_registration_ref",
+    )
+    genesis_lineage_ref = _require_controlled_ref(
+        envelope["genesis_lineage_ref"],
+        field="genesis_lineage_ref",
+    )
+    prior_release_envelope_ref = _require_controlled_ref(
+        envelope["prior_release_envelope_ref"],
+        field="prior_release_envelope_ref",
     )
     _require_literal(
         envelope["signing_algorithm"],
@@ -243,14 +315,14 @@ def validate_envelope(
     _require_hex(
         envelope["signer_public_key_hex"],
         field="signer_public_key_hex",
-        pattern=_HEX_32_RE,
+        pattern=_HEX_32_BYTES_RE,
         token="release_envelope_public_key_invalid",
         allow_empty=allow_unsigned_placeholders,
     )
     _require_hex(
         envelope["signature_hex"],
         field="signature_hex",
-        pattern=_HEX_64_RE,
+        pattern=_HEX_64_BYTES_RE,
         token="release_envelope_signature_hex_invalid",
         allow_empty=allow_unsigned_placeholders,
     )
@@ -276,11 +348,14 @@ def validate_envelope(
         release_id=release_id,
         artifact_id=artifact_id,
         artifact_sha256=artifact_sha256,
+        release_key_registration_ref=release_key_registration_ref,
+        genesis_lineage_ref=genesis_lineage_ref,
+        prior_release_envelope_ref=prior_release_envelope_ref,
     )
     signed_preimage_sha256 = _require_hex(
         envelope["signed_preimage_sha256"],
         field="signed_preimage_sha256",
-        pattern=_HEX_32_RE,
+        pattern=_HEX_32_BYTES_RE,
         token="release_envelope_preimage_sha256_invalid",
     )
     if signed_preimage_sha256 != expected_preimage_sha256:
@@ -331,6 +406,8 @@ def validate_envelope_set(
         token="release_envelope_set_schema_version_invalid",
     )
     version = _require_string(envelope_set["version"], field="version", max_chars=80)
+    if _VERSION_RE.fullmatch(version) is None:
+        _fail("release_envelope_set_version_invalid")
     release_id = f"ilc-core-{version}"
     envelopes = envelope_set["envelopes"]
     if not isinstance(envelopes, Mapping) or not envelopes:
@@ -354,6 +431,8 @@ def validate_envelope_set(
             artifact_id = artifact.get("artifact_id")
             if not isinstance(artifact_id, str):
                 _fail("release_envelope_manifest_artifact_id_invalid")
+            if artifact_id in artifacts_by_id:
+                _fail(f"release_envelope_manifest_duplicate_artifact_id:{artifact_id}")
             artifacts_by_id[artifact_id] = artifact
         if set(envelopes) != set(artifacts_by_id):
             _fail("release_envelope_set_artifact_coverage_mismatch")
@@ -367,6 +446,8 @@ def validate_envelope_set(
             _fail("release_envelope_set_key_mismatch")
         if artifacts_by_id is None:
             validate_envelope(envelope, allow_unsigned_placeholders=allow_unsigned_placeholders)
+            if envelope["release_id"] != release_id:
+                _fail("release_envelope_release_id_mismatch")
         else:
             validate_envelope_for_artifact(
                 envelope,
@@ -378,6 +459,9 @@ def validate_envelope_set(
 
 __all__ = [
     "InstallableReleaseSignatureError",
+    "DEFAULT_GENESIS_LINEAGE_REF",
+    "DEFAULT_PRIOR_RELEASE_ENVELOPE_REF",
+    "DEFAULT_RELEASE_KEY_REGISTRATION_REF",
     "SCHEMA_VERSION",
     "SIGNED_AT_EPOCH_ZERO",
     "SIGNED_PREIMAGE_ALGORITHM",
