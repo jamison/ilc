@@ -52,6 +52,8 @@ _BLS_SECRET_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{64}$")
 _BLS_SIGNATURE_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{192}$")
 _SHA384_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
 _BLS_BACKEND_ENV_VAR: Final[str] = "ILC_BLS_BACKEND"
+# Local operator/test override only. Never source this from network, invite, or
+# bootstrap material; it selects executable verifier code for this process.
 _BLS_VERIFY_COMMAND_ENV_VAR: Final[str] = "ILC_BLS_VERIFY_COMMAND"
 _BLS_BACKEND_PYTHON: Final[str] = "python"
 _BLS_BACKEND_RUST: Final[str] = "rust"

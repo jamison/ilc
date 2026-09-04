@@ -7,6 +7,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 
 class InstallableReleaseManifestError(ValueError):
@@ -76,6 +77,7 @@ REQUIRED_TOP_LEVEL_FIELDS = frozenset(
         "artifacts",
     }
 )
+OPTIONAL_TOP_LEVEL_FIELDS = frozenset({"release_envelope_ref"})
 
 _ARTIFACT_ID_RE = re.compile(r"^ilc-artifact:[a-z0-9][a-z0-9-]*@phase-[1-9][0-9]*$")
 _CANONICAL_HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -110,6 +112,17 @@ def _require_string(value: Any, *, field: str, max_chars: int = 2048) -> str:
     if len(value) > max_chars:
         _fail(f"installable_manifest_string_too_long:{field}")
     return value
+
+
+def _validate_release_envelope_ref(value: Any) -> None:
+    text = _require_string(value, field="release_envelope_ref", max_chars=2048)
+    if "\x00" in text or any(char in text for char in "\r\n"):
+        _fail("installable_manifest_invalid_release_envelope_ref")
+    parsed = urlparse(text)
+    if parsed.scheme and parsed.scheme != "https":
+        _fail("installable_manifest_release_envelope_ref_not_https")
+    if parsed.scheme == "https" and not parsed.netloc:
+        _fail("installable_manifest_invalid_release_envelope_ref")
 
 
 def _require_positive_int(value: Any, *, field: str) -> int:
@@ -210,11 +223,13 @@ def validate_installable_release_manifest(manifest: dict[str, Any]) -> None:
     if not isinstance(manifest, dict):
         _fail("installable_manifest_not_object")
     _reject_floating_numbers(manifest, field_path="manifest")
-    _require_exact_keys(
-        manifest,
-        expected_keys=REQUIRED_TOP_LEVEL_FIELDS,
-        token_prefix="installable_manifest_top_level",
-    )
+    actual_top_level_keys = set(manifest)
+    missing = REQUIRED_TOP_LEVEL_FIELDS - actual_top_level_keys
+    extra = actual_top_level_keys - (REQUIRED_TOP_LEVEL_FIELDS | OPTIONAL_TOP_LEVEL_FIELDS)
+    if missing:
+        _fail(f"installable_manifest_top_level_missing_field:{sorted(missing)[0]}")
+    if extra:
+        _fail(f"installable_manifest_top_level_extra_field:{sorted(extra)[0]}")
 
     _require_string(
         manifest["manifest_schema_version"],
@@ -227,6 +242,8 @@ def validate_installable_release_manifest(manifest: dict[str, Any]) -> None:
         manifest["manifest_produced_phase"],
         field="manifest_produced_phase",
     )
+    if "release_envelope_ref" in manifest:
+        _validate_release_envelope_ref(manifest["release_envelope_ref"])
 
     non_claims = manifest["non_claims"]
     if not isinstance(non_claims, list) or not non_claims:
@@ -254,6 +271,7 @@ def canonical_installable_release_manifest_bytes(manifest: dict[str, Any]) -> by
         manifest,
         sort_keys=True,
         separators=(",", ":"),
+        ensure_ascii=True,
         allow_nan=False,
     ).encode("utf-8")
 

@@ -176,6 +176,34 @@ def test_extra_top_level_field_rejects() -> None:
     _validate_raises(manifest, "extra_field:extra")
 
 
+def test_release_envelope_ref_path_is_allowed() -> None:
+    manifest = _wheel_manifest()
+    manifest["release_envelope_ref"] = (
+        "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+    )
+    validate_installable_release_manifest(manifest)
+
+
+def test_release_envelope_ref_https_url_is_allowed() -> None:
+    manifest = _wheel_manifest()
+    manifest["release_envelope_ref"] = (
+        "https://files.pythonhosted.org/packages/ilc_core_0415_release_envelopes.json"
+    )
+    validate_installable_release_manifest(manifest)
+
+
+def test_release_envelope_ref_http_url_rejects() -> None:
+    manifest = _wheel_manifest()
+    manifest["release_envelope_ref"] = "http://example.invalid/release_envelopes.json"
+    _validate_raises(manifest, "release_envelope_ref_not_https")
+
+
+def test_release_envelope_ref_control_char_rejects() -> None:
+    manifest = _wheel_manifest()
+    manifest["release_envelope_ref"] = "docs/specs/envelope.json\n"
+    _validate_raises(manifest, "invalid_release_envelope_ref")
+
+
 def test_duplicate_artifact_id_rejects() -> None:
     manifest = _manifest()
     manifest["artifacts"][1]["artifact_id"] = manifest["artifacts"][0]["artifact_id"]

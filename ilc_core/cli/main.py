@@ -1060,7 +1060,7 @@ def _post_invite_store_request(
     if len(body) > 16 * 1024 * 1024:
         raise ValueError("invite_generate_store_request_too_large")
 
-    context = ssl._create_unverified_context()
+    context = ssl.create_default_context()
     conn = http.client.HTTPSConnection(
         parsed.hostname,
         port=parsed.port or 443,
