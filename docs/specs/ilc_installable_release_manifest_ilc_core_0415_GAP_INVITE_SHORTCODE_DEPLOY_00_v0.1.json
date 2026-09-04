@@ -12,7 +12,7 @@
       "platform": "any",
       "produced_phase": 1627,
       "ratification_token": "cdl_086_ratified_phase_1220",
-      "signing_status": "unsigned",
+      "signing_status": "signed",
       "size_bytes": 1451016
     },
     {
@@ -27,7 +27,7 @@
       "platform": "any",
       "produced_phase": 1627,
       "ratification_token": "cdl_086_ratified_phase_1220",
-      "signing_status": "unsigned",
+      "signing_status": "signed",
       "size_bytes": 1183400
     }
   ],
@@ -44,5 +44,6 @@
     "no_ilc_minting",
     "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED_remains_True"
   ],
+  "release_envelope_ref": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json",
   "release_id": "ilc-core-0.4.15"
 }

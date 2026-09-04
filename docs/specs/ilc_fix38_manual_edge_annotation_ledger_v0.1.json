@@ -75050,6 +75050,108 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_2026_09_04",
+      "chronology_note": "2026-09-04 detached release envelope set for GAP-RELEASE-SIGN-00c.",
+      "manual_read_summary": "Canonical envelope set records Ed25519 signatures for the 0.4.15 wheel and sdist over release-id/domain-bound SHA-256 preimages, with signer public key, fixed epoch-zero signed_at, and exact manifest artifact coverage.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_core_0415_artifacts_signed_GAP_RELEASE_SIGN_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_release_signature_envelope_schema_GAP_RELEASE_SIGN_00b_v0.2.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_2026_09_04",
+      "chronology_note": "2026-09-04 tests for GAP-RELEASE-SIGN-00c release envelope ceremony.",
+      "manual_read_summary": "Focused tests verify envelope set validation, exact manifest coverage, signed manifest state, detached envelope reference, Ed25519 signatures against the recorded release key, recorded envelope hash, and absence of private-key markers.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signing_ceremony_complete_GAP_RELEASE_SIGN_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00c_ceremony.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-RELEASE-SIGN-00c.",
+      "manual_read_summary": "Walkthrough records GO confirmation, operator boundary, token audit, C1 preimage values, operator signature receipt, local Ed25519 verification, envelope SHA-256, verification command output, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signing_ceremony_complete_GAP_RELEASE_SIGN_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:private_release_key_committed_GAP_RELEASE_SIGN_00c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_00c_walkthrough.md"
     }
   ],
   "boundary": {
