@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-0413-00"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/8e/7f/1f03433a9fbe0621f82af9bad2a820a283f5bf8e42f4a6ff2ebd8d9fcec3/ilc_core-0.4.13-py3-none-any.whl"
-RC_WHEEL_SHA256="dba05b1536ddb5330f8483ae976f294e1e4ea2279ef7457b20fe26518e9a7609"
-RC_WHEEL_SIZE="1442131"
+INSTALLER_VERSION="GAP-INSTALL-SHORTCODE-PACKAGE-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/7f/e7/2512a7759724258a242622bf745542dc158845b69f766163b50d2591b045/ilc_core-0.4.14-py3-none-any.whl"
+RC_WHEEL_SHA256="e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7"
+RC_WHEEL_SIZE="1450984"
 RC_MIN_PYTHON_MINOR="10"
 
 CHANNEL="rc"
@@ -157,7 +157,7 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   if [[ "${ENABLE_UPNP}" == "1" ]]; then
     printf 'enable_upnp=true\n'
   fi
-  for observer in "${PROBE_OBSERVERS[@]}"; do
+  for observer in ${PROBE_OBSERVERS[@]+"${PROBE_OBSERVERS[@]}"}; do
     printf 'probe_observer=%s\n' "${observer}"
   done
   exit 0
@@ -396,7 +396,7 @@ fi
 if [[ "${ENABLE_UPNP}" == "1" ]]; then
   INSTALL_ARGS+=(--enable-upnp)
 fi
-for observer in "${PROBE_OBSERVERS[@]}"; do
+for observer in ${PROBE_OBSERVERS[@]+"${PROBE_OBSERVERS[@]}"}; do
   INSTALL_ARGS+=(--probe-observer "${observer}")
 done
 printf 'install_sh_running_invite_onboard\n'

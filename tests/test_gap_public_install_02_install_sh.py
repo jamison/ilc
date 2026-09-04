@@ -16,15 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0413_GAP_RELAY_BOOTSTRAP_CAPSULE_SIGN_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0414_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/8e/7f/"
-    "1f03433a9fbe0621f82af9bad2a820a283f5bf8e42f4a6ff2ebd8d9fcec3/"
-    "ilc_core-0.4.13-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/7f/e7/"
+    "2512a7759724258a242622bf745542dc158845b69f766163b50d2591b045/"
+    "ilc_core-0.4.14-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "dba05b1536ddb5330f8483ae976f294e1e4ea2279ef7457b20fe26518e9a7609"
-EXPECTED_SIZE = "1442131"
+EXPECTED_SHA256 = "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7"
+EXPECTED_SIZE = "1450984"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -62,6 +62,7 @@ def test_install_sh_dry_run_exits_zero() -> None:
         "/tmp/example-invite.json",
     )
     assert result.returncode == 0
+    assert result.stderr == ""
     assert f"RC_WHEEL_URL={EXPECTED_URL}" in result.stdout
     assert f"RC_WHEEL_SHA256={EXPECTED_SHA256}" in result.stdout
     assert "invite_bundle=/tmp/example-invite.json" in result.stdout
@@ -193,7 +194,7 @@ def test_install_sh_rejects_existing_venv_without_python(tmp_path: Path) -> None
 
 
 def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.13-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.14-py3-none-any.whl"
     payload.write_bytes(b"not a wheel")
     invite = tmp_path / "invite.json"
     invite.write_text("{}", encoding="utf-8")

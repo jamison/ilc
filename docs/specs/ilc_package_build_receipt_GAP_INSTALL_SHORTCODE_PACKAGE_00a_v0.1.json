@@ -40,8 +40,32 @@
   },
   "predecessor_upload_phase": "GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00",
   "predecessor_version": "0.4.13",
+  "predecessor_yank_evidence": {
+    "all_yanked": true,
+    "reason": "Superseded by 0.4.14 which includes relay-hosted invite-code CLI and endpoints (INVITE_SHORTCODE_NOT_ACTIVATED guard closes all new endpoints until DEPLOY-00)",
+    "verified_sources": [
+      "pypi_simple_api",
+      "pypi_version_json"
+    ],
+    "version": "0.4.13"
+  },
   "prompt_hardening_note": "PACKAGE-00a prompt corrected to check forbidden invite-code characters only in the code body, not the mandatory ILC prefix.",
-  "pypi_upload_status": "pending",
+  "pypi_fetchback_verification": {
+    "result": "PASS",
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/36/07/732eb42021c9515595ecea2737c9b7c724832b8a4f52b6350b473492265c/ilc_core-0.4.14.tar.gz",
+      "fetchback_sha256": "458e5c564560edaec41855e5ba345b5cfb7814e8d4d66ba17d32a83bbd44c8f8",
+      "fetchback_size_bytes": 1183345
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/7f/e7/2512a7759724258a242622bf745542dc158845b69f766163b50d2591b045/ilc_core-0.4.14-py3-none-any.whl",
+      "fetchback_sha256": "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7",
+      "fetchback_size_bytes": 1450984
+    }
+  },
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.14/",
+  "pypi_upload_phase": "GAP-INSTALL-SHORTCODE-PACKAGE-00b",
+  "pypi_upload_status": "uploaded",
   "sdist": {
     "filename": "ilc_core-0.4.14.tar.gz",
     "sha256": "458e5c564560edaec41855e5ba345b5cfb7814e8d4d66ba17d32a83bbd44c8f8",
