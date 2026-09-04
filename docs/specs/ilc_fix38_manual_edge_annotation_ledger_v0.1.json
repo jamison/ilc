@@ -86882,6 +86882,108 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_install_shortcode_package_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_shortcode_package_00b_2026_09_04",
+      "chronology_note": "2026-09-04 install shortcode package 00b installable manifest for ilc-core 0.4.14.",
+      "manual_read_summary": "Canonical installable release manifest for ilc-core 0.4.14 produced after PyPI upload and fetchback verification; records wheel and sdist URLs, SHA-256 hashes, byte sizes, unsigned signing status, and no-guard-clearance non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_published_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0414_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_shortcode_package_00b_2026_09_04",
+      "chronology_note": "2026-09-04 PyPI upload receipt for ilc-core 0.4.14.",
+      "manual_read_summary": "Upload receipt records GO phrase, twine upload status, fetchback verification, canonical PyPI URLs, install.sh synchronization values, and predecessor yank evidence for ilc-core 0.4.13.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_published_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_shortcode_package_00b_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for sensitive install shortcode package publication phase.",
+      "manual_read_summary": "Walkthrough records exact GO receipt, token audit, MemPalace/source search, pre-upload hash and size checks, twine check/upload, fetchback verification, PyPI yanked-state verification, install.sh retargeting, test results, planning updates, STATUS output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_published_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared_GAP_INSTALL_SHORTCODE_PACKAGE_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_install_shortcode_package_00b_walkthrough.md"
     }
   ],
   "nodes": [

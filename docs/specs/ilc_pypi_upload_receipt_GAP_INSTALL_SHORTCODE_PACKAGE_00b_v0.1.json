@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/36/07/732eb42021c9515595ecea2737c9b7c724832b8a4f52b6350b473492265c/ilc_core-0.4.14.tar.gz",
+      "fetchback_sha256": "458e5c564560edaec41855e5ba345b5cfb7814e8d4d66ba17d32a83bbd44c8f8",
+      "fetchback_size_bytes": 1183345,
+      "filename": "ilc_core-0.4.14.tar.gz",
+      "local_sha256": "458e5c564560edaec41855e5ba345b5cfb7814e8d4d66ba17d32a83bbd44c8f8",
+      "local_size_bytes": 1183345,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/7f/e7/2512a7759724258a242622bf745542dc158845b69f766163b50d2591b045/ilc_core-0.4.14-py3-none-any.whl",
+      "fetchback_sha256": "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7",
+      "fetchback_size_bytes": 1450984,
+      "filename": "ilc_core-0.4.14-py3-none-any.whl",
+      "local_sha256": "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7",
+      "local_size_bytes": 1450984,
+      "pypi_yanked": false
+    }
+  },
+  "fetchback_verification": "pass",
+  "go_phrase": "GO Phase GAP-INSTALL-SHORTCODE-PACKAGE-00b SHORTCODE-PACKAGE-0414-UPLOAD-AUTHORIZED",
+  "install_sh": {
+    "installer_version": "GAP-INSTALL-SHORTCODE-PACKAGE-00b",
+    "rc_wheel_sha256": "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7",
+    "rc_wheel_size": "1450984",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/7f/e7/2512a7759724258a242622bf745542dc158845b69f766163b50d2591b045/ilc_core-0.4.14-py3-none-any.whl"
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_invite_shortcode_guard_clearance",
+    "no_relay_vps_deployment",
+    "no_live_smoke",
+    "no_cdl_mutation",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "phase": "GAP-INSTALL-SHORTCODE-PACKAGE-00b",
+  "predecessor_version": "0.4.13",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.14/",
+  "pypi_upload_status": "uploaded",
+  "pypi_yank_status": {
+    "0.4.11": {
+      "all_yanked": true
+    },
+    "0.4.12": {
+      "all_yanked": true
+    },
+    "0.4.13": {
+      "all_yanked": true,
+      "reason": "Superseded by 0.4.14 which includes relay-hosted invite-code CLI and endpoints (INVITE_SHORTCODE_NOT_ACTIVATED guard closes all new endpoints until DEPLOY-00)"
+    },
+    "0.4.14": {
+      "all_active": true,
+      "all_yanked": false
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_INSTALL_SHORTCODE_PACKAGE_00b.v0.1",
+  "source_private_commit_at_upload_start": "483d21ac6a6ea52dbf9e12ed212093ccf0e93a31",
+  "source_tree_dirty_at_upload_start": true,
+  "source_tree_dirty_explanation": "STATUS GO receipt was appended before PyPI mutation as required by the phase prompt; final scoped commit records the installer, manifest, receipt, STATUS, planning, and test sentinel updates.",
+  "timestamp_utc": "2026-09-04T01:30:38Z",
+  "twine_upload_status": "pass",
+  "version": "0.4.14"
+}
