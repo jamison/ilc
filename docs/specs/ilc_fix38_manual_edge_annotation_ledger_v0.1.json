@@ -87585,6 +87585,100 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_install_shortcode_package_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_validator_teardown_00_2026_09_04",
+      "chronology_note": "2026-09-04 teardown receipt for GAP-VPS-VALIDATOR-TEARDOWN-00.",
+      "manual_read_summary": "Receipt records human GO authorization, prerequisite token audit, pre-teardown AgentIDs and epoch-0 state, service/unit/namespace deletion status for all four validator slots, identity-root absence under both historical and reprovisioned layouts, relay preservation, log hashes, output token, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-VALIDATOR-TEARDOWN-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:vps_validator_slots_torn_down_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:install_verify_signature_integration_committed_GAP_RELEASE_SIGN_00d"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:relay_service_torn_down_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:droplet_deleted_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_vps_validator_teardown_00/teardown_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_vps_validator_teardown_00_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for sensitive VPS validator slot teardown phase.",
+      "manual_read_summary": "Walkthrough records GO phrase, MemPalace/source reads, token and publish-gate audits, slot mapping, pre-teardown identity and epoch readbacks, destructive systemd/namespace removal command output, post-teardown service/directory/identity/process verification, relay preservation, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VPS-VALIDATOR-TEARDOWN-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:vps_validator_slots_torn_down_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        },
+        {
+          "edge_type": "PRECEDES",
+          "target": "phase:GAP-VPS-VALIDATOR-REPROVISION-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:validator_reprovisioned_GAP_VPS_VALIDATOR_TEARDOWN_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "PRECEDES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_vps_validator_teardown_00_walkthrough.md"
     }
   ],
   "nodes": [
