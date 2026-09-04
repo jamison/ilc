@@ -1,0 +1,62 @@
+{
+  "non_claims": [
+    "no_pypi_upload",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_vps_mutation",
+    "no_guard_activation",
+    "no_public_mirror_push",
+    "INVITE_SHORTCODE_NOT_ACTIVATED_remains_True_in_0414_wheel"
+  ],
+  "package_scope": "local_build_only_no_upload",
+  "phase": "GAP-INSTALL-SHORTCODE-PACKAGE-00a",
+  "post_build_gates": {
+    "bundled_capsule_in_wheel_archive": "PASS",
+    "bundled_capsule_schema": "relay_bootstrap_capsule_v0.1",
+    "invite_code_py_in_wheel_archive": "PASS",
+    "network_id": "public-rc",
+    "relay_records_count": 3,
+    "signing_key_id_prefix": "b0059ca041482603",
+    "twine_check": "PASS"
+  },
+  "post_build_resolver_check": {
+    "capsule_accessibility": "PASS",
+    "guard_closed_in_installed_wheel": "PASS",
+    "import_smoke": "PASS",
+    "invite_code_importable": "PASS",
+    "python_interpreter": "repo .venv Python 3.14 used to create outside-repo venv because macOS system python3 is 3.9.6 and correctly fails requires-python >=3.10",
+    "result": "PASS",
+    "site_packages_confirmed": true
+  },
+  "pre_build_gates": {
+    "audit_fix_ancestry_ca0802a66": "PASS",
+    "audit_regression_spot_checks": "PASS",
+    "dependency_floor_regression": "PASS",
+    "guard_closed_pre_build": "PASS",
+    "invite_code_import_smoke": "PASS",
+    "prompt_validation": "PASS",
+    "shortcode_test_suite_count": 28,
+    "shortcode_test_suite_result": "PASS"
+  },
+  "predecessor_upload_phase": "GAP-RELAY-BOOTSTRAP-CAPSULE-SIGN-00",
+  "predecessor_version": "0.4.13",
+  "prompt_hardening_note": "PACKAGE-00a prompt corrected to check forbidden invite-code characters only in the code body, not the mandatory ILC prefix.",
+  "pypi_upload_status": "pending",
+  "sdist": {
+    "filename": "ilc_core-0.4.14.tar.gz",
+    "sha256": "458e5c564560edaec41855e5ba345b5cfb7814e8d4d66ba17d32a83bbd44c8f8",
+    "size_bytes": 1183345
+  },
+  "source_base_commit_before_phase": "0f67df5375066dadc15f370c8d7e62e23a96954e",
+  "source_diff_scope": [
+    "pyproject.toml version 0.4.13 to 0.4.14",
+    "ilc_core/__init__.py __version__ 0.4.13 to 0.4.14",
+    "phase receipt, walkthrough, STATUS, planning, and Fix38 ledger support artifacts"
+  ],
+  "version": "0.4.14",
+  "wheel": {
+    "filename": "ilc_core-0.4.14-py3-none-any.whl",
+    "sha256": "e19643971fdf9427904f662036c437f4bef5d7c7067abce7360b50370abd30c7",
+    "size_bytes": 1450984
+  }
+}
