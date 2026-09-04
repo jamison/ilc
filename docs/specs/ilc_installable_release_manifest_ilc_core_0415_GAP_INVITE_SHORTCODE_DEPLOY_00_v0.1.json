@@ -43,6 +43,6 @@
     "no_ilc_minting",
     "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED_remains_True"
   ],
-  "release_envelope_ref": "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json",
+  "release_envelope_ref": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json",
   "release_id": "ilc-core-0.4.15"
 }

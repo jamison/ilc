@@ -11,7 +11,7 @@ RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
 RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0415@phase-1627"
 RC_SDIST_SHA256="3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e"
 RC_SDIST_SIZE="1183400"
-RC_RELEASE_ENVELOPE_REF="docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 
 CHANNEL="rc"
