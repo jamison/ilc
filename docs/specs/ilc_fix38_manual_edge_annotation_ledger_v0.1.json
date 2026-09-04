@@ -74534,7 +74534,6 @@
       "annotation_batch": "manual_batch_gap_invite_shortcode_00_stub_2026_09_02",
       "chronology_note": "2026-09-02 \u2014 GAP-INVITE-SHORTCODE-00 phase prompt stub: relay-hosted short-code invite distribution for frictionless public onboarding",
       "manual_read_summary": "Phase prompt stub for relay-hosted short-code invite distribution system enabling single-command ILC install via human-readable codes (ILC-XXXX-XXXX); post-RC priority-1 user acquisition lane.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -74555,7 +74554,8 @@
         "DESCRIBES_PHASE",
         "CLASSIFIED_BY"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md"
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_00_g10_relay_hosted_invite_codes.md"
     },
     {
       "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_07_2026_09_03",
@@ -74604,14 +74604,7 @@
     {
       "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
       "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
-      "repo_path": "ilc_core/network/relay/invite_code.py",
       "manual_read_summary": "Runtime module added by GAP-INVITE-SHORTCODE-IMPL-00. Defines the human-readable ILC-XXXX-XXXX invite code alphabet, weighted modulo-32 checksum over seven payload characters, strict validation, and secrets-backed code generation used by the relay-hosted invite-code implementation. The module is load-bearing runtime code and keeps code formatting independent from relay storage or installer transport.",
-      "recommended_graph_action": "load_bearing_artifact_added",
-      "proposed_trace_roles": [
-        "EVIDENCES",
-        "IMPLEMENTS",
-        "SOURCE_TREE_MEMBER"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "IMPLEMENTS",
@@ -74635,19 +74628,19 @@
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/network/relay/invite_code.py"
     },
     {
       "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
       "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
-      "repo_path": "tests/test_relay_invite_shortcode.py",
       "manual_read_summary": "Test file added by GAP-INVITE-SHORTCODE-IMPL-00. Covers invite-code checksum and alphabet rules, guarded relay invite endpoints, BLS store-request domain separation, bundle-authentication domain separation, legacy inviter_sig insufficiency, current-profile inviter key-binding fail-closed behavior, atomic retrieval, TTL/rate/size bounds, status redaction, pre-auth quota hardening, CLI parser shape, and install.sh no-redirect/pinned-DER source invariants.",
-      "recommended_graph_action": "support_only",
-      "proposed_trace_roles": [
-        "TESTS",
-        "EVIDENCES",
-        "SOURCE_TREE_MEMBER"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "TESTS",
@@ -74683,20 +74676,19 @@
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_relay_invite_shortcode.py"
     },
     {
       "annotation_batch": "manual_batch_gap_invite_shortcode_impl_2026_09_03",
       "chronology_note": "Committed during GAP-INVITE-SHORTCODE-IMPL-00 on 2026-09-03.",
-      "repo_path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md",
       "manual_read_summary": "Walkthrough added by GAP-INVITE-SHORTCODE-IMPL-00. Records direct-read and MemPalace coverage, exact verification outputs, prompt-hardening correction for code-body alphabet checking, pre-auth store-quota hardening, current-profile inviter key-binding fail-closed behavior, guard-closed state, output token, and non-claims for no live relay activation, no PyPI upload, no mirror push, and no public-RC activation.",
-      "recommended_graph_action": "support_only",
-      "proposed_trace_roles": [
-        "EVIDENCES",
-        "SUPPORTS",
-        "SOURCE_TREE_MEMBER",
-        "NEGATIVE_ASSERTS"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -74720,7 +74712,15 @@
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md"
     }
   ],
   "boundary": {
@@ -86798,6 +86798,90 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_install_connectivity_smoke_00_blocked_0410_workflow_gaps.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_shortcode_package_00a_2026_09_04",
+      "chronology_note": "2026-09-04 local package-build receipt for relay-hosted invite shortcode 0.4.14.",
+      "manual_read_summary": "Receipt records the GAP-INSTALL-SHORTCODE-PACKAGE-00a local build of ilc-core 0.4.14, including actual wheel and sdist SHA-256 values, byte sizes, pre-build gate results, wheel archive checks for relay_bootstrap_capsule.json and invite_code.py, outside-repo resolver proof, and non-claims for no PyPI upload, no VPS mutation, and no guard activation.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_built_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.14"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:pypi_upload_performed_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_INSTALL_SHORTCODE_PACKAGE_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_install_shortcode_package_00a_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for relay-hosted invite shortcode 0.4.14 local build phase.",
+      "manual_read_summary": "Walkthrough records direct reads, MemPalace and broad repo search, token audit, audit-fix ancestry and regression spot checks, prompt hardening, dependency-floor regression, shortcode tests, local build output, wheel archive checks, outside-repo resolver proof, import smoke, STATUS token emission, and non-claims for GAP-INSTALL-SHORTCODE-PACKAGE-00a.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-SHORTCODE-PACKAGE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_package_0414_built_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "package:ilc-core-0.4.14"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:pypi_upload_performed_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:vps_mutated_GAP_INSTALL_SHORTCODE_PACKAGE_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_install_shortcode_package_00a_walkthrough.md"
     }
   ],
   "nodes": [
