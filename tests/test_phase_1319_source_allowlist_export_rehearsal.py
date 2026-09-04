@@ -101,6 +101,31 @@ def test_phase_1319_force_included_public_rc_exclude_marker_fails_closed(
     ]
 
 
+def test_phase_1319_docstring_public_rc_exclude_marker_fails_closed(
+    tmp_path: Path,
+) -> None:
+    _write(
+        tmp_path / "src/marked.py",
+        '"""Private helper.\n\n'
+        "PUBLIC_RC_EXCLUDE: synthetic_docstring_marker\n"
+        '"""\n'
+        "VALUE = 1\n",
+    )
+
+    manifest = build_source_allowlist_export_rehearsal(
+        repo_root=tmp_path,
+        include_roots=("src",),
+        excluded_roots=(),
+        force_include_paths=("src/marked.py",),
+    )
+
+    assert manifest["result"] == "fail_closed"
+    assert manifest["marker_scan"]["hit_count"] == 1
+    assert manifest["marker_scan"]["hits"] == [
+        {"marker": "PUBLIC_RC_EXCLUDE", "path": "src/marked.py"}
+    ]
+
+
 def test_phase_1319_public_rc_exclude_prose_reference_is_not_marker(
     tmp_path: Path,
 ) -> None:
