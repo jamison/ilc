@@ -75254,6 +75254,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_00d_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_mirror_refresh_00_2026_09_04",
+      "chronology_note": "2026-09-04 receipt for GAP-CDL017-MIRROR-REFRESH-00.",
+      "manual_read_summary": "Receipt records the staged sanitized public mirror source commit, filtered public head, canonical hash, denylist and header-marker scan results, signed manifest/envelope inclusion, no-push boundary, and completion token.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-MIRROR-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_repository_push_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_cdl017_mirror_refresh_receipt_GAP_CDL017_MIRROR_REFRESH_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_mirror_refresh_00_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-CDL017-MIRROR-REFRESH-00.",
+      "manual_read_summary": "Walkthrough records MemPalace/repo read sequence, pre-mirror public-envelope and scanner hardening, exact mirror generation command/output, post-generation scan evidence, raw PUBLIC_RC_EXCLUDE prose-reference classification, no-push boundary, and completion token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-MIRROR-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_repository_push_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl017_mirror_refresh_00_walkthrough.md"
     }
   ],
   "boundary": {
