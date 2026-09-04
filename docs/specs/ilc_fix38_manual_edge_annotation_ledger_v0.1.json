@@ -74721,6 +74721,127 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_shortcode_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_cdl113_ratification",
+      "chronology_note": "2026-09-04 sensitive CDL-113 relay invite-code protocol ratification prompt hardening.",
+      "manual_read_summary": "Prompt was hardened with a formal Inputs section after validate_phase_prompt reported missing_section:inputs; the prompt records GO phrase, token audit, MemPalace/search obligations, implementation verification requirements, CDL register update scope, walkthrough requirements, and non-claims for GAP-INVITE-SHORTCODE-CDL-RATIFY-00.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-RATIFY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "cdl:CDL-113"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "claim:no_guard_clearance_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_invite_shortcode_cdl_ratify_00_g10_cdl_113_ratification.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_cdl113_ratification",
+      "chronology_note": "2026-09-04 CDL-113 relay invite-code protocol ratification evidence.",
+      "manual_read_summary": "Ratification document marks CDL-113 RATIFIED, maps every CDL-113 section 3 parameter to direct implementation file:line evidence, records DEPLOY-00 as guard-clearance authority, and preserves non-claims for guard clearance, VPS mutation, CDL-112 ratification, public mirror publication, public RC activation, epoch transition, settlement, ECU minting, and ILC minting.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "cdl:CDL-113"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_cdl_113_ratified_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:GAP-INVITE-SHORTCODE-DEPLOY-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_v0.1.md"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tests/test_relay_invite_shortcode.py"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_shortcode_guard_cleared_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_113_relay_invite_code_protocol_ratification_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1611_phase_GAP_INVITE_SHORTCODE_CDL_RATIFY_00_cdl113_ratification",
+      "chronology_note": "2026-09-04 walkthrough for sensitive CDL-113 relay invite-code protocol ratification.",
+      "manual_read_summary": "Walkthrough records the GO phrase, token audit, MemPalace/query result, direct source verification table, deliverables, verification command outputs, CDL register before/after, graph deltas, output token, and non-claims for GAP-INVITE-SHORTCODE-CDL-RATIFY-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INVITE-SHORTCODE-CDL-RATIFY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_shortcode_cdl_113_ratified_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:vps_mutated_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_INVITE_SHORTCODE_CDL_RATIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_invite_shortcode_cdl_ratify_00_walkthrough.md"
     }
   ],
   "boundary": {
