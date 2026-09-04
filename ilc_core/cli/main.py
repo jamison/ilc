@@ -4367,6 +4367,7 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
                 manifest=manifest,
                 artifact_id=artifact_id,
                 artifact_sha256=canonical_hash,
+                manifest_base_dir=getattr(args, "_ilc_update_manifest_base_dir", None),
             )
             result["signature_verification"] = "passed"
         subprocess.run(
@@ -4399,6 +4400,7 @@ def _verify_update_artifact_signature(
     manifest: dict[str, Any],
     artifact_id: str,
     artifact_sha256: str,
+    manifest_base_dir: Path | None = None,
 ) -> None:
     release_envelope_ref = manifest.get("release_envelope_ref")
     if not isinstance(release_envelope_ref, str) or not release_envelope_ref:
@@ -4413,15 +4415,42 @@ def _verify_update_artifact_signature(
         verify_artifact_signature,
     )
 
-    envelope_set = fetch_and_validate_envelope_set(release_envelope_ref, manifest=manifest)
-    verify_artifact_signature(
-        artifact_id,
-        artifact_sha256,
-        envelope_set,
-        release_id=release_id,
-        expected_signer_public_key_hex=PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+    envelope_set = fetch_and_validate_envelope_set(
+        release_envelope_ref,
+        manifest=manifest,
+        base_dir=manifest_base_dir,
     )
-    print(f"Signature verified: {artifact_id}", file=sys.stderr)
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise ValueError("release_envelope_manifest_artifacts_invalid")
+    verified_artifact_ids: list[str] = []
+    selected_seen = False
+    for artifact in artifacts:
+        if not isinstance(artifact, dict):
+            raise ValueError("release_envelope_manifest_artifact_not_object")
+        current_artifact_id = _require_update_artifact_string(artifact, "artifact_id")
+        if current_artifact_id == artifact_id:
+            selected_seen = True
+            if artifact.get("canonical_hash") != artifact_sha256:
+                raise ValueError("release_envelope_selected_artifact_hash_mismatch")
+        if artifact.get("artifact_type") not in {"python_wheel", "python_sdist"}:
+            continue
+        verify_artifact_signature(
+            current_artifact_id,
+            _require_update_artifact_string(artifact, "canonical_hash"),
+            envelope_set,
+            release_id=release_id,
+            expected_signer_public_key_hex=PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+        )
+        verified_artifact_ids.append(current_artifact_id)
+    if not selected_seen:
+        raise ValueError("release_envelope_selected_artifact_missing")
+    if artifact_id not in verified_artifact_ids:
+        raise ValueError("release_envelope_selected_artifact_not_verified")
+    print(
+        f"Signatures verified: {','.join(sorted(verified_artifact_ids))}",
+        file=sys.stderr,
+    )
 
 
 def _update_wheel_filename_from_url(download_url: str) -> str:
@@ -4436,20 +4465,24 @@ def _load_update_manifest(args: argparse.Namespace) -> dict[str, Any]:
     manifest_path = str(getattr(args, "manifest_path", "") or "")
     manifest_url = str(getattr(args, "manifest_url", "") or "")
     if manifest_path:
+        path = Path(manifest_path).expanduser()
+        setattr(args, "_ilc_update_manifest_base_dir", path.resolve().parent)
         return _load_update_manifest_from_path(manifest_path)
+    setattr(args, "_ilc_update_manifest_base_dir", None)
     return _load_update_manifest_from_url(manifest_url or DEFAULT_UPDATE_MANIFEST_URL)
 
 
 def _load_update_manifest_from_path(manifest_path: str) -> dict[str, Any]:
     if "://" in manifest_path:
         raise ValueError("ilc_update_manifest_path_must_be_bare_path")
+    path = Path(manifest_path).expanduser()
     from ilc_core.release.installable_release_manifest import (
         InstallableReleaseManifestError,
         load_installable_release_manifest,
     )
 
     try:
-        return load_installable_release_manifest(Path(manifest_path).expanduser())
+        return load_installable_release_manifest(path)
     except InstallableReleaseManifestError as exc:
         raise ValueError(str(exc)) from exc
 
