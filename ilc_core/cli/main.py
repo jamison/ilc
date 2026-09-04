@@ -2432,6 +2432,14 @@ def _build_parser() -> JsonArgumentParser:
                 action="store_true",
                 help="Skip interactive confirmation before installing",
             )
+            update_parser.add_argument(
+                "--verify-signature",
+                action="store_true",
+                help=(
+                    "Fetch and verify the Ed25519 release envelope before installing. "
+                    "Optional for RC; requires cryptography."
+                ),
+            )
             continue
 
         if command == "validator":
@@ -4354,6 +4362,13 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
         temp_path = Path(temp_dir) / _update_wheel_filename_from_url(download_url)
         _download_update_wheel(download_url, temp_path, size_bytes)
         verify_download_hash(temp_path, canonical_hash)
+        if bool(getattr(args, "verify_signature", False)):
+            _verify_update_artifact_signature(
+                manifest=manifest,
+                artifact_id=artifact_id,
+                artifact_sha256=canonical_hash,
+            )
+            result["signature_verification"] = "passed"
         subprocess.run(
             [sys.executable, "-m", "pip", "install", "--quiet", str(temp_path)],
             check=True,
@@ -4377,6 +4392,36 @@ def _run_update_subcommand(args: argparse.Namespace) -> dict[str, Any]:
     result["status"] = "updated"
     result["event_token"] = f"ilc_update_success:{artifact_id}"
     return result
+
+
+def _verify_update_artifact_signature(
+    *,
+    manifest: dict[str, Any],
+    artifact_id: str,
+    artifact_sha256: str,
+) -> None:
+    release_envelope_ref = manifest.get("release_envelope_ref")
+    if not isinstance(release_envelope_ref, str) or not release_envelope_ref:
+        raise ValueError("release_envelope_ref_missing")
+    release_id = manifest.get("release_id")
+    if not isinstance(release_id, str) or not release_id:
+        raise ValueError("release_envelope_manifest_release_id_missing")
+
+    from ilc_core.release.update_signature_verifier import (
+        PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+        fetch_and_validate_envelope_set,
+        verify_artifact_signature,
+    )
+
+    envelope_set = fetch_and_validate_envelope_set(release_envelope_ref, manifest=manifest)
+    verify_artifact_signature(
+        artifact_id,
+        artifact_sha256,
+        envelope_set,
+        release_id=release_id,
+        expected_signer_public_key_hex=PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+    )
+    print(f"Signature verified: {artifact_id}", file=sys.stderr)
 
 
 def _update_wheel_filename_from_url(download_url: str) -> str:

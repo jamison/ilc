@@ -6,6 +6,13 @@ RC_WHEEL_URL="https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b
 RC_WHEEL_SHA256="058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"
 RC_WHEEL_SIZE="1451016"
 RC_MIN_PYTHON_MINOR="10"
+RC_RELEASE_ID="ilc-core-0.4.15"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0415@phase-1627"
+RC_SDIST_SHA256="3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e"
+RC_SDIST_SIZE="1183400"
+RC_RELEASE_ENVELOPE_REF="docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 
 CHANNEL="rc"
 INVITE_BUNDLE=""
@@ -16,6 +23,7 @@ RELAY_TLS_CERT_DER_SHA256=""
 RELAY_NETWORK_ID=""
 RELAY_INTERNAL_PORT=""
 ENABLE_UPNP="0"
+VERIFY_SIGNATURE="0"
 DRY_RUN="0"
 TMP_DIR=""
 TMP_WHEEL=""
@@ -32,7 +40,7 @@ trap cleanup EXIT
 
 usage() {
   cat >&2 <<'USAGE'
-usage: install.sh [--channel rc] (--invite-bundle PATH | --invite-code CODE) [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--relay-internal-port PORT] [--probe-observer URL] [--enable-upnp] [--dry-run]
+usage: install.sh [--channel rc] (--invite-bundle PATH | --invite-code CODE) [--target-dir PATH] [--relay-url URL] [--relay-tls-cert-der-sha256 HEX] [--relay-network-id ID] [--relay-internal-port PORT] [--probe-observer URL] [--enable-upnp] [--verify-signature] [--dry-run]
 
 Installs the ilc-core Python wheel after SHA-256 verification and completes
 invite-based onboarding with the supplied Genesis invite bundle or relay invite code.
@@ -101,6 +109,10 @@ while [[ "$#" -gt 0 ]]; do
       ENABLE_UPNP="1"
       shift
       ;;
+    --verify-signature)
+      VERIFY_SIGNATURE="1"
+      shift
+      ;;
     --dry-run)
       DRY_RUN="1"
       shift
@@ -156,6 +168,9 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   fi
   if [[ "${ENABLE_UPNP}" == "1" ]]; then
     printf 'enable_upnp=true\n'
+  fi
+  if [[ "${VERIFY_SIGNATURE}" == "1" ]]; then
+    printf 'verify_signature=true\n'
   fi
   for observer in ${PROBE_OBSERVERS[@]+"${PROBE_OBSERVERS[@]}"}; do
     printf 'probe_observer=%s\n' "${observer}"
@@ -264,6 +279,216 @@ fi
 
 if [[ "${actual_hash}" != "${RC_WHEEL_SHA256}" ]]; then
   die 1 "install_sh_hash_verification_failed:expected_${RC_WHEEL_SHA256}:actual_${actual_hash}"
+fi
+
+if [[ "${VERIFY_SIGNATURE}" == "1" ]]; then
+  if ! python3 -c "import cryptography" >/dev/null 2>&1; then
+    printf '%s\n' "install_sh_signature_verification_skipped:cryptography_not_available" >&2
+  else
+    python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" <<'PY'
+import hashlib
+import json
+import sys
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import HTTPRedirectHandler, Request, build_opener
+
+(
+    _wheel_path,
+    release_id,
+    artifact_id,
+    artifact_sha256,
+    envelope_ref,
+    signer_public_key_hex,
+    sdist_artifact_id,
+    sdist_sha256,
+    sdist_size,
+) = sys.argv[1:10]
+MAX_ENVELOPE_SET_BYTES = 65536
+SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
+SIGNED_PREIMAGE_DOMAIN = "ILC_RELEASE_ARTIFACT_SIGNATURE_V1"
+SIGNING_ALGORITHM = "Ed25519"
+SIGNED_AT = "1970-01-01T00:00:00Z"
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
+
+class NoRedirectHandler(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def fail(token):
+    raise SystemExit(token)
+
+
+def read_envelope_set(ref):
+    parsed = urlparse(ref)
+    if parsed.scheme:
+        if parsed.scheme != "https":
+            fail("release_envelope_fetch_insecure_url")
+        request = Request(ref, headers={"User-Agent": "ilc-install/release-signature"})
+        try:
+            response = build_opener(NoRedirectHandler).open(request, timeout=30)
+        except HTTPError as exc:
+            if exc.code in {301, 302, 303, 307, 308}:
+                fail("release_envelope_fetch_redirect_forbidden")
+            fail(f"release_envelope_fetch_failed:{exc.code}")
+        except (URLError, TimeoutError):
+            fail("release_envelope_fetch_failed:network")
+        with response:
+            declared = response.headers.get("Content-Length")
+            if declared is not None:
+                try:
+                    declared_size = int(declared)
+                except ValueError:
+                    fail("release_envelope_content_length_invalid")
+                if declared_size > MAX_ENVELOPE_SET_BYTES:
+                    fail("release_envelope_set_too_large")
+            body = response.read(MAX_ENVELOPE_SET_BYTES + 1)
+    else:
+        path = Path(ref).expanduser()
+        if not path.is_file():
+            fail("release_envelope_set_path_not_found")
+        with path.open("rb") as handle:
+            body = handle.read(MAX_ENVELOPE_SET_BYTES + 1)
+    if len(body) > MAX_ENVELOPE_SET_BYTES:
+        fail("release_envelope_set_too_large")
+    try:
+        data = json.loads(body.decode("utf-8"), parse_constant=lambda value: fail("release_envelope_set_invalid_json"))
+    except Exception:
+        fail("release_envelope_set_invalid_json")
+    if not isinstance(data, dict):
+        fail("release_envelope_set_not_object")
+    return data
+
+
+def canonical_json(payload):
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+
+
+def preimage_sha256(envelope):
+    payload = {
+        "artifact_id": envelope["artifact_id"],
+        "artifact_sha256": envelope["artifact_sha256"],
+        "genesis_lineage_ref": envelope["genesis_lineage_ref"],
+        "prior_release_envelope_ref": envelope["prior_release_envelope_ref"],
+        "release_id": envelope["release_id"],
+        "release_key_registration_ref": envelope["release_key_registration_ref"],
+        "schema_version": SCHEMA_VERSION,
+        "signed_at": SIGNED_AT,
+        "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
+        "signing_algorithm": SIGNING_ALGORITHM,
+    }
+    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def require_envelope(envelope_set, envelope_artifact_id, expected_sha256):
+    envelopes = envelope_set.get("envelopes")
+    if not isinstance(envelopes, dict):
+        fail("release_envelope_set_envelopes_invalid")
+    envelope = envelopes.get(envelope_artifact_id)
+    if not isinstance(envelope, dict):
+        fail("release_envelope_missing_artifact")
+    required = {
+        "artifact_id",
+        "artifact_sha256",
+        "genesis_lineage_ref",
+        "prior_release_envelope_ref",
+        "release_id",
+        "release_key_registration_ref",
+        "schema_version",
+        "signature_hex",
+        "signed_at",
+        "signed_preimage_algorithm",
+        "signed_preimage_domain",
+        "signed_preimage_sha256",
+        "signer_public_key_hex",
+        "signing_algorithm",
+    }
+    if set(envelope) != required:
+        fail("release_envelope_field_set_invalid")
+    if envelope["artifact_id"] != envelope_artifact_id:
+        fail("release_envelope_artifact_id_mismatch")
+    if envelope["artifact_sha256"] != expected_sha256:
+        fail("release_envelope_artifact_sha256_mismatch")
+    if envelope["release_id"] != release_id:
+        fail("release_envelope_release_id_mismatch")
+    if envelope["schema_version"] != SCHEMA_VERSION:
+        fail("release_envelope_schema_version_invalid")
+    if envelope["signed_at"] != SIGNED_AT:
+        fail("release_envelope_signed_at_invalid")
+    if envelope["signed_preimage_domain"] != SIGNED_PREIMAGE_DOMAIN:
+        fail("release_envelope_preimage_domain_invalid")
+    if envelope["signing_algorithm"] != SIGNING_ALGORITHM:
+        fail("release_envelope_signing_algorithm_invalid")
+    if envelope["signer_public_key_hex"] != signer_public_key_hex:
+        fail("release_envelope_signer_public_key_mismatch")
+    expected_preimage = preimage_sha256(envelope)
+    if envelope["signed_preimage_sha256"] != expected_preimage:
+        fail("release_envelope_preimage_mismatch")
+    return envelope
+
+manifest = {
+    "artifacts": [
+        {
+            "arch": "any",
+            "artifact_id": artifact_id,
+            "artifact_type": "python_wheel",
+            "canonical_hash": f"sha256:{artifact_sha256}",
+            "channel": "rc",
+            "download_url": "https://files.pythonhosted.org/",
+            "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+            "min_python_version": "3.10",
+            "platform": "any",
+            "produced_phase": 1627,
+            "ratification_token": "cdl_086_ratified_phase_1220",
+            "signing_status": "signed",
+            "size_bytes": int("1451016"),
+        },
+        {
+            "arch": "any",
+            "artifact_id": sdist_artifact_id,
+            "artifact_type": "python_sdist",
+            "canonical_hash": f"sha256:{sdist_sha256}",
+            "channel": "rc",
+            "download_url": "https://files.pythonhosted.org/",
+            "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+            "min_python_version": "3.10",
+            "platform": "any",
+            "produced_phase": 1627,
+            "ratification_token": "cdl_086_ratified_phase_1220",
+            "signing_status": "signed",
+            "size_bytes": int(sdist_size),
+        }
+    ],
+    "channel": "rc",
+    "manifest_produced_phase": 1627,
+    "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+    "non_claims": ["no_public_mirror_push"],
+    "release_envelope_ref": envelope_ref,
+    "release_id": release_id,
+}
+envelope_set = read_envelope_set(envelope_ref)
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.15":
+    fail("release_envelope_set_schema_version_invalid")
+expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
+if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
+    fail("release_envelope_set_artifact_coverage_mismatch")
+require_envelope(envelope_set, sdist_artifact_id, sdist_sha256)
+wheel_envelope = require_envelope(envelope_set, artifact_id, artifact_sha256)
+try:
+    Ed25519PublicKey.from_public_bytes(bytes.fromhex(signer_public_key_hex)).verify(
+        bytes.fromhex(wheel_envelope["signature_hex"]),
+        bytes.fromhex(wheel_envelope["signed_preimage_sha256"]),
+    )
+except (InvalidSignature, ValueError):
+    fail("release_envelope_signature_invalid")
+print(f"install_sh_signature_verified:{artifact_id}")
+PY
+  fi
 fi
 
 python3 -m venv "${TARGET_DIR}"
