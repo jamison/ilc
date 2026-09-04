@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 from ilc_core.release.installable_release_signature import (
     InstallableReleaseSignatureError,
     compute_signed_preimage_sha256,
+    validate_envelope,
     validate_envelope_set,
 )
 
@@ -49,6 +50,13 @@ def _read_local_envelope_set(path_text: str) -> bytes:
     if len(payload) > MAX_ENVELOPE_SET_BYTES:
         raise ValueError("release_envelope_set_too_large")
     return payload
+
+
+def _resolve_local_envelope_ref(path_text: str, *, base_dir: Path | None = None) -> str:
+    path = Path(path_text).expanduser()
+    if path.is_absolute() or base_dir is None:
+        return str(path)
+    return str((base_dir / path).resolve())
 
 
 def _fetch_https_envelope_set(url: str) -> bytes:
@@ -94,6 +102,7 @@ def fetch_and_validate_envelope_set(
     envelope_ref_url_or_path: str,
     *,
     manifest: dict[str, Any] | None = None,
+    base_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Fetch or read a release envelope set and validate its schema."""
 
@@ -105,7 +114,9 @@ def fetch_and_validate_envelope_set(
             raise ValueError("release_envelope_fetch_insecure_url")
         payload = _fetch_https_envelope_set(envelope_ref_url_or_path)
     else:
-        payload = _read_local_envelope_set(envelope_ref_url_or_path)
+        payload = _read_local_envelope_set(
+            _resolve_local_envelope_ref(envelope_ref_url_or_path, base_dir=base_dir)
+        )
     try:
         envelope_set = json.loads(
             payload.decode("utf-8"),
@@ -138,6 +149,10 @@ def verify_artifact_signature(
     envelope = envelopes.get(artifact_id)
     if not isinstance(envelope, Mapping):
         raise ValueError("release_envelope_missing_artifact")
+    try:
+        validate_envelope(envelope)
+    except InstallableReleaseSignatureError as exc:
+        raise ValueError(str(exc)) from exc
     if envelope.get("release_id") != release_id:
         raise ValueError("release_envelope_release_id_mismatch")
     if envelope.get("signer_public_key_hex") != expected_signer_public_key_hex:

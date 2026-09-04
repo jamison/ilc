@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import subprocess
 import sys
@@ -46,6 +47,58 @@ def _wheel_artifact() -> dict[str, Any]:
         if artifact["artifact_type"] == "python_wheel":
             return artifact
     raise AssertionError("wheel artifact missing")
+
+
+def _artifact_by_type(artifact_type: str) -> dict[str, Any]:
+    for artifact in _manifest()["artifacts"]:
+        if artifact["artifact_type"] == artifact_type:
+            return artifact
+    raise AssertionError(f"{artifact_type} artifact missing")
+
+
+def _install_sh_signature_verifier_source() -> str:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    marker = '${RC_SDIST_SIZE}" "${INSTALLER_ROOT}" <<\'PY\''
+    marker_index = text.index(marker)
+    start = text.index("\n", marker_index) + 1
+    end = text.index("\nPY\n", start)
+    return text[start:end]
+
+
+def _run_install_sh_signature_verifier(
+    tmp_path: Path,
+    *,
+    envelope_set: dict[str, Any],
+) -> subprocess.CompletedProcess[str]:
+    envelope_path = tmp_path / "envelopes.json"
+    envelope_path.write_text(
+        json.dumps(envelope_set, sort_keys=True, separators=(",", ":"), allow_nan=False),
+        encoding="utf-8",
+    )
+    script_path = tmp_path / "install_verifier.py"
+    script_path.write_text(_install_sh_signature_verifier_source(), encoding="utf-8")
+    script_args = [
+        sys.executable,
+        str(script_path),
+        "/tmp/unused.whl",
+        _manifest()["release_id"],
+        _artifact_by_type("python_wheel")["artifact_id"],
+        _artifact_by_type("python_wheel")["canonical_hash"].removeprefix("sha256:"),
+        str(envelope_path),
+        PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+        _artifact_by_type("python_sdist")["artifact_id"],
+        _artifact_by_type("python_sdist")["canonical_hash"].removeprefix("sha256:"),
+        str(_artifact_by_type("python_sdist")["size_bytes"]),
+        str(ROOT),
+    ]
+    return subprocess.run(
+        script_args,
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
 
 
 def test_fetch_envelope_set_from_local_path() -> None:
@@ -113,6 +166,20 @@ def test_verify_artifact_signature_bad_signature() -> None:
     envelope_set = copy.deepcopy(_envelope_set())
     envelope_set["envelopes"][artifact["artifact_id"]]["signature_hex"] = "0" * 128
     with pytest.raises(ValueError, match="release_envelope_signature_invalid"):
+        verify_artifact_signature(
+            artifact["artifact_id"],
+            artifact["canonical_hash"],
+            envelope_set,
+            release_id=_manifest()["release_id"],
+            expected_signer_public_key_hex=PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+        )
+
+
+def test_verify_artifact_signature_direct_call_rejects_missing_signature_field() -> None:
+    artifact = _wheel_artifact()
+    envelope_set = copy.deepcopy(_envelope_set())
+    del envelope_set["envelopes"][artifact["artifact_id"]]["signature_hex"]
+    with pytest.raises(ValueError, match="release_envelope_missing_field:signature_hex"):
         verify_artifact_signature(
             artifact["artifact_id"],
             artifact["canonical_hash"],
@@ -219,6 +286,42 @@ def test_ilc_update_signature_verification_runs_before_pip(
     assert order == ["download", "signature", "pip", "post-check"]
 
 
+def test_ilc_update_verifies_sdist_signature_too(tmp_path: Path) -> None:
+    manifest = _manifest()
+    manifest["release_envelope_ref"] = "envelopes.json"
+    envelope_set = copy.deepcopy(_envelope_set())
+    sdist = _artifact_by_type("python_sdist")
+    envelope_set["envelopes"][sdist["artifact_id"]]["signature_hex"] = "0" * 128
+    (tmp_path / "envelopes.json").write_text(
+        json.dumps(envelope_set, sort_keys=True, separators=(",", ":"), allow_nan=False),
+        encoding="utf-8",
+    )
+    wheel = _artifact_by_type("python_wheel")
+    with pytest.raises(ValueError, match="release_envelope_signature_invalid"):
+        cli_main._verify_update_artifact_signature(
+            manifest=manifest,
+            artifact_id=wheel["artifact_id"],
+            artifact_sha256=wheel["canonical_hash"],
+            manifest_base_dir=tmp_path,
+        )
+
+
+def test_ilc_update_resolves_relative_envelope_ref_against_manifest_dir(tmp_path: Path) -> None:
+    manifest = _manifest()
+    manifest["release_envelope_ref"] = "envelopes.json"
+    (tmp_path / "envelopes.json").write_text(
+        json.dumps(_envelope_set(), sort_keys=True, separators=(",", ":"), allow_nan=False),
+        encoding="utf-8",
+    )
+    wheel = _artifact_by_type("python_wheel")
+    cli_main._verify_update_artifact_signature(
+        manifest=manifest,
+        artifact_id=wheel["artifact_id"],
+        artifact_sha256=wheel["canonical_hash"],
+        manifest_base_dir=tmp_path,
+    )
+
+
 def test_install_sh_verify_signature_flag_and_order() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
     assert "--verify-signature" in text
@@ -226,6 +329,73 @@ def test_install_sh_verify_signature_flag_and_order() -> None:
     signature_check = text.index('python3 - "${TMP_WHEEL}"', hash_check)
     pip_install = text.index('"${TARGET_DIR}/bin/python" -m pip install')
     assert hash_check < signature_check < pip_install
+
+
+def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path: Path) -> None:
+    payload = tmp_path / "ilc_core-0.4.15-py3-none-any.whl"
+    payload.write_bytes(b"not-a-real-wheel")
+    digest = hashlib.sha256(payload.read_bytes()).hexdigest()
+    invite = tmp_path / "invite.json"
+    invite.write_text("{}", encoding="utf-8")
+    script = INSTALL_SH.read_text(encoding="utf-8")
+    script = script.replace(
+        'RC_WHEEL_URL="https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl"',
+        f'RC_WHEEL_URL="{payload.as_uri()}"',
+    )
+    script = script.replace(
+        'RC_WHEEL_SHA256="058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"',
+        f'RC_WHEEL_SHA256="{digest}"',
+    )
+    script = script.replace('RC_WHEEL_SIZE="1451016"', f'RC_WHEEL_SIZE="{payload.stat().st_size}"')
+    script = script.replace(
+        'python3 -c "import cryptography"',
+        'python3 -c "raise ImportError"',
+    )
+    script_path = tmp_path / "install.sh"
+    script_path.write_text(script, encoding="utf-8")
+    script_path.chmod(0o700)
+
+    result = subprocess.run(
+        [
+            "bash",
+            str(script_path),
+            "--invite-bundle",
+            str(invite),
+            "--target-dir",
+            str(tmp_path / "venv"),
+            "--verify-signature",
+        ],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert result.returncode == 1
+    assert "install_sh_signature_verification_failed:cryptography_not_available" in result.stderr
+
+
+def test_install_sh_inline_verifier_rejects_bad_sdist_signature(tmp_path: Path) -> None:
+    envelope_set = copy.deepcopy(_envelope_set())
+    sdist = _artifact_by_type("python_sdist")
+    envelope_set["envelopes"][sdist["artifact_id"]]["signature_hex"] = "0" * 128
+
+    result = _run_install_sh_signature_verifier(tmp_path, envelope_set=envelope_set)
+
+    assert result.returncode != 0
+    assert "release_envelope_signature_invalid" in result.stderr
+
+
+def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Path) -> None:
+    envelope_set = copy.deepcopy(_envelope_set())
+    wheel = _artifact_by_type("python_wheel")
+    envelope_set["envelopes"][wheel["artifact_id"]]["signed_preimage_algorithm"] = "sha384"
+
+    result = _run_install_sh_signature_verifier(tmp_path, envelope_set=envelope_set)
+
+    assert result.returncode != 0
+    assert "release_envelope_preimage_algorithm_invalid" in result.stderr
 
 
 def test_install_sh_verify_signature_runs_without_preinstalled_ilc_core(
@@ -275,3 +445,11 @@ def test_no_tls_bypass_in_verifier() -> None:
     assert "ssl=False" not in text
     assert "check_hostname=False" not in text
     assert "allow_redirects=False" in text
+
+
+def test_install_sh_redirect_handler_fails_with_redirect_token() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    assert "raise HTTPError(req.full_url, code, \"redirect_forbidden\", headers, fp)" in text
+    assert "return None" not in text[
+        text.index("class NoRedirectHandler") : text.index("def fail", text.index("class NoRedirectHandler"))
+    ]

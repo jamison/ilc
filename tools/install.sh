@@ -28,6 +28,8 @@ DRY_RUN="0"
 TMP_DIR=""
 TMP_WHEEL=""
 PROBE_OBSERVERS=()
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+INSTALLER_ROOT="$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd -P)"
 
 cleanup() {
   if [[ -n "${TMP_DIR}" && -d "${TMP_DIR}" ]]; then
@@ -283,9 +285,9 @@ fi
 
 if [[ "${VERIFY_SIGNATURE}" == "1" ]]; then
   if ! python3 -c "import cryptography" >/dev/null 2>&1; then
-    printf '%s\n' "install_sh_signature_verification_skipped:cryptography_not_available" >&2
-  else
-    python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" <<'PY'
+    die 1 "install_sh_signature_verification_failed:cryptography_not_available"
+  fi
+  python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" "${INSTALLER_ROOT}" <<'PY'
 import hashlib
 import json
 import sys
@@ -304,9 +306,11 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
     sdist_artifact_id,
     sdist_sha256,
     sdist_size,
-) = sys.argv[1:10]
+    installer_root,
+) = sys.argv[1:11]
 MAX_ENVELOPE_SET_BYTES = 65536
 SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
+SIGNED_PREIMAGE_ALGORITHM = "sha256_of_canonical_json"
 SIGNED_PREIMAGE_DOMAIN = "ILC_RELEASE_ARTIFACT_SIGNATURE_V1"
 SIGNING_ALGORITHM = "Ed25519"
 SIGNED_AT = "1970-01-01T00:00:00Z"
@@ -317,7 +321,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 class NoRedirectHandler(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
+        raise HTTPError(req.full_url, code, "redirect_forbidden", headers, fp)
 
 
 def fail(token):
@@ -350,6 +354,8 @@ def read_envelope_set(ref):
             body = response.read(MAX_ENVELOPE_SET_BYTES + 1)
     else:
         path = Path(ref).expanduser()
+        if not path.is_absolute() and not path.is_file():
+            path = Path(installer_root) / path
         if not path.is_file():
             fail("release_envelope_set_path_not_found")
         with path.open("rb") as handle:
@@ -422,6 +428,8 @@ def require_envelope(envelope_set, envelope_artifact_id, expected_sha256):
         fail("release_envelope_signed_at_invalid")
     if envelope["signed_preimage_domain"] != SIGNED_PREIMAGE_DOMAIN:
         fail("release_envelope_preimage_domain_invalid")
+    if envelope["signed_preimage_algorithm"] != SIGNED_PREIMAGE_ALGORITHM:
+        fail("release_envelope_preimage_algorithm_invalid")
     if envelope["signing_algorithm"] != SIGNING_ALGORITHM:
         fail("release_envelope_signing_algorithm_invalid")
     if envelope["signer_public_key_hex"] != signer_public_key_hex:
@@ -477,18 +485,19 @@ if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("ver
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
     fail("release_envelope_set_artifact_coverage_mismatch")
-require_envelope(envelope_set, sdist_artifact_id, sdist_sha256)
+sdist_envelope = require_envelope(envelope_set, sdist_artifact_id, sdist_sha256)
 wheel_envelope = require_envelope(envelope_set, artifact_id, artifact_sha256)
 try:
-    Ed25519PublicKey.from_public_bytes(bytes.fromhex(signer_public_key_hex)).verify(
-        bytes.fromhex(wheel_envelope["signature_hex"]),
-        bytes.fromhex(wheel_envelope["signed_preimage_sha256"]),
-    )
+    public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(signer_public_key_hex))
+    for envelope in (wheel_envelope, sdist_envelope):
+        public_key.verify(
+            bytes.fromhex(envelope["signature_hex"]),
+            bytes.fromhex(envelope["signed_preimage_sha256"]),
+        )
 except (InvalidSignature, ValueError):
     fail("release_envelope_signature_invalid")
 print(f"install_sh_signature_verified:{artifact_id}")
 PY
-  fi
 fi
 
 python3 -m venv "${TARGET_DIR}"
