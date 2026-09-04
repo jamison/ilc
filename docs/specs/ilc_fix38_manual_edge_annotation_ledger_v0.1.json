@@ -93352,6 +93352,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_08_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_version_consistency_00_2026_09_04",
+      "chronology_note": "2026-09-04 pre-signing version consistency gate report for final ilc-core 0.4.15 target.",
+      "manual_read_summary": "Gate report records pyproject.toml, tools/install.sh, _0415 installable manifest, and RELEASE-SIGN-00a/00b/00c/00d prompt alignment at ilc-core 0.4.15 with unsigned artifact status preserved before the signing chain.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-VERSION-CONSISTENCY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:version_consistency_gate_passed_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:release_signing_performed_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_public_rc_version_consistency_gate_report_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_version_consistency_00_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-PUBLIC-RC-VERSION-CONSISTENCY-00.",
+      "manual_read_summary": "Walkthrough records MemPalace/search scope, token counts, pyproject/install.sh/manifest checks, release-sign prompt residual scans, overall PASS verdict, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-VERSION-CONSISTENCY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:version_consistency_gate_passed_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_PUBLIC_RC_VERSION_CONSISTENCY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_version_consistency_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
