@@ -7,6 +7,15 @@ from ilc_core.release.installable_release_manifest import (
     load_installable_release_manifest,
     validate_installable_release_manifest,
 )
+from ilc_core.release.installable_release_signature import (
+    InstallableReleaseSignatureError,
+    build_envelope_skeleton,
+    canonical_envelope_json,
+    compute_signed_preimage_sha256,
+    validate_envelope,
+    validate_envelope_for_artifact,
+    validate_envelope_set,
+)
 from ilc_core.release.install_sh_manifest_sync import verify_install_sh_manifest_sync
 from ilc_core.release.update_runtime import (
     enforce_download_size,
@@ -17,11 +26,18 @@ from ilc_core.release.update_runtime import (
 
 __all__ = [
     "InstallableReleaseManifestError",
+    "InstallableReleaseSignatureError",
+    "build_envelope_skeleton",
     "canonical_installable_release_manifest_bytes",
+    "canonical_envelope_json",
+    "compute_signed_preimage_sha256",
     "load_installable_release_manifest",
     "enforce_download_size",
     "is_already_current",
     "select_update_artifact",
+    "validate_envelope",
+    "validate_envelope_for_artifact",
+    "validate_envelope_set",
     "validate_installable_release_manifest",
     "verify_install_sh_manifest_sync",
     "verify_download_hash",
