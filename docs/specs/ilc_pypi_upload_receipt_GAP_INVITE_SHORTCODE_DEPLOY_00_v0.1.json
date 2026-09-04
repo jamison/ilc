@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/06/1e/351517b9b0ec7f7da3c2c3f3a1de835f563dba7e4207f56eedc32cc6f421/ilc_core-0.4.15.tar.gz",
+      "fetchback_sha256": "3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e",
+      "fetchback_size_bytes": 1183400,
+      "filename": "ilc_core-0.4.15.tar.gz",
+      "local_sha256": "3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e",
+      "local_size_bytes": 1183400,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl",
+      "fetchback_sha256": "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+      "fetchback_size_bytes": 1451016,
+      "filename": "ilc_core-0.4.15-py3-none-any.whl",
+      "local_sha256": "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+      "local_size_bytes": 1451016,
+      "pypi_yanked": false
+    }
+  },
+  "fetchback_verification": "pass",
+  "go_phrase": "GO Phase GAP-INVITE-SHORTCODE-DEPLOY-00 INVITE-SHORTCODE-DEPLOY-AUTHORIZED",
+  "install_sh": {
+    "installer_version": "GAP-INVITE-SHORTCODE-DEPLOY-00-0415",
+    "rc_wheel_sha256": "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524",
+    "rc_wheel_size": "1451016",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl"
+  },
+  "non_claims": [
+    "no_manifest_signing",
+    "no_release_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting",
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED_remains_True"
+  ],
+  "phase": "GAP-INVITE-SHORTCODE-DEPLOY-00",
+  "predecessor_version": "0.4.14",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.15/",
+  "pypi_upload_status": "uploaded",
+  "pypi_yank_status": {
+    "0.4.13": {
+      "all_yanked": true
+    },
+    "0.4.14": {
+      "all_yanked": false,
+      "status": "pending_manual_yank"
+    },
+    "0.4.15": {
+      "all_active": true,
+      "all_yanked": false
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_INVITE_SHORTCODE_DEPLOY_00.v0.1",
+  "source_private_commit_at_upload_start": "1c56c654031a7b5f04f393b2dabd7ea447c68e62",
+  "timestamp_utc": "2026-09-04T06:46:44Z",
+  "twine_upload_status": "pass",
+  "version": "0.4.15"
+}
