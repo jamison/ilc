@@ -74842,6 +74842,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_invite_shortcode_cdl_ratify_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00a_2026_09_04",
+      "chronology_note": "2026-09-04 release signing authority reconciliation spec for GAP-RELEASE-SIGN-00a.",
+      "manual_read_summary": "Spec confirms the _0415 installable manifest remains unsigned, classifies historical Phase 1447 signing as v0.3 context only, and confirms detached release envelope intent for future signing_status=signed claims while deferring concrete schema/key details to 00b/00c.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signing_authority_reconciled_GAP_RELEASE_SIGN_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:installable_manifest_unsigned_state_confirmed_GAP_RELEASE_SIGN_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:release_signing_performed_GAP_RELEASE_SIGN_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_release_signing_authority_reconciliation_GAP_RELEASE_SIGN_00a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00a_2026_09_04",
+      "chronology_note": "2026-09-04 walkthrough for GAP-RELEASE-SIGN-00a.",
+      "manual_read_summary": "Walkthrough records prompt hardening, token audit, MemPalace/search scope, direct reads, manifest unsigned state, contradiction search output, verification commands, and PASS verdict for release authority reconciliation.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signing_authority_reconciled_GAP_RELEASE_SIGN_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_rc_activated_GAP_RELEASE_SIGN_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_00a_walkthrough.md"
     }
   ],
   "boundary": {
