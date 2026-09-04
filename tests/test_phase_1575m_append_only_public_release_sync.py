@@ -200,6 +200,14 @@ def test_tool_rejects_docstring_public_rc_exclude_marker(tmp_path: Path) -> None
     sanitized_tree = _make_candidate_repo(tmp_path / "sanitized", public_repo)
     (sanitized_tree / "private_runtime.py").write_text(
         '"""Private helper.\n\n'
+        "Line 3\n"
+        "Line 4\n"
+        "Line 5\n"
+        "Line 6\n"
+        "Line 7\n"
+        "Line 8\n"
+        "Line 9\n"
+        "Line 10\n"
         "PUBLIC_RC_EXCLUDE: synthetic_docstring_marker\n"
         '"""\n',
         encoding="utf-8",
