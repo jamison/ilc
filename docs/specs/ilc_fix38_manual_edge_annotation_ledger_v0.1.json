@@ -75499,6 +75499,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_cdl017_mirror_refresh_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1622_phase_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00_version_update",
+      "chronology_note": "2026-09-05 phase prompt for GAP-INSTALL-DO-SMOKE-PROMPT-REFRESH-00.",
+      "manual_read_summary": "Prompt defines a non-sensitive doc-only refresh of GAP-INSTALL-DO-SMOKE-00 from stale 0.4.4/044 inputs to the current signed 0.4.15, reprovisioned-validator, release-signature, and CDL017 mirror-refresh gates.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "AUTHORIZES",
+          "target": "phase:GAP-INSTALL-DO-SMOKE-PROMPT-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:install_do_smoke_prompt_refreshed_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:vps_mutated_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "AUTHORIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_install_do_smoke_prompt_refresh_00_g10_smoke_prompt_version_update.md"
+    },
+    {
+      "annotation_batch": "manual_batch_1622_phase_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00_version_update",
+      "chronology_note": "2026-09-05 walkthrough for GAP-INSTALL-DO-SMOKE-PROMPT-REFRESH-00.",
+      "manual_read_summary": "Walkthrough records the prompt hardening, smoke-prompt 0.4.15 retargeting, input-token replacement, build-receipt schema correction, --verify-signature insertion, prompt validation, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-INSTALL-DO-SMOKE-PROMPT-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:install_do_smoke_prompt_refreshed_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:install_smoke_executed_GAP_INSTALL_DO_SMOKE_PROMPT_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_install_do_smoke_prompt_refresh_00_walkthrough.md"
     }
   ],
   "boundary": {
