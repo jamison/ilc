@@ -67,6 +67,7 @@ from ilc_core.network.relay.relay_server import (
 )
 from ilc_core.network.relay.relay_server import (
     _FailedAdmissionTracker,
+    _InviteRateLimiter,
     _RelayPortPool,
     _RelayTombstone,
     _PacketRateBucket,
@@ -1294,6 +1295,19 @@ def test_failed_admission_tracker_duplicate_key_reports_do_not_grow_fifo() -> No
     assert tracker.failure_count("ip:198.51.100.201") == 20
     assert list(tracker._insertion_order) == ["ip:198.51.100.201"]
     assert tracker._queued_keys == {"ip:198.51.100.201"}
+
+
+def test_invite_rate_limiter_clears_order_when_entries_are_inconsistent() -> None:
+    limiter = _InviteRateLimiter(limit=1, window_seconds=60, max_entries=1)
+    limiter._entries["ip:198.51.100.10"] = relay_server_module._InviteRateEntry(
+        window_start=1.0,
+        count=1,
+    )
+    limiter._order.clear()
+
+    assert limiter.allow("ip:198.51.100.11") is True
+    assert list(limiter._order) == ["ip:198.51.100.11"]
+    assert set(limiter._entries) == {"ip:198.51.100.11"}
 
 
 def test_failed_admission_valid_client_not_penalized() -> None:

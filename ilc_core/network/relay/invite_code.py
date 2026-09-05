@@ -44,7 +44,10 @@ def generate_code() -> str:
 def validate_code(code: str) -> bool:
     """Return True only when ``code`` has valid structure and checksum."""
 
-    if not isinstance(code, str) or INVITE_CODE_RE.fullmatch(code) is None:
+    if not isinstance(code, str):
+        return False
+    code = code.strip().upper()
+    if INVITE_CODE_RE.fullmatch(code) is None:
         return False
     body = code.removeprefix("ILC-").replace("-", "")
     payload = body[:7]

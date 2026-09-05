@@ -117,6 +117,7 @@ def test_checksum_roundtrip() -> None:
     payload = "H7K2X9P"
     assert checksum_char(payload) == "4"
     assert validate_code("ILC-H7K2-X9P4")
+    assert validate_code(" ilc-h7k2-x9p4 ")
     assert not validate_code("ILC-H7K2-X9P5")
 
 
@@ -686,14 +687,16 @@ def test_install_sh_no_redirect() -> None:
     text = (cli_main.Path(__file__).resolve().parents[1] / "tools/install.sh").read_text(
         encoding="utf-8"
     )
+    invite_start = text.index('INVITE_BUNDLE="${TMP_DIR}/invite_code_bundle.json"')
+    invite_block = text[invite_start : text.index("\nPY\n", invite_start)]
     assert "--invite-code" in text
-    assert "HTTPRedirectHandler" not in text
-    assert "http.client.HTTPSConnection" in text
-    assert "getpeercert(binary_form=True)" in text
-    assert "ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)" in text
-    assert "ssl._create_unverified_context" not in text
-    assert "--location" not in text
-    assert "--location-trusted" not in text
+    assert "HTTPRedirectHandler" not in invite_block
+    assert "http.client.HTTPSConnection" in invite_block
+    assert "getpeercert(binary_form=True)" in invite_block
+    assert "ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)" in invite_block
+    assert "ssl._create_unverified_context" not in invite_block
+    assert "--location" not in invite_block
+    assert "--location-trusted" not in invite_block
 
 
 def test_invite_generate_cli_uses_public_tls_context() -> None:

@@ -10,6 +10,15 @@ from typing import Final
 
 ILC_CONSENSUS_BIN_DIR_ENV: Final[str] = "ILC_CONSENSUS_BIN_DIR"
 _BINARY_NAME_RE: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z0-9_.-]+$")
+_ALLOWED_BINARY_NAMES: Final[frozenset[str]] = frozenset(
+    {
+        "bls_verify_digest",
+        "invite_pop_bls",
+        "keygen",
+        "validator_endpoint_assertion_bls",
+        "validator_harness",
+    }
+)
 
 
 def installed_consensus_binary_path(binary_name: str) -> Path | None:
@@ -20,7 +29,11 @@ def installed_consensus_binary_path(binary_name: str) -> Path | None:
     deployments where HOME is not the desired binary root.
     """
 
-    if not isinstance(binary_name, str) or _BINARY_NAME_RE.fullmatch(binary_name) is None:
+    if (
+        not isinstance(binary_name, str)
+        or _BINARY_NAME_RE.fullmatch(binary_name) is None
+        or binary_name not in _ALLOWED_BINARY_NAMES
+    ):
         raise ValueError("consensus_binary_name_invalid")
     candidates: list[Path] = []
     env_dir = os.environ.get(ILC_CONSENSUS_BIN_DIR_ENV)

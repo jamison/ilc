@@ -61,7 +61,7 @@ def _fail(token: str) -> None:
 def _reject_floating_numbers(value: Any, *, field_path: str, depth: int = 0) -> None:
     if depth > _MAX_DEPTH:
         _fail(f"release_envelope_nesting_too_deep:{field_path}")
-    if type(value) is type(0.0):
+    if isinstance(value, float):
         _fail(f"release_envelope_number_rejected:{field_path}")
     if isinstance(value, Mapping):
         for key, child in value.items():

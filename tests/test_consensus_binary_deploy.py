@@ -50,6 +50,12 @@ def test_installed_consensus_binary_rejects_path_like_name() -> None:
         binary_paths.installed_consensus_binary_command("../keygen")
 
 
+def test_installed_consensus_binary_rejects_unknown_or_dot_names() -> None:
+    for name in (".", "..", "not_an_ilc_helper"):
+        with pytest.raises(ValueError, match="consensus_binary_name_invalid"):
+            binary_paths.installed_consensus_binary_command(name)
+
+
 def test_bls_verify_auto_discovers_installed_binary_before_repo_fallback(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -83,6 +89,24 @@ def test_operator_init_discovers_installed_keygen_and_assertion_signer(
 
     assert operator_init_runtime._default_bls_keygen_command() == (str(keygen),)
     assert operator_init_runtime._default_bls_sign_command() == (str(signer),)
+
+
+def test_operator_init_keygen_empty_stdout_raises_stable_error(tmp_path: Path) -> None:
+    helper = tmp_path / "keygen"
+    secret_path = tmp_path / "signing_key.hex"
+    helper.write_text(
+        "#!/bin/sh\n"
+        "printf '%064d\\n' 1 > \"$2\"\n"
+        "exit 0\n",
+        encoding="utf-8",
+    )
+    helper.chmod(0o700)
+
+    with pytest.raises(ValueError, match="operator_init_bls_keygen_no_stdout"):
+        operator_init_runtime._generate_bls_keypair_external(
+            command=(str(helper),),
+            secret_path=secret_path,
+        )
 
 
 def test_endpoint_rotation_discovers_installed_assertion_signer(

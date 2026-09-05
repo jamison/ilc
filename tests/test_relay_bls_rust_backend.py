@@ -166,7 +166,7 @@ def test_rust_backend_rejects_wrong_dst_signature(monkeypatch: pytest.MonkeyPatc
     )
 
 
-def test_rust_backend_file_not_found_falls_back_to_python(
+def test_rust_backend_file_not_found_fails_required_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     secret_key_hex, agent_id = _relay_keypair()
@@ -175,14 +175,15 @@ def test_rust_backend_file_not_found_falls_back_to_python(
     monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
     monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", "/definitely/not/bls_verify_digest")
 
-    assert verify_relay_bootstrap_record_digest(
-        public_key_hex=agent_id,
-        digest_hex=digest_hex,
-        signature_hex=signature_hex,
-    )
+    with pytest.raises(ValueError, match="bls_rust_backend_required_but_unavailable"):
+        verify_relay_bootstrap_record_digest(
+            public_key_hex=agent_id,
+            digest_hex=digest_hex,
+            signature_hex=signature_hex,
+        )
 
 
-def test_rust_backend_blank_command_falls_back_to_python(
+def test_rust_backend_blank_command_fails_required_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     secret_key_hex, agent_id = _relay_keypair()
@@ -191,11 +192,12 @@ def test_rust_backend_blank_command_falls_back_to_python(
     monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
     monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", "   ")
 
-    assert verify_relay_bootstrap_record_digest(
-        public_key_hex=agent_id,
-        digest_hex=digest_hex,
-        signature_hex=signature_hex,
-    )
+    with pytest.raises(ValueError, match="bls_rust_backend_required_but_unavailable"):
+        verify_relay_bootstrap_record_digest(
+            public_key_hex=agent_id,
+            digest_hex=digest_hex,
+            signature_hex=signature_hex,
+        )
 
 
 def test_rust_backend_unexpected_output_fails_closed(

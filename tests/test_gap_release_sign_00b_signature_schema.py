@@ -218,6 +218,16 @@ def test_validate_envelope_rejects_float_values() -> None:
         validate_envelope(envelope)
 
 
+def test_validate_envelope_rejects_float_subclass_values() -> None:
+    class FloatSubclass(float):
+        pass
+
+    envelope = _signed_envelope()
+    envelope["release_id"] = FloatSubclass(1.25)  # type: ignore[assignment]
+    with pytest.raises(InstallableReleaseSignatureError, match="release_envelope_number_rejected"):
+        validate_envelope(envelope)
+
+
 def test_validate_envelope_rejects_preimage_mismatch() -> None:
     envelope = _signed_envelope()
     envelope["signed_preimage_sha256"] = "0" * 64

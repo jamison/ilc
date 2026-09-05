@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import io
 import os
 import re
 import shutil
 import stat
 import subprocess
+import sys
+import tarfile
 from pathlib import Path
 
 import pytest
@@ -235,6 +238,85 @@ def test_install_sh_consensus_binary_download_is_bounded_and_verified() -> None:
     assert "tarfile.open" in text
     assert "tar xzf" not in text
     assert "curl | tar" not in text
+
+
+def _install_sh_consensus_extractor_source() -> str:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    marker = 'python3 - "${CONSENSUS_TARBALL}" "${CONSENSUS_BIN_INSTALL_DIR}" <<\'PY\''
+    start = text.index("\n", text.index(marker)) + 1
+    end = text.index("\nPY\n", start)
+    return text[start:end]
+
+
+def _write_tar(path: Path, members: list[tuple[str, bytes, str]]) -> None:
+    with tarfile.open(path, "w:gz") as archive:
+        for name, payload, kind in members:
+            info = tarfile.TarInfo(name)
+            if kind == "file":
+                info.size = len(payload)
+                archive.addfile(info, io.BytesIO(payload))
+            elif kind == "symlink":
+                info.type = tarfile.SYMTYPE
+                info.linkname = "keygen"
+                archive.addfile(info)
+            else:
+                raise AssertionError(kind)
+
+
+def _run_consensus_extractor(tmp_path: Path, members: list[tuple[str, bytes, str]]) -> subprocess.CompletedProcess[str]:
+    tarball = tmp_path / "helpers.tar.gz"
+    destination = tmp_path / "bin"
+    destination.mkdir()
+    _write_tar(tarball, members)
+    script = tmp_path / "extractor.py"
+    script.write_text(_install_sh_consensus_extractor_source(), encoding="utf-8")
+    return subprocess.run(
+        [sys.executable, str(script), str(tarball), str(destination)],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
+def _valid_consensus_members() -> list[tuple[str, bytes, str]]:
+    return [
+        ("bls_verify_digest", b"#!/bin/sh\nexit 0\n", "file"),
+        ("invite_pop_bls", b"#!/bin/sh\nexit 0\n", "file"),
+        ("keygen", b"#!/bin/sh\nexit 0\n", "file"),
+        ("validator_endpoint_assertion_bls", b"#!/bin/sh\nexit 0\n", "file"),
+        ("validator_harness", b"#!/bin/sh\nexit 0\n", "file"),
+    ]
+
+
+def test_install_sh_consensus_extractor_rejects_duplicate_member(tmp_path: Path) -> None:
+    members = _valid_consensus_members() + [("keygen", b"#!/bin/sh\nexit 1\n", "file")]
+
+    result = _run_consensus_extractor(tmp_path, members)
+
+    assert result.returncode != 0
+    assert "install_sh_consensus_binary_tar_member_count_invalid" in result.stderr
+
+
+def test_install_sh_consensus_extractor_rejects_nested_member(tmp_path: Path) -> None:
+    members = _valid_consensus_members()
+    members[0] = ("nested/bls_verify_digest", b"#!/bin/sh\nexit 0\n", "file")
+
+    result = _run_consensus_extractor(tmp_path, members)
+
+    assert result.returncode != 0
+    assert "install_sh_consensus_binary_tar_members_invalid" in result.stderr
+
+
+def test_install_sh_consensus_extractor_rejects_symlink_member(tmp_path: Path) -> None:
+    members = _valid_consensus_members()
+    members[0] = ("bls_verify_digest", b"", "symlink")
+
+    result = _run_consensus_extractor(tmp_path, members)
+
+    assert result.returncode != 0
+    assert "install_sh_consensus_binary_tar_member_unsafe" in result.stderr
 
 
 def test_install_sh_manifest_sync_fails_on_url_mismatch(tmp_path: Path) -> None:
