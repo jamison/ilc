@@ -16,15 +16,21 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0415_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0416_GAP_CONSENSUS_BINARY_DEPLOY_00_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/18/dc/"
-    "8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/"
-    "ilc_core-0.4.15-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/2f/f4/"
+    "d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/"
+    "ilc_core-0.4.16-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"
-EXPECTED_SIZE = "1451016"
+EXPECTED_SHA256 = "c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14"
+EXPECTED_SIZE = "1459734"
+EXPECTED_CONSENSUS_URL = (
+    "https://github.com/jamison/ilc/releases/download/v0.4.16/"
+    "ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+)
+EXPECTED_CONSENSUS_SHA256 = "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42"
+EXPECTED_CONSENSUS_SIZE = "4304398"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -66,6 +72,9 @@ def test_install_sh_dry_run_exits_zero() -> None:
     assert f"RC_WHEEL_URL={EXPECTED_URL}" in result.stdout
     assert f"RC_WHEEL_SHA256={EXPECTED_SHA256}" in result.stdout
     assert "invite_bundle=/tmp/example-invite.json" in result.stdout
+    assert f"CONSENSUS_BIN_URL={EXPECTED_CONSENSUS_URL}" in result.stdout
+    assert f"CONSENSUS_BIN_SHA256={EXPECTED_CONSENSUS_SHA256}" in result.stdout
+    assert f"CONSENSUS_BIN_SIZE={EXPECTED_CONSENSUS_SIZE}" in result.stdout
 
 
 def test_install_sh_dry_run_records_connectivity_options() -> None:
@@ -212,6 +221,20 @@ def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
 
 def test_install_sh_manifest_sync_passes() -> None:
     verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST)
+
+
+def test_install_sh_consensus_binary_download_is_bounded_and_verified() -> None:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+
+    assert 'CONSENSUS_BIN_URL="' in text
+    assert 'CONSENSUS_BIN_SHA256="' in text
+    assert 'CONSENSUS_BIN_SIZE="' in text
+    assert "CONSENSUS_BIN_SIZE_CAP" in text
+    assert "response.read(65536)" in text
+    assert "install_sh_consensus_binary_hash_verification_failed" in text
+    assert "tarfile.open" in text
+    assert "tar xzf" not in text
+    assert "curl | tar" not in text
 
 
 def test_install_sh_manifest_sync_fails_on_url_mismatch(tmp_path: Path) -> None:

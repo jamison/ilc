@@ -1,0 +1,118 @@
+{
+  "artifacts": {
+    "consensus_binary_tarball": {
+      "filename": "ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+      "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+      "sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+      "size_bytes": 4304398
+    },
+    "sdist": {
+      "filename": "ilc_core-0.4.16.tar.gz",
+      "sha256": "2058ec724b56bf0d8bbdee9e61cb0185f0b26df9c6dd691bf41b8b84cd60dbd0",
+      "size_bytes": 1190258
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.16-py3-none-any.whl",
+      "sha256": "c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14",
+      "size_bytes": 1459734
+    }
+  },
+  "clean_install_probe": {
+    "binary_lookup_before_installer_tarball": null,
+    "connectivity_advertisement_guard": true,
+    "interpreter": "/usr/local/bin/python3",
+    "python_version": "3.14.3",
+    "relay_client_guard": false,
+    "relay_server_guard": false,
+    "result": "PASS",
+    "version": "0.4.16"
+  },
+  "consensus_binary_build": {
+    "build_host": "ilc-node-2",
+    "cargo_version": "cargo 1.97.1",
+    "package_member_count": 5,
+    "package_members": [
+      "bls_verify_digest",
+      "invite_pop_bls",
+      "keygen",
+      "validator_endpoint_assertion_bls",
+      "validator_harness"
+    ],
+    "rustc_version": "rustc 1.97.1",
+    "target": "linux-x86_64",
+    "warnings": [
+      "src/node.rs:88 MAX_TESTNET_RELAY_HOPS is never used",
+      "src/node.rs:154 next_relay_hop is never used"
+    ]
+  },
+  "github_release_asset": {
+    "asset_name": "ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+    "asset_size": 4304398,
+    "asset_state": "uploaded",
+    "fetchback_sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+    "fetchback_size_bytes": 4304398,
+    "release_tag": "v0.4.16",
+    "release_url": "https://github.com/jamison/ilc/releases/tag/v0.4.16",
+    "url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+  },
+  "linux_tarball_install_probe": {
+    "build_host": "ilc-node-2",
+    "extracted_members": [
+      {
+        "executable": true,
+        "mode": "0o755",
+        "name": "bls_verify_digest",
+        "size_bytes": 785880
+      },
+      {
+        "executable": true,
+        "mode": "0o755",
+        "name": "invite_pop_bls",
+        "size_bytes": 798792
+      },
+      {
+        "executable": true,
+        "mode": "0o755",
+        "name": "keygen",
+        "size_bytes": 575336
+      },
+      {
+        "executable": true,
+        "mode": "0o755",
+        "name": "validator_endpoint_assertion_bls",
+        "size_bytes": 795792
+      },
+      {
+        "executable": true,
+        "mode": "0o755",
+        "name": "validator_harness",
+        "size_bytes": 8961424
+      }
+    ],
+    "result": "PASS"
+  },
+  "non_claims": [
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting",
+    "no_install_do_smoke_token_emitted",
+    "release_signature_verification_for_0416_not_claimed"
+  ],
+  "phase": "GAP-CONSENSUS-BINARY-DEPLOY-00",
+  "predecessor_version": "0.4.15",
+  "schema_version": "ilc.package_build_receipt.GAP_CONSENSUS_BINARY_DEPLOY_00.v0.1",
+  "source_base_commit_before_phase": "9a2759d38a6c9ed4f0dbb2c38ed5a47faf543c72",
+  "timestamp_utc": "2026-09-05T10:07:17Z",
+  "tests": {
+    "directed_consensus_binary_install_surface": "78 passed in 10.55s",
+    "install_sh_manifest_sync_0416": "PASS",
+    "install_sh_shell_syntax": "PASS",
+    "manifest_0416_validation": "PASS"
+  },
+  "twine_check": "PASS",
+  "version": "0.4.16"
+}
