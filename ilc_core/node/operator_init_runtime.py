@@ -590,7 +590,10 @@ def _generate_bls_keypair_external(
     if result.returncode != 0:
         raise ValueError("operator_init_bls_keygen_failed")
     os.chmod(secret_path, 0o600)
-    public_hex = result.stdout.strip().splitlines()[-1].strip().lower()
+    stdout_lines = result.stdout.strip().splitlines()
+    if not stdout_lines:
+        raise ValueError("operator_init_bls_keygen_no_stdout")
+    public_hex = stdout_lines[-1].strip().lower()
     _require_lower_hex_exact(public_hex, BLS_PUBLIC_KEY_HEX_LENGTH, "operator_init_bls_public_key_invalid")
     secret_hex = secret_path.read_text(encoding="utf-8").strip().lower()
     _require_lower_hex_exact(secret_hex, BLS_SECRET_KEY_HEX_LENGTH, "operator_init_bls_secret_key_invalid")

@@ -463,7 +463,7 @@ manifest = {
             "produced_phase": 1627,
             "ratification_token": "cdl_086_ratified_phase_1220",
             "signing_status": "signed",
-            "size_bytes": int("1451016"),
+            "size_bytes": int("1459734"),
         },
         {
             "arch": "any",
@@ -587,6 +587,8 @@ expected = {
 }
 with tarfile.open(tarball, "r:gz") as archive:
     members = archive.getmembers()
+    if len(members) != len(expected):
+        raise SystemExit("install_sh_consensus_binary_tar_member_count_invalid")
     names = {member.name for member in members}
     if names != expected:
         raise SystemExit("install_sh_consensus_binary_tar_members_invalid")

@@ -662,6 +662,7 @@ class _InviteRateLimiter:
             self._entries.pop(self._order.popleft(), None)
         if len(self._entries) >= self._max_entries:
             self._entries.clear()
+            self._order.clear()
 
     def _now(self) -> float:
         now = self._now_provider()

@@ -446,6 +446,8 @@ def _verify_digest_with_ciphersuite(
         )
         if rust_result is not None:
             return rust_result
+        if backend == _BLS_BACKEND_RUST:
+            raise ValueError("bls_rust_backend_required_but_unavailable")
     public_key = bytes.fromhex(clean_public_key_hex)
     digest = bytes.fromhex(clean_digest_hex)
     signature = bytes.fromhex(clean_signature_hex)
@@ -541,7 +543,7 @@ def _resolve_bls_verify_command() -> list[str] | None:
     """
 
     env_command = os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR)
-    if env_command is not None and env_command.strip():
+    if env_command is not None:
         command = shlex.split(env_command)
         return command or None
     path_binary = shutil.which("bls_verify_digest")
