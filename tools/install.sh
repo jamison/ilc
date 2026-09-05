@@ -11,7 +11,8 @@ RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
 RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0415@phase-1627"
 RC_SDIST_SHA256="3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e"
 RC_SDIST_SIZE="1183400"
-RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 
 CHANNEL="rc"
@@ -149,6 +150,7 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   printf 'RC_WHEEL_SHA256=%s\n' "${RC_WHEEL_SHA256}"
   printf 'RC_WHEEL_SIZE=%s\n' "${RC_WHEEL_SIZE}"
   printf 'RC_MIN_PYTHON_MINOR=%s\n' "${RC_MIN_PYTHON_MINOR}"
+  printf 'RC_RELEASE_ENVELOPE_REF=%s\n' "${RC_RELEASE_ENVELOPE_REF}"
   if [[ -n "${TARGET_DIR}" ]]; then
     printf 'target_dir=%s\n' "${TARGET_DIR}"
   fi
