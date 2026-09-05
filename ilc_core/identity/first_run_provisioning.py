@@ -34,6 +34,7 @@ from ilc_core.crypto.pq_signature_verify import (
     _MLDSA_PK_HEX_LENGTH,
     verify_mldsa65_signature,
 )
+from ilc_core.consensus.binary_paths import installed_consensus_binary_command
 from ilc_core.identity.bls_backend import (
     keypair_from_ikm_hex,
     sign_invitee_install_receipt_digest,
@@ -1007,6 +1008,9 @@ def _configured_keygen_command() -> list[str] | None:
     env_command = os.environ.get(ONBOARDING_BLS_KEYGEN_COMMAND_ENV)
     if env_command:
         return shlex.split(env_command)
+    installed_binary = installed_consensus_binary_command("keygen")
+    if installed_binary is not None:
+        return list(installed_binary)
     return None
 
 
@@ -1088,6 +1092,9 @@ def _configured_invite_pop_command() -> list[str] | None:
     env_command = os.environ.get(ONBOARDING_BLS_POP_COMMAND_ENV)
     if env_command:
         return shlex.split(env_command)
+    installed_binary = installed_consensus_binary_command("invite_pop_bls")
+    if installed_binary is not None:
+        return list(installed_binary)
     return None
 
 

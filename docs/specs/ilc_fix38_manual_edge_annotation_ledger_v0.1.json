@@ -94341,6 +94341,68 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_version_consistency_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_consensus_binary_deploy_00_source_checkpoint_2026_09_05",
+      "chronology_note": "2026-09-05 local source checkpoint for the Rust consensus binary packaging gap discovered by GAP-INSTALL-DO-SMOKE-00.",
+      "manual_read_summary": "Shared resolver for packaged consensus helper binaries. Provides operator-local ILC_CONSENSUS_BIN_DIR override and default ~/.ilc/bin lookup for post-install Rust helper discovery without requiring a repo checkout or cargo on fresh pip-only installs.",
+      "node_kind": "runtime_source",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CONSENSUS-BINARY-DEPLOY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:packaged_consensus_binary_lookup_available"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:rust_consensus_binaries_missing_from_0415_wheel"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_core/consensus/binary_paths.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_consensus_binary_deploy_00_source_checkpoint_2026_09_05",
+      "chronology_note": "2026-09-05 focused tests for packaged consensus helper discovery.",
+      "manual_read_summary": "Tests cover ~/.ilc/bin discovery, ILC_CONSENSUS_BIN_DIR precedence, path-like binary name rejection, BLS verifier discovery, onboarding keygen and invite PoP discovery, operator init keygen/assertion signer discovery, and endpoint rotation assertion signer discovery.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:GAP-CONSENSUS-BINARY-DEPLOY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:packaged_consensus_binary_lookup_available"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_consensus_binary_deploy.py"
     }
   ],
   "phase": "1545p-Fix38",
