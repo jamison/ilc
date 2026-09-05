@@ -14,7 +14,26 @@ def _split_markdown_row(line: str) -> list[str]:
     stripped = line.strip()
     if not stripped.startswith("|") or not stripped.endswith("|"):
         return []
-    return [cell.strip() for cell in stripped.strip("|").split("|")]
+    cells: list[str] = []
+    current: list[str] = []
+    escaped = False
+    for char in stripped[1:-1]:
+        if escaped:
+            current.append(char)
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == "|":
+            cells.append("".join(current).strip())
+            current = []
+            continue
+        current.append(char)
+    if escaped:
+        current.append("\\")
+    cells.append("".join(current).strip())
+    return cells
 
 
 def _find_decision_register_table(lines: list[str]) -> tuple[int, list[str]]:

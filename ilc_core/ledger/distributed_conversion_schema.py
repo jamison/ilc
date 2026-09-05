@@ -34,6 +34,7 @@ GENESIS_TRANCHE_ALLOWED_TREATMENTS = frozenset(
         GENESIS_TRANCHE_NOT_APPLICABLE_BY_RATIFIED_RULE,
     }
 )
+MAX_CONVERSION_TEXT_BYTES = 512
 RESOLUTION_STATUSES = frozenset({"resolved", "omitted", "pending"})
 VERIFIER_ROOT_PREFIX = "conversion_resolution_sha256:"
 FIX2R_SCHEMA_COMPLETE_TOKEN = "phase_1568_fix2r_distributed_conversion_schema_complete"
@@ -83,7 +84,10 @@ def _reject_float_tree(value: Any) -> None:
 def _require_text(value: Any, *, token: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(token)
-    return value.strip()
+    text = value.strip()
+    if len(text.encode("utf-8")) > MAX_CONVERSION_TEXT_BYTES:
+        raise ValueError(f"{token}_too_large")
+    return text
 
 
 def _require_epoch(value: Any, *, token: str) -> int:

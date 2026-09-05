@@ -30,10 +30,9 @@ class KeyRegistry:
 
     def status(self, key_id: str) -> str:
         """Return the lifecycle status of a key_id."""
-        # If registry is empty, only allow all keys when explicitly enabled.
+        # An empty registry is fail-closed; test/dev callers must install an
+        # explicit registry rather than broadening all keys via ambient env.
         if self.is_empty():
-            if os.environ.get("ILC_ALLOW_EMPTY_KEY_REGISTRY") == "1":
-                return "current"
             return "unknown"
         if key_id in self.current_keys:
             return "current"

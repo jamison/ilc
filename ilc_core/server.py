@@ -116,7 +116,7 @@ def _route_classification_coverage() -> dict[tuple[str, str], str]:
     return dict(_ROUTE_CLASSIFICATION)
 
 
-def _validate_peer_admin_host(host: str) -> str:
+def _validate_peer_admin_host(host: str, *, allow_private_literal: bool = False) -> str:
     if not isinstance(host, str):
         raise HTTPException(status_code=400, detail=_UNSAFE_PEER_HOST_TOKEN)
     normalized = host.strip().lower().rstrip(".")
@@ -130,10 +130,11 @@ def _validate_peer_admin_host(host: str) -> str:
     literal = normalized
     if literal.startswith("[") and literal.endswith("]"):
         literal = literal[1:-1]
-    try:
-        reject_private_address_literal(literal)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if not allow_private_literal:
+        try:
+            reject_private_address_literal(literal)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     # ipaddress accepts global literals only after the reject_private guard. This
     # pins the intended behavior for odd literals while preserving DNS names.
@@ -432,8 +433,10 @@ async def receive_gossip(request: Request):
 def add_peer_endpoint(host: str, port: int, request: Request):
     """Access class: operator_admin. Add a static peer in local-dev mode only."""
     local_dev_peer_admin = bool(os.environ.get(_LOCAL_DEV_PEER_ADMIN_ENV))
-    if not local_dev_peer_admin:
-        host = _validate_peer_admin_host(host)
+    host = _validate_peer_admin_host(
+        host,
+        allow_private_literal=local_dev_peer_admin,
+    )
     port = _validate_peer_admin_port(port)
     state = _state(request)
     previous_allowance = state.peer_manager.allow_private_peer_endpoints_for_tests
@@ -579,21 +582,35 @@ def submit_ep_task(ep_task: EpistemicWorkTask):
     # Bridge into TaskDescriptor
     td = TaskDescriptor.from_epistemic_work_task(ep_task)
 
-    # If TaskDescriptor is a dataclass, convert to dict appropriately
+    # If TaskDescriptor is a dataclass, convert to JSON-safe dict appropriately
     try:
         from dataclasses import asdict
-        td_dict = asdict(td)
+        td_dict = _json_safe(asdict(td))
     except TypeError:
         # If it's a pydantic model or has .dict(), use that
         if hasattr(td, "dict"):
-            td_dict = td.dict()
+            td_dict = _json_safe(td.dict())
         else:
-            td_dict = td.__dict__
+            td_dict = _json_safe(td.__dict__)
 
     return {
         "ep_task": ep_json,
         "task_descriptor": td_dict,
     }
+
+
+def _json_safe(value: object) -> object:
+    if isinstance(value, Decimal):
+        from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
+
+        return decimal_to_canonical_string(value)
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [_json_safe(item) for item in value]
+    return value
 
 
 @router.post("/api/v1/claimability/verify")

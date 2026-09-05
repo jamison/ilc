@@ -144,8 +144,16 @@ def _require_werner_pressure(value: Any) -> Decimal | None:
             "werner_raw_pressure_must_be_exact_decimal",
             "Werner pressure must be exact",
         ) from exc
-    if not pressure.is_finite() or pressure < Decimal("0"):
-        return None
+    if not pressure.is_finite():
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_finite",
+            "Werner pressure must be finite",
+        )
+    if pressure < Decimal("0"):
+        raise AttributionBatchBridgeError(
+            "werner_raw_pressure_must_be_non_negative",
+            "Werner pressure must be non-negative",
+        )
     return pressure
 
 

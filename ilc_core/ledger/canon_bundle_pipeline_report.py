@@ -43,7 +43,9 @@ def render_pipeline_report(
     Returns:
         A string containing the Markdown report.
     """
-    ts = timestamp or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    ts = timestamp or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
+        "+00:00", "Z"
+    )
     status = "OK" if report.get("ok", False) else "FAIL"
     
     # Build steps table

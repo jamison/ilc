@@ -125,6 +125,8 @@ def compute_bucket_histogram(
     """
     if n not in {2, 3, 4}:
         raise ValueError(f"n must be in {{2, 3, 4}}, got {n}")
+    if isinstance(heads, bool) or not isinstance(heads, int):
+        raise ValueError("heads must be an integer")
     if heads < 1:
         raise ValueError(f"heads must be >= 1, got {heads}")
     

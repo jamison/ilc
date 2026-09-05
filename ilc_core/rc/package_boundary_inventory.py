@@ -218,7 +218,7 @@ def _import_records(path: Path, *, display_path: str) -> list[dict[str, str]]:
                     }
                 )
         elif isinstance(node, ast.ImportFrom):
-            module = _resolve_import_from_module(Path(display_path), node)
+            module = _resolve_import_from_module(path, node)
             if module:
                 records.append(
                     {

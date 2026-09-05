@@ -172,8 +172,7 @@ class EcuIlcLifecycleRuntime:
             "balance_history": merged_balance_history,
             "history_digest": history_digest,
         }
-        self.wallet_store.put_wallet(agent_id, next_wallet_row)
-        self.wallet_store.put_wallet_history(agent_id, next_wallet_history)
+        self.wallet_store.put_wallet_and_history(agent_id, next_wallet_row, next_wallet_history)
         return {
             "ok": True,
             "token": "lifecycle_epoch_commit_applied",

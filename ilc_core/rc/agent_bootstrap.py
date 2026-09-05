@@ -456,7 +456,8 @@ def _sha256_file(path: Path, *, chunk_size: int = 1024 * 1024) -> str:
 
 
 def _sha256_signature_hex_text(path: Path) -> str:
-    return hashlib.sha256(path.read_text(encoding="utf-8").strip().encode("utf-8")).hexdigest()
+    signature_hex = path.read_text(encoding="utf-8").strip().lower()
+    return hashlib.sha256(signature_hex.encode("utf-8")).hexdigest()
 
 
 def _sha256_canonical(payload: Mapping[str, Any]) -> str:

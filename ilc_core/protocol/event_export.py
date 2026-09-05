@@ -43,14 +43,15 @@ def flatten_task_outcome_event(event: Dict[str, Any]) -> Dict[str, Any]:
     Accepts wrapped event {"type": "task_outcome", "payload": {...}}
     or bare payload if it looks like one.
     """
-    payload = event.get("payload", event)
-    # If it was wrapped but payload is missing, fallback to event itself (bare)
-    if not payload: 
-        payload = event
+    payload = event["payload"] if "payload" in event else event
+    if not isinstance(payload, dict):
+        payload = {}
 
     # Handle "body" key if present (some older/test events might use it)
     if "body" in event:
         payload = event["body"]
+    if not isinstance(payload, dict):
+        payload = {}
 
     return {
         "task_id": payload.get("task_id"),
@@ -58,8 +59,8 @@ def flatten_task_outcome_event(event: Dict[str, Any]) -> Dict[str, Any]:
         "domain": payload.get("domain", "unknown"),
         "agent_id": payload.get("agent_id"),
         "epoch": payload.get("epoch"),
-        "stake_spent": payload.get("stake_spent", 0.0),
-        "reward_paid": payload.get("reward_paid", 0.0),
+        "stake_spent": payload.get("stake_spent", "0"),
+        "reward_paid": payload.get("reward_paid", "0"),
         "success": payload.get("success", False),
     }
 
@@ -67,19 +68,21 @@ def flatten_epoch_summary_event(event: Dict[str, Any]) -> Dict[str, Any]:
     """
     Flatten an epoch_summary event into a row dict.
     """
-    payload = event.get("payload", event)
-    if not payload:
-        payload = event
+    payload = event["payload"] if "payload" in event else event
+    if not isinstance(payload, dict):
+        payload = {}
     
     if "body" in event:
         payload = event["body"]
+    if not isinstance(payload, dict):
+        payload = {}
 
     return {
         "epoch": payload.get("epoch", -1),
         "total_tasks": payload.get("total_tasks", 0),
-        "total_ecu_spent": payload.get("total_ecu_spent", 0.0),
-        "total_reward_paid": payload.get("total_reward_paid", 0.0),
-        "clearing_price_ilc_per_ecu": payload.get("clearing_price_ilc_per_ecu", 0.0),
+        "total_ecu_spent": payload.get("total_ecu_spent", "0"),
+        "total_reward_paid": payload.get("total_reward_paid", "0"),
+        "clearing_price_ilc_per_ecu": payload.get("clearing_price_ilc_per_ecu", "0"),
     }
 
 def flatten_claim_event(event: Dict[str, Any]) -> Dict[str, Any]:
@@ -89,11 +92,13 @@ def flatten_claim_event(event: Dict[str, Any]) -> Dict[str, Any]:
     Accepts wrapped event {"kind": "claim", "payload": {...}}
     or bare payload if it looks like one.
     """
-    payload = event.get("payload", event)
-    if not payload:
-        payload = event
+    payload = event["payload"] if "payload" in event else event
+    if not isinstance(payload, dict):
+        payload = {}
     if "body" in event:
         payload = event["body"]
+    if not isinstance(payload, dict):
+        payload = {}
 
     parent_ids = payload.get("parent_ids") or []
     if isinstance(parent_ids, list):
@@ -106,7 +111,7 @@ def flatten_claim_event(event: Dict[str, Any]) -> Dict[str, Any]:
         "type": payload.get("type", "claim"),
         "agent_id": payload.get("agent_id"),
         "content": payload.get("content"),
-        "net_stake": payload.get("net_stake", 0.0),
+        "net_stake": payload.get("net_stake", "0"),
         "timestamp": payload.get("timestamp"),
         "parent_ids": parent_ids_str,
         "target_id": payload.get("target_id"),

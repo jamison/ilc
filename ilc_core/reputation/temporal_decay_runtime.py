@@ -7,7 +7,7 @@ Decimal arithmetic and tokenized validation failures.
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation, localcontext
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN, localcontext
 from typing import TypeAlias
 
 CDL_V1_RUNTIME_VERSION = "cdl_v1_temporal_decay_runtime_388.v0.1"
@@ -18,6 +18,7 @@ ExactNumberish: TypeAlias = Decimal | int | str
 ZERO = Decimal("0")
 ONE = Decimal("1")
 TWELVE_PLACES = Decimal("0.000000000001")
+_DECAY_CONTEXT_PRECISION = 50
 
 
 class TemporalDecayValidationError(ValueError):
@@ -60,7 +61,10 @@ def _require_numeric(name: str, value: object) -> Decimal:
 
 
 def _quantize_twelve_places(value: Decimal) -> Decimal:
-    return value.quantize(TWELVE_PLACES)
+    with localcontext() as ctx:
+        ctx.prec = _DECAY_CONTEXT_PRECISION
+        ctx.rounding = ROUND_HALF_EVEN
+        return value.quantize(TWELVE_PLACES, rounding=ROUND_HALF_EVEN)
 
 
 def compute_decay_multiplier(
@@ -92,8 +96,16 @@ def compute_decay_multiplier(
         )
 
     with localcontext() as ctx:
-        ctx.prec = 50
-        raw = (-(Decimal("2").ln() * (elapsed / half_life))).exp()
+        ctx.prec = _DECAY_CONTEXT_PRECISION
+        ctx.rounding = ROUND_HALF_EVEN
+        exponent = -(Decimal("2").ln() * (elapsed / half_life))
+        if exponent < Decimal(ctx.Emin):
+            raw = ZERO
+        else:
+            try:
+                raw = exponent.exp()
+            except (InvalidOperation, OverflowError):
+                raw = ZERO
     multiplier = max(floor, min(ONE, raw))
     return _quantize_twelve_places(multiplier)
 

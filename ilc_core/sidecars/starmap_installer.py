@@ -252,6 +252,11 @@ def _content_entries(envelope: Mapping[str, object]) -> list[dict[str, object]]:
             raise StarMapInstallerError("starmap_duplicate_content_entry")
         seen.add(node_id)
         _require_sha256(_require_str(entry, "record_sha256"))
+        materialization_path = entry.get("materialization_path")
+        if materialization_path not in (None, ""):
+            if not isinstance(materialization_path, str):
+                raise StarMapInstallerError("starmap_path_traversal_rejected")
+            _validate_relative_path(Path(materialization_path))
         normalized.append(dict(entry))
     if not normalized:
         raise StarMapInstallerError("starmap_content_entries_empty")
@@ -339,7 +344,14 @@ def _write_atomic(path: Path, content: bytes) -> None:
     try:
         with os.fdopen(fd, "wb") as handle:
             handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
         os.replace(temp_name, path)
+        dir_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
     finally:
         if os.path.exists(temp_name):
             os.unlink(temp_name)

@@ -765,8 +765,17 @@ def _python_import_boundary_edges(
 def _strip_inline_toml_comment(line: str) -> str:
     in_string = False
     quote = ""
+    escaped = False
     output = []
     for char in line:
+        if escaped:
+            output.append(char)
+            escaped = False
+            continue
+        if in_string and quote == '"' and char == "\\":
+            output.append(char)
+            escaped = True
+            continue
         if char in {"'", '"'}:
             if not in_string:
                 in_string = True

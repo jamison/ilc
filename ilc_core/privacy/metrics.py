@@ -24,6 +24,7 @@ Token: row5_b_impl_obligation_6_sim_leakage_03_instrumentation
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from decimal import Decimal
 
 from ilc_core.privacy.lane import ReleaseGroup
 
@@ -31,12 +32,15 @@ LEAKAGE_METRICS_VERSION = "leakage_metrics_833.v0.1"
 CDL_072_DEPENDENCY = "cdl_072_bound_b_formula_amendment_ratified_846.v0.1"
 
 # SIM_LEAKAGE bounds are simulation/telemetry constants only. They must never
-# enter economic state, ECU computation, or settlement logic.
+# enter economic state, ECU computation, or settlement logic. Decimal mirrors
+# are used for threshold comparisons to avoid binary-float boundary drift.
 # The bounds SIM-LEAKAGE-03 must satisfy (informational — checked in Phase 834).
 SIM_LEAKAGE_03_BOUND_A: float = 0.15   # max fill-failure rate
 SIM_LEAKAGE_03_BOUND_B: float = 0.15   # retained for historical reference (Phase 845 structural finding)
 SIM_LEAKAGE_03_BOUND_B_MAX_JITTER: int = 3  # CDL-072: max observed jitter ≤ release_jitter_epochs
 SIM_LEAKAGE_03_BOUND_C: float = 0.05   # max degraded-anonymity fraction of settled transfers
+_SIM_LEAKAGE_03_BOUND_A_DECIMAL = Decimal("0.15")
+_SIM_LEAKAGE_03_BOUND_C_DECIMAL = Decimal("0.05")
 
 
 @dataclass
@@ -261,14 +265,24 @@ class LeakageMetricsCollector:
         gm = global_metrics if global_metrics is not None else self.global_snapshot()
 
         # Bound A: fill-failure rate <= 15%
-        fill_failure_rate = 1.0 - gm.global_fill_rate
-        bound_a_ok = fill_failure_rate <= SIM_LEAKAGE_03_BOUND_A
+        total_groups = gm.total_groups_completed + gm.total_groups_force_released
+        fill_failure_rate = (
+            Decimal("0")
+            if total_groups == 0
+            else Decimal(gm.total_groups_force_released) / Decimal(total_groups)
+        )
+        bound_a_ok = fill_failure_rate <= _SIM_LEAKAGE_03_BOUND_A_DECIMAL
 
         # Bound B: jitter spread check
         bound_b_ok = self._check_jitter_spread(gm)
 
         # Bound C: degraded-anonymity fraction <= 5%
-        bound_c_ok = gm.global_degraded_fraction <= SIM_LEAKAGE_03_BOUND_C
+        degraded_fraction = (
+            Decimal("0")
+            if gm.total_transfers_settled == 0
+            else Decimal(gm.total_transfers_degraded) / Decimal(gm.total_transfers_settled)
+        )
+        bound_c_ok = degraded_fraction <= _SIM_LEAKAGE_03_BOUND_C_DECIMAL
 
         return {"A": bound_a_ok, "B": bound_b_ok, "C": bound_c_ok}
 

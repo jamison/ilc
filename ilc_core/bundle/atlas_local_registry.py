@@ -743,9 +743,8 @@ def _resolve_within_root(*, root: str | Path, local_path: str, token_prefix: str
     root_resolved = Path(root).resolve()
     candidate = Path(local_path)
     if candidate.is_absolute():
-        resolved = candidate.resolve()
-    else:
-        resolved = (root_resolved / candidate).resolve()
+        raise AtlasLocalRegistryError(f"{token_prefix}_absolute_forbidden")
+    resolved = (root_resolved / candidate).resolve()
     if resolved != root_resolved and root_resolved not in resolved.parents:
         raise AtlasLocalRegistryError(f"{token_prefix}_outside_root")
     return resolved

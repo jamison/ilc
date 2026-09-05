@@ -264,6 +264,10 @@ def _sorted_unique_str(values: Optional[List[str]]) -> List[str]:
             
     return sorted(list(set(values)))
 
+
+def _list_or_empty(value: Any) -> List[str]:
+    return value if isinstance(value, list) else []
+
 def _normalize_constitution_checks(checks: Optional[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
     """
     Normalize constitution checks list:
@@ -323,12 +327,12 @@ def build_cluster_a_acceptance_evidence(
     accepted = app_ok and conf_ok
 
     # 4. Collect Errors/Warnings (Sorted Unique)
-    app_errs = apply_result.get("errors", [])
-    conf_errs = conformance_result.get("errors", [])
+    app_errs = _list_or_empty(apply_result.get("errors"))
+    conf_errs = _list_or_empty(conformance_result.get("errors"))
     all_errors = _sorted_unique_str(app_errs + conf_errs)
     
-    app_warns = apply_result.get("warnings", [])
-    conf_warns = conformance_result.get("warnings", [])
+    app_warns = _list_or_empty(apply_result.get("warnings"))
+    conf_warns = _list_or_empty(conformance_result.get("warnings"))
     all_warnings = _sorted_unique_str(app_warns + conf_warns)
 
     # 5. Extract Constitution Checks

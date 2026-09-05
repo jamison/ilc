@@ -198,27 +198,27 @@ class KeyCompromiseResponseRuntime:
         if entry.operational_signer_key != decision.compromised_signer_id:
             raise ValueError("compromised_signer_mismatch")
 
-        # phase_1573am_activation_prerequisite_transactional_revoke_recover:
-        # before this default-off surface is wired to any live/public signing
-        # path, revoke()+recover() must be wrapped in checkpoint/restore or an
-        # equivalent transaction. If recover() raises after revoke(), this
-        # lineage can remain REVOKED until an operator repairs state.
-        self._registry.revoke(
-            lineage_id=decision.lineage_id,
-            authorizer_signer_id=containment_authorizer_signer_id,
-            reason_code=decision.reason_code,
-            event_ts=decision.event_ts,
-        )
+        checkpoint = self._registry.create_checkpoint()
+        try:
+            self._registry.revoke(
+                lineage_id=decision.lineage_id,
+                authorizer_signer_id=containment_authorizer_signer_id,
+                reason_code=decision.reason_code,
+                event_ts=decision.event_ts,
+            )
 
-        # ROTATED is non-authoritative. Recover is required to restore canonical authority.
-        self._registry.recover(
-            lineage_id=decision.lineage_id,
-            replacement_signer_id=replacement_signer_id,
-            recovery_ticket_id=recovery_ticket_id,
-            authorizer_signer_id=recovery_authorizer_signer_id,
-            reason_code="recovery_authorized",
-            event_ts=decision.event_ts,
-        )
+            # ROTATED is non-authoritative. Recover is required to restore canonical authority.
+            self._registry.recover(
+                lineage_id=decision.lineage_id,
+                replacement_signer_id=replacement_signer_id,
+                recovery_ticket_id=recovery_ticket_id,
+                authorizer_signer_id=recovery_authorizer_signer_id,
+                reason_code="recovery_authorized",
+                event_ts=decision.event_ts,
+            )
+        except Exception:
+            self._registry.restore_checkpoint(checkpoint)
+            raise
 
         post = self._registry.entries[decision.lineage_id]
         if post.state != RECOVERED:

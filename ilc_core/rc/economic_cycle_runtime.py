@@ -152,6 +152,8 @@ def _node_from_submission(submission: dict[str, Any]) -> Node:
     if not isinstance(output_hash, str) or not output_hash:
         raise EconomicCycleRuntimeError("submission_output_hash_missing")
     ecu_estimate = ep_task.get("ecu_estimate", ep_task.get("ecu.estimate", 0.0))
+    if isinstance(ecu_estimate, bool):
+        raise EconomicCycleRuntimeError("submission_ecu_estimate_invalid")
     try:
         ecu_estimate_decimal = parse_non_negative_decimal(
             ecu_estimate,
@@ -159,9 +161,6 @@ def _node_from_submission(submission: dict[str, Any]) -> Node:
         )
     except ValueError as exc:
         raise EconomicCycleRuntimeError(str(exc)) from exc
-
-    if isinstance(ecu_estimate, bool):
-        raise EconomicCycleRuntimeError("submission_ecu_estimate_invalid")
 
     content = _dag_cbor_safe({
         "artifact_kind": "agent_submission",

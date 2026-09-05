@@ -85,8 +85,12 @@ def cidv1_from_str(cid_str: str) -> bytes:
     Raises:
         ValueError: If string doesn't start with 'b' or is invalid base32.
     """
+    if not isinstance(cid_str, str):
+        raise ValueError("CID must be string")
     if not cid_str.startswith("b"):
         raise ValueError(f"Expected base32lower multibase prefix 'b', got '{cid_str[:1]}'")
+    if cid_str != cid_str.lower():
+        raise ValueError("CID base32lower must be lowercase canonical text")
     
     b32_part = cid_str[1:].upper()
     
@@ -95,9 +99,12 @@ def cidv1_from_str(cid_str: str) -> bytes:
     b32_padded = b32_part + "=" * padding_needed
     
     try:
-        return base64.b32decode(b32_padded)
+        raw = base64.b32decode(b32_padded)
     except (binascii.Error, ValueError) as e:
         raise ValueError(f"Invalid base32 encoding: {e}")
+    if cidv1_to_str(raw) != cid_str:
+        raise ValueError("Non-canonical CID base32 encoding")
+    return raw
 
 
 def parse_cidv1(cid_str: str) -> dict:

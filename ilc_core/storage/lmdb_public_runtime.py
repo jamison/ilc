@@ -13,6 +13,7 @@ from ilc_core.ledger.exact_numeric import normalize_json_scalars
 
 LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
+MAX_PUBLIC_RECEIPT_INDEX_IDS = 10_000
 _ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
 _ENV_CACHE_LOCK = threading.Lock()
 
@@ -164,6 +165,24 @@ class LmdbWalletStore(_LmdbRuntimeBase):
     def put_wallet_history(self, agent_id: str, payload: dict[str, Any]) -> None:
         self._put_json(b"wallet_history", agent_id, payload)
 
+    def put_wallet_and_history(
+        self,
+        agent_id: str,
+        wallet_payload: dict[str, Any],
+        history_payload: dict[str, Any],
+    ) -> None:
+        with self.env.begin(write=True) as txn:
+            txn.put(
+                _encode_key(agent_id),
+                _encode_json(wallet_payload),
+                db=self._dbs[b"wallets"],
+            )
+            txn.put(
+                _encode_key(agent_id),
+                _encode_json(history_payload),
+                db=self._dbs[b"wallet_history"],
+            )
+
     def get_wallet_history(self, agent_id: str) -> dict[str, Any] | None:
         payload = self._get_json(b"wallet_history", agent_id)
         return payload if isinstance(payload, dict) else None
@@ -219,6 +238,8 @@ class LmdbPublicReceiptStore(_LmdbRuntimeBase):
             else:
                 receipt_ids = []
             if receipt_id not in receipt_ids:
+                if len(receipt_ids) >= MAX_PUBLIC_RECEIPT_INDEX_IDS:
+                    raise ValueError("public_receipt_index_capacity_exceeded")
                 receipt_ids.append(receipt_id)
                 txn.put(_encode_key(key), _encode_json(sorted(receipt_ids)))
 

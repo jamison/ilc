@@ -25,12 +25,15 @@ def load_phase_commit_manifest() -> dict[str, Any]:
 
 
 def _git_commit_exists(commit_ref: str) -> bool:
-    result = subprocess.run(
-        ["git", "rev-parse", "--verify", "--quiet", f"{commit_ref}^{{commit}}"],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", f"{commit_ref}^{{commit}}"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError:
+        return False
     return result.returncode == 0
 
 

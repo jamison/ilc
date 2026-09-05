@@ -264,6 +264,12 @@ def _read_json(path: Path, *, missing_default: Any = None) -> Any:
         return json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
         return missing_default
+    except PermissionError as exc:
+        raise CCSSRuntimeError(f"ccss_json_read_permission_denied:{path.name}") from exc
+    except UnicodeDecodeError as exc:
+        raise CCSSRuntimeError(f"ccss_json_utf8_invalid:{path.name}") from exc
+    except OSError as exc:
+        raise CCSSRuntimeError(f"ccss_json_read_error:{path.name}") from exc
     except json.JSONDecodeError as exc:
         raise CCSSRuntimeError(f"ccss_json_invalid:{path}:{exc.pos}") from exc
 
@@ -1002,7 +1008,7 @@ def _tor_send(envelope: bytes, onion: str) -> dict[str, Any]:
         sock.sendall(b"\x05\x01\x00\x03" + bytes([len(host_b)]) + host_b + b"\x00\x50")
         resp = _recv_exact(sock, 4)
         if resp[1] != 0:
-            raise CCSSRuntimeError("socks5_connect_failed")
+            raise CCSSRuntimeError(f"socks5_connect_failed_status_0x{resp[1]:02x}")
         _consume_socks5_reply_address(sock, resp[3])
         req = (
             f"POST /submit HTTP/1.0\r\nHost: {onion}\r\n"
@@ -1050,7 +1056,7 @@ def _consume_socks5_reply_address(sock: socket.socket, atyp: int) -> None:
     if atyp == 0x04:
         _recv_exact(sock, 16 + 2)
         return
-    raise CCSSRuntimeError("socks5_connect_failed")
+    raise CCSSRuntimeError(f"socks5_connect_failed_atyp_0x{atyp:02x}")
 
 
 def _select_contact(contact_id: str, *, home: str | Path | None = None) -> dict[str, Any]:

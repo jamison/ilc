@@ -70,6 +70,8 @@ def _load_and_extract(artifact: Union[Dict[str, Any], str, Path]) -> Tuple[Dict[
         obj = artifact.copy() # Shallow copy enough if we only pop top-level
     else:
         return {}, {}, ["schema_violation:invalid_type:root"]
+    if not isinstance(obj, dict):
+        return {}, {}, ["schema_violation:invalid_type:root"]
 
     # Extract & Strip
     binding = {

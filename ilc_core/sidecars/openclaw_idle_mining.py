@@ -345,10 +345,10 @@ def _sha256_mapping(payload: Mapping[str, Any]) -> str:
 def _validate_payload(value: Any, *, depth: int = 0) -> None:
     if depth > 8:
         raise ValueError("openclaw_idle_payload_depth_exceeded")
-    if isinstance(value, bool):
-        raise ValueError("openclaw_idle_bool_as_int_rejected")
     if isinstance(value, float):
         raise ValueError("openclaw_idle_float_not_allowed")
+    if isinstance(value, bool):
+        return
     if isinstance(value, str):
         if len(value) > MAX_STRING_CHARS:
             raise ValueError("openclaw_idle_string_too_long")

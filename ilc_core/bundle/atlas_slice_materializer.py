@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -247,6 +248,8 @@ def _resolve_blob_path(commitment: Mapping[str, str], local_source_root: Path) -
         candidate = (local_source_root / relative).resolve()
         if candidate != local_source_root and local_source_root not in candidate.parents:
             raise AtlasSliceMaterializerError("atlas_slice_materializer_path_traversal")
+        if candidate.exists() and candidate.is_symlink():
+            raise AtlasSliceMaterializerError("atlas_slice_materializer_blob_symlink_forbidden")
         if candidate.is_file():
             return candidate
     return None
@@ -284,9 +287,24 @@ def _stable_id(raw: Mapping[str, Any], id_fields: Sequence[str], field: str) -> 
 
 def _sha384_file(path: Path) -> str:
     digest = hashlib.sha384()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise AtlasSliceMaterializerError("atlas_slice_materializer_blob_open_failed") from exc
+    try:
+        stat_result = os.fstat(fd)
+        if not stat.S_ISREG(stat_result.st_mode):
+            raise AtlasSliceMaterializerError("atlas_slice_materializer_blob_not_regular")
+        with os.fdopen(fd, "rb") as handle:
+            fd = -1
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+    finally:
+        if fd >= 0:
+            os.close(fd)
     return digest.hexdigest()
 
 

@@ -82,6 +82,8 @@ class UtilityFlowRewardReport(TypedDict):
     allocations: list[UtilityFlowRewardAllocation]
     governor: RewardGovernorCheck
     refutation_profitability: RefutationProfitabilityCheck
+    unallocated_budget: float
+    unallocated_budget_reason: str | None
 
 
 DEFAULT_REWARD_GOVERNOR_POLICY: RewardGovernorPolicy = {
@@ -419,8 +421,11 @@ def allocate_rewards_with_governor(
     allocations = compute_reward_allocations(rows, policy=policy)
     governor = evaluate_reward_governor(allocations, policy=policy)
     invariant = assert_refutation_profitability_invariant(allocations)
+    unallocated_budget = max(0.0, governor["budget"] - governor["total_distributed"])
     return {
         "allocations": allocations,
         "governor": governor,
         "refutation_profitability": invariant,
+        "unallocated_budget": unallocated_budget,
+        "unallocated_budget_reason": "zero_eligible_utility_flow" if not allocations else None,
     }

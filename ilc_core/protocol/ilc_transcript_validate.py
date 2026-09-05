@@ -35,15 +35,15 @@ def _get_sort_key(record: Dict[str, Any]) -> Tuple[str, str, str]:
     Get deterministic sort key for a transcript record.
     Key: (timestamp, normalized_kind, normalized_id)
     """
-    timestamp = record.get("timestamp", "")
+    timestamp = str(record.get("timestamp", ""))
     
     # Normalize kind
     if "receipt_id" in record:
          kind = "receipt"
-         rec_id = record.get("receipt_id", "")
+         rec_id = str(record.get("receipt_id", ""))
     else:
-         kind = record.get("event_kind", "")
-         rec_id = record.get("event_id", "")
+         kind = str(record.get("event_kind", ""))
+         rec_id = str(record.get("event_id", ""))
          
     return (timestamp, kind, rec_id)
 

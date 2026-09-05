@@ -59,14 +59,17 @@ def _settle_epoch(
     epoch_id: str
 ) -> Optional[BalanceSnapshot]:
     # 1. Store Stake Snapshot
-    stakes = {agent_id: Decimal("1") for agent_id in profiles.keys()}
+    stakes = {
+        agent_id: Decimal(str(getattr(profile, "stake", Decimal("1"))))
+        for agent_id, profile in profiles.items()
+    }
     
     stake_snapshot = StakeSnapshot(
         epoch_id=epoch_id,
         epoch_index=snapshot.epoch_index,
         namespace_id=snapshot.namespace_id,
         stakes=stakes,
-        total_stake=Decimal(len(stakes)),
+        total_stake=sum(stakes.values(), Decimal("0")),
         created_at=datetime.now(timezone.utc).isoformat(),
     )
     ledger_backend.put_stake_snapshot(stake_snapshot)
@@ -117,7 +120,7 @@ def _settle_epoch(
             "task_count": total_tasks,
             "agent_count": len(stakes),
             "reward_total": total_reward,
-            "stake_total": Decimal(len(stakes)),
+            "stake_total": sum(stakes.values(), Decimal("0")),
         },
         checksums={
             "epoch_events_cid": "devnet:events",  # Placeholder

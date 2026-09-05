@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from decimal import Decimal, ROUND_HALF_EVEN
 from typing import Dict, List, Optional, TypedDict, TypeAlias
 from os import PathLike
 from pathlib import Path
@@ -6,6 +7,13 @@ import csv
 import json
 
 from ilc_core.sim.devnet_multi_epoch import DevnetMultiEpochResult
+
+
+_REPORT_QUANTUM = Decimal("0.000000000001")
+
+
+def _stable_float(value: float) -> float:
+    return float(Decimal(str(value)).quantize(_REPORT_QUANTUM, rounding=ROUND_HALF_EVEN))
 
 
 class SettlementMetrics(TypedDict, total=False):
@@ -67,8 +75,8 @@ def summarize_multi_epoch_run(
             max_node_tasks = t
             
     # Derived averages
-    avg_tasks_per_epoch = total_tasks / max(num_epochs, 1) if num_epochs > 0 else 0.0
-    avg_reward_per_task = (total_reward / total_tasks) if total_tasks > 0 else 0.0
+    avg_tasks_per_epoch = _stable_float(total_tasks / max(num_epochs, 1) if num_epochs > 0 else 0.0)
+    avg_reward_per_task = _stable_float((total_reward / total_tasks) if total_tasks > 0 else 0.0)
     
     # Phase 64B: Backlog Aggregation
     backlogs = [float(er.backlog_count) for er in multi.epoch_results]
@@ -78,9 +86,9 @@ def summarize_multi_epoch_run(
         for er in multi.epoch_results
     ]
     
-    mean_backlog = sum(backlogs) / max(num_epochs, 1) if num_epochs > 0 else 0.0
+    mean_backlog = _stable_float(sum(backlogs) / max(num_epochs, 1) if num_epochs > 0 else 0.0)
     max_backlog_val = max(backlogs) if backlogs else 0.0
-    mean_ratio = sum(ratios) / max(num_epochs, 1) if num_epochs > 0 else 0.0
+    mean_ratio = _stable_float(sum(ratios) / max(num_epochs, 1) if num_epochs > 0 else 0.0)
 
     return DevnetExperimentSummary(
         label=label,

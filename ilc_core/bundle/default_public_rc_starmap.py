@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import base64
 import hashlib
 from typing import Any
 
@@ -13,7 +14,8 @@ from ilc_core.bundle.atlas_slice_schema import (
     merkle_root_from_rows,
     native_signed_slice_record,
 )
-from ilc_core.sidecars.starmap_installer import canonical_sha256
+from ilc_core.encoding.cidv1 import node_id_from_bytes
+from ilc_core.encoding.dag_cbor import encode_dag_cbor
 
 
 DEFAULT_PUBLIC_RC_SLICE_ID = "public-rc-default-starmap-v1"
@@ -59,14 +61,15 @@ def build_default_public_rc_starmap_payload() -> dict[str, Any]:
         "slice_version": DEFAULT_PUBLIC_RC_SLICE_VERSION,
         "source_lmdb_root_sha256": _ZERO_SHA256,
     }
+    dag_cbor = encode_dag_cbor(envelope)
     payload = {
         **envelope,
         "canonical_json": canonical_schema_json(envelope),
-        "cidv1": "bafkreiadefaultpublicrcstarmapv1",
+        "cidv1": node_id_from_bytes(dag_cbor),
         "cose_sign1_b64": "",
-        "dag_cbor_b64": "default_public_rc_starmap_not_dag_cbor",
+        "dag_cbor_b64": base64.b64encode(dag_cbor).decode("ascii"),
         "dev_signed": False,
-        "sha256": canonical_sha256(envelope),
+        "sha256": hashlib.sha256(dag_cbor).hexdigest(),
     }
     return payload
 

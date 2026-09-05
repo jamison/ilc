@@ -200,6 +200,7 @@ def test_audit_path_writer_emits_deterministic_hash_linked_record() -> None:
 
     core = {
         "challenge_id": first["challenge_id"],
+        "challenge_record_ref": first["challenge_record_ref"],
         "entry_epoch": first["entry_epoch"],
         "entry_type": first["entry_type"],
         "payload_ref": first["payload_ref"],
@@ -213,6 +214,7 @@ def test_audit_path_writer_emits_deterministic_hash_linked_record() -> None:
     assert first["audit_entry_id"] == expected_entry_id
     assert runtime.audit_path_entry_ref(first) == expected_entry_id
     assert first["graph_commitment_path"]["audit_path_head_ref"] == expected_entry_id
+    assert first["challenge_record_ref"] == runtime.challenge_record_ref(challenge)
     assert first["graph_commitment_path"]["prior_challenge_audit_path_ref"] == (
         "sha256:previous-head"
     )

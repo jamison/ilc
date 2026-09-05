@@ -45,6 +45,7 @@ ALLOWED_CODES = {
     "schema_violation:invalid_type:policy_state.proposals",
     "schema_violation:invalid_type:policy_state.known_records",
     "schema_violation:invalid_type:policy_state.known_records_hash_mode",
+    "schema_violation:invalid_type:signature",
     # Inherited from validators (we don't strictly enforce these in allowed codes set for runtime yet, 
     # but for this module's logic we should be strict)
 }
@@ -116,18 +117,18 @@ def _get_sort_key(record: Dict[str, Any]) -> Tuple[str, str, str]:
     Get deterministic sort key for a transcript record.
     Key: (timestamp, normalized_kind, normalized_id)
     """
-    timestamp = record.get("timestamp", "")
+    timestamp = str(record.get("timestamp", ""))
     
     # Normalize kind
     # If wire, use event_kind. If receipt, use "receipt".
     if "receipt_id" in record:
          kind = "receipt"
     else:
-         kind = record.get("event_kind", "")
+         kind = str(record.get("event_kind", ""))
          
     # Normalize ID
     # Use event_id or receipt_id
-    rec_id = record.get("event_id") or record.get("receipt_id") or ""
+    rec_id = str(record.get("event_id") or record.get("receipt_id") or "")
     
     return (timestamp, kind, rec_id)
 
@@ -201,6 +202,12 @@ def ingest_cluster_a_artifact(path_or_obj: Union[str, Path, Dict[str, Any]], art
         res = validate_transcript(obj)
     elif target_kind == "governance_record":
         res = validate_governance_record(obj)
+        signatures = obj.get("signatures", [])
+        if isinstance(signatures, list) and any(not isinstance(row, dict) for row in signatures):
+            res_errors = list(res.get("errors", []))
+            if "schema_violation:invalid_type:signature" not in res_errors:
+                res_errors.append("schema_violation:invalid_type:signature")
+            res = {**res, "errors": res_errors}
     
     # 5. Return Envelope
     return _result(
@@ -400,6 +407,9 @@ def _verify_governance_signatures(
     seen_key_ids = set()
     
     for sig_block in record.get("signatures", []):
+        if not isinstance(sig_block, dict):
+            _add("schema_violation:invalid_type:signature")
+            continue
         key_id = sig_block.get("key_id")
         sig_alg = sig_block.get("sig_alg")
         sig_hex = sig_block.get("signature")

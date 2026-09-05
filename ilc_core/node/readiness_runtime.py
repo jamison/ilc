@@ -68,6 +68,13 @@ def tls_cert_days_remaining(not_after: datetime, *, now: datetime | None = None)
     return max(0, delta_seconds // 86_400)
 
 
+def tls_cert_seconds_remaining(not_after: datetime, *, now: datetime | None = None) -> int:
+    current = now or datetime.now(timezone.utc)
+    if current.tzinfo is None or not_after.tzinfo is None:
+        raise ValueError("node_readiness_datetime_must_be_timezone_aware")
+    return max(0, int((not_after - current).total_seconds()))
+
+
 def extended_local_check_fields(
     *,
     grpc_listen_addr: str,
@@ -77,6 +84,7 @@ def extended_local_check_fields(
 ) -> dict[str, Any]:
     endpoint_assertion_host = endpoint_host(endpoint_assertion_grpc_endpoint)
     days_remaining = tls_cert_days_remaining(tls_cert_not_after_utc, now=now)
+    seconds_remaining = tls_cert_seconds_remaining(tls_cert_not_after_utc, now=now)
     endpoint_host_is_tailscale = host_is_tailscale_cidr(endpoint_assertion_host)
     warnings: list[str] = []
     if days_remaining < 30:
@@ -89,6 +97,7 @@ def extended_local_check_fields(
         "grpc_listen_is_wildcard": endpoint_is_wildcard(grpc_listen_addr),
         "proposal_identity_note": PROPOSAL_IDENTITY_NOTE,
         "tls_cert_days_remaining": days_remaining,
+        "tls_cert_seconds_remaining": seconds_remaining,
         "warnings": warnings,
     }
 

@@ -267,9 +267,9 @@ def _normalize_error_token(error_token: str, status: str) -> str:
         allow_empty=True,
         max_chars=128,
     )
-    if status == "failure" and not normalized_error_token:
+    if status in {"failure", "partial"} and not normalized_error_token:
         raise SidecarExecutionReceiptError("sidecar_execution_receipt_failure_error_token_required")
-    if status != "failure" and normalized_error_token:
+    if status == "success" and normalized_error_token:
         raise SidecarExecutionReceiptError("sidecar_execution_receipt_error_token_without_failure")
     return normalized_error_token
 

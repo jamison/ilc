@@ -170,7 +170,7 @@ class PublicWalletRuntime:
                     "receipt_ref": _payload_ref(prefix="balance_receipt_sha256", payload=item),
                 }
             )
-        return sorted(records, key=lambda record: str(record["epoch_id"]))
+        return sorted(records, key=lambda record: _epoch_sort_key(str(record["epoch_id"])))
 
     def _settled_runtime_root_ref(
         self,
@@ -207,6 +207,15 @@ def _payload_ref(*, prefix: str, payload: Any) -> str | None:
         json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
     ).hexdigest()
     return f"{prefix}:{digest}"
+
+
+def _epoch_sort_key(epoch_id: str) -> tuple[int, int | str]:
+    prefix = "epoch_"
+    if epoch_id.startswith(prefix):
+        suffix = epoch_id[len(prefix):]
+        if suffix.isdigit():
+            return (0, int(suffix))
+    return (1, epoch_id)
 
 
 __all__ = [

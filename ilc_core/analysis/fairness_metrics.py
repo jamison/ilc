@@ -113,9 +113,14 @@ def apply_beta_theta_payouts(
     """
     payouts = {}
     
-    # Avoid zero division
     denom_theta = max(theta, 1e-9)
     denom_above = max(1.0 - theta, 1e-9)
+    if theta < 0.0 or theta > 1.0:
+        raise ValueError("theta_must_be_unit_interval")
+    if theta == 0.0:
+        denom_theta = 1.0
+    if theta == 1.0:
+        denom_above = 1.0
     safe_beta = max(beta, 0.0)
     
     # Iterate over all agents present in EITHER (treat missing as 0 skill / 0 reward)
@@ -135,7 +140,7 @@ def apply_beta_theta_payouts(
             weight = math.pow(ratio, safe_beta)
         else:
             # Linear boost above threshold
-            excess = (skill - theta) / denom_above
+            excess = 0.0 if theta == 1.0 else (skill - theta) / denom_above
             weight = 1.0 + beta * excess
             
         payouts[agent_id] = base_reward * weight

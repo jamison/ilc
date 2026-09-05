@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import threading
 from pathlib import Path
 from typing import cast
 
@@ -17,6 +18,7 @@ from ilc_core.protocol.event_log import ProtocolEvent
 LMDB_LEDGER_BACKEND_VERSION = "lmdb_ledger_backend_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
 _ENV_CACHE: dict[str, lmdb.Environment] = {}
+_ENV_CACHE_LOCK = threading.RLock()
 
 
 def _encode_key(value: str) -> bytes:
@@ -42,17 +44,18 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
         self.storage_dir = Path(storage_dir)
         self.storage_dir.mkdir(parents=True, exist_ok=True)
         root_key = str(self.storage_dir.resolve())
-        self.env = _ENV_CACHE.get(root_key)
-        if self.env is None:
-            self.env = lmdb.open(
-                root_key,
-                create=True,
-                subdir=True,
-                max_dbs=3,
-                map_size=DEFAULT_MAP_SIZE_BYTES,
-                lock=True,
-            )
-            _ENV_CACHE[root_key] = self.env
+        with _ENV_CACHE_LOCK:
+            self.env = _ENV_CACHE.get(root_key)
+            if self.env is None:
+                self.env = lmdb.open(
+                    root_key,
+                    create=True,
+                    subdir=True,
+                    max_dbs=3,
+                    map_size=DEFAULT_MAP_SIZE_BYTES,
+                    lock=True,
+                )
+                _ENV_CACHE[root_key] = self.env
         self._balances_db = self.env.open_db(b"balances")
         self._epochs_db = self.env.open_db(b"epochs")
         self._snapshots_db = self.env.open_db(b"snapshots")
@@ -179,3 +182,17 @@ class LmdbLedgerBackend(InMemoryLedgerBackend):
             raise
         finally:
             self._active_txn = None
+
+
+def close_lmdb_env_cache(storage_dir: str | Path | None = None) -> None:
+    """Close cached LMDB environments for tests and controlled shutdown."""
+    with _ENV_CACHE_LOCK:
+        if storage_dir is None:
+            items = list(_ENV_CACHE.items())
+            _ENV_CACHE.clear()
+        else:
+            root_key = str(Path(storage_dir).resolve())
+            env = _ENV_CACHE.pop(root_key, None)
+            items = [(root_key, env)] if env is not None else []
+    for _, env in items:
+        env.close()

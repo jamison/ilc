@@ -278,17 +278,33 @@ class InMemoryLedgerBackend(LedgerBackend):
         if snapshot.total_stake <= ZERO:
             return
 
-        running_total = ZERO
+        quantum = Decimal("0.000000001")
+        sign = Decimal("-1") if total_rewards < ZERO else Decimal("1")
+        absolute_rewards = abs(total_rewards)
         stake_items = sorted(snapshot.stakes.items(), key=lambda item: item[0])
-        for index, (agent_id, stake) in enumerate(stake_items):
-            if index == len(stake_items) - 1:
-                share = total_rewards - running_total
-            else:
-                share = ((stake / snapshot.total_stake) * total_rewards).quantize(
-                    Decimal("0.000000001"),
-                    rounding=ROUND_DOWN,
-                )
-                running_total += share
+        exact_shares = [
+            (agent_id, (stake / snapshot.total_stake) * absolute_rewards)
+            for agent_id, stake in stake_items
+        ]
+        base_shares = [
+            (agent_id, share.quantize(quantum, rounding=ROUND_DOWN), share)
+            for agent_id, share in exact_shares
+        ]
+        allocated = sum(share for _, share, _ in base_shares)
+        residual = absolute_rewards - allocated
+        residual_quanta = int((residual / quantum).to_integral_value(rounding=ROUND_DOWN))
+        ranked_remainders = sorted(
+            base_shares,
+            key=lambda item: (-(item[2] - item[1]), item[0]),
+        )
+        winners = {agent_id for agent_id, _, _ in ranked_remainders[:residual_quanta]}
+        dust_receiver = ranked_remainders[residual_quanta][0] if residual_quanta < len(ranked_remainders) else None
+        residual_dust = residual - (quantum * residual_quanta)
+        for agent_id, base_share, _ in base_shares:
+            share = base_share + (quantum if agent_id in winners else ZERO)
+            if agent_id == dust_receiver:
+                share += residual_dust
+            share *= sign
             current = self.balances.get(agent_id, ZERO)
             self._set_balance(agent_id, current + share)
 

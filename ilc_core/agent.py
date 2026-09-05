@@ -139,22 +139,19 @@ class EveAgent:
             signature=DRAFT_SIGNATURE,
         )
         node.id = node.compute_id()
-        self.graph.add_node(node)
-        self.graph.add_edge_by_ids(node.id, parent_id, "derives_from")
-
-        # Deduct the chosen stake and register it with the consensus engine.
-        self.wallet_balance -= chosen_stake
+        # Register stake before graph mutation; EpistemicGraph has no rollback API,
+        # so consensus rejection must happen before the node becomes visible.
         success = self.consensus.register_stake(node.id, chosen_stake)
         if not success:
-            # In case governance rejects the stake (e.g., ECU fee changed mid-flight),
-            # revert the wallet deduction and abort.
-            self.wallet_balance += chosen_stake
             logger.warning(
                 "agent_stake_rejected_by_consensus agent=%s chosen=%s",
                 redact_agent_id_for_log(self.id),
                 chosen_stake,
             )
             return None
+        self.wallet_balance -= chosen_stake
+        self.graph.add_node(node)
+        self.graph.add_edge_by_ids(node.id, parent_id, "derives_from")
 
         logger.info(
             "agent_claim_minted agent=%s node=%s",
@@ -238,6 +235,8 @@ class EveAgent:
     def refute_node(self, target_id: str, stake: Decimal):
         self._normalize_balances()
         stake_amount = _agent_coerce_decimal(stake, "agent_refutation_stake_invalid")
+        if stake_amount <= Decimal("0"):
+            raise ValueError("agent_refutation_stake_must_be_positive")
         if self.wallet_balance < stake_amount:
             logger.warning(
                 "agent_refute_insufficient_balance agent=%s target=%s wallet=%s stake=%s",

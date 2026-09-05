@@ -42,6 +42,7 @@ class LmdbGraphPruningResult(TypedDict):
     deleted: int
     retained: int
     skipped_not_tier_2: int
+    skipped_invalid_records: int
     stopped_at_batch_cap: bool
     planned_prune_keys: list[str]
 
@@ -149,6 +150,7 @@ def prune_lmdb_graph_tier_2_records(
     deleted = 0
     retained = 0
     skipped_not_tier_2 = 0
+    skipped_invalid_records = 0
     stopped_at_batch_cap = False
     planned_prune_keys: list[str] = []
 
@@ -160,7 +162,12 @@ def prune_lmdb_graph_tier_2_records(
                 break
 
             scanned += 1
-            payload = _decode_record(value)
+            try:
+                payload = _decode_record(value)
+            except ValueError:
+                skipped_invalid_records += 1
+                retained += 1
+                continue
             if not _is_tier_2_issuance_epoch_record(payload):
                 skipped_not_tier_2 += 1
                 retained += 1
@@ -194,6 +201,7 @@ def prune_lmdb_graph_tier_2_records(
         "deleted": deleted,
         "retained": retained,
         "skipped_not_tier_2": skipped_not_tier_2,
+        "skipped_invalid_records": skipped_invalid_records,
         "stopped_at_batch_cap": stopped_at_batch_cap,
         "planned_prune_keys": planned_prune_keys,
     }

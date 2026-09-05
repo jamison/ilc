@@ -76,6 +76,11 @@ def _stake_harmonic_mean(stakes: Sequence[float]) -> float:
     return n / sum(1.0 / s for s in stakes)
 
 
+def diagnose_zero_stake_hyperedge(stakes: Sequence[float]) -> bool:
+    """Return True when a hyperedge collapses to zero due to non-positive stake."""
+    return bool(stakes) and any(s <= 0.0 for s in stakes)
+
+
 # ---------------------------------------------------------------------------
 # Established-subgraph filter
 # ---------------------------------------------------------------------------

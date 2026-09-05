@@ -33,7 +33,7 @@ class EconScenarioConfig:
     label: str
     param_overrides: EconOverrideMap
 
-def default_apply_econ(overrides: EconOverrideMap) -> None:
+def default_apply_econ(overrides: EconOverrideMap) -> ProtocolParams:
     """
     Apply economic overrides (burn rates, PB rates, etc.) to the global
     protocol parameters / genesis state used by devnet simulations.
@@ -63,12 +63,14 @@ def default_apply_econ(overrides: EconOverrideMap) -> None:
         # parameter registry is a future phase.
         params = ProtocolParams(**filtered_overrides)
         logger.debug("econ_override_effective_params params=%s", params)
+        return params
+    return ProtocolParams()
 
 def run_econ_scenarios_on_devnet(
     base_scenario: DevnetScenarioConfig,
     econ_scenarios: List[EconScenarioConfig],
     *,
-    apply_econ: Callable[[EconOverrideMap], None],
+    apply_econ: Callable[[EconOverrideMap], ProtocolParams | None],
     rng_seed: Optional[int] = None,
     export_root: Optional[PathLike] = None,
     export_prefix: str = "econ",
@@ -94,7 +96,9 @@ def run_econ_scenarios_on_devnet(
     
     for i, econ_scen in enumerate(econ_scenarios):
         # 1. Apply Econ Params (Global Hook)
-        apply_econ(econ_scen.param_overrides)
+        effective_params = apply_econ(econ_scen.param_overrides)
+        if not isinstance(effective_params, ProtocolParams):
+            effective_params = ProtocolParams()
         
         # 2. Build Components from Base Scenario
         topo, profiles = build_topology_and_profiles(base_scenario)
@@ -122,7 +126,8 @@ def run_econ_scenarios_on_devnet(
             profiles=profiles,
             export_root=run_export_dir,
             rng_seed=run_seed,
-            ledger_backend=ledger
+            ledger_backend=ledger,
+            protocol_params=effective_params,
         )
         
         # 4. Summarize (Use econ scenario label)

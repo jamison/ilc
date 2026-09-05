@@ -59,12 +59,15 @@ def test_envelope_fields_are_not_in_raw_payload_hash() -> None:
         {"candidate_node_type": "claim_candidate", "x": 1.5},
         {"candidate_node_type": "claim_candidate", "x": float("nan")},
         {"candidate_node_type": "claim_candidate", "x": float("inf")},
-        {"candidate_node_type": "claim_candidate", "x": True},
     ],
 )
-def test_float_nan_infinity_and_bool_inputs_are_rejected(bad_payload: dict[str, object]) -> None:
+def test_float_nan_infinity_inputs_are_rejected(bad_payload: dict[str, object]) -> None:
     with pytest.raises(ValueError):
         raw_payload_sha256(bad_payload)
+
+
+def test_ordinary_bool_json_input_is_allowed() -> None:
+    assert raw_payload_sha256({"candidate_node_type": "claim_candidate", "x": True})
 
 
 def test_consent_gate_rejects_submission_without_consent() -> None:

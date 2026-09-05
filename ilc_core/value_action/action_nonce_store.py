@@ -39,7 +39,10 @@ class ActionNonceStore:
         with self._env.begin(write=True) as txn:
             issued = _decode_counter(txn.get(issued_key, db=self._issued_db))
             consumed = _decode_counter(txn.get(consumed_key, db=self._consumed_db))
-            next_counter = max(issued, consumed) + 1
+            if issued > consumed:
+                next_counter = consumed + 1
+            else:
+                next_counter = issued + 1
             if next_counter > _MAX_COUNTER:
                 raise NonceReplayError("action_nonce_counter_exhausted")
             txn.put(

@@ -13,6 +13,7 @@ from typing import cast
 from ilc_core.ledger.backend import EpochRecord, InMemoryLedgerBackend, JsonObject
 from ilc_core.ledger.exact_numeric import exact_to_canonical_string, to_decimal
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
+from ilc_core.protocol.event_log import ProtocolEvent
 
 
 class FileLedgerBackend(InMemoryLedgerBackend):
@@ -32,6 +33,8 @@ class FileLedgerBackend(InMemoryLedgerBackend):
         self.epochs_dir = os.path.join(storage_dir, "epochs")
         self.snapshots_dir = os.path.join(storage_dir, "snapshots")
         self.balances_file = os.path.join(storage_dir, "balances.json")
+        self._defer_balance_persistence = False
+        self._balances_dirty = False
 
         self._ensure_directories()
         self._load_state()
@@ -139,17 +142,41 @@ class FileLedgerBackend(InMemoryLedgerBackend):
 
     # --- Overrides for persistence ---
 
-    def _set_balance(self, agent_id: str, new_balance: object) -> None:
-        """Update balance and persist balances.json."""
-        super()._set_balance(agent_id, new_balance)
-        # For MVP, we dump the whole balances dict.
+    def _persist_balances(self) -> None:
         self._atomic_write(
             self.balances_file,
             {
-                account_id: exact_to_canonical_string(balance, token="file_ledger_balance_invalid")
+                account_id: exact_to_canonical_string(
+                    balance,
+                    token="file_ledger_balance_invalid",
+                )
                 for account_id, balance in self.balances.items()
             },
         )
+
+    def _set_balance(self, agent_id: str, new_balance: object) -> None:
+        """Update balance and persist balances.json."""
+        super()._set_balance(agent_id, new_balance)
+        if self._defer_balance_persistence:
+            self._balances_dirty = True
+            return
+        self._persist_balances()
+
+    def apply_epoch_settlement(self, epoch_event: ProtocolEvent) -> None:
+        balances_before = self.balances.copy()
+        self._defer_balance_persistence = True
+        self._balances_dirty = False
+        try:
+            super().apply_epoch_settlement(epoch_event)
+        except Exception:
+            self.balances = balances_before
+            raise
+        finally:
+            should_persist = self._balances_dirty
+            self._defer_balance_persistence = False
+            self._balances_dirty = False
+        if should_persist:
+            self._persist_balances()
 
     def _store_epoch_record(self, record: EpochRecord) -> None:
         """Update epoch record and persist individual epoch file."""

@@ -132,7 +132,8 @@ def _emit_epoch_events(
     backlog_count: int
 ) -> None:
     # Emit EPOCH_CONFIG
-    params_dict = asdict(protocol_params) if protocol_params else {}
+    effective_params = protocol_params or ProtocolParams()
+    params_dict = asdict(effective_params)
     event_logger.emit(
         kind="epoch_config", 
         payload={

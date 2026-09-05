@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Any
 
 from ilc_core.graph.agent_graph_projection_runtime import (
@@ -26,6 +27,7 @@ from ilc_core.protocol.harness_interfaces import (
     StorageHarness,
     TransportHarness,
 )
+from ilc_core.ledger.exact_numeric import normalize_json_scalars
 from ilc_core.rc.package_profiles import (
     PROFILE_OPENCLAW_SKILL_LOCAL,
     profile_manifest,
@@ -146,9 +148,10 @@ def export_local_skill_preview_json(
     if max_bytes <= 0:
         raise ValueError("local_skill_preview_max_bytes_must_be_positive")
     payload = export_sidecar_query_json(result, max_bytes=max_bytes)
-    # Round-trip through JSON to ensure callers never receive Decimal objects.
+    # Round-trip through JSON while preserving exact numeric tokens before
+    # re-emitting canonical JSON.
     return json.dumps(
-        json.loads(payload),
+        normalize_json_scalars(json.loads(payload, parse_float=Decimal)),
         allow_nan=False,
         separators=(",", ":"),
         sort_keys=True,

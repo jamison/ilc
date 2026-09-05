@@ -146,6 +146,8 @@ def discover_epoch_event_dirs(root: str | Path) -> List[Path]:
 
     discovered: List[tuple[int, Path]] = []
     for child in root_path.iterdir():
+        if child.is_symlink():
+            continue
         if not child.is_dir():
             continue
         epoch_index = _epoch_index_from_name(child.name)
@@ -259,6 +261,8 @@ def apply_event_log_retention_plan(
         if not _is_within_root(path, root_path):
             continue
         if not path.exists() or not path.is_dir():
+            continue
+        if path.is_symlink():
             continue
         if not (path / "devnet_events.ndjson").exists():
             continue
