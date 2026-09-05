@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from .diversity_floor_runtime import (
@@ -95,33 +96,52 @@ def summarize_circuit_breaker_quorum_state(
     normalized = _normalize_votes(validator_votes)
     total_weight = sum(v['vote_weight'] for v in normalized)
     requested_votes = [v for v in normalized if v['circuit_breaker_requested']]
-    requested_weight = round(sum(v['vote_weight'] for v in requested_votes), 12)
+    requested_weight = sum(v['vote_weight'] for v in requested_votes)
     cluster_weights = Counter()
     for vote in requested_votes:
         cluster_weights[vote['cluster_id']] += vote['vote_weight']
     largest_cluster_slots = max(cluster_weights.values(), default=0)
     distinct_clusters = len(cluster_weights)
-    max_cluster_share = compute_max_cluster_share(
+    max_cluster_share_decimal = compute_max_cluster_share(
         largest_cluster_slots=largest_cluster_slots,
         total_panel_slots=max(requested_weight, 1),
     )
-    quorum_share = 0.0 if total_weight == 0 else round(requested_weight / total_weight, 12)
+    max_cluster_share = float(max_cluster_share_decimal)
+    quorum_share = (
+        Decimal("0")
+        if total_weight == 0
+        else (Decimal(requested_weight) / Decimal(total_weight)).quantize(Decimal("0.000000000001"))
+    )
     distinct_ok = meets_distinct_cluster_floor(
         distinct_clusters=distinct_clusters,
         distinct_cluster_floor=distinct_cluster_floor,
     )
     share_ok = meets_max_cluster_share_ceiling(
-        max_cluster_share=max_cluster_share,
+        max_cluster_share=max_cluster_share_decimal,
         max_cluster_share_ceiling=max_cluster_share_ceiling,
     )
-    quorum_ok = quorum_share >= quorum_weight_threshold
+    try:
+        threshold = Decimal(str(quorum_weight_threshold))
+    except (InvalidOperation, ValueError) as exc:
+        raise CircuitBreakerInterfaceError(
+            "circuit_breaker_quorum_threshold_invalid",
+            "quorum threshold must be exact finite decimal",
+        ) from exc
+    if not threshold.is_finite() or threshold < 0 or threshold > 1:
+        raise CircuitBreakerInterfaceError(
+            "circuit_breaker_quorum_threshold_invalid",
+            "quorum threshold must be in [0, 1]",
+        )
+    quorum_ok = Decimal(requested_weight) >= (Decimal(total_weight) * threshold)
     return {
         'requested_validator_count': len(requested_votes),
         'requested_weight': requested_weight,
         'total_weight': round(total_weight, 12),
-        'quorum_share': quorum_share,
+        'quorum_share': float(quorum_share),
+        'quorum_share_decimal': str(quorum_share),
         'distinct_clusters': distinct_clusters,
         'max_cluster_share': max_cluster_share,
+        'max_cluster_share_decimal': str(max_cluster_share_decimal),
         'distinct_ok': distinct_ok,
         'share_ok': share_ok,
         'quorum_ok': quorum_ok,

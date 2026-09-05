@@ -21,8 +21,12 @@ def encode_uvarint(n: int) -> bytes:
     Raises:
         ValueError: If n is negative.
     """
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise ValueError("uvarint requires integer")
     if n < 0:
         raise ValueError(f"uvarint requires non-negative integer, got {n}")
+    if n > 0xFFFFFFFFFFFFFFFF:
+        raise ValueError("uvarint exceeds uint64")
     
     if n == 0:
         return b"\x00"
@@ -64,6 +68,11 @@ def decode_uvarint(data: bytes, offset: int = 0) -> tuple[int, int]:
         
         byte = data[offset + bytes_consumed]
         bytes_consumed += 1
+
+        if bytes_consumed > 10:
+            raise ValueError("Varint too long (overflow)")
+        if bytes_consumed == 10 and (byte & 0x7E):
+            raise ValueError("Varint exceeds uint64")
         
         # Add the 7 data bits
         result |= (byte & 0x7F) << shift
@@ -73,8 +82,9 @@ def decode_uvarint(data: bytes, offset: int = 0) -> tuple[int, int]:
         if not (byte & 0x80):
             break
         
-        # Guard against overflow (more than 10 bytes for 64-bit)
-        if bytes_consumed > 10:
-            raise ValueError("Varint too long (overflow)")
+    if result > 0xFFFFFFFFFFFFFFFF:
+        raise ValueError("Varint exceeds uint64")
+    if encode_uvarint(result) != data[offset : offset + bytes_consumed]:
+        raise ValueError("Non-canonical uvarint encoding")
     
     return result, bytes_consumed

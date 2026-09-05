@@ -248,7 +248,12 @@ class TaskCoordinationLmdbStore:
                 if len(acceptances) >= offer.caps_max_concurrent:
                     raise TaskCoordinationError("task_offer_capacity_exceeded")
                 if (
-                    _active_acceptance_count_for_agent(txn, self._acceptances_db, normalized_agent_id)
+                    _active_acceptance_count_for_agent(
+                        txn,
+                        self._acceptances_db,
+                        self._offers_db,
+                        normalized_agent_id,
+                    )
                     >= self.max_concurrent_acceptances_per_agent
                 ):
                     raise TaskCoordinationError("task_agent_concurrent_cap_exceeded")
@@ -520,12 +525,23 @@ def _acceptance_records_for_offer(txn: Any, acceptances_db: Any, offer_id: str) 
     return records
 
 
-def _active_acceptance_count_for_agent(txn: Any, acceptances_db: Any, agent_id: str) -> int:
+def _active_acceptance_count_for_agent(
+    txn: Any,
+    acceptances_db: Any,
+    offers_db: Any,
+    agent_id: str,
+) -> int:
     count = 0
     with txn.cursor(db=acceptances_db) as cursor:
         for _key, value in cursor:
             record = _decode_json_dict(value)
-            if record.get("accepting_agent_id") == agent_id:
+            if record.get("accepting_agent_id") != agent_id:
+                continue
+            offer_id = record.get("offer_id")
+            if not isinstance(offer_id, str):
+                continue
+            offer = _read_offer_from_txn(txn, offers_db, offer_id)
+            if offer is not None and offer.status == "accepted":
                 count += 1
     return count
 

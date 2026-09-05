@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from decimal import Decimal
+from numbers import Integral, Real
 from typing import Any
 
 
@@ -66,7 +68,11 @@ def _require_mapping(record: object, *, token: str) -> dict[str, Any]:
 
 
 def _reject_float_values(value: object, *, context: str) -> None:
-    if isinstance(value, float):
+    if isinstance(value, bool):
+        return
+    if isinstance(value, Integral):
+        return
+    if isinstance(value, (float, Decimal, Real)):
         raise ValueError(f"tier3_float_not_allowed:{context}")
     if isinstance(value, dict):
         for key, item in value.items():

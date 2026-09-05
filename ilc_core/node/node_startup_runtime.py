@@ -84,59 +84,37 @@ H013_SIGMA_ADVERSARY_MODEL_REVISION_REQUIRED = (
 H013_CHANGE_THRESHOLD: float = 0.15  # CDL-082 ratified Phase 950; SIM-BEACON-01 evidence Phase 939
 MAX_NORMALIZED_LAPLACIAN_EIGENVALUE: float = 2.0
 
+
+def _dependency_mismatch_error(*, dependency: str, expected: str, got: str) -> RuntimeError:
+    payload = {
+        "dependency": dependency,
+        "error": "node_startup_dep_chain_mismatch",
+        "expected": expected,
+        "got": got,
+        "ok": False,
+    }
+    return RuntimeError(json.dumps(payload, sort_keys=True))
+
 if _GOSSIP_PEER_REGISTRY_CHECK != GOSSIP_PEER_REGISTRY_DEPENDENCY:
-    import json as _json, sys as _sys
-    _sys.stdout.write(
-        _json.dumps(
-            {
-                "ok": False,
-                "error": "node_startup_dep_chain_mismatch",
-                "dependency": "gossip_peer_registry",
-                "expected": GOSSIP_PEER_REGISTRY_DEPENDENCY,
-                "got": _GOSSIP_PEER_REGISTRY_CHECK,
-            },
-            sort_keys=True,
-        )
-        + "\n"
+    raise _dependency_mismatch_error(
+        dependency="gossip_peer_registry",
+        expected=GOSSIP_PEER_REGISTRY_DEPENDENCY,
+        got=_GOSSIP_PEER_REGISTRY_CHECK,
     )
-    _sys.stdout.flush()
-    raise RuntimeError("node_startup_gossip_peer_registry_dependency_mismatch")
 
 if _HTTP_GOSSIP_TRANSPORT_CHECK != HTTP_GOSSIP_TRANSPORT_DEPENDENCY:
-    import json as _json, sys as _sys
-    _sys.stdout.write(
-        _json.dumps(
-            {
-                "ok": False,
-                "error": "node_startup_dep_chain_mismatch",
-                "dependency": "http_gossip_transport_runtime",
-                "expected": HTTP_GOSSIP_TRANSPORT_DEPENDENCY,
-                "got": _HTTP_GOSSIP_TRANSPORT_CHECK,
-            },
-            sort_keys=True,
-        )
-        + "\n"
+    raise _dependency_mismatch_error(
+        dependency="http_gossip_transport_runtime",
+        expected=HTTP_GOSSIP_TRANSPORT_DEPENDENCY,
+        got=_HTTP_GOSSIP_TRANSPORT_CHECK,
     )
-    _sys.stdout.flush()
-    raise RuntimeError("node_startup_http_gossip_transport_dependency_mismatch")
 
 if _PEER_FINGERPRINT_CACHE_CHECK != H013_PEER_FINGERPRINT_CACHE_DEPENDENCY:
-    import json as _json, sys as _sys
-    _sys.stdout.write(
-        _json.dumps(
-            {
-                "ok": False,
-                "error": "node_startup_dep_chain_mismatch",
-                "dependency": "peer_fingerprint_cache",
-                "expected": H013_PEER_FINGERPRINT_CACHE_DEPENDENCY,
-                "got": _PEER_FINGERPRINT_CACHE_CHECK,
-            },
-            sort_keys=True,
-        )
-        + "\n"
+    raise _dependency_mismatch_error(
+        dependency="peer_fingerprint_cache",
+        expected=H013_PEER_FINGERPRINT_CACHE_DEPENDENCY,
+        got=_PEER_FINGERPRINT_CACHE_CHECK,
     )
-    _sys.stdout.flush()
-    raise RuntimeError("node_startup_h013_peer_fingerprint_cache_dependency_mismatch")
 
 
 @dataclass(frozen=True)
@@ -474,6 +452,21 @@ def _project_noised_lambda_local(lambda_local: list[float], sigma: float) -> lis
         min(MAX_NORMALIZED_LAPLACIAN_EIGENVALUE, max(0.0, float(value)))
         for value in noised
     ]
+
+
+def project_noised_lambda_local_with_telemetry(lambda_local: list[float], sigma: float) -> dict[str, Any]:
+    noised = add_noise(lambda_local, sigma)
+    clipped_low = sum(1 for value in noised if float(value) < 0.0)
+    clipped_high = sum(1 for value in noised if float(value) > MAX_NORMALIZED_LAPLACIAN_EIGENVALUE)
+    projected = [
+        min(MAX_NORMALIZED_LAPLACIAN_EIGENVALUE, max(0.0, float(value)))
+        for value in noised
+    ]
+    return {
+        "clipped_high": clipped_high,
+        "clipped_low": clipped_low,
+        "lambda_local": projected,
+    }
 
 
 def maybe_emit_spectral_beacon(

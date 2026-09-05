@@ -21,7 +21,7 @@ _RUST_ECU_TRANSFER_KEYS = frozenset(
 )
 _OBJECT_REF_KEYS = frozenset({"agent", "version"})
 _U64_MAX = 18446744073709551615
-_MAX_SENDER_SIG_BYTES = 4096
+_SUPPORTED_SENDER_SIG_BYTES = frozenset({64, 96})
 _HEX = frozenset("0123456789abcdef")
 
 
@@ -58,6 +58,12 @@ class ECUTransferAdapter:
         result = submit(rust_payload)
         if isinstance(result, str) and result:
             return result
+        if isinstance(result, dict):
+            for key in ("transfer_reference", "proposal_id"):
+                value = result.get(key)
+                if isinstance(value, str) and value:
+                    return value
+            raise ValueError("consensus_bridge_submit_reference_invalid_shape")
         transfer_reference = getattr(result, "transfer_reference", None)
         if isinstance(transfer_reference, str) and transfer_reference:
             return transfer_reference
@@ -142,14 +148,14 @@ def validate_rust_transfer_payload(payload: Any, intent: ECUFastPathIntent) -> N
 
     sender_sig = payload["sender_sig"]
     if isinstance(sender_sig, bytes):
-        if not sender_sig or len(sender_sig) > _MAX_SENDER_SIG_BYTES:
+        if len(sender_sig) not in _SUPPORTED_SENDER_SIG_BYTES:
             raise ValueError("rust_ecu_transfer_sender_sig_invalid")
     elif isinstance(sender_sig, str):
         if (
             not sender_sig
             or sender_sig != sender_sig.strip()
             or len(sender_sig) % 2 != 0
-            or len(sender_sig) > _MAX_SENDER_SIG_BYTES * 2
+            or len(sender_sig) // 2 not in _SUPPORTED_SENDER_SIG_BYTES
             or any(char not in _HEX for char in sender_sig)
         ):
             raise ValueError("rust_ecu_transfer_sender_sig_invalid")

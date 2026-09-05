@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 from dataclasses import dataclass, field as dc_field
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from enum import Enum
 from typing import Any, Dict, List, Literal, Optional, Set, Union
 from datetime import datetime, timezone
@@ -57,8 +57,45 @@ class WeightParams:
     """
     stake: Decimal               # ECU stake at edge creation — basis for decay
     reuse_count: int             # Traversal counter; incremented on each access
-    decay_rate: float            # CDL-V1 decay rate (0.0 = no decay; 1.0 = full decay per epoch)
-    edge_type_coefficient: float # α — per-type weight multiplier; provisional until CDL
+    decay_rate: Decimal          # CDL-V1 decay rate (0 = no decay; 1 = full decay per epoch)
+    edge_type_coefficient: Decimal # α — per-type weight multiplier; provisional until CDL
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "stake", _coerce_weight_decimal(self.stake, "weight_stake_invalid"))
+        if isinstance(self.reuse_count, bool) or not isinstance(self.reuse_count, int) or self.reuse_count < 0:
+            raise ValueError("weight_reuse_count_invalid")
+        object.__setattr__(
+            self,
+            "decay_rate",
+            _coerce_weight_decimal(self.decay_rate, "weight_decay_rate_invalid"),
+        )
+        object.__setattr__(
+            self,
+            "edge_type_coefficient",
+            _coerce_weight_decimal(
+                self.edge_type_coefficient,
+                "weight_edge_type_coefficient_invalid",
+            ),
+        )
+
+
+def _coerce_weight_decimal(value: object, token: str) -> Decimal:
+    if isinstance(value, bool):
+        raise ValueError(token)
+    if isinstance(value, Decimal):
+        number = value
+    elif isinstance(value, int):
+        number = Decimal(value)
+    elif isinstance(value, str):
+        try:
+            number = Decimal(value)
+        except InvalidOperation as exc:
+            raise ValueError(token) from exc
+    else:
+        raise ValueError(token)
+    if not number.is_finite():
+        raise ValueError(f"{token}_non_finite")
+    return number
 
 
 # ---------------------------------------------------------------------------
@@ -342,8 +379,8 @@ def claim_record_to_node(claim: ClaimRecord) -> Node:
     if claim.timestamp:
         try:
             ts = datetime.fromisoformat(claim.timestamp)
-        except ValueError:
-            pass
+        except ValueError as exc:
+            raise ValueError("claim_record_timestamp_invalid") from exc
     if not claim.signature:
         raise ValueError("ClaimRecord signature required to create Node")
 

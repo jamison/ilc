@@ -20,6 +20,7 @@ Token: row5_b_impl_obligation_5_degraded_anonymity_notification
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import Any
 
 from ilc_core.privacy.lane import K_FALLBACK, K_PRIMARY, ReleaseGroup
@@ -29,6 +30,7 @@ PRIVACY_LANE_MONITOR_VERSION = "privacy_lane_monitor_832.v0.1"
 # Locked monitoring constants.
 FILL_ALERT_MULTIPLIER: float = 1.5        # 1.5 × max_wait triggers a FillAlert
 FALLBACK_ACTIVATION_RATE: float = 0.05    # 5 % force-release rate activates fallback
+_FALLBACK_ACTIVATION_RATE_DECIMAL = Decimal("0.05")
 
 
 @dataclass(frozen=True)
@@ -105,8 +107,7 @@ class FillMonitor:
     def record_force_release(self, epoch: int) -> None:  # noqa: ARG002
         """Record a forced partial release and re-evaluate fallback activation."""
         self._groups_force_released += 1
-        rate = self._failure_rate()
-        if not self._fallback_latched and rate >= FALLBACK_ACTIVATION_RATE:
+        if not self._fallback_latched and self._failure_rate_decimal() >= _FALLBACK_ACTIVATION_RATE_DECIMAL:
             self._fallback_latched = True
 
     # ------------------------------------------------------------------
@@ -169,6 +170,12 @@ class FillMonitor:
             return 0.0
         return self._groups_force_released / total
 
+    def _failure_rate_decimal(self) -> Decimal:
+        total = self._groups_completed + self._groups_force_released
+        if total == 0:
+            return Decimal("0")
+        return Decimal(self._groups_force_released) / Decimal(total)
+
 
 # ------------------------------------------------------------------
 # Obligation 5 helper
@@ -187,12 +194,19 @@ def make_degraded_notifications(
     """
     if not group.degraded_anonymity:
         return []
-    return [
-        DegradedAnonymityNotification(
-            agent_id=agent_id,
-            actual_set_size=group.anonymity_set_size,
-            nominal_k=nominal_k,
-            release_epoch=group.release_epoch,
+    notifications: list[DegradedAnonymityNotification] = []
+    seen: set[str] = set()
+    for agent_id in group.agent_ids:
+        key = repr(agent_id)
+        if key in seen:
+            continue
+        seen.add(key)
+        notifications.append(
+            DegradedAnonymityNotification(
+                agent_id=agent_id,
+                actual_set_size=group.anonymity_set_size,
+                nominal_k=nominal_k,
+                release_epoch=group.release_epoch,
+            )
         )
-        for agent_id in group.agent_ids
-    ]
+    return notifications

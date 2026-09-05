@@ -149,6 +149,7 @@ def test_manifest_json_round_trip_and_tamper_rejected() -> None:
         assert str(exc) in {
             "atlas_slice_manifest_canonical_json_mismatch",
             "atlas_slice_manifest_dag_cbor_mismatch",
+            "atlas_slice_manifest_merkle_root_mismatch",
             "atlas_slice_manifest_cid_mismatch",
             "atlas_slice_manifest_sha_mismatch",
         }

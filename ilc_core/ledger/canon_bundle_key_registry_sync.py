@@ -232,8 +232,10 @@ def _record_last_sync(
         sidecar = channel_file.with_suffix(channel_file.suffix + ".last_sync.json")
         content = json.dumps(last_sync, indent=2, sort_keys=True, allow_nan=False)
         _atomic_write(sidecar, content)
-    except OSError:
-        pass
+    except OSError as exc:
+        last_sync["warnings"] = list(last_sync["warnings"]) + [
+            f"last_sync_write_failed:{type(exc).__name__}"
+        ]
     return last_sync
 
 

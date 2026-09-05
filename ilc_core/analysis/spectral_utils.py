@@ -76,6 +76,8 @@ def compute_weight(
 
     Pure function — no side effects, no I/O, deterministic.
     """
+    if isinstance(params.reuse_count, bool) or params.reuse_count < 0:
+        raise ValueError("weight_reuse_count_invalid")
     base_stake = float(params.stake)
     decayed_stake = (
         cdl_v1_decay_fn(base_stake, current_epoch)
@@ -84,7 +86,7 @@ def compute_weight(
     )
     # Provisional reuse signal: log(n+1) so zero reuse → 0 additive, not multiplicative zero
     reuse_signal = math.log(params.reuse_count + 1)
-    return params.edge_type_coefficient * decayed_stake * (1.0 + reuse_signal)
+    return float(params.edge_type_coefficient) * decayed_stake * (1.0 + reuse_signal)
 
 
 def quantize_spectral_eigenvalues_fixed_point(

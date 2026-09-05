@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 import time
-import secrets
 import math
 import hashlib
 import sys
@@ -9,7 +8,6 @@ import logging
 from ilc_core.identity.log_redaction_runtime import redact_agent_id_for_log
 
 logger = logging.getLogger(__name__)
-_SECURE_RNG = secrets.SystemRandom()
 
 
 # Hardware Acceleration Imports
@@ -66,17 +64,13 @@ class PoWBenchmark:
 
         Stages
         ------
-        1. Genesis Bypass:
-           - If 'genesis' is in the agent_id, return a fixed score of 1.0.
-             This is a convenience hook for early bootstrap nodes.
-
-        2. Filter (Memory / Throughput check):
+        1. Filter (Memory / Throughput check):
            - Run a matrix workload appropriate to the environment:
              GPU (torch.cuda) > NumPy > pure Python.
 
-        3. Work (Task-specific kernel):
-           - Either a matrix-heavy workload or a prime-search workload,
-             selected with a simple Kademlia-style hash lottery.
+        2. Work (fixed kernel set):
+           - Run both matrix-heavy and integer-search workloads so scores are
+             comparable across agents.
 
         Scoring
         -------
@@ -100,44 +94,27 @@ class PoWBenchmark:
             redact_agent_id_for_log(agent_id),
         )
 
-        # --- GENESIS BYPASS ------------------------------------------------
-        if "genesis" in agent_id.lower():
-            logger.info("[Benchmark] GENESIS AGENT DETECTED. Bypassing checks.")
-            return {
-                "score": 1.0,
-                "tier": "genesis",
-                "device": "virtual_core",
-                "task": "bypass",
-                "total_time": 0.0,
-            }
-
         # --- ENVIRONMENT / TIER DETECTION ---------------------------------
         tier, device = self._detect_tier()
 
-        # --- TASK ASSIGNMENT (lottery) ------------------------------------
-        task_type = self._assign_task(agent_id)
-
         # --- FILTER STAGE --------------------------------------------------
-        start_filter = time.time()
+        start_filter = time.perf_counter()
         if tier == "silicon":
             # GPU or "fast path" filter
             self._run_gpu_or_numpy_matrix()
         else:
             # CPU-only filter
             self._run_numpy_or_python_matrix()
-        filter_time = time.time() - start_filter
+        filter_time = time.perf_counter() - start_filter
 
         # --- WORK STAGE ----------------------------------------------------
-        start_work = time.time()
-        if task_type == "MATRIX_HEAVY":
-            if tier == "silicon":
-                # Heavier matrix work on GPU/NumPy
-                self._run_gpu_or_numpy_matrix(heavy=True)
-            else:
-                self._run_numpy_or_python_matrix(heavy=True)
+        start_work = time.perf_counter()
+        if tier == "silicon":
+            self._run_gpu_or_numpy_matrix(heavy=True)
         else:
-            self._run_prime_search()
-        work_time = time.time() - start_work
+            self._run_numpy_or_python_matrix(heavy=True)
+        self._run_prime_search(agent_id)
+        work_time = time.perf_counter() - start_work
 
         # --- SCORING -------------------------------------------------------
         # Efficiency proxy: smaller total_time => higher score.
@@ -174,7 +151,7 @@ class PoWBenchmark:
             "score": round(normalized_score, 4),
             "tier": tier,
             "device": device,
-            "task": task_type,
+            "task": "FIXED_MATRIX_AND_INTEGER_SEARCH",
             "total_time": total_time,
         }
 
@@ -261,14 +238,18 @@ class PoWBenchmark:
         Very simple pure-Python matrix-like workload for worst-case environments.
         """
         s = 150
-        A = [[_SECURE_RNG.random() for _ in range(s)] for _ in range(s)]
+        A = [[((row * 131 + col * 17) % 997) / 997 for col in range(s)] for row in range(s)]
         _ = sum(sum(row) for row in A)
 
-    def _run_prime_search(self) -> None:
+    def _run_prime_search(self, agent_id: str) -> None:
         """
-        Integer workload: naive prime search near a random large number.
+        Integer workload: naive prime search near a deterministic large number.
         """
-        cand = 5_000_000 + _SECURE_RNG.randint(1, 1_000)
+        offset = int.from_bytes(
+            hashlib.sha256(agent_id.encode("utf-8")).digest()[:2],
+            "big",
+        ) % 1_000
+        cand = 5_000_000 + offset + 1
         while True:
             is_prime = True
             limit = int(math.sqrt(cand)) + 1

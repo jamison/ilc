@@ -305,10 +305,10 @@ def build_status_record(envelopes: Sequence[CaptureEnvelope]) -> dict[str, Any]:
 def _validate_json_input(value: Any, *, depth: int = 0) -> None:
     if depth > MAX_DEPTH:
         raise ValueError("openclaw_payload_depth_exceeded")
-    if isinstance(value, bool):
-        raise ValueError("openclaw_bool_as_int_rejected")
     if isinstance(value, float):
         raise ValueError("openclaw_float_not_allowed")
+    if isinstance(value, bool):
+        return
     if isinstance(value, str):
         if len(value) > MAX_STRING_CHARS:
             raise ValueError("openclaw_string_too_long")

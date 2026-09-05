@@ -97,6 +97,11 @@ class SignerLineageRegistry:
     ) -> LineageTransitionRecord:
         if lineage_id in self._entries:
             raise ValueError(f"lineage already registered: {lineage_id}")
+        _require_non_empty_key(lineage_id, "lineage_id_required")
+        _require_non_empty_key(canonical_root_key, "canonical_root_key_required")
+        _require_non_empty_key(authority_recovery_key, "authority_recovery_key_required")
+        _require_non_empty_key(operational_signer_key, "operational_signer_key_required")
+        _require_non_empty_key(authorizer_signer_id, "authorizer_signer_id_required")
 
         entry = LineageEntry(
             lineage_id=lineage_id,
@@ -241,11 +246,7 @@ class SignerLineageRegistry:
             return VerificationResult(False, "revoked_lineage")
         if entry.state not in {ACTIVE, RECOVERED}:
             return VerificationResult(False, "lineage_not_canonical_authority_state")
-        if signer_id not in {
-            entry.canonical_root_key,
-            entry.authority_recovery_key,
-            entry.operational_signer_key,
-        }:
+        if signer_id not in {entry.canonical_root_key, entry.operational_signer_key}:
             return VerificationResult(False, "signer_not_in_lineage")
         return VerificationResult(True, "accepted")
 
@@ -275,10 +276,12 @@ class SignerLineageRegistry:
         if record.event_name == REGISTER:
             if record.lineage_id in self._entries:
                 raise ValueError(f"duplicate register event for lineage: {record.lineage_id}")
+            if not record.canonical_root_key or not record.authority_recovery_key:
+                raise ValueError("lineage_register_root_key_missing")
             self._entries[record.lineage_id] = LineageEntry(
                 lineage_id=record.lineage_id,
-                canonical_root_key=record.canonical_root_key or record.authorizer_signer_id,
-                authority_recovery_key=record.authority_recovery_key or record.authorizer_signer_id,
+                canonical_root_key=record.canonical_root_key,
+                authority_recovery_key=record.authority_recovery_key,
                 operational_signer_key=record.subject_signer_id,
                 state=record.next_state,
             )
@@ -349,3 +352,8 @@ class SignerLineageRegistry:
     def _derive_event_id(*, event_name: str, lineage_id: str, event_counter: int, event_ts: str) -> str:
         payload = f"{event_name}|{lineage_id}|{event_counter}|{event_ts}".encode("utf-8")
         return hashlib.sha256(payload).hexdigest()
+
+
+def _require_non_empty_key(value: str, token: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(token)

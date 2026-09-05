@@ -98,14 +98,20 @@ class _DeterministicRNG:
     def randint(self, lo: int, hi: int) -> int:
         """Return deterministic uniform integer in [lo, hi] inclusive."""
         span = hi - lo + 1
-        return lo + (self._next_uint64() % span)
+        if span <= 0:
+            raise ValueError("invalid_randint_span")
+        limit = (1 << 64) - ((1 << 64) % span)
+        while True:
+            value = self._next_uint64()
+            if value < limit:
+                return lo + (value % span)
 
     def sample(self, population: range, k: int) -> list:
         """Return k deterministically chosen unique elements via partial Fisher-Yates."""
         items = list(population)
         n = len(items)
         for i in range(k):
-            j = i + (self._next_uint64() % (n - i))
+            j = i + self.randint(0, n - i - 1)
             items[i], items[j] = items[j], items[i]
         return items[:k]
 

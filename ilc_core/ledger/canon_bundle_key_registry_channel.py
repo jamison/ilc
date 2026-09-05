@@ -9,6 +9,7 @@ and the currently active channel.
 import json
 import os
 import re
+import stat
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -29,6 +30,29 @@ ALLOWED_FIELDS = {
     "channel_order", "sources", "last_sync", "last_promotion",
     "published_at", "channel_seq", "prev_channel_hash",
 }
+MAX_CHANNEL_FILE_BYTES = 1_048_576
+
+
+def _read_regular_text_file(path: Path, *, max_bytes: int = MAX_CHANNEL_FILE_BYTES) -> str:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        raise OSError(f"file_read_error:{exc}") from exc
+    try:
+        st = os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode):
+            raise OSError("file_not_regular")
+        if st.st_size > max_bytes:
+            raise OSError("file_too_large")
+        data = os.read(fd, max_bytes + 1)
+        if len(data) > max_bytes:
+            raise OSError("file_too_large")
+        return data.decode("utf-8")
+    finally:
+        os.close(fd)
 def _resolve_channel_updated_at(
     data: dict,
     updated_at: str | None,
@@ -49,13 +73,21 @@ def _resolve_channel_updated_at(
 
 def _atomic_write(path: Path, content: str) -> None:
     """Write content atomically using temp file + rename."""
+    path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_str = tempfile.mkstemp(
         dir=str(path.parent), prefix=f".{path.stem}.", suffix=".tmp"
     )
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(content)
+            f.flush()
+            os.fsync(f.fileno())
         os.replace(tmp_str, path)
+        dir_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
     except Exception:
         try:
             os.unlink(tmp_str)
@@ -75,7 +107,7 @@ def load_channel_file(path: Path) -> dict:
         return {"ok": False, "error": "file_not_found"}
     
     try:
-        content = path.read_text(encoding="utf-8")
+        content = _read_regular_text_file(path)
     except OSError as e:
         return {"ok": False, "error": f"file_read_error:{e}"}
     

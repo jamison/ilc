@@ -62,6 +62,8 @@ def _engine_compute_tax_rate(
     """Helper to compute maintenance tax rate based on age and reuse."""
     # Reuse count simulated by net_stake for now.
     age_decimal = _engine_coerce_decimal(age, "consensus_age_invalid")
+    if age_decimal < Decimal("0"):
+        raise ValueError("consensus_age_negative")
     reuse_factor = max(Decimal("1"), _engine_coerce_decimal(net_stake, "consensus_net_stake_invalid"))
 
     base_tax = Decimal("0.01")  # 1% per epoch (or per time unit)
@@ -81,6 +83,8 @@ def _engine_compute_bounty_amount(
     # Tuned exponent to ensure EV < 0 for looting attacks at a 1% error rate
     # (as per earlier design discussions).
     age_decimal = _engine_coerce_decimal(age, "consensus_age_invalid")
+    if age_decimal < Decimal("0"):
+        raise ValueError("consensus_age_negative")
     if age_decimal == Decimal("0"):
         paradigm_bonus = Decimal("0")
     else:

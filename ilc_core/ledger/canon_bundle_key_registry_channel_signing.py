@@ -203,6 +203,8 @@ def verify_channel_file_signature(
         sig_data = json.loads(resolved_sig.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {"ok": False, "errors": ["channel_signature_read_error"], "warnings": []}
+    if not isinstance(sig_data, dict):
+        return {"ok": False, "errors": ["channel_signature_root_not_object"], "warnings": []}
     
     # 3. Required fields
     required = ["sig_alg", "key_id", "signed_at", "channel_hash", "signature_hex"]

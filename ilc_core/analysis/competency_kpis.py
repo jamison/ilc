@@ -4,7 +4,8 @@ from typing import Dict, Iterable, TypedDict, TypeAlias
 
 from ilc_core.analysis.problem_space_kpis import ProblemSpace, TaskRowLike, infer_problem_space
 
-BarrierLevel = str  # or Literal["low", "medium", "high"]
+BarrierLevel = str  # locked values: "low", "medium", "high"
+_VALID_BARRIER_LEVELS = frozenset({"low", "medium", "high"})
 
 
 class CompetencySpaceSummary(TypedDict):
@@ -57,6 +58,8 @@ def infer_barrier_level(row: TaskRowLike) -> BarrierLevel:
     """
     explicit = row.get("barrier_level")
     if isinstance(explicit, str) and explicit:
+        if explicit not in _VALID_BARRIER_LEVELS:
+            raise ValueError("competency_barrier_level_invalid")
         return explicit
 
     reward_raw = row.get("reward", 0.0)
@@ -163,7 +166,8 @@ def summarize_competency_for_profile(
                 "barrier_high": row.barrier_high,
             }
             success_rates.append(row.success_rate)
-        avg_success = sum(success_rates) / len(success_rates) if success_rates else 0.0
+        total_successes = sum(row.successes for row in per_space.values())
+        avg_success = total_successes / total_tasks if total_tasks else 0.0
         summary[agent_id] = {
             "by_space": by_space,
             "global": {

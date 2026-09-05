@@ -76,7 +76,7 @@ def _reject_float_tree(value: Any, *, path: str = "$") -> None:
         )
     if isinstance(value, dict):
         for key, item in value.items():
-            _reject_float_tree(key, path=f"{path}.<key>")
+            _reject_float_tree(key, path=f"{path}.{key!r}<key>")
             _reject_float_tree(item, path=f"{path}.{key}")
         return
     if isinstance(value, (list, tuple)):

@@ -98,12 +98,12 @@ class ClaimNullifierRegistry:
         )
         with self._lock:
             self._expire_stale_records_locked(candidate.first_seen_issuance_epoch)
+            self._reject_active_conflict(candidate)
             if len(self._records) >= self._max_records:
                 raise ClaimNullifierRegistryError(
                     "claim_nullifier_registry_record_limit_exceeded_phase_1428_audit_fix",
                     "claim nullifier registry record limit exceeded",
                 )
-            self._reject_active_conflict(candidate)
             self._records[candidate.claim_nullifier_ref] = candidate
             self._presentation_ids[candidate.presentation_id] = candidate.claim_nullifier_ref
             self._presentation_canonicals[candidate.presentation_canonical_ref] = (

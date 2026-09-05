@@ -27,6 +27,7 @@ ILC_TRANSFER_LEDGER_VERSION = "ilc_transfer_ledger_04.v0.1"
 
 _BALANCES_DB = b"ilc_transfer_balances"
 _TRANSFERS_DB = b"ilc_transfer_records"
+_GENESIS_EPOCH_SPEND_DB = b"ilc_genesis_epoch_spend"
 _TRANSFER_RECORD_BODY_KEYS = frozenset(
     {
         "amount_ilc",
@@ -110,6 +111,7 @@ class ILCTransferLedger:
         self._env = lmdb_env
         self._balances_db = self._env.open_db(_BALANCES_DB, create=True)
         self._transfers_db = self._env.open_db(_TRANSFERS_DB, create=True)
+        self._genesis_epoch_spend_db = self._env.open_db(_GENESIS_EPOCH_SPEND_DB, create=True)
         self._genesis_value_certificate = genesis_value_certificate
 
     def get_balance(self, agent_id: str) -> Decimal:
@@ -161,15 +163,15 @@ class ILCTransferLedger:
         sender_key = _key(env.sender_agent_id)
         recipient_key = _key(env.recipient_agent_id)
         with self._env.begin(write=True) as txn:
+            current_epoch_spent = 0
             if env.sender_agent_id == GENESIS_AGENT1_AGENT_ID:
+                current_epoch_spent = _decode_non_negative_int(
+                    txn.get(_genesis_epoch_key(env.epoch), db=self._genesis_epoch_spend_db)
+                )
                 enforce_genesis_envelope_guard(
                     env,
                     genesis_value_certificate=self._genesis_value_certificate,
-                    current_epoch_spent_micro_ilc=_genesis_epoch_spent_micro_ilc(
-                        txn,
-                        self._transfers_db,
-                        env.epoch,
-                    ),
+                    current_epoch_spent_micro_ilc=current_epoch_spent,
                 )
             sender_before = _decode_balance(txn.get(sender_key, db=self._balances_db))
             recipient_before = _decode_balance(
@@ -213,6 +215,13 @@ class ILCTransferLedger:
                 _json_bytes(record_with_id),
                 db=self._transfers_db,
             )
+            if env.sender_agent_id == GENESIS_AGENT1_AGENT_ID:
+                next_epoch_spent = current_epoch_spent + transfer_intent._amount_ilc_to_micro_ilc(env.amount_ilc)
+                txn.put(
+                    _genesis_epoch_key(env.epoch),
+                    str(next_epoch_spent).encode("ascii"),
+                    db=self._genesis_epoch_spend_db,
+                )
 
         return _entry_from_record(record_with_id)
 
@@ -290,6 +299,22 @@ def _decode_balance(raw: bytes | None) -> Decimal:
     except UnicodeDecodeError as exc:
         raise ValueError("invalid_ilc_balance_encoding") from exc
     return parse_non_negative_decimal(rendered, token="invalid_ilc_balance")
+
+
+def _genesis_epoch_key(epoch: int) -> bytes:
+    return f"epoch:{epoch}".encode("ascii")
+
+
+def _decode_non_negative_int(raw: bytes | None) -> int:
+    if raw is None:
+        return 0
+    try:
+        value = int(raw.decode("ascii"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise ValueError("invalid_genesis_epoch_spend_index") from exc
+    if value < 0:
+        raise ValueError("invalid_genesis_epoch_spend_index")
+    return value
 
 
 def _record_payload(

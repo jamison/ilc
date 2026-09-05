@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import binascii
 import os
+import stat
 from abc import ABC, abstractmethod
 from dataclasses import replace
 from pathlib import Path
@@ -94,17 +95,11 @@ def resolve_signing_key(kid: str, key_store_path: Path | None = None) -> bytes:
         for suffix in (".pem", ".key"):
             candidate = root / f"{kid}{suffix}"
             try:
-                if candidate.is_file():
-                    if candidate.is_symlink():
-                        raise ValueError("signing_provider_key_file_symlink_rejected")
-                    stat = candidate.stat()
-                    if stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
-                        raise ValueError("signing_provider_key_file_too_large")
-                    if stat.st_mode & 0o077:
-                        raise ValueError("signing_provider_key_file_permissions")
-                    return candidate.read_bytes()
+                return _read_private_key_file(candidate)
             except ValueError:
                 raise
+            except FileNotFoundError:
+                continue
             except OSError as exc:
                 raise ValueError("signing_provider_key_file_unreadable") from exc
     raise ValueError(f"signing_provider_kid_not_found:{kid}")
@@ -197,15 +192,17 @@ class LocalEd25519SigningProvider(ILCSigningProvider):
             "action_type": env.action_type.value,
             "amount_ilc": decimal_to_canonical_string(env.amount_ilc),
             "epoch": env.epoch,
-            "memo": env.memo,
             "nonce": env.nonce,
             "recipient_agent_id": env.recipient_agent_id,
             "sender_agent_id": env.sender_agent_id,
-            "signed_at_epoch": env.signed_at_epoch,
             "version": "agent_action_envelope.ilc_transfer.v0.1",
         }
+        if env.memo is not None:
+            payload["memo"] = env.memo
         if env.graph_context_anchor is not None:
             payload["graph_context_anchor"] = env.graph_context_anchor
+        if env.signed_at_epoch is not None:
+            payload["signed_at_epoch"] = env.signed_at_epoch
         return payload
 
     def canonical_payload_dag_cbor(self, env: AgentActionEnvelope) -> bytes:
@@ -217,14 +214,7 @@ class LocalEd25519SigningProvider(ILCSigningProvider):
     def _load_private_key(self, key_uri: str) -> ed25519.Ed25519PrivateKey:
         key_path = self._parse_file_uri(key_uri)
         try:
-            if not key_path.is_file():
-                raise ValueError("invalid_file_key_uri_not_file")
-            stat = key_path.stat()
-            if stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
-                raise ValueError("invalid_file_key_uri_too_large")
-            if stat.st_mode & 0o077:
-                raise ValueError("invalid_file_key_uri_permissions")
-            key_bytes = key_path.read_bytes()
+            key_bytes = _read_private_key_file(key_path)
         except ValueError:
             raise
         except OSError as exc:
@@ -245,6 +235,27 @@ class LocalEd25519SigningProvider(ILCSigningProvider):
         if not path.is_absolute():
             raise ValueError("invalid_file_key_uri_not_absolute")
         return path
+
+
+def _read_private_key_file(path: Path) -> bytes:
+    flags = os.O_RDONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
+    fd = os.open(path, flags)
+    try:
+        file_stat = os.fstat(fd)
+        if not stat.S_ISREG(file_stat.st_mode):
+            raise ValueError("invalid_file_key_uri_not_file")
+        if file_stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
+            raise ValueError("invalid_file_key_uri_too_large")
+        if file_stat.st_mode & 0o077:
+            raise ValueError("invalid_file_key_uri_permissions")
+        with os.fdopen(fd, "rb") as handle:
+            fd = -1
+            return handle.read(_MAX_PRIVATE_KEY_PEM_BYTES + 1)
+    finally:
+        if fd >= 0:
+            os.close(fd)
 
 
 class GuardedLocalEd25519SigningProvider(LocalEd25519SigningProvider):

@@ -101,6 +101,7 @@ def _validate_promotion_inputs(
 def _perform_promotion(src_bundle: Path, dest_dir: Path) -> dict:
     """Perform atomic copy of bundle."""
     tmp_bundle = None
+    backup_bundle = None
     try:
         dest_bundle = dest_dir / BUNDLE_DIR_NAME
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -111,14 +112,28 @@ def _perform_promotion(src_bundle: Path, dest_dir: Path) -> dict:
         shutil.copytree(src_bundle, tmp_bundle)
 
         if dest_bundle.exists():
-            shutil.rmtree(dest_bundle)
+            backup_bundle = Path(tempfile.mkdtemp(dir=str(dest_dir), prefix=f".{BUNDLE_DIR_NAME}.backup."))
+            shutil.rmtree(backup_bundle)
+            os.replace(dest_bundle, backup_bundle)
         tmp_bundle.rename(dest_bundle)
         tmp_bundle = None  # successfully renamed — do not clean up
+        if backup_bundle is not None and backup_bundle.exists():
+            shutil.rmtree(backup_bundle, ignore_errors=True)
 
         return {"ok": True, "dest_bundle": dest_bundle}
     except OSError as e:
         if tmp_bundle is not None and tmp_bundle.exists():
             shutil.rmtree(tmp_bundle, ignore_errors=True)
+        if backup_bundle is not None and backup_bundle.exists():
+            dest_bundle = dest_dir / BUNDLE_DIR_NAME
+            if not dest_bundle.exists():
+                try:
+                    os.replace(backup_bundle, dest_bundle)
+                    backup_bundle = None
+                except OSError:
+                    pass
+            if backup_bundle is not None and backup_bundle.exists():
+                shutil.rmtree(backup_bundle, ignore_errors=True)
         return {"ok": False, "error": f"promotion_failed:{e}"}
 
 

@@ -82,19 +82,24 @@ class TaskDescriptor:
 
 class TaskQueue:
     """
-        - future schedulers / routers
-        - optional API endpoints
+    In-memory FIFO helper for simulations, future schedulers/routers, and
+    optional API endpoints.
 
     This is *not* a distributed queue or a durability layer; it's just
     an in-memory helper for MVP simulations and a future task router.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, max_size: int = 10_000) -> None:
+        if isinstance(max_size, bool) or not isinstance(max_size, int) or max_size < 1:
+            raise ValueError("task_queue_max_size_invalid")
+        self._max_size = max_size
         self._q: Deque[TaskDescriptor] = deque()
 
     # Core API -----------------------------------------------------------
     def add_task(self, task: TaskDescriptor) -> None:
         """Append a task to the back of the queue."""
+        if len(self._q) >= self._max_size:
+            raise OverflowError("task_queue_capacity_exceeded")
         self._q.append(task)
 
     def pop_next(self) -> Optional[TaskDescriptor]:

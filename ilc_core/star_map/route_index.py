@@ -220,6 +220,9 @@ def build_route_index_payload(
     """
     if created_at is None:
         created_at = datetime.now(timezone.utc)
+    elif created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+    created_at = created_at.astimezone(timezone.utc)
     
     # Deep copy routes to avoid mutating caller's data
     copied_routes = []

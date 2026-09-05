@@ -7,6 +7,8 @@ from os import PathLike
 
 from ilc_core.analysis.routed_tasks import TaskRowDictList
 
+ROUTED_TASKS_CSV_HEADER = ("agent_id", "task_id", "task_type")
+
 def export_routed_tasks_to_csv(
     routed_task_rows: TaskRowDictList,
     path: Union[str, PathLike]
@@ -15,13 +17,10 @@ def export_routed_tasks_to_csv(
     Export a list of routed task dictionaries to a CSV file.
     """
     if not routed_task_rows:
-        # Create empty file or do nothing? Usually creation is better for pipelines.
-        # But we need header. If empty, we can't infer header.
-        # Let's create an empty file if list is empty, or skip writing header if no known keys.
-        # Standard approach: ensure path parent exists, touch file.
         p = Path(path)
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.touch()
+        with p.open("w", newline="", encoding="utf-8") as f:
+            csv.writer(f).writerow(ROUTED_TASKS_CSV_HEADER)
         return
 
     # Determine unique keys for header

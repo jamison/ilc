@@ -62,7 +62,7 @@ class EpistemicGraph:
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"Genesis config missing: {config_path}")
 
-        with open(config_path, "r") as f:
+        with open(config_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         
         # Create the 'Root' Genesis Node (Abstract container)

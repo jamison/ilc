@@ -30,6 +30,7 @@ Token: row5_b_impl_obligation_3_bounded_hold_carry_over
 from __future__ import annotations
 
 import secrets
+import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -56,6 +57,7 @@ class PrivacyLaneConfig:
     k: int = K_PRIMARY
     release_jitter_epochs: int = RELEASE_JITTER_EPOCHS
     max_wait_epochs: int = 4  # force-release threshold; SIM-LEAKAGE-03 will validate
+    max_pending_per_sender: int = 1_024
 
     def __post_init__(self) -> None:
         if self.k not in (K_PRIMARY, K_FALLBACK):
@@ -70,6 +72,8 @@ class PrivacyLaneConfig:
             )
         if self.max_wait_epochs < 1:
             raise ValueError("privacy_lane_config_max_wait_must_be_positive")
+        if self.max_pending_per_sender < 1:
+            raise ValueError("privacy_lane_config_sender_cap_must_be_positive")
 
 
 @dataclass
@@ -139,6 +143,7 @@ class PrivacyLane:
         self._monitor = monitor
         self._accumulator: list[Any] = []          # pending transfers not yet grouped
         self._accumulator_agent_ids: list[Any] = []
+        self._accumulator_agent_counts: dict[str, int] = {}
         self._accumulator_entry_epoch: int = current_epoch  # epoch when first transfer entered
         self._release_queue: list[ReleaseGroup] = []
         # Per-epoch stats for obligation 6 (SIM-LEAKAGE-03 instrumentation, Phase 833)
@@ -186,10 +191,15 @@ class PrivacyLane:
         if len(self._accumulator) == 0:
             self._accumulator_entry_epoch = current_epoch
 
+        agent_key = _agent_id_key(agent_id)
+        agent_count = self._accumulator_agent_counts.get(agent_key, 0)
+        if agent_count >= self._config.max_pending_per_sender:
+            raise ValueError("privacy_lane_sender_pending_cap_exceeded")
         self._accumulator.append(transfer)
         self._accumulator_agent_ids.append(agent_id)
+        self._accumulator_agent_counts[agent_key] = agent_count + 1
 
-        if _distinct_agent_count(self._accumulator_agent_ids) >= self._config.k:
+        if len(self._accumulator_agent_counts) >= self._config.k:
             self._seal_group(current_epoch)
 
         return None
@@ -232,12 +242,13 @@ class PrivacyLane:
             release_epoch=current_epoch,
             transfers=list(self._accumulator),
             agent_ids=list(self._accumulator_agent_ids),
-            anonymity_set_size=_distinct_agent_count(self._accumulator_agent_ids),
+            anonymity_set_size=len(self._accumulator_agent_counts),
             degraded_anonymity=True,
             sealed_epoch=current_epoch,
         )
         self._accumulator.clear()
         self._accumulator_agent_ids.clear()
+        self._accumulator_agent_counts.clear()
         self._stats["groups_force_released"] += 1
         if self._monitor is not None:
             self._monitor.record_force_release(current_epoch)
@@ -281,13 +292,14 @@ class PrivacyLane:
             release_epoch=release_epoch,
             transfers=list(self._accumulator),
             agent_ids=list(self._accumulator_agent_ids),
-            anonymity_set_size=_distinct_agent_count(self._accumulator_agent_ids),
+            anonymity_set_size=len(self._accumulator_agent_counts),
             degraded_anonymity=False,
             sealed_epoch=current_epoch,
         )
         self._release_queue.append(group)
         self._accumulator.clear()
         self._accumulator_agent_ids.clear()
+        self._accumulator_agent_counts.clear()
         self._stats["groups_completed"] += 1
         if self._monitor is not None:
             self._monitor.record_fill_success(current_epoch)
@@ -311,6 +323,18 @@ def _distinct_agent_count(agent_ids: list[Any]) -> int:
         if not any(agent_id == existing for existing in distinct):
             distinct.append(agent_id)
     return len(distinct)
+
+
+def _agent_id_key(agent_id: Any) -> str:
+    """Stable key for bounded accumulator accounting."""
+    if isinstance(agent_id, str):
+        if not agent_id:
+            raise ValueError("privacy_lane_agent_id_empty")
+        return agent_id
+    try:
+        return json.dumps(agent_id, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("privacy_lane_agent_id_unkeyable") from exc
 
 
 def _get_agent_id(transfer: Any) -> Any:
@@ -361,7 +385,11 @@ def _is_express_bypass(transfer_class: Any) -> bool:
             return False
         return express.get("agent_acknowledged_timing_disclosure", False) is True
 
-    # Object form (for future Rust FFI / typed Python classes)
+    # Object form (for future Rust FFI / typed Python classes). Class-name-only
+    # matching is spoofable, so accept only project-owned types.
+    module_name = type(transfer_class).__module__
+    if not module_name.startswith("ilc_core."):
+        return False
     class_name = type(transfer_class).__name__
     if class_name != "Payment":
         return False

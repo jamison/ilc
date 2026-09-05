@@ -53,7 +53,9 @@ def build_agent_descriptors_from_task_rows(
         }
 
         # Identify dominant problem space (ties broken arbitrarily by max).
-        if problem_space_counts:
+        if total_tasks <= 0:
+            dominant_space = "OTHER"
+        elif problem_space_counts:
             dominant_space = max(problem_space_counts.items(), key=lambda kv: kv[1])[0]
         else:
             dominant_space = "OTHER"

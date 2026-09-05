@@ -11,6 +11,7 @@ Supports:
 import hashlib
 import json
 import shutil
+import stat
 import tarfile
 import tempfile
 import zipfile
@@ -45,6 +46,21 @@ def _is_safe_archive_path(path_str: str) -> bool:
         return False
     parts = Path(path_str).parts
     return ".." not in parts
+
+
+def _is_safe_zip_member(info: zipfile.ZipInfo) -> bool:
+    """Reject zip links/special files before extraction."""
+    mode = (info.external_attr >> 16) & 0o170000
+    if mode == 0:
+        return True
+    if stat.S_ISREG(mode) or stat.S_ISDIR(mode):
+        return True
+    return False
+
+
+def _is_safe_tar_member(member: tarfile.TarInfo) -> bool:
+    """Allow only regular files and directories in registry bundle archives."""
+    return member.isfile() or member.isdir()
 
 
 def _copy_response_bounded(response, dest_path: Path, max_bytes: int) -> dict:
@@ -106,6 +122,8 @@ def _extract_zip(
             for info in infos:
                 if not _is_safe_archive_path(info.filename):
                     return {"ok": False, "error": "archive_path_traversal"}
+                if not _is_safe_zip_member(info):
+                    return {"ok": False, "error": "archive_unsafe_member_type"}
                 total_size += int(info.file_size)
                 if total_size > max_extract_bytes:
                     return {"ok": False, "error": "archive_extract_size_exceeded"}
@@ -131,6 +149,8 @@ def _extract_tar(
             for member in members:
                 if not _is_safe_archive_path(member.name):
                     return {"ok": False, "error": "archive_path_traversal"}
+                if not _is_safe_tar_member(member):
+                    return {"ok": False, "error": "archive_unsafe_member_type"}
                 if member.isfile():
                     total_size += int(member.size)
                     if total_size > max_extract_bytes:

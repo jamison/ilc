@@ -33,6 +33,7 @@ COSE_ALG_EDDSA = -8
 
 # Ed25519 signatures are always exactly 64 bytes (RFC 8032 §5.1.6).
 _EDDSA_SIG_LENGTH = 64
+_MAX_COSE_KID_BYTES = 256
 
 
 def cose_sign1_sign(
@@ -64,6 +65,10 @@ def cose_sign1_sign(
     # Build protected header map
     protected_map: dict[int, Any] = {COSE_HDR_ALG: COSE_ALG_EDDSA}
     if kid is not None:
+        if not isinstance(kid, bytes):
+            raise ValueError("COSE protected kid must be bytes")
+        if not kid or len(kid) > _MAX_COSE_KID_BYTES:
+            raise ValueError("COSE protected kid length invalid")
         protected_map[COSE_HDR_KID] = kid
     
     # Encode protected header to canonical bytes
@@ -161,6 +166,11 @@ def cose_sign1_decode(cose_bytes: bytes) -> dict:
     # Extract algorithm and kid
     alg = protected_map.get(COSE_HDR_ALG)
     kid = protected_map.get(COSE_HDR_KID)
+    if kid is not None:
+        if not isinstance(kid, bytes):
+            raise ValueError("COSE protected kid must be bytes")
+        if not kid or len(kid) > _MAX_COSE_KID_BYTES:
+            raise ValueError("COSE protected kid length invalid")
     
     return {
         "protected_bstr": protected_bstr,

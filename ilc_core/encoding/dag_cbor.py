@@ -183,12 +183,17 @@ def _read_extended_length(additional: int, data: bytes, offset: int) -> tuple[in
     if additional == 24:
         if offset + 1 >= len(data):
             raise ValueError("Truncated CBOR: missing 1-byte length")
-        return data[offset + 1], 1
+        value = data[offset + 1]
+        if value <= 23:
+            raise ValueError("Non-minimal CBOR integer/length encoding")
+        return value, 1
     
     if additional == 25:
         if offset + 2 >= len(data):
             raise ValueError("Truncated CBOR: missing 2-byte length")
         val = (data[offset + 1] << 8) | data[offset + 2]
+        if val <= 0xFF:
+            raise ValueError("Non-minimal CBOR integer/length encoding")
         return val, 2
     
     if additional == 26:
@@ -196,6 +201,8 @@ def _read_extended_length(additional: int, data: bytes, offset: int) -> tuple[in
             raise ValueError("Truncated CBOR: missing 4-byte length")
         val = (data[offset + 1] << 24) | (data[offset + 2] << 16) | \
               (data[offset + 3] << 8) | data[offset + 4]
+        if val <= 0xFFFF:
+            raise ValueError("Non-minimal CBOR integer/length encoding")
         return val, 4
     
     if additional == 27:
@@ -204,6 +211,8 @@ def _read_extended_length(additional: int, data: bytes, offset: int) -> tuple[in
         val = 0
         for i in range(8):
             val = (val << 8) | data[offset + 1 + i]
+        if val <= 0xFFFFFFFF:
+            raise ValueError("Non-minimal CBOR integer/length encoding")
         return val, 8
     
     if additional in (28, 29, 30):
@@ -238,6 +247,8 @@ def _decode_value(data: bytes, offset: int, _depth: int = 0) -> tuple[Any, int]:
     pos = offset + header_len
 
     if major == _MT_UNSIGNED:
+        if val > 2**63 - 1:
+            raise ValueError("dag_cbor_integer_out_of_signed_64bit_range")
         return val, header_len
 
     if major == _MT_NEGATIVE:

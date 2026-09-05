@@ -54,6 +54,10 @@ _NETWORK_ID_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
 _DNS_HOST_RE = re.compile(r"^[A-Za-z0-9.-]+$")
 
 
+class OperatorInitError(ValueError):
+    """Typed operator-init validation error preserving token strings."""
+
+
 @dataclass(frozen=True)
 class NodeInitResult:
     """Paths and metadata produced by `ilc node init`."""
@@ -793,56 +797,56 @@ def _loads_json_no_constants(raw: str) -> Any:
 
 def _require_safe_root(path: Path) -> None:
     if path.exists() and not path.is_dir():
-        raise ValueError("operator_init_root_not_directory")
+        raise OperatorInitError("operator_init_root_not_directory")
 
 
 def _require_paths_absent(paths: list[Path]) -> None:
     for path in paths:
         if path.exists():
-            raise ValueError("operator_init_refuses_to_overwrite_existing_material")
+            raise OperatorInitError("operator_init_refuses_to_overwrite_existing_material")
 
 
 def _require_string(value: Any, token: str) -> str:
     if not isinstance(value, str) or not value.strip():
-        raise ValueError(token)
+        raise OperatorInitError(token)
     return value
 
 
 def _require_network_id(value: Any) -> str:
     network_id = _require_string(value, "operator_init_network_id_invalid")
     if len(network_id) > MAX_NETWORK_ID_CHARS or not _NETWORK_ID_RE.fullmatch(network_id):
-        raise ValueError("operator_init_network_id_invalid")
+        raise OperatorInitError("operator_init_network_id_invalid")
     return network_id
 
 
 def _require_host(value: Any) -> str:
     host = _require_string(value, "operator_init_host_invalid")
     if len(host) > MAX_HOST_CHARS or ":" in host or not _host_is_valid(host):
-        raise ValueError("operator_init_host_invalid")
+        raise OperatorInitError("operator_init_host_invalid")
     return host
 
 
 def _require_port(value: Any, token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 1 or value > 65535:
-        raise ValueError(token)
+        raise OperatorInitError(token)
     return value
 
 
 def _require_positive_int(value: Any, token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-        raise ValueError(token)
+        raise OperatorInitError(token)
     return value
 
 
 def _require_uint64(value: Any, token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0 or value > 2**64 - 1:
-        raise ValueError(token)
+        raise OperatorInitError(token)
     return value
 
 
 def _require_peer_seeds(values: list[str]) -> list[str]:
     if len(values) > MAX_PEER_SEEDS:
-        raise ValueError("operator_init_peer_seed_limit_exceeded")
+        raise OperatorInitError("operator_init_peer_seed_limit_exceeded")
     seeds: list[str] = []
     seen: set[str] = set()
     for value in values:
@@ -856,13 +860,13 @@ def _require_peer_seeds(values: list[str]) -> list[str]:
 
 def _parse_endpoint(value: str, token: str) -> tuple[str, int]:
     if ":" not in value:
-        raise ValueError(token)
+        raise OperatorInitError(token)
     host, port_text = value.rsplit(":", 1)
     _require_host(host)
     try:
         port = int(port_text)
     except ValueError as exc:
-        raise ValueError(token) from exc
+        raise OperatorInitError(token) from exc
     return host, _require_port(port, token)
 
 

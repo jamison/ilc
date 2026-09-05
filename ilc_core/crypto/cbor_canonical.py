@@ -65,12 +65,14 @@ def validate_canonical_cbor_bytes(data: bytes) -> None:
     Raises:
         ValueError: If bytes are not canonical.
     """
+    if not isinstance(data, (bytes, bytearray)):
+        raise TypeError("CBOR data must be bytes")
     if not data:
         raise ValueError("Empty CBOR data")
     
     try:
         obj = cbor_loads(data)
-    except (cbor2.CBORDecodeError, ValueError, TypeError) as e:
+    except (cbor2.CBORDecodeError, ValueError) as e:
         raise ValueError(f"Invalid CBOR: {e}")
     
     reencoded = cbor_dumps_canonical(obj)

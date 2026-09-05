@@ -17,6 +17,7 @@ ECU_FAST_PATH_TRANSFER_ENABLED = True
 ECU_FAST_PATH_INTENT_VERSION = "ecu_fast_path_intent_01.v0.1"
 PRE_RC_TRANSFER_CAP_ECU = Decimal("1000")
 _ZERO_ECU = Decimal("0")
+_MICRO_ECU = Decimal("0.000001")
 
 
 class TransferClass(Enum):
@@ -57,6 +58,8 @@ def validate_intent(intent: ECUFastPathIntent) -> None:
         raise ValueError("invalid_amount_non_finite")
     if intent.amount_ecu <= _ZERO_ECU:
         raise ValueError("invalid_amount_non_positive")
+    if intent.amount_ecu.quantize(_MICRO_ECU) != intent.amount_ecu:
+        raise ValueError("invalid_amount_sub_micro_precision")
     if intent.amount_ecu > PRE_RC_TRANSFER_CAP_ECU:
         raise ValueError("invalid_amount_exceeds_pre_rc_cap")
     if not isinstance(intent.transfer_class, TransferClass):

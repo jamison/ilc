@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 import hashlib
 import hmac
+import string
 from typing import Any
 
 
@@ -75,6 +76,9 @@ def _coerce_commitment(value: Any, *, field: str) -> bytes:
         try:
             raw = bytes.fromhex(normalized)
         except ValueError:
+            hex_chars = set(string.hexdigits)
+            if value.startswith("0x") or all(char in hex_chars for char in normalized):
+                raise ContactGateError(f"ccss_contact_gate_{field}_invalid_hex")
             raw = value.encode("utf-8")
         if not raw:
             raise ContactGateError(f"ccss_contact_gate_{field}_empty")

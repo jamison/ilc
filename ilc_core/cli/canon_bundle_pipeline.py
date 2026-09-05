@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 import argparse
+import base64
+import hashlib
+import hmac
 import json
 import sys
 from pathlib import Path
@@ -147,6 +150,23 @@ def _verify_signature(bundle_path: Path, key, report, steps) -> bool:
         _set_error(report, "signature_missing")
         return False
 
+
+def _verify_just_written_signature(bundle_path: Path, key, report, steps) -> bool:
+    try:
+        manifest_bytes = (bundle_path / "manifest.json").read_bytes()
+        sig_text = (bundle_path / "manifest.sig").read_text(encoding="utf-8").strip()
+        actual = base64.b64decode(sig_text.encode("ascii"), validate=True)
+    except Exception:
+        _set_error(report, "signature_missing")
+        return False
+    expected = hmac.new(key, manifest_bytes, hashlib.sha256).digest()
+    if not hmac.compare_digest(actual, expected):
+        _set_error(report, "signature_mismatch")
+        return False
+    steps["verify"] = True
+    return True
+
+
 def _handle_signing(args, bundle_path: Path, report, steps) -> bool:
     if not args.key_file:
         report["warnings"].append("signature_verification_skipped")
@@ -159,7 +179,7 @@ def _handle_signing(args, bundle_path: Path, report, steps) -> bool:
         return _handle_existing_signature(bundle_path, key, report, steps)
     if not _sign_bundle(bundle_path, key, report, steps, args.overwrite):
         return False
-    return _verify_signature(bundle_path, key, report, steps)
+    return _verify_just_written_signature(bundle_path, key, report, steps)
 
 def _finalize(args, report) -> int:
     """Write report/audit (if requested), print JSON, and return exit code."""

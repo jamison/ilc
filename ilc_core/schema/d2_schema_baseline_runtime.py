@@ -10,7 +10,7 @@ from typing import Any, Iterable
 
 
 SCHEMA_BASELINE_VERSION = "d2_schema_baseline_310.v0.1"
-ALLOWED_FIELD_TYPES = ("array", "bool", "float", "int", "object", "string")
+ALLOWED_FIELD_TYPES = ("array", "bool", "int", "object", "string")
 
 
 CANONICAL_SCHEMA_VECTORS: list[dict[str, Any]] = [
@@ -47,7 +47,7 @@ class D2SchemaValidationError(ValueError):
 
 
 def _stable_json(value: Any) -> str:
-    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def _stable_sha256(value: Any) -> str:
@@ -56,7 +56,20 @@ def _stable_sha256(value: Any) -> str:
 
 def _sorted_mapping(value: Any) -> Any:
     if isinstance(value, dict):
-        return {str(key): _sorted_mapping(value[key]) for key in sorted(value, key=str)}
+        normalized: dict[str, Any] = {}
+        for key in sorted(value, key=lambda item: str(item)):
+            if not isinstance(key, str):
+                raise D2SchemaValidationError(
+                    "d2_schema_metadata_key_not_string",
+                    f"metadata_key_not_string:{key!r}",
+                )
+            if key in normalized:
+                raise D2SchemaValidationError(
+                    "d2_schema_metadata_key_collision",
+                    f"metadata_key_collision:{key}",
+                )
+            normalized[key] = _sorted_mapping(value[key])
+        return normalized
     if isinstance(value, list):
         return [_sorted_mapping(item) for item in value]
     return value
@@ -116,11 +129,11 @@ def _normalize_entry(entry: Any) -> dict[str, Any]:
         (_normalize_field(field, schema_id=schema_id) for field in raw_fields),
         key=lambda item: (item["name"], item["type"], item["required"]),
     )
-    dedupe_key = {(item["name"], item["type"]) for item in normalized_fields}
+    dedupe_key = {item["name"] for item in normalized_fields}
     if len(dedupe_key) != len(normalized_fields):
         raise D2SchemaValidationError(
             "d2_schema_duplicate_field",
-            f"duplicate_field_signature:{schema_id}",
+            f"duplicate_field_name:{schema_id}",
         )
 
     normalized: dict[str, Any] = {
