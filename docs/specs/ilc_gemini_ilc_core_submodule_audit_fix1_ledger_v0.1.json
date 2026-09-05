@@ -1,0 +1,1769 @@
+{
+  "audit_source": "/Users/jamison/.gemini/antigravity-ide/brain/844f5fc0-a07b-458c-9737-b584999d1933/ilc_submodule_audit_report.md",
+  "created_date": "2026-09-05",
+  "ledger_schema_version": "ilc_gemini_ilc_core_submodule_audit_fix1_ledger.v0.1",
+  "phase_candidate": "GAP-ILC-CORE-SUBMODULE-AUDIT-FIX1-00",
+  "status": "frozen_for_gap_ilc_core_submodule_audit_fix1_00",
+  "scope_note": "This ledger records Codex direct-source disposition of Gemini ilc_core findings reviewed through FINDING-244. The Fix1 intake is frozen; later Gemini findings must enter a later fix batch.",
+  "dispositions": [
+    {
+      "finding_id": "F71",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/lmdb_backend.py"
+      ],
+      "summary": "Module-level LMDB environment cache lacks lock/refcount/close discipline.",
+      "fix_intent": "Add synchronized env-cache access and explicit cache close/release semantics, or remove unsafe cache if unnecessary."
+    },
+    {
+      "finding_id": "F72",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/ledger/persistent_backend.py",
+        "ilc_core/ledger/backend.py"
+      ],
+      "summary": "FileLedgerBackend writes full balances.json for each balance mutation; reward distribution can become O(N^2).",
+      "fix_intent": "Batch/defer balance persistence during epoch settlement and write balances.json once per settlement."
+    },
+    {
+      "finding_id": "F73",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/backend.py"
+      ],
+      "summary": "Reward quantization residual is always assigned to the lexicographically last staker.",
+      "fix_intent": "Replace last-agent residual absorption with deterministic largest-remainder allocation and stable tie-breaks."
+    },
+    {
+      "finding_id": "F74",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/exact_numeric.py"
+      ],
+      "summary": "Reported ExactNumeric.from_float surface does not exist in current source.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F75",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_fetch.py"
+      ],
+      "summary": "Archive extraction should explicitly reject symlinks, hard links, special files, and unsafe zip metadata.",
+      "fix_intent": "Add explicit safe-member checks before zip/tar extraction and regression tests for symlink/special-file archives."
+    },
+    {
+      "finding_id": "F76",
+      "codex_disposition": "rejected_policy_not_bug",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_fetch.py"
+      ],
+      "summary": "Registry bundle fetch uses HTTPS default CA validation, rejects redirects, bounds reads, then verifies bundle cryptographically. Certificate pinning would be a new trust-policy feature.",
+      "fix_intent": "No Fix1 code change."
+    },
+    {
+      "finding_id": "F77",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_sync.py"
+      ],
+      "summary": "Sync-state failures already fail in prod, but last_sync sidecar write failures are swallowed.",
+      "fix_intent": "Surface last_sync write failure as a warning; make prod behavior explicit and tested."
+    },
+    {
+      "finding_id": "F78",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/public_economics_admission_firewall.py"
+      ],
+      "summary": "Reported validate_admission_packet path does not match current source.",
+      "fix_intent": "No code change unless a later direct-source pass identifies a current equivalent."
+    },
+    {
+      "finding_id": "F79",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/claimability_proof_binding_runtime.py"
+      ],
+      "summary": "Current proof-binding semantics validate non-negative epochs, deadline derivation, conversion_epoch >= issue_epoch, and conversion_epoch <= deadline_epoch.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F80",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/canon_export_bundle_verify_sig.py"
+      ],
+      "summary": "Current source uses hmac.compare_digest.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F81",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/stake_snapshot.py"
+      ],
+      "summary": "Current stake snapshot source uses Decimal; reported float voting-power function is stale.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F82",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+        "ilc_core/storage/lmdb_public_runtime.py"
+      ],
+      "summary": "Not an in-memory dict race as reported; real issue is two separate LMDB writes for wallet row and wallet history.",
+      "fix_intent": "Add atomic wallet row/history update path or single-transaction lifecycle commit."
+    },
+    {
+      "finding_id": "F83",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_promotion.py"
+      ],
+      "summary": "Bundle promotion removes destination before replacement, creating a failure window.",
+      "fix_intent": "Use staging/backup atomic promotion semantics without deleting the last good destination first."
+    },
+    {
+      "finding_id": "F84",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_channel_signing.py"
+      ],
+      "summary": "Non-dict .sig payload can trigger confusing TypeError instead of controlled signature validation error.",
+      "fix_intent": "Validate decoded .sig top-level type before field checks."
+    },
+    {
+      "finding_id": "F85",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry.py"
+      ],
+      "summary": "ILC_ALLOW_EMPTY_KEY_REGISTRY=1 makes empty registry return current for any key.",
+      "fix_intent": "Remove or restrict the bypass to explicit test-only helpers and prevent ambient env-var production behavior."
+    },
+    {
+      "finding_id": "F86",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low",
+      "files": [
+        "ilc_core/ledger/canon_bundle_pipeline_report.py"
+      ],
+      "summary": "Fallback timestamp format is not strict ISO-8601 Zulu.",
+      "fix_intent": "Use deterministic strict ISO-8601 UTC formatting consistently."
+    },
+    {
+      "finding_id": "F87",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/conversion_candidate_runtime.py",
+        "ilc_core/ledger/distributed_conversion_schema.py"
+      ],
+      "summary": "Conversion candidates do not consistently enforce issue_epoch <= deadline_epoch.",
+      "fix_intent": "Add invariant validation at construction/normalization boundaries."
+    },
+    {
+      "finding_id": "F88",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/canon_export_bundle_sign.py"
+      ],
+      "summary": "Base64 key loader lacks validate=True and decoded key length bounds.",
+      "fix_intent": "Validate base64 strictly and require the expected HMAC key length range."
+    },
+    {
+      "finding_id": "F89",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/conversion_candidate_runtime.py",
+        "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py"
+      ],
+      "summary": "Current candidate path raises on invalid amounts and only skips not-yet-deadline-eligible lots.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F90",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/distributed_conversion_schema.py"
+      ],
+      "summary": "Distributed conversion metadata text fields are unbounded.",
+      "fix_intent": "Add max character/byte limits to text normalization."
+    },
+    {
+      "finding_id": "F91",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_channel.py"
+      ],
+      "summary": "Channel atomic writes lack flush/fsync before os.replace.",
+      "fix_intent": "Flush and fsync temporary file before replace."
+    },
+    {
+      "finding_id": "F92",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ledger/canon_bundle_key_registry_channel.py"
+      ],
+      "summary": "Channel file load uses unbounded read_text without regular-file guard.",
+      "fix_intent": "Require regular file and bounded byte read before JSON parse."
+    },
+    {
+      "finding_id": "F93",
+      "codex_disposition": "accepted_fix1_verify_first",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/ledger/canon_bundle_utils.py"
+      ],
+      "summary": "Key ID/fingerprint derivation needs exact type normalization review before patching.",
+      "fix_intent": "Confirm current behavior, then enforce bytes-only or explicit UTF-8 encoding consistently."
+    },
+    {
+      "finding_id": "F94",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/ledger/canon_bundle_replay_verify.py"
+      ],
+      "summary": "Replay mismatch diagnostics lack granular index telemetry.",
+      "fix_intent": "Improve mismatch reporting without weakening hash checks."
+    },
+    {
+      "finding_id": "F95",
+      "codex_disposition": "rejected_as_stated",
+      "severity": "none",
+      "files": [
+        "ilc_core/ledger/ledger_export.py"
+      ],
+      "summary": "Gemini's world-readable temp-file claim is not established for mkstemp JSON path; any direct CSV permission concerns should be handled as a separate concrete finding.",
+      "fix_intent": "No Fix1 action from this finding as stated."
+    },
+    {
+      "finding_id": "F96",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/governance/challenge_node_runtime.py"
+      ],
+      "summary": "Current quorum verifier checks duplicates before verdict return.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F97",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/governance/challenge_node_runtime.py"
+      ],
+      "summary": "Challenge audit metadata is not committed in audit_entry_id hash.",
+      "fix_intent": "Commit metadata or explicitly separate committed and non-committed metadata fields with tests."
+    },
+    {
+      "finding_id": "F98",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/governance/fork_legitimacy_runtime.py"
+      ],
+      "summary": "Fork signal JSON file loader has special-file/TOCTOU risk.",
+      "fix_intent": "Require regular file, bounded read, and stable size handling."
+    },
+    {
+      "finding_id": "F99",
+      "codex_disposition": "rejected_intentional_canonical_strictness",
+      "severity": "none",
+      "files": [
+        "ilc_core/governance/fork_legitimacy_runtime.py"
+      ],
+      "summary": "Uppercase hash rejection matches canonical lowercase digest posture.",
+      "fix_intent": "No code change unless UX policy changes."
+    },
+    {
+      "finding_id": "F100",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low",
+      "files": [
+        "ilc_core/governance/fork_legitimacy_runtime.py"
+      ],
+      "summary": "Governance inspection CLI emits raw stack traces on malformed input.",
+      "fix_intent": "Add controlled stderr diagnostics and non-zero exit without traceback."
+    },
+    {
+      "finding_id": "F101",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/governance/challenge_node_runtime.py"
+      ],
+      "summary": "Challenge validation accepts zero evidence_refs.",
+      "fix_intent": "Require at least one evidence ref unless a canonical no-evidence challenge type is explicitly defined."
+    },
+    {
+      "finding_id": "F102",
+      "codex_disposition": "rejected_intentional_strictness",
+      "severity": "none",
+      "files": [
+        "ilc_core/governance/challenge_node_runtime.py"
+      ],
+      "summary": "Empty string optional refs are rejected rather than normalized to None; this is strict JSON hygiene.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F103",
+      "codex_disposition": "rejected_schema_design",
+      "severity": "none",
+      "files": [
+        "ilc_core/governance/fork_legitimacy_runtime.py"
+      ],
+      "summary": "Root hash optional sha256: prefix normalization versus required prefixed refs is a schema design distinction.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F104",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/sidecars/confidential_coordination_capability.py"
+      ],
+      "summary": "Current code computes membership_boundary_ref expected hash before adding the self-reference.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F105",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/sidecars/task_coordination.py"
+      ],
+      "summary": "Agent acceptance cap counts lifetime acceptances rather than active concurrent acceptances.",
+      "fix_intent": "Count only acceptances whose corresponding offers remain active/open-or-accepted and non-expired."
+    },
+    {
+      "finding_id": "F106",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/sidecars/openclaw_idle_mining.py"
+      ],
+      "summary": "Generic JSON payload validator rejects ordinary booleans.",
+      "fix_intent": "Allow JSON booleans as booleans while still rejecting bool where numeric int fields are expected."
+    },
+    {
+      "finding_id": "F107",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/sidecars/claim_nullifier_registry_v1.py"
+      ],
+      "summary": "Registry capacity is checked before active duplicate/conflict checks.",
+      "fix_intent": "Check active conflicts first so duplicate replay remains classified as replay even at capacity."
+    },
+    {
+      "finding_id": "F108",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/sidecars/execution_receipt.py"
+      ],
+      "summary": "ExecutionReceipt status partial cannot carry error_token even though partial is a valid status.",
+      "fix_intent": "Permit error_token for failure and partial, require it for failure, and document/test partial semantics."
+    },
+    {
+      "finding_id": "F109",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/sidecars/starmap_installer.py"
+      ],
+      "summary": "StarMap materialization atomic write lacks flush/fsync before replace.",
+      "fix_intent": "Flush and fsync temp file before os.replace."
+    },
+    {
+      "finding_id": "F110",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low",
+      "files": [
+        "ilc_core/sidecars/idea_descent_rehearsal.py"
+      ],
+      "summary": "Error string misses f-string interpolation.",
+      "fix_intent": "Add f-string prefix and regression test."
+    },
+    {
+      "finding_id": "F111",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low",
+      "files": [
+        "ilc_core/consensus/accepted_work_lineage_adapter.py"
+      ],
+      "summary": "Float rejection path uses literal <key> instead of key value.",
+      "fix_intent": "Render the actual key path in diagnostics."
+    },
+    {
+      "finding_id": "F112",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/consensus/circuit_breaker_interface.py"
+      ],
+      "summary": "Circuit breaker quorum calculation uses float threshold/comparison.",
+      "fix_intent": "Use exact integer cross-multiplication or Fraction/Decimal for quorum decision."
+    },
+    {
+      "finding_id": "F113",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/consensus/clustering.py"
+      ],
+      "summary": "SponsorGraph.weights is unused dead state.",
+      "fix_intent": "Remove unused attribute."
+    },
+    {
+      "finding_id": "F114",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/consensus/attribution_batch_bridge.py"
+      ],
+      "summary": "Negative Werner pressure returns None instead of explicit validation error.",
+      "fix_intent": "Reject negative pressure with a stable AttributionBatchBridgeError token."
+    },
+    {
+      "finding_id": "F115",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/consensus/engine.py"
+      ],
+      "summary": "Negative age can trigger raw Decimal InvalidOperation in logarithm path.",
+      "fix_intent": "Reject negative age before ln with domain-specific error."
+    },
+    {
+      "finding_id": "F116",
+      "codex_disposition": "rejected_naming_only",
+      "severity": "none",
+      "files": [
+        "ilc_core/consensus/epoch_state_runtime.py"
+      ],
+      "summary": "_require_positive_number intentionally enforces positive int weights per local comment.",
+      "fix_intent": "Optional rename only; no Fix1 blocker."
+    },
+    {
+      "finding_id": "F117",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/consensus/attribution_audit_lmdb.py"
+      ],
+      "summary": "Epoch count deserializes all events instead of counting index entries.",
+      "fix_intent": "Count stored index keys without loading full event payloads."
+    },
+    {
+      "finding_id": "F118",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/sidecars/openclaw_local_capture.py"
+      ],
+      "summary": "Generic JSON capture validator rejects ordinary booleans.",
+      "fix_intent": "Allow JSON booleans as booleans while preserving numeric bool rejection at numeric field boundaries."
+    },
+    {
+      "finding_id": "F119",
+      "codex_disposition": "rejected_false",
+      "severity": "none",
+      "files": [
+        "ilc_core/sidecars/claimability_receipt_verifier.py"
+      ],
+      "summary": "Decimal trailing-zero truncation claim is wrong; stripping only occurs when a decimal point is present.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F120",
+      "codex_disposition": "rejected_intentional_canonical_order",
+      "severity": "none",
+      "files": [
+        "ilc_core/sidecars/claimability_receipt_verifier.py"
+      ],
+      "summary": "Token list canonical-order enforcement appears intentional.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F121",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/crypto/pq_signature_verify.py"
+      ],
+      "summary": "ML-DSA verify intentionally fails closed, but broad outer Exception can hide programmer/system errors.",
+      "fix_intent": "Narrow expected exception handling while preserving fail-closed crypto verification behavior."
+    },
+    {
+      "finding_id": "F122",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/crypto/cbor_canonical.py"
+      ],
+      "summary": "validate_canonical_cbor_bytes wraps invalid parameter type TypeError as ValueError.",
+      "fix_intent": "Preserve TypeError for non-bytes caller input and keep decode/canonical failures as ValueError."
+    },
+    {
+      "finding_id": "F123",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/crypto/cose_sign1.py"
+      ],
+      "summary": "COSE Sign1 protected kid lacks type/length bounds.",
+      "fix_intent": "Require bytes/bytearray kid and cap protected kid length with tests."
+    },
+    {
+      "finding_id": "F124",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/rc/economic_cycle_runtime.py"
+      ],
+      "summary": "Submission ECU estimate bool guard runs after decimal parsing.",
+      "fix_intent": "Reject bool before calling parse_non_negative_decimal and add a regression test for True and False."
+    },
+    {
+      "finding_id": "F125",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low",
+      "files": [
+        "ilc_core/rc/atlas_graph_discipline.py"
+      ],
+      "summary": "Manual TOML inline-comment stripper does not handle escaped quote characters.",
+      "fix_intent": "Track escape state inside quoted strings or replace with a safer parser; test escaped quotes before #."
+    },
+    {
+      "finding_id": "F126",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/rc/economic_cycle_runtime.py"
+      ],
+      "summary": "Wallet export recalculates the same Decimal and binds an unused generator variable.",
+      "fix_intent": "Normalize each wallet balance once per agent and remove the unused loop binding."
+    },
+    {
+      "finding_id": "F127",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/rc/local_skill_preview.py"
+      ],
+      "summary": "Local skill preview JSON round-trip can parse numeric tokens into IEEE 754 floats before re-emitting.",
+      "fix_intent": "Use Decimal-preserving json.loads parse_float/parse_int hooks or avoid the lossy round trip while retaining canonical JSON output."
+    },
+    {
+      "finding_id": "F128",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/rc/package_boundary_inventory.py"
+      ],
+      "summary": "Relative import resolution can include absolute filesystem path components when anchor_to_repo_root is false.",
+      "fix_intent": "Normalize package path parts relative to the scanned root/base before resolving ImportFrom levels; add absolute-path regression coverage."
+    },
+    {
+      "finding_id": "F129",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/rc/agent_bootstrap.py"
+      ],
+      "summary": "Signature sidecar text hash is case-sensitive for hex text and can drift on uppercase hex.",
+      "fix_intent": "Validate the signature sidecar as hex and hash the lowercase canonical hex text."
+    },
+    {
+      "finding_id": "F130",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/graph/__init__.py"
+      ],
+      "summary": "Genesis graph config load omits explicit UTF-8 encoding.",
+      "fix_intent": "Open genesis config with encoding='utf-8'."
+    },
+    {
+      "finding_id": "F131",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/graph/atlas_bounded_query_runtime.py"
+      ],
+      "summary": "LMDB edge iterator yields from inside a read transaction, leaving a suspended transaction if not exhausted.",
+      "fix_intent": "Avoid exposing a transaction-backed generator; use a callback/list materialization pattern with existing row caps and tests for partial iteration."
+    },
+    {
+      "finding_id": "F132",
+      "codex_disposition": "accepted_fix1_low_medium",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/graph/atlas_bounded_query_runtime.py"
+      ],
+      "summary": "Neighborhood hops rescan the bounded edge table for every hop.",
+      "fix_intent": "Build a bounded adjacency edge cache once per query or use existing indexed lookups if available; preserve max edge scan caps."
+    },
+    {
+      "finding_id": "F133",
+      "codex_disposition": "defer_exact_numeric_api_migration",
+      "severity": "deferred_low",
+      "files": [
+        "ilc_core/graph/sidecar_query_runtime.py"
+      ],
+      "summary": "Local novelty advisory overlap score is a float ratio.",
+      "fix_intent": "No Fix1 code change; changing score type is an API migration and should be handled with the broader exact-numeric advisory-score lane."
+    },
+    {
+      "finding_id": "F134",
+      "codex_disposition": "rejected_false_current_locking",
+      "severity": "none",
+      "files": [
+        "ilc_core/storage/lmdb_public_runtime.py"
+      ],
+      "summary": "Reported close underflow/double-close does not reproduce: _closed is checked and set under _ENV_CACHE_LOCK before refcount decrement can repeat for the same instance.",
+      "fix_intent": "No code change unless a new direct-source path mutates _closed outside close()."
+    },
+    {
+      "finding_id": "F135",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/storage/lmdb_public_runtime.py"
+      ],
+      "summary": "Public receipt secondary index values can grow without a length cap.",
+      "fix_intent": "Add bounded index list limits or paginated index buckets and tests for cap enforcement."
+    },
+    {
+      "finding_id": "F136",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/storage/lmdb_graph_pruning_runtime.py"
+      ],
+      "summary": "Graph pruning aborts the whole operation on one oversized or malformed LMDB record.",
+      "fix_intent": "Catch decode errors per record, count skipped_invalid_records, and continue safely without deleting undecodable entries."
+    },
+    {
+      "finding_id": "F137",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py"
+      ],
+      "summary": "Candidate node primary table replacement and secondary index replacement occur in separate LMDB transactions.",
+      "fix_intent": "Replace primary and secondary node indexes in one write transaction."
+    },
+    {
+      "finding_id": "F138",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/storage/genesis_atlas_lmdb_writer.py"
+      ],
+      "summary": "Atomic JSON write cleanup unlink can mask the original write/replace exception.",
+      "fix_intent": "Suppress cleanup unlink errors while re-raising the original exception."
+    },
+    {
+      "finding_id": "F139",
+      "codex_disposition": "accepted_fix1",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/protocol/event_export.py"
+      ],
+      "summary": "Empty payload dictionaries are treated as missing and replaced with the outer event envelope.",
+      "fix_intent": "Fallback only when the payload key is absent; reject or preserve explicit empty/non-dict payloads predictably."
+    },
+    {
+      "finding_id": "F140",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/protocol/event_export.py"
+      ],
+      "summary": "Event CSV export uses float defaults for economic fields.",
+      "fix_intent": "Use canonical string numeric defaults such as '0' for economic/export metrics."
+    },
+    {
+      "finding_id": "F141",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/protocol/ilc_cluster_a_conformance.py"
+      ],
+      "summary": "Conformance ingestion calls pop() on non-dict JSON roots.",
+      "fix_intent": "Require decoded JSON root to be a dict before mutation and return a structured schema error otherwise."
+    },
+    {
+      "finding_id": "F142",
+      "codex_disposition": "accepted_fix1_low_medium",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/protocol/ilc_cluster_a_acceptance_evidence.py"
+      ],
+      "summary": "Acceptance evidence list concatenation crashes when errors or warnings are explicitly None.",
+      "fix_intent": "Normalize errors/warnings to lists before concatenation."
+    },
+    {
+      "finding_id": "F143",
+      "codex_disposition": "defer_exact_numeric_api_migration",
+      "severity": "deferred_medium",
+      "files": [
+        "ilc_core/protocol/params.py"
+      ],
+      "summary": "ProtocolParams uses floats for toy/simulation economic knobs.",
+      "fix_intent": "No Fix1 code change; migrate to Decimal/exact strings in a dedicated API-compatibility phase because these fields are used by sim and analysis tests."
+    },
+    {
+      "finding_id": "F144",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/protocol/ilc_cluster_a_ingest.py"
+      ],
+      "summary": "Governance signature verification assumes every signatures[] entry is a dict.",
+      "fix_intent": "Validate signature block type and emit a structured signature error for non-dict entries."
+    },
+    {
+      "finding_id": "F145",
+      "codex_disposition": "accepted_fix1_low_medium",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/protocol/public_wallet_runtime.py"
+      ],
+      "summary": "Wallet balance history sorts epoch IDs lexicographically.",
+      "fix_intent": "Use numeric-aware epoch sort keys for epoch_N style IDs while retaining deterministic fallback ordering."
+    },
+    {
+      "finding_id": "F146",
+      "codex_disposition": "accepted_fix1_low_medium",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/protocol/event_log_retention.py"
+      ],
+      "summary": "Retention planning follows symlinked epoch directories that execution later refuses to delete.",
+      "fix_intent": "Exclude symlink directories during discovery or record them as skipped unsafe paths consistently."
+    },
+    {
+      "finding_id": "F147",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/protocol/ilc_transcript_validate.py",
+        "ilc_core/protocol/ilc_cluster_a_ingest.py"
+      ],
+      "summary": "Transcript sort keys can compare mixed non-string and string attribute values.",
+      "fix_intent": "Coerce timestamp/kind/id sort-key fields to strings or reject malformed values before sorting; add mixed-type regression tests."
+    },
+    {
+      "finding_id": "F148",
+      "codex_disposition": "defer_exact_numeric_api_migration",
+      "severity": "deferred_low_medium",
+      "files": [
+        "ilc_core/epistemic/aesthetic_panel_runtime.py"
+      ],
+      "summary": "Aesthetic consensus scoring returns floats.",
+      "fix_intent": "No Fix1 code change; BLOCKING_AUTHORITY_ACTIVE is false and changing return types belongs in the exact-numeric advisory-score migration lane."
+    },
+    {
+      "finding_id": "F149",
+      "codex_disposition": "defer_exact_numeric_api_migration",
+      "severity": "deferred_low_medium",
+      "files": [
+        "ilc_core/epistemic/reuse_centrality_runtime.py"
+      ],
+      "summary": "Reuse centrality score and U_FLOOR are floats.",
+      "fix_intent": "No Fix1 code change; centrality scoring API still exposes floats and should migrate with related advisory scoring surfaces."
+    },
+    {
+      "finding_id": "F150",
+      "codex_disposition": "rejected_false_doc_contract",
+      "severity": "none",
+      "files": [
+        "ilc_core/epistemic/truth_primitive_sig_verifier.py"
+      ],
+      "summary": "verify_truth_primitive_sig intentionally raises ValueError for malformed or invalid signed records; the docstring states this.",
+      "fix_intent": "No code change."
+    },
+    {
+      "finding_id": "F151",
+      "codex_disposition": "defer_requires_transactional_store_api",
+      "severity": "deferred_medium",
+      "files": [
+        "ilc_core/epistemic/truth_primitive_graph_store.py",
+        "ilc_core/protocol/harness_interfaces.py",
+        "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py"
+      ],
+      "summary": "write_truth_primitive_result cannot guarantee atomic node+edge writes through the current generic store interface.",
+      "fix_intent": "Defer to a store-interface phase that adds an atomic batch write contract; do not fake rollback in Fix1."
+    },
+    {
+      "finding_id": "F152",
+      "codex_disposition": "rejected_stale",
+      "severity": "none",
+      "files": [
+        "ilc_core/epistemic/node_submission_runtime.py"
+      ],
+      "summary": "Reported _validate_stake_amount function does not exist in current source.",
+      "fix_intent": "No code change unless a later source pass finds a renamed equivalent."
+    },
+    {
+      "finding_id": "F153",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/encoding/dag_cbor.py"
+      ],
+      "summary": "DAG-CBOR decoder accepts unsigned integers outside the encoder's signed 64-bit range.",
+      "fix_intent": "Reject decoded unsigned values above 2**63 - 1 to preserve decode/re-encode symmetry."
+    },
+    {
+      "finding_id": "F154",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/encoding/dag_cbor.py"
+      ],
+      "summary": "DAG-CBOR decoder accepts non-minimal extended integer/length encodings.",
+      "fix_intent": "Enforce canonical minimal additional-info encoding during decode and test non-minimal forms."
+    },
+    {
+      "finding_id": "F155",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/encoding/varint.py"
+      ],
+      "summary": "Uvarint decoder can return values above uint64 because overflow is checked too late/incompletely.",
+      "fix_intent": "Reject overlong and >2**64-1 varints before returning; test malformed 10-byte encodings."
+    },
+    {
+      "finding_id": "F156",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/encoding/cidv1.py"
+      ],
+      "summary": "CIDv1 base32 decoder permits non-canonical alternate encodings via ignored trailing padding bits.",
+      "fix_intent": "Require lower-case base32 and verify cidv1_to_str(decoded) exactly equals the input."
+    },
+    {
+      "finding_id": "F157",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/mining/benchmark.py"
+      ],
+      "summary": "PoW benchmark grants Genesis tier by substring match in untrusted agent_id.",
+      "fix_intent": "Remove ambient substring bypass; if a test/bootstrap bypass remains, require explicit non-default trusted parameter or fixture-only path."
+    },
+    {
+      "finding_id": "F158",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/mining/benchmark.py"
+      ],
+      "summary": "Benchmark uses time.time and float logistic score for environment-dependent hardware measurement.",
+      "fix_intent": "Use monotonic perf_counter_ns for measurement and mark score output as advisory/non-consensus; avoid wall-clock APIs in benchmark timing."
+    },
+    {
+      "finding_id": "F159",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/mining/benchmark.py"
+      ],
+      "summary": "Hash-modulo lottery assigns only one workload type, making benchmark scores incomparable across agents.",
+      "fix_intent": "Run a fixed workload suite or otherwise ensure every agent executes comparable task classes; retain deterministic ordering only."
+    },
+    {
+      "finding_id": "F160",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/mining/benchmark.py"
+      ],
+      "summary": "Benchmark workload generation uses unseeded SystemRandom, making workloads non-reproducible.",
+      "fix_intent": "Derive deterministic per-agent workload inputs from SHA-256 or another explicit deterministic seed; remove SystemRandom from this module."
+    },
+    {
+      "finding_id": "F161",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/mining/__init__.py"
+      ],
+      "summary": "ilc_core/mining lacks __init__.py.",
+      "fix_intent": "Add package initializer exporting the benchmark surface."
+    },
+    {
+      "finding_id": "F162",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ecu/ecu_fast_path_intent.py",
+        "ilc_core/ecu/ecu_transfer_context_verifier.py"
+      ],
+      "summary": "ECU fast-path intent validation accepts amounts with sub-micro-ECU fractional precision and only rejects them later in context verification.",
+      "fix_intent": "Reject non-integral micro-ECU amounts directly in validate_intent and test the validation boundary."
+    },
+    {
+      "finding_id": "F163",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low",
+      "files": [
+        "ilc_core/ecu/ecu_transfer_adapter.py"
+      ],
+      "summary": "Consensus bridge submit reference extraction collapses malformed result shapes into a generic invalid-reference error.",
+      "fix_intent": "Normalize and strip accepted reference strings, reject blank references deterministically, and return bounded non-leaking diagnostics for unsupported result shapes."
+    },
+    {
+      "finding_id": "F164",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/ecu/ecu_fast_path_intent.py",
+        "ilc_core/ecu/ecu_transfer_context_verifier.py"
+      ],
+      "summary": "Whitespace-only graph context anchors are treated as absent by the verifier if intent validation is bypassed, although the current verifier path calls validate_intent first.",
+      "fix_intent": "Harden the presence helper or verifier boundary so whitespace-only anchors remain invalid even if future call paths bypass validate_intent; add a regression."
+    },
+    {
+      "finding_id": "F165",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ecu/ecu_transfer_adapter.py"
+      ],
+      "summary": "Raw byte transfer payload signature validation accepts any non-empty byte string up to the maximum length, including one-byte signatures.",
+      "fix_intent": "Require sender signatures to match ratified or implementation-supported signature lengths and reject arbitrary short byte strings; test one-byte rejection."
+    },
+    {
+      "finding_id": "F166",
+      "codex_disposition": "rejected_unsupported_as_stated",
+      "severity": "none",
+      "files": [
+        "ilc_core/cli/main.py"
+      ],
+      "summary": "Gemini alleged log injection and shell command injection via unsanitized CLI error arguments.",
+      "fix_intent": "No Fix1 code change from the current evidence: CLI parser diagnostics are JSON-escaped, subprocess calls reviewed in main.py use list-form shell=False defaults, and install_command display strings use shlex.quote. Reopen only if a concrete unquoted shell sink is identified."
+    },
+    {
+      "finding_id": "F167",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/cli/_key_utils.py"
+      ],
+      "summary": "The key loader falls back to raw bytes after strict base64 decode errors, which can silently accept malformed base64-looking key files as raw key material.",
+      "fix_intent": "Reject malformed base64-looking text while preserving explicit raw-byte key support for non-base64 input; add tests for both paths."
+    },
+    {
+      "finding_id": "F168",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low",
+      "files": [
+        "ilc_core/cli/canon_cli.py"
+      ],
+      "summary": "The claimed unconditional zero exit code is stale because canon_cli already returns non-zero on invalid input, but quiet mode can suppress useful failure diagnostics.",
+      "fix_intent": "Preserve non-zero exits and add bounded stderr diagnostics for invalid quiet-mode verification without emitting successful stdout noise."
+    },
+    {
+      "finding_id": "F169",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/cli/bundle_cli.py"
+      ],
+      "summary": "Atomic file write cleanup can mask the original write/replace exception if temporary-file unlinking fails.",
+      "fix_intent": "Preserve the root exception context and suppress or chain cleanup errors safely; add a cleanup-failure regression."
+    },
+    {
+      "finding_id": "F170",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/cli/network_doctor.py"
+      ],
+      "summary": "Relay admission material JSON loading parses numbers with default json.loads behavior before later validation, permitting NaN/float handling inconsistency with stricter bundle parsers.",
+      "fix_intent": "Use strict parse_float, parse_int, and parse_constant hooks for relay material JSON and test NaN/float rejection before semantic validation."
+    },
+    {
+      "finding_id": "F171",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/privacy/metrics.py"
+      ],
+      "summary": "Exact degraded-anonymity threshold checks use binary floats and can misclassify boundary values such as a 15 percent failure rate.",
+      "fix_intent": "Replace float subtraction/comparison with integer cross-multiplication or Decimal arithmetic and add exact-boundary tests."
+    },
+    {
+      "finding_id": "F172",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/privacy/monitor.py"
+      ],
+      "summary": "Fallback activation latch evaluation computes failure rates with binary float division.",
+      "fix_intent": "Use exact integer cross-multiplication for threshold comparisons and test boundary equality/one-over cases."
+    },
+    {
+      "finding_id": "F173",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/privacy/lane.py"
+      ],
+      "summary": "Privacy lane accumulation has unbounded per-sender growth and quadratic distinct-agent counting under single-sender flooding.",
+      "fix_intent": "Cap per-sender pending transfer accumulation and maintain O(1) distinct-agent counts; test flood rejection and linear behavior."
+    },
+    {
+      "finding_id": "F174",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/privacy/lane.py"
+      ],
+      "summary": "Express-payment bypass introspection uses loose duck typing and class-name matching that can be spoofed by arbitrary objects.",
+      "fix_intent": "Restrict bypass detection to explicit dict/schema fields or trusted concrete types with exact bool flags; remove class-name-only authority."
+    },
+    {
+      "finding_id": "F175",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/privacy/monitor.py"
+      ],
+      "summary": "The degraded-anonymity monitor can emit duplicate notifications for the same agent across repeated transfer observations.",
+      "fix_intent": "Dedupe notification agent IDs while preserving deterministic order; add repeated-agent regression."
+    },
+    {
+      "finding_id": "F176",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/privacy/metrics.py"
+      ],
+      "summary": "Privacy metrics snapshots are keyed by sealed epoch while operational queries use a release/current epoch, creating a possible epoch-index mismatch after sealing.",
+      "fix_intent": "Make sealed-epoch versus release-epoch semantics explicit in the stored snapshot/API and add a regression for querying after release epoch advances."
+    },
+    {
+      "finding_id": "F177",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/reputation/temporal_decay_runtime.py"
+      ],
+      "summary": "Temporal decay quantization inherits the caller's ambient Decimal context rounding mode.",
+      "fix_intent": "Use an explicit local Decimal context and rounding mode for every protocol-visible quantize operation; add context-invariance tests."
+    },
+    {
+      "finding_id": "F178",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/reputation/temporal_decay_runtime.py"
+      ],
+      "summary": "Unquantized Decimal logarithmic/exponential intermediates can vary with ambient context precision before final decay multiplier quantization.",
+      "fix_intent": "Compute decay intermediates under an explicit local context and quantize ratios/intermediates at defined boundaries; test precision-context invariance."
+    },
+    {
+      "finding_id": "F179",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/reputation/temporal_decay_runtime.py"
+      ],
+      "summary": "Very large elapsed/half-life ratios can drive Decimal exp below context exponent bounds and raise instead of returning the configured floor multiplier.",
+      "fix_intent": "Guard extreme decay exponents under an explicit local context and clamp underflow to zero before floor enforcement; add large-epoch regression tests."
+    },
+    {
+      "finding_id": "F180",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/agent.py"
+      ],
+      "summary": "refute_node accepts negative stake values and subtracts them from wallet_balance, increasing the balance.",
+      "fix_intent": "Require refutation stake_amount > 0 before wallet mutation; test negative and zero stake rejection."
+    },
+    {
+      "finding_id": "F181",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/types.py"
+      ],
+      "summary": "claim_record_to_node silently replaces invalid historical timestamp strings with the current wall-clock time.",
+      "fix_intent": "Reject invalid timestamps with a deterministic error token instead of substituting datetime.now; test invalid timestamp rejection."
+    },
+    {
+      "finding_id": "F182",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/hardware.py",
+        "ilc_core/agent.py"
+      ],
+      "summary": "Hardware archetype stake fractions and base potential are stored as floats in simulation/helper code and can leak float artifacts into auto_mine_claim stake calculation.",
+      "fix_intent": "Store/coerce archetype fractions as Decimal-compatible exact values and compute auto_mine_claim stake fractions with Decimal; preserve simulation-only scope."
+    },
+    {
+      "finding_id": "F183",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/types.py",
+        "ilc_core/analysis/spectral_utils.py"
+      ],
+      "summary": "WeightParams stores provisional decay_rate and edge_type_coefficient as binary floats in committed hyperedge parameters.",
+      "fix_intent": "Migrate WeightParams coefficients to Decimal-compatible exact values or enforce canonical Decimal conversion at construction and computation; update tests for no committed float dependence."
+    },
+    {
+      "finding_id": "F184",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/server.py"
+      ],
+      "summary": "submit_ep_task returns dataclasses.asdict(TaskDescriptor) with raw Decimal fields, causing JSON serialization failures.",
+      "fix_intent": "Normalize Decimal values to canonical strings before FastAPI response serialization; test endpoint response encoding."
+    },
+    {
+      "finding_id": "F185",
+      "codex_disposition": "accepted_fix1",
+      "severity": "high",
+      "files": [
+        "ilc_core/agent.py"
+      ],
+      "summary": "mine_thought mutates the graph before consensus stake registration; if consensus rejects, graph nodes and edges remain orphaned.",
+      "fix_intent": "Reorder stake registration before graph mutation or add rollback for graph mutations on consensus rejection; test rejection leaves no graph delta."
+    },
+    {
+      "finding_id": "F186",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/hardware.py"
+      ],
+      "summary": "load_hardware_archetypes silently returns an empty dict when an explicit config_path is missing.",
+      "fix_intent": "Raise FileNotFoundError or a deterministic ValueError for missing explicit config paths while preserving default fallback behavior."
+    },
+    {
+      "finding_id": "F187",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/server.py"
+      ],
+      "summary": "Local-dev peer admin mode bypasses host validation entirely and stores raw host strings.",
+      "fix_intent": "Continue allowing private endpoints in explicit local-dev mode, but still require bounded normalized host strings and reject control characters or malformed hosts."
+    },
+    {
+      "finding_id": "F188",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/schema/d2_schema_baseline_runtime.py"
+      ],
+      "summary": "D2 schema baseline duplicate-field detection keys by name and type, allowing duplicate field names with different types.",
+      "fix_intent": "Reject duplicate field names regardless of type; test same-name different-type entries."
+    },
+    {
+      "finding_id": "F189",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/schema/d2_schema_baseline_runtime.py"
+      ],
+      "summary": "D2 schema baseline currently permits a float field type despite project-wide runtime determinism rules.",
+      "fix_intent": "Remove float from allowed protocol baseline types or quarantine it behind an explicit non-protocol simulation-only marker; update dependent tests/docs."
+    },
+    {
+      "finding_id": "F190",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/schema/verdict_record_schema.py"
+      ],
+      "summary": "Verdict canonical payload serializes ecus_at_stake with str(Decimal), preserving non-canonical scale differences.",
+      "fix_intent": "Serialize ecus_at_stake with the project canonical Decimal encoder and test equivalent Decimal scales hash identically."
+    },
+    {
+      "finding_id": "F191",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/schema/d2_schema_baseline_runtime.py"
+      ],
+      "summary": "Metadata sorting coerces mapping keys to strings in a dict comprehension, allowing collisions and silent overwrite.",
+      "fix_intent": "Reject non-string metadata keys or detect string-coercion collisions before canonical sorting; test int/string key collision."
+    },
+    {
+      "finding_id": "F192",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/schema/verdict_record_schema.py",
+        "ilc_core/epistemic/jury_finality_evaluator.py"
+      ],
+      "summary": "VerdictRecord requires quorum_count == total_votes even though CDL-095 treats quorum as a participation floor and total_votes may exceed it.",
+      "fix_intent": "Change schema validation to require total_votes >= quorum_count and preserve exact vote-breakdown validation; add over-quorum valid verdict tests."
+    },
+    {
+      "finding_id": "F193",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/security/signer_lineage_runtime.py"
+      ],
+      "summary": "REGISTER log replay uses truthiness fallback for empty canonical_root_key, diverging from live register state.",
+      "fix_intent": "Reject empty key fields at record construction/replay or preserve exact values consistently; prefer fail-closed rejection with tests."
+    },
+    {
+      "finding_id": "F194",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/security/key_compromise_runtime.py",
+        "ilc_core/security/signer_lineage_runtime.py"
+      ],
+      "summary": "Confirmed compromise flow revokes before recover and can leave lineage revoked if recovery raises.",
+      "fix_intent": "Wrap revoke/recover in checkpoint/restore or an equivalent transaction so recovery failure restores prior lineage state; test injected recover failure."
+    },
+    {
+      "finding_id": "F195",
+      "codex_disposition": "defer_with_reason_existing_default_off_design_required",
+      "severity": "medium",
+      "files": [
+        "ilc_core/security/rollback_resistance_runtime.py"
+      ],
+      "summary": "RollbackResistanceRuntime replay state is process-local and non-durable across restarts.",
+      "fix_intent": "Do not add an ad hoc durable backend in Fix1. The source already marks this as a default-off activation prerequisite and the phase_1573am design note requires LMDB/append-only-log design before live wiring."
+    },
+    {
+      "finding_id": "F196",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/security/signer_lineage_runtime.py"
+      ],
+      "summary": "verify_canonical_authority permits authority_recovery_key to satisfy routine canonical operational signing authority.",
+      "fix_intent": "Separate operational signing authority from recovery authority and disallow recovery keys for routine operational verification unless a dedicated recovery transition path is being evaluated."
+    },
+    {
+      "finding_id": "F197",
+      "codex_disposition": "not_classified_missing_report_detail",
+      "severity": "none",
+      "files": [
+        "ilc_core/data/"
+      ],
+      "summary": "Gemini index lists FINDING-197 for ilc_core/data, but the detailed report contains no FINDING-197 section.",
+      "fix_intent": "No code action until Gemini supplies the missing finding text; keep this placeholder so the numbering gap is explicit."
+    },
+    {
+      "finding_id": "F198",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/value_action/action_nonce_store.py"
+      ],
+      "summary": "next_nonce persists issuance advancement; if a nonce is abandoned, later issued nonces are permanently out of sequence against consumed.",
+      "fix_intent": "Make issuance idempotent when consumed lags issued by one, or add an explicit abort/release path; test abandoned nonce does not deadlock future action stream."
+    },
+    {
+      "finding_id": "F199",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/value_action/ilc_transfer_ledger.py"
+      ],
+      "summary": "Genesis same-epoch spend calculation scans and re-verifies all historical transfers inside the LMDB write transaction.",
+      "fix_intent": "Maintain an authenticated per-epoch Genesis spend aggregate or secondary index and verify/update it atomically; test behavior against multiple epochs."
+    },
+    {
+      "finding_id": "F200",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/value_action/local_signing_provider.py"
+      ],
+      "summary": "Signing key file resolution checks symlink/file metadata before read with TOCTOU exposure.",
+      "fix_intent": "Use lstat/open/fstat style checks or equivalent no-follow regular-file validation before reading; reject symlinks and loose permissions deterministically."
+    },
+    {
+      "finding_id": "F201",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/value_action/local_signing_provider.py"
+      ],
+      "summary": "Canonical action payload includes memo and signed_at_epoch as null keys while omitting graph_context_anchor when absent.",
+      "fix_intent": "Normalize optional-field canonicalization consistently, preferably omitting all absent optional fields before signing; test stable payload key sets."
+    },
+    {
+      "finding_id": "F202",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/work/task_queue.py"
+      ],
+      "summary": "In-memory TaskQueue has no maximum capacity and can grow until OOM in service/simulation environments.",
+      "fix_intent": "Add a configurable finite max_size with fail-closed overflow error; preserve simple FIFO behavior and test capacity rejection."
+    },
+    {
+      "finding_id": "F203",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/work/task_queue.py"
+      ],
+      "summary": "TaskQueue docstring is malformed/truncated.",
+      "fix_intent": "Replace with a clear descriptive docstring naming in-memory, non-durable semantics."
+    },
+    {
+      "finding_id": "F204",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/bundle/atlas_slice_manifest.py"
+      ],
+      "summary": "Atlas content-entry Merkle root commits sorted record_sha256 hex strings only, without explicit domain-separated leaf framing or node IDs.",
+      "fix_intent": "Use domain-separated binary leaf framing that includes node_id and record_sha256; test roots change on node-id swaps. Do not claim practical SHA-256 collision feasibility."
+    },
+    {
+      "finding_id": "F205",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/bundle/atlas_slice_schema.py"
+      ],
+      "summary": "Merkle root computation repeatedly allocates full intermediate lists, amplifying memory for large projection slices.",
+      "fix_intent": "Reduce intermediate allocation where practical and enforce/record row-count bounds for this pre-RC surface; add large-input smoke regression."
+    },
+    {
+      "finding_id": "F206",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/bundle/atlas_slice_materializer.py"
+      ],
+      "summary": "Local blob materialization resolves and checks file paths before later hashing/opening, leaving a symlink-swap TOCTOU window.",
+      "fix_intent": "Hash via a symlink-safe opened file descriptor after lstat/fstat regular-file validation inside the source root; test symlink rejection."
+    },
+    {
+      "finding_id": "F207",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/bundle/atlas_local_registry.py"
+      ],
+      "summary": "_resolve_within_root accepts absolute local_path values if they resolve inside root, weakening the intended relative-path boundary.",
+      "fix_intent": "Reject absolute local_path inputs and require explicit relative paths under the selected root; test absolute path rejection even when inside root."
+    },
+    {
+      "finding_id": "F208",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/bundle/default_public_rc_starmap.py"
+      ],
+      "summary": "Default public-RC starmap uses static placeholder CID and non-DAG-CBOR placeholder payload strings.",
+      "fix_intent": "Emit a real canonical DAG-CBOR payload and CID for the default starmap witness, or explicitly mark placeholders as non-verifiable and prevent generic verifier acceptance; prefer real canonical payload before public RC."
+    },
+    {
+      "finding_id": "F209",
+      "codex_disposition": "rejected_unsupported_as_stated",
+      "severity": "none",
+      "files": [
+        "ilc_core/distribution/genesis_package_manifest.py"
+      ],
+      "summary": "Gemini alleged unsanitized marker scanning overlap/window behavior in PUBLIC_RC_EXCLUDE detection.",
+      "fix_intent": "No Fix1 code change from current evidence: the function intentionally performs bounded raw-byte marker detection across chunk boundaries. Treating the literal marker inside comments/docstrings as excluded is a conservative safety policy, not a bug."
+    },
+    {
+      "finding_id": "F210",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/distribution/materialization.py"
+      ],
+      "summary": "HTTP fetch errors include source_path directly in exception strings, allowing control-character/log injection in diagnostics.",
+      "fix_intent": "Sanitize or repr-escape source_path in error tokens while preserving bounded operator diagnostics; add newline/control-character regression."
+    },
+    {
+      "finding_id": "F211",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/distribution/materialization.py"
+      ],
+      "summary": "Build recipe telemetry records only stdout/stderr tails, which can hide root causes earlier in long output.",
+      "fix_intent": "Record output lengths and hashes plus bounded head/tail excerpts, or otherwise make truncation explicit and auditable."
+    },
+    {
+      "finding_id": "F212",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/analysis/agent_descriptors.py"
+      ],
+      "summary": "Agent descriptor dominant problem space falls back to the first zero-count bucket for inactive agents.",
+      "fix_intent": "Default dominant_problem_space to OTHER when total_tasks is zero or all space counts are zero; add deterministic inactive-agent tests."
+    },
+    {
+      "finding_id": "F213",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/analysis/competency_kpis.py"
+      ],
+      "summary": "Competency KPI inference accepts arbitrary explicit barrier strings and computes global success as an unweighted macro-average across problem spaces.",
+      "fix_intent": "Validate barrier_level against low/medium/high and compute a task-weighted global success rate; add malformed-barrier and unbalanced-space tests."
+    },
+    {
+      "finding_id": "F214",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/analysis/fairness_metrics.py"
+      ],
+      "summary": "Beta/theta payout scaling can spike when theta is near or equal to 1.0 due to a tiny denominator fallback.",
+      "fix_intent": "Validate theta within a safe open interval or define a bounded theta==1 branch; test boundary behavior and no multiplier explosion."
+    },
+    {
+      "finding_id": "F215",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/analysis/laplacian_analytics.py"
+      ],
+      "summary": "A zero-stake member intentionally collapses harmonic hyperedge weight to zero, but the collapse is silent and can hide malformed analytics inputs.",
+      "fix_intent": "Keep the zero-stake fail-closed behavior but expose deterministic diagnostics or validation so malformed inputs are not silently invisible."
+    },
+    {
+      "finding_id": "F216",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/analysis/routed_tasks_export.py"
+      ],
+      "summary": "Empty routed-task CSV export creates a zero-byte file instead of a header-bearing CSV artifact.",
+      "fix_intent": "Write deterministic standard headers for empty exports or require caller-provided headers; add empty export test."
+    },
+    {
+      "finding_id": "F217",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/analysis/spectral_utils.py"
+      ],
+      "summary": "compute_weight passes negative reuse_count into math.log and can raise an uncaught domain error.",
+      "fix_intent": "Reject negative reuse_count with a deterministic error before math.log; test -1 and less-than--1 boundaries."
+    },
+    {
+      "finding_id": "F218",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/analysis/utility_flow_rewards.py"
+      ],
+      "summary": "Zero total utility flow leaves the epoch reward budget undistributed with no unallocated-budget telemetry.",
+      "fix_intent": "Record explicit unallocated_budget or treasury_rollover telemetry when total_flow is zero; preserve no arbitrary redistribution."
+    },
+    {
+      "finding_id": "F219",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/star_map/route_index.py"
+      ],
+      "summary": "Route index timestamps only replace +00:00 with Z and do not normalize naive or non-UTC datetimes to canonical UTC.",
+      "fix_intent": "Require timezone-aware datetimes, normalize to UTC, and emit Z-form ISO strings; add non-UTC and naive datetime tests."
+    },
+    {
+      "finding_id": "F220",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/star_map/debruijn_harness.py"
+      ],
+      "summary": "Bucket histogram head count accepts non-int values until range(heads) raises a generic TypeError.",
+      "fix_intent": "Reject bool/float/non-int heads with deterministic validation before range(); test float and bool inputs."
+    },
+    {
+      "finding_id": "F221",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/ccss/runtime.py"
+      ],
+      "summary": "CCSS JSON reader wraps JSON decode and missing-file cases but lets UnicodeDecodeError and PermissionError escape raw.",
+      "fix_intent": "Wrap text decode and permission/read errors in CCSSRuntimeError with bounded deterministic tokens; add malformed UTF-8 test."
+    },
+    {
+      "finding_id": "F222",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/ccss/runtime.py"
+      ],
+      "summary": "Tor SOCKS5 connection failures omit the SOCKS status byte; the plaintext HTTP-over-onion transport is a policy boundary rather than a direct TLS bug.",
+      "fix_intent": "Add bounded SOCKS status diagnostics and explicitly document/test the current onion transport security boundary; do not silently imply WebPKI TLS."
+    },
+    {
+      "finding_id": "F223",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low",
+      "files": [
+        "ilc_core/ccss/contact_gate.py"
+      ],
+      "summary": "Malformed hex-looking contact commitments are caught but silently treated as UTF-8 raw commitments, creating ambiguous parsing.",
+      "fix_intent": "Reject malformed 0x-prefixed or hex-looking commitment strings with ContactGateError while preserving intentional non-hex string commitments."
+    },
+    {
+      "finding_id": "F224",
+      "codex_disposition": "rejected_stale_as_stated",
+      "severity": "none",
+      "files": [
+        "ilc_core/ccss/contact_envelope.py"
+      ],
+      "summary": "Gemini alleged direct over-max message length packing in _build_plaintext.",
+      "fix_intent": "No Fix1 code change from current evidence: _build_plaintext calls _require_message_bytes before struct.pack_into, and that helper enforces CONTACT_ENVELOPE_MAX_MESSAGE_BYTES. Add tests only if a future unguarded path is found."
+    },
+    {
+      "finding_id": "F225",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/eve/capsule.py"
+      ],
+      "summary": "Capsule signature verification correctly fails closed on invalid public-key length but provides no structured diagnostic test coverage.",
+      "fix_intent": "Add invalid public-key length regression and, if useful, a bounded reason-returning helper while keeping verify_capsule_signature fail-closed."
+    },
+    {
+      "finding_id": "F226",
+      "codex_disposition": "rejected_unsupported_as_stated",
+      "severity": "none",
+      "files": [
+        "ilc_core/eve/capsule_builder.py",
+        "ilc_core/eve/capsule.py"
+      ],
+      "summary": "Gemini alleged capsule ID two-pass key ordering sensitivity.",
+      "fix_intent": "No Fix1 code change from current evidence: sign_capsule_manifest computes capsule_id from the empty-capsule_id canonical payload and verify_manifest_cid recomputes the same preimage. Keep or add a regression pinning this invariant."
+    },
+    {
+      "finding_id": "F227",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/harness/co_attestation_receipt.py"
+      ],
+      "summary": "Co-attestation receipt builder assumes every attestation_signatures item supports .get and raises AttributeError for non-mapping rows.",
+      "fix_intent": "Require each signature row to be a Mapping and raise co_attestation_invalid_signature for non-mapping inputs; add regression."
+    },
+    {
+      "finding_id": "F228",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/harness/consent_gate.py"
+      ],
+      "summary": "ConsentGate.approve writes a local ledger entry before verifying receipt hash consistency for externally supplied receipts.",
+      "fix_intent": "Rebuild and verify the returned receipt, including local ledger entry binding, before durable write or make write rollback/atomic; test mismatched receipt leaves no entry."
+    },
+    {
+      "finding_id": "F229",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/harness/local_immutable_store.py"
+      ],
+      "summary": "Harness immutable store does not explicitly set private permissions on ledger entry files.",
+      "fix_intent": "Set temp and final files to 0600 before/after atomic replace; add permission regression."
+    },
+    {
+      "finding_id": "F230",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/harness/provider_usage_adapter.py"
+      ],
+      "summary": "Provider usage snapshot uses the historical minimum remaining-token value and can stay stale after quota resets.",
+      "fix_intent": "Use the latest observed remaining-token signal or expose both latest and historical minimum explicitly; test quota reset behavior."
+    },
+    {
+      "finding_id": "F231",
+      "codex_disposition": "accepted_fix1",
+      "severity": "medium",
+      "files": [
+        "ilc_core/mcp/service.py"
+      ],
+      "summary": "MCP audit payload redaction can crash when digesting non-JSON-serializable sensitive field values.",
+      "fix_intent": "Digest a bounded canonical representation for unsupported values or record a type-only redaction digest without leaking content; add bytes/set/object regressions."
+    },
+    {
+      "finding_id": "F232",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/mcp/schema.py"
+      ],
+      "summary": "MCP schema loader fallback failure hides package-resource lookup details.",
+      "fix_intent": "Preserve bounded package-resource failure context in the final FileNotFoundError or custom error; add missing-resource diagnostic regression."
+    },
+    {
+      "finding_id": "F233",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/node/node_startup_runtime.py"
+      ],
+      "summary": "Dependency mismatch check writes JSON to stdout during module import before raising.",
+      "fix_intent": "Avoid stdout side effects at import time; raise a structured RuntimeError carrying the same data or write only to stderr in explicit CLI context."
+    },
+    {
+      "finding_id": "F234",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/node/node_startup_runtime.py"
+      ],
+      "summary": "Noised spectral eigenvalues are clamped at 0 and 2 without clipping telemetry, which can distort later DP interpretation.",
+      "fix_intent": "Expose deterministic clipping count/telemetry or document returned values as clipped projections; add boundary clipping tests."
+    },
+    {
+      "finding_id": "F235",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/node/operator_init_runtime.py"
+      ],
+      "summary": "Operator initialization validators raise generic ValueError instead of a typed domain exception.",
+      "fix_intent": "Introduce or reuse OperatorInitError for validation failures while preserving token strings; add catchability tests."
+    },
+    {
+      "finding_id": "F236",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/node/readiness_runtime.py"
+      ],
+      "summary": "TLS certificate days-remaining diagnostic floors sub-day validity to zero.",
+      "fix_intent": "Return or expose seconds_remaining alongside days_remaining, or ceil positive sub-day validity to one where user-facing; test 23h59m boundary."
+    },
+    {
+      "finding_id": "F237",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "medium",
+      "files": [
+        "ilc_core/node/tier3_runtime_linkage_runtime.py"
+      ],
+      "summary": "Tier3 float rejection catches built-in float only and misses other non-integer numeric scalars.",
+      "fix_intent": "Reject non-integral numeric scalar types in Tier3 records unless explicitly allowed, with bool/int handling preserved; add Decimal/numpy-like regression without requiring numpy."
+    },
+    {
+      "finding_id": "F238",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/sim/devnet_epoch_orchestrator.py"
+      ],
+      "summary": "Devnet epoch event telemetry records empty protocol_params when defaults are used implicitly.",
+      "fix_intent": "Materialize default ProtocolParams before use and record the effective parameters in epoch_config telemetry; add default telemetry test."
+    },
+    {
+      "finding_id": "F239",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/sim/devnet_experiments.py"
+      ],
+      "summary": "Devnet experiment summaries emit unrounded binary-float averages.",
+      "fix_intent": "Quantize or format reporting averages deterministically; preserve simulation-only semantics."
+    },
+    {
+      "finding_id": "F240",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/sim/devnet_multi_epoch.py"
+      ],
+      "summary": "Devnet settlement hardcodes equal Decimal('1') stakes for all profiles, ignoring profile stake/weight configuration.",
+      "fix_intent": "Use explicit profile stake if available and fall back to Decimal('1') with telemetry; test custom profile stake behavior."
+    },
+    {
+      "finding_id": "F241",
+      "codex_disposition": "accepted_fix1_narrowed",
+      "severity": "low_medium",
+      "files": [
+        "ilc_core/sim/harness_econ_scenarios.py"
+      ],
+      "summary": "Economic scenario overrides are validated but not passed into run_devnet_multi_epoch, making them no-ops.",
+      "fix_intent": "Return effective ProtocolParams from apply_econ and pass them to devnet runs; test that overrides affect the simulation parameter path."
+    },
+    {
+      "finding_id": "F242",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/sim/sim_fetch_01/sim_fetch_01_harness.py"
+      ],
+      "summary": "Deterministic simulation randint uses modulo reduction and introduces small distribution bias for non-power-of-two spans.",
+      "fix_intent": "Use deterministic rejection sampling over uint64 draws; test span boundaries and reproducibility."
+    },
+    {
+      "finding_id": "F243",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/testing/phase_commit_manifest.py"
+      ],
+      "summary": "Phase commit manifest helper lets missing git binary raise raw FileNotFoundError.",
+      "fix_intent": "Catch OSError/FileNotFoundError and return False or skip through the existing helper; add monkeypatch regression."
+    },
+    {
+      "finding_id": "F244",
+      "codex_disposition": "accepted_fix1_low",
+      "severity": "low",
+      "files": [
+        "ilc_core/testing/ratification_mutation_scope_guardrail.py"
+      ],
+      "summary": "Markdown decision-register row parser splits on escaped pipe characters inside cells.",
+      "fix_intent": "Implement escaped-pipe-aware row splitting; test cells containing \\| remain intact."
+    }
+  ],
+  "summary_counts": {
+    "accepted_fix1_or_narrowed": 144,
+    "rejected_or_deferred_no_code": 30,
+    "reviewed_findings_through": 244
+  }
+}
