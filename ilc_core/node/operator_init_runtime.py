@@ -25,6 +25,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import NameOID
 
+from ilc_core.consensus.binary_paths import installed_consensus_binary_command
 from ilc_core.consensus.validator_endpoint_assertion import (
     VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
     VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
@@ -658,6 +659,9 @@ def _sign_endpoint_assertion_external(
 
 
 def _default_bls_keygen_command() -> tuple[str, ...] | None:
+    installed = installed_consensus_binary_command("keygen")
+    if installed is not None:
+        return installed
     cargo = shutil.which("cargo")
     if cargo is None:
         home_cargo = Path.home() / ".cargo" / "bin" / "cargo"
@@ -677,6 +681,9 @@ def _default_bls_keygen_command() -> tuple[str, ...] | None:
 
 
 def _default_bls_sign_command() -> tuple[str, ...] | None:
+    installed = installed_consensus_binary_command("validator_endpoint_assertion_bls")
+    if installed is not None:
+        return installed
     cargo = shutil.which("cargo")
     if cargo is None:
         home_cargo = Path.home() / ".cargo" / "bin" / "cargo"

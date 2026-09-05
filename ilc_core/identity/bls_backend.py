@@ -21,6 +21,8 @@ from typing import Final
 from py_ecc.bls import G2Basic
 from py_ecc.optimized_bls12_381 import curve_order
 
+from ilc_core.consensus.binary_paths import installed_consensus_binary_command
+
 ILC_INVITE_POP_DST: Final[bytes] = (
     b"ILC_INVITE_POP_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
@@ -545,6 +547,9 @@ def _resolve_bls_verify_command() -> list[str] | None:
     path_binary = shutil.which("bls_verify_digest")
     if path_binary is not None:
         return [path_binary]
+    installed_binary = installed_consensus_binary_command("bls_verify_digest")
+    if installed_binary is not None:
+        return list(installed_binary)
     debug_binary = _REPO_ROOT / "ilc_consensus" / "target" / "debug" / "bls_verify_digest"
     if debug_binary.exists():
         return [str(debug_binary)]

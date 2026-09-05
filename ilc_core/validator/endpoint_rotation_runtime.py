@@ -18,6 +18,7 @@ from typing import Any
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 
+from ilc_core.consensus.binary_paths import installed_consensus_binary_command
 from ilc_core.consensus.validator_endpoint_assertion import (
     VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
     VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
@@ -278,6 +279,9 @@ def _read_bounded_key_bytes(path: Path) -> bytes:
 
 
 def _default_bls_sign_command() -> tuple[str, ...] | None:
+    installed = installed_consensus_binary_command("validator_endpoint_assertion_bls")
+    if installed is not None:
+        return installed
     cargo = shutil.which("cargo")
     if cargo is None:
         home_cargo = Path.home() / ".cargo" / "bin" / "cargo"
