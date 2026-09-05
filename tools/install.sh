@@ -489,7 +489,7 @@ manifest = {
     "release_id": release_id,
 }
 envelope_set = read_envelope_set(envelope_ref)
-if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.15":
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.16":
     fail("release_envelope_set_schema_version_invalid")
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
