@@ -1,0 +1,70 @@
+{
+  "artifacts": {
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/32/5e/a76b77f2585a50b346e557b48867f9215efdd409b948f75800ee050aaf58/ilc_core-0.4.16.tar.gz",
+      "fetchback_sha256": "2058ec724b56bf0d8bbdee9e61cb0185f0b26df9c6dd691bf41b8b84cd60dbd0",
+      "fetchback_size_bytes": 1190258,
+      "filename": "ilc_core-0.4.16.tar.gz",
+      "local_sha256": "2058ec724b56bf0d8bbdee9e61cb0185f0b26df9c6dd691bf41b8b84cd60dbd0",
+      "local_size_bytes": 1190258,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl",
+      "fetchback_sha256": "c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14",
+      "fetchback_size_bytes": 1459734,
+      "filename": "ilc_core-0.4.16-py3-none-any.whl",
+      "local_sha256": "c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14",
+      "local_size_bytes": 1459734,
+      "pypi_yanked": false
+    }
+  },
+  "consensus_binary": {
+    "canonical_github_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+    "fetchback_sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+    "fetchback_size_bytes": 4304398,
+    "filename": "ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+    "local_sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+    "local_size_bytes": 4304398
+  },
+  "fetchback_verification": "pass",
+  "go_phrase": "GO Phase GAP-CONSENSUS-BINARY-DEPLOY-00 CONSENSUS-BINARY-PUBLISH-AUTHORIZED",
+  "install_sh": {
+    "consensus_bin_sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+    "consensus_bin_size": "4304398",
+    "consensus_bin_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+    "installer_version": "GAP-CONSENSUS-BINARY-DEPLOY-00-0416",
+    "rc_wheel_sha256": "c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14",
+    "rc_wheel_size": "1459734",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl"
+  },
+  "non_claims": [
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_public_mirror_push",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting",
+    "release_signature_verification_for_0416_not_claimed"
+  ],
+  "phase": "GAP-CONSENSUS-BINARY-DEPLOY-00",
+  "predecessor_version": "0.4.15",
+  "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.16/",
+  "pypi_upload_status": "uploaded",
+  "pypi_yank_status": {
+    "0.4.15": {
+      "all_yanked": false,
+      "status": "operator_yank_required"
+    },
+    "0.4.16": {
+      "all_active": true,
+      "all_yanked": false
+    }
+  },
+  "schema_version": "ilc.pypi_upload_receipt.GAP_CONSENSUS_BINARY_DEPLOY_00.v0.1",
+  "source_private_commit_at_upload_start": "9a2759d38a6c9ed4f0dbb2c38ed5a47faf543c72",
+  "timestamp_utc": "2026-09-05T10:07:17Z",
+  "twine_upload_status": "pass",
+  "version": "0.4.16"
+}

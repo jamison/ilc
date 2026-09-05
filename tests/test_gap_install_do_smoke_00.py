@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
-import zipfile
 from pathlib import Path
 
 import pytest
@@ -57,11 +56,9 @@ def test_missing_invite_bundle_hard_stops_before_droplet(tmp_path: Path) -> None
     installer = tmp_path / "install.sh"
     build_receipt = tmp_path / "build.json"
     envelope = tmp_path / "envelope.json"
-    wheel = tmp_path / "wheel.whl"
     installer.write_text('RC_WHEEL_SHA256="abc123"\n', encoding="utf-8")
     build_receipt.write_text(json.dumps({"artifacts": {"wheel": {"sha256": "abc123"}}}), encoding="utf-8")
     envelope.write_text("{}", encoding="utf-8")
-    wheel.write_bytes(b"not-a-real-wheel")
     config = tool.SmokeConfig(
         token="",
         ssh_key_id="",
@@ -70,32 +67,49 @@ def test_missing_invite_bundle_hard_stops_before_droplet(tmp_path: Path) -> None
         installer_path=installer,
         build_receipt_path=build_receipt,
         release_envelope_path=envelope,
-        wheel_path=wheel,
         dry_run=True,
     )
     with pytest.raises(ValueError, match="invite_bundle_missing"):
         tool.validate_preconditions(config)
 
 
-def test_wheel_required_binary_detection(tmp_path: Path) -> None:
+def test_consensus_binary_metadata_from_install_sh(tmp_path: Path) -> None:
     tool = _load_tool()
-    wheel = tmp_path / "ok.whl"
-    with zipfile.ZipFile(wheel, "w") as archive:
-        archive.writestr("ilc_consensus/bin/validator_harness", "")
-        archive.writestr("ilc_consensus/bin/validator_endpoint_assertion_bls", "")
-    has_binaries, hits = tool.wheel_contains_required_rust_binaries(wheel)
-    assert has_binaries is True
-    assert hits == [
-        "ilc_consensus/bin/validator_endpoint_assertion_bls",
-        "ilc_consensus/bin/validator_harness",
-    ]
+    installer = tmp_path / "install.sh"
+    installer.write_text(
+        "\n".join(
+            [
+                'CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"',
+                'CONSENSUS_BIN_SHA256="' + "a" * 64 + '"',
+                'CONSENSUS_BIN_SIZE="4304398"',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    metadata = tool.consensus_binary_metadata_from_install_sh(installer)
+
+    assert metadata["url"].endswith("ilc-consensus-linux-x86_64-v0.4.16.tar.gz")
+    assert metadata["sha256"] == "a" * 64
+    assert metadata["size"] == "4304398"
 
 
-def test_current_0415_wheel_missing_rust_binaries_is_explicit() -> None:
+def test_consensus_binary_metadata_rejects_insecure_url(tmp_path: Path) -> None:
     tool = _load_tool()
-    has_binaries, hits = tool.wheel_contains_required_rust_binaries(Path("dist/ilc_core-0.4.15-py3-none-any.whl"))
-    assert has_binaries is False
-    assert hits == []
+    installer = tmp_path / "install.sh"
+    installer.write_text(
+        "\n".join(
+            [
+                'CONSENSUS_BIN_URL="http://example.invalid/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"',
+                'CONSENSUS_BIN_SHA256="' + "a" * 64 + '"',
+                'CONSENSUS_BIN_SIZE="4304398"',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="consensus_binary_url_not_https"):
+        tool.consensus_binary_metadata_from_install_sh(installer)
 
 
 def test_blocked_receipt_is_redacted(tmp_path: Path) -> None:
@@ -109,9 +123,13 @@ def test_blocked_receipt_is_redacted(tmp_path: Path) -> None:
     )
     receipt = tool.blocked_receipt(
         config,
-        reason="rust_consensus_binaries_missing_from_0415_wheel",
+        reason="install_sh_consensus_binary_metadata_missing",
         wheel_sha256="abc123",
-        binary_entries=[],
+        consensus_binary_metadata={
+            "url": "https://example.invalid/a.tgz",
+            "sha256": "a" * 64,
+            "size": "1",
+        },
     )
     tool.validate_receipt_redacted(receipt)
     assert receipt["blocked_before_droplet_create"] is True
@@ -125,14 +143,20 @@ def test_destroy_runs_in_finally(monkeypatch, tmp_path: Path) -> None:
     installer = tmp_path / "install.sh"
     build_receipt = tmp_path / "build.json"
     envelope = tmp_path / "envelope.json"
-    wheel = tmp_path / "wheel.whl"
     invite.write_text("{}", encoding="utf-8")
-    installer.write_text('RC_WHEEL_SHA256="abc123"\n', encoding="utf-8")
+    installer.write_text(
+        "\n".join(
+            [
+                'RC_WHEEL_SHA256="abc123"',
+                'CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"',
+                'CONSENSUS_BIN_SHA256="' + "a" * 64 + '"',
+                'CONSENSUS_BIN_SIZE="4304398"',
+            ]
+        ),
+        encoding="utf-8",
+    )
     build_receipt.write_text(json.dumps({"artifacts": {"wheel": {"sha256": "abc123"}}}), encoding="utf-8")
     envelope.write_text("{}", encoding="utf-8")
-    with zipfile.ZipFile(wheel, "w") as archive:
-        archive.writestr("bin/validator_harness", "")
-        archive.writestr("bin/validator_endpoint_assertion_bls", "")
     config = tool.SmokeConfig(
         token="token",
         ssh_key_id="123",
@@ -141,7 +165,6 @@ def test_destroy_runs_in_finally(monkeypatch, tmp_path: Path) -> None:
         installer_path=installer,
         build_receipt_path=build_receipt,
         release_envelope_path=envelope,
-        wheel_path=wheel,
         dry_run=True,
     )
     destroyed: list[int] = []

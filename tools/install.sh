@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-INVITE-SHORTCODE-DEPLOY-00-0415"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl"
-RC_WHEEL_SHA256="058e2deec5656d25cc92de3d16acd8db01778f26c18e6405e06db48569ce7524"
-RC_WHEEL_SIZE="1451016"
+INSTALLER_VERSION="GAP-CONSENSUS-BINARY-DEPLOY-00-0416"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl"
+RC_WHEEL_SHA256="c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14"
+RC_WHEEL_SIZE="1459734"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.15"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0415@phase-1627"
-RC_SDIST_SHA256="3aea9f609898a1f841de26a64cd8c9706be4a16094b14934879c78456232f21e"
-RC_SDIST_SIZE="1183400"
+RC_RELEASE_ID="ilc-core-0.4.16"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0416@phase-1627"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0416@phase-1627"
+RC_SDIST_SHA256="2058ec724b56bf0d8bbdee9e61cb0185f0b26df9c6dd691bf41b8b84cd60dbd0"
+RC_SDIST_SIZE="1190258"
 DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
+CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+CONSENSUS_BIN_SHA256="adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42"
+CONSENSUS_BIN_SIZE="4304398"
+CONSENSUS_BIN_INSTALL_DIR="${ILC_CONSENSUS_BIN_INSTALL_DIR:-${HOME:-}/.ilc/bin}"
 
 CHANNEL="rc"
 INVITE_BUNDLE=""
@@ -151,6 +155,9 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   printf 'RC_WHEEL_SIZE=%s\n' "${RC_WHEEL_SIZE}"
   printf 'RC_MIN_PYTHON_MINOR=%s\n' "${RC_MIN_PYTHON_MINOR}"
   printf 'RC_RELEASE_ENVELOPE_REF=%s\n' "${RC_RELEASE_ENVELOPE_REF}"
+  printf 'CONSENSUS_BIN_URL=%s\n' "${CONSENSUS_BIN_URL}"
+  printf 'CONSENSUS_BIN_SHA256=%s\n' "${CONSENSUS_BIN_SHA256}"
+  printf 'CONSENSUS_BIN_SIZE=%s\n' "${CONSENSUS_BIN_SIZE}"
   if [[ -n "${TARGET_DIR}" ]]; then
     printf 'target_dir=%s\n' "${TARGET_DIR}"
   fi
@@ -505,6 +512,110 @@ fi
 python3 -m venv "${TARGET_DIR}"
 "${TARGET_DIR}/bin/python" -m pip install --quiet "${TMP_WHEEL}"
 "${TARGET_DIR}/bin/python" -m ilc_core.cli.main --help >/dev/null 2>&1 || die 1 "install_sh_post_install_check_failed"
+
+OS_NAME="$(uname -s)"
+ARCH_NAME="$(uname -m)"
+if [[ "${OS_NAME}" == "Linux" && ( "${ARCH_NAME}" == "x86_64" || "${ARCH_NAME}" == "amd64" ) ]]; then
+  if [[ "${CONSENSUS_BIN_INSTALL_DIR}" == "/.ilc/bin" ]]; then
+    die 1 "install_sh_consensus_binary_home_missing"
+  fi
+  CONSENSUS_TARBALL="${TMP_DIR}/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+  CONSENSUS_BIN_SIZE_CAP="$(( (CONSENSUS_BIN_SIZE * 11 + 9) / 10 ))"
+  python3 - "${CONSENSUS_BIN_URL}" "${CONSENSUS_TARBALL}" "${CONSENSUS_BIN_SIZE_CAP}" <<'PY'
+import sys
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+url, output_path, cap_text = sys.argv[1], sys.argv[2], sys.argv[3]
+cap = int(cap_text)
+request = Request(url, headers={"User-Agent": "ilc-install/consensus-binary"})
+try:
+    with urlopen(request, timeout=120) as response:
+        raw_status = getattr(response, "status", None)
+        status = 200 if raw_status is None else int(raw_status)
+        if status != 200:
+            raise SystemExit(f"install_sh_consensus_binary_download_failed:{status}")
+        declared = response.headers.get("Content-Length")
+        if declared is not None and int(declared) > cap:
+            raise SystemExit("install_sh_consensus_binary_size_exceeded")
+        total = 0
+        with open(output_path, "wb") as handle:
+            while True:
+                chunk = response.read(65536)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > cap:
+                    raise SystemExit("install_sh_consensus_binary_size_exceeded")
+                handle.write(chunk)
+except HTTPError as exc:
+    raise SystemExit(f"install_sh_consensus_binary_download_failed:{exc.code}") from exc
+except URLError as exc:
+    raise SystemExit("install_sh_consensus_binary_download_failed:network") from exc
+except TimeoutError as exc:
+    raise SystemExit("install_sh_consensus_binary_download_failed:timeout") from exc
+except ValueError as exc:
+    raise SystemExit("install_sh_consensus_binary_content_length_invalid") from exc
+PY
+  actual_consensus_size="$(wc -c < "${CONSENSUS_TARBALL}" | tr -d '[:space:]')"
+  if [[ "${actual_consensus_size}" != "${CONSENSUS_BIN_SIZE}" ]]; then
+    die 1 "install_sh_consensus_binary_size_verification_failed:expected_${CONSENSUS_BIN_SIZE}:actual_${actual_consensus_size}"
+  fi
+  if [[ "${HASH_COMMAND}" == "shasum" ]]; then
+    actual_consensus_hash="$(shasum -a 256 "${CONSENSUS_TARBALL}" | awk '{print $1}')"
+  else
+    actual_consensus_hash="$(sha256sum "${CONSENSUS_TARBALL}" | awk '{print $1}')"
+  fi
+  if [[ "${actual_consensus_hash}" != "${CONSENSUS_BIN_SHA256}" ]]; then
+    die 1 "install_sh_consensus_binary_hash_verification_failed:expected_${CONSENSUS_BIN_SHA256}:actual_${actual_consensus_hash}"
+  fi
+  mkdir -p "${CONSENSUS_BIN_INSTALL_DIR}"
+  python3 - "${CONSENSUS_TARBALL}" "${CONSENSUS_BIN_INSTALL_DIR}" <<'PY'
+import os
+import stat
+import sys
+import tarfile
+from pathlib import Path
+
+tarball, output_dir = sys.argv[1], Path(sys.argv[2])
+expected = {
+    "bls_verify_digest",
+    "invite_pop_bls",
+    "keygen",
+    "validator_endpoint_assertion_bls",
+    "validator_harness",
+}
+with tarfile.open(tarball, "r:gz") as archive:
+    members = archive.getmembers()
+    names = {member.name for member in members}
+    if names != expected:
+        raise SystemExit("install_sh_consensus_binary_tar_members_invalid")
+    for member in members:
+        path = Path(member.name)
+        if path.is_absolute() or len(path.parts) != 1 or not member.isfile():
+            raise SystemExit("install_sh_consensus_binary_tar_member_unsafe")
+        if member.size <= 0 or member.size > 50_000_000:
+            raise SystemExit("install_sh_consensus_binary_member_size_invalid")
+        source = archive.extractfile(member)
+        if source is None:
+            raise SystemExit("install_sh_consensus_binary_member_unreadable")
+        destination = output_dir / member.name
+        temporary = output_dir / f".{member.name}.tmp"
+        with source, temporary.open("wb") as handle:
+            while True:
+                chunk = source.read(65536)
+                if not chunk:
+                    break
+                handle.write(chunk)
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.chmod(stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH | stat.S_IRGRP | stat.S_IROTH)
+        os.replace(temporary, destination)
+print("install_sh_consensus_binaries_installed")
+PY
+else
+  printf 'install_sh_consensus_binaries_skipped platform=%s_%s\n' "${OS_NAME}" "${ARCH_NAME}"
+fi
 
 if [[ -n "${INVITE_CODE}" ]]; then
   INVITE_BUNDLE="${TMP_DIR}/invite_code_bundle.json"
