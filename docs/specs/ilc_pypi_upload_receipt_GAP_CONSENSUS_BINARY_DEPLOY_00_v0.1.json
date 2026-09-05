@@ -54,8 +54,9 @@
   "pypi_upload_status": "uploaded",
   "pypi_yank_status": {
     "0.4.15": {
-      "all_yanked": false,
-      "status": "operator_yank_required"
+      "all_yanked": true,
+      "status": "complete",
+      "yank_reason": "superseded by 0.4.16 which adds packaged Rust consensus binary delivery for pip-only installs"
     },
     "0.4.16": {
       "all_active": true,

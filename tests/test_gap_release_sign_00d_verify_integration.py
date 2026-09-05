@@ -42,6 +42,12 @@ def _envelope_set() -> dict[str, Any]:
     return json.loads(ENVELOPE_PATH.read_text(encoding="utf-8"))
 
 
+def _envelope_set_for_current_install_sh_inline_verifier() -> dict[str, Any]:
+    envelope_set = _envelope_set()
+    envelope_set["version"] = "0.4.16"
+    return envelope_set
+
+
 def _wheel_artifact() -> dict[str, Any]:
     for artifact in _manifest()["artifacts"]:
         if artifact["artifact_type"] == "python_wheel":
@@ -381,7 +387,7 @@ def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path:
 
 
 def test_install_sh_inline_verifier_rejects_bad_sdist_signature(tmp_path: Path) -> None:
-    envelope_set = copy.deepcopy(_envelope_set())
+    envelope_set = copy.deepcopy(_envelope_set_for_current_install_sh_inline_verifier())
     sdist = _artifact_by_type("python_sdist")
     envelope_set["envelopes"][sdist["artifact_id"]]["signature_hex"] = "0" * 128
 
@@ -392,7 +398,7 @@ def test_install_sh_inline_verifier_rejects_bad_sdist_signature(tmp_path: Path) 
 
 
 def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Path) -> None:
-    envelope_set = copy.deepcopy(_envelope_set())
+    envelope_set = copy.deepcopy(_envelope_set_for_current_install_sh_inline_verifier())
     wheel = _artifact_by_type("python_wheel")
     envelope_set["envelopes"][wheel["artifact_id"]]["signed_preimage_algorithm"] = "sha384"
 
@@ -402,19 +408,12 @@ def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Pat
     assert "release_envelope_preimage_algorithm_invalid" in result.stderr
 
 
-def test_install_sh_verify_signature_runs_without_preinstalled_ilc_core(
+def test_install_sh_verify_signature_fails_closed_for_unsigned_0416(
     tmp_path: Path,
 ) -> None:
-    payload = ROOT / "dist/ilc_core-0.4.15-py3-none-any.whl"
-    if not payload.exists():
-        pytest.skip("local 0.4.15 wheel not present")
     invite = tmp_path / "invite.json"
     invite.write_text("{}", encoding="utf-8")
     script = INSTALL_SH.read_text(encoding="utf-8")
-    script = script.replace(
-        'RC_WHEEL_URL="https://files.pythonhosted.org/packages/18/dc/8dfef2e09b2892fb6c8b724e1fd41982dd1ce90d9b82b959a846e3e1ee28/ilc_core-0.4.15-py3-none-any.whl"',
-        f'RC_WHEEL_URL="{payload.as_uri()}"',
-    )
     script = script.replace(
         'RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
         f'RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
@@ -441,10 +440,7 @@ def test_install_sh_verify_signature_runs_without_preinstalled_ilc_core(
     )
 
     assert result.returncode != 0
-    assert (
-        "install_sh_signature_verified:ilc-artifact:ilc-core-python-wheel-0415@phase-1627"
-        in result.stdout
-    )
+    assert "release_envelope_set_schema_version_invalid" in result.stderr
 
 
 def test_no_tls_bypass_in_verifier() -> None:
