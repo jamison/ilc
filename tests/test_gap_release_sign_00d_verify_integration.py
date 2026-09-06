@@ -39,6 +39,10 @@ CURRENT_RC_WHEEL_URL = (
 )
 CURRENT_RC_WHEEL_SHA256 = "414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1"
 CURRENT_RC_WHEEL_SIZE = "1466767"
+CURRENT_DEFAULT_ENVELOPE_REF = (
+    "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
+    "ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+)
 
 
 def _manifest() -> dict[str, Any]:
@@ -366,7 +370,7 @@ def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path:
         f'RC_WHEEL_URL="{payload.as_uri()}"',
     )
     script = script.replace(
-        'DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
+        f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{CURRENT_DEFAULT_ENVELOPE_REF}"',
         f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
     )
     script = script.replace(
@@ -450,7 +454,7 @@ def test_install_sh_verify_signature_fails_closed_for_stale_envelope_set(
         f'RC_WHEEL_SIZE="{payload.stat().st_size}"',
     )
     script = script.replace(
-        'DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
+        f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{CURRENT_DEFAULT_ENVELOPE_REF}"',
         f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
     )
     script_path = tmp_path / "install.sh"

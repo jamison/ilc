@@ -77,10 +77,11 @@ REQUIRED_TOP_LEVEL_FIELDS = frozenset(
         "artifacts",
     }
 )
-OPTIONAL_TOP_LEVEL_FIELDS = frozenset({"release_envelope_ref"})
+OPTIONAL_TOP_LEVEL_FIELDS = frozenset({"release_envelope_ref", "signer_public_key_hex"})
 
 _ARTIFACT_ID_RE = re.compile(r"^ilc-artifact:[a-z0-9][a-z0-9-]*@phase-[1-9][0-9]*$")
 _CANONICAL_HASH_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+_SIGNER_PUBLIC_KEY_RE = re.compile(r"^[0-9a-f]{64}$")
 _LINEAGE_RE = re.compile(
     r"^(genesis:v[0-9]+(?:\.[0-9]+)*|artifact:ilc-artifact:[a-z0-9][a-z0-9-]*@phase-[1-9][0-9]*@sha256:[0-9a-f]{64})$"
 )
@@ -244,6 +245,14 @@ def validate_installable_release_manifest(manifest: dict[str, Any]) -> None:
     )
     if "release_envelope_ref" in manifest:
         _validate_release_envelope_ref(manifest["release_envelope_ref"])
+    if "signer_public_key_hex" in manifest:
+        signer_public_key_hex = _require_string(
+            manifest["signer_public_key_hex"],
+            field="signer_public_key_hex",
+            max_chars=64,
+        )
+        if _SIGNER_PUBLIC_KEY_RE.fullmatch(signer_public_key_hex) is None:
+            _fail("installable_manifest_invalid_signer_public_key_hex")
 
     non_claims = manifest["non_claims"]
     if not isinstance(non_claims, list) or not non_claims:

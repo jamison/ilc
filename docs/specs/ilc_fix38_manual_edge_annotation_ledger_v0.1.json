@@ -76089,6 +76089,208 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00c_g10_release_signing_ceremony.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "0.4.17 manifest now binds release_envelope_ref to public HTTPS raw-GitHub URL, records signer_public_key_hex, and removes stale release-signature non-claim.",
+      "node_kind": "installable_release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        },
+        {
+          "edge_type": "REFERENCES_ARTIFACT",
+          "target": "docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:install_verify_signature_0417_integration_committed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_ARTIFACT",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Installable manifest validator now accepts optional signer_public_key_hex and validates it as lowercase 64-character Ed25519 public-key hex while preserving rejection for arbitrary extra top-level fields.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:manifest_signer_public_key_hex_shape_enforced"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/release/installable_release_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Installer default release envelope reference retargeted from 0.4.15 to 0.4.17 and inline verifier metadata aligned to current 0.4.17 manifest phase and wheel size.",
+      "node_kind": "install_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:install_sh_verify_signature_uses_current_release_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tools/install.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Adds regression tests for optional manifest signer_public_key_hex acceptance and malformed-key rejection.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/release/installable_release_manifest.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:manifest_signer_public_key_hex_shape_enforced"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_install_01_installable_release_manifest.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Retargets 0.4.17 ceremony manifest assertions to post-00d public HTTPS envelope ref, signer public key field, and stale non-claim removal.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:0417_manifest_public_envelope_ref_and_signer_key_bound"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00c_ceremony.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Keeps 00d installer verifier tests aligned to current 0.4.17 envelope URL and inline manifest metadata.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/install.sh"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:install_sh_verify_signature_uses_current_release_envelope"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00d_verify_integration.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Records 0.4.17 release-signature integration rerun, manifest and installer retargeting, verification outputs, and immutable wheel limitation.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:install_verify_signature_0417_integration_committed"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_00d_0417_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00d_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00d 0.4.17 signature integration rerun.",
+      "manual_read_summary": "Prompt hardened so explicit install.sh --verify-signature fails closed when cryptography is unavailable instead of silently skipping requested verification.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:explicit_verify_signature_no_silent_skip"
+        }
+      ],
+      "proposed_trace_roles": [
+        "NEGATIVE_ASSERTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00d_g10_install_verify_signature_integration.md"
     }
   ],
   "boundary": {

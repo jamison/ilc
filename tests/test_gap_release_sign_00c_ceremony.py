@@ -79,15 +79,21 @@ def test_manifest_signing_status_marks_only_signed_artifacts() -> None:
     }
 
 
-def test_manifest_has_local_envelope_ref_for_00d_public_url_update() -> None:
+def test_manifest_has_public_https_envelope_ref_after_00d() -> None:
     assert (
         _manifest()["release_envelope_ref"]
-        == "docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        == "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
     )
 
 
+def test_manifest_records_release_signer_public_key() -> None:
+    assert _manifest()["signer_public_key_hex"] == EXPECTED_SIGNER_PUBLIC_KEY_HEX
+
+
 def test_manifest_no_longer_claims_no_release_signing() -> None:
-    assert "no_release_signing" not in _manifest()["non_claims"]  # type: ignore[operator]
+    non_claims = _manifest()["non_claims"]
+    assert "no_release_signing" not in non_claims  # type: ignore[operator]
+    assert "release_signature_verification_for_0417_not_claimed" not in non_claims  # type: ignore[operator]
 
 
 def test_envelope_artifacts_match_signed_manifest_artifacts_exactly() -> None:
