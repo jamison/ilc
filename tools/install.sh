@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-CONSENSUS-BINARY-DEPLOY-00-0416"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl"
-RC_WHEEL_SHA256="c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14"
-RC_WHEEL_SIZE="1459734"
+INSTALLER_VERSION="GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00-0417"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/9b/84/59b4793e2e6ca20508978837c9a34830fa09cc05faf30349670ea523685c/ilc_core-0.4.17-py3-none-any.whl"
+RC_WHEEL_SHA256="414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1"
+RC_WHEEL_SIZE="1466767"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.16"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0416@phase-1627"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0416@phase-1627"
-RC_SDIST_SHA256="2058ec724b56bf0d8bbdee9e61cb0185f0b26df9c6dd691bf41b8b84cd60dbd0"
-RC_SDIST_SIZE="1190258"
+RC_RELEASE_ID="ilc-core-0.4.17"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0417@phase-1628"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0417@phase-1628"
+RC_SDIST_SHA256="5957ea7be367d579b97bdf155f00ce36e4ae5e585db5b5640d3d7040c97cf2e7"
+RC_SDIST_SIZE="1197171"
 DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
@@ -489,7 +489,7 @@ manifest = {
     "release_id": release_id,
 }
 envelope_set = read_envelope_set(envelope_ref)
-if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.16":
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.17":
     fail("release_envelope_set_schema_version_invalid")
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:

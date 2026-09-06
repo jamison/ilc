@@ -75761,6 +75761,64 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_consensus_binary_deploy_fix2_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_consensus_binary_deploy_fix2_00b_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00b sensitive PyPI publication and installer retarget.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.17. Records wheel and sdist PyPI URLs, SHA-256 hashes, byte sizes, unchanged v0.4.16 consensus binary tarball metadata, unsigned release status, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_core_0417_installable_manifest_available"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_consensus_binary_deploy_fix2_00b_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00b sensitive PyPI publication and installer retarget.",
+      "manual_read_summary": "PyPI upload receipt for ilc-core 0.4.17. Records twine upload, wheel and sdist fetchback SHA-256/size verification, unchanged consensus binary metadata, install.sh retarget values, and pending 0.4.16 yank gate.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_core_0417_pypi_fetchback_verified"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00b_v0.1.json"
     }
   ],
   "boundary": {

@@ -94,9 +94,9 @@ def test_consensus_binary_metadata_from_install_sh(tmp_path: Path) -> None:
     assert metadata["size"] == "4304398"
 
 
-def test_unsigned_0416_smoke_does_not_use_release_signature_verification() -> None:
+def test_unsigned_0417_smoke_does_not_use_release_signature_verification() -> None:
     tool = _load_tool()
-    assert tool.EXPECTED_ILC_CORE_VERSION == "0.4.16"
+    assert tool.EXPECTED_ILC_CORE_VERSION == "0.4.17"
     assert tool.VERIFY_SIGNATURE_DURING_SMOKE is False
 
 
