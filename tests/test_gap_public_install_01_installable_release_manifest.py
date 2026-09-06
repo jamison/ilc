@@ -176,6 +176,24 @@ def test_extra_top_level_field_rejects() -> None:
     _validate_raises(manifest, "extra_field:extra")
 
 
+def test_signer_public_key_hex_is_allowed() -> None:
+    manifest = _wheel_manifest()
+    manifest["signer_public_key_hex"] = "a" * 64
+    validate_installable_release_manifest(manifest)
+
+
+def test_signer_public_key_hex_rejects_wrong_length() -> None:
+    manifest = _wheel_manifest()
+    manifest["signer_public_key_hex"] = "a" * 63
+    _validate_raises(manifest, "invalid_signer_public_key_hex")
+
+
+def test_signer_public_key_hex_rejects_uppercase() -> None:
+    manifest = _wheel_manifest()
+    manifest["signer_public_key_hex"] = "A" * 64
+    _validate_raises(manifest, "invalid_signer_public_key_hex")
+
+
 def test_release_envelope_ref_path_is_allowed() -> None:
     manifest = _wheel_manifest()
     manifest["release_envelope_ref"] = (
