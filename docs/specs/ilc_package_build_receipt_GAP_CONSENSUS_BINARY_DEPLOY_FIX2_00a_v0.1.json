@@ -1,0 +1,31 @@
+{
+  "build_commit": "226b90b324ab06fb3d2d117b3ec6eb0a8e482d86",
+  "build_phase": "GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00a",
+  "build_source_commit_before_phase_commit": "226b90b324ab06fb3d2d117b3ec6eb0a8e482d86",
+  "build_tree_diff_sha256": "8638b39d019c9b37358a14ef2533c6286cddd946ea7610745c41b3bc1b92f58a",
+  "consensus_binary_sha256": "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42",
+  "consensus_binary_size_bytes": 4304398,
+  "consensus_binary_tarball_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+  "consensus_binary_unchanged": true,
+  "local_sdist_path": "dist/ilc_core-0.4.17.tar.gz",
+  "local_wheel_path": "dist/ilc_core-0.4.17-py3-none-any.whl",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_github_release_asset_change",
+    "no_relay_venv_upgrade",
+    "no_install_sh_update_to_0417",
+    "no_vps_mutation",
+    "no_guard_clearance",
+    "no_release_signing",
+    "no_public_mirror_push",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ilc_minting"
+  ],
+  "pypi_upload_status": "pending",
+  "sdist_sha256": "5957ea7be367d579b97bdf155f00ce36e4ae5e585db5b5640d3d7040c97cf2e7",
+  "sdist_size_bytes": 1197171,
+  "version": "0.4.17",
+  "wheel_sha256": "414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1",
+  "wheel_size_bytes": 1466767
+}
