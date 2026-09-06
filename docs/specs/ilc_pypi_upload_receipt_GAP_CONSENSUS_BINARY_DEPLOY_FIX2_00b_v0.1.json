@@ -52,11 +52,11 @@
   "phase": "GAP-CONSENSUS-BINARY-DEPLOY-FIX2-00b",
   "predecessor_version": "0.4.16",
   "pypi_project_url": "https://pypi.org/project/ilc-core/0.4.17/",
-  "pypi_upload_status": "uploaded_fetchback_verified_yank_pending",
+  "pypi_upload_status": "uploaded_fetchback_verified",
   "pypi_yank_status": {
     "0.4.16": {
-      "all_yanked": false,
-      "status": "pending_operator_yank",
+      "all_yanked": true,
+      "status": "complete",
       "yank_reason": "superseded by 0.4.17 which incorporates binary-deploy audit hardening and ilc_core submodule audit Fix1 security patches"
     },
     "0.4.17": {
