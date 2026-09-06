@@ -425,6 +425,7 @@ def validate_envelope_set(
         if not isinstance(artifacts, list) or not artifacts:
             _fail("release_envelope_manifest_artifacts_invalid")
         artifacts_by_id = {}
+        signed_artifact_ids: set[str] = set()
         for artifact in artifacts:
             if not isinstance(artifact, Mapping):
                 _fail("release_envelope_manifest_artifact_not_object")
@@ -434,7 +435,13 @@ def validate_envelope_set(
             if artifact_id in artifacts_by_id:
                 _fail(f"release_envelope_manifest_duplicate_artifact_id:{artifact_id}")
             artifacts_by_id[artifact_id] = artifact
-        if set(envelopes) != set(artifacts_by_id):
+            if artifact.get("signing_status") == "signed":
+                signed_artifact_ids.add(artifact_id)
+        unknown_envelope_ids = set(envelopes) - set(artifacts_by_id)
+        if unknown_envelope_ids:
+            _fail(f"release_envelope_set_unknown_artifact_id:{sorted(unknown_envelope_ids)[0]}")
+        expected_envelope_ids = signed_artifact_ids or set(artifacts_by_id)
+        if set(envelopes) != expected_envelope_ids:
             _fail("release_envelope_set_artifact_coverage_mismatch")
 
     for artifact_id, envelope in envelopes.items():
@@ -449,6 +456,8 @@ def validate_envelope_set(
             if envelope["release_id"] != release_id:
                 _fail("release_envelope_release_id_mismatch")
         else:
+            if artifact_id not in artifacts_by_id:
+                _fail("release_envelope_set_unknown_artifact_id")
             validate_envelope_for_artifact(
                 envelope,
                 artifacts_by_id[artifact_id],
