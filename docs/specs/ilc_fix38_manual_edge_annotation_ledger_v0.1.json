@@ -75819,6 +75819,52 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_prompt_patch_09_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-PROMPT-PATCH-09 walkthrough for the 0.4.17 release-signing prompt cascade and inline fast-path checks.",
+      "manual_read_summary": "Walkthrough records prompt validation, input-token audit, unsigned 0.4.17 manifest confirmation, release preimage SHA-256 values, version consistency fast-path, residual historical 0.4.15 classification, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-PROMPT-PATCH-09"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_sign_prompts_patched_for_0417_direct_patch"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:installable_manifest_0417_unsigned_state_confirmed"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:installable_manifest_0417_envelope_schema_fast_path"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:version_consistency_gate_passed_0417"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_ARTIFACT",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_ARTIFACT"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_09_walkthrough.md"
     }
   ],
   "boundary": {
@@ -78106,7 +78152,6 @@
       "annotation_batch": "manual_batch_NNN_phase_GAP_RELEASE_SIGN_PROMPT_PATCH_09_0417_version_patch",
       "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-PROMPT-PATCH-09 \u2014 retargets release-signing chain from 0.4.15 to 0.4.17",
       "manual_read_summary": "NON-SENSITIVE patch phase that updates all downstream release-signing, mirror, smoke, and publish prompts from 0.4.15 to 0.4.17 and executes RELEASE-SIGN-00a/00b fast-paths and VERSION-CONSISTENCY-00 second run inline.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_09_g10_0417_version_patch.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -78117,7 +78162,8 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=support_only"
+      "recommended_graph_action": "graph_delta=support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_prompt_patch_09_g10_0417_version_patch.md"
     }
   ],
   "description": "Manual direct-read semantic edge ledger for Phase 1545p-Fix38 frontier files. This ledger records best-effort TESTS, COVERS_SYMBOL, EVIDENCES, REGRESSES, NEGATIVE_ASSERTS, REQUIRES_PROFILE, SOURCE_TREE_MEMBER, and candidate authority-trace edges for graph-refresh review.",
