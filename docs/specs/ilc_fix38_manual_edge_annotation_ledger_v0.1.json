@@ -94553,6 +94553,36 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_consensus_binary_deploy.py"
+    },
+    {
+      "annotation_batch": "manual_batch_forward_plan_scope_list_reconciled_rev4_2026_09_05",
+      "chronology_note": "2026-09-05 \u2014 reconciled forward-plan phase/scope summary, Rev 4. Corrects stale Fix2/Part-3c/REDEPLOY-00c labels against STATUS.md and repo source reads.",
+      "manual_read_summary": "Internal planning summary reconciling the comprehensive forward plan, STATUS.md tokens, PLANNING_INDEX.md frontier log, and prior in-chat Rev 2/Rev 3 versions; fixes three stale status labels and adds Part 3k homoiconic-binary-deploy phase.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-INSTALL-DO-SMOKE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
