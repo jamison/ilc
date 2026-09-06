@@ -95150,6 +95150,92 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_cdl017_mirror_refresh_00_0417_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_publish_exec_00_2026_09_06",
+      "chronology_note": "2026-09-06 receipt for GAP-PUBLIC-RC-PUBLISH-EXEC-00 public mirror publication.",
+      "manual_read_summary": "Receipt records Genesis authorization, staged mirror path, prior public main, pushed filtered public head, public GitHub visibility readback, raw-GitHub signed envelope and installable manifest fetches, zero revocation markers, zero authoritative exclusion-header hits, and non-claims for no epoch, settlement, or minting.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-PUBLISH-EXEC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:public_rc_published_GAP_PUBLIC_RC_PUBLISH_EXEC_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_0417_GAP_CDL017_MIRROR_REFRESH_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:install_e2e_verified_signed_0417_GAP_INSTALL_DO_SMOKE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ASSERTS",
+          "target": "claim:public_repository_main_equals_filtered_public_head"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_public_rc_publish_exec_receipt_GAP_PUBLIC_RC_PUBLISH_EXEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_publish_exec_00_2026_09_06",
+      "chronology_note": "2026-09-06 walkthrough for GAP-PUBLIC-RC-PUBLISH-EXEC-00 public mirror publication.",
+      "manual_read_summary": "Walkthrough records prompt hardening, preflight token counts, manifest checks, staged mirror scans, public visibility readback, force-with-lease push output, post-push remote head verification, public raw-GitHub artifact fetches, output token, and publication non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-PUBLISH-EXEC-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:public_rc_published_GAP_PUBLIC_RC_PUBLISH_EXEC_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_0417_GAP_CDL017_MIRROR_REFRESH_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:fresh_linux_invite_bootstrap_smoke_signed_pass_GAP_INSTALL_DO_SMOKE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ASSERTS",
+          "target": "claim:public_raw_github_manifest_and_envelope_fetch_passed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_publish_exec_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
