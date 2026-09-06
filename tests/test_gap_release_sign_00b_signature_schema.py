@@ -292,14 +292,89 @@ def test_validate_envelope_set_rejects_release_id_mismatch_without_manifest() ->
 
 def test_validate_envelope_set_checks_manifest_coverage() -> None:
     envelope = _signed_envelope()
+    manifest = _manifest()
+    manifest["artifacts"][0]["signing_status"] = "signed"  # type: ignore[index]
     validate_envelope_set(
         {
             "schema_version": SCHEMA_VERSION,
             "version": "0.4.15",
             "envelopes": {ARTIFACT_ID: envelope},
         },
-        manifest=_manifest(),
+        manifest=manifest,
     )
+
+
+def test_validate_envelope_set_allows_unsigned_manifest_artifact_omission() -> None:
+    envelope = _signed_envelope()
+    manifest = _manifest()
+    manifest["artifacts"].append(  # type: ignore[union-attr]
+        {
+            "artifact_id": "ilc-artifact:ilc-consensus-linux-x86-64-tarball-0416@phase-1628",
+            "artifact_type": "cli_binary",
+            "canonical_hash": "sha256:" + ("2" * 64),
+            "lineage_reference": "genesis:v0.1",
+            "produced_phase": 1628,
+            "ratification_token": "cdl_086_ratified_phase_1220",
+            "signing_status": "unsigned",
+            "platform": "linux",
+            "arch": "amd64",
+            "channel": "rc",
+            "size_bytes": 123,
+            "download_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
+        }
+    )
+    manifest["artifacts"][0]["signing_status"] = "signed"  # type: ignore[index]
+    validate_envelope_set(
+        {
+            "schema_version": SCHEMA_VERSION,
+            "version": "0.4.15",
+            "envelopes": {ARTIFACT_ID: envelope},
+        },
+        manifest=manifest,
+    )
+
+
+def test_validate_envelope_set_rejects_missing_signed_manifest_artifact() -> None:
+    envelope = _signed_envelope()
+    manifest = _manifest()
+    manifest["artifacts"][0]["signing_status"] = "signed"  # type: ignore[index]
+    second = dict(manifest["artifacts"][0])  # type: ignore[index]
+    second["artifact_id"] = "ilc-artifact:ilc-core-python-sdist-0415@phase-1627"
+    second["artifact_type"] = "python_sdist"
+    second["canonical_hash"] = "sha256:" + ("3" * 64)
+    second["download_url"] = "https://files.pythonhosted.org/example/ilc_core-0.4.15.tar.gz"
+    second["signing_status"] = "signed"
+    manifest["artifacts"].append(second)  # type: ignore[union-attr]
+    with pytest.raises(
+        InstallableReleaseSignatureError,
+        match="release_envelope_set_artifact_coverage_mismatch",
+    ):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.15",
+                "envelopes": {ARTIFACT_ID: envelope},
+            },
+            manifest=manifest,
+        )
+
+
+def test_validate_envelope_set_rejects_unknown_manifest_artifact() -> None:
+    envelope = _signed_envelope()
+    unknown_id = "ilc-artifact:ilc-core-python-wheel-missing@phase-1627"
+    envelope["artifact_id"] = unknown_id
+    with pytest.raises(
+        InstallableReleaseSignatureError,
+        match="release_envelope_set_unknown_artifact_id",
+    ):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.15",
+                "envelopes": {unknown_id: envelope},
+            },
+            manifest=_manifest(),
+        )
 
 
 def test_validate_envelope_set_rejects_duplicate_manifest_artifact_id() -> None:
@@ -339,6 +414,33 @@ def test_validate_envelope_set_accepts_current_0415_manifest_placeholders() -> N
         manifest=manifest,
         allow_unsigned_placeholders=True,
     )
+
+
+def test_validate_envelope_set_rejects_partial_unsigned_manifest_placeholders() -> None:
+    manifest_path = (
+        ROOT
+        / "docs/specs/ilc_installable_release_manifest_ilc_core_0415_GAP_INVITE_SHORTCODE_DEPLOY_00_v0.1.json"
+    )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    artifact = manifest["artifacts"][0]
+    envelope = build_envelope_skeleton(
+        release_id=manifest["release_id"],
+        artifact_id=artifact["artifact_id"],
+        artifact_sha256=artifact["canonical_hash"],
+    )
+    with pytest.raises(
+        InstallableReleaseSignatureError,
+        match="release_envelope_set_artifact_coverage_mismatch",
+    ):
+        validate_envelope_set(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "version": "0.4.15",
+                "envelopes": {artifact["artifact_id"]: envelope},
+            },
+            manifest=manifest,
+            allow_unsigned_placeholders=True,
+        )
 
 
 def test_validate_envelope_set_rejects_manifest_hash_mismatch() -> None:

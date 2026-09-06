@@ -44,7 +44,7 @@ def _envelope_set() -> dict[str, Any]:
 
 def _envelope_set_for_current_install_sh_inline_verifier() -> dict[str, Any]:
     envelope_set = _envelope_set()
-    envelope_set["version"] = "0.4.16"
+    envelope_set["version"] = "0.4.17"
     return envelope_set
 
 

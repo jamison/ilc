@@ -75865,6 +75865,230 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_release_sign_prompt_patch_09_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Canonical detached Ed25519 release envelope set for ilc-core 0.4.17 wheel and sdist; signed Python artifacts only; unchanged v0.4.16 consensus helper tarball intentionally unsigned in manifest.",
+      "node_kind": "release_envelope_set",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_core_0417_artifacts_signed"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "adr-0036:public-rc-operational-release-key-registration"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SIGNS",
+          "target": "artifact:ilc-artifact:ilc-core-python-wheel-0417@phase-1628"
+        },
+        {
+          "edge_type": "SIGNS",
+          "target": "artifact:ilc-artifact:ilc-core-python-sdist-0417@phase-1628"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SIGNS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Manifest updated to mark 0.4.17 wheel and sdist signed, remove stale no_release_signing non-claim, add local release_envelope_ref, and retain v0.4.16 cli_binary as unsigned.",
+      "node_kind": "installable_release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "REFERENCES_ARTIFACT",
+          "target": "docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:python_wheel_and_sdist_signed_cli_binary_unsigned"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_ARTIFACT",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "validate_envelope_set now supports mixed signed/unsigned manifests by requiring envelope coverage exactly for signed artifacts, while preserving full placeholder coverage for all-unsigned manifests and rejecting unknown envelope artifact IDs before generic coverage errors.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:release_envelope_signed_artifact_coverage_exact"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:unsigned_manifest_placeholder_coverage_exact"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/release/installable_release_signature.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Adds regression coverage for mixed signed/unsigned manifest envelope coverage, missing signed artifacts, unknown envelope artifact IDs, and partial all-unsigned placeholder rejection.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/release/installable_release_signature.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:release_envelope_signed_artifact_coverage_exact"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00b_signature_schema.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Verifies the committed 0.4.17 envelope set, release signer public key, Ed25519 signatures, manifest signing states, envelope-set SHA-256, and absence of private key material.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:operator_release_signatures_verify_against_registered_public_key"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00c_ceremony.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Retargets the install.sh inline-verifier negative fixtures to current 0.4.17 verifier metadata so 00d integration regression tests remain meaningful after 00c.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/install.sh"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:install_sh_inline_release_signature_verifier_fails_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REGRESSES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00d_verify_integration.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Records 0.4.17 signing ceremony inputs, envelope SHA-256, manifest mutation, verification outputs, and non-claims without overwriting the historical 0.4.15 00c walkthrough.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_signing_ceremony_0417_complete"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_sign_00c_0417_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_sign_00c_0417_2026_09_06",
+      "chronology_note": "2026-09-06 GAP-RELEASE-SIGN-00c 0.4.17 signing ceremony closure.",
+      "manual_read_summary": "Prompt hardened to preserve Phase 1334 unsigned-production gate semantics rather than repurposing it as a 0.4.17 signing record.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-SIGN-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:phase_1334_unsigned_artifact_gate_not_mutated_by_0417_signing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "NEGATIVE_ASSERTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00c_g10_release_signing_ceremony.md"
     }
   ],
   "boundary": {
