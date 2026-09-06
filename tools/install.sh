@@ -296,7 +296,7 @@ if [[ "${VERIFY_SIGNATURE}" == "1" ]]; then
   if ! python3 -c "import cryptography" >/dev/null 2>&1; then
     die 1 "install_sh_signature_verification_failed:cryptography_not_available"
   fi
-  python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" "${INSTALLER_ROOT}" <<'PY'
+  python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_WHEEL_SIZE}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" "${INSTALLER_ROOT}" <<'PY'
 import hashlib
 import json
 import sys
@@ -310,13 +310,14 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
     release_id,
     artifact_id,
     artifact_sha256,
+    artifact_size,
     envelope_ref,
     signer_public_key_hex,
     sdist_artifact_id,
     sdist_sha256,
     sdist_size,
     installer_root,
-) = sys.argv[1:11]
+) = sys.argv[1:12]
 MAX_ENVELOPE_SET_BYTES = 65536
 SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
 SIGNED_PREIMAGE_ALGORITHM = "sha256_of_canonical_json"
@@ -460,10 +461,10 @@ manifest = {
             "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
             "min_python_version": "3.10",
             "platform": "any",
-            "produced_phase": 1627,
+            "produced_phase": 1628,
             "ratification_token": "cdl_086_ratified_phase_1220",
             "signing_status": "signed",
-            "size_bytes": int("1459734"),
+            "size_bytes": int(artifact_size),
         },
         {
             "arch": "any",
@@ -475,14 +476,14 @@ manifest = {
             "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
             "min_python_version": "3.10",
             "platform": "any",
-            "produced_phase": 1627,
+            "produced_phase": 1628,
             "ratification_token": "cdl_086_ratified_phase_1220",
             "signing_status": "signed",
             "size_bytes": int(sdist_size),
         }
     ],
     "channel": "rc",
-    "manifest_produced_phase": 1627,
+    "manifest_produced_phase": 1628,
     "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
     "non_claims": ["no_public_mirror_push"],
     "release_envelope_ref": envelope_ref,

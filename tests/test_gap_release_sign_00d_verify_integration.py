@@ -32,6 +32,13 @@ ENVELOPE_PATH = (
 )
 INSTALL_SH = ROOT / "tools/install.sh"
 VERIFIER_PATH = ROOT / "ilc_core/release/update_signature_verifier.py"
+CURRENT_RC_WHEEL_URL = (
+    "https://files.pythonhosted.org/packages/9b/84/"
+    "59b4793e2e6ca20508978837c9a34830fa09cc05faf30349670ea523685c/"
+    "ilc_core-0.4.17-py3-none-any.whl"
+)
+CURRENT_RC_WHEEL_SHA256 = "414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1"
+CURRENT_RC_WHEEL_SIZE = "1466767"
 
 
 def _manifest() -> dict[str, Any]:
@@ -90,6 +97,7 @@ def _run_install_sh_signature_verifier(
         _manifest()["release_id"],
         _artifact_by_type("python_wheel")["artifact_id"],
         _artifact_by_type("python_wheel")["canonical_hash"].removeprefix("sha256:"),
+        str(_artifact_by_type("python_wheel")["size_bytes"]),
         str(envelope_path),
         PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
         _artifact_by_type("python_sdist")["artifact_id"],
@@ -337,15 +345,24 @@ def test_install_sh_verify_signature_flag_and_order() -> None:
     assert hash_check < signature_check < pip_install
 
 
+def test_install_sh_inline_manifest_uses_current_artifact_metadata() -> None:
+    source = _install_sh_signature_verifier_source()
+    assert '"produced_phase": 1628' in source
+    assert '"manifest_produced_phase": 1628' in source
+    assert '"size_bytes": int(artifact_size)' in source
+    assert '"produced_phase": 1627' not in source
+    assert 'int("1459734")' not in source
+
+
 def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.16-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.17-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
     invite.write_text("{}", encoding="utf-8")
     script = INSTALL_SH.read_text(encoding="utf-8")
     script = script.replace(
-        'RC_WHEEL_URL="https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl"',
+        f'RC_WHEEL_URL="{CURRENT_RC_WHEEL_URL}"',
         f'RC_WHEEL_URL="{payload.as_uri()}"',
     )
     script = script.replace(
@@ -353,10 +370,13 @@ def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path:
         f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
     )
     script = script.replace(
-        'RC_WHEEL_SHA256="c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14"',
+        f'RC_WHEEL_SHA256="{CURRENT_RC_WHEEL_SHA256}"',
         f'RC_WHEEL_SHA256="{digest}"',
     )
-    script = script.replace('RC_WHEEL_SIZE="1459734"', f'RC_WHEEL_SIZE="{payload.stat().st_size}"')
+    script = script.replace(
+        f'RC_WHEEL_SIZE="{CURRENT_RC_WHEEL_SIZE}"',
+        f'RC_WHEEL_SIZE="{payload.stat().st_size}"',
+    )
     script = script.replace(
         'python3 -c "import cryptography"',
         'python3 -c "raise ImportError"',
@@ -408,24 +428,27 @@ def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Pat
     assert "release_envelope_preimage_algorithm_invalid" in result.stderr
 
 
-def test_install_sh_verify_signature_fails_closed_for_unsigned_0416(
+def test_install_sh_verify_signature_fails_closed_for_stale_envelope_set(
     tmp_path: Path,
 ) -> None:
-    payload = tmp_path / "ilc_core-0.4.16-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.17-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
     invite.write_text("{}", encoding="utf-8")
     script = INSTALL_SH.read_text(encoding="utf-8")
     script = script.replace(
-        'RC_WHEEL_URL="https://files.pythonhosted.org/packages/2f/f4/d87d5575c32f4f03d3be9f420740e1dd62e11c96a6c7c2d25380fb900278/ilc_core-0.4.16-py3-none-any.whl"',
+        f'RC_WHEEL_URL="{CURRENT_RC_WHEEL_URL}"',
         f'RC_WHEEL_URL="{payload.as_uri()}"',
     )
     script = script.replace(
-        'RC_WHEEL_SHA256="c5ddec63bc5ed446ca08cec1bc9b714fed66b94ab84981ac8f9f4bc1397cfc14"',
+        f'RC_WHEEL_SHA256="{CURRENT_RC_WHEEL_SHA256}"',
         f'RC_WHEEL_SHA256="{digest}"',
     )
-    script = script.replace('RC_WHEEL_SIZE="1459734"', f'RC_WHEEL_SIZE="{payload.stat().st_size}"')
+    script = script.replace(
+        f'RC_WHEEL_SIZE="{CURRENT_RC_WHEEL_SIZE}"',
+        f'RC_WHEEL_SIZE="{payload.stat().st_size}"',
+    )
     script = script.replace(
         'DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"',
         f'DEFAULT_RC_RELEASE_ENVELOPE_REF="{ENVELOPE_PATH}"',
