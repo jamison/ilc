@@ -41,6 +41,15 @@ def test_sha_precheck_matches_installer_and_receipt(tmp_path: Path) -> None:
     assert tool.verify_sha_precheck(installer, receipt) == "abc123"
 
 
+def test_sha_precheck_matches_flattened_fix2_build_receipt(tmp_path: Path) -> None:
+    tool = _load_tool()
+    installer = tmp_path / "install.sh"
+    receipt = tmp_path / "build.json"
+    installer.write_text('RC_WHEEL_SHA256="abc123"\n', encoding="utf-8")
+    receipt.write_text(json.dumps({"wheel_sha256": "abc123"}), encoding="utf-8")
+    assert tool.verify_sha_precheck(installer, receipt) == "abc123"
+
+
 def test_sha_precheck_rejects_mismatch(tmp_path: Path) -> None:
     tool = _load_tool()
     installer = tmp_path / "install.sh"
