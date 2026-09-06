@@ -64,7 +64,8 @@ def test_pipeline_script_exists_and_has_no_push_command() -> None:
 def test_pipeline_script_honors_rust_public_rc_exclude_headers() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
-    assert '(?:<!--|#|//)' in content
+    assert "(?:#|//)" in content
+    assert "<!--\\s*PUBLIC_RC_EXCLUDE" in content
     assert '".rs"' in content
     assert "shamir_split" in content
     assert "shamir_recover" in content
