@@ -7,6 +7,8 @@
   "consensus_binary_size_bytes": 4304398,
   "consensus_binary_tarball_url": "https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz",
   "consensus_binary_unchanged": true,
+  "canonical_pypi_sdist_url": "https://files.pythonhosted.org/packages/e6/20/aa50a27c3aa2ac61d8b5ae37d31bf42832c54cce0a99fcd38e58494e05ff/ilc_core-0.4.17.tar.gz",
+  "canonical_pypi_wheel_url": "https://files.pythonhosted.org/packages/9b/84/59b4793e2e6ca20508978837c9a34830fa09cc05faf30349670ea523685c/ilc_core-0.4.17-py3-none-any.whl",
   "local_sdist_path": "dist/ilc_core-0.4.17.tar.gz",
   "local_wheel_path": "dist/ilc_core-0.4.17-py3-none-any.whl",
   "non_claims": [
@@ -22,7 +24,7 @@
     "no_settlement",
     "no_ilc_minting"
   ],
-  "pypi_upload_status": "pending",
+  "pypi_upload_status": "uploaded_fetchback_verified_yank_pending",
   "sdist_sha256": "5957ea7be367d579b97bdf155f00ce36e4ae5e585db5b5640d3d7040c97cf2e7",
   "sdist_size_bytes": 1197171,
   "version": "0.4.17",
