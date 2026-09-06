@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import os
 import re
 import shutil
@@ -355,6 +356,64 @@ def test_install_sh_manifest_sync_fails_on_tmp_wheel_mismatch(tmp_path: Path) ->
     )
     with pytest.raises(ValueError, match="TMP_WHEEL"):
         verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+def test_install_sh_manifest_sync_validates_consensus_binary_fields() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST)
+
+
+def test_install_sh_manifest_sync_fails_on_consensus_url_mismatch(
+    tmp_path: Path,
+) -> None:
+    bad_script = _copy_script(
+        tmp_path,
+        replacements={EXPECTED_CONSENSUS_URL: "https://example.invalid/helpers.tar.gz"},
+    )
+    with pytest.raises(ValueError, match="CONSENSUS_BIN_URL"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+def test_install_sh_manifest_sync_fails_on_consensus_hash_mismatch(
+    tmp_path: Path,
+) -> None:
+    bad_script = _copy_script(
+        tmp_path,
+        replacements={EXPECTED_CONSENSUS_SHA256: "0" * 64},
+    )
+    with pytest.raises(ValueError, match="CONSENSUS_BIN_SHA256"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+def test_install_sh_manifest_sync_fails_on_consensus_size_mismatch(
+    tmp_path: Path,
+) -> None:
+    bad_script = _copy_script(
+        tmp_path,
+        replacements={
+            f'CONSENSUS_BIN_SIZE="{EXPECTED_CONSENSUS_SIZE}"': 'CONSENSUS_BIN_SIZE="1"',
+        },
+    )
+    with pytest.raises(ValueError, match="CONSENSUS_BIN_SIZE"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+def test_install_sh_manifest_sync_rejects_manifest_without_cli_binary(
+    tmp_path: Path,
+) -> None:
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    manifest["artifacts"] = [
+        artifact
+        for artifact in manifest["artifacts"]
+        if artifact["artifact_type"] != "cli_binary"
+    ]
+    manifest_path = tmp_path / "manifest_without_cli_binary.json"
+    manifest_path.write_text(
+        json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="cli_binary_record_missing"):
+        verify_install_sh_manifest_sync(INSTALL_SH, manifest_path)
 
 
 def test_install_sh_manifest_sync_rejects_oversized_script(tmp_path: Path) -> None:

@@ -18,6 +18,9 @@ _SYNCED_ASSIGNMENT_NAMES = frozenset(
         "RC_WHEEL_SIZE",
         "RC_MIN_PYTHON_MINOR",
         "TMP_WHEEL",
+        "CONSENSUS_BIN_URL",
+        "CONSENSUS_BIN_SHA256",
+        "CONSENSUS_BIN_SIZE",
     }
 )
 _ILC_CORE_PY3_ANY_WHEEL_RE = re.compile(
@@ -49,6 +52,13 @@ def _wheel_record(manifest: dict[str, Any]) -> dict[str, Any]:
         if record.get("channel") == "rc" and record.get("artifact_type") == "python_wheel":
             return record
     raise ValueError("install_sh_manifest_sync_failed:python_wheel_record_missing")
+
+
+def _cli_binary_record(manifest: dict[str, Any]) -> dict[str, Any]:
+    for record in manifest.get("artifacts", []):
+        if record.get("channel") == "rc" and record.get("artifact_type") == "cli_binary":
+            return record
+    raise ValueError("install_sh_manifest_sync_failed:cli_binary_record_missing")
 
 
 def _require_sync(
@@ -96,6 +106,10 @@ def verify_install_sh_manifest_sync(
     canonical_hash = record["canonical_hash"]
     if not canonical_hash.startswith("sha256:"):
         raise ValueError("install_sh_manifest_sync_failed:canonical_hash_prefix")
+    cli_binary = _cli_binary_record(manifest)
+    cli_binary_hash = cli_binary["canonical_hash"]
+    if not cli_binary_hash.startswith("sha256:"):
+        raise ValueError("install_sh_manifest_sync_failed:cli_binary_canonical_hash_prefix")
     assignments = _load_shell_assignments(Path(install_sh_path))
     _require_sync(
         assignments,
@@ -120,3 +134,18 @@ def verify_install_sh_manifest_sync(
     )
     wheel_basename = str(record["download_url"]).rsplit("/", maxsplit=1)[-1]
     _require_tmp_wheel_sync(assignments, wheel_basename)
+    _require_sync(
+        assignments,
+        shell_field="CONSENSUS_BIN_URL",
+        expected=str(cli_binary["download_url"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="CONSENSUS_BIN_SHA256",
+        expected=cli_binary_hash.removeprefix("sha256:"),
+    )
+    _require_sync(
+        assignments,
+        shell_field="CONSENSUS_BIN_SIZE",
+        expected=str(cli_binary["size_bytes"]),
+    )
