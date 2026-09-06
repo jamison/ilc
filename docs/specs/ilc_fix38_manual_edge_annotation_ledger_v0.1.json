@@ -95072,6 +95072,84 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_mirror_refresh_0417_2026_09_06",
+      "chronology_note": "2026-09-06 receipt for the 0.4.17 second run of GAP-CDL017-MIRROR-REFRESH-00.",
+      "manual_read_summary": "Receipt records the fresh sanitized public mirror staging directory, source commit, filtered public head, archive hash, denylist and header-marker scan results, signed 0.4.17 manifest/envelope inclusion, no-push boundary, supersession of prior mirror heads, and 0.4.17 completion token.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-MIRROR-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_0417_GAP_CDL017_MIRROR_REFRESH_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:install_verify_signature_0417_integration_committed_GAP_RELEASE_SIGN_00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_repository_push_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_cdl017_mirror_refresh_receipt_0417_GAP_CDL017_MIRROR_REFRESH_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl017_mirror_refresh_0417_2026_09_06",
+      "chronology_note": "2026-09-06 walkthrough for the 0.4.17 second run of GAP-CDL017-MIRROR-REFRESH-00.",
+      "manual_read_summary": "Walkthrough records direct-read context, MemPalace/repo searches, token and manifest preflights, clean detached worktree use, focused public-export regression output, mirror generator output, post-generation denylist and artifact checks, prompt validation, diff hygiene, no-push boundary, and completion token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL017-MIRROR-REFRESH-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:cdl017_public_rc_mirror_refreshed_0417_GAP_CDL017_MIRROR_REFRESH_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:install_verify_signature_0417_integration_committed_GAP_RELEASE_SIGN_00d"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:public_repository_push_GAP_CDL017_MIRROR_REFRESH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl017_mirror_refresh_00_0417_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
