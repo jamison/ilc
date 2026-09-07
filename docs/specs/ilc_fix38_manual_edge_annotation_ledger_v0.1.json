@@ -78969,6 +78969,63 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_relay_rendezvous_deploy_00_blocked_cloud_firewall_access.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_2026_09_07",
+      "chronology_note": "2026-09-07 GAP-GENESIS-INVITE-ISSUER-00 adds the public schema for a dedicated Genesis-delegated BLS invite-issuer key before public-RC invite enforcement activation.",
+      "manual_read_summary": "Schema specifies the public delegation record, signed payload boundary, Phase 838a Genesis ML-DSA authority source, BLS bundle/store DSTs, non-reuse constraints, revocation policy, and explicit no-runtime-constant boundary.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-INVITE-ISSUER-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "authority:genesis_delegate_invite_issuer_v1"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_genesis_invite_issuer_delegation_schema_GAP_GENESIS_INVITE_ISSUER_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_2026_09_07",
+      "chronology_note": "2026-09-07 GAP-GENESIS-INVITE-ISSUER-00 adds regression tests for the public delegation record and cryptographic verification boundary.",
+      "manual_read_summary": "Tests enforce delegation record fields, BLS G1 public key format, distinction from capsule and validator keys, machine-checkable issuance limits, signed payload exclusion of delegation_sig_hex and phase_tokens, ML-DSA verification against the Phase 838a Genesis pubkey record, absence of private key material, and no runtime GENESIS_INVITE_ISSUER_PK_HEX constant in this phase.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-INVITE-ISSUER-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_genesis_invite_issuer_delegation_record"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_genesis_invite_issuer_00.py"
     }
   ],
   "manual_annotations": [
