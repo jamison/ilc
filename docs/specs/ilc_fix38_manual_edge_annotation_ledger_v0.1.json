@@ -95195,6 +95195,44 @@
       "repo_path": "docs/specs/ilc_public_rc_publish_exec_receipt_GAP_PUBLIC_RC_PUBLISH_EXEC_00_v0.1.md"
     },
     {
+      "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_prompt_hardening_2026_09_07",
+      "chronology_note": "2026-09-07 phase prompt for GAP-GENESIS-INVITE-ISSUER-00 dedicated BLS invite issuer delegation.",
+      "manual_read_summary": "Prompt defines the non-sensitive delegation schema/test half and the sensitive Genesis ML-DSA delegation ceremony for a dedicated BLS invite-issuer key. Hardening binds Genesis authority to the Phase 838a pubkey record, explicitly excludes Phase 1431 as public-RC authority, locks the signed payload boundary, requires non-skipping final ML-DSA verification, and forbids runtime GENESIS_INVITE_ISSUER_PK_HEX wiring in this phase.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-INVITE-ISSUER-00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_published_GAP_PUBLIC_RC_PUBLISH_EXEC_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:vps_validators_reprovisioned_real_install_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:genesis_capsule_signing_key_not_reused_for_invites"
+        },
+        {
+          "edge_type": "ASSERTS",
+          "target": "claim:genesis_agent1_phase_838a_pubkey_record_is_invite_delegation_authority"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "NEGATIVE_ASSERTS",
+        "ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_invite_issuer_00_g10_dedicated_bls_invite_issuer_delegation.md"
+    },
+    {
       "annotation_batch": "manual_batch_gap_public_rc_publish_exec_00_2026_09_06",
       "chronology_note": "2026-09-06 walkthrough for GAP-PUBLIC-RC-PUBLISH-EXEC-00 public mirror publication.",
       "manual_read_summary": "Walkthrough records prompt hardening, preflight token counts, manifest checks, staged mirror scans, public visibility readback, force-with-lease push output, post-push remote head verification, public raw-GitHub artifact fetches, output token, and publication non-claims.",
