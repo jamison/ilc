@@ -95808,6 +95808,40 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_genesis_invite_issuer_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_00b_2026_09_07_blocked_checkpoint",
+      "chronology_note": "2026-09-07 GAP-PUBLIC-RC-INVITE-00b received Genesis GO but stopped before invite enforcement activation because a required predecessor profile artifact/token was absent and the identity-init enrollment hook lacked durable nullifier registration.",
+      "manual_read_summary": "Walkthrough records prompt validation, token and artifact audits, MemPalace search, direct source reads of invite_enforcement.py and cli/main.py callsites, the passing install-from-invite LMDB-backed path, the blocked identity-init path, and explicit non-claims. INVITE_ENFORCEMENT_ENABLED remained False and the activation token was not emitted.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_activation_blocked_missing_profile_and_durable_identity_init_nullifier_GAP_PUBLIC_RC_INVITE_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:invite_enforcement_activated_GAP_PUBLIC_RC_INVITE_00b"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_00b_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
