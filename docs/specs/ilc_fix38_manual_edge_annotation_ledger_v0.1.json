@@ -79026,6 +79026,73 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_gap_genesis_invite_issuer_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_validator_provenance_binding_00_2026_09_07",
+      "chronology_note": "2026-09-07 GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 adds the public schema for a Genesis Agent 01 signed binding over the four current public-RC validator identities and endpoint assertions.",
+      "manual_read_summary": "Schema specifies the public validator binding record, signed payload boundary, Phase 838a Genesis ML-DSA authority source, assertions_manifest_sha256 reference, per-validator assertion_content_sha256 cross-references, dev invite placeholder gap closure, revocation policy, and explicit no-runtime-constant boundary.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:dev_invite_placeholder_gap_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_genesis_validator_provenance_binding_schema_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_validator_provenance_binding_00_2026_09_07",
+      "chronology_note": "2026-09-07 GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 adds regression tests for the Genesis-signed validator provenance binding record and its cross-file evidence links.",
+      "manual_read_summary": "Tests enforce binding record field shape, four-validator coverage, BLS G1 AgentID format, genesis.json identity equality, endpoint assertions manifest digest and per-validator assertion hash cross-references, network and epoch scope, signed payload exclusion of binding_sig_hex and phase_tokens, ML-DSA verification against Phase 838a Genesis pubkey, absence of private key material, phase tokens, Genesis CID, and no runtime GENESIS_VALIDATOR_PROVENANCE_BINDING constant in this phase.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_genesis_validator_provenance_binding_record"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_genesis_validator_provenance_binding_00.py"
     }
   ],
   "manual_annotations": [
