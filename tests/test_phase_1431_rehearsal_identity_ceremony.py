@@ -170,3 +170,19 @@ def test_phase_tokens_present() -> None:
     ]
     for token in required_tokens:
         assert token in text, f"Required phase token missing: {token}"
+
+
+# ---------------------------------------------------------------------------
+# Pre-epoch blockers
+# ---------------------------------------------------------------------------
+
+def test_pre_epoch_blocker_tokens_present() -> None:
+    text = _read(MANIFEST)
+    assert "pre_epoch_blocker_gap_genesis_validator_provenance_binding_00_phase_1431" in text
+    assert "pre_epoch_blocker_gap_genesis_invite_issuer_00_phase_1431" in text
+
+
+def test_pre_epoch_blocker_gap_names_in_table() -> None:
+    text = _read(MANIFEST)
+    assert "GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00" in text
+    assert "GAP-GENESIS-INVITE-ISSUER-00" in text

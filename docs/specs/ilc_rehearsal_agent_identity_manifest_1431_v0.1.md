@@ -2,7 +2,7 @@
 
 **Status:** Ceremony complete — public fields only
 **Phase:** 1431
-**Date:** 2026-05-22
+**Date:** 2026-09-07
 **Scope:** Private soft-RC rehearsal only
 
 ```text
@@ -73,7 +73,7 @@ pubkey_record_ref:        docs/genesis/genesis_agent1_pubkey_record_838a.txt
 machine:                  M1
 role:                     Reviewer
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -93,7 +93,7 @@ recovery_commitment:      b0a75d49f01932842e31a7900cbd9363a2ed9260130e2534456c9b
 machine:                  M1
 role:                     Reviewer
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -113,7 +113,7 @@ recovery_commitment:      c82dacead8305ec864743ee34c6fa582f4d2ddf02235f6b662c7aa
 machine:                  M2 (ilc-node-2)
 role:                     Validator-A
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -133,7 +133,7 @@ recovery_commitment:      8d2104266484de558d495de6bc09f6ff429b9cf1a3632d322c3907
 machine:                  M2 (ilc-node-2)
 role:                     Validator-A
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -153,7 +153,7 @@ recovery_commitment:      ecfef18a21c55f3abb58c722c92f43db0b368f2074fb26ceebe80a
 machine:                  M3 (ilc-node-3)
 role:                     Validator-B
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -173,7 +173,7 @@ recovery_commitment:      a150446be521386d7e3cb49d89043d3346cf8894efec5419ac651d
 machine:                  M3 (ilc-node-3)
 role:                     Validator-B
 ceremony_phase:           1431
-ceremony_date:            2026-05-22
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -183,6 +183,24 @@ mldsa_pk_hex:             a2f74a4969f97207fb779d066cfc2a4c4236e1462fb60eeed2c07a
 sphincs_pk_hex:           1111f91339a8209da40044aa9dd0af9b5abc9c06dc8559885fdb6a1f6b598bff
 identity_seed_commitment: 63df56d7bc87ff02ae6e5b3b1c967f3d68cb7a50fd02dfb510b7e0cf37d6b172a1a6ec35fb35ddb46c1777c2ccf07e8a
 recovery_commitment:      cd31be2bfcdd4b73cd07afdc99799068f3549915a0a0db312e5c3dbf1e7a065854ea52546419ad7a854351bf9af7206c
+```
+
+---
+
+## Pre-Epoch Blockers
+
+The following GAPs are required before any rehearsal epoch ceremony or production
+validator onboarding. They are not optional cleanup. No agent in this manifest
+may be treated as an authorized epoch participant until both GAPs are closed.
+
+| GAP | Title | Blocker scope |
+|-----|-------|---------------|
+| GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 | Genesis-signed artifact binding rehearsal validators to the Genesis authority chain | Pre-epoch: validators must have a provenance binding signed by Genesis Agent 01 before they can participate in any epoch ceremony |
+| GAP-GENESIS-INVITE-ISSUER-00 | Dedicated BLS invite-issuer key delegated from Genesis Agent 01 | Pre-epoch: invite PoPs must be issued by a delegated invite-issuer key, not the Genesis Agent 01 validator hot key |
+
+```text
+pre_epoch_blocker_gap_genesis_validator_provenance_binding_00_phase_1431
+pre_epoch_blocker_gap_genesis_invite_issuer_00_phase_1431
 ```
 
 ---
