@@ -76291,6 +76291,190 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_sign_00d_g10_install_verify_signature_integration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_prompt_refresh_00_g10_epoch_lane_stale_ref_patch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_00b_g10_invite_enforcement_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_00c_g10_inviter_bootstrap_discovery_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00a_g10_activation_certificate_finalization.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00b_g10_genesis_first_agent_install.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00c_g10_epoch_1_commit_hello_world.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_launch_00_g10_public_rc_publication_gate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_prompt_refresh_00_2026_09_07",
+      "chronology_note": "2026-09-07 post-publication/pre-epoch prompt refresh; no runtime or live infrastructure mutation.",
+      "manual_read_summary": "GAP-PUBLIC-RC-PROMPT-REFRESH-00 refreshed stale epoch-lane prompt references to current 0.4.17 public-RC, reprovision, and Genesis authority evidence.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-PROMPT-REFRESH-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_stale_track_a_or_043_launch_dependency"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_prompt_refresh_00_walkthrough.md"
     }
   ],
   "boundary": {
