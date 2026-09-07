@@ -79093,6 +79093,89 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_gap_genesis_validator_provenance_binding_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_validator_provenance_binding_00_2026_09_07_sensitive_completion",
+      "chronology_note": "2026-09-07 GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 sensitive ceremony committed the Genesis Agent 01 ML-DSA signed public binding over the four public-RC validator AgentIDs and endpoint assertion digest.",
+      "manual_read_summary": "Binding record contains four validator AgentIDs, slots, hosts, gRPC ports, per-validator assertion_content_sha256 values, the assertions_manifest_sha256 compact reference, public-rc epoch-0 scope, dev invite placeholder gap closure, Genesis Agent 01 CID, ML-DSA signature, and phase tokens. It contains no private key or seed material.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_validator_provenance_binding_complete_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        },
+        {
+          "edge_type": "SIGNED_BY",
+          "target": "agent:GENESIS_AGENT1_PHASE_838A_MLDSA"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:dev_invite_placeholder_gap_GAP_VPS_VALIDATOR_REPROVISION_00"
+        },
+        {
+          "edge_type": "ASSERTS",
+          "target": "claim:all_4_public_rc_validators_genesis_bound_epoch_0"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SIGNED_BY",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES",
+        "ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_genesis_validator_provenance_binding_record_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_validator_provenance_binding_00_2026_09_07_sensitive_completion",
+      "chronology_note": "2026-09-07 GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 walkthrough records the sensitive Genesis ML-DSA binding ceremony, signature verification, tests, STATUS token emission, and non-claims.",
+      "manual_read_summary": "Walkthrough records prompt validation, MemPalace search, direct source-read conclusions, token gates, non-sensitive schema/test commit, canonical payload hashes, signed record hashes, ML-DSA verification output, focused test results, corrected phase token names, completion tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_validator_provenance_binding_complete_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:dev_invite_placeholder_gap_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_genesis_validator_provenance_binding_00_walkthrough.md"
     }
   ],
   "manual_annotations": [
