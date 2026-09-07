@@ -95195,6 +95195,44 @@
       "repo_path": "docs/specs/ilc_public_rc_publish_exec_receipt_GAP_PUBLIC_RC_PUBLISH_EXEC_00_v0.1.md"
     },
     {
+      "annotation_batch": "manual_batch_gap_genesis_validator_provenance_binding_00_prompt_hardening_2026_09_07",
+      "chronology_note": "2026-09-07 phase prompt for GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00 Genesis-signed binding over public-RC validator identities.",
+      "manual_read_summary": "Prompt defines the schema/test half and sensitive Genesis ML-DSA signing ceremony for binding the four current public-RC validator AgentIDs, endpoint assertion hashes, and reprovision receipt gap into a Genesis-signed provenance artifact. Hardening requires Phase 838a Genesis ML-DSA authority, excludes Phase 1431 as public-RC authority, separates pre-ceremony test collection from post-ceremony full tests, and adds a concrete non-skipping pq_sign verification command.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_published_GAP_PUBLIC_RC_PUBLISH_EXEC_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:vps_validators_reprovisioned_real_install_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "ASSERTS",
+          "target": "claim:current_public_rc_validators_bound_to_genesis_authority"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:dev_invite_placeholder_gap_GAP_VPS_VALIDATOR_REPROVISION_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "ASSERTS",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_validator_provenance_binding_00_g10_genesis_signed_validator_binding.md"
+    },
+    {
       "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_prompt_hardening_2026_09_07",
       "chronology_note": "2026-09-07 phase prompt for GAP-GENESIS-INVITE-ISSUER-00 dedicated BLS invite issuer delegation.",
       "manual_read_summary": "Prompt defines the non-sensitive delegation schema/test half and the sensitive Genesis ML-DSA delegation ceremony for a dedicated BLS invite-issuer key. Hardening binds Genesis authority to the Phase 838a pubkey record, explicitly excludes Phase 1431 as public-RC authority, locks the signed payload boundary, requires non-skipping final ML-DSA verification, and forbids runtime GENESIS_INVITE_ISSUER_PK_HEX wiring in this phase.",
