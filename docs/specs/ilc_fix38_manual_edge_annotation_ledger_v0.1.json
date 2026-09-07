@@ -95406,6 +95406,74 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_publish_exec_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_2026_09_07_sensitive_completion",
+      "chronology_note": "2026-09-07 GAP-GENESIS-INVITE-ISSUER-00 sensitive ceremony committed the Genesis Agent 01 signed public delegation record for a dedicated BLS invite-issuer key.",
+      "manual_read_summary": "Delegation record contains the invite issuer BLS G1 public key, role and network scope, bundle-authenticity and store-request DSTs, machine-checkable issuance limits, revocation policy, Phase 838a Genesis Agent 01 CID binding, ML-DSA signature, and phase tokens. It contains no private key or seed material.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-INVITE-ISSUER-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_invite_issuer_delegation_complete_GAP_GENESIS_INVITE_ISSUER_00"
+        },
+        {
+          "edge_type": "SIGNED_BY",
+          "target": "agent:GENESIS_AGENT1_PHASE_838A_MLDSA"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:invite_issuer_key_not_capsule_or_validator_key"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SIGNED_BY",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_genesis_invite_issuer_delegation_record_GAP_GENESIS_INVITE_ISSUER_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_invite_issuer_00_2026_09_07_sensitive_completion",
+      "chronology_note": "2026-09-07 GAP-GENESIS-INVITE-ISSUER-00 walkthrough records the sensitive key ceremony, signature verification, tests, STATUS token emission, and non-claims.",
+      "manual_read_summary": "Walkthrough records prompt validation, MemPalace search, direct source-read conclusions, token gates, non-sensitive schema/test commit, BLS key generation to encrypted volume with mode 0600, canonical payload hashes, ML-DSA verification output, focused and broader regression results, and completion tokens.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-INVITE-ISSUER-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_invite_issuer_delegation_complete_GAP_GENESIS_INVITE_ISSUER_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_genesis_invite_issuer_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
