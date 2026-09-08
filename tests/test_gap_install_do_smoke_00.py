@@ -103,11 +103,11 @@ def test_consensus_binary_metadata_from_install_sh(tmp_path: Path) -> None:
     assert metadata["size"] == "4304398"
 
 
-def test_signed_0417_smoke_uses_release_signature_verification() -> None:
+def test_signed_0418_smoke_uses_release_signature_verification() -> None:
     tool = _load_tool()
-    assert tool.EXPECTED_ILC_CORE_VERSION == "0.4.17"
+    assert tool.EXPECTED_ILC_CORE_VERSION == "0.4.18"
     assert tool.VERIFY_SIGNATURE_DURING_SMOKE is True
-    assert "0417" in str(tool.DEFAULT_RELEASE_ENVELOPE_PATH)
+    assert "0418" in str(tool.DEFAULT_RELEASE_ENVELOPE_PATH)
 
 
 def test_remote_diagnostic_commands_match_cli_shapes() -> None:
