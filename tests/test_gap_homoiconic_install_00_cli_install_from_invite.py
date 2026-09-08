@@ -52,6 +52,17 @@ def _args(invite: Path | str, target: Path, receipt: Path) -> argparse.Namespace
     return argparse.Namespace(
         force_reprovision=False,
         from_invite=str(invite),
+        invite_code="",
+        target_dir=str(target),
+        output_receipt=str(receipt),
+    )
+
+
+def _code_args(code: str, target: Path, receipt: Path) -> argparse.Namespace:
+    return argparse.Namespace(
+        force_reprovision=False,
+        from_invite="",
+        invite_code=code,
         target_dir=str(target),
         output_receipt=str(receipt),
     )
@@ -122,6 +133,60 @@ def test_install_from_invite_missing_invite_arg_exits_error() -> None:
 
     assert result.returncode != 0
     assert "invite" in result.stderr.lower() or "invite" in result.stdout.lower()
+
+
+def test_install_invite_code_normalization_accepts_canonical_dash_format() -> None:
+    assert cli_main._normalize_invite_code(" ILC-H7K2-X9P4 ") == "ILC-H7K2-X9P4"
+
+
+def test_install_invite_code_normalization_accepts_no_dash_format() -> None:
+    assert cli_main._normalize_invite_code("ilch7k2x9p4") == "ILC-H7K2-X9P4"
+
+
+def test_install_invite_code_normalization_rejects_malformed_dash_format() -> None:
+    with pytest.raises(ValueError, match="install_invite_code_invalid"):
+        cli_main._normalize_invite_code("ILC-H7K2X9P4")
+
+
+def test_install_invite_code_normalization_rejects_invalid_checksum() -> None:
+    with pytest.raises(ValueError, match="install_invite_code_invalid"):
+        cli_main._normalize_invite_code("ILCH7K2X9PQ")
+
+
+def test_install_invite_source_conflict_rejected(tmp_path: Path) -> None:
+    invite_path = _write_bundle(tmp_path / "invite.json")
+    args = _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
+    args.invite_code = "ILC-H7K2-X9P4"
+
+    with pytest.raises(ValueError, match="install_invite_source_conflict"):
+        cli_main._run_install_subcommand(args)
+
+
+def test_install_invite_code_runtime_fetches_canonical_dash_code(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+
+    captured: list[str] = []
+
+    def _fake_fetch(code: str) -> dict[str, object]:
+        captured.append(code)
+        return _bundle()
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    monkeypatch.setattr(cli_main, "_fetch_invite_bundle_by_shortcode", _fake_fetch)
+
+    result = cli_main._run_install_subcommand(
+        _code_args("ilch7k2x9p4", tmp_path / "target", tmp_path / "receipt.json")
+    )
+
+    assert result["status"] == "ok"
+    assert captured == ["ILC-H7K2-X9P4"]
 
 
 def test_install_from_invite_invalid_json_file_exits_error(tmp_path: Path) -> None:
