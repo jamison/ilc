@@ -20,15 +20,15 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0417_GAP_CONSENSUS_BINARY_DEPLOY_FIX2_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0418_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/9b/84/"
-    "59b4793e2e6ca20508978837c9a34830fa09cc05faf30349670ea523685c/"
-    "ilc_core-0.4.17-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/13/7c/"
+    "620d7282571916f9c2d2982a14b509017601c122cf58fa1b69c8db5a5cda/"
+    "ilc_core-0.4.18-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1"
-EXPECTED_SIZE = "1466767"
+EXPECTED_SHA256 = "5631d21a38dce78fcdad86ecf8f5af758a25b3886596e5244a5ecb595140f26a"
+EXPECTED_SIZE = "1468626"
 EXPECTED_CONSENSUS_URL = (
     "https://github.com/jamison/ilc/releases/download/v0.4.16/"
     "ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
