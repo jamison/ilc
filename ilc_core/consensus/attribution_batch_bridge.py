@@ -5,6 +5,17 @@ This module converts accepted agent-loop ECU claim payloads into the narrow
 JSON shape consumed by the Rust `attribution_batch_ingest` binary. It is not a
 review, jury, CDL-048, ILC allocation, or settlement-root runtime.
 
+ISOLATION BOUNDARY — DO NOT COLLAPSE INTO SHARED MEMORY:
+    This module is an intentional hard boundary between the Python attribution
+    layer and the Rust consensus layer. It validates payloads and writes
+    immutable JSON artifacts to disk; the Rust binary reads those artifacts
+    independently. The two sides never share memory or a live IPC channel.
+
+    This isolation is a security property: a bug, exploit, or economic-logic
+    error in the Python attribution layer cannot corrupt Rust consensus state
+    mid-epoch. Replacing this boundary with PyO3 shared memory or a tighter
+    IPC pipe would remove that guarantee. See ARCHITECTURE.md §4.
+
 GAP-ECU-04b extension point: when backward-attribution traversal is ratified
 and implemented, this bridge schema is the place to add a `provenance_chain`
 field. Until then, provenance fields are intentionally absent so fixed
