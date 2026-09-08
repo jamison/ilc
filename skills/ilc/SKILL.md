@@ -39,19 +39,14 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 https://github.com/jamison/ilc
 ```
 
-Quickest install (signed public installer):
-
-```bash
-curl -fsSL https://github.com/jamison/ilc/raw/main/tools/install.sh | bash
-ilc version   # should report 0.4.18
-```
-
-Or via PyPI:
+Install via PyPI:
 
 ```bash
 pip install ilc-core==0.4.18
-ilc version
+ilc version   # should report 0.4.18
 ```
+
+For the signed installer, see `tools/install.sh` in the public source repository.
 
 Install from source:
 
