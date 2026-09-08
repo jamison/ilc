@@ -76571,6 +76571,234 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "Internal sensitive publish/sign/mirror prompt for ilc-core 0.4.18 invite-enforcement package publication.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_package_0418_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "Installable release manifest for signed ilc-core 0.4.18 wheel/sdist and unchanged v0.4.16 consensus helper tarball.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0418_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "Ed25519 release envelope set for ilc-core 0.4.18 wheel and sdist.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_core_0418_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "PyPI upload, fetchback, yanking, release signing, and public mirror push receipt for ilc-core 0.4.18.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "Standalone receipt for the 0.4.18 public mirror regeneration, force-with-lease push, and public raw-GitHub verification.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_public_rc_invite_package_0418_public_mirror_push_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b publishes and signs ilc-core 0.4.18, updates install.sh, and pushes the sanitized public mirror.",
+      "manual_read_summary": "Execution walkthrough for GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b final closure.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:public_mirror_head_6dca34604e559e3f614a420b9dd286b3e513b635"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0418_00b_walkthrough.md"
     }
   ],
   "boundary": {
