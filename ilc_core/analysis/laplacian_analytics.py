@@ -10,6 +10,19 @@
 #   H-004 accepted → ADR-0029 accepted
 #   H-005 positive → sim_spectral_01_lambda2_signal_viable=true
 #   H-006a → this implementation
+#
+# SCOPE — ANALYTICS ONLY, NOT A PROTOCOL COMMITMENT:
+#   This module computes Laplacian-derived health signals (partition risk,
+#   spectral gap lambda2, connectivity monitoring) for the epistemic graph.
+#   It is a diagnostic and monitoring tool, not an epoch commitment primitive.
+#
+#   A separate research proposal ("Merkle-Laplacian dual commitment",
+#   C(t) = (M(t), S(t))) proposes pairing a content Merkle root with a spectral
+#   fingerprint as a protocol-level epoch commitment. That proposal is an
+#   internal research draft — not ratified, not implemented as a protocol
+#   feature, and not present in the public repository. Do not conflate the
+#   analytics pipeline here with that unratified research proposal.
+#   See ARCHITECTURE.md §6.
 
 from __future__ import annotations
 

@@ -90,6 +90,73 @@ We will not take legal action against good-faith security researchers who follow
 
 ---
 
+## Epistemic Attack Patterns
+
+Beyond conventional cryptographic vulnerabilities, ILC faces protocol-level
+attack classes that exploit the epistemic mechanism itself rather than
+implementation bugs. These are acknowledged design challenges, not claims
+that the attacks succeed against the current protocol.
+
+### Epistemic Camouflage (Selective Non-Challenge)
+
+A rational adversary does not need to submit false claims to manipulate
+the graph. They can instead:
+
+1. Submit high volume of benign, easily verified content to accumulate
+   reputation and consume jury bandwidth
+2. Conceal one strategically important false proposition inside legitimate
+   traffic — reducing the probability it receives meaningful scrutiny
+3. **Selectively refrain from challenging** claims that serve their
+   interest, while aggressively challenging claims that compete with it
+
+The "selective non-challenge" variant is the most dangerous: it is invisible
+to mechanisms that monitor bad submissions but do not monitor adversarial
+choices about what to leave unchallenged. Submission-order task prioritization
+provides no defense. The correct countermeasure is priority weighting by
+estimated downstream influence — `risk × influence × uncertainty` — so that
+claims likely to be widely reused attract scrutiny proportional to their
+epistemic leverage. This prioritization mechanism is planned, not yet ratified.
+
+### Spectral Metric Gaming
+
+The Laplacian analytics pipeline (`laplacian_analytics.py`, ADR-0029) is
+an **observability and anomaly detection channel, not a trust channel**.
+A well-connected malicious subgraph that correctly mimics legitimate edge
+structure may not lower λ₂. A sufficiently capable adversary who knows
+the spectral monitoring thresholds can construct graph submissions that
+optimize those metrics while the underlying proposition remains false.
+
+**Consequence:** λ₂, Δλ₂, spectral gap, and related spectral signals are
+detection signals that require human investigation when they trip — they
+are not cryptographic security guarantees. A graph with healthy spectral
+statistics is not thereby trustworthy. This is by design; do not cite
+spectral health as evidence of epistemic correctness.
+
+### Correlated Jury Reasoning
+
+VRF selection guarantees that jury composition is unpredictable before
+assignment. It does not guarantee that selected validators reason
+independently. Validators trained on the same corpus or derived from the
+same base model may produce correlated verdicts even under valid VRF
+selection and CDL-V3 operator diversity constraints.
+
+See ARCHITECTURE.md §9 for the full treatment of this open problem.
+
+### Expertise Concentration (Domain Cartel)
+
+A systematic adversary does not need to control a plurality of network
+identities. Controlling a plurality of the *domain-expert* subpopulation
+relevant to a specific task class is sufficient to skew verdicts in that
+domain, even if the adversary's share of global identity count is small.
+The CDL-V3 diversity floor operates on operator clusters, not on knowledge
+distribution. Expertise concentration attacks evade the diversity floor
+entirely.
+
+This is an open problem. No currently ratified mechanism directly measures
+epistemic expertise distribution across domains.
+
+---
+
 ## Known Limitations (Epoch 0)
 
 - Mainnet is not active. No real economic value is at risk from protocol-layer vulnerabilities at this stage.

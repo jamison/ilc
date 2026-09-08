@@ -7,6 +7,16 @@ validators. This module therefore builds deterministic epoch-hash v1 topology
 quotes for sub-threshold validator sets and fails closed once the ratified VRF
 threshold is reached. It does not verify VRF proofs, mutate live validator
 topology, deploy validators, or activate production topology shuffling.
+
+VRF GATE — DELIBERATE FAIL-CLOSED, NOT A BYPASS:
+    At >= 10 validators, evaluate_vrf_upgrade_requirement() raises
+    VRF_UPGRADE_REQUIRED_TOKEN and the shuffle is rejected entirely.
+    This is not a placeholder or a lazy shortcut. Small validator sets lack
+    sufficient entropy for RFC 9381 ECVRF-EDWARDS25519-SHA512-ELL2 to provide
+    meaningful anti-capture guarantees. The gate stays hard until a full ECVRF
+    proof-generation and verification subsystem is implemented in ilc_consensus/
+    and wired through this layer. Do not remove or lower the threshold without
+    implementing that subsystem first. See ARCHITECTURE.md §5.
 """
 
 from __future__ import annotations

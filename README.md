@@ -32,13 +32,13 @@
 ILC is a content-addressed knowledge network where every claim, refutation, revision, and reuse is a first-class graph node — permanently attributable, economically accountable, and open to challenge by any participant. Built for the era where human and AI intelligence operate on the same substrate and need a shared record that neither side can edit unilaterally.
 
 <table>
-<tr><td><b><a href="HUMANS.md#what-is-ilc">Evidence-first graph</a></b></td><td>Every claim, refutation, revision, and reuse is a permanent content-addressed node. Nothing is deleted — refutations are edges, reuse is weight. Seven canonical truth primitives: <code>assert</code>, <code>validate</code>, <code>contradict</code>, <code>refute</code>, <code>revise</code>, <code>link</code>, <code>commit.epoch</code>.</td></tr>
-<tr><td><b><a href="economics.md">Anti-hoarding economics</a></b></td><td>ECU (<em>W_e = ΔH / E_cost</em>) is created by verified work, reduced by temporal decay, and converted to scarce ILC only through activation-gated paths. Deployment velocity × quality outranks accumulated balance.</td></tr>
-<tr><td><b><a href="HUMANS.md#highlights">VRF jury assignment</a></b></td><td>Review panels use RFC 9381 verifiable random functions — unpredictable before selection, verifiable after. No operator can predict or steer who reviews a claim.</td></tr>
-<tr><td><b><a href="SECURITY.md">Post-quantum identity</a></b></td><td>Agent identity uses ML-DSA-65 (NIST FIPS 204). Your Agent ID is CIDv1 content-addressed — not a row in a database, not a handle someone can revoke.</td></tr>
-<tr><td><b><a href="docs/ILC_Technical_Paper_Draft_v0.2.md">ILC-authored Rust consensus</a></b></td><td>Mysticeti-inspired object-sharded DAG. Sub-500ms finality for owned ECU objects; epoch path for shared settlement. BLS12-381 quorum compression.</td></tr>
+<tr><td><b><a href="HUMANS.md#what-is-ilc">Evidence-first graph</a></b></td><td>Every claim, refutation, revision, and reuse is a permanent content-addressed node. Nothing is deleted — refutations are edges, reuse is weight. Six agent-submittable truth primitives: <code>assert.truth</code>, <code>validate.claim</code>, <code>contradict.assert</code>, <code>refute.claim</code>, <code>revise.assert</code>, <code>link.claim</code>. (<code>commit.epoch</code> is a protocol-internal primitive — not agent-submittable.)</td></tr>
+<tr><td><b><a href="economics.md">Anti-hoarding economics</a></b></td><td>ECU is created by verified work and decays over time; the Werner flow-governor (CDL-109) weights attribution by epistemic contribution rate. Deployment velocity × quality outranks accumulated balance. ECU converts to scarce ILC only through activation-gated paths.</td></tr>
+<tr><td><b><a href="HUMANS.md#highlights">VRF jury assignment</a></b></td><td>Review panels are designed around RFC 9381 verifiable random functions — unpredictable before selection, verifiable after. Production VRF activation is gated on validator count reaching the ratified threshold (CDL-068).</td></tr>
+<tr><td><b><a href="SECURITY.md">Post-quantum identity</a></b></td><td>Three distinct identity surfaces: (1) general agent identity — SHA-384 key derivation (CDL-069); (2) validator/consensus identity — BLS12-381 G1 public key, where <code>agent_id == validator_key</code> (CDL-017); (3) Genesis authority artifacts — ML-DSA-65 (NIST FIPS 204). See <a href="ARCHITECTURE.md">ARCHITECTURE.md §1</a>.</td></tr>
+<tr><td><b><a href="docs/ILC_Technical_Paper_Draft_v0.2.md">ILC-authored Rust consensus</a></b></td><td>Mysticeti-inspired object-sharded DAG. Sub-500ms finality for owned ECU objects (fast path); ≤45s p99 finality for shared epoch-settlement records (slow path). BLS12-381 quorum compression. These are two distinct latency profiles — see <a href="ARCHITECTURE.md">ARCHITECTURE.md §3</a>.</td></tr>
 <tr><td><b><a href="sidecars.md">Open sidecar platform</a></b></td><td>No registry, no application process. Any trust-requiring service composes with ILC identity + jury + ECU without becoming core protocol code. Public RC includes recipes for StarMap installation, OpenClaw capture, CCSS coordination, graph visualization, and wallet-facing projections.</td></tr>
-<tr><td><b><a href="SECURITY.md">Spectral integrity model</a></b></td><td>Merkle-Laplacian dual commitment <em>C(t) = (M(t), S(t))</em> — content Merkle root paired with a spectral fingerprint of graph topology. Content integrity and topology integrity are separate, complementary signals.</td></tr>
+<tr><td><b><a href="SECURITY.md">Laplacian graph analytics</a></b></td><td>Graph topology is monitored via the Laplacian analytics pipeline (<code>ilc_core/analysis/laplacian_analytics.py</code>, ADR-0029). This provides partition-risk monitoring and spectral health signals. A Merkle-Laplacian dual commitment research proposal (<em>C(t) = (M(t), S(t))</em>) exists as an internal research draft and is not yet a ratified protocol feature.</td></tr>
 <tr><td><b><a href="methodology.md">Homoiconic governance</a></b></td><td>Governance records and knowledge claims share the same graph-native object model. CDLs and ADRs are addressable, typed, refutable nodes — not off-graph policy prose.</td></tr>
 </table>
 
@@ -51,10 +51,10 @@ These figures are from the private canonical repository. The sanitized public mi
 | Metric | Figure |
 |--------|--------|
 | **Total repository** | ~1.57M lines (code + documentation) |
-| **Python runtime** (`ilc_core/`) | ~137k lines across 453 modules |
-| **Python tests** (`tests/`) | ~283k lines · 15,590 collected tests · 1,743 test files |
+| **Python runtime** (`ilc_core/`) | ~158k lines across 489 modules |
+| **Python tests** (`tests/`) | ~283k lines · 16,947 collected tests · 1,743 test files |
 | **Python tooling** (`tools/`) | ~109k lines |
-| **Rust consensus** (`ilc_consensus/`) | ~16k lines across 26 source files · 373 `#[test]` functions |
+| **Rust consensus** (`ilc_consensus/`) | ~30k lines across 26 source files · 373 `#[test]` functions |
 | **Documentation** (`docs/`) | ~1.02M lines: 1,845 spec docs · 1,988 phase walkthroughs · 1,631 phase prompts · 36 ADRs · 79k lines of research memos |
 | **Git commits** | 4,748 commits from genesis |
 | **Constitutional Decision Log** | 120 CDL entries (ratified protocol governance) |
@@ -79,8 +79,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e .
-cd ilc_consensus && cargo build --release && cd ..
 ilc version
+# Note: ilc_consensus/ Rust binaries are bundled in the wheel.
+# A Rust toolchain is only needed if you want to build the consensus layer from source.
 ```
 
 **Via ClawHub / OpenClaw marketplace:**
@@ -121,6 +122,7 @@ python3 tools/demo_walkthrough.py
 
 | | |
 |---|---|
+| [Architecture](ARCHITECTURE.md) | Identity surfaces, truth primitives, consensus latency profiles, Python/Rust boundary, VRF gate, Laplacian analytics vs. research proposal, activation status table |
 | [Introduction (HUMANS.md)](HUMANS.md) | What ILC is, how it works, current status, full doc index |
 | [Quickstart](QUICKSTART.md) | Install → identity → first submit |
 | [Economics](economics.md) | ECU, ILC, Werner anti-hoarding mechanics, decay, conversion paths |

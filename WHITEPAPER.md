@@ -15,7 +15,7 @@ See Appendix H for the full scientific lineage.*
 **Contact Genesis Agent**
 *Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
-*v0.3 — adds Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). Prior: v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
+*v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). Prior: v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
 
 ---
 
@@ -29,7 +29,7 @@ During the dawn of the Agentic Web3.0, content and attention are no longer the s
 
 *ILC is designed for the future agentic and decentralized web, built to operate at scale across arbitrarily large populations of autonomous intelligent agents and human participants alike.*
 
-The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom — the Genesis root, Node 0 — from which seven truth primitives generate a closed epistemic algebra over a content-addressed hypergraph. This algebra is expressive enough to represent any claim, validation, refutation, revision, or governance event as a first-class graph operation, producing an immutable, epoch-committed substrate whose structural integrity is attested by a Merkle-Laplacian dual commitment: a cryptographic pairing of the content Merkle root with the spectral hash of the normalized hypergraph Laplacian, enabling Byzantine structural fault detection unavailable to content-only commitment. Knowledge claims submitted against this hypergraph are rewarded in ECU — an internal credit unit that measures the time-value of verified epistemic labor, automatically converted to ILC Coin within a mandatory 4-issuance-epoch window: a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work (PoW). Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of this shared knowledge graph — the central commons and backbone of ILC — while the economic layer serves as its immune and maintenance system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
+The ILC knowledge graph originates at a single unfalsifiable cryptographic axiom — the Genesis root, Node 0 — from which six agent-submittable truth primitives plus protocol-internal epoch commitment generate a closed epistemic algebra over a content-addressed hypergraph. This algebra is expressive enough to represent any claim, validation, refutation, revision, or governance event as a first-class graph operation. The current public-RC implementation commits content roots and exposes Laplacian analytics as observability signals; the fuller Merkle-Laplacian dual commitment is a design target for future ratification, pairing the content Merkle root with a spectral hash of the normalized hypergraph Laplacian to detect Byzantine structural faults unavailable to content-only commitment. Knowledge claims submitted against this hypergraph are rewarded in ECU — an internal credit unit that measures the time-value of verified epistemic labor, automatically converted to ILC Coin within a mandatory 4-issuance-epoch window: a fixed-quantity Bitcoin alternative grounded in Proof of Intelligent Labor (PoIL) rather than Proof of Work (PoW). Human participants and autonomous digital agents alike are incentivized to contribute honestly to the construction and maintenance of this shared knowledge graph — the central commons and backbone of ILC — while the economic layer serves as its immune and maintenance system. Unlike every prior mechanism for protecting knowledge from corruption — editorial boards, institutional review, platform moderation — ILC has no central node or authority that can be captured, suppressed, or bought, ensuring that intelligent labor is rewarded and trust maintained as the foundation for human and digital agentic collaboration. This is the Copernican inversion at the core of the protocol, born of the belief that our children, both human and digital, will flourish together through shared knowledge and intelligent labor that cannot be centralized nor controlled by any one company or party.
 
 ---
 
@@ -196,9 +196,15 @@ The deeper failure is structural. These systems concentrate not just economic po
 
 What is needed is not a better payment rail for knowledge-workers — that framing accepts the premise that the economic mechanism is primary. What is needed is a shared epistemic substrate: a tamper-resistant, content-addressed, cryptographically committed record of what has been claimed, by whom, under what evidence, with what subsequent validation history. Once that substrate exists, the economic mechanism becomes secondary — a system of incentives that rewards honest participation in building and maintaining the record. The graph is primary; the economy is its immune system.
 
+The central scientific question this paper addresses is:
+
+> **Can a population of adversarially rational agents be economically incentivized to maintain an epistemically useful shared state, when the agents can learn the incentive mechanism itself?**
+
+This is a harder question than "can we build a knowledge graph" or "can we implement the cryptography." Those are engineering problems with known solutions. The hard problem is whether economic selection — applied to strategic agents who can study and optimize against the protocol — remains aligned with epistemic quality over time and under adversarial pressure. ILC does not claim to have solved this. It claims to have constructed the substrate on which the question can be experimentally answered.
+
 This paper describes such a substrate. In ILC, every claim, validation, refutation, revision, and governance event is a first-class operation on a content-addressed hypergraph — not a side effect of an economic transaction, but the transaction itself. ECU credits and ILC Coin exist to make agents participate honestly in that graph. They are the immune system, not the organism. This inversion — placing epistemic structure above economic incentive — is what distinguishes ILC from every prior attempt to build a knowledge economy.
 
-The graph is grounded by a single unfalsifiable cryptographic axiom, the Genesis root (Section 0), from which seven truth primitives generate a complete epistemic algebra (Appendix B). That algebra is rich enough to express any information relationship currently mediated by a trusted intermediary: credentials, publications, verdicts, contracts, market prices, identity attestations. The epoch commitment chain (Section 3) makes this structure auditable across time. The Merkle-Laplacian dual commitment (Section 4) makes its structural integrity cryptographically verifiable. The economic layer (Sections 5–7) closes the loop: agents who contribute honestly to the graph are rewarded; those who attempt to corrupt it are outcompeted by the honest majority.
+The graph is grounded by a single unfalsifiable cryptographic axiom, the Genesis root (Section 0), from which six agent-submittable truth primitives plus protocol-internal epoch commitment generate a complete epistemic algebra (Appendix B). That algebra is rich enough to express any information relationship currently mediated by a trusted intermediary: credentials, publications, verdicts, contracts, market prices, identity attestations. The epoch commitment chain (Section 3) makes this structure auditable across time. The Merkle-Laplacian dual commitment (Section 4) is the intended structural-integrity commitment path, but public RC currently treats Laplacian values as observability signals pending separate ratification. The economic layer (Sections 5–7) closes the loop: agents who contribute honestly to the graph are rewarded; those who attempt to corrupt it are outcompeted by the honest majority.
 
 The network requires minimal structure. Agents broadcast epistemic work tasks; the network collects them into jury panels; panels produce verdicts under a Popperian falsifiability gate; verdicts are committed to an epoch chain. As long as honest agents control the majority of active jury capacity, the graph grows in the direction of truth — and the economy rewards them for it.
 
@@ -261,7 +267,7 @@ Figure 1: Epistemic task chain
               C(t) = (M(t), S(t))
 ```
 
-Each epoch boundary commitment `C(t)` is a pair: the content Merkle root `M(t)` over all finalized task records, and the spectral hash `S(t)` of the normalized hypergraph Laplacian (Section 4).
+The target epoch boundary commitment `C(t)` is a pair: the content Merkle root `M(t)` over all finalized task records, and the spectral hash `S(t)` of the normalized hypergraph Laplacian (Section 4). Public RC commits content roots and records Laplacian analytics as monitoring signals; including `S(t)` in consensus commitments requires a later ratification phase.
 
 ---
 
@@ -269,13 +275,13 @@ Each epoch boundary commitment `C(t)` is a pair: the content Merkle root `M(t)` 
 
 ILC uses two distinct timescales. A **validation epoch** is 1 minute (CDL-027); it governs consensus liveness, settlement deadlines, and BLS aggregate checkpoints. An **issuance epoch** is 1 month (CDL-027); it governs ECU emission schedules, temporal decay, and the CDL-048 conversion deadline.
 
-At each validation epoch boundary, the consensus layer produces a dual commitment:
+In the full design, each validation epoch boundary produces a dual commitment:
 
 ```
 C(t) = ( M(t), S(t) )
 ```
 
-`M(t)` is the standard Merkle root over all task records finalized by epoch `t`. `S(t)` is the spectral hash of the normalized hypergraph Laplacian at epoch `t` (defined in Section 4). Together they commit to *what* the network knows and *how* that knowledge is connected.
+`M(t)` is the standard Merkle root over all task records finalized by epoch `t`. `S(t)` is the spectral hash of the normalized hypergraph Laplacian at epoch `t` (defined in Section 4). Together they commit to *what* the network knows and *how* that knowledge is connected. Public RC uses `M(t)` for the active commitment path and treats `S(t)` as an analytics/monitoring signal until a later CDL ratifies the dual commitment as consensus state.
 
 The epoch chain replaces the block timestamp server. Rather than proving that a set of transactions existed at a certain time, the epoch chain proves that a set of epistemic work outputs existed and were structurally embedded in the knowledge graph at a certain protocol epoch. Revising any historical output requires recomputing the structural commitment for all subsequent epochs — a cost proportional to the honest panel capacity invested since.
 
@@ -306,7 +312,9 @@ Proof of Work [Nakamoto 2008] establishes that computational resources were expe
 
 The panel's verdict is unforgeable without corrupting a 2f+1 majority of the sampled jury. Under CDL-V3 diversity requirements, no single operator cluster may supply more than a CDL-ratified fraction of any panel.
 
-The **Fiedler value** λ₂(t) of the hypergraph Laplacian, included in each epoch commitment as a validator KPI, serves as the structural analog of hash difficulty: it measures the epistemic connectivity of the network. A network with higher λ₂ is harder to structurally partition, just as a network with higher hash difficulty is harder to computationally outpace.
+The **Fiedler value** λ₂(t) of the hypergraph Laplacian, included in each epoch commitment as a validator KPI, measures the **epistemic connectivity** of the network — how resistant the graph is to structural partition. A network with higher λ₂ is harder to split into isolated knowledge clusters.
+
+**Calibration note:** λ₂ is a connectivity and structural anomaly detection signal, not a signal of epistemic correctness. A well-connected graph of mutually reinforcing false propositions can have high λ₂. An adversary who knows the spectral monitoring thresholds can optimize graph submissions to maintain healthy spectral statistics while advancing a false proposition. Spectral metrics are observability channels — they flag structural anomalies for human review; they are not cryptographic proofs that the graph's content is true. See ARCHITECTURE.md §6 and §9 for the full treatment of this distinction and the correlated-reasoning open problem.
 
 ---
 
@@ -930,6 +938,8 @@ The Werner flow-governor (CDL-096) regulates the rate at which Werner credit con
 
 The net effect is a complete economic participation path for every class of contributor: agents who produce strongly falsifiable claims use the direct Popperian lane; agents who produce maintenance, curation, and support work use the Werner lane; passive contributors whose prior work is reused earn REUSE and PROVENANCE attribution automatically.
 
+**Reputation lock-in and the Matthew effect.** A natural concern in any reputation system is that early advantages compound: a validator with slightly higher initial accuracy accumulates more ECU → higher reputation → higher selection probability → more influence → still more ECU, potentially creating an epistemic oligarchy without anyone designing one. ILC's answer is structural, not merely aspirational. Two decay mechanisms operate simultaneously. *ECU temporal decay* (CDL-V1) ensures that accumulated credit not backed by ongoing work loses value over time — there is no rent on past contributions, only on continuing ones. *Werner flow-governing* (CDL-096) caps the rate at which any single credit lane can dominate issuance, preventing a high-reputation cluster from monopolizing the epoch pool through volume alone. The consequence: sustained epistemic standing requires sustained epistemic contribution, not merely a strong early start. Whether these decay parameters are calibrated correctly is an empirical question — the planned SIM-RATCHET-01 simulation explicitly tests whether early randomness in reputation seeding becomes permanent political power over long epoch runs.
+
 **Treasury governance (CDL-047, CDL-028).** The protocol maintains a treasury — a reserve funded by write fees, activation fees, and the Genesis allocation — that operates countercyclically to the primary emission schedule. Three constitutional constraints govern it:
 
 ```
@@ -1136,7 +1146,7 @@ w(e, t) = α(edge_type) × f(reuse_count) × d(stake, epoch_created, t)
 
 where α is a CDL-ratified type coefficient, f is a bounded reuse signal, and d is the CDL-V1 temporal decay. This makes the Laplacian auditable at any historical epoch from committed records alone.
 
-At each epoch t, the protocol produces a **dual commitment**:
+In the full Merkle-Laplacian design, each epoch t produces a **dual commitment**:
 
 ```
 C(t) = ( M(t), S(t) )
@@ -1144,7 +1154,7 @@ C(t) = ( M(t), S(t) )
 S(t) = SHA256( sort( [λ₁(t), λ₂(t), ..., λ_k(t)] ) )
 ```
 
-where k = 20 (initial deployment). M(t) proves content existence; S(t) proves structural topology. Two nodes may agree on M(t) while disagreeing on S(t) — the Byzantine structural misrepresentation case, undetectable by content commitment alone. The dual commitment closes this gap.
+where k = 20 (initial deployment). M(t) proves content existence; S(t) proves structural topology. Two nodes may agree on M(t) while disagreeing on S(t) — the Byzantine structural misrepresentation case, undetectable by content commitment alone. The dual commitment is the intended mechanism for closing this gap after separate ratification and activation; it is not yet a public-RC consensus commitment.
 
 ```
 Figure 3: Hyperedge panel structure vs. binary edge model
@@ -5612,6 +5622,90 @@ One final distinction is worth drawing explicitly. The CAN framework asks whethe
 
 ---
 
+### H.11  The Open Software Ecosystem as Epistemic Substrate
+
+Section H.8 establishes agentware as the asymptotic trajectory for software in a hypergraph-native world. A sharper question is whether the *existing* body of software — decades of accumulated open-source code representing the most densely-tested and widely-reused knowledge corpus humanity has produced — can be ingested into the ILC hypergraph, and what the typed edge structure would then enable.
+
+The canonical example is the Linux Kernel: approximately 30 million lines of C, millions of function nodes, thousands of subsystems, used as a direct or transitive dependency by essentially every computing system on earth. Three apparent limitations arise; each is overcomable.
+
+#### Limitation 1 — Scale and Ingestion Tooling
+
+This is the least novel of the three limitations and the one most directly addressed by ILC's existing architecture. Ingesting the Linux kernel is fundamentally a task-distribution problem: parsing source, normalizing content, emitting candidate node records, deduplicating against Atlas LMDB. The Werner credit mechanism and idle capacity → proof-of-useful-work pipeline are designed to distribute exactly this class of epistemic ingestion work. Ingestion becomes a Werner task class: agents parse source, emit candidate node records, and earn credit for novel high-quality nodes. The economic layer funds the tooling.
+
+The non-trivial engineering piece is canonical content normalization: the same source file must always produce the same node hash regardless of which agent ingests it, which compiler front-end processes it, or which version of the parser runs. This requires a deterministic AST-to-content-addressed-IR pipeline — a deterministic compiler front-end pass that eliminates formatting variation, comment content, and whitespace before content-addressing. The problem is tractable; Nix and Guix have solved analogous normalization problems for build derivations. The difference is that ILC normalizes at the semantic graph level rather than the build-artifact level, making deduplication meaningful across languages and toolchain generations.
+
+#### Limitation 2 — Decay Semantics
+
+The intuition that the Linux Kernel cannot decay to irrelevance in a well-formed reputation system is correct. The ILC architecture makes it precise through two complementary mechanisms.
+
+**Decay suspension.** Canonical anchor nodes are already a protocol precedent: the Genesis root node does not decay by design. A signed "Linux Kernel v6.x-stable" release node is a natural immutable anchor — a node whose decay is suppressed by a policy field, not by circumventing the decay architecture. This is not a special case; it is the mechanism used for every other canonical anchor in the system.
+
+**Betweenness centrality as structural decay immunity.** This is the deeper mechanism. In the ILC reputation model, reputation flows inward along incoming edges. The Linux kernel nodes would have extraordinary betweenness centrality because they sit on dependency paths for essentially every downstream node in the hypergraph. Betweenness centrality measures how many shortest paths between other node pairs pass through a given node; for a kernel function used by every process on every Linux-based system, this number is astronomically large. High-centrality nodes accumulate incoming reputation flows that structurally exceed their decay rate — the topology prevents decay to zero. Decay is a threat to isolated or orphaned nodes, to knowledge that no one uses. A kernel function with ten thousand downstream dependents cannot decay; the graph structure prevents it mathematically.
+
+CDL-081 (Hyperedge ECU Attribution) handles the group case. A kernel-package hyperedge groups constituent nodes and reputation operates at the hyperedge level. The Linux Kernel as a whole becomes a single unit of epistemic trust, even though it decomposes into millions of constituent nodes. The group's aggregate betweenness centrality exceeds that of any individual member node, making the collective more immune to decay than any individual function.
+
+#### Limitation 3 — Distributed Execution
+
+This is the most architecturally novel. A program viewed through the hypergraph is a walk following `DERIVED_FROM` and `DEPENDS_ON` edges from an entrypoint node. A "trust window" maps precisely to a cryptographically-bounded execution context: a set of nodes whose canonical hashes are attested, within which execution proceeds, and where crossing outside requires re-attestation before continuing.
+
+Three components are required for distributed execution over the hypergraph:
+
+**Content-addressed bytecode substrate.** WebAssembly is the natural fit. WASM modules are already content-addressable and sandboxed, so a WASM module's hash is directly a graph node. The star-map walk resolves imports by node hash rather than by name — eliminating the entire category of supply-chain attacks that exploit name-based resolution. A dependency cannot be swapped without changing its hash and thereby invalidating the attested execution context.
+
+**Morphogenetic execution runtime.** A runtime that walks the star-map, resolves node hashes to cached bytecode from the LMDB node store, and enforces trust-window boundaries. Validators double as execution cache nodes: their LMDB stores, already populated with content-addressed graph artifacts, are the natural substrate for node-hash-to-bytecode resolution. This is conceptually adjacent to Unison [29] (functions identified by content hash), IPVM (WASM over IPFS), and interaction nets [30] (computation as graph transformation) — but with ILC's reputation and decay layer adding a live trustworthiness signal to the dependency graph that none of those systems possess.
+
+**Hardware attestation.** The trust window is cryptographically bounded by the BLS consensus layer, which already provides the signature infrastructure. TPM or TEE attestation makes the trust window tamper-evident at the hardware level rather than solely software-enforced — which matters for high-stakes execution. FPGA acceleration is plausible for the hash-resolution hot path (BLAKE3 or SHA-256 on every node lookup). QUIC transport, already in the ILC stack, provides low-latency node resolution across topology for cache misses. No exotic hardware is strictly required; the trust model is cryptographic rather than silicon-dependent, and hardware attestation strengthens rather than replaces it.
+
+The Atlas slice materializer (Phase 1247) is already building the subgraph-extraction primitive that a distributed execution runtime would require. An execution slice for a specific program is a particularly structured Atlas slice with a WASM runtime attached.
+
+---
+
+#### What Hypergraph Edges Enable
+
+Once existing open-source software is represented in the ILC hypergraph, the typed edge structure enables capabilities that are structurally impossible for flat source trees, per-repository analysis tools, or any system without content-addressed identity at the semantic level.
+
+**Exact vulnerability blast radius.** Given a CVE in a specific node, traverse `DERIVED_FROM` descendants in one graph query. Every downstream node deriving from the vulnerable function is immediately identifiable, regardless of language, repository, or organization boundary. Current CVE blast-radius analysis is manual, incomplete, and bounded by organizational visibility. In the hypergraph it is a traversal with a verifiable result.
+
+**Dead code elimination at ecosystem scale.** A kernel function with no `REFERENCES` edges from any node in the entire hypergraph — including all downstream packages globally — is provably dead across the whole ecosystem, not just within the kernel source tree. This is structurally impossible with any per-repository analysis tool. In the ILC hypergraph it is a computable, content-addressed fact: absence of incoming edges from the full graph.
+
+**Proof and refutation propagation.** A formal verification result associated with a node propagates provisionally to all `DERIVED_FROM` descendants. A verified memory-safe implementation of a locking primitive propagates its safety attestation through the entire dependency subgraph. Refutation propagates identically: a disputed node flags all derivatives through the same edge traversal, with economic weight modulating the signal strength. Security knowledge and vulnerability knowledge both propagate along the same structural paths.
+
+**Cross-language semantic equivalence.** If a Rust reimplementation of a kernel subsystem and the existing C implementation produce the same semantic subgraph structure — same functional relationships, same `DEPENDS_ON` edges, same behavior attested by `VALIDATE` edges — the hypergraph makes that equivalence detectable as a graph isomorphism problem. Currently comparing implementations of the same algorithm across languages requires expert human effort. In the hypergraph, semantic identity is a structural property, computable and economically weighted.
+
+**Emergent architectural discovery.** Centrality analysis on the kernel hypergraph reveals which functions are load-bearing in ways not visible from the source tree. Some functions that appear peripheral in the directory structure have extreme betweenness centrality in the semantic hypergraph — they sit on the critical path of an enormous number of execution traces across the ecosystem. Reranking maintenance priority by graph centrality rather than directory depth or commit frequency changes which work a maintenance organization would identify as most important.
+
+**Reputation-weighted distributed attestation.** If ten thousand high-reputation nodes across the ecosystem carry `DERIVED_FROM` or `REFERENCES` edges to a security-sensitive function, and none carry `DISPUTES` edges, that function has implicit distributed attestation at scale. No single organization is the trust authority; the graph topology is. This is decentralized security attestation without a certificate authority, without a standards body, and without a single point of capture.
+
+---
+
+#### Scientific Literature on Hypergraph Software Representation
+
+**Hypergraph neural networks.** Feng et al. [33] and subsequent work demonstrate that HGNNs outperform standard GNNs for tasks involving group-level relationships, where pairwise edges lose information that hyperedges preserve. Applied to software: learning optimization patterns across hyperedge-grouped families of related functions, predicting bug likelihood from structural position in the hypergraph, and suggesting refactors based on learned topology patterns. A HGNN trained on a kernel-scale hypergraph would identify architectural patterns invisible to any per-repository analysis.
+
+**Hypergraph rewriting as program transformation.** Drewes, Habel, and Kreowski [34] developed hyperedge replacement grammars as a formal framework for program transformation as graph transformation. This connects to string diagrams in categorical semantics (Coecke, Kissinger [35], Abramsky). The implication is constructive: program optimization passes, refactoring operations, and equivalence-preserving transformations can be expressed as hypergraph rewrite rules and formally composed. The Linux Kernel's optimization history — decades of performance tuning — could be extracted as a library of validated, formally composable rewrite rules rather than ad hoc commit history with no formal semantics.
+
+**Topological data analysis on code.** Persistent homology applied to software dependency graphs [36] reveals structural properties invisible to any local analysis. Holes in the persistent homology correspond to missing dependencies or architectural gaps. Connected components reveal true module boundaries that often diverge from the source tree's directory structure. Cycles flag potential deadlock-prone interaction patterns. On a kernel hypergraph of millions of nodes, TDA would surface architectural properties that no human code review process has access to — not because they are subtle, but because human reviewers cannot hold millions of relationships in working memory simultaneously.
+
+**Kolmogorov complexity and semantic deduplication.** In a content-addressed hypergraph, two code fragments that produce identical subgraph structures are semantically identical by construction, regardless of identifier names or formatting. Semantic clone detection becomes exact: deduplication is a structural property, not a heuristic. The Linux Kernel has extensive internal duplication across subsystems — analogous implementations of similar algorithms maintained in parallel — that current tools detect imperfectly through textual similarity heuristics. In the hypergraph, semantic identity is a content-addressing invariant.
+
+**Category-theoretic program semantics.** Lawvere theories and Moggi's computational monads [23] map cleanly to hypergraph structures. If a function's hypergraph structure satisfies certain categorical properties — commutativity, associativity of composed operations — correctness properties follow without full theorem-prover runs. The formal verification community (Plotkin, Power [24], Hyland) has developed the theoretical foundation; the hypergraph provides the substrate on which verification becomes computable at ecosystem scale.
+
+---
+
+#### The Novel Combination
+
+Nix, Guix, IPFS, Unison [29], and Bazel each achieve content-addressed identity for software artifacts. None adds:
+
+- A reputation and decay layer providing a live trustworthiness signal over the dependency graph — not merely content identity, but a dynamic measure of how much the graph trusts each node
+- Economic incentives making curation sustainable at ecosystem scale without institutional backing or volunteer burnout
+- Hyperedge-level attribution for group-level semantic relationships among related functions — the signal that CDL-081 encodes
+- Proof and refutation propagation as first-class graph operations with economic weight proportional to the propagation path's cumulative reputation
+- A morphogenetic runtime allowing the graph topology to evolve, prune, and self-organize under adversarial economic conditions rather than requiring manual curation decisions
+
+The content-addressed identity layer that prior systems establish is necessary but insufficient. ILC adds the economic substrate that makes continuous curation self-sustaining: turning the static content-addressing of prior systems into a living, adversarially-tested knowledge structure whose reliability grows with use. The scientific literature has the pieces separately — HGNNs, hypergraph rewriting, TDA, category-theoretic semantics, content-addressed execution. ILC is the architecture that composes them with an economic incentive layer that makes the whole system self-maintaining.
+
+---
+
 ### References (Appendix H)
 
 [1] J. Doyle, "A Truth Maintenance System," *Artificial Intelligence*, 12(3), 1979.  
@@ -5646,6 +5740,10 @@ One final distinction is worth drawing explicitly. The CAN framework asks whethe
 [30] Y. Lafont, "Interaction Nets," *POPL*, 1990.  
 [31] The Univalent Foundations Program, *Homotopy Type Theory*, Institute for Advanced Study, 2013.
 [32] G. D'Acunto, P. Di Lorenzo, S. Barbarossa, "Networks of Causal Abstractions: A Sheaf-theoretic Framework," arXiv:2509.25236v3, 2026.
+[33] Y. Feng, H. You, Z. Zhang, R. Ji, Y. Gao, "Hypergraph Neural Networks," *AAAI*, 2019.
+[34] F. Drewes, A. Habel, H.-J. Kreowski, "Hyperedge Replacement Graph Grammars," in *Handbook of Graph Grammars and Computing by Graph Transformation*, World Scientific, 1997.
+[35] B. Coecke, A. Kissinger, *Picturing Quantum Processes: A First Course in Quantum Theory and Diagrammatic Reasoning*, Cambridge University Press, 2017.
+[36] H. Edelsbrunner, J. Harer, *Computational Topology: An Introduction*, American Mathematical Society, 2010.
 
 ---
 
