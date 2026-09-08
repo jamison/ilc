@@ -1,0 +1,99 @@
+{
+  "artifact_checks": {
+    "sdist": {
+      "filename": "ilc_core-0.4.18.tar.gz",
+      "sha256": "281a9e91f022eb79629fe1e0f1f6b6bbcfc3f8e311214be9797505d89ec30991",
+      "size_bytes": 1199384
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.18-py3-none-any.whl",
+      "invite_enforcement_enabled_true": true,
+      "invite_enforcement_py_present": true,
+      "invite_nullifier_lmdb_store_py_present": true,
+      "sha256": "5631d21a38dce78fcdad86ecf8f5af758a25b3886596e5244a5ecb595140f26a",
+      "size_bytes": 1468626
+    }
+  },
+  "build_command": ".venv/bin/python -m build",
+  "build_phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00a",
+  "build_python": "Python 3.14.3",
+  "build_tree_diff_sha256": "0a63da782340aaf36aff1ad9059f5697b8e3a7ca9259dd39fa074cbde5662398",
+  "clean_venv_install_sentinel": {
+    "ilc_core_version": "0.4.18",
+    "invite_enforcement_enabled": true,
+    "lmdb_registry_class": "InviteNullifierLmdbRegistry",
+    "lmdb_registry_version": "invite_nullifier_lmdb_store_1576r_fix1.v0.1",
+    "result": "PASS",
+    "venv_path": "/tmp/ilc-0418-local-build-venv"
+  },
+  "dist_metadata": {
+    "requires_python": ">=3.10",
+    "version": "0.4.18"
+  },
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_mutation",
+    "no_relay_mutation",
+    "no_digitalocean_mutation",
+    "no_guard_change",
+    "no_install_sh_update_to_0418",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ],
+  "package_scope": "local_build_only_no_upload",
+  "phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00a",
+  "phase_output_token": "invite_enforcement_package_0418_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00A",
+  "post_build_gates": {
+    "focused_invite_enforcement_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_rc_invite_00b_enforcement_activation.py tests/test_invite_enforcement_fix1.py -q --tb=short",
+      "result": "PASS",
+      "summary": "12 passed"
+    },
+    "installer_package_sentinel_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_install_02_install_sh.py tests/test_gap_public_rc_package_refresh_00b.py -q --tb=short",
+      "result": "PASS",
+      "summary": "70 passed",
+      "scope_note": "Sentinels still target 0.4.17 because tools/install.sh is intentionally not retargeted until GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b."
+    },
+    "invite_bootstrap_adjacent_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_rc_invite_00a_bootstrap_profile.py tests/test_phase_1573z_invite_token_cli_plumbing.py tests/test_gap_agent_onboarding_00d_pop_and_nullifier.py -q --tb=short",
+      "result": "PASS",
+      "summary": "39 passed"
+    },
+    "twine_check": {
+      "command": ".venv/bin/python -m twine check dist/ilc_core-0.4.18-py3-none-any.whl dist/ilc_core-0.4.18.tar.gz",
+      "result": "PASS"
+    }
+  },
+  "pre_build_gates": {
+    "input_token_invite_bootstrap_profile_committed_GAP_PUBLIC_RC_INVITE_00a": "PRESENT",
+    "input_token_invite_enforcement_activated_GAP_PUBLIC_RC_INVITE_00b": "PRESENT",
+    "input_token_invite_enforcement_fix1_durable_nullifier_wiring_committed_GAP_PUBLIC_RC_INVITE_ENFORCEMENT_FIX1_00": "PRESENT",
+    "invite_enforcement_enabled_pre_build": true,
+    "source_version_sentinels": {
+      "ilc_core/__init__.py": "0.4.18",
+      "pyproject.toml": "0.4.18"
+    }
+  },
+  "predecessor_version": "0.4.17",
+  "pypi_upload_phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b",
+  "schema_version": "ilc.package_build_receipt.GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00a.v0.1",
+  "source_base_commit_before_phase": "6f075127b6b91166d684972f65d26f345f7af4f7",
+  "source_diff_scope": [
+    "pyproject.toml version 0.4.17 to 0.4.18",
+    "ilc_core/__init__.py __version__ 0.4.17 to 0.4.18",
+    "local build receipt",
+    "STATUS output token",
+    "Fix38 ledger support annotation for the new receipt"
+  ],
+  "status": "local_build_complete",
+  "version": "0.4.18"
+}

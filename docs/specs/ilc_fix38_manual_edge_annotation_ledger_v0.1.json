@@ -76547,6 +76547,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00a_2026_09_08",
+      "chronology_note": "2026-09-08 local build-only package receipt for ilc-core 0.4.18 after invite enforcement activation; no upload, signing, mirror, VPS, or guard mutation.",
+      "manual_read_summary": "Build receipt records wheel/sdist hashes, direct wheel inspection proving INVITE_ENFORCEMENT_ENABLED=True and invite_nullifier_lmdb_store.py packaged, clean venv local-wheel smoke, and scoped non-claims.",
+      "node_kind": "package_build_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_enforcement_package_0418_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00a_v0.1.json"
     }
   ],
   "boundary": {
