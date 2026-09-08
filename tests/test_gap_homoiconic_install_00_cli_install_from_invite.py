@@ -104,21 +104,24 @@ def test_install_from_invite_help_is_discoverable() -> None:
 
     assert result.returncode == 0
     assert "--from-invite" in result.stdout
+    assert "--invite-code" in result.stdout
     assert "--target-dir" in result.stdout
     assert "--output-receipt" in result.stdout
-    assert "Install a verified local graph slice" in result.stdout
+    assert "Enroll as a public-RC agent" in result.stdout
 
 
 def test_install_from_invite_missing_invite_arg_exits_error() -> None:
+    # With no flags and non-TTY stdin, the runtime raises install_invite_source_missing.
     result = subprocess.run(
         [sys.executable, "-m", "ilc_core.cli.main", "install"],
         check=False,
         capture_output=True,
         text=True,
+        stdin=subprocess.DEVNULL,
     )
 
-    assert result.returncode == 2
-    assert "from-invite" in result.stderr
+    assert result.returncode != 0
+    assert "invite" in result.stderr.lower() or "invite" in result.stdout.lower()
 
 
 def test_install_from_invite_invalid_json_file_exits_error(tmp_path: Path) -> None:

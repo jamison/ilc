@@ -1117,6 +1117,82 @@ def _load_first_bundled_relay_url() -> str:
     return str(selected.get("control_url") or "")
 
 
+def _normalize_invite_code(raw: str) -> str:
+    """Accept ILC-XXXX-XXXX or ILCXXXXXXXX; return stripped uppercase token."""
+    return raw.strip().replace("-", "").upper()
+
+
+def _fetch_invite_bundle_by_shortcode(code: str) -> dict[str, Any]:
+    """Fetch and decode an invite bundle from the bundled relay using a shortcode."""
+    import base64
+    import http.client
+    import ssl
+
+    from ilc_core.network.relay.relay_server import (
+        RELAY_INVITE_PATH_PREFIX,
+        decode_shortcode_invite_bundle,
+    )
+
+    records = _load_bundled_relay_records_for_generate()
+    if not records:
+        raise ValueError("install_invite_code_no_relay_capsule")
+    selected = sorted(records, key=lambda r: str(r.get("control_url")))[0]
+    relay_url = str(selected.get("control_url") or "")
+    tls_pin = _install_relay_record_tls_pin(selected)
+
+    parsed = urlparse(relay_url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise ValueError("install_invite_code_relay_url_invalid")
+
+    fetch_path = f"{RELAY_INVITE_PATH_PREFIX}{code}/fetch"
+    context = ssl.create_default_context()
+    conn = http.client.HTTPSConnection(
+        parsed.hostname,
+        port=parsed.port or 443,
+        timeout=15,
+        context=context,
+    )
+    try:
+        conn.connect()
+        if conn.sock is None:
+            raise ValueError("install_invite_code_relay_tls_connection_failed")
+        cert_der = conn.sock.getpeercert(binary_form=True)
+        actual_pin = hashlib.sha256(cert_der).hexdigest()
+        if actual_pin != tls_pin:
+            raise ValueError("install_invite_code_relay_tls_pin_mismatch")
+        conn.request(
+            "GET",
+            fetch_path,
+            headers={"Accept": "application/json", "User-Agent": "ilc-install/1"},
+        )
+        response = conn.getresponse()
+        raw = response.read(INSTALL_INVITE_MAX_BYTES + 1)
+        if len(raw) > INSTALL_INVITE_MAX_BYTES:
+            raise ValueError("install_invite_code_response_too_large")
+        try:
+            payload = _loads_json_no_constants(raw.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise ValueError("install_invite_code_response_invalid") from exc
+        if not isinstance(payload, dict):
+            raise ValueError("install_invite_code_response_invalid")
+        if response.status == 404:
+            raise ValueError("install_invite_code_not_found")
+        if response.status == 410:
+            raise ValueError("install_invite_code_exhausted")
+        if response.status != 200:
+            token = payload.get("error")
+            if not isinstance(token, str) or not token:
+                token = "install_invite_code_fetch_failed"
+            raise ValueError(f"install_invite_code_fetch_failed:{response.status}:{token}")
+        bundle_b64 = payload.get("bundle_b64")
+        if not isinstance(bundle_b64, str) or not bundle_b64:
+            raise ValueError("install_invite_code_bundle_b64_missing")
+        bundle = decode_shortcode_invite_bundle(bundle_b64)
+        return dict(bundle)
+    finally:
+        conn.close()
+
+
 def _default_public_rc_starmap_payload() -> dict[str, Any]:
     from ilc_core.bundle.default_public_rc_starmap import (
         build_default_public_rc_starmap_payload,
@@ -2347,15 +2423,30 @@ def _build_parser() -> JsonArgumentParser:
         if command == "install":
             install_parser = subparsers.add_parser(
                 "install",
-                help="Install a verified local graph slice from an invite bundle",
-                description="Install a verified local graph slice from an invite bundle",
+                help="Enroll as a public-RC agent using an invite code or bundle",
+                description=(
+                    "Enroll as a public-RC agent. Run with no arguments to be prompted "
+                    "for your invite code (ILC-XXXX-XXXX format). "
+                    "Request a free invite code at ilcops@proton.me."
+                ),
+            )
+            install_parser.add_argument(
+                "--invite-code",
+                dest="invite_code",
+                default="",
+                metavar="CODE",
+                help=(
+                    "Shortcode invite (ILC-XXXX-XXXX or ILCXXXXXXXX); "
+                    "fetched from the relay automatically. "
+                    "If omitted, you will be prompted interactively."
+                ),
             )
             install_parser.add_argument(
                 "--from-invite",
                 dest="from_invite",
-                required=True,
+                default="",
                 metavar="INVITE",
-                help="Path, file:// URI, '-' stdin, or raw JSON invite bundle",
+                help="Path, file:// URI, '-' stdin, or raw JSON invite bundle (advanced)",
             )
             install_parser.add_argument(
                 "--target-dir",
@@ -4635,7 +4726,29 @@ def _run_install_subcommand(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
-    invite_bundle = _load_install_invite_bundle(str(args.from_invite))
+    from_invite = str(getattr(args, "from_invite", "") or "").strip()
+    invite_code = str(getattr(args, "invite_code", "") or "").strip()
+
+    if from_invite:
+        invite_bundle = _load_install_invite_bundle(from_invite)
+    elif invite_code:
+        invite_bundle = _fetch_invite_bundle_by_shortcode(_normalize_invite_code(invite_code))
+    else:
+        # Interactive prompt: no flags provided
+        if not sys.stdin.isatty():
+            raise ValueError(
+                "install_invite_source_missing: provide --invite-code CODE "
+                "or --from-invite PATH"
+            )
+        print(
+            "\nWelcome to ILC public-RC enrollment.\n"
+            "\nEnter your invite code below (ILC-XXXX-XXXX format)."
+            "\nDon't have one? Email ilcops@proton.me to request a free code.\n"
+        )
+        raw_code = input("Invite code: ").strip()
+        if not raw_code:
+            raise ValueError("install_invite_source_missing")
+        invite_bundle = _fetch_invite_bundle_by_shortcode(_normalize_invite_code(raw_code))
     expected_profile = _install_expected_profile(invite_bundle)
     current_epoch = _install_current_epoch(invite_bundle)
     invite_id = _install_invite_id(invite_bundle)
