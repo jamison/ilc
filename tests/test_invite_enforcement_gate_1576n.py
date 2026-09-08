@@ -192,6 +192,7 @@ def test_cli_identity_init_rejects_missing_invite_when_enforcement_enabled(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
     args = argparse.Namespace(
         identity_subcommand="init",
         lineage_id="lineage-local",
@@ -234,6 +235,7 @@ def test_cli_identity_init_with_legacy_invite_rejected_when_enforcement_enabled(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
     invite_path = _invite_batch_file(tmp_path)
     args = argparse.Namespace(
         identity_subcommand="init",

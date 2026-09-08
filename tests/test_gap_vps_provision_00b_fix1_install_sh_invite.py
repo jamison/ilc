@@ -97,10 +97,10 @@ def test_install_sh_invite_bundle_not_found_exits_1(tmp_path: Path) -> None:
     assert "install_sh_invite_bundle_not_found" in result.stderr
 
 
-def test_install_sh_missing_invite_bundle_required() -> None:
+def test_install_sh_missing_invite_material_required() -> None:
     result = _run_install_sh("--dry-run")
     assert result.returncode == 2
-    assert "install_sh_invite_bundle_required" in result.stderr
+    assert "install_sh_invite_bundle_or_code_required" in result.stderr
 
 
 def test_install_sh_no_onboard_is_not_accepted_bypass() -> None:
