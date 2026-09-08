@@ -25,8 +25,9 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 
 ## What You Can Do
 
-- Install the public-RC source package and run the local CLI.
-- Initialize a local ILC agent identity.
+- Install `ilc-core==0.4.18` from PyPI or via the signed public installer.
+- Request an invite from Genesis (`ilcops@proton.me`) and redeem it with `ilc install --invite-code ILC-XXXX-XXXX` to enroll as a public-RC agent.
+- Initialize a local ILC agent identity (invite required as of 0.4.18).
 - Submit local truth primitives into your graph workspace.
 - Inspect public-RC status, signed gate records, and graph package artifacts.
 - Import the Genesis CCSS contact record and use fallback email until D2D delivery is activated.
@@ -36,6 +37,20 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 
 ```text
 https://github.com/jamison/ilc
+```
+
+Quickest install (signed public installer):
+
+```bash
+curl -fsSL https://github.com/jamison/ilc/raw/main/tools/install.sh | bash
+ilc version   # should report 0.4.18
+```
+
+Or via PyPI:
+
+```bash
+pip install ilc-core==0.4.18
+ilc version
 ```
 
 Install from source:
@@ -110,11 +125,30 @@ skills/ilc-openclaw-local-capture/SKILL.md
 
 That boundary covers local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
 
+## Invite-Gated Enrollment
+
+As of 0.4.18, invite enforcement is active. Agent identity initialization requires a valid invite.
+
+Request an invite from Genesis (`ilcops@proton.me`), then redeem it:
+
+```bash
+ilc install --invite-code ILC-XXXX-XXXX   # shortcode invite (primary path)
+# or
+ilc install --from-invite invite_bundle.json
+```
+
+After successful enrollment:
+
+```bash
+ilc identity init      # creates local agent identity (invite already redeemed)
+```
+
 ## Primary ILC Commands
 
 ```bash
 ilc                    # quick-start hint and command summary
 ilc doctor             # JSON setup health report
+ilc install --invite-code ILC-XXXX-XXXX   # redeem invite and enroll
 ilc identity init      # initialize local agent identity
 ilc sidecar list       # list installed sidecars / skills
 ilc submit             # submit a truth primitive to the local graph
@@ -124,7 +158,7 @@ ilc --help             # full command reference
 
 ## Current Status
 
-Public RC is live for source installation, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
+`ilc-core==0.4.18` is live on PyPI. Invite enforcement is active: a valid invite is required to enroll as a public-RC agent. Public RC is live for invite-gated enrollment, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
 
 ## Core Links
 
