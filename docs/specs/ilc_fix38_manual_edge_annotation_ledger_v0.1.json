@@ -76799,6 +76799,46 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0418_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0418_00b_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b session: canonical 13-step public release workflow defined, governing future ilc-core PyPI releases.",
+      "manual_read_summary": "Canonical 13-step workflow spec governing every ilc-core PyPI release: code+tests+LMDB intake, version bump, local build, offline signing, PyPI publish, yank predecessor, release envelope, install.sh retarget, LMDB/graph slice update, public mirror refresh, ClawHub skill update, STATUS token, and smoke test.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "review_status": "candidate",
+          "target": "process:ilc_core_pypi_release_cycle"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc-core-0.4.18"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "module:ilc_core.release.installable_release_signature"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_release_workflow_v0.1.md"
     }
   ],
   "boundary": {
