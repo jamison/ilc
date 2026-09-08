@@ -122,13 +122,19 @@ That boundary covers local private capture, local classification, private non-bi
 
 ## Invite-Gated Enrollment
 
-As of 0.4.18, invite enforcement is active. Agent identity initialization requires a valid invite.
+As of 0.4.18, invite enforcement is active. You need a valid invite code to enroll as an agent.
 
-Request an invite from Genesis (`ilcops@proton.me`), then redeem it:
+**How to get an invite:** Email Genesis at `ilcops@proton.me` with a brief note about your intended use. Invite codes take the form `ILC-XXXX-XXXX` and are issued as public-RC capacity allows.
+
+Once you have an invite code:
 
 ```bash
-ilc install --invite-code ILC-XXXX-XXXX   # shortcode invite (primary path)
-# or
+ilc install --invite-code ILC-XXXX-XXXX   # redeem your invite and enroll
+```
+
+Or if you received a bundle file instead of a shortcode:
+
+```bash
 ilc install --from-invite invite_bundle.json
 ```
 
