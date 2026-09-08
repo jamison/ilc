@@ -1413,12 +1413,33 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
 
         # Phase 1578a found no general enrollment runtime yet; identity init is
         # the current concrete enrollment hook until that runtime exists.
-        from ilc_core.genesis.invite_enforcement import require_invite_for_enrollment
-
-        require_invite_for_enrollment(
-            enrollment_agent_id,
-            state.get("invite_redemption_record"),
+        from ilc_core.genesis.invite_enforcement import (
+            is_enrollment_invite_enforced,
+            require_invite_for_enrollment,
         )
+
+        redemption_record = state.get("invite_redemption_record")
+        if redemption_record is None and not is_enrollment_invite_enforced():
+            require_invite_for_enrollment(enrollment_agent_id, redemption_record)
+        else:
+            from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
+
+            nullifier_registry_path = Path.home() / ".ilc" / "lmdb" / "nullifiers"
+            with InviteNullifierLmdbRegistry(nullifier_registry_path) as nullifier_registry:
+                require_invite_for_enrollment(
+                    enrollment_agent_id,
+                    redemption_record,
+                    nullifier_registry=nullifier_registry,
+                    register_nullifier=True,
+                )
+                if not is_enrollment_invite_enforced() and redemption_record is not None:
+                    from ilc_core.genesis.invitation_provenance_record import (
+                        validate_invite_redemption_record,
+                    )
+
+                    record = validate_invite_redemption_record(redemption_record)
+                    if not nullifier_registry.register_if_new(str(record.redemption_nullifier)):
+                        raise ValueError("invite_nullifier_already_used_for_enrollment")
         _apply_validator_candidate_enrollment_state(args, state, enrollment_agent_id)
         _write_identity_state(state_path, state)
         return {"action": "init", "state_path": str(state_path), "state": state}

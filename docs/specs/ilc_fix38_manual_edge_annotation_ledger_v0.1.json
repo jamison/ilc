@@ -95842,6 +95842,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_enforcement_fix1_00_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00 hardened and executed the durable nullifier wiring fix for ilc identity init after the 00b blocker checkpoint.",
+      "manual_read_summary": "Phase prompt records the source-read requirements, token checks, no-double-registration invariant, and non-claims for the non-sensitive identity-init durable nullifier wiring fix.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_fix1_durable_nullifier_wiring_committed_GAP_PUBLIC_RC_INVITE_ENFORCEMENT_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_enforcement_fix1_00_g10_durable_nullifier_wiring.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_enforcement_fix1_00_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00 added focused regression tests for identity-init LMDB nullifier persistence, restart replay rejection, no no-invite side effect, and enabled-guard no-double-registration behavior.",
+      "manual_read_summary": "Test file exercises the actual _run_identity_subcommand path under tmp_path-isolated HOME values and verifies the durable LMDB replay boundary without flipping INVITE_ENFORCEMENT_ENABLED.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:identity_init_invite_nullifier_replay_rejected_after_lmdb_restart"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_invite_enforcement_fix1.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_enforcement_fix1_00_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00 walkthrough records prompt validation, MemPalace/repo searches, source-read conclusions, verification output, STATUS token emission, and non-claims.",
+      "manual_read_summary": "Walkthrough records the runtime callsite classification, exact verification outputs, durable nullifier path choice, broad invite regression results, and the boundary that packaging/signing/mirror work remains future scope.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-ENFORCEMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_enforcement_fix1_durable_nullifier_wiring_committed_GAP_PUBLIC_RC_INVITE_ENFORCEMENT_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_enforcement_fix1_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
