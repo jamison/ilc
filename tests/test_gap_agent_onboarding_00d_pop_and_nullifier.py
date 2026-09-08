@@ -225,10 +225,12 @@ def test_duplicate_nullifier_rejected(
         )
 
 
-def test_enforcement_gate_still_false_after_this_phase(
+def test_install_records_nullifier_before_public_rc_enforcement_activation(
     tmp_path: Path,
     install_env: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
     invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-guard-false"))
     result = cli_main._run_install_subcommand(
         _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")

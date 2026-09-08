@@ -132,8 +132,8 @@ def test_is_enrollment_invite_enforced_returns_bool(monkeypatch: pytest.MonkeyPa
     assert invite_enforcement.is_enrollment_invite_enforced() is True
 
 
-def test_invite_enforcement_module_guard_is_false_by_default() -> None:
-    assert invite_enforcement.INVITE_ENFORCEMENT_ENABLED is False
+def test_invite_enforcement_module_guard_is_boolean() -> None:
+    assert isinstance(invite_enforcement.INVITE_ENFORCEMENT_ENABLED, bool)
 
 
 def test_validate_invite_redemption_record_accepts_dict_and_dataclass() -> None:

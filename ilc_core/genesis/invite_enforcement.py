@@ -13,7 +13,7 @@ from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_I
 from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
 
 INVITE_ENFORCEMENT_RUNTIME_VERSION = "invite_enforcement_gate_1576n.v0.1"
-INVITE_ENFORCEMENT_ENABLED: bool = False
+INVITE_ENFORCEMENT_ENABLED: bool = True
 
 
 def is_enrollment_invite_enforced() -> bool:
