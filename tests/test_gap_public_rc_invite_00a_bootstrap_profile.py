@@ -85,8 +85,10 @@ def test_spec_distinguishes_openclaw_subset_from_install_materialization_fields(
     assert "OpenClaw subset" in text
 
 
-def test_invite_enforcement_still_off() -> None:
-    assert invite_enforcement.INVITE_ENFORCEMENT_ENABLED is False
+def test_invite_enforcement_profile_records_pre_activation_state() -> None:
+    text = _spec_text()
+    assert "`INVITE_ENFORCEMENT_ENABLED` still false" in text
+    assert isinstance(invite_enforcement.INVITE_ENFORCEMENT_ENABLED, bool)
 
 
 def test_genesis_agent_exempt_from_enforcement() -> None:

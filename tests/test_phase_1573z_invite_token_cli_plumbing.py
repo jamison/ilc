@@ -222,7 +222,9 @@ def test_identity_invite_create_enabled_writes_local_artifact_only(tmp_path: Pat
     assert "private_invite_nonces" not in payload["invite_batch_record"]
 
 
-def test_identity_init_with_invite_writes_local_redemption_record_only(tmp_path: Path) -> None:
+def test_identity_init_with_legacy_invite_rejected_after_public_rc_enforcement(
+    tmp_path: Path,
+) -> None:
     invite_path = tmp_path / "invite_batch.json"
     graph_state = tmp_path / "graph.json"
     create_result = subprocess.run(
@@ -269,11 +271,6 @@ def test_identity_init_with_invite_writes_local_redemption_record_only(tmp_path:
         text=True,
     )
 
-    assert init_result.returncode == 0, init_result.stderr
-    payload = json.loads(init_result.stdout)
-    state = payload["data"]["state"]
-    assert state["production_graph_write"] is False
-    assert state["invite_runtime_version"] == INVITE_BATCH_RUNTIME_VERSION
-    assert "invite_redemption_record" in state
-    assert "private_invite_nonces" not in state["invite_redemption_record"]
-    assert "identity_node" not in state
+    assert init_result.returncode == 1
+    payload = json.loads(init_result.stderr)
+    assert payload["message"] == "invite_redemption_redeemer_key_binding_required"
