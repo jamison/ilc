@@ -1118,8 +1118,23 @@ def _load_first_bundled_relay_url() -> str:
 
 
 def _normalize_invite_code(raw: str) -> str:
-    """Accept ILC-XXXX-XXXX or ILCXXXXXXXX; return stripped uppercase token."""
-    return raw.strip().replace("-", "").upper()
+    """Accept ILC-XXXX-XXXX or ILCXXXXXXXX; return canonical dashed token."""
+    from ilc_core.network.relay.invite_code import validate_code
+
+    if not isinstance(raw, str):
+        raise ValueError("install_invite_code_invalid")
+    candidate = raw.strip().upper()
+    if validate_code(candidate):
+        return candidate
+    if (
+        "-" not in candidate
+        and len(candidate) == len("ILCXXXXXXXX")
+        and candidate.startswith("ILC")
+    ):
+        candidate = f"ILC-{candidate[3:7]}-{candidate[7:]}"
+        if validate_code(candidate):
+            return candidate
+    raise ValueError("install_invite_code_invalid")
 
 
 def _fetch_invite_bundle_by_shortcode(code: str) -> dict[str, Any]:
@@ -4729,10 +4744,14 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
     from_invite = str(getattr(args, "from_invite", "") or "").strip()
     invite_code = str(getattr(args, "invite_code", "") or "").strip()
 
+    if from_invite and invite_code:
+        raise ValueError("install_invite_source_conflict")
     if from_invite:
         invite_bundle = _load_install_invite_bundle(from_invite)
     elif invite_code:
-        invite_bundle = _fetch_invite_bundle_by_shortcode(_normalize_invite_code(invite_code))
+        invite_bundle = _fetch_invite_bundle_by_shortcode(
+            _normalize_invite_code(invite_code)
+        )
     else:
         # Interactive prompt: no flags provided
         if not sys.stdin.isatty():
