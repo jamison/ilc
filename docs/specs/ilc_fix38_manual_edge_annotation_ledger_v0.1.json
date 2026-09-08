@@ -95929,6 +95929,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_enforcement_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_00a_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-00a defines the current public-RC invite bootstrap profile after durable nullifier Fix1 and shortcode/capsule deployment.",
+      "manual_read_summary": "Spec reconciles raw --from-invite bundles, relay-hosted --invite-code shortcodes, Genesis-delegated invite issuer authority, bundled relay bootstrap capsule, OpenClaw invite subset validation, starmap materialization, bootstrap hints, and durable LMDB nullifier registration before invite enforcement activation.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_bootstrap_profile_committed_GAP_PUBLIC_RC_INVITE_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:ilc_genesis_invite_issuer_delegation_record_GAP_GENESIS_INVITE_ISSUER_00"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "artifact:relay_bootstrap_capsule_json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_invite_bootstrap_profile_GAP_PUBLIC_RC_INVITE_00a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_00a_2026_09_08",
+      "chronology_note": "2026-09-08 GAP-PUBLIC-RC-INVITE-00a regression tests lock the profile against runtime field sets and current public-RC invite bootstrap artifacts.",
+      "manual_read_summary": "Tests parse _invite_bootstrap_payload from ilc_core/cli/main.py, confirm InviteBatchRecord fields, verify invite enforcement remains off, confirm Genesis exemption source, require CDL-079 env vars to be documented as legacy/fallback authority, require bundled relay endpoints, require delegated invite issuer key, and prevent overclaiming legacy inviter_sig as cryptographic verification.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_public_rc_invite_bootstrap_profile_GAP_PUBLIC_RC_INVITE_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_bootstrap_profile_committed_GAP_PUBLIC_RC_INVITE_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/cli/main.py:_invite_bootstrap_payload"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "DOCUMENTS_RUNTIME_SURFACE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_invite_00a_bootstrap_profile.py"
     }
   ],
   "phase": "1545p-Fix38",
