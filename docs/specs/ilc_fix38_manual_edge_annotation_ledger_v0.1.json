@@ -77343,6 +77343,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_mirror_incremental_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00a_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-EPOCH-00a produced the activation baseline certificate before any epoch transition.",
+      "manual_read_summary": "Activation certificate records public-RC prerequisite tokens, current validator namespace, direct-read guard states, deferred surfaces, non-claims, and self-consistent certificate_sha256 for GAP-PUBLIC-RC-EPOCH-00a.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00a"
+        },
+        {
+          "edge_type": "GATES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "GATES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_activation_certificate_GAP_PUBLIC_RC_EPOCH_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00a_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-EPOCH-00a walkthrough documents activation-certificate finalization and no epoch transition.",
+      "manual_read_summary": "Walkthrough records GO receipt, token audit, MemPalace/source expansion, guard-state evidence, certificate hash verification, graph coverage, STATUS token, and non-claims for GAP-PUBLIC-RC-EPOCH-00a.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00a_walkthrough.md"
     }
   ],
   "boundary": {
