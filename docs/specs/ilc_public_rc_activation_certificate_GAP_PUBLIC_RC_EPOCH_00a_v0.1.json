@@ -1,0 +1,185 @@
+{
+  "certificate_purpose": "public_rc_activation_baseline",
+  "certificate_sha256": "6696c190ed43f4652e12bf001a59b436aedbe9f69ea15893adede9d97f7ca89c",
+  "created_at_protocol_epoch": 0,
+  "deferred_surfaces": [
+    {
+      "deferred_reason": "Genesis settlement and minting authority do not imply unrestricted wallet-provider spend, transfer, or withdrawal authority.",
+      "guard": "GENESIS_WALLET_WRITE_AUTHORIZED",
+      "value": false
+    },
+    {
+      "deferred_reason": "General public P2P remains outside this epoch-launch certificate and requires separate transport activation authority.",
+      "guard": "PUBLIC_P2P_ENABLED",
+      "value": false
+    },
+    {
+      "deferred_reason": "General public fetch serving remains outside this epoch-launch certificate and requires separate transport activation authority.",
+      "guard": "PUBLIC_FETCH_SERVING_ENABLED",
+      "value": false
+    },
+    {
+      "deferred_reason": "Rust P2P bridge runtime remains a guarded future surface; public RC uses existing HTTP/TLS, relay, and validator endpoints only.",
+      "guard": "RUST_P2P_BRIDGE_NOT_ACTIVATED",
+      "value": true
+    },
+    {
+      "deferred_reason": "Treasury distribution and validator reward payout remain deferred to a separate post-RC activation phase.",
+      "guard": "TREASURY_DISTRIBUTION_NOT_ACTIVATED",
+      "value": true
+    },
+    {
+      "deferred_reason": "Dynamic validator admission and ejection remain deferred to post-RC governance; the launch validator set is fixed by reprovision and Genesis provenance binding records.",
+      "guard": "VALIDATOR_ADMISSION_NOT_ACTIVATED",
+      "value": true
+    },
+    {
+      "deferred_reason": "Maintenance lottery draws and related ECU distribution remain outside the public-RC epoch-1 ceremony.",
+      "guard": "MAINTENANCE_LOTTERY_NOT_ACTIVATED",
+      "value": true
+    },
+    {
+      "deferred_reason": "This package-profile/public-path legacy guard is retained as a distribution-layer non-activation record and is not the public mirror publication state.",
+      "guard": "PUBLIC_RC_NOT_ACTIVATED",
+      "value": true
+    },
+    {
+      "deferred_reason": "Historical Phase 1447 epoch transition authorization remains false; current epoch transition requires the later GAP-PUBLIC-RC-EPOCH-00c GO phrase.",
+      "guard": "PHASE_1447_EPOCH_TRANSITION_AUTHORIZED",
+      "value": false
+    }
+  ],
+  "guard_sources": {
+    "CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED": "ilc_core/ledger/conversion_candidate_runtime.py",
+    "DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED": "ilc_core/network/d2d/gossip_peer_registry.py",
+    "ECU_FAST_PATH_TRANSFER_ENABLED": "ilc_core/ecu/ecu_fast_path_intent.py",
+    "GENESIS_MINTING_AUTHORIZED": "ilc_core/epoch/genesis_settlement_destination.py",
+    "GENESIS_SETTLEMENT_WRITE_AUTHORIZED": "ilc_core/epoch/genesis_settlement_destination.py",
+    "GENESIS_WALLET_WRITE_AUTHORIZED": "ilc_core/epoch/genesis_settlement_destination.py",
+    "ILC_TRANSFER_ENABLED": "ilc_core/value_action/ilc_transfer_intent.py",
+    "INVITE_ENFORCEMENT_ENABLED": "ilc_core/genesis/invite_enforcement.py",
+    "MAINTENANCE_LOTTERY_NOT_ACTIVATED": "ilc_core/epistemic/maintenance_lottery_runtime.py",
+    "PASSIVE_ECU_WIRING_NOT_ACTIVATED": "ilc_core/economics/epoch_attribution_settle_runtime.py",
+    "PHASE_1447_EPOCH_TRANSITION_AUTHORIZED": "ilc_core/rc/signing_ceremony_status.py",
+    "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED": "ilc_core/epistemic/jury_assignment_runtime.py",
+    "PRODUCTION_EMISSION_NOT_ACTIVATED": "ilc_core/epoch/epoch_emission_production_path.py",
+    "PUBLIC_FETCH_SERVING_ENABLED": "ilc_core/network/d2d/transport_principal_cdl_094_status.py",
+    "PUBLIC_P2P_ENABLED": "ilc_core/network/d2d/transport_principal_cdl_094_status.py",
+    "PUBLIC_RC_NOT_ACTIVATED": "ilc_core/distribution/package_profiles.py",
+    "RUST_P2P_BRIDGE_NOT_ACTIVATED": "ilc_core/network/rust_p2p_bridge.py",
+    "TREASURY_DISTRIBUTION_NOT_ACTIVATED": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+    "VALIDATOR_ADMISSION_NOT_ACTIVATED": "ilc_core/validator/validator_admission_ejection_production_path.py",
+    "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED": "ilc_core/consensus/production_bridge.py",
+    "WERNER_CREDIT_WIRING_NOT_ACTIVATED": "ilc_core/economics/werner_runtime.py"
+  },
+  "guard_states": {
+    "CONVERSION_CANDIDATE_RUNTIME_NOT_ACTIVATED": false,
+    "DYNAMIC_PEER_DISCOVERY_NOT_ACTIVATED": false,
+    "ECU_FAST_PATH_TRANSFER_ENABLED": true,
+    "GENESIS_MINTING_AUTHORIZED": true,
+    "GENESIS_SETTLEMENT_WRITE_AUTHORIZED": true,
+    "GENESIS_WALLET_WRITE_AUTHORIZED": false,
+    "ILC_TRANSFER_ENABLED": true,
+    "INVITE_ENFORCEMENT_ENABLED": true,
+    "MAINTENANCE_LOTTERY_NOT_ACTIVATED": true,
+    "PASSIVE_ECU_WIRING_NOT_ACTIVATED": false,
+    "PHASE_1447_EPOCH_TRANSITION_AUTHORIZED": false,
+    "PRODUCTION_ASSIGNMENT_NOT_ACTIVATED": false,
+    "PRODUCTION_EMISSION_NOT_ACTIVATED": false,
+    "PUBLIC_FETCH_SERVING_ENABLED": false,
+    "PUBLIC_P2P_ENABLED": false,
+    "PUBLIC_RC_NOT_ACTIVATED": true,
+    "RUST_P2P_BRIDGE_NOT_ACTIVATED": true,
+    "TREASURY_DISTRIBUTION_NOT_ACTIVATED": true,
+    "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
+    "VALIDATOR_CERT_GRAPH_BINDING_NOT_ACTIVATED": false,
+    "WERNER_CREDIT_WIRING_NOT_ACTIVATED": false
+  },
+  "non_claims": [
+    "This certificate does not authorize epoch 0-to-1 transition; that requires GAP-PUBLIC-RC-EPOCH-00c GO phrase.",
+    "This certificate does not constitute a CDL or ADR.",
+    "This certificate is valid only for the validator namespace established by GAP-VPS-VALIDATOR-REPROVISION-00 and bound by GAP-GENESIS-VALIDATOR-PROVENANCE-BINDING-00.",
+    "This certificate does not activate mainnet, general public P2P, public fetch serving, external withdrawals, generalized ECU money transfer, public mirror push, treasury distribution, dynamic validator admission, or maintenance lottery."
+  ],
+  "prerequisite_tokens_confirmed": [
+    "vps_validators_reprovisioned_real_install_GAP_VPS_VALIDATOR_REPROVISION_00",
+    "cdl017_public_rc_mirror_refreshed_0417_GAP_CDL017_MIRROR_REFRESH_00",
+    "public_rc_published_GAP_PUBLIC_RC_PUBLISH_EXEC_00",
+    "genesis_invite_issuer_delegation_complete_GAP_GENESIS_INVITE_ISSUER_00",
+    "genesis_validator_provenance_binding_complete_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00",
+    "invite_enforcement_activated_GAP_PUBLIC_RC_INVITE_00b",
+    "invite_bootstrap_smoke_pass_GAP_PUBLIC_RC_INVITE_00c",
+    "public_claimability_authorized_phase_1592",
+    "ilc_settlement_authorized_phase_1592",
+    "genesis_value_guard_runtime_committed_GAP_GENESIS_VALUE_02"
+  ],
+  "schema_version": "GAP_PUBLIC_RC_EPOCH_00a_v0.1",
+  "source_commit_before_certificate": "d36810ba3141bb7e5bf6115ce67f4af6b9f56878",
+  "validator_namespace": [
+    {
+      "agent_id": "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09",
+      "connectivity_mode": "relay_reachable",
+      "grpc_port": 50151,
+      "host": "ilc-node-2",
+      "lmdb_epoch": 0,
+      "nullifier_registered": true,
+      "operator_key_backup_recorded": true,
+      "public_host": "164.90.201.11",
+      "quic_port": 7101,
+      "service_active": "active",
+      "settlement_path": "none",
+      "slot": "validator_1",
+      "state_extractor_epoch0_clean": true,
+      "validator_key": "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09"
+    },
+    {
+      "agent_id": "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f",
+      "connectivity_mode": "relay_reachable",
+      "grpc_port": 50152,
+      "host": "ilc-node-2",
+      "lmdb_epoch": 0,
+      "nullifier_registered": true,
+      "operator_key_backup_recorded": true,
+      "public_host": "164.90.201.11",
+      "quic_port": 7102,
+      "service_active": "active",
+      "settlement_path": "none",
+      "slot": "validator_2",
+      "state_extractor_epoch0_clean": true,
+      "validator_key": "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f"
+    },
+    {
+      "agent_id": "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19",
+      "connectivity_mode": "relay_reachable",
+      "grpc_port": 50153,
+      "host": "ilc-node-3",
+      "lmdb_epoch": 0,
+      "nullifier_registered": true,
+      "operator_key_backup_recorded": true,
+      "public_host": "64.227.70.134",
+      "quic_port": 7103,
+      "service_active": "active",
+      "settlement_path": "none",
+      "slot": "validator_3",
+      "state_extractor_epoch0_clean": true,
+      "validator_key": "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19"
+    },
+    {
+      "agent_id": "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9",
+      "connectivity_mode": "relay_reachable",
+      "grpc_port": 50154,
+      "host": "ilc-node-6",
+      "lmdb_epoch": 0,
+      "nullifier_registered": true,
+      "operator_key_backup_recorded": true,
+      "public_host": "167.99.45.238",
+      "quic_port": 7104,
+      "service_active": "active",
+      "settlement_path": "none",
+      "slot": "validator_4",
+      "state_extractor_epoch0_clean": true,
+      "validator_key": "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9"
+    }
+  ],
+  "validator_namespace_ref": "out/gap_vps_validator_reprovision_00/reprovision_receipt.json"
+}
