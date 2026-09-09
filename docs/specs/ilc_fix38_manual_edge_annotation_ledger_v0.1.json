@@ -97048,6 +97048,189 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_advertisement_activate_00_g10_connectivity_advertisement_activation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 mutates the constitutional decision log row for CDL-112 from opened to ratified while preserving runtime guard closure.",
+      "manual_read_summary": "CDL register row records ratified_phase GAP-CDL-112-RATIFY-00, ratified_date 2026-09-09, ratification token cdl_112_connectivity_advertisement_ratified_GAP_CDL_112_RATIFY_00, runtime activation blocked until GAP-CONNECTIVITY-ADVERTISEMENT-ACTIVATE-00, and CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True_pending_activation.",
+      "node_kind": "governance_register",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "RATIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 updates the CDL-112 source document from opened to ratified and embeds the activation invariants.",
+      "manual_read_summary": "CDL-112 document now records status RATIFIED, the ratification token, all ten ratification question resolutions, and the nine activation invariants required before connectivity advertisement gossip can be publicly activated.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-112"
+        },
+        {
+          "edge_type": "GATES",
+          "target": "phase:GAP-CONNECTIVITY-ADVERTISEMENT-ACTIVATE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "RATIFIES",
+        "GATES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "docs/specs/ilc_cdl_112_connectivity_advertisement_opening_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_SPEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 creates the dedicated ratification evidence artifact for CDL-112.",
+      "manual_read_summary": "Ratification evidence records CDL-112 ratified scope, resolved opening questions, activation invariants, guard boundary, register mutation, output token, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL-112-RATIFY-00"
+        },
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "RATIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_112_connectivity_advertisement_ratification_GAP_CDL_112_RATIFY_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 walkthrough records the sensitive governance-only ratification execution.",
+      "manual_read_summary": "Walkthrough records GO receipt, token and contradiction audit, MemPalace/source reads, per-invariant CDL-112 verification table, exact verification outputs, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL-112-RATIFY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:cdl_112_connectivity_advertisement_ratified_GAP_CDL_112_RATIFY_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl_112_ratify_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 updates active and archived forward-planning text so CDL-112 is no longer misclassified as post-launch deferred.",
+      "manual_read_summary": "Planning updates mark CDL-112-RATIFY-00 complete, move the frontier to GAP-RUST-P2P-BINARY-IMPL-AND-DISTRIBUTION-00, and preserve CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True until the separate activation phase.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CDL-112-RATIFY-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 corrects relay-native architecture status text after CDL-112 ratification.",
+      "manual_read_summary": "Architecture vision now records CDL-112 as opened and ratified, while preserving the separate activation phase and the closed CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED guard.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_relay_native_trust_and_connectivity_architecture_vision_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl_112_ratify_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CDL-112-RATIFY-00 annotates the archived comprehensive plan to avoid stale MemPalace retrievals claiming CDL-112 ratification is still deferred.",
+      "manual_read_summary": "Archived plan header now points to the Rev 13 reconciled list and historical CDL-112 deferral paragraphs are explicitly superseded by GAP-CDL-112-RATIFY-00 while preserving the guard-closed activation boundary.",
+      "node_kind": "planning_archive",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-CDL-112-RATIFY-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
