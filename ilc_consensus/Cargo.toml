@@ -105,5 +105,9 @@ path = "src/invite_pop_bls_main.rs"
 name = "bls_verify_digest"
 path = "src/bls_verify_digest_main.rs"
 
+[[bin]]
+name = "ilc_p2p_bridge"
+path = "src/ilc_p2p_bridge_main.rs"
+
 # ILC implements its own sovereign Mysticeti-style consensus loop here. The
 # upstream mysticeti-core crate is not a current dependency or vendored source.
