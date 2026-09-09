@@ -76959,6 +76959,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00b_blocked_preflight_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_upload_yank_blocked_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b uploaded ilc-core 0.4.19 and fetchback-verified, then stopped before completion pending manual 0.4.18 PyPI yank.",
+      "manual_read_summary": "Partial PyPI upload receipt for ilc-core 0.4.19; fetchback and signature verification passed; phase blocked pending manual 0.4.18 yank.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_completion_before_predecessor_yank"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b.partial.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_upload_yank_blocked_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b uploaded ilc-core 0.4.19 and fetchback-verified, then stopped before completion pending manual 0.4.18 PyPI yank.",
+      "manual_read_summary": "Walkthrough for 0.4.19 upload/fetchback success and manual PyPI yank blocker.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_completion_before_predecessor_yank"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00b_upload_yank_blocked_walkthrough.md"
     }
   ],
   "boundary": {
