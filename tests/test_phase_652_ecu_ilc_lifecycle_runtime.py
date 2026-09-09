@@ -10,6 +10,8 @@ from fastapi.testclient import TestClient
 from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
     LIFECYCLE_C_MAX_ILC,
+    LIFECYCLE_MAX_AGENT_ID_BYTES,
+    LIFECYCLE_MAX_EPOCH_ID_BYTES,
     EcuIlcLifecycleRuntimeError,
     _epoch_history_sort_key,
     _stable_digest,
@@ -186,6 +188,38 @@ def test_lifecycle_rejects_balance_above_cmax() -> None:
                 reward_delta_ilc="25920000.000000001",
             )
         assert getattr(exc_info.value, "token", None) == "lifecycle_balance_exceeds_c_max"
+
+
+def test_lifecycle_rejects_subquantum_reward_delta() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="epoch-001",
+                reward_delta_ilc="0.0000000001",
+            )
+        assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_invalid"
+
+
+def test_lifecycle_rejects_oversized_agent_and_epoch_ids() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as agent_exc:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="a" * (LIFECYCLE_MAX_AGENT_ID_BYTES + 1),
+                epoch_id="epoch-001",
+                reward_delta_ilc="1",
+            )
+        assert getattr(agent_exc.value, "token", None) == "agent_id_required"
+
+        with pytest.raises(Exception) as epoch_exc:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="e" * (LIFECYCLE_MAX_EPOCH_ID_BYTES + 1),
+                reward_delta_ilc="1",
+            )
+        assert getattr(epoch_exc.value, "token", None) == "epoch_id_required"
 
 
 def test_lifecycle_cmax_imports_epoch_emission_cmax() -> None:

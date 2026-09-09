@@ -81,6 +81,20 @@ def test_quote_zeroes_budget_at_cmax_and_rejects_over_cap() -> None:
         build_epoch_emission_quote(10, C_MAX_ILC + Decimal("0.000000001"))
 
 
+def test_quote_rejects_subquantum_cumulative_issued_before_quantization() -> None:
+    with pytest.raises(
+        ValueError,
+        match="cumulative_issued_before_epoch_ilc_must_align_to_ilc_quantum",
+    ):
+        build_epoch_emission_quote(0, Decimal("0.0000000001"))
+
+
+def test_finite_480_epoch_horizon_is_ratified_quote_horizon_not_operational_limit() -> None:
+    assert ISSUANCE_SCHEDULE_HORIZON_EPOCHS == 480
+    assert raw_epoch_emission_budget(480) > Decimal("0")
+    assert raw_epoch_emission_budget(2_338) == Decimal("0E-9")
+
+
 def test_exact_numeric_guards_reject_float_bool_negative_and_non_finite() -> None:
     with pytest.raises(ValueError, match="issuance_epoch_must_be_non_negative_int"):
         build_epoch_emission_quote(True, Decimal("0"))

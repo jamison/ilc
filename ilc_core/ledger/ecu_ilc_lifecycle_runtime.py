@@ -8,7 +8,7 @@ import json
 from decimal import Decimal
 from typing import Any
 
-from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC
+from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.exact_numeric import (
     ZERO,
@@ -22,6 +22,8 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 ECU_ILC_LIFECYCLE_RUNTIME_VERSION = "ecu_ilc_lifecycle_runtime_652.v0.1"
 LIFECYCLE_C_MAX_ILC = C_MAX_ILC
 LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN = "lifecycle_balance_exceeds_c_max"
+LIFECYCLE_MAX_AGENT_ID_BYTES = 256
+LIFECYCLE_MAX_EPOCH_ID_BYTES = 64
 
 
 class EcuIlcLifecycleRuntimeError(ValueError):
@@ -78,10 +80,18 @@ class EcuIlcLifecycleRuntime:
         epoch_id: str,
         reward_delta_ilc: int | str | Decimal,
     ) -> dict[str, Any]:
-        if not isinstance(agent_id, str) or not agent_id.strip():
-            raise EcuIlcLifecycleRuntimeError("agent_id_required", "agent_id must be a non-empty string")
-        if not isinstance(epoch_id, str) or not epoch_id.strip():
-            raise EcuIlcLifecycleRuntimeError("epoch_id_required", "epoch_id must be a non-empty string")
+        _require_lifecycle_id(
+            agent_id,
+            token="agent_id_required",
+            max_bytes=LIFECYCLE_MAX_AGENT_ID_BYTES,
+            label="agent_id",
+        )
+        _require_lifecycle_id(
+            epoch_id,
+            token="epoch_id_required",
+            max_bytes=LIFECYCLE_MAX_EPOCH_ID_BYTES,
+            label="epoch_id",
+        )
 
         try:
             reward_delta_decimal = parse_non_negative_decimal(
@@ -90,6 +100,11 @@ class EcuIlcLifecycleRuntime:
             )
         except ValueError as exc:
             raise EcuIlcLifecycleRuntimeError("lifecycle_reward_delta_invalid", str(exc)) from exc
+        if reward_delta_decimal % ILC_QUANTUM != ZERO:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_reward_delta_invalid",
+                "reward delta must align to ILC quantum",
+            )
 
         wallet_row = self.wallet_store.get_wallet(agent_id) or {}
         wallet_history = self.wallet_store.get_wallet_history(agent_id) or {}
@@ -240,10 +255,20 @@ def _wallet_decimal_string(value: object) -> str:
     )
 
 
+def _require_lifecycle_id(value: object, *, token: str, max_bytes: int, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise EcuIlcLifecycleRuntimeError(token, f"{label} must be a non-empty string")
+    if len(value.encode("utf-8")) > max_bytes:
+        raise EcuIlcLifecycleRuntimeError(token, f"{label} exceeds maximum byte length")
+    return value
+
+
 __all__ = [
     "ECU_ILC_LIFECYCLE_RUNTIME_VERSION",
     "LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN",
     "LIFECYCLE_C_MAX_ILC",
+    "LIFECYCLE_MAX_AGENT_ID_BYTES",
+    "LIFECYCLE_MAX_EPOCH_ID_BYTES",
     "EcuIlcLifecycleRuntime",
     "EcuIlcLifecycleRuntimeError",
 ]
