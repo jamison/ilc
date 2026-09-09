@@ -76911,6 +76911,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_blocked_preflight_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b preflight stopped before PyPI upload pending offline Phase 1335 Ed25519 signatures.",
+      "manual_read_summary": "Sensitive publish/sign/mirror prompt for ilc-core 0.4.19 interactive install UX package publication.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_pypi_upload_before_offline_release_signatures"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_package_0419_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_blocked_preflight_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b preflight stopped before PyPI upload pending offline Phase 1335 Ed25519 signatures.",
+      "manual_read_summary": "Blocked preflight walkthrough recording 0.4.19 artifact hash checks, PyPI absence, twine check, and Phase 1335 Ed25519 signing preimages before upload.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "boundary:no_pypi_upload_before_offline_release_signatures"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00b_blocked_preflight_walkthrough.md"
     }
   ],
   "boundary": {
