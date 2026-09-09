@@ -1,0 +1,119 @@
+{
+  "artifact_checks": {
+    "sdist": {
+      "filename": "ilc_core-0.4.19.tar.gz",
+      "sha256": "b483b912d93baf2e110d73e8e5acf4b3bcf4d68590293aea6a0165400e559b5d",
+      "size_bytes": 1200428
+    },
+    "wheel": {
+      "filename": "ilc_core-0.4.19-py3-none-any.whl",
+      "interactive_install_prompt_present": true,
+      "invite_nullifier_lmdb_store_py_present": true,
+      "normalize_invite_code_present": true,
+      "relay_bootstrap_capsule_present": true,
+      "relay_invite_code_py_present": true,
+      "sha256": "0fb2b324634a72e35e5b1f2d1dc072c9f23d2790778da21f136aceb328c74bb4",
+      "shortcode_fetch_present": true,
+      "size_bytes": 1469637
+    }
+  },
+  "build_command": ".venv/bin/python -m build",
+  "build_python": "Python 3.14.3",
+  "dist_metadata": {
+    "requires_python": ">=3.10",
+    "version": "0.4.19"
+  },
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_installable_release_manifest_0419",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_tools_install_sh_update_to_0419",
+    "no_vps_mutation",
+    "no_validator_mutation",
+    "no_relay_mutation",
+    "no_digitalocean_mutation",
+    "no_guard_change",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ],
+  "package_scope": "local_build_only_no_upload",
+  "phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00a",
+  "phase_output_token": "invite_interactive_install_package_0419_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00A",
+  "post_build_gates": {
+    "clean_venv_install_sentinel": {
+      "bundled_capsule_schema": "relay_bootstrap_capsule_v0.1",
+      "connectivity_advertisement_not_activated": true,
+      "ilc_core_version": "0.4.19",
+      "interactive_install_symbols": "PASS",
+      "invite_enforcement_enabled": true,
+      "invite_shortcode_not_activated": false,
+      "relay_client_not_activated": false,
+      "relay_records_count": 3,
+      "relay_server_not_activated": false,
+      "result": "PASS",
+      "site_packages_confirmed": true,
+      "venv_path": "/tmp/ilc-0419-local-build-venv"
+    },
+    "combined_directed_slice": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_homoiconic_install_00_cli_install_from_invite.py tests/test_gap_public_rc_invite_00b_enforcement_activation.py tests/test_invite_enforcement_fix1.py tests/test_gap_public_install_02_install_sh.py tests/test_gap_public_rc_package_refresh_00b.py -q --tb=short",
+      "result": "PASS",
+      "summary": "104 passed"
+    },
+    "focused_invite_enforcement_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_rc_invite_00b_enforcement_activation.py tests/test_invite_enforcement_fix1.py -q --tb=short",
+      "result": "PASS",
+      "summary": "12 passed"
+    },
+    "installer_package_sentinel_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_install_02_install_sh.py tests/test_gap_public_rc_package_refresh_00b.py -q --tb=short",
+      "result": "PASS",
+      "scope_note": "Sentinels intentionally remain synced to 0.4.18 because tools/install.sh is not retargeted until GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b.",
+      "summary": "71 passed"
+    },
+    "invite_bootstrap_adjacent_tests": {
+      "command": ".venv/bin/python -m pytest tests/test_gap_public_rc_invite_00a_bootstrap_profile.py tests/test_phase_1573z_invite_token_cli_plumbing.py tests/test_gap_agent_onboarding_00d_pop_and_nullifier.py -q --tb=short",
+      "result": "PASS",
+      "summary": "39 passed"
+    },
+    "twine_check": {
+      "command": ".venv/bin/python -m twine check dist/ilc_core-0.4.19-py3-none-any.whl dist/ilc_core-0.4.19.tar.gz",
+      "result": "PASS"
+    },
+    "wheel_archive_interactive_ux_check": "PASS"
+  },
+  "pre_build_gates": {
+    "dependency_floor_regression": "PASS: 1 passed, 12 deselected",
+    "ilc_core___version___py_absent": true,
+    "input_token_invite_enforcement_package_0418_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00B": "PRESENT",
+    "interactive_install_cli_tests": "PASS: 21 passed",
+    "output_token_absent_before_execution": true,
+    "source_version_sentinels_before_bump": {
+      "ilc_core/__init__.py": "0.4.18",
+      "pyproject.toml": "0.4.18"
+    },
+    "tools_install_sh_pre_upload_target": "0.4.18"
+  },
+  "predecessor_upload_phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b",
+  "predecessor_version": "0.4.18",
+  "pypi_upload_phase": "GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b",
+  "schema_version": "ilc.package_build_receipt.GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00a.v0.1",
+  "source_base_commit_before_phase": "0f76341c6097302757afba2d851ac570ac9b5c58",
+  "source_diff_scope": [
+    "new 0419 local-build phase prompt",
+    "pyproject.toml version 0.4.18 to 0.4.19",
+    "ilc_core/__init__.py __version__ 0.4.18 to 0.4.19",
+    "local build receipt",
+    "walkthrough",
+    "STATUS output token",
+    "Fix38 ledger support annotations for new prompt, receipt, and walkthrough"
+  ],
+  "source_diff_sha256": "398e845cea90edb2e6e98a89892254913364b56da11dfa877a5335e8596008fe",
+  "status": "local_build_complete",
+  "version": "0.4.19"
+}

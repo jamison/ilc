@@ -76839,6 +76839,78 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_public_release_workflow_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00a_2026_09_09",
+      "chronology_note": "2026-09-09 local build-only package phase for ilc-core 0.4.19 interactive install UX; no upload, signing, mirror, VPS, or guard mutation.",
+      "manual_read_summary": "Prompt for the 0.4.19 local build-only phase that packages interactive ilc install UX without publication authority.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_invite_package_0419_00a_g10_local_build_interactive_install_ux.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00a_2026_09_09",
+      "chronology_note": "2026-09-09 local build-only package phase for ilc-core 0.4.19 interactive install UX; no upload, signing, mirror, VPS, or guard mutation.",
+      "manual_read_summary": "Build receipt records wheel/sdist hashes, direct wheel inspection, clean venv local-wheel smoke, directed tests, and scoped non-claims for ilc-core 0.4.19.",
+      "node_kind": "package_build_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00a_2026_09_09",
+      "chronology_note": "2026-09-09 local build-only package phase for ilc-core 0.4.19 interactive install UX; no upload, signing, mirror, VPS, or guard mutation.",
+      "manual_read_summary": "Execution walkthrough for GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00a local build closure.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00A"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00a_walkthrough.md"
     }
   ],
   "boundary": {
