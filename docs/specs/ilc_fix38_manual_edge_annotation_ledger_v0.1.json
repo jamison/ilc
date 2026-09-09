@@ -96922,6 +96922,103 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_gap_public_rc_invite_00a_bootstrap_profile.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_audit_fix_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-EPOCH-AUDIT-FIX-00 closed pre-EPOCH-00c epoch settlement audit findings before the 0.4.20 package window.",
+      "manual_read_summary": "Runtime patch changes epoch_zero_emission_budget from finite 480-epoch truncation to exact infinite geometric-series normalization while preserving Decimal precision and ROUND_DOWN quantum discipline. Predecessor commit a5dc9ffd9 already closed conservation gate wiring, LMDB monotonicity, and atomic lifecycle writer enforcement.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_settlement_audit_fixes_committed_GAP_EPOCH_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "invariant:exact_infinite_geometric_emission_normalization"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:no_epoch_overissuance_from_finite_horizon_b0"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/epoch_emission_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_audit_fix_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-EPOCH-AUDIT-FIX-00 receipt records finding dispositions and verification output for the epoch settlement audit fix batch.",
+      "manual_read_summary": "Receipt records the verified closure state for monotonicity, conservation gate wiring, atomic lifecycle writer enforcement, missing tests, and S_infinity B0 normalization; includes focused pass output, broad epoch residual classification, MemPalace search terms, and non-claims.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_settlement_audit_fixes_committed_GAP_EPOCH_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_epoch_audit_fix_00/audit_fix_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_audit_fix_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-EPOCH-AUDIT-FIX-00 walkthrough records source review, MemPalace search, focused tests, broad epoch residuals, and non-claims.",
+      "manual_read_summary": "Walkthrough documents that the non-sensitive phase did not mutate validators, package artifacts, public mirror state, guards, settlement, ECU minting, or ILC minting.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-AUDIT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_settlement_audit_fixes_committed_GAP_EPOCH_AUDIT_FIX_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_epoch_audit_fix_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

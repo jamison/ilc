@@ -22,9 +22,8 @@ TERMINAL_ISSUANCE_MODEL = "fee_funded_tail_model_b"
 HALVING_INTERVAL_ISSUANCE_EPOCHS = 48
 ISSUANCE_EPOCH_DURATION = "1_month"
 VALIDATION_EPOCH_SECONDS = 60
-# The finite 480-epoch geometric horizon intentionally truncates the infinite
-# halving tail by roughly 0.1%; this is the ratified simulation/default-off
-# quote horizon, not a claim that the infinite series is exactly exhausted.
+# The 480-epoch value remains the disclosed quote horizon. B0 normalization uses
+# the exact infinite geometric series so the monthly tail does not over-issue.
 ISSUANCE_SCHEDULE_HORIZON_EPOCHS = 480
 ILC_QUANTUM = Decimal("0.000000001")
 DECIMAL_PRECISION = 80
@@ -116,12 +115,10 @@ def epoch_zero_emission_budget() -> Decimal:
     ratio = halving_decay_ratio()
     with localcontext() as context:
         context.prec = DECIMAL_PRECISION
-        geometric_sum = (Decimal(1) - (ratio ** ISSUANCE_SCHEDULE_HORIZON_EPOCHS)) / (
-            Decimal(1) - ratio
-        )
-        if not geometric_sum.is_finite() or geometric_sum <= Decimal("0"):
+        sum_of_series = Decimal(1) / (Decimal(1) - ratio)
+        if not sum_of_series.is_finite() or sum_of_series <= Decimal("0"):
             raise ValueError("epoch_zero_emission_geometric_sum_invalid")
-        return _quantize_ilc(C_MAX_ILC / geometric_sum)
+        return _quantize_ilc(C_MAX_ILC / sum_of_series)
 
 
 def raw_epoch_emission_budget(issuance_epoch: int) -> Decimal:

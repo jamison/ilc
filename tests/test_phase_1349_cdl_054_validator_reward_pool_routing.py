@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from pathlib import Path
 
 import pytest
@@ -62,7 +62,8 @@ def _read(path: Path) -> str:
 
 
 def _cumulative_for_remaining_budget(budget: str) -> str:
-    return format(C_MAX_ILC - Decimal(budget), "f")
+    quantized_budget = Decimal(budget).quantize(Decimal("0.000000001"), rounding=ROUND_DOWN)
+    return format(C_MAX_ILC - quantized_budget, "f")
 
 
 def test_phase_1349_constants_bind_cdl_054_cdl_047_and_default_off_state() -> None:
@@ -231,7 +232,7 @@ def test_phase_1367_treasury_budget_binding_removes_caller_supplied_budget_input
         observed_velocity="0.95",
     )
 
-    assert quote.treasury_epoch_budget_ilc == Decimal("371973.146271994")
+    assert quote.treasury_epoch_budget_ilc == Decimal("371609.891246338")
     assert quote.treasury_epoch_budget_binding_token == (
         "phase_1366_treasury_epoch_budget_binding_verified"
     )
