@@ -1,0 +1,69 @@
+{
+  "schema_version": "ilc_rust_p2p_binary_distribution_receipt.v0.1",
+  "phase": "GAP-RUST-P2P-BINARY-IMPL-AND-DISTRIBUTION-00",
+  "date": "2026-09-10",
+  "source_commit_before_phase": "4e6f18741ea76240486d2af03d59d9d74c5760e1",
+  "rust_binary_target": "ilc_p2p_bridge",
+  "binary_source_path": "ilc_consensus/src/ilc_p2p_bridge_main.rs",
+  "cargo_manifest_path": "ilc_consensus/Cargo.toml",
+  "python_bridge_path": "ilc_core/network/rust_p2p_bridge.py",
+  "helper_resolver_path": "ilc_core/consensus/binary_paths.py",
+  "request_surface": {
+    "command": "ilc_p2p_bridge send --request-json <canonical-json>",
+    "max_request_json_bytes": 140000,
+    "max_endpoint_id_chars": 256,
+    "max_payload_bytes": 65536,
+    "unknown_json_fields_rejected": true,
+    "runtime_fail_closed_error": "rust_p2p_bridge_runtime_not_activated"
+  },
+  "local_platform_build": {
+    "platform": "darwin",
+    "arch": "x86_64",
+    "release_binary_path": "ilc_consensus/target/release/ilc_p2p_bridge",
+    "file_output": "Mach-O 64-bit executable x86_64",
+    "tarball_path": "out/gap_rust_p2p_binary_impl_and_distribution_00/ilc-consensus-darwin-x86_64-v0.4.20-prep.tar.gz",
+    "tarball_sha256": "29e46fe44d9f35204041be3b5c755728faed5c17d67e56fbadd9ffce430b5cc2",
+    "tarball_size_bytes": 4731798,
+    "tarball_members": [
+      "bls_verify_digest",
+      "ilc_p2p_bridge",
+      "invite_pop_bls",
+      "keygen",
+      "validator_endpoint_assertion_bls",
+      "validator_harness"
+    ]
+  },
+  "linux_x86_64_public_tarball_status": {
+    "status": "deferred_to_0_4_20_package_publish_or_linux_build_host",
+    "musl_cross_build_attempted": true,
+    "musl_cross_build_error": "x86_64-linux-musl-gcc not found while building aws-lc-sys",
+    "cargo_zigbuild_attempted": true,
+    "cargo_zigbuild_error": "ring/aws-lc cross-build failed under local macOS zig toolchain; Linux publication requires suitable Linux build host or repaired cross toolchain"
+  },
+  "guard_state_after_phase": {
+    "RUST_P2P_BRIDGE_NOT_ACTIVATED": true,
+    "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED": true,
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED": true
+  },
+  "downstream_prompt_hardening": {
+    "cdl_094_prompt_requires_token": "rust_p2p_bridge_binary_impl_distribution_ready_GAP_RUST_P2P_BINARY_IMPL_AND_DISTRIBUTION_00",
+    "p2p_activate_prompt_keeps_connectivity_advertisement_guard_separate": true
+  },
+  "output_token": "rust_p2p_bridge_binary_impl_distribution_ready_GAP_RUST_P2P_BINARY_IMPL_AND_DISTRIBUTION_00",
+  "non_claims": [
+    "no_rust_p2p_activation",
+    "no_cdl_094_guard_clearance",
+    "no_connectivity_advertisement_guard_clearance",
+    "no_tools_install_sh_update",
+    "no_github_release_upload",
+    "no_pypi_publish",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_lmdb_mutation",
+    "no_linux_x86_64_public_tarball_claim",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ]
+}
