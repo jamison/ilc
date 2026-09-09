@@ -55,16 +55,16 @@ def test_halving_schedule_uses_decimal_budget_and_halves_at_h48() -> None:
     epoch_zero = epoch_zero_emission_budget()
     epoch_48 = raw_epoch_emission_budget(48)
     epoch_96 = raw_epoch_emission_budget(96)
-    assert epoch_zero == Decimal("371973.146271994")
-    assert epoch_48 == Decimal("185986.573135996")
-    assert epoch_96 == Decimal("92993.286567998")
+    assert epoch_zero == Decimal("371609.891246338")
+    assert epoch_48 == Decimal("185804.945623168")
+    assert epoch_96 == Decimal("92902.472811584")
     assert abs((epoch_48 / epoch_zero) - Decimal("0.5")) < Decimal("0.000000001")
     assert abs((epoch_96 / epoch_48) - Decimal("0.5")) < Decimal("0.000000001")
 
 
 def test_quote_enforces_cmax_without_activating_minting() -> None:
     quote = build_epoch_emission_quote(0, Decimal("25919999"))
-    assert quote.raw_epoch_budget_ilc == Decimal("371973.146271994")
+    assert quote.raw_epoch_budget_ilc == Decimal("371609.891246338")
     assert quote.remaining_cap_before_epoch_ilc == Decimal("1.000000000")
     assert quote.capped_epoch_budget_ilc == Decimal("1.000000000")
     assert quote.cap_enforced is True
@@ -89,7 +89,7 @@ def test_quote_rejects_subquantum_cumulative_issued_before_quantization() -> Non
         build_epoch_emission_quote(0, Decimal("0.0000000001"))
 
 
-def test_finite_480_epoch_horizon_is_ratified_quote_horizon_not_operational_limit() -> None:
+def test_b0_normalizes_against_exact_infinite_series_not_finite_quote_horizon() -> None:
     assert ISSUANCE_SCHEDULE_HORIZON_EPOCHS == 480
     assert raw_epoch_emission_budget(480) > Decimal("0")
     assert raw_epoch_emission_budget(2_338) == Decimal("0E-9")
@@ -119,7 +119,7 @@ def test_canonical_record_serializes_decimals_as_strings() -> None:
     record = build_epoch_emission_quote(48, "0").to_canonical_record()
     assert record["runtime_version"] == EPOCH_EMISSION_RUNTIME_VERSION
     assert record["c_max_ilc"] == "25920000"
-    assert record["raw_epoch_budget_ilc"] == "185986.573135996"
+    assert record["raw_epoch_budget_ilc"] == "185804.945623168"
     assert record["production_minting_activated"] is False
     assert record["decision_token"] == PRODUCTION_MINTING_NOT_ACTIVATED_TOKEN
 
