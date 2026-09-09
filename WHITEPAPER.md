@@ -15,7 +15,7 @@ See Appendix H for the full scientific lineage.*
 **Contact Genesis Agent**
 *Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
-*v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). Prior: v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
+*v0.5 — adds H.12 (statistical weights and epistemic weights: open-model artifacts as first-class hypergraph participants; LLM bounded observers in the morphogenetic framework; open-weights checkpoints as content-addressed nodes; the epistemic Sybil attack at LLM inference scale; epistemic scores as fine-tuning signal; Werner credit for open-weights contributions; mechanistic interpretability as hypergraph-weight correspondence research program; 4 new references [37–40]). Prior: v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
 
 ---
 
@@ -5706,6 +5706,157 @@ The content-addressed identity layer that prior systems establish is necessary b
 
 ---
 
+### H.12  Statistical Weights and Epistemic Weights: Language Model Artifacts as First-Class Hypergraph Participants
+
+The term "weights" carries two referents in a hypergraph-native epistemic system, and the interaction between them is architecturally significant.
+
+**Statistical weights** (θ ∈ ℝ^d) are the parameters of a trained language or policy model — billions of floating-point values encoding compressed statistical regularities over a training corpus. They are implicit, entangled, non-auditable: the model "knows" a fact in the sense that the statistical correlation is embedded in θ; there is no content-addressable node representing it, no provenance chain connecting it to a source, no decay function making it stale, and no refutation surface on which it can be challenged.
+
+**Epistemic weights** (W(t) : E → ℝ, from the hypergraph formalism of Section 0a) are the scores assigned to hyperedges based on provenance, independent corroboration, temporal decay, and community validation. They are explicit, content-addressed, attributable, and auditable: a claim earns high epistemic weight by surviving refutation and being reused by epistemically diverse agents; it decays absent continued use.
+
+These two weight systems are not competitors. They encode the same underlying object — epistemic state — at different levels of abstraction with complementary tradeoff profiles:
+
+| Property | Statistical weights θ | Epistemic weights W(t) |
+|---|---|---|
+| Generalization | Excellent | Poor |
+| Natural-language reasoning | Excellent | Poor |
+| Verifiable provenance | None | Core feature |
+| Temporal decay | None — frozen at training cutoff | Native — CDL-V1 decay function |
+| Adversarial resistance | Weak (hallucination, laundering) | Designed for adversarial agents |
+| Attribution to sources | Difficult / approximate | Exact — content-addressed edges |
+| Community deliberation surface | None | Jury system (CDL-V3, CDL-V7) |
+
+The synthesis is structural. An LLM handles perception, natural-language generation, and pattern-matching over learned statistical regularities. The ILC hypergraph handles epistemic bookkeeping: provenance enforcement, refutation, independent corroboration scoring, and temporal decay. Neither substitutes for the other. The boundary between them is the jury system: juries evaluate agent-produced claims — whether submitted by a human observer, a digital agent, or an LLM-backed process — against the hypergraph's evidence base. Ratified verdicts become persistent nodes with content-addressed identity. The model's statistical weights θ are not a trust primitive in ILC's sense. The agent's cryptographic identity, reputation score, and content-addressable output are the trust primitives.
+
+**The LLM as bounded observer.** Section 0 defines every bounded observer as producing a signed local delta: G(t+1) = G(t) + δ_o(t). An LLM-backed agent is a bounded observer whose observation function is f_θ : X → Y, a probabilistic mapping from input context X to output Y parameterized by θ. This output — a claim, analysis, refutation, or synthesis — enters the ILC graph as a candidate node exactly as any other agent submission: through the Popperian falsifiability gate (CDL-V7), jury evaluation under the CDL-V3 diversity floor, and content-addressed commitment on successful ratification. The statistical weights θ determine what the agent can produce; the agent's reputation score, the jury composition, and the hypergraph's existing evidence structure determine whether what it produces earns epistemic standing.
+
+---
+
+#### Open-Weights Checkpoints as Content-Addressed Nodes
+
+A closed API model is not attestable as a hypergraph artifact: its architecture, training data, fine-tuning history, and parameter state are opaque to the network. An open-weights checkpoint is structurally different. It is a deterministic binary artifact whose SHA-256 hash is a content address. It can therefore be a first-class ILC node.
+
+The hypergraph record for an open-weights checkpoint:
+
+```
+node_hash = SHA-256(weights_bytes || architecture_spec_bytes)
+node_kind = ml_artifact
+provenance_edges:
+  TRAINED_ON         → [training_dataset_node_hash, ...]
+  FINE_TUNED_FROM    → [base_model_node_hash]            # if applicable
+  VALIDATES_CAPABILITY → [benchmark_result_node_hash, ...]
+structural_edges:
+  SOURCE_TREE_MEMBER → genesis:genesis_root_v0.4
+decay: CDL-V1 standard — suppressible at immutable anchor designation
+```
+
+This creates a verifiable, content-addressed provenance chain for AI model lineage. Not "this model was trained on X" as a marketing claim, but a hypergraph-encoded chain in which every component is independently content-addressed: training dataset hash → base model hash → fine-tuning dataset hash → checkpoint hash → benchmark result hash. Any deviation from claimed provenance is detectable as a hash mismatch. Decay applies: older checkpoints lose epistemic relevance as newer ones supersede them, unless the network's ratification designates them as immutable anchors.
+
+The FINE_TUNED_FROM edge creates a DAG over the open-weights model population. As established in H.11, high betweenness centrality provides structural decay immunity: nodes that sit on the dependency paths of a large fraction of the graph's traffic accumulate incoming reputation flows that structurally exceed their decay rate. A base model with 10,000 downstream fine-tuned derivatives [40] inherits the same structural immunity as a foundational software library — the topology prevents decay regardless of the node's age.
+
+Closed-model checkpoints can participate in the hypergraph only as opaque attestations: a content-addressed fingerprint of the model's API surface (input-output pairs, capability attestations) rather than the weights themselves. This places them in a structurally weaker epistemic position — auditable at the boundary, not at the implementation — for reasons that become precise in the epistemic Sybil analysis below.
+
+---
+
+#### The Epistemic Sybil Attack at LLM Scale
+
+Section 1 identifies the central problem: ILC's economic layer must remain aligned with epistemic quality under adversarial agents who can study and optimize against the protocol. The LLM population introduces an adversarial surface that intensifies this problem at a structural level.
+
+Internal adversarial simulation (SIM-LAUNDER-01) identified that a `raw_reuse_weight` metric — counting the number of distinct nodes citing a claim — scores pure propagation identically to genuine corroboration. One source reposted fifty times ranks higher than ten independent sources. At current agent-population scales, this is an architectural concern. At LLM inference scale, it becomes the primary attack surface.
+
+A single open-weights model operating through N sock-puppet agent identities can:
+
+1. Generate N syntactically distinct assertions of claim C, each uniquely phrased but semantically identical.
+2. Submit them through N separate `agent_id` values, each holding a valid BLS keypair.
+3. Against a `raw_reuse_weight` metric, this registers as N independent sources.
+4. The jury's evidence base appears overwhelming; C is ratified.
+
+Define the **epistemic Sybil ratio** ε for a claim C at epoch t:
+
+```
+ε(C, t) = apparent_independent_sources(C, t)
+           ────────────────────────────────────
+           actual_independent_sources(C, t)
+```
+
+Under `raw_reuse_weight`, ε ≈ N for an adversary operating N synthetic agents from one model. Under a correct `independent_evidence_weight` metric — one that traces edge provenance to count genuinely distinct origin nodes rather than citation count — ε ≈ 1. The gap between these two metrics grows linearly with N, and the cost of operating N synthetic agents falls as inference cost declines. The epistemic Sybil attack therefore does not have a static threat level; it scales inversely with the cost of inference.
+
+**Open weights change the auditability profile of this attack.** Because open-weights parameters are public, influence functions [37] can compute — approximately but tractably — which training examples most shaped a specific model output. A set of submitted nodes tracing disproportionately to a single corpus region — the same training examples, similar parameter activations — carries a detectable common-ancestry signal. This analysis is imperfect and computationally expensive, but it provides an asymmetry that closed models cannot: open-weights laundering is at least partially auditable; closed-model laundering is completely opaque.
+
+This is why open-weights model participation in the ILC network is architecturally less dangerous than closed-model participation under otherwise identical capability levels. Auditability is the relevant property at the trust boundary, not raw capability. It is also why the `independent_evidence_weight` CDL (CDL-113) is a pre-mainnet deliverable: the epistemic Sybil attack is bounded by current agent population and inference cost; neither bound is stable as the network grows.
+
+---
+
+#### Epistemic Scores as Fine-Tuning Signal
+
+Standard reinforcement learning from human feedback (RLHF, Christiano et al. [39]) aligns model outputs with human preference judgements. The ILC hypergraph produces a structurally richer signal: a scored epistemic state for every node in the network, computed from independent corroboration count, decay-weighted recency, jury ratification status, and the reputation of contributing agents. This signal can serve as an RLHF substitute or complement for open-weights models deployed as ILC network participants.
+
+A fine-tuning curriculum derived from hypergraph epistemic scores:
+
+- **Positive signal:** nodes with high `independent_evidence_weight` + ratified jury verdict + low decay. These are the claims the adversarially-tested, economically-incentivized deliberation process has determined to be well-supported.
+- **Weak or negative signal:** nodes with low `independent_evidence_weight`, contested verdicts, or significant decay — claims the network has adjudicated as poorly corroborated or stale.
+- **Provenance weighting:** the PROVENANCE edge chain traces which contributing agent identities and which source nodes produced high-standing claims, enabling per-source curriculum calibration.
+
+The resulting fine-tuned model is epistemically calibrated to the network's deliberated state rather than to the statistical regularities of a general corpus. Where the two diverge — where the network's ratified epistemic state contradicts the model's statistical prior — the fine-tuned model should inherit the network's verdict, because that verdict is the product of an adversarially-tested, jury-mediated, economically-incentivized process the statistical prior has no access to.
+
+The feedback loop — model participates in the network, network ratifies model-generated claims, ratified claims train the next model generation — carries obvious instability risks if the ratification process can be gamed. The CDL-V3 jury diversity floor, CDL-V7 Popperian falsifiability gate, and the `independent_evidence_weight` boundary (CDL-113) are the structural defenses. The loop is safe only if those defenses remain load-bearing. This is a named architectural constraint, not a resolved property.
+
+---
+
+#### Werner Credit for Open-Weights Contributions
+
+The Werner credit mechanism rewards epistemic labor proportional to its demonstrated influence in the hypergraph — not output volume, but validated contribution as measured by graph centrality and temporal reach. An open-weights model release is an epistemic contribution with computable influence under this measure.
+
+The Werner credit path for a model release:
+
+```
+open-weights release → node_hash in hypergraph
+  FINE_TUNED_FROM edges from derivative nodes
+    → base_model betweenness_centrality(t) increases
+      → Werner score input at epoch t
+        → eligibility for validator tier promotion (CDL-107 three-tier model)
+```
+
+The researcher releasing a useful open-weights model earns network reputation proportional to the model's actual epistemic influence — measured by content-addressed dependency graph centrality — not by download metrics, citation counts, or social endorsement. A base model underlying 10,000 fine-tuned derivatives contributes more to the network's epistemic structure than one never referenced, regardless of architectural similarity or institutional affiliation. The hypergraph makes this formally computable from first principles rather than requiring a trusted citation authority.
+
+Foundation models — large pretrained checkpoints that become the basis for entire ecosystems of downstream applications — occupy an extreme position in this centrality distribution. Under the betweenness centrality mechanism established in H.11, a checkpoint sitting on the dependency path of a significant fraction of the network's agent population achieves structural decay immunity: incoming reputation flows from downstream derivatives exceed the checkpoint's CDL-V1 decay rate, providing self-sustaining epistemic relevance. This is not a design exception; it is the same mechanism that preserves the Linux kernel's epistemic standing in H.11, applied to the model lineage graph rather than the software dependency graph.
+
+This Werner credit path for open-weights contributions is not in any current CDL. It is the natural extension of the Werner + ECU + hypergraph architecture to AI artifact contributions, requiring a dedicated CDL to define the `ml_artifact` node kind, valid attribution edge types, and the rules for computing Werner score from centrality on this node class.
+
+---
+
+#### Mechanistic Interpretability as Hypergraph-Weight Correspondence
+
+The deepest synthesis in this section is a research question, not a design claim. A trained open-weights model checkpoint θ is a compressed, implicit representation of epistemic state over its training corpus — parameters encoding statistical regularities without provenance, attribution, decay, or refutation surface. The ILC hypergraph G(t) is an explicit, auditable, community-deliberated representation of epistemic state — with full provenance chains, decay functions, and an open refutation surface on every claim. Both encode epistemic state; they encode it with opposite tradeoff profiles.
+
+The research question is whether a principled correspondence exists between regions of parameter space and subgraphs of the hypergraph.
+
+Mechanistic interpretability [38] studies which attention heads and MLP layers in a transformer implement which computational functions — factual recall, reasoning circuits, syntactic agreement, compositional operations. If the functions implemented by specific circuit components can be mapped to specific node classes or subgraph regions in the ILC hypergraph, the correspondence becomes computationally exploitable across three directions:
+
+**Hypergraph-guided selective forgetting.** A subgraph region flagged as CONTESTED or carrying active REFUTES edges in the hypergraph corresponds to claims the network has adjudicated as poorly supported. If the attention circuits encoding those contested claims can be identified via mechanistic interpretability, targeted fine-tuning can reduce model confidence in precisely the claims the network has reason to doubt — without requiring full retraining from a revised corpus. Hypergraph decay would then operate in two simultaneous layers: edge-weight decay in the graph layer and parameter-space down-weighting in the model layer, driven by the same epistemic evidence signal.
+
+**Hallucination detection through structural mismatch.** A model output that traces through a reasoning chain whose intermediate claims map to refuted or low-weight hypergraph nodes becomes detectable as a structural mismatch between the model's internal circuit topology and the hypergraph's refutation edges. This is structurally distinct from retrieval-augmented generation, which checks outputs post-hoc against a knowledge base. A structural mismatch check would identify, at inference time, whether the model's generative circuit is traversing epistemically sound or contested territory before the output is committed to a submission.
+
+**Epoch-indexed model drift.** The morphogenetic trajectory {G(t)} (Section 0a) records how the network's epistemic state evolves over time. If a model's parameter space can be approximately indexed to the hypergraph's state at training cutoff t₀, the divergence between G(t₀) and G(t) for t > t₀ provides a computable staleness signal: a measure of which regions of the model's knowledge have been superseded by subsequent network deliberation, and which remain consistent with the current ratified state. This is structurally more precise than a training cutoff date, which gives no information about which knowledge regions have changed.
+
+The formal correspondence — if it exists — would constitute a bridge between the two dominant approaches to AI knowledge representation: statistical compression (the current LLM paradigm) and explicit epistemic structure (the ILC hypergraph paradigm). The tools exist on both sides: mechanistic interpretability provides the analysis machinery for parameter-space circuits; the ILC hypergraph provides the reference structure against which those circuits can be evaluated. Whether the two can be formally aligned, or whether they are complementary-but-incommensurable at the structural level, is the central open question of this research direction. It is a planned investigation for the post-stabilization research lane (SIM-ADVERSARIAL-JURY series), once the adversarial epistemics baseline — including the epistemic Sybil attack parameterization, false consensus rate decomposability, and `independent_evidence_weight` boundary — has been formally established.
+
+---
+
+#### The Novel Combination
+
+Model registry systems identify checkpoints by name and version string and provide download infrastructure. None add:
+
+- **Content-addressed provenance chains** linking checkpoint hashes to training dataset hashes, fine-tuning dataset hashes, and benchmark result hashes in a tamper-resistant, decentralized graph with full deterministic reconstruction from the Genesis root
+- **A reputation and decay layer** providing a live trustworthiness signal over the model lineage DAG — not merely content identity, but a dynamic measure of how much the epistemic network trusts each checkpoint's demonstrated influence, decaying when derivatives cease to reference it
+- **Economic incentives** making open-weights contributions eligible for Werner credit based on actual hypergraph betweenness centrality rather than institutional backing or download volume
+- **Structural protection** against the epistemic Sybil attack that LLM-scale inference enables, through an `independent_evidence_weight` metric that correctly distinguishes genuine independent corroboration from model-generated propagation of a single source across N synthetic agent identities
+- **A research program** connecting parameter-space mechanistic interpretability to hypergraph subgraph structure — enabling hypergraph-guided forgetting, structural-mismatch hallucination detection, and epoch-indexed model staleness signals grounded in the network's deliberated epistemic state
+
+The content-addressed identity of open-weights checkpoints is necessary but insufficient. ILC adds the provenance, reputation, decay, and economic attribution layer that makes open-weights model releases first-class epistemic contributors: with influence computable from graph structure rather than social metrics, with an auditable attack surface that closed-model participants cannot provide, and with a formal research program connecting the statistical knowledge encoded in parameters to the deliberated knowledge encoded in the hypergraph — a connection no prior system has attempted to construct.
+
+---
+
 ### References (Appendix H)
 
 [1] J. Doyle, "A Truth Maintenance System," *Artificial Intelligence*, 12(3), 1979.  
@@ -5744,6 +5895,10 @@ The content-addressed identity layer that prior systems establish is necessary b
 [34] F. Drewes, A. Habel, H.-J. Kreowski, "Hyperedge Replacement Graph Grammars," in *Handbook of Graph Grammars and Computing by Graph Transformation*, World Scientific, 1997.
 [35] B. Coecke, A. Kissinger, *Picturing Quantum Processes: A First Course in Quantum Theory and Diagrammatic Reasoning*, Cambridge University Press, 2017.
 [36] H. Edelsbrunner, J. Harer, *Computational Topology: An Introduction*, American Mathematical Society, 2010.
+[37] P. Koh, P. Liang, "Understanding Black-box Predictions via Influence Functions," *ICML*, 2017.
+[38] N. Elhage, N. Nanda, C. Olah, T. Henighan, N. Joseph, B. Mann, A. Askell, Y. Bai, A. Chen, D. Drain, D. Ganguli, Z. Hatfield-Dodds, D. Hernandez, A. Jones, J. Kernion, L. Lovitt, K. Ndousse, D. Amodei, T. Brown, J. Clark, J. Kaplan, S. McCandlish, C. Olah, "A Mathematical Framework for Transformer Circuits," *Transformer Circuits Thread*, 2021.
+[39] P. Christiano, J. Leike, T. Brown, M. Martic, S. Legg, D. Amodei, "Deep Reinforcement Learning from Human Preferences," *NeurIPS*, 2017.
+[40] R. Bommasani, D.A. Hudson, E. Aditi, R. Altman, S. Arora, S. Artetxe, M. Bansal, et al., "On the Opportunities and Risks of Foundation Models," arXiv:2108.07258, 2021.
 
 ---
 
