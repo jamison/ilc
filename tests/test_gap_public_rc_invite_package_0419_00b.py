@@ -6,6 +6,7 @@ from pathlib import Path
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+from ilc_core.release.install_sh_manifest_sync import verify_install_sh_manifest_sync
 from ilc_core.release.installable_release_manifest import validate_installable_release_manifest
 from ilc_core.release.installable_release_signature import validate_envelope_set
 from ilc_core.release.update_signature_verifier import verify_artifact_signature
@@ -14,24 +15,25 @@ from ilc_core.release.update_signature_verifier import verify_artifact_signature
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0418_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0419_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
 )
 ENVELOPE_PATH = (
     ROOT
-    / "docs/specs/ilc_core_0418_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    / "docs/specs/ilc_core_0419_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
 )
 UPLOAD_RECEIPT_PATH = (
-    ROOT / "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+    ROOT / "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
 )
+INSTALL_SH = ROOT / "tools/install.sh"
 EXPECTED_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 )
 EXPECTED_ENVELOPE_SHA256 = (
-    "133361b5a9ad23876fede9671f4d9843786b494e4a935f5f2e362e7c5f292dd9"
+    "cb2faacaf59a4f572b1d8ee07f76e83d739422feb1656208a00f05c9ae307a6f"
 )
 EXPECTED_SIGNED_ARTIFACT_IDS = {
-    "ilc-artifact:ilc-core-python-wheel-0418@phase-1628",
-    "ilc-artifact:ilc-core-python-sdist-0418@phase-1628",
+    "ilc-artifact:ilc-core-python-wheel-0419@phase-1628",
+    "ilc-artifact:ilc-core-python-sdist-0419@phase-1628",
 }
 
 
@@ -39,18 +41,18 @@ def _load_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def test_0418_manifest_and_envelope_set_validate() -> None:
+def test_0419_manifest_and_envelope_set_validate() -> None:
     manifest = _load_json(MANIFEST_PATH)
     envelope_set = _load_json(ENVELOPE_PATH)
 
     validate_installable_release_manifest(manifest)
     validate_envelope_set(envelope_set, manifest=manifest)
 
-    assert manifest["release_id"] == "ilc-core-0.4.18"
-    assert envelope_set["version"] == "0.4.18"
+    assert manifest["release_id"] == "ilc-core-0.4.19"
+    assert envelope_set["version"] == "0.4.19"
 
 
-def test_0418_envelope_set_covers_only_signed_python_artifacts() -> None:
+def test_0419_envelope_set_covers_only_signed_python_artifacts() -> None:
     manifest = _load_json(MANIFEST_PATH)
     envelope_set = _load_json(ENVELOPE_PATH)
     signed_artifacts = {
@@ -63,7 +65,7 @@ def test_0418_envelope_set_covers_only_signed_python_artifacts() -> None:
     assert set(envelope_set["envelopes"]) == EXPECTED_SIGNED_ARTIFACT_IDS  # type: ignore[arg-type]
 
 
-def test_0418_release_signatures_verify_with_committed_release_key() -> None:
+def test_0419_release_signatures_verify_with_committed_release_key() -> None:
     manifest = _load_json(MANIFEST_PATH)
     envelope_set = _load_json(ENVELOPE_PATH)
     public_key = Ed25519PublicKey.from_public_bytes(
@@ -88,35 +90,24 @@ def test_0418_release_signatures_verify_with_committed_release_key() -> None:
         )
 
 
-def test_0418_upload_receipt_matches_manifest_and_pypi_urls() -> None:
+def test_0419_upload_receipt_matches_manifest_and_pypi_urls() -> None:
     manifest = _load_json(MANIFEST_PATH)
     receipt = _load_json(UPLOAD_RECEIPT_PATH)
     artifacts_by_type = {
         artifact["artifact_type"]: artifact for artifact in manifest["artifacts"]  # type: ignore[index]
     }
 
-    assert receipt["version"] == "0.4.18"
+    assert receipt["version"] == "0.4.19"
     assert receipt["fetchback_verification"] == "pass"
     assert receipt["release_signing"]["signature_verification"] == "pass"  # type: ignore[index]
     assert artifacts_by_type["python_wheel"]["download_url"] == receipt["artifacts"]["wheel"]["canonical_pypi_url"]  # type: ignore[index]
     assert artifacts_by_type["python_sdist"]["download_url"] == receipt["artifacts"]["sdist"]["canonical_pypi_url"]  # type: ignore[index]
+    assert receipt["pypi_yank_status"]["0.4.18"]["all_yanked"] is True  # type: ignore[index]
 
 
-def test_0418_receipt_records_installer_sync_at_publication_time() -> None:
-    manifest = _load_json(MANIFEST_PATH)
-    receipt = _load_json(UPLOAD_RECEIPT_PATH)
-    wheel = next(
-        artifact
-        for artifact in manifest["artifacts"]  # type: ignore[index]
-        if artifact["artifact_type"] == "python_wheel"
-    )
-
-    assert receipt["install_sh"]["installer_version"] == "GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"  # type: ignore[index]
-    assert receipt["install_sh"]["rc_release_id"] == manifest["release_id"]  # type: ignore[index]
-    assert receipt["install_sh"]["rc_wheel_url"] == wheel["download_url"]  # type: ignore[index]
-    assert receipt["install_sh"]["rc_wheel_sha256"] == wheel["canonical_hash"].removeprefix("sha256:")  # type: ignore[index]
-    assert receipt["install_sh"]["rc_wheel_size"] == str(wheel["size_bytes"])  # type: ignore[index]
+def test_install_sh_is_synced_to_0419_manifest() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_PATH)
 
 
-def test_0418_envelope_set_sha256_pinned() -> None:
+def test_0419_envelope_set_sha256_pinned() -> None:
     assert hashlib.sha256(ENVELOPE_PATH.read_bytes()).hexdigest() == EXPECTED_ENVELOPE_SHA256
