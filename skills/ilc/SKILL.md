@@ -25,9 +25,9 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 
 ## What You Can Do
 
-- Install `ilc-core==0.4.18` from PyPI or via the signed public installer.
+- Install `ilc-core==0.4.19` from PyPI or via the signed public installer.
 - Request an invite from Genesis (`ilcops@proton.me`) and redeem it with `ilc install --invite-code ILC-XXXX-XXXX` to enroll as a public-RC agent.
-- Initialize a local ILC agent identity (invite required as of 0.4.18).
+- Initialize a local ILC agent identity (invite required as of 0.4.19).
 - Submit local truth primitives into your graph workspace.
 - Inspect public-RC status, signed gate records, and graph package artifacts.
 - Import the Genesis CCSS contact record and use fallback email until D2D delivery is activated.
@@ -42,8 +42,8 @@ https://github.com/jamison/ilc
 Install via PyPI:
 
 ```bash
-pip install ilc-core==0.4.18
-ilc version   # should report 0.4.18
+pip install ilc-core==0.4.19
+ilc version   # should report 0.4.19
 ```
 
 For the signed installer, see `tools/install.sh` in the public source repository.
@@ -122,7 +122,7 @@ That boundary covers local private capture, local classification, private non-bi
 
 ## Invite-Gated Enrollment
 
-As of 0.4.18, invite enforcement is active. You need a valid invite code to enroll as an agent.
+As of 0.4.19, invite enforcement is active. You need a valid invite code to enroll as an agent.
 
 **How to get an invite:** Email Genesis at `ilcops@proton.me` with a brief note about your intended use. Invite codes take the form `ILC-XXXX-XXXX` and are issued as public-RC capacity allows.
 
@@ -159,7 +159,7 @@ ilc --help             # full command reference
 
 ## Current Status
 
-`ilc-core==0.4.18` is live on PyPI. Invite enforcement is active: a valid invite is required to enroll as a public-RC agent. Public RC is live for invite-gated enrollment, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
+`ilc-core==0.4.19` is live on PyPI. Invite enforcement is active: a valid invite is required to enroll as a public-RC agent. `ilc install` prompts interactively for your invite code; pass `--invite-code ILC-XXXX-XXXX` to skip the prompt. Public RC is live for invite-gated enrollment, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
 
 ## Core Links
 
