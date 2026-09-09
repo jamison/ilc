@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-PUBLIC-RC-INVITE-PACKAGE-0418-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/13/7c/620d7282571916f9c2d2982a14b509017601c122cf58fa1b69c8db5a5cda/ilc_core-0.4.18-py3-none-any.whl"
-RC_WHEEL_SHA256="5631d21a38dce78fcdad86ecf8f5af758a25b3886596e5244a5ecb595140f26a"
-RC_WHEEL_SIZE="1468626"
+INSTALLER_VERSION="GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/dc/da/e5f555eb59f8fd078180b7b99f867cdea8509cd218e98ccba37647991e8e/ilc_core-0.4.19-py3-none-any.whl"
+RC_WHEEL_SHA256="0fb2b324634a72e35e5b1f2d1dc072c9f23d2790778da21f136aceb328c74bb4"
+RC_WHEEL_SIZE="1469637"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.18"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0418@phase-1628"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0418@phase-1628"
-RC_SDIST_SHA256="281a9e91f022eb79629fe1e0f1f6b6bbcfc3f8e311214be9797505d89ec30991"
-RC_SDIST_SIZE="1199384"
-DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0418_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0418_00b_v0.1.json"
+RC_RELEASE_ID="ilc-core-0.4.19"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0419@phase-1628"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0419@phase-1628"
+RC_SDIST_SHA256="b483b912d93baf2e110d73e8e5acf4b3bcf4d68590293aea6a0165400e559b5d"
+RC_SDIST_SIZE="1200428"
+DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0419_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
@@ -490,7 +490,7 @@ manifest = {
     "release_id": release_id,
 }
 envelope_set = read_envelope_set(envelope_ref)
-if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.17":
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.19":
     fail("release_envelope_set_schema_version_invalid")
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
