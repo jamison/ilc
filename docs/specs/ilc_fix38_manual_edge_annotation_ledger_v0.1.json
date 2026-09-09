@@ -97019,6 +97019,35 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_epoch_audit_fix_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_connectivity_advertisement_activate_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-CONNECTIVITY-ADVERTISEMENT-ACTIVATE-00 prompt defines the dedicated sensitive activation phase for CDL-112 connectivity advertisement propagation after authenticated P2P substrate activation.",
+      "manual_read_summary": "Prompt requires CDL-112 ratification, CDL-094 wire completion, and P2P activation before clearing CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED; mandates sidecar-owned signed tombstones, principal-bound gossip ingestion, private endpoint rejection, TTL and expiry checks, rate limits with revocation capacity, and no validator admission claims.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "GATES",
+          "target": "guard:CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:CDL-112"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GATES",
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_connectivity_advertisement_activate_00_g10_connectivity_advertisement_activation.md"
     }
   ],
   "phase": "1545p-Fix38",
