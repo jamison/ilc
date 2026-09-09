@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from decimal import Decimal
 from pathlib import Path
 
@@ -34,6 +35,18 @@ from tools.phase_1575s_genesis_ilc_minting_authorization import (
     stable_json,
     verify_genesis_ilc_minting_authorization_evidence,
 )
+
+
+HISTORICAL_PHASE_1575S_EVIDENCE_PATH = Path(
+    "out/genesis_ilc_minting_authorization_1575s/genesis_ilc_balance_proof.json"
+)
+HISTORICAL_PHASE_1575S_ROOT_HEX = (
+    "011453c0b46c94948a6540f431c0db39aa91f49db2f1fb166c7b8574048b68dc"
+)
+
+
+def _historical_evidence() -> dict[str, object]:
+    return json.loads(HISTORICAL_PHASE_1575S_EVIDENCE_PATH.read_text(encoding="utf-8"))
 
 
 def test_phase_1575s_guard_semantics_are_option_c2() -> None:
@@ -80,7 +93,7 @@ def test_phase_1575s_destination_verifier_rejects_wrong_guard_state(
         verify_genesis_settlement_destination_record(record)
 
 
-def test_phase_1575s_canonical_epoch_one_root_matches_soak() -> None:
+def test_phase_1575s_historical_soak_root_is_superseded_by_s_infinity_runtime() -> None:
     result = compute_epoch_emission_production_path(
         CANONICAL_SOAK_EPOCH,
         "0",
@@ -88,10 +101,11 @@ def test_phase_1575s_canonical_epoch_one_root_matches_soak() -> None:
         genesis_cumulative_accrual_ilc="0",
     )
     root = compute_settlement_root(result)
-    evidence_text = CANONICAL_SOAK_EVIDENCE_PATH.read_text(encoding="utf-8")
+    soak_evidence = json.loads(CANONICAL_SOAK_EVIDENCE_PATH.read_text(encoding="utf-8"))
 
     assert CANONICAL_SOAK_EPOCH == 1
-    assert root.root_hex in evidence_text
+    assert soak_evidence["economic_settlement_root_sha256"] == HISTORICAL_PHASE_1575S_ROOT_HEX
+    assert root.root_hex != HISTORICAL_PHASE_1575S_ROOT_HEX
     assert result.fee_burn_quote.to_canonical_record()["remaining_fee_pool_ilc"] == "900"
     assert result.allocation_quote.to_canonical_record()["genesis_overhead_pool_ilc"] == "45"
     assert Decimal("900") * GENESIS_OVERHEAD_ALLOCATION_FRACTION == Decimal("45")
@@ -102,10 +116,17 @@ def test_phase_1575s_fixed_tranche_reference_remains_canonical() -> None:
     assert GENESIS_FIXED_TRANCHE_ILC == C_MAX_ILC * Decimal("0.05")
 
 
-def test_phase_1575s_evidence_builds_and_verifies(tmp_path: Path) -> None:
-    evidence = build_genesis_ilc_minting_authorization_evidence(
-        wallet_root=tmp_path / "wallet_lmdb",
-    )
+def test_phase_1575s_new_evidence_generation_fails_closed_after_s_infinity_change(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(ValueError, match="phase_1575s_epoch_1_settlement_root_mismatch"):
+        build_genesis_ilc_minting_authorization_evidence(
+            wallet_root=tmp_path / "wallet_lmdb",
+        )
+
+
+def test_phase_1575s_historical_evidence_verifies() -> None:
+    evidence = _historical_evidence()
 
     verify_genesis_ilc_minting_authorization_evidence(evidence)
     assert evidence["schema_version"] == SCHEMA_VERSION
@@ -117,10 +138,8 @@ def test_phase_1575s_evidence_builds_and_verifies(tmp_path: Path) -> None:
     assert evidence["wallet_evidence"]["wallet_status"]["data"]["claimability_state"] == "deferred"
 
 
-def test_phase_1575s_non_claims_all_false(tmp_path: Path) -> None:
-    evidence = build_genesis_ilc_minting_authorization_evidence(
-        wallet_root=tmp_path / "wallet_lmdb",
-    )
+def test_phase_1575s_non_claims_all_false() -> None:
+    evidence = _historical_evidence()
 
     assert evidence["non_claims"]
     assert all(value is False for value in evidence["non_claims"].values())
@@ -129,29 +148,23 @@ def test_phase_1575s_non_claims_all_false(tmp_path: Path) -> None:
     assert evidence["non_claims"]["wallet_withdrawal_enabled"] is False
 
 
-def test_phase_1575s_output_tokens_present(tmp_path: Path) -> None:
-    evidence = build_genesis_ilc_minting_authorization_evidence(
-        wallet_root=tmp_path / "wallet_lmdb",
-    )
+def test_phase_1575s_output_tokens_present() -> None:
+    evidence = _historical_evidence()
 
     assert tuple(evidence["output_tokens"]) == OUTPUT_TOKENS
     assert "genesis_ilc_balance_proof_committed_phase_1575s" in evidence["output_tokens"]
 
 
-def test_phase_1575s_rejects_tampered_balance(tmp_path: Path) -> None:
-    evidence = build_genesis_ilc_minting_authorization_evidence(
-        wallet_root=tmp_path / "wallet_lmdb",
-    )
+def test_phase_1575s_rejects_tampered_balance() -> None:
+    evidence = _historical_evidence()
     evidence["wallet_evidence"]["wallet_status"]["data"]["balance_ilc"] = "44"
 
     with pytest.raises(ValueError, match="phase_1575s_wallet_balance_mismatch"):
         verify_genesis_ilc_minting_authorization_evidence(evidence)
 
 
-def test_phase_1575s_rejects_tampered_payload_hash(tmp_path: Path) -> None:
-    evidence = build_genesis_ilc_minting_authorization_evidence(
-        wallet_root=tmp_path / "wallet_lmdb",
-    )
+def test_phase_1575s_rejects_tampered_payload_hash() -> None:
+    evidence = _historical_evidence()
     evidence["phase_disposition"] = "tampered"
 
     with pytest.raises(ValueError, match="phase_1575s_evidence_payload_sha256_mismatch"):
@@ -177,11 +190,6 @@ def test_phase_1575s_atomic_writer_is_hardened() -> None:
     assert "os.replace" in source
 
 
-def test_phase_1575s_run_writes_private_evidence(tmp_path: Path) -> None:
-    result = run_genesis_ilc_minting_authorization(output_root=tmp_path / "phase1575s")
-    evidence_path = Path(result["evidence_path"])
-
-    assert evidence_path.is_file()
-    assert result["genesis_ilc_credit_ilc"] == "45"
-    assert len(result["evidence_payload_sha256"]) == 64
-    assert len(result["evidence_file_sha256"]) == 64
+def test_phase_1575s_run_fails_closed_after_s_infinity_change(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="phase_1575s_epoch_1_settlement_root_mismatch"):
+        run_genesis_ilc_minting_authorization(output_root=tmp_path / "phase1575s")
