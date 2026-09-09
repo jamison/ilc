@@ -77007,6 +77007,150 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00b_upload_yank_blocked_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Release envelope set for signed ilc-core 0.4.19 Python artifacts.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0419_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.19 public RC installer.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0419_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Final PyPI upload, predecessor yank, signing, and mirror receipt for ilc-core 0.4.19.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Public mirror push receipt for ilc-core 0.4.19 release surface.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_public_rc_invite_package_0419_public_mirror_push_receipt_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Walkthrough for GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b completion.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_invite_package_0419_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_invite_package_0419_00b_completion_2026_09_09",
+      "chronology_note": "2026-09-09 sensitive 0.4.19 interactive install UX publish/sign/mirror phase completed after PyPI 0.4.18 yank verification.",
+      "manual_read_summary": "Regression tests for 0.4.19 manifest, envelope, receipt, signature verification, and installer sync.",
+      "node_kind": "test_evidence_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REGRESSES",
+          "target": "claim:invite_interactive_install_package_0419_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_invite_package_0419_00b.py"
     }
   ],
   "boundary": {
