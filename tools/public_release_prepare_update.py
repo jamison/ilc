@@ -91,17 +91,23 @@ def _run_mirror_generation(
     repo_root: Path,
     *,
     mirror_output_dir: Path | None,
+    previous_filter_hash: str | None,
+    previous_source_commit: str | None,
 ) -> dict[str, Any]:
     output_dir = mirror_output_dir or Path(
         f"/tmp/ilc-public-mirror-1575e-{_run_git(['rev-parse', '--short', 'HEAD'], cwd=repo_root)}"
     )
+    command = [
+        "bash",
+        "tools/scripts/generate_public_mirror.sh",
+    ]
+    if previous_filter_hash is not None:
+        command.extend(["--incremental", "--previous-filter-hash", previous_filter_hash])
+    if previous_source_commit is not None:
+        command.extend(["--last-source-commit", previous_source_commit])
+    command.extend([str(repo_root), str(output_dir)])
     proc = subprocess.run(
-        [
-            "bash",
-            "tools/scripts/generate_public_mirror.sh",
-            str(repo_root),
-            str(output_dir),
-        ],
+        command,
         cwd=repo_root,
         check=True,
         text=True,
@@ -127,6 +133,8 @@ def build_receipt(
     baseline_commit: str | None = None,
     generate_mirror: bool = False,
     mirror_output_dir: Path | None = None,
+    previous_filter_hash: str | None = None,
+    previous_source_commit: str | None = None,
 ) -> dict[str, Any]:
     repo_root = _repo_root()
     actual_head = _run_git(["rev-parse", "HEAD"], cwd=repo_root)
@@ -145,7 +153,12 @@ def build_receipt(
     counts = source_export_manifest.get("counts", {})
     mirror_manifest: dict[str, Any] | None = None
     if generate_mirror:
-        mirror_manifest = _run_mirror_generation(repo_root, mirror_output_dir=mirror_output_dir)
+        mirror_manifest = _run_mirror_generation(
+            repo_root,
+            mirror_output_dir=mirror_output_dir,
+            previous_filter_hash=previous_filter_hash,
+            previous_source_commit=previous_source_commit,
+        )
 
     receipt: dict[str, Any] = {
         "changed_file_baseline_status": baseline_status,
@@ -179,8 +192,13 @@ def build_receipt(
         "sanitized_mirror": {
             "archive_sha256": None,
             "denylist_scan_result": None,
+            "filter_files_hash": None,
             "filtered_public_head_sha": None,
             "generated": False,
+            "incremental_eligible": False,
+            "incremental_reason": None,
+            "incremental_used": False,
+            "last_mirror_source_commit": previous_source_commit,
             "public_rc_exclude_scan_result": None,
             "staging_dir": None,
         },
@@ -199,8 +217,13 @@ def build_receipt(
         receipt["sanitized_mirror"] = {
             "archive_sha256": mirror_manifest.get("canonical_hash"),
             "denylist_scan_result": mirror_manifest.get("denylist_scan_result"),
+            "filter_files_hash": mirror_manifest.get("filter_files_hash"),
             "filtered_public_head_sha": mirror_manifest.get("filtered_public_head_sha"),
             "generated": True,
+            "incremental_eligible": mirror_manifest.get("incremental_reason") == "eligible",
+            "incremental_reason": mirror_manifest.get("incremental_reason"),
+            "incremental_used": mirror_manifest.get("incremental_used"),
+            "last_mirror_source_commit": mirror_manifest.get("last_mirror_source_commit"),
             "public_rc_exclude_scan_result": mirror_manifest.get("public_rc_exclude_scan_result"),
             "staging_dir": mirror_manifest.get("staging_dir"),
         }
@@ -214,12 +237,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--last-public-release-commit")
     parser.add_argument("--generate-mirror", action="store_true")
     parser.add_argument("--mirror-output-dir", type=Path)
+    parser.add_argument(
+        "--previous-filter-hash",
+        help="previous mirror receipt filter_files_hash used to decide incremental eligibility",
+    )
+    parser.add_argument(
+        "--previous-source-commit",
+        help="previous source_private_commit used as the incremental mirror delta anchor",
+    )
     args = parser.parse_args(argv)
     receipt = build_receipt(
         source_private_commit=args.source_private_commit,
         baseline_commit=args.last_public_release_commit,
         generate_mirror=args.generate_mirror,
         mirror_output_dir=args.mirror_output_dir,
+        previous_filter_hash=args.previous_filter_hash,
+        previous_source_commit=args.previous_source_commit,
     )
     if receipt.get("public_push_authorized") is not False:
         raise ValueError("public_push_authorized_must_be_false")

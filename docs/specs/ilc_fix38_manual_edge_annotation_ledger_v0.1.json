@@ -77223,6 +77223,126 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_gap_public_rc_invite_00c_bootstrap_smoke.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mirror_incremental_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-MIRROR-INCREMENTAL-00 adds local-only incremental public mirror pipeline support while preserving no-push release-engineering boundaries.",
+      "manual_read_summary": "Phase prompt for NON-SENSITIVE incremental public mirror pipeline tooling; requires stateless filter hash eligibility, full-tree denylist and PUBLIC_RC_EXCLUDE scans, append-only ancestry checks, no public push, and no package or runtime mutation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-MIRROR-INCREMENTAL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_mirror_incremental_00_g10_incremental_public_mirror_pipeline.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mirror_incremental_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-MIRROR-INCREMENTAL-00 adds local-only incremental public mirror pipeline support while preserving no-push release-engineering boundaries.",
+      "manual_read_summary": "Public mirror generator now supports --incremental with explicit source anchor and previous filter hash, preserves full regeneration fallback, applies denylist replacements to incremental file content, rewrites author identity, and scans the full public tree and git object database before emitting no-push manifest metadata.",
+      "node_kind": "tooling_runtime",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-MIRROR-INCREMENTAL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "public_mirror_generation_pipeline"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DOCUMENTS_RUNTIME_SURFACE",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/scripts/generate_public_mirror.sh"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mirror_incremental_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-MIRROR-INCREMENTAL-00 adds local-only incremental public mirror pipeline support while preserving no-push release-engineering boundaries.",
+      "manual_read_summary": "Public release propagation receipt wrapper accepts previous-filter-hash and previous-source-commit arguments, passes them to mirror generation, and records filter_files_hash plus incremental eligibility and usage metadata in sanitized_mirror receipts.",
+      "node_kind": "tooling_runtime",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-MIRROR-INCREMENTAL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "public_release_propagation_receipt"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DOCUMENTS_RUNTIME_SURFACE",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/public_release_prepare_update.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mirror_incremental_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-MIRROR-INCREMENTAL-00 adds local-only incremental public mirror pipeline support while preserving no-push release-engineering boundaries.",
+      "manual_read_summary": "Regression tests cover sanitized incremental delta application, Genesis author rewrite, AGENTS_PUBLIC rename behavior, private AGENTS preservation, empty delta no-op, filter-hash fallback, full-tree denylist scan, full-tree PUBLIC_RC_EXCLUDE scan, and wrapper help exposure.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:GAP-MIRROR-INCREMENTAL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "tools/scripts/generate_public_mirror.sh"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DOCUMENTS_RUNTIME_SURFACE",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_mirror_incremental_00_pipeline.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mirror_incremental_00_2026_09_09",
+      "chronology_note": "2026-09-09 GAP-MIRROR-INCREMENTAL-00 adds local-only incremental public mirror pipeline support while preserving no-push release-engineering boundaries.",
+      "manual_read_summary": "Walkthrough records purpose, deliverable disposition, MemPalace/source-read context, exact verification command output, filter hash, carry-forward constraints, STATUS token, and non-claims for GAP-MIRROR-INCREMENTAL-00.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MIRROR-INCREMENTAL-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_mirror_incremental_00_walkthrough.md"
     }
   ],
   "boundary": {
