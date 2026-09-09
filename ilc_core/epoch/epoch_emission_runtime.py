@@ -93,6 +93,8 @@ def _require_decimal_amount(value: Decimal | int | str, field_name: str) -> Deci
         raise ValueError(f"{field_name}_must_be_finite")
     if amount < Decimal("0"):
         raise ValueError(f"{field_name}_must_be_non_negative")
+    if amount % ILC_QUANTUM != Decimal("0"):
+        raise ValueError(f"{field_name}_must_align_to_ilc_quantum")
     return amount
 
 

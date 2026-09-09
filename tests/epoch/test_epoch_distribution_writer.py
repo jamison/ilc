@@ -6,7 +6,7 @@ from collections.abc import Iterator, Mapping
 import pytest
 
 from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
-from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM, raw_epoch_emission_budget
+from ilc_core.epoch.epoch_emission_runtime import raw_epoch_emission_budget
 from ilc_core.epoch.epoch_distribution_writer import (
     DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
     EPOCH_ID_FORMAT,
@@ -18,6 +18,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
     _require_lifecycle_settlement_delta,
     compute_epoch_distribution,
     commit_epoch_distribution,
+    commit_verified_epoch_distribution,
     format_epoch_id,
 )
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
@@ -32,7 +33,10 @@ from ilc_core.epoch.pool_carry_forward_runtime import (
 )
 from ilc_core.epoch.protocol_reserve_destination import PROTOCOL_RESERVE_ACCOUNT_ID
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
-from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+    EcuIlcLifecycleRuntime,
+    EcuIlcLifecycleRuntimeError,
+)
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 
@@ -40,6 +44,8 @@ ROOT_HEX = "b" * 64
 
 
 class RecordingBatchLifecycle:
+    ilc_atomic_epoch_batch_writer = True
+
     def __init__(self) -> None:
         self.calls: list[dict[str, object]] = []
 
@@ -67,6 +73,16 @@ class OversizedWeightMapping(Mapping[str, Decimal]):
 class OversizedPriorRecordList(list[object]):
     def __len__(self) -> int:
         return MAX_PRIOR_CARRY_FORWARD_RECORDS + 1
+
+
+class UnmarkedDuckBatchLifecycle:
+    def commit_settled_epoch_batch(
+        self,
+        *,
+        settlements: dict[str, Decimal],
+        epoch_id: str,
+    ) -> list[dict[str, object]]:
+        return [{"settlements": settlements, "epoch_id": epoch_id}]
 
 
 def _inputs(**overrides: object) -> EpochDistributionInput:
@@ -305,6 +321,31 @@ def test_default_settlement_root_is_automatically_rejected_after_epoch_zero() ->
         )
 
 
+@pytest.mark.parametrize(
+    "bad_root",
+    [
+        "A" * 64,
+        "g" * 64,
+        "b" * 63,
+        "b" * 65,
+        123,
+    ],
+)
+def test_malformed_source_settlement_root_rejected_by_commit_path(bad_root: object) -> None:
+    lifecycle = RecordingBatchLifecycle()
+
+    with pytest.raises(ValueError, match="source_settlement_root_must_be_sha256_hex"):
+        commit_epoch_distribution(
+            _inputs(
+                total_epoch_fees_ilc=Decimal("100"),
+                source_settlement_root_hex=bad_root,
+            ),
+            lifecycle,
+        )
+
+    assert lifecycle.calls == []
+
+
 def test_non_default_settlement_root_passes_when_default_root_is_forbidden() -> None:
     output = compute_epoch_distribution(
         _inputs(
@@ -413,6 +454,14 @@ def test_commit_requires_atomic_batch_writer_for_unknown_lifecycle() -> None:
         commit_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("1")), object())  # type: ignore[arg-type]
 
 
+def test_commit_rejects_unmarked_duck_typed_batch_writer() -> None:
+    with pytest.raises(ValueError, match="atomic_lifecycle_batch_writer_required"):
+        commit_epoch_distribution(
+            _inputs(total_epoch_fees_ilc=Decimal("1")),
+            UnmarkedDuckBatchLifecycle(),  # type: ignore[arg-type]
+        )
+
+
 def test_conservation_failure_writes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
     lifecycle = RecordingBatchLifecycle()
 
@@ -424,6 +473,48 @@ def test_conservation_failure_writes_nothing(monkeypatch: pytest.MonkeyPatch) ->
         commit_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("1")), lifecycle)
 
     assert lifecycle.calls == []
+
+
+def test_commit_epoch_distribution_invokes_load_bearing_conservation_gate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    lifecycle = RecordingBatchLifecycle()
+    calls: list[object] = []
+
+    def _gate(output: object) -> None:
+        calls.append(output)
+        raise ValueError("load_bearing_gate_forced_failure")
+
+    monkeypatch.setattr(
+        "ilc_core.epoch.epoch_conservation_gate.verify_epoch_conservation_before_commit",
+        _gate,
+    )
+
+    with pytest.raises(ValueError, match="load_bearing_gate_forced_failure"):
+        commit_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("100")), lifecycle)
+
+    assert len(calls) == 1
+    assert lifecycle.calls == []
+
+
+def test_commit_verified_epoch_distribution_commits_supplied_output_without_recompute(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    lifecycle = RecordingBatchLifecycle()
+    output = compute_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("100")))
+
+    def _fail_recompute(_inputs: object) -> object:
+        raise AssertionError("must not recompute already verified output")
+
+    monkeypatch.setattr(
+        "ilc_core.epoch.epoch_distribution_writer.compute_epoch_distribution",
+        _fail_recompute,
+    )
+
+    committed = commit_verified_epoch_distribution(output, lifecycle)
+
+    assert committed is output
+    assert lifecycle.calls
 
 
 def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -442,6 +533,89 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
     assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000000"  # type: ignore[index]
     assert wallet_store.get_wallet(PROTOCOL_RESERVE_ACCOUNT_ID)["balance_ilc"] == "10"  # type: ignore[index]
     assert wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"] == "4.5"  # type: ignore[index]
+
+
+def test_real_lmdb_allows_first_nonzero_public_rc_settlement_epoch_one(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    output = commit_epoch_distribution(
+        _inputs(
+            issuance_epoch=1,
+            eligible_agents={"agent:a": Decimal("1")},
+        ),
+        lifecycle,
+    )
+
+    assert output.issuance_epoch == 1
+    assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
+
+
+def test_real_lmdb_rejects_initial_epoch_gap(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        commit_epoch_distribution(
+            _inputs(
+                issuance_epoch=2,
+                eligible_agents={"agent:a": Decimal("1")},
+            ),
+            lifecycle,
+        )
+
+    assert exc_info.value.token == "lifecycle_epoch_sequence_gap"
+
+
+def test_real_lmdb_rejects_out_of_order_epoch_gap(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    commit_epoch_distribution(
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+        lifecycle,
+    )
+
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        commit_epoch_distribution(
+            _inputs(
+                issuance_epoch=2,
+                eligible_agents={"agent:a": Decimal("1")},
+            ),
+            lifecycle,
+        )
+
+    assert exc_info.value.token == "lifecycle_epoch_sequence_gap"
+
+
+def test_real_lmdb_rejects_same_epoch_recipient_extension(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    commit_epoch_distribution(
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+        lifecycle,
+    )
+
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        commit_epoch_distribution(
+            _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:b": Decimal("1")}),
+            lifecycle,
+        )
+
+    assert exc_info.value.token == "lifecycle_epoch_replay_recipient_extension"
 
 
 def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -473,6 +647,25 @@ def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> N
     agent_wallet = wallet_store.get_wallet("agent:a")
     assert agent_wallet is not None
     assert Decimal(agent_wallet["balance_ilc"]) > Decimal("85.5")
+
+
+def test_saturated_genesis_cap_with_fees_and_prior_carry_forward_conserves() -> None:
+    prior = _prior_record(amount=Decimal("10"), source_epoch=0, target_epoch=1)
+
+    output = compute_epoch_distribution(
+        _inputs(
+            issuance_epoch=1,
+            total_epoch_fees_ilc=Decimal("100"),
+            genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC,
+            eligible_agents={"agent:a": Decimal("1")},
+            prior_carry_forward_records=[prior],
+        )
+    )
+
+    assert output.genesis_settled_delta == Decimal("0E-9")
+    assert output.agent_settled_balance_deltas["agent:a"] > Decimal("10")
+    assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("10")
+    assert output.conservation_record.difference_ilc == Decimal("0E-9")
 
 
 def test_float_and_missing_genesis_accrual_are_rejected() -> None:
@@ -571,3 +764,4 @@ def test_epoch_package_exports_distribution_writer_surface() -> None:
     assert epoch.EpochDistributionInput is EpochDistributionInput
     assert epoch.compute_epoch_distribution is compute_epoch_distribution
     assert epoch.commit_epoch_distribution is commit_epoch_distribution
+    assert epoch.commit_verified_epoch_distribution is commit_verified_epoch_distribution

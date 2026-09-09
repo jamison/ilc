@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping, Protocol, runtime_checkable
 
 from ilc_core.epoch.allocation_distributor_runtime import (
     EpochAllocationDistributionQuote,
@@ -107,7 +107,10 @@ _PROTOCOL_ACCOUNT_IDS = frozenset(
 )
 
 
+@runtime_checkable
 class AtomicEpochBatchWriter(Protocol):
+    ilc_atomic_epoch_batch_writer: bool
+
     def commit_settled_epoch_batch(
         self,
         *,
@@ -307,8 +310,16 @@ def commit_epoch_distribution(
     lifecycle_runtime: EcuIlcLifecycleRuntime | AtomicEpochBatchWriter,
 ) -> EpochDistributionOutput:
     output = compute_epoch_distribution(inputs)
-    if not output.conservation_verified:
-        raise ValueError("epoch_distribution_conservation_not_verified")
+    return commit_verified_epoch_distribution(output, lifecycle_runtime)
+
+
+def commit_verified_epoch_distribution(
+    output: EpochDistributionOutput,
+    lifecycle_runtime: EcuIlcLifecycleRuntime | AtomicEpochBatchWriter,
+) -> EpochDistributionOutput:
+    from ilc_core.epoch.epoch_conservation_gate import verify_epoch_conservation_before_commit
+
+    verify_epoch_conservation_before_commit(output)
 
     settlements = _settlement_deltas_for_commit(output)
     if settlements:
@@ -684,15 +695,23 @@ def _commit_settled_epoch_batch(
     settlements: Mapping[str, Decimal],
     epoch_id: str,
 ) -> list[dict[str, Any]]:
-    batch_method = getattr(lifecycle_runtime, "commit_settled_epoch_batch", None)
-    if callable(batch_method):
-        return batch_method(settlements=dict(settlements), epoch_id=epoch_id)
     if isinstance(lifecycle_runtime, EcuIlcLifecycleRuntime):
         return _commit_lmdb_lifecycle_batch(
             lifecycle_runtime=lifecycle_runtime,
             settlements=settlements,
             epoch_id=epoch_id,
         )
+    if (
+        isinstance(lifecycle_runtime, AtomicEpochBatchWriter)
+        and getattr(lifecycle_runtime, "ilc_atomic_epoch_batch_writer", None) is True
+    ):
+        result = lifecycle_runtime.commit_settled_epoch_batch(
+            settlements=dict(settlements),
+            epoch_id=epoch_id,
+        )
+        if not isinstance(result, list):
+            raise ValueError("atomic_lifecycle_batch_writer_result_required")
+        return result
     raise ValueError("atomic_lifecycle_batch_writer_required")
 
 
@@ -705,10 +724,26 @@ def _commit_lmdb_lifecycle_batch(
     wallet_store = lifecycle_runtime.wallet_store
     if not isinstance(wallet_store, LmdbWalletStore):
         raise ValueError("atomic_lmdb_wallet_store_required")
+    epoch_number = _require_epoch_id_format(epoch_id)
     results: list[dict[str, Any]] = []
     wallets_db = wallet_store._dbs[b"wallets"]
     history_db = wallet_store._dbs[b"wallet_history"]
     with wallet_store.env.begin(write=True) as txn:
+        current_epoch_number = _current_lmdb_epoch_number(txn, wallets_db)
+        if current_epoch_number is None:
+            if epoch_number not in {0, 1}:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_sequence_gap",
+                    "first lifecycle settlement epoch must be 0000000000 or 0000000001",
+                )
+            replay_epoch = False
+        else:
+            replay_epoch = epoch_number == current_epoch_number
+            if epoch_number not in {current_epoch_number, current_epoch_number + 1}:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_sequence_gap",
+                    "lifecycle settlement epoch must be current epoch or next sequential epoch",
+                )
         for agent_id, amount in sorted(settlements.items()):
             _require_agent_id(agent_id)
             settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
@@ -762,6 +797,11 @@ def _commit_lmdb_lifecycle_batch(
                     }
                 )
                 continue
+            if replay_epoch:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_replay_recipient_extension",
+                    "same-epoch replay cannot add new settlement recipients",
+                )
 
             prior_balance = to_decimal(
                 wallet_row.get("balance_ilc", "0"),
@@ -818,6 +858,30 @@ def _commit_lmdb_lifecycle_batch(
     return results
 
 
+def _require_epoch_id_format(epoch_id: str) -> int:
+    if not isinstance(epoch_id, str) or len(epoch_id) != 10 or not epoch_id.isdecimal():
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_epoch_id_invalid",
+            "epoch_id must be a 10-digit zero-padded decimal string",
+        )
+    return int(epoch_id)
+
+
+def _current_lmdb_epoch_number(txn: Any, wallets_db: Any) -> int | None:
+    current: int | None = None
+    cursor = txn.cursor(db=wallets_db)
+    for _, raw_wallet in cursor:
+        wallet_row = _decode_json(raw_wallet)
+        if not isinstance(wallet_row, dict):
+            continue
+        last_epoch = wallet_row.get("last_settled_epoch_id")
+        if not isinstance(last_epoch, str) or len(last_epoch) != 10 or not last_epoch.isdecimal():
+            continue
+        epoch_number = int(last_epoch)
+        current = epoch_number if current is None else max(current, epoch_number)
+    return current
+
+
 def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decimal:
     if agent_id in {PERFORMER_CARRY_FORWARD_ACCOUNT_ID, AUDITOR_CARRY_FORWARD_ACCOUNT_ID}:
         try:
@@ -871,5 +935,6 @@ __all__ = [
     "PROTOCOL_RESERVE_WIRED_TOKEN",
     "compute_epoch_distribution",
     "commit_epoch_distribution",
+    "commit_verified_epoch_distribution",
     "format_epoch_id",
 ]

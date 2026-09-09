@@ -176,6 +176,11 @@ impl EpochStore {
 
         let mut update_sentinel = true;
         if let Ok(bytes) = txn.get(self.db, &CURRENT_EPOCH_SENTINEL) {
+            if bytes.len() != 8 {
+                return Err(ILCConsensusError::Other(
+                    "epoch_sentinel_invalid_length".to_string(),
+                ));
+            }
             let mut buf = [0u8; 8];
             buf.copy_from_slice(bytes);
             let current = u64::from_be_bytes(buf);
@@ -296,6 +301,11 @@ impl EpochStore {
 
         match txn.get(self.db, &CURRENT_EPOCH_SENTINEL) {
             Ok(bytes) => {
+                if bytes.len() != 8 {
+                    return Err(ILCConsensusError::Other(
+                        "epoch_sentinel_invalid_length".to_string(),
+                    ));
+                }
                 let mut buf = [0u8; 8];
                 buf.copy_from_slice(bytes);
                 Ok(u64::from_be_bytes(buf))
@@ -413,6 +423,11 @@ impl EpochSettlementProtocol {
         // enforce +1 — it is used for direct test injection without ordering constraints.
         let current_epoch = match txn.get(self.epoch_store.db, &CURRENT_EPOCH_SENTINEL) {
             Ok(bytes) => {
+                if bytes.len() != 8 {
+                    return Err(ILCConsensusError::Other(
+                        "epoch_sentinel_invalid_length".to_string(),
+                    ));
+                }
                 let mut buf = [0u8; 8];
                 buf.copy_from_slice(bytes);
                 u64::from_be_bytes(buf)
@@ -666,6 +681,60 @@ mod tests {
 
         let records = store.get_epochs_after(0).unwrap();
         assert!(records.is_empty());
+    }
+
+    #[test]
+    fn test_get_current_epoch_rejects_corrupt_sentinel_length() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let mut txn = env.begin_rw_txn().unwrap();
+        txn.put(
+            store.db,
+            &CURRENT_EPOCH_SENTINEL,
+            &[1u8, 2u8, 3u8],
+            WriteFlags::empty(),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+
+        let err = store.get_current_epoch().unwrap_err();
+        assert!(format!("{:?}", err).contains("epoch_sentinel_invalid_length"));
+    }
+
+    #[test]
+    fn test_process_checkpoint_rejects_corrupt_sentinel_length_without_panic() {
+        let (env, _dir) = setup_env();
+        let store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let protocol = EpochSettlementProtocol::new(store.clone());
+        let (vset, entries) = setup_validators();
+        let mut txn = env.begin_rw_txn().unwrap();
+        txn.put(
+            store.db,
+            &CURRENT_EPOCH_SENTINEL,
+            &[9u8],
+            WriteFlags::empty(),
+        )
+        .unwrap();
+        txn.commit().unwrap();
+
+        let record = EpochSettlementRecord {
+            epoch: EpochSeq(1),
+            state_root: CIDv1Root::new([1u8; 36]),
+            spectral_hash: [0u8; 32],
+            proposal_commitment_sha256: [1u8; 32],
+            not_before_unix_ms: 0,
+        };
+        let (sigs, signers) = agg_sig_all(&record, &entries);
+        let checkpoint = EpochCheckpoint {
+            record,
+            sigs,
+            signers,
+        };
+
+        let err = protocol
+            .process_epoch_checkpoint(checkpoint, &vset)
+            .unwrap_err();
+        assert!(format!("{:?}", err).contains("epoch_sentinel_invalid_length"));
     }
 
     #[test]
