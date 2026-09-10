@@ -30,18 +30,25 @@ MANIFEST_PATH = (
 ENVELOPE_PATH = (
     ROOT / "docs/specs/ilc_core_0415_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
 )
+CURRENT_MANIFEST_PATH = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0420_GAP_PACKAGE_0420_00b_v0.1.json"
+)
+CURRENT_ENVELOPE_PATH = (
+    ROOT / "docs/specs/ilc_core_0420_release_envelopes_GAP_PACKAGE_0420_00b_v0.1.json"
+)
 INSTALL_SH = ROOT / "tools/install.sh"
 VERIFIER_PATH = ROOT / "ilc_core/release/update_signature_verifier.py"
 CURRENT_RC_WHEEL_URL = (
-    "https://files.pythonhosted.org/packages/9b/84/"
-    "59b4793e2e6ca20508978837c9a34830fa09cc05faf30349670ea523685c/"
-    "ilc_core-0.4.17-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/d8/5d/"
+    "98bec04b3658824d4def52867723609828dbdbaddad12aae3f9108a4f0e2/"
+    "ilc_core-0.4.20-py3-none-any.whl"
 )
-CURRENT_RC_WHEEL_SHA256 = "414702127dcbf4e97a8f29e0875f1f1494811b1873cff9fa748606b1b5f657f1"
-CURRENT_RC_WHEEL_SIZE = "1466767"
+CURRENT_RC_WHEEL_SHA256 = "53906561691fece74d487f8419d54778f64e201ce4cdf77824189db70b11842f"
+CURRENT_RC_WHEEL_SIZE = "1477085"
 CURRENT_DEFAULT_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0417_release_envelopes_GAP_RELEASE_SIGN_00c_v0.1.json"
+    "ilc_core_0420_release_envelopes_GAP_PACKAGE_0420_00b_v0.1.json"
 )
 
 
@@ -53,10 +60,16 @@ def _envelope_set() -> dict[str, Any]:
     return json.loads(ENVELOPE_PATH.read_text(encoding="utf-8"))
 
 
+def _current_manifest() -> dict[str, Any]:
+    return load_installable_release_manifest(CURRENT_MANIFEST_PATH)
+
+
+def _current_envelope_set() -> dict[str, Any]:
+    return json.loads(CURRENT_ENVELOPE_PATH.read_text(encoding="utf-8"))
+
+
 def _envelope_set_for_current_install_sh_inline_verifier() -> dict[str, Any]:
-    envelope_set = _envelope_set()
-    envelope_set["version"] = "0.4.17"
-    return envelope_set
+    return _current_envelope_set()
 
 
 def _wheel_artifact() -> dict[str, Any]:
@@ -68,6 +81,13 @@ def _wheel_artifact() -> dict[str, Any]:
 
 def _artifact_by_type(artifact_type: str) -> dict[str, Any]:
     for artifact in _manifest()["artifacts"]:
+        if artifact["artifact_type"] == artifact_type:
+            return artifact
+    raise AssertionError(f"{artifact_type} artifact missing")
+
+
+def _current_artifact_by_type(artifact_type: str) -> dict[str, Any]:
+    for artifact in _current_manifest()["artifacts"]:
         if artifact["artifact_type"] == artifact_type:
             return artifact
     raise AssertionError(f"{artifact_type} artifact missing")
@@ -98,15 +118,15 @@ def _run_install_sh_signature_verifier(
         sys.executable,
         str(script_path),
         "/tmp/unused.whl",
-        _manifest()["release_id"],
-        _artifact_by_type("python_wheel")["artifact_id"],
-        _artifact_by_type("python_wheel")["canonical_hash"].removeprefix("sha256:"),
-        str(_artifact_by_type("python_wheel")["size_bytes"]),
+        _current_manifest()["release_id"],
+        _current_artifact_by_type("python_wheel")["artifact_id"],
+        _current_artifact_by_type("python_wheel")["canonical_hash"].removeprefix("sha256:"),
+        str(_current_artifact_by_type("python_wheel")["size_bytes"]),
         str(envelope_path),
         PUBLIC_RC_RELEASE_SIGNER_PUBLIC_KEY_HEX,
-        _artifact_by_type("python_sdist")["artifact_id"],
-        _artifact_by_type("python_sdist")["canonical_hash"].removeprefix("sha256:"),
-        str(_artifact_by_type("python_sdist")["size_bytes"]),
+        _current_artifact_by_type("python_sdist")["artifact_id"],
+        _current_artifact_by_type("python_sdist")["canonical_hash"].removeprefix("sha256:"),
+        str(_current_artifact_by_type("python_sdist")["size_bytes"]),
         str(ROOT),
     ]
     return subprocess.run(
@@ -359,7 +379,7 @@ def test_install_sh_inline_manifest_uses_current_artifact_metadata() -> None:
 
 
 def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.17-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.20-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
@@ -412,7 +432,7 @@ def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path:
 
 def test_install_sh_inline_verifier_rejects_bad_sdist_signature(tmp_path: Path) -> None:
     envelope_set = copy.deepcopy(_envelope_set_for_current_install_sh_inline_verifier())
-    sdist = _artifact_by_type("python_sdist")
+    sdist = _current_artifact_by_type("python_sdist")
     envelope_set["envelopes"][sdist["artifact_id"]]["signature_hex"] = "0" * 128
 
     result = _run_install_sh_signature_verifier(tmp_path, envelope_set=envelope_set)
@@ -423,7 +443,7 @@ def test_install_sh_inline_verifier_rejects_bad_sdist_signature(tmp_path: Path) 
 
 def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Path) -> None:
     envelope_set = copy.deepcopy(_envelope_set_for_current_install_sh_inline_verifier())
-    wheel = _artifact_by_type("python_wheel")
+    wheel = _current_artifact_by_type("python_wheel")
     envelope_set["envelopes"][wheel["artifact_id"]]["signed_preimage_algorithm"] = "sha384"
 
     result = _run_install_sh_signature_verifier(tmp_path, envelope_set=envelope_set)
@@ -435,7 +455,7 @@ def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Pat
 def test_install_sh_verify_signature_fails_closed_for_stale_envelope_set(
     tmp_path: Path,
 ) -> None:
-    payload = tmp_path / "ilc_core-0.4.17-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.20-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"

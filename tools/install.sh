@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-PUBLIC-RC-INVITE-PACKAGE-0419-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/dc/da/e5f555eb59f8fd078180b7b99f867cdea8509cd218e98ccba37647991e8e/ilc_core-0.4.19-py3-none-any.whl"
-RC_WHEEL_SHA256="0fb2b324634a72e35e5b1f2d1dc072c9f23d2790778da21f136aceb328c74bb4"
-RC_WHEEL_SIZE="1469637"
+INSTALLER_VERSION="GAP-PACKAGE-0420-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/d8/5d/98bec04b3658824d4def52867723609828dbdbaddad12aae3f9108a4f0e2/ilc_core-0.4.20-py3-none-any.whl"
+RC_WHEEL_SHA256="53906561691fece74d487f8419d54778f64e201ce4cdf77824189db70b11842f"
+RC_WHEEL_SIZE="1477085"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.19"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0419@phase-1628"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0419@phase-1628"
-RC_SDIST_SHA256="b483b912d93baf2e110d73e8e5acf4b3bcf4d68590293aea6a0165400e559b5d"
-RC_SDIST_SIZE="1200428"
-DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0419_release_envelopes_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+RC_RELEASE_ID="ilc-core-0.4.20"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0420@phase-1628"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0420@phase-1628"
+RC_SDIST_SHA256="f0b99eede34f0bfd4c6a2ddcf53fd2fcd908b5288a40aa9fb7cc9f1025daa682"
+RC_SDIST_SIZE="1207307"
+DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0420_release_envelopes_GAP_PACKAGE_0420_00b_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
-CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.16/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
-CONSENSUS_BIN_SHA256="adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42"
-CONSENSUS_BIN_SIZE="4304398"
+CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.20/ilc-consensus-linux-x86_64-v0.4.20.tar.gz"
+CONSENSUS_BIN_SHA256="ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9"
+CONSENSUS_BIN_SIZE="4560519"
 CONSENSUS_BIN_INSTALL_DIR="${ILC_CONSENSUS_BIN_INSTALL_DIR:-${HOME:-}/.ilc/bin}"
 
 CHANNEL="rc"
@@ -490,7 +490,7 @@ manifest = {
     "release_id": release_id,
 }
 envelope_set = read_envelope_set(envelope_ref)
-if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.19":
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.20":
     fail("release_envelope_set_schema_version_invalid")
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
@@ -520,7 +520,7 @@ if [[ "${OS_NAME}" == "Linux" && ( "${ARCH_NAME}" == "x86_64" || "${ARCH_NAME}" 
   if [[ "${CONSENSUS_BIN_INSTALL_DIR}" == "/.ilc/bin" ]]; then
     die 1 "install_sh_consensus_binary_home_missing"
   fi
-  CONSENSUS_TARBALL="${TMP_DIR}/ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+  CONSENSUS_TARBALL="${TMP_DIR}/ilc-consensus-linux-x86_64-v0.4.20.tar.gz"
   CONSENSUS_BIN_SIZE_CAP="$(( (CONSENSUS_BIN_SIZE * 11 + 9) / 10 ))"
   python3 - "${CONSENSUS_BIN_URL}" "${CONSENSUS_TARBALL}" "${CONSENSUS_BIN_SIZE_CAP}" <<'PY'
 import sys
@@ -581,6 +581,7 @@ from pathlib import Path
 tarball, output_dir = sys.argv[1], Path(sys.argv[2])
 expected = {
     "bls_verify_digest",
+    "ilc_p2p_bridge",
     "invite_pop_bls",
     "keygen",
     "validator_endpoint_assertion_bls",
