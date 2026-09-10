@@ -20,21 +20,21 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0419_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0420_GAP_PACKAGE_0420_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/dc/da/"
-    "e5f555eb59f8fd078180b7b99f867cdea8509cd218e98ccba37647991e8e/"
-    "ilc_core-0.4.19-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/d8/5d/"
+    "98bec04b3658824d4def52867723609828dbdbaddad12aae3f9108a4f0e2/"
+    "ilc_core-0.4.20-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "0fb2b324634a72e35e5b1f2d1dc072c9f23d2790778da21f136aceb328c74bb4"
-EXPECTED_SIZE = "1469637"
+EXPECTED_SHA256 = "53906561691fece74d487f8419d54778f64e201ce4cdf77824189db70b11842f"
+EXPECTED_SIZE = "1477085"
 EXPECTED_CONSENSUS_URL = (
-    "https://github.com/jamison/ilc/releases/download/v0.4.16/"
-    "ilc-consensus-linux-x86_64-v0.4.16.tar.gz"
+    "https://github.com/jamison/ilc/releases/download/v0.4.20/"
+    "ilc-consensus-linux-x86_64-v0.4.20.tar.gz"
 )
-EXPECTED_CONSENSUS_SHA256 = "adde50e924c1ac0e0259998b29ef2778f4a4a7a8b4dfbfed72c206ca9f20bc42"
-EXPECTED_CONSENSUS_SIZE = "4304398"
+EXPECTED_CONSENSUS_SHA256 = "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9"
+EXPECTED_CONSENSUS_SIZE = "4560519"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -284,6 +284,7 @@ def _run_consensus_extractor(tmp_path: Path, members: list[tuple[str, bytes, str
 def _valid_consensus_members() -> list[tuple[str, bytes, str]]:
     return [
         ("bls_verify_digest", b"#!/bin/sh\nexit 0\n", "file"),
+        ("ilc_p2p_bridge", b"#!/bin/sh\nexit 0\n", "file"),
         ("invite_pop_bls", b"#!/bin/sh\nexit 0\n", "file"),
         ("keygen", b"#!/bin/sh\nexit 0\n", "file"),
         ("validator_endpoint_assertion_bls", b"#!/bin/sh\nexit 0\n", "file"),

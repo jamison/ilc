@@ -77684,6 +77684,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0420_00b_blocked_preflight_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_publication_source_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b published and signed ilc-core 0.4.20 Track A+ artifacts after PyPI 0.4.19 yank verification.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.20 Track A+ public RC installer, including signed wheel/sdist and unsigned SHA-bound Linux helper tarball.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0420_GAP_PACKAGE_0420_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_publication_source_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b published and signed ilc-core 0.4.20 Track A+ artifacts after PyPI 0.4.19 yank verification.",
+      "manual_read_summary": "Release envelope set for signed ilc-core 0.4.20 Python wheel and sdist artifacts.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0420_release_envelopes_GAP_PACKAGE_0420_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_publication_source_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b published and signed ilc-core 0.4.20 Track A+ artifacts after PyPI 0.4.19 yank verification.",
+      "manual_read_summary": "PyPI upload, predecessor yank, release signing, helper-binary publication, installer retarget, and mirror-pending receipt for ilc-core 0.4.20.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0420_00b_v0.1.json"
     }
   ],
   "boundary": {
