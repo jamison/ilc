@@ -2479,6 +2479,12 @@ def _build_parser() -> JsonArgumentParser:
                 help="Explicitly replace an existing local onboarding identity after invite install",
             )
             install_parser.add_argument(
+                "--no-validator",
+                dest="no_validator",
+                action="store_true",
+                help="Opt out of default public-RC Candidate validator candidacy",
+            )
+            install_parser.add_argument(
                 "--probe-observer",
                 action="append",
                 default=[],
@@ -4985,6 +4991,16 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                     witness,
                 ),
             )
+            candidate_validator_record = _install_candidate_validator_record_fields(
+                args,
+                install_dir=Path.home(),
+                agent_id=agent_id,
+                network_id=str(
+                    getattr(args, "relay_network_id", "") or INSTALL_RELAY_DEFAULT_NETWORK_ID
+                ),
+                connectivity_receipt=connectivity_receipt,
+                capsule_record=capsule_record,
+            )
             receipt.update(_install_connectivity_receipt_fields(connectivity_receipt))
             receipt.update(
                 _install_invite_bootstrap_capsule_fields(
@@ -4992,10 +5008,12 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                     invitee_install_receipt,
                 )
             )
+            receipt.update(candidate_validator_record)
             _write_install_receipt_atomic(output_receipt, receipt)
             return {
                 "bootstrap_fetch_peers": capsule_record["bootstrap_fetch_peers"],
                 "bootstrap_peer_hints": capsule_record["bootstrap_peer_hints"],
+                "candidate_validator_record": candidate_validator_record,
                 "connectivity_receipt": connectivity_receipt,
                 "connectivity_summary": connectivity_receipt["connectivity_summary"],
                 "identity_provisioning": identity_provisioning,
@@ -5599,6 +5617,89 @@ def _install_invite_bootstrap_capsule_fields(
         "known_peer_hints_offered": evidence["known_peer_hints_offered"],
         "known_peer_hints_verified": evidence["known_peer_hints_verified"],
     }
+
+
+def _install_candidate_validator_record_fields(
+    args: argparse.Namespace,
+    *,
+    install_dir: Path,
+    agent_id: str,
+    network_id: str,
+    connectivity_receipt: dict[str, Any],
+    capsule_record: dict[str, Any],
+) -> dict[str, Any]:
+    validator_participation_enabled = not bool(getattr(args, "no_validator", False))
+    if not validator_participation_enabled:
+        return {
+            "candidate_validator_record_ref": None,
+            "candidate_validator_record_sha384": None,
+            "candidate_validator_record_status": "opted_out",
+            "validator_mode": "opted_out",
+            "validator_participation_enabled": False,
+        }
+
+    from ilc_core.validator.candidate_validator_record import build_candidate_validator_record
+
+    identity_dir = install_dir.expanduser().resolve() / ".ilc" / "identity"
+    validator_dir = identity_dir.parent / "validator"
+    record_path = validator_dir / "candidate_validator_record.json"
+    connectivity_ref = connectivity_receipt.get("connectivity_receipt_sha384")
+    if connectivity_ref is not None and not isinstance(connectivity_ref, str):
+        raise ValueError("candidate_validator_connectivity_receipt_ref_invalid")
+    relay_ref = connectivity_receipt.get("relay_endpoint")
+    if relay_ref is not None and not isinstance(relay_ref, str):
+        raise ValueError("candidate_validator_relay_endpoint_ref_invalid")
+    evidence = capsule_record.get("invite_bootstrap_capsule_evidence", {})
+    if not isinstance(evidence, dict):
+        raise ValueError("candidate_validator_bootstrap_capsule_evidence_invalid")
+    bootstrap_ref = evidence.get("bootstrap_fetch_bundle_cid")
+    if bootstrap_ref is not None and not isinstance(bootstrap_ref, str):
+        raise ValueError("candidate_validator_bootstrap_capsule_ref_invalid")
+
+    record = build_candidate_validator_record(
+        agent_id=agent_id,
+        network_id=network_id,
+        connectivity_receipt_ref=connectivity_ref,
+        relay_endpoint_ref=relay_ref,
+        bootstrap_capsule_ref=bootstrap_ref,
+    )
+    record_path, record_sha384 = _write_candidate_validator_record_atomic(record_path, record)
+    return {
+        "candidate_validator_record_ref": {
+            "path": str(record_path),
+            "sha384": record_sha384,
+        },
+        "candidate_validator_record_sha384": record_sha384,
+        "candidate_validator_record_status": "written",
+        "validator_mode": "candidate",
+        "validator_participation_enabled": True,
+    }
+
+
+def _write_candidate_validator_record_atomic(path: Path, record: Any) -> tuple[Path, str]:
+    payload = record.to_canonical_json().encode("utf-8")
+    record_sha384 = hashlib.sha384(payload).hexdigest()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        os.chmod(temp_name, 0o644)
+        with os.fdopen(fd, "wb") as handle:
+            fd = -1
+            handle.write(payload)
+            handle.write(b"\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_name, path)
+        os.chmod(path, 0o644)
+    except BaseException:
+        if fd != -1:
+            os.close(fd)
+        try:
+            os.unlink(temp_name)
+        except FileNotFoundError:
+            _temp_file_already_removed = True
+        raise
+    return path, record_sha384
 
 
 def _write_install_receipt_atomic(path: Path, receipt: dict[str, Any]) -> Path:
