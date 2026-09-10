@@ -77540,6 +77540,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_rust_p2p_binary_impl_and_distribution_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_prompt_hardening_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00a prompt drafted for the Track A+ local 0.4.20 build after candidate validator default completion.",
+      "manual_read_summary": "Prompt defines local build-only scope, token audit, guard verification, clean outside-repo venv smoke, build receipt, walkthrough, and non-claims for the 0.4.20 package cycle.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PACKAGE-0420-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0420_00a_g10_local_build_track_a_plus.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_prompt_hardening_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b prompt drafted for sensitive Track A+ publication, signing, Linux helper binary publication, and mirror refresh.",
+      "manual_read_summary": "Prompt defines GO-gated PyPI publication, Ed25519 release signing, Linux x86_64 helper tarball publication including ilc_p2p_bridge, predecessor yank verification, installer retargeting, public mirror refresh, and non-claims.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0420_00b_g10_pypi_upload_sign_mirror.md"
     }
   ],
   "boundary": {
