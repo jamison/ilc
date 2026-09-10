@@ -77636,6 +77636,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0420_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_blocked_preflight_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b sensitive preflight stopped before upload pending offline Phase 1335 Ed25519 signatures.",
+      "manual_read_summary": "Partial receipt records GO phrase, local artifact hashes, PyPI 0.4.19 active and 0.4.20 absent checks, twine check, release signing preimages, private-key-absent status, blocker token, and non-claims.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0420_00b.partial.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_blocked_preflight_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b walkthrough records sensitive preflight blocker before external mutation.",
+      "manual_read_summary": "Walkthrough records GO phrase, prompt read, artifact checks, PyPI preflight, signing preimages, blocker, output token non-emission, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0420_00b_blocked_preflight_walkthrough.md"
     }
   ],
   "boundary": {
