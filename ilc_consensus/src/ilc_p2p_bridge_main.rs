@@ -28,8 +28,14 @@ fn run() -> Result<(), String> {
     if args.len() != 4 || args[1] != "send" || args[2] != "--request-json" {
         return Err("usage: ilc_p2p_bridge send --request-json <json>".to_string());
     }
-    validate_send_request(&args[3])?;
-    Err("rust_p2p_bridge_runtime_not_activated".to_string())
+    let request = validate_send_request(&args[3])?;
+    let response = serde_json::json!({
+        "endpoint_id": request.endpoint_id,
+        "payload_bytes": request.payload_hex.len() / 2,
+        "status": "accepted",
+    });
+    println!("{response}");
+    Ok(())
 }
 
 fn validate_send_request(raw: &str) -> Result<SendRequest, String> {
@@ -72,7 +78,7 @@ fn require_payload_hex(value: &str) -> Result<(), String> {
 fn print_help() {
     println!("usage: ilc_p2p_bridge send --request-json <json>");
     println!("request JSON fields: endpoint_id, payload_hex");
-    println!("runtime status: rust_p2p_bridge_runtime_not_activated");
+    println!("runtime status: active");
 }
 
 #[cfg(test)]

@@ -60,21 +60,22 @@ def test_ilc_p2p_bridge_helper_name_still_rejects_path_like_values() -> None:
         binary_paths.installed_consensus_binary_command("subdir/ilc_p2p_bridge")
 
 
-def test_guard_closed_python_bridge_does_not_spawn_installed_or_repo_binary() -> None:
+def test_public_activation_python_bridge_requires_authenticated_principal_before_spawn() -> None:
     bridge = rust_p2p_bridge.RustP2PBridge()
 
     with patch("ilc_core.network.rust_p2p_bridge.subprocess.run") as run:
-        assert bridge.send_via_rust_p2p("validator-1", b"payload") is False
+        with pytest.raises(ValueError, match="cdl_094_principal_not_provided_by_bridge"):
+            bridge.send_via_rust_p2p("validator-1", b"payload")
 
     run.assert_not_called()
-    assert rust_p2p_bridge.RUST_P2P_BRIDGE_NOT_ACTIVATED is True
+    assert rust_p2p_bridge.RUST_P2P_BRIDGE_NOT_ACTIVATED is False
     assert rust_p2p_bridge.CDL_094_ADMISSION_WIRE_NOT_ACTIVATED is False
 
 
-def test_rust_bridge_source_fails_closed_until_activation() -> None:
+def test_rust_bridge_source_accepts_valid_request_after_activation() -> None:
     source = BRIDGE_SOURCE.read_text(encoding="utf-8")
 
-    assert "rust_p2p_bridge_runtime_not_activated" in source
+    assert '"status": "accepted"' in source
     assert "serde(deny_unknown_fields)" in source
     assert "MAX_PAYLOAD_BYTES" in source
     assert "MAX_REQUEST_JSON_BYTES" in source
@@ -115,5 +116,5 @@ def test_release_binary_reports_not_activated_if_built() -> None:
         timeout=10,
     )
 
-    assert result.returncode != 0
-    assert "rust_p2p_bridge_runtime_not_activated" in result.stderr
+    assert result.returncode == 0
+    assert '"status":"accepted"' in result.stdout

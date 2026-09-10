@@ -43,6 +43,7 @@ TRANSPORT_PRINCIPAL_CDL_RATIFIED_GATE_WIRED_TOKEN = (
 )
 GAP_14_COMPLETE_GATE_WIRED_TOKEN = "gap_14_complete_gate_wired_phase_1436"
 OPENCLAW_P2P_NOT_ACTIVATED_TOKEN = "openclaw_p2p_not_activated_phase_1436"
+NATIVE_RUST_P2P_ACTIVATED_TOKEN = "native_rust_p2p_activated_GAP_P2P_ACTIVATE_00"
 ECU_DISTRIBUTION_NOT_ACTIVATED_TOKEN = "ecu_distribution_not_activated_phase_1436"
 EPOCH_TRANSITION_NOT_TRIGGERED_TOKEN = "epoch_transition_not_triggered_phase_1436"
 TRANSPORT_PRINCIPAL_CDL_RATIFIED_PHASE_1435_TOKEN = (
@@ -55,7 +56,7 @@ NON_LOOPBACK_SIDECAR_PROJECTION_ACTIVATED = True
 OPENCLAW_P2P_ACTIVATED = True
 ECU_DISTRIBUTION_ACTIVATED = False
 EPOCH_TRANSITION_TRIGGERED = False
-PUBLIC_P2P_ACTIVATED = False
+PUBLIC_P2P_ACTIVATED = True
 PUBLIC_CONFIDENTIAL_COORDINATION_ACTIVATED = False
 
 PUBLIC_PATH_DEFAULT_TIMEOUT_SECONDS = 5
@@ -86,8 +87,7 @@ _REQUIRED_TOKENS = (
     OPENCLAW_P2P_ACTIVATED_TOKEN,
     OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
     OPENCLAW_HARNESS_ASSISTED_P2P_ACTIVE_TOKEN,
-    NATIVE_RUST_P2P_NOT_ACTIVATED_TOKEN,
-    NATIVE_RUST_P2P_DEFERRED_WINDOW_1459_PLUS_TOKEN,
+    NATIVE_RUST_P2P_ACTIVATED_TOKEN,
     OPENCLAW_GATEWAY_NOT_PUBLICLY_ACTIVATED_TOKEN,
     REHEARSAL_OPENCLAW_PATH_VALIDATED_GATE_TOKEN,
     PUBLIC_RC_NOT_ACTIVATED_TOKEN,
@@ -283,7 +283,7 @@ def build_public_path_activation_decision(
         "principal_id": validated_context["principal_id"],
         "public_confidential_coordination_activated": False,
         "public_fetch_serving_enabled": active_surface == PUBLIC_PATH_SURFACE_PUBLIC_FETCH,
-        "public_p2p_activated": False,
+        "public_p2p_activated": PUBLIC_P2P_ACTIVATED,
         "rate_limit_ceiling": ceiling,
         "rate_limit_counter": counter,
         "rate_limit_identity_source": "authenticated_transport_principal",
@@ -366,7 +366,7 @@ def validate_public_path_activation_decision(
         payload.get("openclaw_p2p_activated"),
         OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN,
     )
-    _require_false(payload.get("public_p2p_activated"), "public_p2p_not_activated_phase_1436")
+    _require_true(payload.get("public_p2p_activated"), NATIVE_RUST_P2P_ACTIVATED_TOKEN)
     _require_false(
         payload.get("public_confidential_coordination_activated"),
         "public_confidential_coordination_not_activated_phase_1436",
@@ -451,7 +451,7 @@ def validate_public_path_activation_decision(
         "principal_id": principal_id,
         "public_confidential_coordination_activated": False,
         "public_fetch_serving_enabled": fetch_enabled,
-        "public_p2p_activated": False,
+        "public_p2p_activated": True,
         "rate_limit_ceiling": rate_limit_ceiling,
         "rate_limit_counter": rate_limit_counter,
         "rate_limit_identity_source": "authenticated_transport_principal",

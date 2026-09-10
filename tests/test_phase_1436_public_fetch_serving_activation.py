@@ -66,7 +66,7 @@ def test_phase_1436_activation_manifest_tokens_and_non_claims() -> None:
     assert manifest["public_fetch_serving_activated"] is True
     assert manifest["non_loopback_sidecar_projection_activated"] is True
     assert manifest["openclaw_p2p_activated"] is True
-    assert manifest["public_p2p_activated"] is False
+    assert manifest["public_p2p_activated"] is True
     assert manifest["ecu_distribution_activated"] is False
     assert manifest["epoch_transition_triggered"] is False
 

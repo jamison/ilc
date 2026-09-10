@@ -302,8 +302,8 @@ def test_public_path_activation_openclaw_p2p_now_true() -> None:
     assert public_path_activation.OPENCLAW_P2P_ACTIVATED is True
 
 
-def test_public_path_activation_native_rust_still_false() -> None:
-    assert public_path_activation.PUBLIC_P2P_ACTIVATED is False
+def test_public_path_activation_native_rust_now_true() -> None:
+    assert public_path_activation.PUBLIC_P2P_ACTIVATED is True
 
 
 def test_public_path_manifest_openclaw_p2p_activated() -> None:
@@ -312,15 +312,16 @@ def test_public_path_manifest_openclaw_p2p_activated() -> None:
     ] is True
 
 
-def test_public_path_manifest_public_p2p_still_false() -> None:
-    assert public_path_activation.public_path_activation_manifest()["public_p2p_activated"] is False
+def test_public_path_manifest_public_p2p_now_true() -> None:
+    assert public_path_activation.public_path_activation_manifest()["public_p2p_activated"] is True
 
 
 def test_openclaw_harness_p2p_token_in_required_tokens() -> None:
     tokens = set(public_path_activation.public_path_activation_required_tokens())
     assert OPENCLAW_HARNESS_P2P_ACTIVATED_TOKEN in tokens
     assert OPENCLAW_P2P_ACTIVATED_TOKEN in tokens
-    assert NATIVE_RUST_P2P_NOT_ACTIVATED_TOKEN in tokens
+    assert public_path_activation.NATIVE_RUST_P2P_ACTIVATED_TOKEN in tokens
+    assert NATIVE_RUST_P2P_NOT_ACTIVATED_TOKEN not in tokens
     assert PUBLIC_RC_NOT_ACTIVATED_TOKEN in tokens
 
 
