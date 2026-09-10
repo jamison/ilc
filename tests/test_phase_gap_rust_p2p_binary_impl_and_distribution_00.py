@@ -68,7 +68,7 @@ def test_guard_closed_python_bridge_does_not_spawn_installed_or_repo_binary() ->
 
     run.assert_not_called()
     assert rust_p2p_bridge.RUST_P2P_BRIDGE_NOT_ACTIVATED is True
-    assert rust_p2p_bridge.CDL_094_ADMISSION_WIRE_NOT_ACTIVATED is True
+    assert rust_p2p_bridge.CDL_094_ADMISSION_WIRE_NOT_ACTIVATED is False
 
 
 def test_rust_bridge_source_fails_closed_until_activation() -> None:
