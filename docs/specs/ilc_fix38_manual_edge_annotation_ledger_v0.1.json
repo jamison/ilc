@@ -77756,6 +77756,30 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0420_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0420_00b_completion_2026_09_10",
+      "chronology_note": "2026-09-10 GAP-PACKAGE-0420-00b completed after PyPI 0.4.19 yank verification and public mirror push.",
+      "manual_read_summary": "Walkthrough records 0.4.20 PyPI publication, Ed25519 signatures, Linux helper tarball publication, installer retargeting, mirror regeneration, public raw fetchback, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0420-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0420_00b_walkthrough.md"
     }
   ],
   "boundary": {
