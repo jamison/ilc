@@ -233,19 +233,22 @@ _SIDECAR_DEFINITIONS = (
     },
     {
         "authority_gate": (
-            "CDL-112 pre-ratification; CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True; "
-            "no gossip propagation until cleared"
+            "CDL-112 ratified GAP-CDL-112-RATIFY-00; "
+            "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=False; "
+            "activated GAP-CONNECTIVITY-ADVERTISEMENT-ACTIVATE-00"
         ),
         "component": "connectivity_advertisement_protocol_sidecar",
         "implementation_status": (
-            "implemented_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00_guarded"
+            "activated_GAP_CONNECTIVITY_ADVERTISEMENT_ACTIVATE_00"
         ),
         "public_serving_enabled": False,
         "required_capabilities": (
             "candidate_endpoint_cap_3",
             "connectivity_mode_binding",
-            "default_off_gossip_propagation",
+            "gossip_propagation_activated",
             "mldsa65_signature_verification",
+            "per_agent_update_rate_limit",
+            "signed_tombstone_revocation",
         ),
         "sidecar_id": "connectivity-advertisement",
         "wiring_modes": ("in_process_import",),
@@ -908,15 +911,23 @@ def _validate_connectivity_advertisement_manifest(integrity: Mapping[str, Any]) 
         raise ValueError(
             "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
         )
-    _require_false_keys(
+    _require_true_keys(
         manifest,
         (
             "connectivity_advertisement_activated",
             "public_gossip_propagation_enabled",
+        ),
+        token=(
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_manifest_invalid"
+        ),
+    )
+    _require_false_keys(
+        manifest,
+        (
             "public_serving_enabled",
         ),
         token=(
-            "sidecar_registry_package_profile_integrity_connectivity_advertisement_authority_forbidden"
+            "sidecar_registry_package_profile_integrity_connectivity_advertisement_serving_forbidden"
         ),
     )
 

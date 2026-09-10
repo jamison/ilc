@@ -40,6 +40,14 @@ from ilc_core.network.d2d.invite_nullifier_gossip import (
 from ilc_core.network.d2d.tls_policy import (
     D2D_PUBLIC_MODE_ENV,
 )
+from ilc_core.sidecars.connectivity_advertisement import (
+    CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+    CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
+    ConnectivityAdvertisementValidationError,
+    ConnectivityAdvertisementValidator,
+    decode_connectivity_advertisement_gossip_payload,
+    decode_connectivity_advertisement_tombstone_gossip_payload,
+)
 from ilc_core.genesis.invite_nullifier_registry import (
     InviteNullifierError,
     InviteNullifierRegistry,
@@ -83,6 +91,13 @@ AUTHORITY_BEARING_GOSSIP_TYPES = frozenset({
     "centrality_delta",
     "panel_verdict",
     "ecu_claim_batch",
+    CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+    CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
+    INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
+})
+STATE_APPLYING_GOSSIP_TYPES = frozenset({
+    CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+    CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
     INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE,
 })
 UNVERIFIABLE_NO_PUBKEY_TOKEN = "gossip_signature_unverifiable_no_pubkey"
@@ -257,6 +272,16 @@ def _unverifiable_peer_rejection_token(gossip_type: str) -> str | None:
     if gossip_type in AUTHORITY_BEARING_GOSSIP_TYPES:
         return UNVERIFIABLE_AUTHORITY_GOSSIP_REJECTED_TOKEN
     return None
+
+
+def _claimed_actor_required_token(gossip_type: str) -> str:
+    if gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE:
+        return "invite_nullifier_gossip_claimed_actor_required"
+    if gossip_type == CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE:
+        return "connectivity_advertisement_gossip_claimed_actor_required"
+    if gossip_type == CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE:
+        return "connectivity_advertisement_tombstone_gossip_claimed_actor_required"
+    return "gossip_claimed_actor_required"
 
 
 class _GossipReplayCache:
@@ -551,7 +576,10 @@ class HttpGossipTransportRuntime:
             )
             self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
             return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
-        invite_nullifier_replay_key: tuple[str, str, int, str, str, str] | None = None
+        state_applying_replay_key: tuple[str, str, int, str, str, str] | None = None
+        claimed_actor: str | None = None
+        current_epoch = 0
+        verified_peer_pubkey: str | None = None
         if payload is not None:
             if not isinstance(payload, bytes):
                 self._record("incoming_envelope_rejected", token="gossip_payload_must_be_bytes")
@@ -678,16 +706,14 @@ class HttpGossipTransportRuntime:
                     )
                     self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
                     return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                verified_peer_pubkey = peer_pubkey
 
                 if gossip_type in AUTHORITY_BEARING_GOSSIP_TYPES:
                     claimed_actor = _extract_claimed_actor(payload)
-                    if (
-                        gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE
-                        and claimed_actor is None
-                    ):
+                    if gossip_type in STATE_APPLYING_GOSSIP_TYPES and claimed_actor is None:
                         self._record(
                             "incoming_envelope_rejected",
-                            token="invite_nullifier_gossip_claimed_actor_required",
+                            token=_claimed_actor_required_token(gossip_type),
                             peer_id=sender_peer_id,
                             key_id=key_id,
                             gossip_type=gossip_type,
@@ -711,8 +737,8 @@ class HttpGossipTransportRuntime:
                         self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
                         return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
 
-                if gossip_type == INVITE_NULLIFIER_GOSSIP_MESSAGE_TYPE:
-                    invite_nullifier_replay_key = replay_key
+                if gossip_type in STATE_APPLYING_GOSSIP_TYPES:
+                    state_applying_replay_key = replay_key
                 else:
                     self._replay_cache.record(replay_key)
 
@@ -752,8 +778,95 @@ class HttpGossipTransportRuntime:
                 ).hexdigest(),
                 nullifier_status=nullifier_status,
             )
-            if invite_nullifier_replay_key is not None:
-                self._replay_cache.record(invite_nullifier_replay_key)
+            if state_applying_replay_key is not None:
+                self._replay_cache.record(state_applying_replay_key)
+
+        if gossip_type == CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE:
+            if payload is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="connectivity_advertisement_gossip_payload_required",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            if self._peer_registry is None or verified_peer_pubkey is None or claimed_actor is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="connectivity_advertisement_gossip_verified_peer_required",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            try:
+                message = decode_connectivity_advertisement_gossip_payload(payload)
+                verified_ad = ConnectivityAdvertisementValidator(
+                    ml_dsa_verify_fn=verify_mldsa65_signature,
+                    pubkey_hex=verified_peer_pubkey,
+                    current_epoch=current_epoch,
+                ).validate(message["advertisement"])
+                if verified_ad.advertisement.agent_id != claimed_actor:
+                    raise ConnectivityAdvertisementValidationError(
+                        "connectivity_advertisement_actor_mismatch"
+                    )
+                stored = self._peer_registry.add_connectivity_advertisement(
+                    verified_ad,
+                    current_epoch,
+                )
+            except (ConnectivityAdvertisementValidationError, ValueError) as exc:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token=str(exc) or exc.__class__.__name__,
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            self._record(
+                "incoming_connectivity_advertisement_applied",
+                agent_id=verified_ad.advertisement.agent_id,
+                stored=stored,
+            )
+            if state_applying_replay_key is not None:
+                self._replay_cache.record(state_applying_replay_key)
+
+        if gossip_type == CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE:
+            if payload is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="connectivity_advertisement_tombstone_gossip_payload_required",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            if self._peer_registry is None or verified_peer_pubkey is None or claimed_actor is None:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token="connectivity_advertisement_tombstone_verified_peer_required",
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            try:
+                message = decode_connectivity_advertisement_tombstone_gossip_payload(payload)
+                verified_tombstone = ConnectivityAdvertisementValidator(
+                    ml_dsa_verify_fn=verify_mldsa65_signature,
+                    pubkey_hex=verified_peer_pubkey,
+                    current_epoch=current_epoch,
+                ).validate_tombstone(message["tombstone"])
+                removed = self._peer_registry.revoke_connectivity_advertisement(
+                    verified_tombstone,
+                    authenticated_agent_id=claimed_actor,
+                    current_epoch=current_epoch,
+                )
+            except (ConnectivityAdvertisementValidationError, ValueError) as exc:
+                self._record(
+                    "incoming_envelope_rejected",
+                    token=str(exc) or exc.__class__.__name__,
+                )
+                self.state["last_status_code"] = gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+                return gossip_transport.HTTP_STATUS_ENVELOPE_ERROR
+            self._record(
+                "incoming_connectivity_advertisement_tombstone_applied",
+                agent_id=verified_tombstone.tombstone.agent_id,
+                removed=removed,
+            )
+            if state_applying_replay_key is not None:
+                self._replay_cache.record(state_applying_replay_key)
 
         event_payload: dict[str, Any] = {"path": path}
         if payload is not None:
