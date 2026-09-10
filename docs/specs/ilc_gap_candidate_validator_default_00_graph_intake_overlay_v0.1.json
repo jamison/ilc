@@ -1,0 +1,45 @@
+{
+  "phase": "GAP-CANDIDATE-VALIDATOR-DEFAULT-00",
+  "schema_version": "graph_intake_overlay.v0.1",
+  "created_date": "2026-09-10",
+  "entries": [
+    {
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_candidate_validator_default_00_g10_candidate_validator_default.md",
+      "node_kind": "phase_prompt",
+      "graph_action": "support_only",
+      "authority": "Track A+ forward plan; CDL-107 prerequisite"
+    },
+    {
+      "path": "ilc_core/validator/candidate_validator_record.py",
+      "node_kind": "runtime_source_file",
+      "graph_action": "load_bearing_artifact_added",
+      "authority": "CDL-107 Candidate tier semantics"
+    },
+    {
+      "path": "tests/test_candidate_validator_record.py",
+      "node_kind": "test_source_file",
+      "graph_action": "load_bearing_artifact_added",
+      "authority": "GAP-CANDIDATE-VALIDATOR-DEFAULT-00 regression coverage"
+    },
+    {
+      "path": "out/gap_candidate_validator_default_00/candidate_validator_default_receipt.json",
+      "node_kind": "phase_receipt",
+      "graph_action": "phase_evidence_added",
+      "authority": "GAP-CANDIDATE-VALIDATOR-DEFAULT-00 completion evidence"
+    },
+    {
+      "path": "docs/phases/phase_gap_candidate_validator_default_00_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "graph_action": "phase_evidence_added",
+      "authority": "GAP-CANDIDATE-VALIDATOR-DEFAULT-00 execution walkthrough"
+    }
+  ],
+  "non_claims": [
+    "no_validator_admission_activation",
+    "no_active_validator_set_mutation",
+    "no_package_publish",
+    "no_public_mirror_push",
+    "no_epoch_transition",
+    "no_settlement"
+  ]
+}
