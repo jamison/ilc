@@ -1,0 +1,93 @@
+{
+  "schema_version": "ilc.package_build_receipt.GAP_PACKAGE_0420_00a.v0.1",
+  "phase": "GAP-PACKAGE-0420-00a",
+  "date": "2026-09-10",
+  "sensitivity": "NON-SENSITIVE",
+  "source_git_head_before_build": "8d53f23ad55925039ccf24fc8844a52dde2b959f",
+  "version": "0.4.20",
+  "version_bump": {
+    "from": "0.4.19",
+    "to": "0.4.20",
+    "files": [
+      "pyproject.toml",
+      "ilc_core/__init__.py"
+    ]
+  },
+  "artifacts": {
+    "wheel": {
+      "path": "dist/ilc_core-0.4.20-py3-none-any.whl",
+      "filename": "ilc_core-0.4.20-py3-none-any.whl",
+      "sha256": "53906561691fece74d487f8419d54778f64e201ce4cdf77824189db70b11842f",
+      "size_bytes": 1477085
+    },
+    "sdist": {
+      "path": "dist/ilc_core-0.4.20.tar.gz",
+      "filename": "ilc_core-0.4.20.tar.gz",
+      "sha256": "f0b99eede34f0bfd4c6a2ddcf53fd2fcd908b5288a40aa9fb7cc9f1025daa682",
+      "size_bytes": 1207307
+    }
+  },
+  "wheel_content_checks": {
+    "ilc_core/validator/candidate_validator_record.py": true,
+    "ilc_core/network/rust_p2p_bridge.py": true,
+    "ilc_core/network/d2d/transport_principal_cdl_094_status.py": true,
+    "ilc_core/sidecars/connectivity_advertisement.py": true,
+    "ilc_core/network/relay/relay_server.py": true
+  },
+  "wheel_guard_literal_checks": {
+    "PUBLIC_P2P_ENABLED = True": true,
+    "RUST_P2P_BRIDGE_NOT_ACTIVATED: Final[bool] = False": true,
+    "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED: Final[bool] = False": true,
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED = False": true,
+    "VALIDATOR_ADMISSION_NOT_ACTIVATED = True": true
+  },
+  "clean_venv_smoke": {
+    "outside_repo": true,
+    "python_version": "3.14",
+    "site_packages_import": true,
+    "ilc_core_version": "0.4.20",
+    "PUBLIC_P2P_ENABLED": true,
+    "PUBLIC_FETCH_SERVING_ENABLED": true,
+    "NON_LOOPBACK_SIDECAR_PROJECTION_ENABLED": true,
+    "RUST_P2P_BRIDGE_NOT_ACTIVATED": false,
+    "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED": false,
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED": false,
+    "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
+    "candidate_validator_record_importable": true
+  },
+  "verification": {
+    "dependency_floor": "1 passed, 12 deselected",
+    "track_a_plus_focused_slice": "94 passed",
+    "twine_check": "PASSED for wheel and sdist",
+    "package_install_focused_slice": "61 passed",
+    "prompt_validation": "VALID for GAP-PACKAGE-0420-00a and GAP-PACKAGE-0420-00b",
+    "ledger_json": "valid"
+  },
+  "known_followup": {
+    "sensitive_publish_phase": "GAP-PACKAGE-0420-00b",
+    "go_phrase_required": "GO Phase GAP-PACKAGE-0420-00b PACKAGE-0420-PUBLISH-AUTHORIZED",
+    "linux_x86_64_helper_tarball_publication_deferred_to_00b": true,
+    "install_sh_retained_on_0419_until_00b": true
+  },
+  "output_token": "invite_interactive_install_package_0420_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0420_00A",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_install_sh_update_to_0420",
+    "no_linux_x86_64_helper_tarball_publication",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ]
+}
