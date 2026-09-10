@@ -62,7 +62,7 @@ def test_gap_p2p_activate_guard_states_are_exact() -> None:
     assert NON_LOOPBACK_SIDECAR_PROJECTION_ENABLED is True
     assert RUST_P2P_BRIDGE_NOT_ACTIVATED is False
     assert CDL_094_ADMISSION_WIRE_NOT_ACTIVATED is False
-    assert CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is True
+    assert CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is False
     assert VALIDATOR_ADMISSION_NOT_ACTIVATED is True
 
 
@@ -188,8 +188,9 @@ def test_real_loopback_fetch_serving_responds_and_bounds_oversize_request() -> N
         runtime.stop()
 
 
-def test_connectivity_advertisement_ingestion_remains_guarded() -> None:
+def test_connectivity_advertisement_ingestion_requires_verified_envelope() -> None:
     registry = GossipPeerRegistry(())
 
-    with pytest.raises(RuntimeError, match="connectivity_advertisement_not_activated"):
+    assert CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is False
+    with pytest.raises(ValueError, match="connectivity_advertisement_requires_verified_envelope"):
         registry.add_connectivity_advertisement(object(), current_epoch=0)  # type: ignore[arg-type]

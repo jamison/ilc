@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """CDL-112 ConnectivityAdvertisement protocol sidecar.
 
-The sidecar records a signed reachability advertisement schema only. It does
-not clear CDL-112, start a listener, mutate peer fanout, or activate public
-connectivity gossip while CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED remains True.
+This sidecar owns the signed reachability advertisement and revocation schemas.
+It does not grant validator admission, endpoint authority, relay incentives, or
+settlement eligibility.
 """
 
 from __future__ import annotations
@@ -32,14 +32,31 @@ CONNECTIVITY_ADVERTISEMENT_SCHEMA_VERSION = "connectivity_advertisement_cdl112.v
 CONNECTIVITY_ADVERTISEMENT_SIDECAR_VERSION = (
     "connectivity_advertisement_sidecar_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00.v0.1"
 )
+CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION = (
+    "connectivity_advertisement_tombstone_cdl112.v0.1"
+)
+CONNECTIVITY_ADVERTISEMENT_GOSSIP_SCHEMA_VERSION = (
+    "connectivity_advertisement_gossip_message_cdl112.v0.1"
+)
+CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_SCHEMA_VERSION = (
+    "connectivity_advertisement_tombstone_gossip_message_cdl112.v0.1"
+)
+CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE = "connectivity_advertisement"
+CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE = (
+    "connectivity_advertisement_tombstone"
+)
 CONNECTIVITY_ADVERTISEMENT_RUNTIME_TOKEN = (
     "connectivity_advertisement_runtime_committed_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00"
 )
-CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED = True
+CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED = False
 CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT = "mldsa65_signature_verified_cdl112"
+CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_VERIFICATION_CONTEXT = (
+    "mldsa65_tombstone_signature_verified_cdl112"
+)
 CONNECTIVITY_ADVERTISEMENT_AUTHORITY_GATE = (
-    "CDL-112 pre-ratification; CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=True; "
-    "no gossip propagation until cleared"
+    "CDL-112 ratified GAP-CDL-112-RATIFY-00; "
+    "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED=False; "
+    "activated GAP-CONNECTIVITY-ADVERTISEMENT-ACTIVATE-00"
 )
 MAX_CANDIDATE_ENDPOINTS = 3
 
@@ -381,6 +398,145 @@ class VerifiedConnectivityAdvertisement:
     verification_context: str = CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT
 
 
+@dataclass(frozen=True)
+class ConnectivityAdvertisementTombstone:
+    agent_id: str
+    revocation_epoch: int
+    ml_dsa_signature: str
+    key_binding_ref: str
+    schema_version: str = CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION
+
+    def __post_init__(self) -> None:
+        _require_sha384_hex(
+            self.agent_id,
+            "connectivity_advertisement_tombstone_agent_id_invalid",
+        )
+        _require_uint64(
+            self.revocation_epoch,
+            "connectivity_advertisement_tombstone_revocation_epoch_invalid",
+            max_value=MAX_PEER_ADVERTISEMENT_EPOCH,
+        )
+        _require_lower_hex_exact(
+            self.ml_dsa_signature,
+            _MLDSA_SIG_HEX_LENGTH,
+            "connectivity_advertisement_tombstone_signature_invalid",
+        )
+        _require_string(
+            self.key_binding_ref,
+            "connectivity_advertisement_tombstone_key_binding_ref_invalid",
+            max_chars=_MAX_KEY_BINDING_REF_CHARS,
+        )
+        if self.schema_version != CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION:
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_schema_version_unsupported"
+            )
+
+    def body_dict(self) -> dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "revocation_epoch": self.revocation_epoch,
+            "revoke": True,
+        }
+
+    def to_canonical_json(self) -> bytes:
+        return json.dumps(
+            self.body_dict(),
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode("utf-8")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "body": self.body_dict(),
+            "key_binding_ref": self.key_binding_ref,
+            "ml_dsa_signature": self.ml_dsa_signature,
+            "schema_version": self.schema_version,
+        }
+
+    def verify(
+        self,
+        ml_dsa_verify_fn: Callable[[bytes, str, str], bool],
+        *,
+        pubkey_hex: str,
+    ) -> bool:
+        try:
+            _require_lower_hex_exact(
+                pubkey_hex,
+                _MLDSA_PK_HEX_LENGTH,
+                "connectivity_advertisement_tombstone_pubkey_invalid",
+            )
+            return bool(
+                ml_dsa_verify_fn(
+                    self.to_canonical_json(),
+                    self.ml_dsa_signature,
+                    pubkey_hex,
+                )
+            )
+        except Exception:  # noqa: BLE001 - verification must fail closed.
+            return False
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "ConnectivityAdvertisementTombstone":
+        if not isinstance(value, Mapping):
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_not_mapping"
+            )
+        allowed = {"body", "key_binding_ref", "ml_dsa_signature", "schema_version"}
+        _reject_missing_or_extra(value, allowed, "connectivity_advertisement_tombstone")
+        schema_version = _require_string(
+            value.get("schema_version"),
+            "connectivity_advertisement_tombstone_schema_version_invalid",
+            max_chars=80,
+        )
+        if schema_version != CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION:
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_schema_version_unsupported"
+            )
+        body = value.get("body")
+        if not isinstance(body, Mapping):
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_body_invalid"
+            )
+        allowed_body = {"agent_id", "revocation_epoch", "revoke"}
+        _reject_missing_or_extra(body, allowed_body, "connectivity_advertisement_tombstone_body")
+        if body.get("revoke") is not True:
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_revoke_flag_invalid"
+            )
+        return cls(
+            agent_id=_require_sha384_hex(
+                body.get("agent_id"),
+                "connectivity_advertisement_tombstone_agent_id_invalid",
+            ),
+            revocation_epoch=_require_uint64(
+                body.get("revocation_epoch"),
+                "connectivity_advertisement_tombstone_revocation_epoch_invalid",
+                max_value=MAX_PEER_ADVERTISEMENT_EPOCH,
+            ),
+            ml_dsa_signature=_require_lower_hex_exact(
+                value.get("ml_dsa_signature"),
+                _MLDSA_SIG_HEX_LENGTH,
+                "connectivity_advertisement_tombstone_signature_invalid",
+            ),
+            key_binding_ref=_require_string(
+                value.get("key_binding_ref"),
+                "connectivity_advertisement_tombstone_key_binding_ref_invalid",
+                max_chars=_MAX_KEY_BINDING_REF_CHARS,
+            ),
+            schema_version=schema_version,
+        )
+
+
+@dataclass(frozen=True)
+class VerifiedConnectivityAdvertisementTombstone:
+    """Verifier-approved tombstone envelope required before registry removal."""
+
+    tombstone: ConnectivityAdvertisementTombstone
+    verification_context: str = CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_VERIFICATION_CONTEXT
+
+
 class ConnectivityAdvertisementValidator:
     """Parse and verify CDL-112 advertisements before registry insertion."""
 
@@ -436,6 +592,24 @@ class ConnectivityAdvertisementValidator:
                 "connectivity_advertisement_signature_invalid"
             )
         return VerifiedConnectivityAdvertisement(advertisement=advertisement)
+
+    def validate_tombstone(
+        self,
+        value: Mapping[str, Any] | ConnectivityAdvertisementTombstone,
+    ) -> VerifiedConnectivityAdvertisementTombstone:
+        if isinstance(value, ConnectivityAdvertisementTombstone):
+            tombstone = value
+        else:
+            tombstone = ConnectivityAdvertisementTombstone.from_dict(value)
+        if tombstone.revocation_epoch > self._current_epoch:
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_future_epoch"
+            )
+        if not tombstone.verify(self._verify_fn, pubkey_hex=self._pubkey_hex):
+            raise ConnectivityAdvertisementValidationError(
+                "connectivity_advertisement_tombstone_signature_invalid"
+            )
+        return VerifiedConnectivityAdvertisementTombstone(tombstone=tombstone)
 
 
 def connectivity_advertisement_from_receipt(
@@ -525,14 +699,111 @@ def connectivity_advertisement_sidecar_manifest() -> dict[str, Any]:
         "authority_gate": CONNECTIVITY_ADVERTISEMENT_AUTHORITY_GATE,
         "candidate_endpoint_cap": MAX_CANDIDATE_ENDPOINTS,
         "component": "connectivity_advertisement_protocol_sidecar",
-        "connectivity_advertisement_activated": False,
+        "connectivity_advertisement_activated": True,
         "contract_version": CONNECTIVITY_ADVERTISEMENT_SIDECAR_VERSION,
-        "public_gossip_propagation_enabled": False,
+        "public_gossip_propagation_enabled": True,
         "public_serving_enabled": False,
         "schema_version": CONNECTIVITY_ADVERTISEMENT_SCHEMA_VERSION,
         "sidecar_id": "connectivity-advertisement",
+        "tombstone_schema_version": CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION,
         "token": CONNECTIVITY_ADVERTISEMENT_RUNTIME_TOKEN,
     }
+
+
+def build_connectivity_advertisement_gossip_message(
+    advertisement: ConnectivityAdvertisement,
+) -> dict[str, Any]:
+    if not isinstance(advertisement, ConnectivityAdvertisement):
+        raise ConnectivityAdvertisementValidationError(
+            "connectivity_advertisement_gossip_advertisement_invalid"
+        )
+    return {
+        "advertisement": advertisement.to_dict(),
+        "claimed_actor": advertisement.agent_id,
+        "message_type": CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+        "schema_version": CONNECTIVITY_ADVERTISEMENT_GOSSIP_SCHEMA_VERSION,
+    }
+
+
+def build_connectivity_advertisement_tombstone_gossip_message(
+    tombstone: ConnectivityAdvertisementTombstone,
+) -> dict[str, Any]:
+    if not isinstance(tombstone, ConnectivityAdvertisementTombstone):
+        raise ConnectivityAdvertisementValidationError(
+            "connectivity_advertisement_tombstone_gossip_tombstone_invalid"
+        )
+    return {
+        "claimed_actor": tombstone.agent_id,
+        "message_type": CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
+        "schema_version": CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_SCHEMA_VERSION,
+        "tombstone": tombstone.to_dict(),
+    }
+
+
+def encode_connectivity_advertisement_gossip_payload(
+    message: Mapping[str, Any],
+) -> bytes:
+    _validate_connectivity_gossip_message(
+        message,
+        schema_version=CONNECTIVITY_ADVERTISEMENT_GOSSIP_SCHEMA_VERSION,
+        message_type=CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+        payload_key="advertisement",
+    )
+    return json.dumps(
+        dict(message),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def encode_connectivity_advertisement_tombstone_gossip_payload(
+    message: Mapping[str, Any],
+) -> bytes:
+    _validate_connectivity_gossip_message(
+        message,
+        schema_version=CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_SCHEMA_VERSION,
+        message_type=CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
+        payload_key="tombstone",
+    )
+    return json.dumps(
+        dict(message),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+        allow_nan=False,
+    ).encode("utf-8")
+
+
+def decode_connectivity_advertisement_gossip_payload(payload: bytes | str) -> dict[str, Any]:
+    message = _decode_connectivity_json_payload(
+        payload,
+        token="connectivity_advertisement_gossip_payload_invalid",
+    )
+    _validate_connectivity_gossip_message(
+        message,
+        schema_version=CONNECTIVITY_ADVERTISEMENT_GOSSIP_SCHEMA_VERSION,
+        message_type=CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE,
+        payload_key="advertisement",
+    )
+    return message
+
+
+def decode_connectivity_advertisement_tombstone_gossip_payload(
+    payload: bytes | str,
+) -> dict[str, Any]:
+    message = _decode_connectivity_json_payload(
+        payload,
+        token="connectivity_advertisement_tombstone_gossip_payload_invalid",
+    )
+    _validate_connectivity_gossip_message(
+        message,
+        schema_version=CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_SCHEMA_VERSION,
+        message_type=CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE,
+        payload_key="tombstone",
+    )
+    return message
 
 
 def _reject_missing_or_extra(
@@ -546,6 +817,47 @@ def _reject_missing_or_extra(
     extra = sorted(set(value).difference(allowed))
     if extra:
         raise ConnectivityAdvertisementValidationError(f"{prefix}_unknown_fields:{extra}")
+
+
+def _decode_connectivity_json_payload(payload: bytes | str, *, token: str) -> dict[str, Any]:
+    try:
+        raw = payload.encode("utf-8") if isinstance(payload, str) else payload
+        if not isinstance(raw, bytes):
+            raise ConnectivityAdvertisementValidationError(token)
+        decoded = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ConnectivityAdvertisementValidationError(token) from exc
+    if not isinstance(decoded, dict):
+        raise ConnectivityAdvertisementValidationError(token)
+    return decoded
+
+
+def _validate_connectivity_gossip_message(
+    message: Mapping[str, Any],
+    *,
+    schema_version: str,
+    message_type: str,
+    payload_key: str,
+) -> None:
+    if not isinstance(message, Mapping):
+        raise ConnectivityAdvertisementValidationError(
+            f"{message_type}_gossip_message_invalid"
+        )
+    allowed = {"claimed_actor", "message_type", "schema_version", payload_key}
+    _reject_missing_or_extra(message, allowed, message_type)
+    if message.get("schema_version") != schema_version:
+        raise ConnectivityAdvertisementValidationError(
+            f"{message_type}_gossip_schema_version_invalid"
+        )
+    if message.get("message_type") != message_type:
+        raise ConnectivityAdvertisementValidationError(
+            f"{message_type}_gossip_message_type_invalid"
+        )
+    _require_sha384_hex(message.get("claimed_actor"), f"{message_type}_claimed_actor_invalid")
+    if not isinstance(message.get(payload_key), Mapping):
+        raise ConnectivityAdvertisementValidationError(
+            f"{message_type}_gossip_payload_invalid"
+        )
 
 
 def _coerce_mode(value: ConnectivityMode | str | object) -> ConnectivityMode:
@@ -729,16 +1041,30 @@ def _require_lower_hex_exact(value: object, expected_length: int, token: str) ->
 
 __all__ = [
     "CONNECTIVITY_ADVERTISEMENT_AUTHORITY_GATE",
+    "CONNECTIVITY_ADVERTISEMENT_GOSSIP_MESSAGE_TYPE",
+    "CONNECTIVITY_ADVERTISEMENT_GOSSIP_SCHEMA_VERSION",
     "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED",
     "CONNECTIVITY_ADVERTISEMENT_RUNTIME_TOKEN",
     "CONNECTIVITY_ADVERTISEMENT_SCHEMA_VERSION",
     "CONNECTIVITY_ADVERTISEMENT_SIDECAR_VERSION",
+    "CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_MESSAGE_TYPE",
+    "CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_GOSSIP_SCHEMA_VERSION",
+    "CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_SCHEMA_VERSION",
+    "CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_VERIFICATION_CONTEXT",
     "CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT",
     "ConnectivityAdvertisement",
+    "ConnectivityAdvertisementTombstone",
     "ConnectivityAdvertisementValidationError",
     "ConnectivityAdvertisementValidator",
     "MAX_CANDIDATE_ENDPOINTS",
     "VerifiedConnectivityAdvertisement",
+    "VerifiedConnectivityAdvertisementTombstone",
+    "build_connectivity_advertisement_gossip_message",
+    "build_connectivity_advertisement_tombstone_gossip_message",
     "connectivity_advertisement_from_receipt",
     "connectivity_advertisement_sidecar_manifest",
+    "decode_connectivity_advertisement_gossip_payload",
+    "decode_connectivity_advertisement_tombstone_gossip_payload",
+    "encode_connectivity_advertisement_gossip_payload",
+    "encode_connectivity_advertisement_tombstone_gossip_payload",
 ]

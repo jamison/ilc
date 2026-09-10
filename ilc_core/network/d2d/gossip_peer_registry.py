@@ -8,6 +8,7 @@ a listener, enable public sidecar serving, or authorize DHT discovery.
 
 from __future__ import annotations
 
+import collections
 import ipaddress
 import json
 import socket
@@ -31,9 +32,12 @@ from ilc_core.network.d2d.peer_advertisement import (
 )
 from ilc_core.sidecars.connectivity_advertisement import (
     CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED,
+    CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_VERIFICATION_CONTEXT,
     CONNECTIVITY_ADVERTISEMENT_VERIFICATION_CONTEXT,
     ConnectivityAdvertisement,
+    ConnectivityAdvertisementTombstone,
     VerifiedConnectivityAdvertisement,
+    VerifiedConnectivityAdvertisementTombstone,
 )
 
 
@@ -48,6 +52,8 @@ LEXICOGRAPHIC_FANOUT_ROTATION_DEFERRED_TOKEN = (
 )
 MAX_PEERS = 16
 N_MAX = 1000
+MAX_CONNECTIVITY_AD_UPDATES_PER_EPOCH = 3
+MAX_CONNECTIVITY_RATE_LIMIT_ENTRIES = N_MAX * 8
 MAX_INTRODUCTION_CANDIDATES = N_MAX
 MAX_BOOTSTRAP_HINTS = 8
 MAX_BOOTSTRAP_HINTS_FILE_BYTES = 1_048_576
@@ -196,6 +202,19 @@ def _require_mldsa_pubkey_hex(value: Any) -> str:
     return value
 
 
+def _require_agent_id_hex(value: Any, token: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError(token)
+    normalized = value.strip()
+    if (
+        len(normalized) != 96
+        or normalized.lower() != normalized
+        or any(char not in _HEX_CHARS for char in normalized)
+    ):
+        raise ValueError(token)
+    return normalized
+
+
 def _require_authorized_actor_ids(value: Any) -> tuple[str, ...]:
     if not isinstance(value, list) or not value:
         raise ValueError("peer_authorized_actor_ids_required")
@@ -282,6 +301,10 @@ class GossipPeerRegistry:
         self._allow_private_address_literals = allow_private_address_literals
         self._dynamic_ad_table: dict[str, PeerAdvertisement] = {}
         self._connectivity_ad_table: dict[str, ConnectivityAdvertisement] = {}
+        self._connectivity_ad_update_counts: collections.OrderedDict[
+            tuple[str, int],
+            int,
+        ] = collections.OrderedDict()
         self._vrf_introduction_table: dict[str, PeerAdvertisement] = {}
 
     def peer_count(self) -> int:
@@ -398,8 +421,45 @@ class GossipPeerRegistry:
                 return False
         if existing is not None and ad.peer_timestamp_epoch < existing.peer_timestamp_epoch:
             return False
+        if not self._consume_connectivity_ad_update(ad.agent_id, current):
+            return False
         self._connectivity_ad_table[ad.agent_id] = ad
         return True
+
+    def revoke_connectivity_advertisement(
+        self,
+        verified_tombstone: VerifiedConnectivityAdvertisementTombstone,
+        *,
+        authenticated_agent_id: str,
+        current_epoch: int,
+    ) -> bool:
+        """Remove a CDL-112 advertisement using a sidecar-verified tombstone."""
+
+        if CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED:
+            raise RuntimeError("connectivity_advertisement_not_activated")
+        current = _require_epoch(
+            current_epoch,
+            "connectivity_advertisement_tombstone_current_epoch_invalid",
+        )
+        if not isinstance(verified_tombstone, VerifiedConnectivityAdvertisementTombstone):
+            raise ValueError("connectivity_advertisement_tombstone_requires_verified_envelope")
+        tombstone = verified_tombstone.tombstone
+        if not isinstance(tombstone, ConnectivityAdvertisementTombstone):
+            raise ValueError("connectivity_advertisement_tombstone_invalid")
+        if (
+            verified_tombstone.verification_context
+            != CONNECTIVITY_ADVERTISEMENT_TOMBSTONE_VERIFICATION_CONTEXT
+        ):
+            raise ValueError("connectivity_advertisement_tombstone_verification_context_invalid")
+        actor = _require_agent_id_hex(
+            authenticated_agent_id,
+            "connectivity_advertisement_authenticated_agent_id_invalid",
+        )
+        if tombstone.agent_id != actor:
+            raise ValueError("connectivity_advertisement_tombstone_actor_mismatch")
+        if tombstone.revocation_epoch > current:
+            raise ValueError("connectivity_advertisement_tombstone_future_epoch")
+        return self._connectivity_ad_table.pop(tombstone.agent_id, None) is not None
 
     def expire_connectivity_ads(self, current_epoch: int) -> int:
         current = _require_epoch(
@@ -424,6 +484,23 @@ class GossipPeerRegistry:
         if current_epoch is not None:
             self.expire_connectivity_ads(current_epoch)
         return sorted(self._connectivity_ad_table.values(), key=lambda item: item.agent_id)
+
+    def _consume_connectivity_ad_update(self, agent_id: str, epoch: int) -> bool:
+        key = (
+            _require_agent_id_hex(
+                agent_id,
+                "connectivity_advertisement_rate_limit_agent_id_invalid",
+            ),
+            _require_epoch(epoch, "connectivity_advertisement_rate_limit_epoch_invalid"),
+        )
+        count = self._connectivity_ad_update_counts.get(key, 0)
+        if count >= MAX_CONNECTIVITY_AD_UPDATES_PER_EPOCH:
+            return False
+        self._connectivity_ad_update_counts[key] = count + 1
+        self._connectivity_ad_update_counts.move_to_end(key)
+        while len(self._connectivity_ad_update_counts) > MAX_CONNECTIVITY_RATE_LIMIT_ENTRIES:
+            self._connectivity_ad_update_counts.popitem(last=False)
+        return True
 
     def load_bootstrap_hints(self, path: Path | str, *, current_epoch: int) -> int:
         """Load locally persisted, self-verifiable invite bootstrap peer hints."""

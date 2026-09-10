@@ -94,15 +94,15 @@ def _ad(
 
 
 def test_connectivity_advertisement_sidecar_imports_guarded_and_manifested() -> None:
-    assert CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is True
+    assert CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED is False
     assert CONNECTIVITY_ADVERTISEMENT_RUNTIME_TOKEN == (
         "connectivity_advertisement_runtime_committed_GAP_PEER_CONNECTIVITY_ADVERTISEMENT_IMPL_00"
     )
     manifest = connectivity_advertisement_sidecar_manifest()
     assert manifest["sidecar_id"] == "connectivity-advertisement"
     assert manifest["candidate_endpoint_cap"] == 3
-    assert manifest["connectivity_advertisement_activated"] is False
-    assert manifest["public_gossip_propagation_enabled"] is False
+    assert manifest["connectivity_advertisement_activated"] is True
+    assert manifest["public_gossip_propagation_enabled"] is True
 
 
 def test_connectivity_advertisement_canonical_json_excludes_signature_and_is_stable() -> None:
@@ -359,8 +359,11 @@ def test_connectivity_advertisement_from_receipt_rejects_local_only() -> None:
         )
 
 
-def test_gossip_registry_connectivity_advertisement_path_is_guarded() -> None:
+def test_gossip_registry_connectivity_advertisement_path_is_guarded(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     registry = GossipPeerRegistry([])
+    monkeypatch.setattr(registry_module, "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED", True)
     with pytest.raises(RuntimeError, match="connectivity_advertisement_not_activated"):
         registry.add_connectivity_advertisement(
             VerifiedConnectivityAdvertisement(_ad()),
@@ -384,7 +387,7 @@ def test_gossip_registry_can_store_connectivity_ads_when_guard_is_cleared(
     assert registry.get_connectivity_advertisements(current_epoch=14) == []
 
 
-def test_sidecar_registry_includes_connectivity_advertisement_default_off() -> None:
+def test_sidecar_registry_includes_connectivity_advertisement_activation_state() -> None:
     manifest = build_sidecar_registry_manifest()
     sidecars = {sidecar["sidecar_id"]: sidecar for sidecar in manifest["sidecars"]}
 
@@ -393,8 +396,8 @@ def test_sidecar_registry_includes_connectivity_advertisement_default_off() -> N
     integrity = manifest["package_profile_integrity"][
         "connectivity_advertisement_sidecar_manifest"
     ]
-    assert integrity["public_gossip_propagation_enabled"] is False
-    assert integrity["connectivity_advertisement_activated"] is False
+    assert integrity["public_gossip_propagation_enabled"] is True
+    assert integrity["connectivity_advertisement_activated"] is True
 
 
 def test_connectivity_advertisement_sidecar_uses_no_wall_clock_imports() -> None:
