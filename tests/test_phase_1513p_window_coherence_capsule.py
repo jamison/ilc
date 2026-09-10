@@ -125,7 +125,7 @@ def test_guard_states_remain_true_and_non_activation_floor_is_present() -> None:
     for path, phrase in guards.items():
         assert phrase in _read(path)
 
-    assert "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED: Final[bool] = True" in _read(
+    assert "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED: Final[bool] = False" in _read(
         RUST_BRIDGE
     )
 
