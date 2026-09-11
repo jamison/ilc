@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import ast
+from concurrent.futures import ThreadPoolExecutor
+import threading
 from pathlib import Path
 
 import pytest
@@ -11,6 +13,7 @@ import pytest
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.genesis import invite_enforcement
 from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
+from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
 from ilc_core.genesis.invitation_provenance_record import (
     build_invite_batch_record,
     build_invite_redemption_record,
@@ -108,6 +111,42 @@ def test_registered_lmdb_nullifier_rejects_replay_after_reopen(tmp_path: Path) -
                 register_nullifier=True,
                 require_redeemer_key_binding=False,
             )
+
+
+def test_concurrent_invite_registration_consumes_nullifier_once() -> None:
+    class RaceyRegistry(InviteNullifierRegistry):
+        def __init__(self, parties: int) -> None:
+            super().__init__()
+            self._barrier = threading.Barrier(parties)
+
+        def is_known(self, nullifier_hex: str) -> bool:
+            known = super().is_known(nullifier_hex)
+            if not known:
+                self._barrier.wait(timeout=5)
+            return known
+
+    redemption = _valid_redemption()
+    registry = RaceyRegistry(parties=8)
+
+    def redeem_once() -> str:
+        try:
+            invite_enforcement.require_invite_for_enrollment(
+                REDEEMER_AGENT_ID,
+                redemption,
+                nullifier_registry=registry,
+                register_nullifier=True,
+                require_redeemer_key_binding=False,
+            )
+        except ValueError as exc:
+            return str(exc)
+        return "accepted"
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda _: redeem_once(), range(8)))
+
+    assert results.count("accepted") == 1
+    assert results.count("invite_nullifier_already_used_for_enrollment") == 7
+    assert registry.is_known(str(redemption["redemption_nullifier"])) is True
 
 
 def test_identity_init_and_install_callsites_use_lmdb_registration() -> None:

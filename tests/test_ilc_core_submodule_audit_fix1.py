@@ -384,6 +384,9 @@ def test_consensus_and_privacy_exact_boundaries():
         ]
     )
     assert summary["quorum_ok"] is True
+    assert summary["quorum_share_decimal"] == "0.666666666667"
+    assert "quorum_share" not in summary
+    assert "max_cluster_share" not in summary
     with pytest.raises(AttributionBatchBridgeError) as pressure_error:
         _require_werner_pressure("-0.1")
     assert pressure_error.value.token == "werner_raw_pressure_must_be_non_negative"

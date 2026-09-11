@@ -67,6 +67,30 @@ def test_bls_verify_auto_discovers_installed_binary_before_repo_fallback(
     assert bls_backend._resolve_bls_verify_command() == [str(helper)]
 
 
+def test_bls_verify_auto_prefers_installed_binary_before_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    installed = _executable(tmp_path / "installed" / "bls_verify_digest")
+    path_binary = _executable(tmp_path / "path" / "bls_verify_digest")
+    monkeypatch.delenv("ILC_BLS_VERIFY_COMMAND", raising=False)
+    monkeypatch.setenv("ILC_CONSENSUS_BIN_DIR", str(installed.parent))
+    monkeypatch.setattr(bls_backend.shutil, "which", lambda _name: str(path_binary))
+
+    assert bls_backend._resolve_bls_verify_command() == [str(installed)]
+
+
+def test_bls_verify_env_override_rejects_wrappers_and_wrong_names(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wrapper = _executable(tmp_path / "wrapper")
+    helper = _executable(tmp_path / "bls_verify_digest")
+    monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", f"{helper} --unexpected")
+    assert bls_backend._resolve_bls_verify_command() is None
+
+    monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", str(wrapper))
+    assert bls_backend._resolve_bls_verify_command() is None
+
+
 def test_onboarding_discovers_installed_keygen_and_invite_pop(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

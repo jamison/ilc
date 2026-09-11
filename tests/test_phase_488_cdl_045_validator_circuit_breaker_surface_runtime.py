@@ -127,7 +127,9 @@ def test_quorum_summary_uses_weight_not_slot_share_for_cluster_ceiling() -> None
         max_cluster_share_ceiling=0.50,
     )
     assert summary['distinct_ok'] is True
-    assert summary['max_cluster_share'] == 0.9
+    assert summary['max_cluster_share_decimal'] == "0.900000000000"
+    assert "max_cluster_share" not in summary
+    assert "quorum_share" not in summary
     assert summary['share_ok'] is False
     assert summary['eligible'] is False
 

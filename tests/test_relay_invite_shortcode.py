@@ -535,6 +535,12 @@ def test_invite_batch_expiry_heap_removes_only_matching_generation() -> None:
     assert "ILC-H7K2-X9P4" in server._invite_batches
 
 
+def test_relay_invite_clock_uses_integer_unix_seconds() -> None:
+    server = _server(now_provider=lambda: 2000.75)
+
+    assert server._unix_now() == 2000
+
+
 def test_invite_store_rejects_colon_delimited_source_host() -> None:
     server = _server()
     bundle = _signed_bundle()[3]

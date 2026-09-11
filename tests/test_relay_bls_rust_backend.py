@@ -207,7 +207,7 @@ def test_rust_backend_unexpected_output_fails_closed(
     secret_key_hex, agent_id = _relay_keypair()
     digest_hex = "a5" * 48
     signature_hex = sign_relay_bootstrap_record_digest(secret_key_hex, digest_hex)
-    helper = tmp_path / "fake_bls_verify"
+    helper = tmp_path / "bls_verify_digest"
     helper.write_text("#!/bin/sh\nprintf 'maybe\\n'\n", encoding="utf-8")
     helper.chmod(0o700)
     monkeypatch.setenv("ILC_BLS_BACKEND", "rust")
@@ -299,17 +299,18 @@ def test_auto_backend_uses_available_rust_helper(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _secret_key_hex, agent_id = _relay_keypair()
-    helper = tmp_path / "fake_bls_verify"
+    helper = tmp_path / "bls_verify_digest"
     helper.write_text("#!/bin/sh\nprintf 'true\\n'\n", encoding="utf-8")
     helper.chmod(0o700)
     monkeypatch.setenv("ILC_BLS_BACKEND", "auto")
     monkeypatch.setenv("ILC_BLS_VERIFY_COMMAND", str(helper))
 
-    assert verify_relay_admission_digest(
-        public_key_hex=agent_id,
-        digest_hex="ba" * 48,
-        signature_hex="bb" * 96,
-    )
+    with pytest.warns(RuntimeWarning, match="ILC_BLS_VERIFY_COMMAND"):
+        assert verify_relay_admission_digest(
+            public_key_hex=agent_id,
+            digest_hex="ba" * 48,
+            signature_hex="bb" * 96,
+        )
 
 
 def test_auto_backend_falls_back_to_python_when_helper_unavailable(
