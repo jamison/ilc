@@ -78016,6 +78016,64 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0421_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00b_blocked_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00b uploaded and fetchback-verified ilc-core 0.4.21 and published the v0.4.21 helper tarball, then blocked pending manual PyPI 0.4.20 yank.",
+      "manual_read_summary": "Partial receipt records verified signatures, v0.4.21 helper tarball publication, PyPI 0.4.21 upload/fetchback success, and the manual 0.4.20 yank blocker.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0421_00b_pending_manual_pypi_0420_yank"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0421_00b.partial.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00b_blocked_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00b uploaded and fetchback-verified ilc-core 0.4.21 and published the v0.4.21 helper tarball, then blocked pending manual PyPI 0.4.20 yank.",
+      "manual_read_summary": "Walkthrough records GO phrase, preflight, signature verification, helper tarball re-tag, PyPI upload/fetchback output, blocker token, and non-claims for the blocked 00b checkpoint.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0421_00b_pending_manual_pypi_0420_yank"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0421_00b_blocked_post_upload_walkthrough.md"
     }
   ],
   "boundary": {
