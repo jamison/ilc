@@ -77900,6 +77900,122 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_p2p_live_smoke_0420_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00a_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00a completed local build-only packaging for ilc-core 0.4.21 security hardening.",
+      "manual_read_summary": "Prompt defines the NON-SENSITIVE local build-only 0.4.21 package phase carrying security hardening fixes after 0.4.20; hardened to use existing focused regression test paths.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_interactive_install_package_0421_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0421_00a_g10_local_build_security_hardening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00a_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00a completed local build-only packaging for ilc-core 0.4.21 security hardening.",
+      "manual_read_summary": "Prompt defines the SENSITIVE 0.4.21 publish/sign/mirror phase following the local 00a build; not executed in 00a.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_interactive_install_package_0421_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0421_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00a_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00a completed local build-only packaging for ilc-core 0.4.21 security hardening.",
+      "manual_read_summary": "Receipt records 0.4.21 wheel and sdist hashes, sizes, build checks, clean outside-repo wheel smoke, focused regression slice, guard states, output token, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_interactive_install_package_0421_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0421_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0421_00a_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PACKAGE-0421-00a completed local build-only packaging for ilc-core 0.4.21 security hardening.",
+      "manual_read_summary": "Walkthrough records prompt hardening, MemPalace/source preflight, version bump, local build output, twine check, clean-venv smoke, tests, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0421-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:invite_interactive_install_package_0421_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0421_00a_walkthrough.md"
     }
   ],
   "boundary": {
