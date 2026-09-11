@@ -365,6 +365,57 @@ def test_loopback_relay_slot_keepalive_and_release() -> None:
     assert captured[0]["payload"]["schema_version"] == RELAY_CLIENT_SCHEMA_VERSION
 
 
+def test_https_transport_rejects_non_finite_response(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        status = 200
+
+        def read(self, _amount: int) -> bytes:
+            return b'{"ok":NaN}'
+
+        def close(self) -> None:
+            return None
+
+    monkeypatch.setattr(relay_module, "_urlopen_no_redirect", lambda *_args, **_kwargs: Response())
+    transport = HttpsRelayClientTransport("http://127.0.0.1:9")
+
+    with pytest.raises(RelayClientError, match="relay_response_json_invalid"):
+        transport.post_json("/relay/admission/request", {"x": "y"}, timeout_seconds=0.1)
+
+
+def test_https_transport_rejects_duplicate_response_keys(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        status = 200
+
+        def read(self, _amount: int) -> bytes:
+            return b'{"ok":true,"ok":false}'
+
+        def close(self) -> None:
+            return None
+
+    monkeypatch.setattr(relay_module, "_urlopen_no_redirect", lambda *_args, **_kwargs: Response())
+    transport = HttpsRelayClientTransport("http://127.0.0.1:9")
+
+    with pytest.raises(RelayClientError, match="relay_response_json_invalid"):
+        transport.post_json("/relay/admission/request", {"x": "y"}, timeout_seconds=0.1)
+
+
+def test_https_transport_rejects_excessive_response_depth(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Response:
+        status = 200
+
+        def read(self, _amount: int) -> bytes:
+            return (b"[" * 65) + b"0" + (b"]" * 65)
+
+        def close(self) -> None:
+            return None
+
+    monkeypatch.setattr(relay_module, "_urlopen_no_redirect", lambda *_args, **_kwargs: Response())
+    transport = HttpsRelayClientTransport("http://127.0.0.1:9")
+
+    with pytest.raises(RelayClientError, match="relay_response_json_invalid"):
+        transport.post_json("/relay/admission/request", {"x": "y"}, timeout_seconds=0.1)
+
+
 def test_grant_rejects_agent_mismatch() -> None:
     secret_key, agent_id, invite_pop = _pop_material()
     _, admission_signature = _relay_admission_signature(

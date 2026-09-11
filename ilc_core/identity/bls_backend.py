@@ -17,6 +17,7 @@ import shlex
 import shutil
 import subprocess
 from typing import Final
+import warnings
 
 from py_ecc.bls import G2Basic
 from py_ecc.optimized_bls12_381 import curve_order
@@ -61,6 +62,7 @@ _BLS_BACKEND_PYTHON: Final[str] = "python"
 _BLS_BACKEND_RUST: Final[str] = "rust"
 _BLS_BACKEND_AUTO: Final[str] = "auto"
 _BLS_VERIFY_TIMEOUT_SECONDS: Final[float] = 5.0
+_BLS_VERIFY_BINARY_NAME: Final[str] = "bls_verify_digest"
 _RUST_SUITE_INVITE_POP: Final[str] = "invite_pop"
 _RUST_SUITE_RELAY_ADMISSION: Final[str] = "relay_admission"
 _RUST_SUITE_RELAY_LIFECYCLE: Final[str] = "relay_lifecycle"
@@ -542,20 +544,44 @@ def _resolve_bls_verify_command() -> list[str] | None:
     prebuilt binary is discoverable.
     """
 
-    env_command = os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR)
-    if env_command is not None:
-        command = shlex.split(env_command)
-        return command or None
-    path_binary = shutil.which("bls_verify_digest")
-    if path_binary is not None:
-        return [path_binary]
-    installed_binary = installed_consensus_binary_command("bls_verify_digest")
+    if os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR) is not None:
+        return _resolve_env_bls_verify_command()
+    installed_binary = installed_consensus_binary_command(_BLS_VERIFY_BINARY_NAME)
     if installed_binary is not None:
         return list(installed_binary)
+    path_binary = shutil.which(_BLS_VERIFY_BINARY_NAME)
+    if path_binary is not None:
+        return [path_binary]
     debug_binary = _REPO_ROOT / "ilc_consensus" / "target" / "debug" / "bls_verify_digest"
     if debug_binary.exists():
         return [str(debug_binary)]
     return None
+
+
+def _resolve_env_bls_verify_command() -> list[str] | None:
+    env_command = os.environ.get(_BLS_VERIFY_COMMAND_ENV_VAR)
+    if env_command is None:
+        return None
+    command = shlex.split(env_command)
+    if not command:
+        return None
+    if len(command) != 1:
+        return None
+    binary = Path(command[0]).expanduser()
+    if binary.name != _BLS_VERIFY_BINARY_NAME:
+        return None
+    try:
+        if not binary.is_absolute() or not binary.is_file() or not os.access(binary, os.X_OK):
+            return None
+    except OSError:
+        return None
+    warnings.warn(
+        "ILC_BLS_VERIFY_COMMAND is an operator-local verifier override; "
+        "public installs should prefer the packaged ~/.ilc/bin/bls_verify_digest helper.",
+        RuntimeWarning,
+        stacklevel=2,
+    )
+    return [str(binary)]
 
 
 def _require_rust_suite(value: str) -> str:

@@ -57,7 +57,11 @@ def require_invite_for_enrollment(
         raise ValueError("invite_redeemer_agent_id_mismatch")
     if register_nullifier and nullifier_registry is None:
         raise ValueError("invite_nullifier_registry_required_for_registration")
-    if nullifier_registry is not None and nullifier_registry.is_known(record.redemption_nullifier):
+    if (
+        not register_nullifier
+        and nullifier_registry is not None
+        and nullifier_registry.is_known(record.redemption_nullifier)
+    ):
         raise ValueError("invite_nullifier_already_used_for_enrollment")
     if require_redeemer_key_binding:
         verify_invite_redemption_redeemer_key_binding(
@@ -65,7 +69,8 @@ def require_invite_for_enrollment(
             invite_pop_verifier=invite_pop_verifier,
         )
     if register_nullifier and nullifier_registry is not None:
-        nullifier_registry.register_nullifier(record.redemption_nullifier)
+        if not nullifier_registry.register_if_new(record.redemption_nullifier):
+            raise ValueError("invite_nullifier_already_used_for_enrollment")
 
 
 __all__ = [

@@ -57,6 +57,7 @@ _MAX_EPOCH = (1 << 64) - 1
 _MAX_TEXT_CHARS = 512
 _MAX_REQUEST_BYTES = 32_768
 _MAX_RESPONSE_BYTES = 65_536
+_MAX_RESPONSE_JSON_DEPTH = 64
 _MAX_TTL_EPOCHS = 4
 _MAX_BYTES_PER_EPOCH = 64 * 1024 * 1024
 _MAX_CONCURRENT_STREAMS = 8
@@ -574,11 +575,17 @@ class HttpsRelayClientTransport:
         if len(raw) > _MAX_RESPONSE_BYTES:
             raise RelayClientError("relay_response_too_large")
         try:
-            decoded = json.loads(raw.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            _reject_excessive_json_depth(raw)
+            decoded = json.loads(
+                raw.decode("utf-8"),
+                parse_constant=_reject_json_constant,
+                object_pairs_hook=_reject_duplicate_json_keys,
+            )
+        except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError) as exc:
             raise RelayClientError("relay_response_json_invalid") from exc
         if not isinstance(decoded, dict):
             raise RelayClientError("relay_response_must_be_object")
+        _reject_response_float_tree(decoded)
         return decoded
 
 
@@ -1087,6 +1094,59 @@ def _require_bool(value: object, token: str) -> bool:
     if not isinstance(value, bool):
         raise RelayClientError(token)
     return value
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"relay_response_non_finite_number:{value}")
+
+
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    decoded: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in decoded:
+            raise ValueError("relay_response_duplicate_key")
+        decoded[key] = value
+    return decoded
+
+
+def _reject_excessive_json_depth(raw: bytes) -> None:
+    depth = 0
+    in_string = False
+    escaped = False
+    for byte in raw:
+        if in_string:
+            if escaped:
+                escaped = False
+            elif byte == 0x5C:  # backslash
+                escaped = True
+            elif byte == 0x22:  # quote
+                in_string = False
+            continue
+        if byte == 0x22:  # quote
+            in_string = True
+            continue
+        if byte in (0x7B, 0x5B):  # { or [
+            depth += 1
+            if depth > _MAX_RESPONSE_JSON_DEPTH:
+                raise ValueError("relay_response_json_depth_exceeded")
+        elif byte in (0x7D, 0x5D):  # } or ]
+            depth = max(0, depth - 1)
+
+
+def _reject_response_float_tree(value: object, *, depth: int = 0) -> None:
+    if depth > _MAX_RESPONSE_JSON_DEPTH:
+        raise RelayClientError("relay_response_json_invalid")
+    if isinstance(value, float):
+        raise RelayClientError("relay_response_json_invalid")
+    if isinstance(value, dict):
+        for key, nested in value.items():
+            if not isinstance(key, str):
+                raise RelayClientError("relay_response_json_invalid")
+            _reject_response_float_tree(nested, depth=depth + 1)
+        return
+    if isinstance(value, list):
+        for nested in value:
+            _reject_response_float_tree(nested, depth=depth + 1)
 
 
 class _NoRedirect(HTTPRedirectHandler):

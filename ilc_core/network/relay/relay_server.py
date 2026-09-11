@@ -1284,11 +1284,11 @@ class RelayRendezvousServer:
             raise RelayServerError("code_exhausted")
         return batch
 
-    def _unix_now(self) -> float:
+    def _unix_now(self) -> int:
         now = self._now_provider()
         if not isinstance(now, (int, float)) or isinstance(now, bool) or not math.isfinite(now):
             raise RelayServerError("relay_invite_clock_invalid")
-        return float(now)
+        return int(now)
 
     def handle_json_request(
         self,

@@ -17,8 +17,8 @@ from .finality_evaluator import CDL_051_RATIFICATION_DEPENDENCY
 CDL_045_DEPENDENCY = 'cdl_045_operational_emergency_response_408.v0.1'
 CIRCUIT_BREAKER_INTERFACE_VERSION = 'validator_circuit_breaker_surface_488.v0.1'
 DEFAULT_DISTINCT_CLUSTER_FLOOR = 2
-DEFAULT_MAX_CLUSTER_SHARE_CEILING = 0.60
-DEFAULT_QUORUM_WEIGHT_THRESHOLD = 2.0 / 3.0
+DEFAULT_MAX_CLUSTER_SHARE_CEILING = Decimal("0.60")
+DEFAULT_QUORUM_WEIGHT_THRESHOLD = Decimal("0.6666666666666666666666666667")
 
 
 class CircuitBreakerInterfaceError(ValueError):
@@ -90,8 +90,8 @@ def summarize_circuit_breaker_quorum_state(
     validator_votes: list[dict[str, Any]],
     *,
     distinct_cluster_floor: int = DEFAULT_DISTINCT_CLUSTER_FLOOR,
-    max_cluster_share_ceiling: float = DEFAULT_MAX_CLUSTER_SHARE_CEILING,
-    quorum_weight_threshold: float = DEFAULT_QUORUM_WEIGHT_THRESHOLD,
+    max_cluster_share_ceiling: Decimal | int | str = DEFAULT_MAX_CLUSTER_SHARE_CEILING,
+    quorum_weight_threshold: Decimal | int | str = DEFAULT_QUORUM_WEIGHT_THRESHOLD,
 ) -> dict[str, Any]:
     normalized = _normalize_votes(validator_votes)
     total_weight = sum(v['vote_weight'] for v in normalized)
@@ -106,7 +106,6 @@ def summarize_circuit_breaker_quorum_state(
         largest_cluster_slots=largest_cluster_slots,
         total_panel_slots=max(requested_weight, 1),
     )
-    max_cluster_share = float(max_cluster_share_decimal)
     quorum_share = (
         Decimal("0")
         if total_weight == 0
@@ -137,18 +136,16 @@ def summarize_circuit_breaker_quorum_state(
         'requested_validator_count': len(requested_votes),
         'requested_weight': requested_weight,
         'total_weight': round(total_weight, 12),
-        'quorum_share': float(quorum_share),
         'quorum_share_decimal': str(quorum_share),
         'distinct_clusters': distinct_clusters,
-        'max_cluster_share': max_cluster_share,
         'max_cluster_share_decimal': str(max_cluster_share_decimal),
         'distinct_ok': distinct_ok,
         'share_ok': share_ok,
         'quorum_ok': quorum_ok,
         'eligible': quorum_ok and distinct_ok and share_ok,
         'distinct_cluster_floor': distinct_cluster_floor,
-        'max_cluster_share_ceiling': max_cluster_share_ceiling,
-        'quorum_weight_threshold': quorum_weight_threshold,
+        'max_cluster_share_ceiling_decimal': str(Decimal(str(max_cluster_share_ceiling))),
+        'quorum_weight_threshold_decimal': str(threshold),
     }
 
 
