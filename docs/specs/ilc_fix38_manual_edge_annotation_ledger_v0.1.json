@@ -78074,6 +78074,162 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0421_00b_blocked_post_upload_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00b_enrollment_fix1_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00 resolved EPOCH-00b via the Genesis-signed validator provenance binding Path B disposition.",
+      "manual_read_summary": "Prompt defines Path B for EPOCH-00b: the Genesis-signed validator provenance binding record is the durable Genesis Agent enrollment authority for public-RC epoch 0; Codex hardened it to require cryptographic ML-DSA verification before token emission.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_agent_installed_public_rc_validators_GAP_PUBLIC_RC_EPOCH_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_genesis_validator_provenance_binding_record_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:validator_genesis_agent_enrollment_surface_missing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00b_enrollment_fix1_00_g10_genesis_enrollment_via_provenance_binding.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00b_enrollment_fix1_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00 resolved EPOCH-00b via the Genesis-signed validator provenance binding Path B disposition.",
+      "manual_read_summary": "Receipt records EPOCH-00b completion via enrollment_method=genesis_validator_provenance_binding_signed, ML-DSA signature verification, four bound validators, epoch-0 scope, and non-claims for no validator LMDB mutation or epoch transition.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_agent_installed_public_rc_validators_GAP_PUBLIC_RC_EPOCH_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_genesis_validator_provenance_binding_record_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:validator_genesis_agent_enrollment_surface_missing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00b_enrollment_fix1_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00 resolved EPOCH-00b via the Genesis-signed validator provenance binding Path B disposition.",
+      "manual_read_summary": "Walkthrough records prompt hardening, token audit, blocker receipt confirmation, provenance binding verification, ML-DSA verifier output, reprovision cross-check, receipt tests, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_agent_installed_public_rc_validators_GAP_PUBLIC_RC_EPOCH_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_genesis_validator_provenance_binding_record_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:validator_genesis_agent_enrollment_surface_missing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00b_enrollment_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00b_enrollment_fix1_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00 resolved EPOCH-00b via the Genesis-signed validator provenance binding Path B disposition.",
+      "manual_read_summary": "Regression tests confirm the EPOCH-00b Path B receipt records the signed provenance binding enrollment method, matches Genesis Agent 1, matches the signed binding, matches the reprovisioned validator set, and emits the completion token exactly once.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00B-ENROLLMENT-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_agent_installed_public_rc_validators_GAP_PUBLIC_RC_EPOCH_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_genesis_validator_provenance_binding_record_GAP_GENESIS_VALIDATOR_PROVENANCE_BINDING_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:validator_genesis_agent_enrollment_surface_missing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "MITIGATES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_epoch_00b_enrollment_fix1.py"
     }
   ],
   "boundary": {
