@@ -1,0 +1,82 @@
+{
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-0421-00a",
+  "generated_at_utc": "2026-09-11T00:00:00Z",
+  "release_id": "ilc-core-0.4.21",
+  "source_base_commit": "0ad5882352acb5a2fe2c591d946e1355df324a9a",
+  "security_hardening_commit": "dc65b4bcd",
+  "predecessor_release_id": "ilc-core-0.4.20",
+  "version_updates": {
+    "pyproject_toml": "0.4.21",
+    "ilc_core___init__": "0.4.21",
+    "tools_install_sh_retained_release_id": "ilc-core-0.4.20"
+  },
+  "artifacts": {
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.21-py3-none-any.whl",
+      "sha256": "e9904a501ff5eb2c14a9961d2055781643cc30bc15ddd1ad6f25a7123032a328",
+      "size_bytes": 1477826
+    },
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.21.tar.gz",
+      "sha256": "0d443246e7b15d60726b4fdf0a623d12f5d814bacccf2ca7ab130c52b9a6e10f",
+      "size_bytes": 1208008
+    }
+  },
+  "artifact_content_checks": {
+    "ilc_core/genesis/invite_enforcement.py": true,
+    "ilc_core/network/relay/relay_client.py": true,
+    "ilc_core/consensus/circuit_breaker_interface.py": true,
+    "ilc_core/identity/bls_backend.py": true,
+    "ilc_core/network/relay/relay_server.py": true,
+    "ilc_core/genesis/invite_nullifier_lmdb_store.py": true
+  },
+  "verification": {
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b": "VALID",
+    "dependency_floor": "1 passed, 12 deselected",
+    "build": "Successfully built ilc_core-0.4.21.tar.gz and ilc_core-0.4.21-py3-none-any.whl",
+    "twine_check": "PASSED for wheel and sdist",
+    "clean_outside_repo_venv_smoke": {
+      "status": "passed",
+      "loaded_from_site_packages": true,
+      "ilc_core_version": "0.4.21",
+      "register_if_new_in_require_invite_for_enrollment": true,
+      "relay_json_constant_guard_importable": true,
+      "relay_duplicate_key_guard_importable": true,
+      "relay_depth_guard_importable": true,
+      "circuit_breaker_decimal_only_summary": true,
+      "bls_env_resolver_importable": true,
+      "relay_server_unix_now_method_returns_int": true,
+      "PUBLIC_P2P_ENABLED": true,
+      "PUBLIC_FETCH_SERVING_ENABLED": true,
+      "NON_LOOPBACK_SIDECAR_PROJECTION_ENABLED": true,
+      "RUST_P2P_BRIDGE_NOT_ACTIVATED": false,
+      "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED": false,
+      "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED": false,
+      "VALIDATOR_ADMISSION_NOT_ACTIVATED": true
+    },
+    "focused_security_regression_slice": "152 passed, 6 warnings in 140.37s"
+  },
+  "output_token": "invite_interactive_install_package_0421_local_build_complete_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00A",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_tools_install_sh_retarget_to_0421",
+    "no_linux_helper_tarball_publication",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ]
+}
