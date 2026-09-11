@@ -28,7 +28,7 @@ EVIDENCE = ROOT / "out/gap_public_rc_invite_00c/smoke_evidence.json"
 FIXTURE_MANIFEST = ROOT / "tests/fixtures/starmap/core_public_rc_slice_fixture.json"
 IDENTITY_SEED_HEX = "99" * 32
 REDEEMER_AGENT_ID = derive_agent_id_from_identity_seed(IDENTITY_SEED_HEX)
-OUTPUT_TOKEN = "invite_bootstrap_smoke_pass_GAP_PUBLIC_RC_INVITE_00c"
+OUTPUT_TOKEN = "invite_bootstrap_smoke_0421_rerun_pass_GAP_PUBLIC_RC_INVITE_00c"
 
 
 def _redemption(nonce_byte: str = "ab") -> tuple[dict[str, object], str]:
@@ -191,7 +191,7 @@ def test_shortcode_path_registers_nullifier_durably(
 
 def test_smoke_evidence_exists_and_all_pass() -> None:
     evidence = json.loads(EVIDENCE.read_text(encoding="utf-8"))
-    assert evidence["package_version_confirmed"] == "0.4.19"
+    assert evidence["package_version_confirmed"] == "0.4.21"
     assert evidence["invite_enforcement_enabled"] is True
     assert set(evidence["scenarios"]) == {
         "issue_test_batch",
@@ -202,8 +202,8 @@ def test_smoke_evidence_exists_and_all_pass() -> None:
     assert all(value == "PASS" for value in evidence["scenarios"].values())
 
 
-def test_package_version_is_0419() -> None:
-    assert ilc_core.__version__ == "0.4.19"
+def test_package_version_is_0421() -> None:
+    assert ilc_core.__version__ == "0.4.21"
 
 
 def test_output_token_in_status() -> None:
