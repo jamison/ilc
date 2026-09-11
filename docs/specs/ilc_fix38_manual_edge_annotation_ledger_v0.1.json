@@ -97909,6 +97909,92 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0421_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-VALIDATOR-PACKAGE-SYNC-0421-00 synced all four live public-RC validator service-user venvs from ilc-core 0.4.20 to 0.4.21.",
+      "manual_read_summary": "Receipt records per-slot stop, upgrade, installed-wheel TOCTOU fix verification, admission guard readback, restart, active service readback, and unchanged Rust validator_harness size/mtime.",
+      "node_kind": "runtime_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-PACKAGE-SYNC-0421-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:vps_validators_synced_to_0421_GAP_VALIDATOR_PACKAGE_SYNC_0421_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_validator_package_sync_0421_00/sync_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0421_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-VALIDATOR-PACKAGE-SYNC-0421-00 walkthrough records the sensitive validator venv synchronization from ilc-core 0.4.20 to 0.4.21.",
+      "manual_read_summary": "Walkthrough records GO phrase, prompt validation, token audit, PyPI fetchback, baseline receipt, per-slot service-user upgrade evidence, TOCTOU fix checks, admission guard checks, Rust binary stats, receipt validation, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-PACKAGE-SYNC-0421-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:vps_validators_synced_to_0421_GAP_VALIDATOR_PACKAGE_SYNC_0421_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_validator_package_sync_0421_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0421_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-VALIDATOR-PACKAGE-SYNC-0421-00 updates active planning state from validator sync frontier to EPOCH-00b frontier.",
+      "manual_read_summary": "Planning update records validator venv sync completion, confirms 0.4.21 on all four live validator service-user venvs, preserves VALIDATOR_ADMISSION_NOT_ACTIVATED=True, and advances the frontier to GAP-PUBLIC-RC-EPOCH-00b.",
+      "node_kind": "planning_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-VALIDATOR-PACKAGE-SYNC-0421-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     }
   ],
   "phase": "1545p-Fix38",
