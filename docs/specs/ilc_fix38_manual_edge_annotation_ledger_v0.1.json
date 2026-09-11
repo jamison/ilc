@@ -98715,6 +98715,224 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_settlement_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00 committed the Python epoch-0 settlement after the Rust BLS epoch 0-to-1 advance.",
+      "manual_read_summary": "Receipt records EPOCH-00c CIDv1Root source settlement root, epoch-1 distribution writer input, conservation gate pass, Genesis wallet balance readback, carry-forward-out records, decision tokens, receipt SHA-256, and non-claims for GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00.",
+      "node_kind": "runtime_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_conservation_gate_passed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "COMMITS_TO",
+          "target": "artifact:out/public_runtime/wallet"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00c/epoch_1_commit_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "COMMITS_TO",
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_settlement_00/epoch_0_settlement_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_settlement_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00 committed the Python epoch-0 settlement after the Rust BLS epoch 0-to-1 advance.",
+      "manual_read_summary": "Walkthrough records prompt hardening, root-format source fixes, circular import fix, token and guard audits, EPOCH-00c root extraction, settlement execution output, receipt validation, wallet CLI readback, tests, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_conservation_gate_passed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        },
+        {
+          "edge_type": "DOCUMENTS_RUNTIME_SURFACE",
+          "target": "ilc_core/epoch/pool_carry_forward_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "DOCUMENTS_RUNTIME_SURFACE",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_settlement_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_settlement_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00 committed the Python epoch-0 settlement after the Rust BLS epoch 0-to-1 advance.",
+      "manual_read_summary": "Regression tests now prove the distribution writer accepts live Rust 01711220 CIDv1Root source settlement roots and rejects malformed CIDv1 prefixes before settlement commit.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_conservation_gate_passed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_epoch_distribution_writer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_settlement_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00 committed the Python epoch-0 settlement after the Rust BLS epoch 0-to-1 advance.",
+      "manual_read_summary": "Regression tests now prove carry-forward records preserve live Rust 01711220 CIDv1Root source settlement roots and reject malformed CIDv1 prefixes.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_conservation_gate_passed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/epoch/pool_carry_forward_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_pool_carry_forward_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_settlement_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00 prompt hardened before executing the non-sensitive Python settlement pipeline.",
+      "manual_read_summary": "Prompt hardening corrected EPOCH-00c receipt field names, 72-hex Rust CIDv1Root semantics, distribution-writer Genesis delta reporting, carry-forward non-claims, and public mirror non-claims before settlement execution.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_0_conservation_gate_passed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00c/epoch_1_commit_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_settlement_00_g10_epoch_0_python_settlement.md"
     }
   ],
   "phase": "1545p-Fix38",

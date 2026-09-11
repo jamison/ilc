@@ -41,6 +41,7 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 
 ROOT_HEX = "b" * 64
+CIDV1_ROOT_HEX = "01711220" + "b" * 64
 
 
 class RecordingBatchLifecycle:
@@ -172,6 +173,22 @@ def test_epoch_one_scheduled_emission_is_distributed_without_fees() -> None:
     assert output.genesis_settled_delta > Decimal("0")
     assert output.agent_settled_balance_deltas["agent:a"] > Decimal("0")
     assert output.protocol_reserve_delta == Decimal("0E-9")
+
+
+def test_epoch_one_accepts_rust_cidv1_source_settlement_root() -> None:
+    output = compute_epoch_distribution(
+        _inputs(
+            issuance_epoch=1,
+            source_settlement_root_hex=CIDV1_ROOT_HEX,
+            allow_default_source_settlement_root=False,
+        )
+    )
+
+    assert output.carry_forward_out_records
+    assert all(
+        record.source_settlement_root == CIDV1_ROOT_HEX
+        for record in output.carry_forward_out_records
+    )
 
 
 def test_auditor_agents_can_be_distinct_from_performer_agents() -> None:
@@ -334,7 +351,7 @@ def test_default_settlement_root_is_automatically_rejected_after_epoch_zero() ->
 def test_malformed_source_settlement_root_rejected_by_commit_path(bad_root: object) -> None:
     lifecycle = RecordingBatchLifecycle()
 
-    with pytest.raises(ValueError, match="source_settlement_root_must_be_sha256_hex"):
+    with pytest.raises(ValueError, match="source_settlement_root_must_be_sha256_or_cidv1_hex"):
         commit_epoch_distribution(
             _inputs(
                 total_epoch_fees_ilc=Decimal("100"),
@@ -360,6 +377,33 @@ def test_non_default_settlement_root_passes_when_default_root_is_forbidden() -> 
     assert {record.source_settlement_root for record in output.carry_forward_out_records} == {
         ROOT_HEX
     }
+
+
+def test_non_default_cidv1_settlement_root_passes_when_default_root_is_forbidden() -> None:
+    output = compute_epoch_distribution(
+        _inputs(
+            total_epoch_fees_ilc=Decimal("100"),
+            source_settlement_root_hex=CIDV1_ROOT_HEX,
+            allow_default_source_settlement_root=False,
+        )
+    )
+
+    assert output.conservation_verified is True
+    assert output.carry_forward_out_records
+    assert {record.source_settlement_root for record in output.carry_forward_out_records} == {
+        CIDV1_ROOT_HEX
+    }
+
+
+def test_malformed_cidv1_source_settlement_root_prefix_rejected() -> None:
+    with pytest.raises(ValueError, match="source_settlement_root_must_be_sha256_or_cidv1_hex"):
+        compute_epoch_distribution(
+            _inputs(
+                issuance_epoch=1,
+                source_settlement_root_hex="01711221" + "b" * 64,
+                allow_default_source_settlement_root=False,
+            )
+        )
 
 
 @pytest.mark.parametrize(

@@ -48,7 +48,7 @@ CONSUMED_STATUS = "consumed"
 MAX_CARRY_FORWARD_REASON_BYTES = 256
 MAX_CARRY_FORWARD_AMOUNT_ADJUSTED_EXPONENT = 18
 
-_SOURCE_SETTLEMENT_ROOT_RE = re.compile(r"^[0-9a-f]{64}$")
+_SOURCE_SETTLEMENT_ROOT_RE = re.compile(r"^(?:[0-9a-f]{64}|01711220[0-9a-f]{64})$")
 _ROLE_TO_ACCOUNT_ID = {
     PERFORMER_POOL_ROLE: PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
     AUDITOR_POOL_ROLE: AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
@@ -149,7 +149,7 @@ def _require_reason(value: str) -> str:
 
 def _require_source_settlement_root(value: str) -> str:
     if not isinstance(value, str) or _SOURCE_SETTLEMENT_ROOT_RE.fullmatch(value) is None:
-        raise ValueError("carry_forward_source_settlement_root_must_be_sha256_hex")
+        raise ValueError("carry_forward_source_settlement_root_must_be_sha256_or_cidv1_hex")
     return value
 
 

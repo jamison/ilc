@@ -49,13 +49,6 @@ from ilc_core.epoch.protocol_reserve_destination import PROTOCOL_RESERVE_ACCOUNT
 from ilc_core.epoch.validator_reward_pool_routing_runtime import (
     VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
 )
-from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
-    EcuIlcLifecycleRuntime,
-    EcuIlcLifecycleRuntimeError,
-    LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
-    _epoch_history_sort_key,
-    _stable_digest,
-)
 from ilc_core.ledger.exact_numeric import (
     ZERO,
     decimal_to_canonical_string,
@@ -63,7 +56,6 @@ from ilc_core.ledger.exact_numeric import (
     to_decimal,
 )
 from ilc_core.storage.lmdb_public_runtime import (
-    LmdbWalletStore,
     _decode_json,
     _encode_json,
     _encode_key,
@@ -97,6 +89,7 @@ MAX_AGENT_ID_BYTES = 256
 MAX_ELIGIBLE_AGENTS = 65_536
 MAX_PRIOR_CARRY_FORWARD_RECORDS = 65_536
 DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX = "0" * 64
+CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX = "01711220"
 _PROTOCOL_ACCOUNT_IDS = frozenset(
     {
         PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
@@ -457,10 +450,14 @@ def _require_settlement_root(
     issuance_epoch: int,
     allow_default_source_settlement_root: bool,
 ) -> str:
-    if not isinstance(value, str) or len(value) != 64:
-        raise ValueError("source_settlement_root_must_be_sha256_hex")
-    if any(char not in "0123456789abcdef" for char in value):
-        raise ValueError("source_settlement_root_must_be_sha256_hex")
+    if not isinstance(value, str) or any(char not in "0123456789abcdef" for char in value):
+        raise ValueError("source_settlement_root_must_be_sha256_or_cidv1_hex")
+    if len(value) == 64:
+        pass
+    elif len(value) == 72 and value.startswith(CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX):
+        pass
+    else:
+        raise ValueError("source_settlement_root_must_be_sha256_or_cidv1_hex")
     if not allow_default_source_settlement_root and value == DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX:
         raise ValueError("source_settlement_root_default_not_allowed")
     if issuance_epoch > 0 and value == DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX:
@@ -695,6 +692,8 @@ def _commit_settled_epoch_batch(
     settlements: Mapping[str, Decimal],
     epoch_id: str,
 ) -> list[dict[str, Any]]:
+    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+
     if isinstance(lifecycle_runtime, EcuIlcLifecycleRuntime):
         return _commit_lmdb_lifecycle_batch(
             lifecycle_runtime=lifecycle_runtime,
@@ -721,6 +720,14 @@ def _commit_lmdb_lifecycle_batch(
     settlements: Mapping[str, Decimal],
     epoch_id: str,
 ) -> list[dict[str, Any]]:
+    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+        EcuIlcLifecycleRuntimeError,
+        LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
+        _epoch_history_sort_key,
+        _stable_digest,
+    )
+    from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
+
     wallet_store = lifecycle_runtime.wallet_store
     if not isinstance(wallet_store, LmdbWalletStore):
         raise ValueError("atomic_lmdb_wallet_store_required")
@@ -859,6 +866,8 @@ def _commit_lmdb_lifecycle_batch(
 
 
 def _require_epoch_id_format(epoch_id: str) -> int:
+    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntimeError
+
     if not isinstance(epoch_id, str) or len(epoch_id) != 10 or not epoch_id.isdecimal():
         raise EcuIlcLifecycleRuntimeError(
             "lifecycle_epoch_id_invalid",
@@ -883,6 +892,11 @@ def _current_lmdb_epoch_number(txn: Any, wallets_db: Any) -> int | None:
 
 
 def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decimal:
+    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+        EcuIlcLifecycleRuntimeError,
+        LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
+    )
+
     if agent_id in {PERFORMER_CARRY_FORWARD_ACCOUNT_ID, AUDITOR_CARRY_FORWARD_ACCOUNT_ID}:
         try:
             settlement_delta = to_decimal(
@@ -921,6 +935,7 @@ def _decimal_string(value: Decimal) -> str:
 __all__ = [
     "ATOMIC_SETTLEMENT_WRITER_CREATED_TOKEN",
     "CARRY_FORWARD_CONSUMED_EXACTLY_ONCE_WIRED_TOKEN",
+    "CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX",
     "CONSERVATION_EQUATION_ENFORCED_TOKEN",
     "DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX",
     "EPOCH_DISTRIBUTION_WRITER_VERSION",

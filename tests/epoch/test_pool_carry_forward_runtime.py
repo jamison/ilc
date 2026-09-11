@@ -30,6 +30,7 @@ from ilc_core.epoch.pool_carry_forward_runtime import (
 
 
 ROOT_HEX = "a" * 64
+CIDV1_ROOT_HEX = "01711220" + "a" * 64
 
 
 def _valid_record(**overrides: object) -> PoolCarryForwardRecord:
@@ -64,6 +65,13 @@ def test_valid_round_trip_canonical_record() -> None:
         "status": PENDING_CONSUMPTION_STATUS,
         "target_epoch": 2,
     }
+
+
+def test_valid_cidv1_source_settlement_root_round_trip() -> None:
+    record = _valid_record(source_settlement_root=CIDV1_ROOT_HEX)
+
+    assert record.source_settlement_root == CIDV1_ROOT_HEX
+    assert record.to_canonical_record()["source_settlement_root"] == CIDV1_ROOT_HEX
 
 
 def test_valid_consumption_sets_status_and_consumed_epoch() -> None:
@@ -192,9 +200,12 @@ def test_verify_pool_record_rejects_extra_field() -> None:
         verify_carry_forward_pool_record(record)
 
 
-@pytest.mark.parametrize("bad_root", ["abc123", "A" * 64, "g" * 64, "a" * 63, "a" * 65])
-def test_source_settlement_root_must_be_sha256_hex(bad_root: str) -> None:
-    with pytest.raises(ValueError, match="carry_forward_source_settlement_root_must_be_sha256_hex"):
+@pytest.mark.parametrize(
+    "bad_root",
+    ["abc123", "A" * 64, "g" * 64, "a" * 63, "a" * 65, "01711221" + "a" * 64],
+)
+def test_source_settlement_root_must_be_sha256_or_cidv1_hex(bad_root: str) -> None:
+    with pytest.raises(ValueError, match="carry_forward_source_settlement_root_must_be_sha256_or_cidv1_hex"):
         _valid_record(source_settlement_root=bad_root)
 
 
