@@ -67,6 +67,12 @@ struct Args {
     peer_cert_der: PathBuf,
     /// AgentID to claim in GossipEnvelope.peer_id (default 0).
     peer_id: u32,
+    /// Real 48-byte AgentID to claim in GossipEnvelope.peer_id.
+    ///
+    /// Public-RC validators bind the envelope peer_id to the authenticated
+    /// mTLS certificate. The legacy numeric --peer-id is retained for old
+    /// testnet-only paths, but live public-RC sends must pass this value.
+    peer_agent_id: Option<AgentID>,
     msg_type: MsgType,
     // broadcast params
     sender_key_file: Option<PathBuf>,
@@ -95,6 +101,7 @@ fn parse_args() -> Result<Args, String> {
     let mut key_pem: Option<PathBuf> = None;
     let mut peer_cert_der: Option<PathBuf> = None;
     let mut peer_id: u32 = 0;
+    let mut peer_agent_id: Option<AgentID> = None;
     let mut msg_type: Option<MsgType> = None;
     let mut sender_key_file: Option<PathBuf> = None;
     let mut to_hex: Option<String> = None;
@@ -141,6 +148,14 @@ fn parse_args() -> Result<Args, String> {
                     .ok_or("--peer-id requires a number")?
                     .parse()
                     .map_err(|e| format!("--peer-id: {}", e))?;
+            }
+            "--peer-agent-id" => {
+                i += 1;
+                let value = raw
+                    .get(i)
+                    .ok_or("--peer-agent-id requires a 96-char hex AgentID")?;
+                peer_agent_id =
+                    Some(parse_agent_id_hex(value).map_err(|e| format!("--peer-agent-id: {}", e))?);
             }
             "--msg" => {
                 i += 1;
@@ -275,7 +290,7 @@ fn parse_args() -> Result<Args, String> {
             "--help" | "-h" => {
                 eprintln!("Usage:");
                 eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement|epoch_checkpoint>");
-                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --quorum-keys <csv> ...");
+                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --quorum-keys <csv> --peer-agent-id <96hex> ...");
                 eprintln!("  testnet_client --msg broadcast --sender-key <file> --to <hex> --amount <u64> --version <u64> [--batch-window-ms <N>] [--relay-count <N> --relay-route <id,id,..> --validators <id@addr,id@addr,..>]");
                 eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --epoch <N> --cert <pem> --key <pem>");
                 std::process::exit(0);
@@ -291,6 +306,7 @@ fn parse_args() -> Result<Args, String> {
         key_pem: key_pem.ok_or("--key is required")?,
         peer_cert_der: peer_cert_der.unwrap_or_else(|| PathBuf::from("")), // optional for FullTransfer
         peer_id,
+        peer_agent_id,
         msg_type: msg_type.ok_or("--msg is required")?,
         sender_key_file,
         to_hex,
@@ -497,8 +513,12 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
         .map_err(|e| format!("PeerNetwork::new_client: {}", e))?;
 
     eprintln!(
-        "[testnet_client] endpoint ready for target {} (peer_id claim={})",
-        args.validator_addr, args.peer_id
+        "[testnet_client] endpoint ready for target {} (peer_id claim={}, peer_agent_id claim={})",
+        args.validator_addr,
+        args.peer_id,
+        args.peer_agent_id
+            .map(|id| id.to_string())
+            .unwrap_or_else(|| "legacy_numeric_mapping".into())
     );
 
     // -----------------------------------------------------------------------
@@ -531,7 +551,9 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 };
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: AgentID::from_testnet_validator_index(args.peer_id),
+                    peer_id: args
+                        .peer_agent_id
+                        .unwrap_or_else(|| AgentID::from_testnet_validator_index(args.peer_id)),
                     payload: GossipMessage::EpochSettlementTx(tx),
                 };
                 let (send, _recv) = conn
@@ -624,7 +646,9 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
                 let envelope = GossipEnvelope {
                     frame_type: 0x00,
-                    peer_id: AgentID::from_testnet_validator_index(args.peer_id),
+                    peer_id: args
+                        .peer_agent_id
+                        .unwrap_or_else(|| AgentID::from_testnet_validator_index(args.peer_id)),
                     payload: GossipMessage::EpochCheckpointMsg(checkpoint),
                 };
 
@@ -996,6 +1020,13 @@ fn hex_decode_exact_lowercase(hex: &str, expected_len: usize) -> Result<Vec<u8>,
         return Err("expected lowercase hex".into());
     }
     hex_decode_exact(hex, expected_len)
+}
+
+fn parse_agent_id_hex(hex: &str) -> Result<AgentID, String> {
+    let bytes = hex_decode_exact_lowercase(hex, 48)?;
+    let mut fixed = [0u8; 48];
+    fixed.copy_from_slice(&bytes);
+    Ok(AgentID(fixed))
 }
 
 fn hex_decode_exact(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {

@@ -78488,6 +78488,312 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_epoch_00c_retry_blocked_operator_prep_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Canonical EPOCH-00c receipt records all four public-RC validators at epoch 1 with matching BLS-verified state root and references the helper execute/preflight receipts without storing secret material.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+        },
+        {
+          "edge_type": "COMMITS",
+          "target": "epoch:public-rc:1"
+        }
+      ],
+      "proposed_trace_roles": [
+        "COMMITS",
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "out/gap_public_rc_epoch_00c/epoch_1_commit_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Walkthrough records preflight checks, first failed no-mutation submit, peer-agent-id tool correction, successful epoch-1 submit, receipt hashes, verification output, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00c_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Internal Rust testnet client now accepts --peer-agent-id so live ceremony envelopes can claim the authenticated mTLS AgentID instead of the legacy numeric testnet mapping.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:epoch_00c_legacy_numeric_peer_id_submit_rejected"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "MITIGATES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_consensus/src/testnet_client_main.rs"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "EPOCH-00c helper passes the authenticated injector AgentID corresponding to the client TLS certificate for each live validator checkpoint submission.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:epoch_00c_legacy_numeric_peer_id_submit_rejected"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "MITIGATES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/gap_epoch_00c_epoch_advance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Regression tests assert EPOCH-00c checkpoint argv includes --peer-agent-id and maps each target to the correct authenticated injector AgentID.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00b/genesis_install_receipt.json"
+        },
+        {
+          "edge_type": "MITIGATES",
+          "target": "claim:epoch_00c_legacy_numeric_peer_id_submit_rejected"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "MITIGATES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_epoch_00c_tool_fix1_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Helper preflight receipt records current key derivation, staged TLS material paths, epoch-0 live readback, and no-execute safety state before the successful EPOCH-00c submit.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00c/epoch_1_commit_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00c/epoch_advance_preflight_20260911_after_peer_agent_fix.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_complete_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-PUBLIC-RC-EPOCH-00c committed the public-RC validator network from epoch 0 to epoch 1 after an internal ceremony-tool peer AgentID correction.",
+      "manual_read_summary": "Helper execute receipt records four successful checkpoint sends and final epoch-1 readback with identical BLS-verified state root across all public-RC validators.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_public_rc_epoch_00c/epoch_1_commit_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00c/epoch_advance_execute_20260911_after_peer_agent_fix.json"
     }
   ],
   "boundary": {

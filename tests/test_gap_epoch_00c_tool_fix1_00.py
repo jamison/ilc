@@ -137,3 +137,38 @@ def test_build_checkpoint_argv_uses_absolute_tooling_and_current_key_dir(tmp_pat
     assert str(key_dir / "validator_1_signing_key.hex") in quorum_keys
     assert str(cert_dir / "validator_2_cert.pem") in argv
     assert str(cert_dir / "validator_1_cert.der") in argv
+    assert argv[argv.index("--peer-agent-id") + 1] == EXPECTED_AGENT_IDS[2]
+
+
+def test_build_checkpoint_argv_uses_authenticated_injector_agent_id(tmp_path: Path) -> None:
+    client = tmp_path / "testnet_client"
+    client.write_text("#!/bin/sh\n", encoding="utf-8")
+    client.chmod(0o700)
+    key_dir = tmp_path / "keys"
+    key_dir.mkdir()
+    cert_dir = tmp_path / "certs"
+    cert_dir.mkdir()
+    for slot in EXPECTED_AGENT_IDS:
+        (key_dir / f"validator_{slot}_signing_key.hex").write_text("0" * 64, encoding="utf-8")
+        for suffix in ("cert.pem", "key.pem", "cert.der"):
+            (cert_dir / f"validator_{slot}_{suffix}").write_text("placeholder", encoding="utf-8")
+
+    argv_to_slot_1 = build_checkpoint_argv(
+        testnet_client_bin=client,
+        key_dir=key_dir,
+        cert_dir=cert_dir,
+        endpoint=VALIDATORS[0],
+        epoch=1,
+        state_root=epoch_1_state_root(),
+    )
+    argv_to_slot_3 = build_checkpoint_argv(
+        testnet_client_bin=client,
+        key_dir=key_dir,
+        cert_dir=cert_dir,
+        endpoint=VALIDATORS[2],
+        epoch=1,
+        state_root=epoch_1_state_root(),
+    )
+
+    assert argv_to_slot_1[argv_to_slot_1.index("--peer-agent-id") + 1] == EXPECTED_AGENT_IDS[2]
+    assert argv_to_slot_3[argv_to_slot_3.index("--peer-agent-id") + 1] == EXPECTED_AGENT_IDS[1]
