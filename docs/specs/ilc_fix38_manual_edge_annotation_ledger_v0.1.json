@@ -78402,6 +78402,92 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_epoch_00c_tool_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_retry_blocked_operator_prep_2026_09_11",
+      "chronology_note": "2026-09-11 EPOCH-00c sensitive retry stopped before mutation because operator prep was incomplete after TOOL-FIX1-00.",
+      "manual_read_summary": "Retry blocker receipt records that EPOCH-00c stopped before mutation because /Volumes/MySecureFolder/validator_agents was not mounted; testnet_client existed, helper preflight failed closed with gap_epoch_00c_key_dir_missing, and no checkpoint or validator mutation occurred.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_00c_retry_blocked_before_mutation_operator_prep_missing"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "BLOCKS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00c/epoch_1_commit_retry_blocker_receipt_2026_09_11.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00c_retry_blocked_operator_prep_2026_09_11",
+      "chronology_note": "2026-09-11 EPOCH-00c sensitive retry stopped before mutation because operator prep was incomplete after TOOL-FIX1-00.",
+      "manual_read_summary": "Walkthrough records the reissued GO phrase, missing key mount evidence, local testnet_client evidence, helper preflight traceback, non-claims, and required operator prep before the sensitive retry can proceed.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00c"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_00c_retry_blocked_before_mutation_operator_prep_missing"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_00c_tool_fix_complete_GAP_PUBLIC_RC_EPOCH_00C_TOOL_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:epoch_1_commit_complete_GAP_PUBLIC_RC_EPOCH_00c"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "claim:ilc_network_epoch_1_live_GAP_PUBLIC_RC_EPOCH_00c"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "BLOCKS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00c_retry_blocked_operator_prep_walkthrough.md"
     }
   ],
   "boundary": {
