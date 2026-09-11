@@ -77780,6 +77780,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0420_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0420_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-VALIDATOR-PACKAGE-SYNC-0420-00 synced all four live public-RC validator service-user venvs from ilc-core 0.4.15 to 0.4.20.",
+      "manual_read_summary": "Receipt records sequential stop, venv upgrade, admission guard verification, service restart, active readback, and unchanged Rust validator_harness stats for all validator slots.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-PACKAGE-SYNC-0420-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_validator_package_sync_0420_00/sync_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0420_00_2026_09_11",
+      "chronology_note": "2026-09-11 GAP-VALIDATOR-PACKAGE-SYNC-0420-00 completed and moved the frontier to GAP-P2P-LIVE-SMOKE-0420-00.",
+      "manual_read_summary": "Walkthrough records GO receipt, token audit, MemPalace/repo discovery, PyPI state, service-unit preflight, per-slot upgrade transcript, independent post-sync readbacks, verification outputs, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-PACKAGE-SYNC-0420-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_validator_package_sync_0420_00_walkthrough.md"
     }
   ],
   "boundary": {
