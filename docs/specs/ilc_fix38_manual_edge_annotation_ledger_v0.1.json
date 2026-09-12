@@ -99570,6 +99570,167 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_settlement_00_g10_epoch_0_python_settlement.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 Genesis clarified launch-valid economic canon after identifying that prior EPOCH-SETTLEMENT-00 and GENESIS-WALLET-TRANSFER-BRIDGE-00 artifacts could be misread as immediate public-launch monetary state.",
+      "manual_read_summary": "Correction memo records that public launch starts issuance epoch 0, no nonzero ILC is launch-valid until the first monthly issuance epoch closes, ECU precedes non-Genesis ILC allocation, and protocol pools/reserves are not user wallets.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SUPERSEDES_INTERPRETATION",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-SETTLEMENT-00"
+        },
+        {
+          "edge_type": "SUPERSEDES_INTERPRETATION",
+          "target": "phase:GAP-GENESIS-WALLET-TRANSFER-BRIDGE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        },
+        {
+          "edge_type": "BLOCKS",
+          "target": "phase:GAP-PUBLIC-RC-LAUNCH-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "BLOCKS",
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDES_INTERPRETATION"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_economic_state_canon_correction_2026_09_12_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 prompt drafted to reconcile historical prelaunch settlement/bridge artifacts against Genesis's corrected launch economic canon.",
+      "manual_read_summary": "Prompt requires no LMDB mutation and produces a reconciliation record that blocks EPOCH-00d, LAUNCH-00, validator sync, and public monetary claims until the correction lane closes.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PUBLIC-RC-ECONOMIC-STATE-RECONCILE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_public_rc_economic_state_canon_correction_2026_09_12_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_economic_state_reconcile_00_g10_launch_economic_state_reconciliation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 prompt drafted to implement explicit monthly issuance maturity gating before any nonzero ILC settlement becomes launch-valid.",
+      "manual_read_summary": "Prompt requires validation epoch 0-to-1 to be rejected as monthly issuance maturity and requires a fail-closed maturity proof before nonzero settlement/bridging/display.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_public_rc_economic_state_canon_correction_2026_09_12_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_epoch_maturity_gate_00_g10_monthly_issuance_maturity_gate.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 prompt drafted to correct public wallet claimability reporting after direct source audit found hardcoded proof-authorized display.",
+      "manual_read_summary": "Prompt requires wallet surfaces to report stored lifecycle claimability state and prevents read paths from upgrading deferred balances.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-WALLET-CLAIMABILITY-FIX1-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/protocol/public_wallet_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_wallet_claimability_fix1_00_g10_claimability_state_consistency.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 prompt drafted to enforce the boundary between agent wallets and protocol pool/reserve accounts.",
+      "manual_read_summary": "Prompt requires protocol accounts to be excluded from ordinary user-wallet counts and rejected by transfer sender/recipient paths.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-PROTOCOL-ACCOUNT-SEPARATION-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/value_action/ilc_transfer_ledger.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/protocol/public_wallet_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "PROMPT_AUTHORITY",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_protocol_account_separation_00_g10_reserved_pool_wallet_boundary.md"
+    },
+    {
+      "annotation_batch": "manual_batch_public_rc_economic_state_canon_correction_2026_09_12",
+      "chronology_note": "2026-09-12 prompt drafted to refresh MemPalace/context after repeated assistant memory drift around epoch timing and ILC generation.",
+      "manual_read_summary": "Prompt is sensitive because it may read private local chat transcripts; it requires corrected retrieval for launch epoch 0, no ILC before monthly close, ECU-before-ILC, and protocol-pool wallet boundaries without committing private transcripts.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-MEMPALACE-REHYDRATE-20260912"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_public_rc_economic_state_canon_correction_2026_09_12_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "PROMPT_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_mempalace_rehydrate_20260912_00_g10_context_rehydration.md"
     }
   ],
   "phase": "1545p-Fix38",
