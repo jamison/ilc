@@ -38,7 +38,7 @@
     }
   },
   "blocker_token": null,
-  "completion_status": "pending_source_commit_and_mirror",
+  "completion_status": "complete",
   "go_phrase": "GO Phase GAP-PACKAGE-0422-00b PACKAGE-0422-PUBLISH-AUTHORIZED",
   "install_sh": {
     "consensus_bin_sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
@@ -75,7 +75,7 @@
     "cli_binary_not_ed25519_signed_sha256_size_verified_instead"
   ],
   "output_token": "package_0422_published_GAP_PACKAGE_0422_00B",
-  "output_token_emitted": false,
+  "output_token_emitted": true,
   "phase": "GAP-PACKAGE-0422-00b",
   "phase_yank_verification": {
     "all_yanked": true,
@@ -99,8 +99,63 @@
   },
   "predecessor_version": "0.4.21",
   "public_mirror": {
-    "previous_public_head_sha": "1ae29e9ddd87a7ac0e0a9e3489c631b81bd06238",
-    "status": "pending_source_commit"
+    "adr_0016_absence_spot_check": {
+      "status": 404,
+      "url": "https://raw.githubusercontent.com/jamison/ilc/main/docs/adr/ADR_0016_Productive_ECU_Expansion_Bounty_Mechanism.md",
+      "verification": "pass"
+    },
+    "canonical_hash": "sha256:4ab2ef661b93ed380355c221d4da8245708028e5a036cb80882f68e93ee0bdf4",
+    "commit_count_after": 3453,
+    "commit_count_before": 5206,
+    "commit_count_min_required": 3123,
+    "denylist_scan_result": "pass",
+    "excluded_path_count": 9070,
+    "filter_files_hash": "d3ad9606907e6c122f9845d967d51a915648e8924d3728af32dca22e4e0032dc",
+    "filtered_public_head_sha": "a2431ded8f4cd4bec4bf0c57dfabcf304fa9219e",
+    "first_full_regen_public_head_sha": "3039d8a99c01391db01f98297c68095e04d5ce0b",
+    "mirror_filter_hardening_commits": [
+      "40ffb011e",
+      "6d64ea204",
+      "36e01df53"
+    ],
+    "mirror_mode": "full_filtered_regeneration",
+    "mirror_rewrite_reason": "append_only_failed_due_historical_public_denylist_blob_then_postpush_adr0016_absence_requirement",
+    "post_push_ls_remote_head": "a2431ded8f4cd4bec4bf0c57dfabcf304fa9219e",
+    "previous_attempt_public_head_sha": "1ae29e9ddd87a7ac0e0a9e3489c631b81bd06238",
+    "previous_public_head_is_ancestor": false,
+    "previous_public_head_sha": "3039d8a99c01391db01f98297c68095e04d5ce0b",
+    "public_rc_exclude_scan_result": "pass",
+    "push_result": "forced_update_with_lease",
+    "raw_fetch_verification": {
+      "adr_0016": {
+        "status": 404,
+        "url": "https://raw.githubusercontent.com/jamison/ilc/main/docs/adr/ADR_0016_Productive_ECU_Expansion_Bounty_Mechanism.md"
+      },
+      "envelopes_0422": {
+        "sha256": "8a753767669007cde38afbf096f56b49d61ba7aba9ab0998715031ffe2e5326b",
+        "size_bytes": 2364,
+        "status": 200,
+        "url": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0422_release_envelopes_GAP_PACKAGE_0422_00b_v0.1.json"
+      },
+      "install_sh": {
+        "contains_0422_envelope_ref": true,
+        "contains_0422_wheel": true,
+        "sha256": "c66461a605877d8be5d7486d22b39cf977622241feaea33fb4a4ead21f954354",
+        "size_bytes": 29463,
+        "status": 200,
+        "url": "https://raw.githubusercontent.com/jamison/ilc/main/tools/install.sh"
+      },
+      "manifest_0422": {
+        "contains_0422_envelope_ref": true,
+        "contains_0422_wheel": true,
+        "sha256": "ff34f49381025955f7f230cb4fa90c6ee95b87a6ec57d605caa56317e292c74e",
+        "size_bytes": 3004,
+        "status": 200,
+        "url": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_installable_release_manifest_ilc_core_0422_GAP_PACKAGE_0422_00b_v0.1.json"
+      }
+    },
+    "source_private_commit": "36e01df5314edbd925283f0008edf99bc77e554f",
+    "status": "complete"
   },
   "published_wheel_importability": {
     "ilc_core_version": "0.4.22",
