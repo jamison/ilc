@@ -1,0 +1,126 @@
+{
+  "artifacts": {
+    "cli_binary": {
+      "fetchback_verification": "pass",
+      "filename": "ilc-consensus-linux-x86_64-v0.4.22.tar.gz",
+      "github_release_tag": "v0.4.22",
+      "members": [
+        "bls_verify_digest",
+        "ilc_p2p_bridge",
+        "invite_pop_bls",
+        "keygen",
+        "validator_endpoint_assertion_bls",
+        "validator_harness"
+      ],
+      "reuse_decision": "re_tag_v0.4.21_payload_no_rust_source_changes",
+      "sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+      "signing_status": "unsigned_sha256_size_bound_in_manifest_and_install_sh",
+      "size_bytes": 4560519,
+      "url": "https://github.com/jamison/ilc/releases/download/v0.4.22/ilc-consensus-linux-x86_64-v0.4.22.tar.gz"
+    },
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/7f/83/a5125314f226e7b2aeff9905710ffcd8cd4fe5e70d514475bc49b39d6c0d/ilc_core-0.4.22.tar.gz",
+      "fetchback_sha256": "666993088db25df7c9743bbb6de227983423a2dd2d340bcd5448d7a639751efd",
+      "fetchback_size_bytes": 1221128,
+      "filename": "ilc_core-0.4.22.tar.gz",
+      "local_sha256": "666993088db25df7c9743bbb6de227983423a2dd2d340bcd5448d7a639751efd",
+      "local_size_bytes": 1221128,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/30/a3/dc7c20e0ac7c28f46a8d19df80bef0f6c04d8df98133e28f3bfde6bf1002/ilc_core-0.4.22-py3-none-any.whl",
+      "fetchback_sha256": "07c59b68b8d0b2447f499ddb60fcc6dd62c9a6425021fbd612aa8b6367c776b3",
+      "fetchback_size_bytes": 1495190,
+      "filename": "ilc_core-0.4.22-py3-none-any.whl",
+      "local_sha256": "07c59b68b8d0b2447f499ddb60fcc6dd62c9a6425021fbd612aa8b6367c776b3",
+      "local_size_bytes": 1495190,
+      "pypi_yanked": false
+    }
+  },
+  "blocker_token": null,
+  "completion_status": "pending_source_commit_and_mirror",
+  "go_phrase": "GO Phase GAP-PACKAGE-0422-00b PACKAGE-0422-PUBLISH-AUTHORIZED",
+  "install_sh": {
+    "consensus_bin_sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+    "consensus_bin_size": "4560519",
+    "consensus_bin_url": "https://github.com/jamison/ilc/releases/download/v0.4.22/ilc-consensus-linux-x86_64-v0.4.22.tar.gz",
+    "installer_version": "GAP-PACKAGE-0422-00b",
+    "rc_release_envelope_ref": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0422_release_envelopes_GAP_PACKAGE_0422_00b_v0.1.json",
+    "rc_release_id": "ilc-core-0.4.22",
+    "rc_wheel_sha256": "07c59b68b8d0b2447f499ddb60fcc6dd62c9a6425021fbd612aa8b6367c776b3",
+    "rc_wheel_size": "1495190",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/30/a3/dc7c20e0ac7c28f46a8d19df80bef0f6c04d8df98133e28f3bfde6bf1002/ilc_core-0.4.22-py3-none-any.whl",
+    "tools_install_sh": "tools/install.sh"
+  },
+  "installable_release_manifest_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0422_GAP_PACKAGE_0422_00b_v0.1.json",
+  "local_artifact_verification": {
+    "00a_receipt": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0422_00a_v0.1.json",
+    "sdist_sha256": "666993088db25df7c9743bbb6de227983423a2dd2d340bcd5448d7a639751efd",
+    "sdist_signed_preimage_sha256": "c29edd3ff2b7ed66d61040d22a460ee94f57d29ab9bc1b8dd588a6cb3ae2d916",
+    "sdist_size_bytes": 1221128,
+    "twine_check": "pass",
+    "wheel_sha256": "07c59b68b8d0b2447f499ddb60fcc6dd62c9a6425021fbd612aa8b6367c776b3",
+    "wheel_signed_preimage_sha256": "4edc5e9aa0c334b31d36cb4ae621be0646714856470c3629f0f2445bd4eb546f",
+    "wheel_size_bytes": 1495190
+  },
+  "non_claims": [
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_epoch_00d_retry",
+    "cli_binary_not_ed25519_signed_sha256_size_verified_instead"
+  ],
+  "output_token": "package_0422_published_GAP_PACKAGE_0422_00B",
+  "output_token_emitted": false,
+  "phase": "GAP-PACKAGE-0422-00b",
+  "phase_yank_verification": {
+    "all_yanked": true,
+    "files": [
+      {
+        "filename": "ilc_core-0.4.21-py3-none-any.whl",
+        "sha256": "e9904a501ff5eb2c14a9961d2055781643cc30bc15ddd1ad6f25a7123032a328",
+        "size": 1477826,
+        "yanked": true,
+        "yanked_reason": "superseded by 0.4.22 which ships genesis value certificate and transfer bridge audit hardening, value_action packaging fix for EPOCH-00d"
+      },
+      {
+        "filename": "ilc_core-0.4.21.tar.gz",
+        "sha256": "0d443246e7b15d60726b4fdf0a623d12f5d814bacccf2ca7ab130c52b9a6e10f",
+        "size": 1208008,
+        "yanked": true,
+        "yanked_reason": "superseded by 0.4.22 which ships genesis value certificate and transfer bridge audit hardening, value_action packaging fix for EPOCH-00d"
+      }
+    ],
+    "version": "0.4.21"
+  },
+  "predecessor_version": "0.4.21",
+  "public_mirror": {
+    "previous_public_head_sha": "1ae29e9ddd87a7ac0e0a9e3489c631b81bd06238",
+    "status": "pending_source_commit"
+  },
+  "published_wheel_importability": {
+    "ilc_core_version": "0.4.22",
+    "ilc_transfer_ledger_importable": true,
+    "install_mode": "pip_full_deps_pypi_wheel_path_with_cargo",
+    "invalid_genesis_epoch_spend_index_guard_visible": true,
+    "invite_enforcement_enabled": true,
+    "loaded_from_site_packages": true,
+    "python_version": "3.12",
+    "register_if_new_in_require_invite_for_enrollment": true
+  },
+  "release_id": "ilc-core-0.4.22",
+  "release_signing": {
+    "release_envelopes_path": "docs/specs/ilc_core_0422_release_envelopes_GAP_PACKAGE_0422_00b_v0.1.json",
+    "sdist_signature_hex": "527d28c7bcf784c2235d515b388c1f87b9c9d09705f60da41aac380f18c47dd9d23d677de408540110a29da1792f6c379bb2c8f0784308116a85e04f0824c204",
+    "sdist_signature_verified": true,
+    "signature_preimage_kind": "raw_32_byte_signed_preimage_sha256",
+    "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "wheel_signature_hex": "b93e70525865c7630efbf3af6035aac08caf8ff72dd8a54f6ae77672074bec96af2e12d3552058b2eae1bd9c95b6f186d2373ff258a14e5285b16e1ceb320e09",
+    "wheel_signature_verified": true
+  },
+  "schema_version": "ilc_pypi_upload_receipt.v0.1"
+}
