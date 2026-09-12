@@ -13,6 +13,7 @@ from ilc_core.ledger.exact_numeric import normalize_json_scalars
 
 LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
+DEFAULT_MAX_NAMED_DBS = 16
 MAX_PUBLIC_RECEIPT_INDEX_IDS = 10_000
 _ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
 _ENV_CACHE_LOCK = threading.Lock()
@@ -49,7 +50,7 @@ class _LmdbRuntimeBase:
                     self._root_key,
                     create=True,
                     subdir=True,
-                    max_dbs=max(1, len(db_names)),
+                    max_dbs=max(DEFAULT_MAX_NAMED_DBS, len(db_names)),
                     map_size=map_size,
                     lock=True,
                 )

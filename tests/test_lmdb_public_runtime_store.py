@@ -11,6 +11,7 @@ from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent
 from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
+from ilc_core.value_action.ilc_transfer_ledger import ILCTransferLedger
 
 
 def _commit_event(
@@ -63,6 +64,16 @@ def test_lmdb_wallet_store_persists_wallet_rows_and_history(tmp_path: Path) -> N
     wallet_store_reloaded = LmdbWalletStore(store_root)
     assert wallet_store_reloaded.get_wallet("agent-a")["balance_ilc"] == 3.0
     assert wallet_store_reloaded.get_wallet_history("agent-a")["claim_history"][0]["claim_id"] == "c1"
+
+
+def test_lmdb_wallet_store_env_has_headroom_for_transfer_ledger(tmp_path: Path) -> None:
+    store_root = tmp_path / "wallet-store"
+    wallet_store = LmdbWalletStore(store_root)
+    try:
+        ledger = ILCTransferLedger(wallet_store.env)
+        assert ledger.get_balance("a" * 96) == Decimal("0")
+    finally:
+        wallet_store.close()
 
 
 def test_lmdb_graph_store_normalizes_decimal_payloads(tmp_path: Path) -> None:
