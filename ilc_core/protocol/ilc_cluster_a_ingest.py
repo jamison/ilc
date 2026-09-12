@@ -145,6 +145,48 @@ def _calc_policy_snapshot(policy_payload: Dict[str, Any]) -> Dict[str, str]:
         # In a real system, might also include policy_version/id if present in payload
     }
 
+
+def _load_cluster_a_object(
+    path_or_obj: Union[str, Path, Dict[str, Any]]
+) -> Tuple[Optional[Any], Optional[Dict[str, Any]]]:
+    if isinstance(path_or_obj, (str, Path)):
+        try:
+            p = Path(path_or_obj)
+            if not p.exists():
+                return None, _result(False, errors=["file_not_found"])
+            return json.loads(p.read_text(encoding="utf-8")), None
+        except OSError:
+            return None, _result(False, errors=["file_read_error"])
+        except json.JSONDecodeError:
+            return None, _result(False, errors=["invalid_json"])
+    if isinstance(path_or_obj, dict):
+        return path_or_obj, None
+    return None, _result(False, errors=["schema_violation:invalid_type:root"])
+
+
+def _validation_result_for_kind(target_kind: str, obj: Dict[str, Any]) -> Dict[str, Any]:
+    if target_kind == "wire":
+        return validate_wire_event(obj)
+    if target_kind == "receipt":
+        return validate_receipt_record(obj)
+    if target_kind == "transcript":
+        return validate_transcript(obj)
+    if target_kind == "governance_record":
+        return _validate_governance_record_for_ingest(obj)
+    return {"ok": False, "errors": ["context_violation:unknown_artifact_kind"]}
+
+
+def _validate_governance_record_for_ingest(obj: Dict[str, Any]) -> Dict[str, Any]:
+    res = validate_governance_record(obj)
+    signatures = obj.get("signatures", [])
+    if isinstance(signatures, list) and any(not isinstance(row, dict) for row in signatures):
+        res_errors = list(res.get("errors", []))
+        if "schema_violation:invalid_type:signature" not in res_errors:
+            res_errors.append("schema_violation:invalid_type:signature")
+        return {**res, "errors": res_errors}
+    return res
+
+
 # --- Core Functions ---
 
 def ingest_cluster_a_artifact(path_or_obj: Union[str, Path, Dict[str, Any]], artifact_kind: Optional[str] = None) -> Dict[str, Any]:
@@ -158,24 +200,10 @@ def ingest_cluster_a_artifact(path_or_obj: Union[str, Path, Dict[str, Any]], art
     Returns:
         Deterministic envelope Dict found in _result.
     """
-    errors: List[str] = []
-    warnings: List[str] = []
-    obj: Dict[str, Any] = {}
-    
-    # 1. Load Object
-    if isinstance(path_or_obj, (str, Path)):
-        try:
-            p = Path(path_or_obj)
-            if not p.exists():
-                return _result(False, errors=["file_not_found"])
-            obj = json.loads(p.read_text(encoding="utf-8"))
-        except OSError:
-            return _result(False, errors=["file_read_error"])
-        except json.JSONDecodeError:
-            return _result(False, errors=["invalid_json"])
-    elif isinstance(path_or_obj, dict):
-        obj = path_or_obj
-    else:
+    obj, load_error = _load_cluster_a_object(path_or_obj)
+    if load_error is not None:
+        return load_error
+    if obj is None:
         return _result(False, errors=["schema_violation:invalid_type:root"])
 
     # 2. Infer Kind
@@ -192,22 +220,7 @@ def ingest_cluster_a_artifact(path_or_obj: Union[str, Path, Dict[str, Any]], art
     target_kind = inferred_kind
     
     # 4. Dispatch Validation
-    res: Dict[str, Any] = {"ok": False}
-    
-    if target_kind == "wire":
-        res = validate_wire_event(obj)
-    elif target_kind == "receipt":
-        res = validate_receipt_record(obj)
-    elif target_kind == "transcript":
-        res = validate_transcript(obj)
-    elif target_kind == "governance_record":
-        res = validate_governance_record(obj)
-        signatures = obj.get("signatures", [])
-        if isinstance(signatures, list) and any(not isinstance(row, dict) for row in signatures):
-            res_errors = list(res.get("errors", []))
-            if "schema_violation:invalid_type:signature" not in res_errors:
-                res_errors.append("schema_violation:invalid_type:signature")
-            res = {**res, "errors": res_errors}
+    res = _validation_result_for_kind(target_kind, obj)
     
     # 5. Return Envelope
     return _result(
