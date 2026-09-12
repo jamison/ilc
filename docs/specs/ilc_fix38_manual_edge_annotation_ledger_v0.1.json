@@ -79240,6 +79240,197 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0422_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00b_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00b prompt created to publish/sign/mirror ilc-core 0.4.22 after local 00a build.",
+      "manual_read_summary": "Phase prompt defining the sensitive 0.4.22 publish/sign/mirror procedure, helper tarball re-tag, and installed-wheel value_action gate.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:invite_interactive_install_package_0421_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0422_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00b_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00b produced the canonical 0.4.22 installable manifest consumed by install.sh and public mirror.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.22 with signed Python wheel/sdist and SHA-256/size-bound Linux helper tarball.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:invite_interactive_install_package_0421_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0422_GAP_PACKAGE_0422_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00b_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00b produced Phase 1335 Ed25519 signatures over 0.4.22 release artifact preimages.",
+      "manual_read_summary": "Ed25519 release envelope set for the signed ilc-core 0.4.22 Python wheel and sdist artifacts.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:invite_interactive_install_package_0421_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0422_release_envelopes_GAP_PACKAGE_0422_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00b_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00b records external publication, fetchback, yank, and mirror verification evidence.",
+      "manual_read_summary": "PyPI/GitHub helper upload receipt for ilc-core 0.4.22, predecessor yank, installer retarget, and mirror closure evidence.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:invite_interactive_install_package_0421_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0422_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00b_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00b walkthrough records the sensitive publish/sign/mirror execution trace.",
+      "manual_read_summary": "Walkthrough for GAP-PACKAGE-0422-00b recording command outputs, signatures, PyPI fetchback, yank verification, mirror checks, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:invite_interactive_install_package_0421_published_GAP_PUBLIC_RC_INVITE_PACKAGE_0421_00B"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0422_00b_walkthrough.md"
     }
   ],
   "boundary": {
