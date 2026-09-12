@@ -210,6 +210,18 @@ def test_cli_help_works_for_all_three_tools() -> None:
         assert "usage:" in completed.stdout
 
 
+def test_transfer_tools_expose_genesis_certificate_wiring() -> None:
+    ilc_source = Path("tools/testbed/ilc_transfer_submit.py").read_text(encoding="utf-8")
+    ecu_source = Path("tools/testbed/ecu_transfer_submit.py").read_text(encoding="utf-8")
+
+    assert "--genesis-value-certificate-path" in ilc_source
+    assert "load_and_verify_certificate(genesis_value_certificate_path)" in ilc_source
+    assert "ILCTransferLedger(env, genesis_value_certificate=genesis_value_certificate)" in ilc_source
+    assert "--genesis-value-certificate-path" in ecu_source
+    assert "--genesis-epoch-spent-micro-ecu" in ecu_source
+    assert '"genesis_value_certificate": genesis_value_certificate' in ecu_source
+
+
 def test_ecu_cli_outputs_json(tmp_path: Path) -> None:
     completed = subprocess.run(
         [

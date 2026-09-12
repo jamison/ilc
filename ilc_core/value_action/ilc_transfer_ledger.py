@@ -28,6 +28,7 @@ ILC_TRANSFER_LEDGER_VERSION = "ilc_transfer_ledger_04.v0.1"
 _BALANCES_DB = b"ilc_transfer_balances"
 _TRANSFERS_DB = b"ilc_transfer_records"
 _GENESIS_EPOCH_SPEND_DB = b"ilc_genesis_epoch_spend"
+_U64_MAX = 18_446_744_073_709_551_615
 _TRANSFER_RECORD_BODY_KEYS = frozenset(
     {
         "amount_ilc",
@@ -142,8 +143,8 @@ class ILCTransferLedger:
         if transfer_intent.ILC_TRANSFER_ENABLED is not True:
             raise ValueError("transfer_not_enabled")
         validate_envelope(env)
-        # Fast fail before signature work. For Genesis this only catches a
-        # single transfer above the epoch cap; the authoritative cumulative
+        # Cheap policy fail before signature work. For Genesis this only proves
+        # the single transfer fits the certificate; the authoritative cumulative
         # epoch-spend check is repeated inside the write transaction below.
         enforce_genesis_envelope_guard(
             env,
@@ -216,10 +217,12 @@ class ILCTransferLedger:
                 db=self._transfers_db,
             )
             if env.sender_agent_id == GENESIS_AGENT1_AGENT_ID:
-                next_epoch_spent = current_epoch_spent + transfer_intent._amount_ilc_to_micro_ilc(env.amount_ilc)
+                next_epoch_spent = current_epoch_spent + transfer_intent._amount_ilc_to_micro_ilc(
+                    env.amount_ilc
+                )
                 txn.put(
                     _genesis_epoch_key(env.epoch),
-                    str(next_epoch_spent).encode("ascii"),
+                    _encode_epoch_spend(next_epoch_spent),
                     db=self._genesis_epoch_spend_db,
                 )
 
@@ -286,6 +289,8 @@ def _verify_transfer_signature(
 def _encode_balance(value: Decimal) -> bytes:
     if not isinstance(value, Decimal):
         raise TypeError("invalid_ilc_balance_type")
+    if not value.is_finite():
+        raise ValueError("invalid_ilc_balance_non_finite")
     if value < Decimal("0"):
         raise ValueError("invalid_ilc_balance_negative")
     return decimal_to_canonical_string(value).encode("ascii")
@@ -309,12 +314,26 @@ def _decode_non_negative_int(raw: bytes | None) -> int:
     if raw is None:
         return 0
     try:
-        value = int(raw.decode("ascii"))
+        rendered = raw.decode("ascii")
     except (UnicodeDecodeError, ValueError) as exc:
         raise ValueError("invalid_genesis_epoch_spend_index") from exc
-    if value < 0:
+    if not rendered or (len(rendered) > 1 and rendered.startswith("0")) or len(rendered) > 20:
+        raise ValueError("invalid_genesis_epoch_spend_index")
+    try:
+        value = int(rendered)
+    except ValueError as exc:
+        raise ValueError("invalid_genesis_epoch_spend_index") from exc
+    if value < 0 or value > _U64_MAX:
         raise ValueError("invalid_genesis_epoch_spend_index")
     return value
+
+
+def _encode_epoch_spend(value: int) -> bytes:
+    if not isinstance(value, int) or isinstance(value, bool):
+        raise ValueError("invalid_genesis_epoch_spend_index")
+    if value < 0 or value > _U64_MAX:
+        raise ValueError("invalid_genesis_epoch_spend_index")
+    return str(value).encode("ascii")
 
 
 def _record_payload(
@@ -339,30 +358,6 @@ def _record_payload(
         "sender_balance_after_ilc": decimal_to_canonical_string(sender_after),
         "sender_balance_before_ilc": decimal_to_canonical_string(sender_before),
     }
-
-
-def _genesis_epoch_spent_micro_ilc(txn: object, transfers_db: object, epoch: int) -> int:
-    """Return same-epoch Genesis settled-ILC spend from stored transfer records.
-
-    This pre-RC implementation deliberately recomputes from authenticated LMDB
-    transfer records inside the write transaction. That is fail-closed and
-    deterministic, but linear in transfer-record count until a future indexed
-    per-epoch aggregate is introduced.
-    """
-    spent = 0
-    with txn.cursor(db=transfers_db) as cursor:
-        for key_bytes, raw in cursor:
-            record = _decode_transfer_record(raw)
-            try:
-                expected_transfer_id = key_bytes.decode("ascii")
-            except UnicodeDecodeError as exc:
-                raise ValueError("invalid_transfer_record_key_encoding") from exc
-            _verify_record_sha256(record, expected_transfer_id=expected_transfer_id)
-            entry = _entry_from_record(record)
-            _verify_transfer_record_semantics(entry)
-            if entry.sender_agent_id == GENESIS_AGENT1_AGENT_ID and entry.epoch == epoch:
-                spent += transfer_intent._amount_ilc_to_micro_ilc(entry.amount_ilc)
-    return spent
 
 
 def _entry_from_record(record: dict[str, Any]) -> ILCTransferLedgerEntry:

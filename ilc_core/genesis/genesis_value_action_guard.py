@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
+from collections import OrderedDict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,6 +37,9 @@ GENESIS_VALUE_MAX_PER_EPOCH_MICRO_ILC = 5_000_000_000
 _U64_MAX = 18_446_744_073_709_551_615
 _ALLOWED_ACTION_CLASSES = frozenset({"CONTRIBUTION", "PAYMENT"})
 _UNITS = frozenset({"ECU", "ILC"})
+_CERTIFICATE_SIG_CACHE_MAX_ENTRIES = 128
+_CERTIFICATE_SIG_CACHE: "OrderedDict[tuple[str, str, str], None]" = OrderedDict()
+_CERTIFICATE_SIG_CACHE_LOCK = threading.Lock()
 
 
 class GenesisValueGuardError(ValueError):
@@ -72,9 +77,8 @@ def load_and_verify_certificate(path: str | Path) -> GenesisValueActionPolicyCer
     """Load and validate a GenesisValueActionPolicyCertificate JSON artifact."""
     certificate_path = Path(path)
     try:
-        if certificate_path.stat().st_size > GENESIS_VALUE_MAX_CERTIFICATE_JSON_BYTES:
-            raise GenesisValueGuardError("genesis_value_certificate_json_too_large")
-        raw = json.loads(certificate_path.read_text(encoding="utf-8"))
+        raw_bytes = _read_certificate_json_bytes(certificate_path)
+        raw = json.loads(raw_bytes.decode("utf-8"))
     except GenesisValueGuardError:
         raise
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -85,6 +89,8 @@ def load_and_verify_certificate(path: str | Path) -> GenesisValueActionPolicyCer
         raise GenesisValueGuardError("genesis_value_certificate_json_fields_invalid")
     action_classes = raw.get("allowed_action_classes")
     if not isinstance(action_classes, Sequence) or isinstance(action_classes, (str, bytes)):
+        raise GenesisValueGuardError("genesis_value_certificate_action_classes_invalid")
+    if any(not isinstance(action_class, str) for action_class in action_classes):
         raise GenesisValueGuardError("genesis_value_certificate_action_classes_invalid")
     try:
         normalized_action_classes = frozenset(action_classes)
@@ -152,6 +158,8 @@ def validate_genesis_value_certificate(
         raise GenesisValueGuardError("genesis_value_certificate_action_classes_not_frozenset")
     if not cert.allowed_action_classes:
         raise GenesisValueGuardError("genesis_value_certificate_action_classes_empty")
+    if any(not isinstance(action_class, str) for action_class in cert.allowed_action_classes):
+        raise GenesisValueGuardError("genesis_value_certificate_action_classes_invalid")
     if not cert.allowed_action_classes.issubset(_ALLOWED_ACTION_CLASSES):
         raise GenesisValueGuardError("genesis_value_certificate_action_class_invalid")
     if cert.allowed_recipient_policy != GENESIS_VALUE_ALLOWED_RECIPIENT_POLICY:
@@ -177,7 +185,12 @@ def validate_genesis_value_certificate(
     )
     if compute_certificate_payload_sha256(cert) != cert.certificate_payload_sha256:
         raise GenesisValueGuardError("genesis_value_certificate_payload_sha256_mismatch")
+    cache_key = _certificate_sig_cache_key(cert)
+    if cache_key is not None and _certificate_sig_cache_contains(cache_key):
+        return
     _validate_certificate_sig(cert.certificate_sig, cert)
+    if cache_key is not None:
+        _certificate_sig_cache_add(cache_key)
 
 
 def compute_certificate_payload_sha256(
@@ -367,8 +380,13 @@ def _validate_certificate_sig(
         raise GenesisValueGuardError("genesis_value_certificate_guardian_keys_invalid")
     if len(guardian_public_keys) != GENESIS_VALUE_GUARDIAN_KEY_COUNT:
         raise GenesisValueGuardError("genesis_value_certificate_guardian_key_count_invalid")
-    public_keys_by_guardian = _parse_guardian_public_keys(guardian_public_keys)
-    if _guardian_public_key_root(guardian_public_keys) != cert.guardian_public_key_root:
+    public_keys_by_guardian, normalized_guardian_keys = _normalize_guardian_public_keys(
+        guardian_public_keys
+    )
+    if (
+        _guardian_public_key_root_from_normalized(normalized_guardian_keys)
+        != cert.guardian_public_key_root
+    ):
         raise GenesisValueGuardError("genesis_value_certificate_guardian_root_mismatch")
 
     signatures = value.get("signatures")
@@ -414,11 +432,12 @@ def _validate_certificate_sig(
         raise GenesisValueGuardError("genesis_value_certificate_signatures_insufficient")
 
 
-def _parse_guardian_public_keys(
+def _normalize_guardian_public_keys(
     descriptors: Sequence[object],
-) -> dict[str, bytes]:
+) -> tuple[dict[str, bytes], list[dict[str, str]]]:
     public_keys_by_guardian: dict[str, bytes] = {}
     seen_pubkey_bytes: set[bytes] = set()
+    normalized: list[dict[str, str]] = []
     for descriptor in descriptors:
         if not isinstance(descriptor, Mapping):
             raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
@@ -443,31 +462,17 @@ def _parse_guardian_public_keys(
             raise GenesisValueGuardError("genesis_value_certificate_guardian_public_key_duplicate")
         seen_pubkey_bytes.add(public_key_bytes)
         public_keys_by_guardian[guardian_id] = public_key_bytes
-    return public_keys_by_guardian
+        normalized.append({"guardian_id": guardian_id, "public_key_hex": public_key_hex})
+    normalized.sort(key=lambda entry: entry["guardian_id"])
+    return public_keys_by_guardian, normalized
 
 
 def _guardian_public_key_root(descriptors: Sequence[object]) -> str:
-    normalized = []
-    for descriptor in descriptors:
-        if not isinstance(descriptor, Mapping):
-            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
-        if set(descriptor.keys()) != _EXPECTED_GUARDIAN_DESCRIPTOR_KEYS:
-            raise GenesisValueGuardError("genesis_value_certificate_guardian_key_entry_invalid")
-        normalized.append(
-            {
-                "guardian_id": _require_canonical_string(
-                    descriptor.get("guardian_id"),
-                    "genesis_value_certificate_guardian_id_invalid",
-                    max_chars=256,
-                ),
-                "public_key_hex": _require_hex_even_bytes(
-                    descriptor.get("public_key_hex"),
-                    "genesis_value_certificate_guardian_public_key_invalid",
-                    max_bytes=32,
-                ),
-            }
-        )
-    normalized.sort(key=lambda entry: entry["guardian_id"])
+    _, normalized = _normalize_guardian_public_keys(descriptors)
+    return _guardian_public_key_root_from_normalized(normalized)
+
+
+def _guardian_public_key_root_from_normalized(normalized: Sequence[Mapping[str, str]]) -> str:
     return hashlib.sha256(_json_bytes({"guardian_public_keys": normalized})).hexdigest()
 
 
@@ -491,6 +496,8 @@ def _require_u64(value: object, token: str) -> int:
 
 def _require_canonical_string(value: object, token: str, *, max_chars: int | None = None) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
+        raise GenesisValueGuardError(token)
+    if any(ord(char) < 32 or ord(char) == 127 for char in value):
         raise GenesisValueGuardError(token)
     if max_chars is not None and len(value) > max_chars:
         raise GenesisValueGuardError(token)
@@ -531,6 +538,42 @@ def _json_bytes(payload: dict[str, Any]) -> bytes:
     return json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode(
         "utf-8"
     )
+
+
+def _read_certificate_json_bytes(path: Path) -> bytes:
+    with path.open("rb") as handle:
+        data = handle.read(GENESIS_VALUE_MAX_CERTIFICATE_JSON_BYTES + 1)
+    if len(data) > GENESIS_VALUE_MAX_CERTIFICATE_JSON_BYTES:
+        raise GenesisValueGuardError("genesis_value_certificate_json_too_large")
+    return data
+
+
+def _certificate_sig_cache_key(
+    cert: GenesisValueActionPolicyCertificate,
+) -> tuple[str, str, str] | None:
+    try:
+        sig_digest = hashlib.sha256(
+            _json_bytes({"certificate_sig": cert.certificate_sig})
+        ).hexdigest()
+    except (TypeError, ValueError):
+        return None
+    return (cert.certificate_id, cert.certificate_payload_sha256, sig_digest)
+
+
+def _certificate_sig_cache_contains(cache_key: tuple[str, str, str]) -> bool:
+    with _CERTIFICATE_SIG_CACHE_LOCK:
+        if cache_key not in _CERTIFICATE_SIG_CACHE:
+            return False
+        _CERTIFICATE_SIG_CACHE.move_to_end(cache_key)
+        return True
+
+
+def _certificate_sig_cache_add(cache_key: tuple[str, str, str]) -> None:
+    with _CERTIFICATE_SIG_CACHE_LOCK:
+        _CERTIFICATE_SIG_CACHE[cache_key] = None
+        _CERTIFICATE_SIG_CACHE.move_to_end(cache_key)
+        while len(_CERTIFICATE_SIG_CACHE) > _CERTIFICATE_SIG_CACHE_MAX_ENTRIES:
+            _CERTIFICATE_SIG_CACHE.popitem(last=False)
 
 
 __all__ = [

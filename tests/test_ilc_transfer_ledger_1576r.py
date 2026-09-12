@@ -299,6 +299,23 @@ def test_transaction_is_atomic_on_balance_corruption(lmdb_env, key_uri: str, pri
     assert nonce_store.peek_counter(SENDER_AGENT_ID) == 0
 
 
+def test_encode_balance_rejects_non_finite_decimal() -> None:
+    with pytest.raises(ValueError, match="invalid_ilc_balance_non_finite"):
+        transfer_ledger._encode_balance(Decimal("NaN"))  # noqa: SLF001
+
+
+def test_genesis_epoch_spend_codec_rejects_noncanonical_and_over_u64() -> None:
+    assert (
+        transfer_ledger._decode_non_negative_int(  # noqa: SLF001
+            transfer_ledger._encode_epoch_spend(18_446_744_073_709_551_615)  # noqa: SLF001
+        )
+        == 18_446_744_073_709_551_615
+    )
+    for raw in (b"", b"00", b"18446744073709551616", b"-1"):
+        with pytest.raises(ValueError, match="invalid_genesis_epoch_spend_index"):
+            transfer_ledger._decode_non_negative_int(raw)  # noqa: SLF001
+
+
 def test_seed_balance_for_test_requires_explicit_authorization(
     lmdb_env,
     monkeypatch: pytest.MonkeyPatch,

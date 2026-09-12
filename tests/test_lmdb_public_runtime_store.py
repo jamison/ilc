@@ -10,7 +10,11 @@ from ilc_core.ledger import get_ledger_backend
 from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent
-from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore, LmdbWalletStore
+from ilc_core.storage.lmdb_public_runtime import (
+    LmdbGraphStore,
+    LmdbPublicReceiptStore,
+    LmdbWalletStore,
+)
 from ilc_core.value_action.ilc_transfer_ledger import ILCTransferLedger
 
 
@@ -74,6 +78,37 @@ def test_lmdb_wallet_store_env_has_headroom_for_transfer_ledger(tmp_path: Path) 
         assert ledger.get_balance("a" * 96) == Decimal("0")
     finally:
         wallet_store.close()
+
+
+def test_lmdb_runtime_cached_env_rejects_larger_late_map_size(tmp_path: Path) -> None:
+    store_root = tmp_path / "wallet-store"
+    wallet_store = LmdbWalletStore(store_root, map_size=1024 * 1024)
+    try:
+        with pytest.raises(ValueError, match="lmdb_runtime_cached_env_map_size_too_small"):
+            LmdbWalletStore(store_root, map_size=2 * 1024 * 1024)
+    finally:
+        wallet_store.close()
+
+
+def test_public_receipt_kind_epoch_index_does_not_collide_on_delimiter(tmp_path: Path) -> None:
+    store = LmdbPublicReceiptStore(tmp_path / "receipt-store")
+    try:
+        store.put_receipt(
+            "receipt-a",
+            {"signer_agent_id": "agent", "artifact_kind": "a::b", "epoch_id": "c"},
+        )
+        store.put_receipt(
+            "receipt-b",
+            {"signer_agent_id": "agent", "artifact_kind": "a", "epoch_id": "b::c"},
+        )
+
+        rows_a = store.get_receipts_by_artifact_epoch("a::b", "c")
+        rows_b = store.get_receipts_by_artifact_epoch("a", "b::c")
+    finally:
+        store.close()
+
+    assert [row["artifact_kind"] for row in rows_a] == ["a::b"]
+    assert [row["artifact_kind"] for row in rows_b] == ["a"]
 
 
 def test_lmdb_graph_store_normalizes_decimal_payloads(tmp_path: Path) -> None:

@@ -15,7 +15,7 @@ LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
 DEFAULT_MAX_NAMED_DBS = 16
 MAX_PUBLIC_RECEIPT_INDEX_IDS = 10_000
-_ENV_CACHE: dict[str, tuple[lmdb.Environment, int]] = {}
+_ENV_CACHE: dict[str, tuple[lmdb.Environment, int, int]] = {}
 _ENV_CACHE_LOCK = threading.Lock()
 
 
@@ -38,27 +38,40 @@ def _decode_json(payload: bytes | None) -> Any:
     return json.loads(payload.decode("utf-8"))
 
 
+def _compound_index_key(*parts: str) -> str:
+    return json.dumps(list(parts), sort_keys=False, separators=(",", ":"), allow_nan=False)
+
+
 class _LmdbRuntimeBase:
-    def __init__(self, root: Path | str, *, db_names: tuple[bytes, ...], map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
+    def __init__(
+        self,
+        root: Path | str,
+        *,
+        db_names: tuple[bytes, ...],
+        map_size: int = DEFAULT_MAP_SIZE_BYTES,
+    ) -> None:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self._root_key = str(self.root.resolve())
         with _ENV_CACHE_LOCK:
             cached = _ENV_CACHE.get(self._root_key)
+            requested_max_dbs = max(DEFAULT_MAX_NAMED_DBS, len(db_names))
             if cached is None:
                 self.env = lmdb.open(
                     self._root_key,
                     create=True,
                     subdir=True,
-                    max_dbs=max(DEFAULT_MAX_NAMED_DBS, len(db_names)),
+                    max_dbs=requested_max_dbs,
                     map_size=map_size,
                     lock=True,
                 )
-                _ENV_CACHE[self._root_key] = (self.env, 1)
+                _ENV_CACHE[self._root_key] = (self.env, 1, map_size)
             else:
-                self.env, refcount = cached
-                _ENV_CACHE[self._root_key] = (self.env, refcount + 1)
-        self._dbs = {name: self.env.open_db(name) for name in db_names}
+                self.env, refcount, cached_map_size = cached
+                if map_size > cached_map_size:
+                    raise ValueError("lmdb_runtime_cached_env_map_size_too_small")
+                _ENV_CACHE[self._root_key] = (self.env, refcount + 1, cached_map_size)
+            self._dbs = {name: self.env.open_db(name) for name in db_names}
         self._closed = False
 
     def _put_json(self, db_name: bytes, key: str, payload: Any) -> None:
@@ -89,12 +102,12 @@ class _LmdbRuntimeBase:
             if cached is None:
                 self.env.close()
             else:
-                env, refcount = cached
+                env, refcount, map_size = cached
                 if refcount <= 1:
                     env.close()
                     _ENV_CACHE.pop(self._root_key, None)
                 else:
-                    _ENV_CACHE[self._root_key] = (env, refcount - 1)
+                    _ENV_CACHE[self._root_key] = (env, refcount - 1, map_size)
             self._closed = True
 
 
@@ -211,10 +224,15 @@ class LmdbPublicReceiptStore(_LmdbRuntimeBase):
             )
         artifact_kind = payload.get("artifact_kind")
         epoch_id = payload.get("epoch_id")
-        if isinstance(artifact_kind, str) and artifact_kind and isinstance(epoch_id, str) and epoch_id:
+        if (
+            isinstance(artifact_kind, str)
+            and artifact_kind
+            and isinstance(epoch_id, str)
+            and epoch_id
+        ):
             self._append_index_id(
                 db_name=b"receipts_by_kind_epoch",
-                key=f"{artifact_kind}::{epoch_id}",
+                key=_compound_index_key(artifact_kind, epoch_id),
                 receipt_id=receipt_id,
             )
 
@@ -225,7 +243,17 @@ class LmdbPublicReceiptStore(_LmdbRuntimeBase):
     def get_receipts_by_signer(self, signer_agent_id: str) -> list[dict[str, Any]]:
         return self._resolve_index_rows(db_name=b"receipts_by_signer", key=signer_agent_id)
 
-    def get_receipts_by_artifact_epoch(self, artifact_kind: str, epoch_id: str) -> list[dict[str, Any]]:
+    def get_receipts_by_artifact_epoch(
+        self,
+        artifact_kind: str,
+        epoch_id: str,
+    ) -> list[dict[str, Any]]:
+        rows = self._resolve_index_rows(
+            db_name=b"receipts_by_kind_epoch",
+            key=_compound_index_key(artifact_kind, epoch_id),
+        )
+        if rows:
+            return rows
         return self._resolve_index_rows(
             db_name=b"receipts_by_kind_epoch",
             key=f"{artifact_kind}::{epoch_id}",

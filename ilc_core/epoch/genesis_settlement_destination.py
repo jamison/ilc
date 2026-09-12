@@ -59,8 +59,6 @@ GENESIS_MINTING_AUTHORIZED = True
 
 CDL_048_GENESIS_TRANCHE_TREATMENT = "explicitly_applied_by_authorized_value_path"
 
-_FORBIDDEN_TRUE_FIELDS = frozenset()
-
 _REQUIRED_TRUE_FIELDS_PHASE_1575S = frozenset(
     {
         "genesis_settlement_write_authorized",
@@ -108,9 +106,6 @@ def verify_genesis_settlement_destination_record(record: dict[str, Any]) -> None
 
     if not isinstance(record, dict):
         raise ValueError("genesis_settlement_destination_must_be_dict")
-    for field in _FORBIDDEN_TRUE_FIELDS:
-        if record.get(field) is not False:
-            raise ValueError(f"genesis_settlement_{field}_must_be_false")
     for field in _REQUIRED_TRUE_FIELDS_PHASE_1575S:
         if record.get(field) is not True:
             raise ValueError(f"genesis_settlement_{field}_must_be_true_phase_1575s")

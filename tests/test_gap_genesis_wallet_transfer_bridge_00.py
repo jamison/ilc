@@ -5,6 +5,8 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
+import pytest
+
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.ledger.exact_numeric import parse_non_negative_decimal
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
@@ -13,6 +15,11 @@ from ilc_core.value_action.ilc_transfer_ledger import ILCTransferLedger
 
 RECEIPT_PATH = Path("out/gap_genesis_wallet_transfer_bridge_00/bridge_receipt.json")
 WALLET_PATH = Path("out/public_runtime/wallet")
+
+pytestmark = pytest.mark.skipif(
+    not RECEIPT_PATH.exists() or not (WALLET_PATH / "data.mdb").exists(),
+    reason="requires local EPOCH-SETTLEMENT-00 and TRANSFER-BRIDGE-00 LMDB artifacts",
+)
 
 
 def test_gap_genesis_wallet_transfer_bridge_receipt_matches_lmdb_readback() -> None:
