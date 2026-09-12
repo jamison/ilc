@@ -99731,6 +99731,81 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_mempalace_rehydrate_20260912_00_g10_context_rehydration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_economic_state_reconcile_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PUBLIC-RC-ECONOMIC-STATE-RECONCILE-00 classified prelaunch nonzero settlement and bridge state as not launch-valid monetary state.",
+      "manual_read_summary": "Reconciliation record direct-reads CDL-027, CDL-029, current settlement and bridge receipts, wallet LMDB rows, transfer-ledger balance, public wallet claimability behavior, and Genesis guard states; it preserves the Genesis 5% tranche design while classifying the current row as historical/prelaunch-only pending monthly maturity.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-ECONOMIC-STATE-RECONCILE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_public_rc_economic_state_canon_correction_2026_09_12_v0.1.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_0_settlement_committed_GAP_PUBLIC_RC_EPOCH_SETTLEMENT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:genesis_wallet_transfer_bridge_committed_GAP_GENESIS_WALLET_TRANSFER_BRIDGE_00"
+        },
+        {
+          "edge_type": "BLOCKS_UNTIL",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS",
+        "BLOCKS_UNTIL"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_public_rc_economic_state_reconciliation_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_economic_state_reconcile_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PUBLIC-RC-ECONOMIC-STATE-RECONCILE-00 walkthrough records direct-read evidence, MemPalace drift, wallet rows, guard states, verification commands, tokens, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive economic-state reconciliation phase, including prompt validation, token audit, receipt hashes, wallet/transfer readback, classification decision, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-ECONOMIC-STATE-RECONCILE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_public_rc_economic_state_reconciliation_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_economic_state_reconcile_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
