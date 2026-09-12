@@ -78794,6 +78794,218 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "out/gap_public_rc_epoch_00c/epoch_advance_execute_20260911_after_peer_agent_fix.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Sensitive Genesis value certificate phase prompt; scopes CDL-110 certificate issuance, guardian key ceremony, load_and_verify_certificate implementation, and GENESIS_WALLET_WRITE_AUTHORIZED guard clearance.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "PROMPT_AUTHORITY",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_value_cert_00_g10_genesis_value_certificate_issue.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Regression tests for the produced Genesis value certificate artifact, certificate signature bundle shape, guard-state consistency, output secrecy boundaries, and mutated certificate rejection.",
+      "node_kind": "test",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_genesis_value_cert_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Walkthrough records sensitive GO receipt, direct-read findings, public certificate hashes, runtime verification, focused and adjacent test outputs, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_genesis_value_cert_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Public GenesisValueActionPolicyCertificate artifact for network ilc-rc01, epoch window 1-4, with verified 2-of-3 guardian COSE_Sign1 signatures.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_genesis_value_cert_00/genesis_value_action_policy_certificate.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Public guardian key descriptor record and guardian public key root for the GAP-GENESIS-VALUE-CERT-00 certificate.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_genesis_value_cert_00/guardian_pubkeys.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_genesis_value_cert_00_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-GENESIS-VALUE-CERT-00 issued the CDL-110 Genesis value policy certificate and cleared wallet-write authority behind certificate verification.",
+      "manual_read_summary": "Certificate issue receipt recording certificate ID, hashes, guardian threshold, non-path off-repo custody reference, and phase non-claims.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-GENESIS-VALUE-CERT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_cdl_110_genesis_value_spend_guard_authority_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "PROMPT_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_genesis_value_cert_00/cert_issue_receipt.json"
     }
   ],
   "boundary": {

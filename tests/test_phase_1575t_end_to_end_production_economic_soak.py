@@ -16,6 +16,7 @@ from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime, Ec
 from ilc_core.ledger.cdl048_conversion_sweeper_runtime import (
     CDL048_ACTIVATED_PHASE_1388_TOKEN,
 )
+from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 import tools.phase1575t_e2e_production_soak as phase1575t
 from tools.phase1575t_e2e_production_soak import (
@@ -109,7 +110,11 @@ def test_gate_3_genesis_ilc_credit_confirmed(tmp_path: Path) -> None:
 
     assert gate["pass"] is True
     assert gate["wallet_status"]["data"]["agent_id"] == GENESIS_AGENT1_AGENT_ID
-    assert gate["wallet_status"]["data"]["claimability_state"] == "deferred"
+    assert gate["expected_claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    assert (
+        gate["wallet_status"]["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    )
     assert Decimal(gate["genesis_ilc_credit"]) > Decimal("0")
     assert Decimal(gate["wallet_status"]["data"]["balance_ilc"]) == Decimal(gate["genesis_ilc_credit"])
 
@@ -198,8 +203,8 @@ def test_completion_certificate_no_wallet_provider_spend_transfer_withdrawal_wri
 
     assert cert["no_wallet_provider_spend_transfer_withdrawal_writes"] is True
     assert cert["lifecycle_lmdb_settlement_writes_observed"] is True
-    assert cert["genesis_wallet_write_authorized"] is False
-    assert GENESIS_WALLET_WRITE_AUTHORIZED is False
+    assert cert["genesis_wallet_write_authorized"] is True
+    assert GENESIS_WALLET_WRITE_AUTHORIZED is True
     assert cert["non_claims"]["wallet_transfer_enabled"] is False
 
 

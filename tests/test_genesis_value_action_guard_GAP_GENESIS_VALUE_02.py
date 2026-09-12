@@ -37,6 +37,7 @@ from ilc_core.genesis.genesis_value_action_guard import (
     canonical_certificate_payload,
     compute_certificate_payload_sha256,
     enforce_genesis_value_guard,
+    load_and_verify_certificate,
     validate_genesis_value_certificate,
 )
 from ilc_core.value_action import ilc_transfer_intent
@@ -277,6 +278,133 @@ def test_valid_certificate_within_epoch_accepted() -> None:
         unit="ECU",
         current_epoch_spent_micro_unit=0,
     )
+
+
+def test_load_and_verify_certificate_accepts_valid_json(tmp_path: Path) -> None:
+    cert = _cert()
+    path = tmp_path / "genesis_value_certificate.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": cert.schema_version,
+                "certificate_id": cert.certificate_id,
+                "genesis_agent_id": cert.genesis_agent_id,
+                "network_id": cert.network_id,
+                "effective_epoch_start": cert.effective_epoch_start,
+                "effective_epoch_end": cert.effective_epoch_end,
+                "allowed_action_classes": sorted(cert.allowed_action_classes),
+                "allowed_recipient_policy": cert.allowed_recipient_policy,
+                "per_transfer_cap_micro_ecu": cert.per_transfer_cap_micro_ecu,
+                "per_epoch_cap_micro_ecu": cert.per_epoch_cap_micro_ecu,
+                "per_transfer_cap_micro_ilc": cert.per_transfer_cap_micro_ilc,
+                "per_epoch_cap_micro_ilc": cert.per_epoch_cap_micro_ilc,
+                "nonce_domain": cert.nonce_domain,
+                "guardian_public_key_root": cert.guardian_public_key_root,
+                "guardian_threshold": cert.guardian_threshold,
+                "guardian_key_count": cert.guardian_key_count,
+                "guardian_signature_scheme": cert.guardian_signature_scheme,
+                "certificate_payload_sha256": cert.certificate_payload_sha256,
+                "certificate_sig": cert.certificate_sig,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = load_and_verify_certificate(path)
+
+    assert loaded.certificate_id == cert.certificate_id
+    assert loaded.certificate_payload_sha256 == cert.certificate_payload_sha256
+
+
+def test_load_and_verify_certificate_rejects_extra_json_field(tmp_path: Path) -> None:
+    cert = _cert()
+    path = tmp_path / "genesis_value_certificate_extra.json"
+    raw = {
+        "schema_version": cert.schema_version,
+        "certificate_id": cert.certificate_id,
+        "genesis_agent_id": cert.genesis_agent_id,
+        "network_id": cert.network_id,
+        "effective_epoch_start": cert.effective_epoch_start,
+        "effective_epoch_end": cert.effective_epoch_end,
+        "allowed_action_classes": sorted(cert.allowed_action_classes),
+        "allowed_recipient_policy": cert.allowed_recipient_policy,
+        "per_transfer_cap_micro_ecu": cert.per_transfer_cap_micro_ecu,
+        "per_epoch_cap_micro_ecu": cert.per_epoch_cap_micro_ecu,
+        "per_transfer_cap_micro_ilc": cert.per_transfer_cap_micro_ilc,
+        "per_epoch_cap_micro_ilc": cert.per_epoch_cap_micro_ilc,
+        "nonce_domain": cert.nonce_domain,
+        "guardian_public_key_root": cert.guardian_public_key_root,
+        "guardian_threshold": cert.guardian_threshold,
+        "guardian_key_count": cert.guardian_key_count,
+        "guardian_signature_scheme": cert.guardian_signature_scheme,
+        "certificate_payload_sha256": cert.certificate_payload_sha256,
+        "certificate_sig": cert.certificate_sig,
+        "unsigned_extra": "injected",
+    }
+    path.write_text(json.dumps(raw), encoding="utf-8")
+
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_json_fields_invalid",
+    ):
+        load_and_verify_certificate(path)
+
+
+def test_load_and_verify_certificate_rejects_non_object_json(tmp_path: Path) -> None:
+    path = tmp_path / "genesis_value_certificate_array.json"
+    path.write_text("[]", encoding="utf-8")
+
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_json_not_object",
+    ):
+        load_and_verify_certificate(path)
+
+
+def test_load_and_verify_certificate_rejects_oversized_json(tmp_path: Path) -> None:
+    path = tmp_path / "genesis_value_certificate_oversized.json"
+    path.write_text(" " * 65_537, encoding="utf-8")
+
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_json_too_large",
+    ):
+        load_and_verify_certificate(path)
+
+
+def test_load_and_verify_certificate_rejects_duplicate_action_classes(tmp_path: Path) -> None:
+    cert = _cert()
+    path = tmp_path / "genesis_value_certificate_duplicate_actions.json"
+    raw = {
+        "schema_version": cert.schema_version,
+        "certificate_id": cert.certificate_id,
+        "genesis_agent_id": cert.genesis_agent_id,
+        "network_id": cert.network_id,
+        "effective_epoch_start": cert.effective_epoch_start,
+        "effective_epoch_end": cert.effective_epoch_end,
+        "allowed_action_classes": ["CONTRIBUTION", "CONTRIBUTION"],
+        "allowed_recipient_policy": cert.allowed_recipient_policy,
+        "per_transfer_cap_micro_ecu": cert.per_transfer_cap_micro_ecu,
+        "per_epoch_cap_micro_ecu": cert.per_epoch_cap_micro_ecu,
+        "per_transfer_cap_micro_ilc": cert.per_transfer_cap_micro_ilc,
+        "per_epoch_cap_micro_ilc": cert.per_epoch_cap_micro_ilc,
+        "nonce_domain": cert.nonce_domain,
+        "guardian_public_key_root": cert.guardian_public_key_root,
+        "guardian_threshold": cert.guardian_threshold,
+        "guardian_key_count": cert.guardian_key_count,
+        "guardian_signature_scheme": cert.guardian_signature_scheme,
+        "certificate_payload_sha256": cert.certificate_payload_sha256,
+        "certificate_sig": cert.certificate_sig,
+    }
+    path.write_text(json.dumps(raw), encoding="utf-8")
+
+    with pytest.raises(
+        GenesisValueGuardError,
+        match="genesis_value_certificate_action_classes_duplicate",
+    ):
+        load_and_verify_certificate(path)
 
 
 def test_certificate_wrong_agent_id_rejected() -> None:

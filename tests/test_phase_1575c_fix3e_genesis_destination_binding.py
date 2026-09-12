@@ -72,7 +72,7 @@ def test_fix3e_agent_id_matches_pubkey_record() -> None:
 def test_fix3e_destination_record_phase_1575s_guard_state() -> None:
     record = get_genesis_settlement_destination_record()
 
-    assert record["genesis_wallet_write_authorized"] is False
+    assert record["genesis_wallet_write_authorized"] is True
     assert record["genesis_settlement_write_authorized"] is True
     assert record["genesis_minting_authorized"] is True
 
@@ -92,11 +92,14 @@ def test_fix3e_verify_destination_record_passes() -> None:
     )
 
 
-def test_fix3e_verify_destination_record_rejects_wallet_write_true() -> None:
+def test_fix3e_verify_destination_record_rejects_wallet_write_false_after_cert_00() -> None:
     record = get_genesis_settlement_destination_record()
-    record["genesis_wallet_write_authorized"] = True
+    record["genesis_wallet_write_authorized"] = False
 
-    with pytest.raises(ValueError, match="genesis_wallet_write_authorized_must_be_false"):
+    with pytest.raises(
+        ValueError,
+        match="genesis_wallet_write_authorized_must_be_true_gap_genesis_value_cert_00",
+    ):
         verify_genesis_settlement_destination_record(record)
 
 
@@ -104,7 +107,10 @@ def test_fix3e_verify_destination_record_rejects_missing_wallet_guard() -> None:
     record = get_genesis_settlement_destination_record()
     record.pop("genesis_wallet_write_authorized")
 
-    with pytest.raises(ValueError, match="genesis_wallet_write_authorized_must_be_false"):
+    with pytest.raises(
+        ValueError,
+        match="genesis_wallet_write_authorized_must_be_true_gap_genesis_value_cert_00",
+    ):
         verify_genesis_settlement_destination_record(record)
 
 

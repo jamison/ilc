@@ -58,6 +58,7 @@ from .genesis_value_action_guard import (
     GenesisValueActionPolicyCertificate,
     GenesisValueGuardError,
     enforce_genesis_value_guard,
+    load_and_verify_certificate,
     validate_genesis_value_certificate,
 )
 __all__ = [
@@ -101,6 +102,7 @@ __all__ = [
     "enforce_genesis_value_guard",
     "generate_validator_enrollment_record",
     "generate_genesis_bundle",
+    "load_and_verify_certificate",
     "materialize_epoch_zero_state",
     "read_genesis_intervention_counter",
     "record_genesis_intervention_guardrail_invocation",

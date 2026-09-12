@@ -50,7 +50,7 @@ def _historical_evidence() -> dict[str, object]:
 
 
 def test_phase_1575s_guard_semantics_are_option_c2() -> None:
-    assert GENESIS_WALLET_WRITE_AUTHORIZED is False
+    assert GENESIS_WALLET_WRITE_AUTHORIZED is True
     assert GENESIS_SETTLEMENT_WRITE_AUTHORIZED is True
     assert GENESIS_MINTING_AUTHORIZED is True
 
@@ -66,8 +66,8 @@ def test_phase_1575s_destination_verifier_accepts_current_record() -> None:
     (
         (
             "genesis_wallet_write_authorized",
-            True,
-            "genesis_wallet_write_authorized_must_be_false",
+            False,
+            "genesis_wallet_write_authorized_must_be_true_gap_genesis_value_cert_00",
         ),
         (
             "genesis_settlement_write_authorized",

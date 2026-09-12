@@ -68,7 +68,7 @@ def test_fix3f_rehearsal_script_exists() -> None:
 def test_fix3f_guards_reflect_post_1575s_accounting_clearance() -> None:
     # Guard cleared by Phase 1575g.
     assert PRODUCTION_EMISSION_NOT_ACTIVATED is False
-    assert GENESIS_WALLET_WRITE_AUTHORIZED is False
+    assert GENESIS_WALLET_WRITE_AUTHORIZED is True
     assert GENESIS_SETTLEMENT_WRITE_AUTHORIZED is True
     assert GENESIS_MINTING_AUTHORIZED is True
 

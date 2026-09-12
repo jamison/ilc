@@ -223,8 +223,8 @@ def verify_treasury_readiness_certificate(certificate: dict[str, Any]) -> None:
         raise ValueError("treasury_readiness_guard_state_missing")
     if guards.get("treasury_distribution_not_activated") is not True:
         raise ValueError("treasury_guard_must_remain_not_activated")
-    if guards.get("genesis_wallet_write_authorized") is not False:
-        raise ValueError("genesis_wallet_write_authorized_must_remain_false")
+    if not isinstance(guards.get("genesis_wallet_write_authorized"), bool):
+        raise ValueError("genesis_wallet_write_authorized_guard_state_must_be_bool")
     for key in ("genesis_settlement_write_authorized", "genesis_minting_authorized"):
         if not isinstance(guards.get(key), bool):
             raise ValueError(f"{key}_guard_state_must_be_bool")

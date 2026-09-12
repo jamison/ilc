@@ -5,6 +5,7 @@ import hashlib
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from cryptography.exceptions import InvalidSignature
@@ -24,6 +25,7 @@ GENESIS_VALUE_GUARDIAN_THRESHOLD = 2
 GENESIS_VALUE_GUARDIAN_KEY_COUNT = 3
 GENESIS_VALUE_GUARDIAN_SIGNATURE_SCHEME = "Ed25519-COSE-Sign1"
 GENESIS_VALUE_MAX_COSE_SIGN1_BYTES = 4096
+GENESIS_VALUE_MAX_CERTIFICATE_JSON_BYTES = 65_536
 GENESIS_VALUE_MAX_POLICY_WINDOW_EPOCHS = 4
 GENESIS_VALUE_MAX_PER_TRANSFER_MICRO_ECU = 1_000_000_000
 GENESIS_VALUE_MAX_PER_EPOCH_MICRO_ECU = 5_000_000_000
@@ -64,6 +66,55 @@ class GenesisValueActionPolicyCertificate:
     guardian_signature_scheme: str
     certificate_payload_sha256: str
     certificate_sig: Mapping[str, object]
+
+
+def load_and_verify_certificate(path: str | Path) -> GenesisValueActionPolicyCertificate:
+    """Load and validate a GenesisValueActionPolicyCertificate JSON artifact."""
+    certificate_path = Path(path)
+    try:
+        if certificate_path.stat().st_size > GENESIS_VALUE_MAX_CERTIFICATE_JSON_BYTES:
+            raise GenesisValueGuardError("genesis_value_certificate_json_too_large")
+        raw = json.loads(certificate_path.read_text(encoding="utf-8"))
+    except GenesisValueGuardError:
+        raise
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise GenesisValueGuardError("genesis_value_certificate_load_failed") from exc
+    if not isinstance(raw, Mapping):
+        raise GenesisValueGuardError("genesis_value_certificate_json_not_object")
+    if set(raw.keys()) != _EXPECTED_CERTIFICATE_JSON_KEYS:
+        raise GenesisValueGuardError("genesis_value_certificate_json_fields_invalid")
+    action_classes = raw.get("allowed_action_classes")
+    if not isinstance(action_classes, Sequence) or isinstance(action_classes, (str, bytes)):
+        raise GenesisValueGuardError("genesis_value_certificate_action_classes_invalid")
+    try:
+        normalized_action_classes = frozenset(action_classes)
+    except TypeError as exc:
+        raise GenesisValueGuardError("genesis_value_certificate_action_classes_invalid") from exc
+    if len(normalized_action_classes) != len(action_classes):
+        raise GenesisValueGuardError("genesis_value_certificate_action_classes_duplicate")
+    cert = GenesisValueActionPolicyCertificate(
+        schema_version=raw["schema_version"],
+        certificate_id=raw["certificate_id"],
+        genesis_agent_id=raw["genesis_agent_id"],
+        network_id=raw["network_id"],
+        effective_epoch_start=raw["effective_epoch_start"],
+        effective_epoch_end=raw["effective_epoch_end"],
+        allowed_action_classes=normalized_action_classes,
+        allowed_recipient_policy=raw["allowed_recipient_policy"],
+        per_transfer_cap_micro_ecu=raw["per_transfer_cap_micro_ecu"],
+        per_epoch_cap_micro_ecu=raw["per_epoch_cap_micro_ecu"],
+        per_transfer_cap_micro_ilc=raw["per_transfer_cap_micro_ilc"],
+        per_epoch_cap_micro_ilc=raw["per_epoch_cap_micro_ilc"],
+        nonce_domain=raw["nonce_domain"],
+        guardian_public_key_root=raw["guardian_public_key_root"],
+        guardian_threshold=raw["guardian_threshold"],
+        guardian_key_count=raw["guardian_key_count"],
+        guardian_signature_scheme=raw["guardian_signature_scheme"],
+        certificate_payload_sha256=raw["certificate_payload_sha256"],
+        certificate_sig=raw["certificate_sig"],
+    )
+    validate_genesis_value_certificate(cert)
+    return cert
 
 
 def validate_genesis_value_certificate(
@@ -274,6 +325,29 @@ def _caps_for_unit(
 
 _EXPECTED_CERT_SIG_KEYS = frozenset({"threshold", "guardian_public_keys", "signatures"})
 _EXPECTED_GUARDIAN_DESCRIPTOR_KEYS = frozenset({"guardian_id", "public_key_hex"})
+_EXPECTED_CERTIFICATE_JSON_KEYS = frozenset(
+    {
+        "allowed_action_classes",
+        "allowed_recipient_policy",
+        "certificate_id",
+        "certificate_payload_sha256",
+        "certificate_sig",
+        "effective_epoch_end",
+        "effective_epoch_start",
+        "genesis_agent_id",
+        "guardian_key_count",
+        "guardian_public_key_root",
+        "guardian_signature_scheme",
+        "guardian_threshold",
+        "network_id",
+        "nonce_domain",
+        "per_epoch_cap_micro_ecu",
+        "per_epoch_cap_micro_ilc",
+        "per_transfer_cap_micro_ecu",
+        "per_transfer_cap_micro_ilc",
+        "schema_version",
+    }
+)
 
 
 def _validate_certificate_sig(
@@ -471,5 +545,6 @@ __all__ = [
     "canonical_certificate_payload",
     "compute_certificate_payload_sha256",
     "enforce_genesis_value_guard",
+    "load_and_verify_certificate",
     "validate_genesis_value_certificate",
 ]

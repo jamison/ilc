@@ -2,9 +2,10 @@
 """Genesis settlement destination binding.
 
 Binds the CDL-029 genesis overhead pool to the canonical Genesis Agent 1
-identity. Phase 1575s clears settlement/minting accounting for Option C2
+identity. Phase 1575s cleared settlement/minting accounting for Option C2
 settled-balance writes while keeping wallet-provider spend/transfer/withdrawal
-authority disabled.
+authority disabled. GAP-GENESIS-VALUE-CERT-00 later clears wallet-provider
+authority only behind a verified GenesisValueActionPolicyCertificate.
 """
 
 from __future__ import annotations
@@ -49,25 +50,27 @@ GENESIS_BURN_POOL_NOT_ROUTED_TO_GENESIS_AGENT_TOKEN = (
     "genesis_burn_pool_not_routed_to_genesis_agent_phase_1575c_fix3e"
 )
 
-# Activation guards. Phase 1575s clears only the internal settled-balance
-# accounting path; wallet-provider spend/transfer/withdrawal authority remains
-# blocked until a separate wallet authority phase.
-GENESIS_WALLET_WRITE_AUTHORIZED = False
+# Activation guards. Phase 1575s cleared only the internal settled-balance
+# accounting path. GAP-GENESIS-VALUE-CERT-00 clears wallet-provider
+# spend/transfer/withdrawal authority behind the CDL-110 certificate guard.
+GENESIS_WALLET_WRITE_AUTHORIZED = True
 GENESIS_SETTLEMENT_WRITE_AUTHORIZED = True
 GENESIS_MINTING_AUTHORIZED = True
 
 CDL_048_GENESIS_TRANCHE_TREATMENT = "explicitly_applied_by_authorized_value_path"
 
-_FORBIDDEN_TRUE_FIELDS = frozenset(
-    {
-        "genesis_wallet_write_authorized",
-    }
-)
+_FORBIDDEN_TRUE_FIELDS = frozenset()
 
 _REQUIRED_TRUE_FIELDS_PHASE_1575S = frozenset(
     {
         "genesis_settlement_write_authorized",
         "genesis_minting_authorized",
+    }
+)
+
+_REQUIRED_TRUE_FIELDS_GAP_GENESIS_VALUE_CERT_00 = frozenset(
+    {
+        "genesis_wallet_write_authorized",
     }
 )
 
@@ -77,7 +80,8 @@ def get_genesis_settlement_destination_record() -> dict[str, Any]:
 
     This record is constitutionally bound by the CDL-048 amendment in Phase
     1575c-Fix3e and authorized for internal settled-balance accounting by Phase
-    1575s. It does not authorize wallet-provider spend/transfer/withdrawal.
+    1575s. Wallet-provider spend/transfer/withdrawal authority is live only
+    when callers also provide a verified CDL-110 Genesis value certificate.
     """
 
     return {
@@ -110,6 +114,9 @@ def verify_genesis_settlement_destination_record(record: dict[str, Any]) -> None
     for field in _REQUIRED_TRUE_FIELDS_PHASE_1575S:
         if record.get(field) is not True:
             raise ValueError(f"genesis_settlement_{field}_must_be_true_phase_1575s")
+    for field in _REQUIRED_TRUE_FIELDS_GAP_GENESIS_VALUE_CERT_00:
+        if record.get(field) is not True:
+            raise ValueError(f"genesis_settlement_{field}_must_be_true_gap_genesis_value_cert_00")
     if record.get("agent_id") != GENESIS_AGENT1_AGENT_ID:
         raise ValueError("genesis_settlement_agent_id_mismatch")
     if record.get("cdl_048_genesis_tranche_treatment") != (

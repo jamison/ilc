@@ -101,7 +101,7 @@ def test_fix3g_records_live_authority_boundary() -> None:
     boundary = payload["authority_boundary"]
 
     assert boundary["production_emission_not_activated"] is False
-    assert boundary["genesis_wallet_write_authorized"] is False
+    assert boundary["genesis_wallet_write_authorized"] is True
     assert boundary["genesis_settlement_write_authorized"] is True
     assert boundary["genesis_minting_authorized"] is True
     assert boundary["genesis_agent1_agent_id"].startswith("c43f69fcc4dfd021")

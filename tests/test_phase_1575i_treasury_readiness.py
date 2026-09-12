@@ -53,7 +53,7 @@ def test_phase_1575i_guard_state_preserves_treasury_and_wallet_boundaries() -> N
     guards = certificate["guard_state"]
 
     assert guards["treasury_distribution_not_activated"] is True
-    assert guards["genesis_wallet_write_authorized"] is False
+    assert guards["genesis_wallet_write_authorized"] is True
     assert guards["genesis_settlement_write_authorized"] is True
     assert guards["genesis_minting_authorized"] is True
     assert "not_activated" in guards["treasury_distribution_guard_token"]
