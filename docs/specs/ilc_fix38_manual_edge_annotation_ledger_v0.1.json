@@ -79166,6 +79166,80 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "out/gap_genesis_wallet_transfer_bridge_00/bridge_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00a_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00a produced local ilc-core 0.4.22 build artifacts for the post-value-certificate and settled-wallet bridge package refresh.",
+      "manual_read_summary": "Local package build receipt for ilc-core 0.4.22 recording version bump, wheel/sdist SHA-256 values and sizes, signing preimages, installed-wheel content checks, clean-venv smoke, and non-claims.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:genesis_wallet_transfer_bridge_committed_GAP_GENESIS_WALLET_TRANSFER_BRIDGE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0422_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0422_00a_2026_09_12",
+      "chronology_note": "2026-09-12 GAP-PACKAGE-0422-00a produced local ilc-core 0.4.22 build artifacts for the post-value-certificate and settled-wallet bridge package refresh.",
+      "manual_read_summary": "Walkthrough recording corrected sensitive boundary for yanking, code-health predecessor commit, 0.4.22 build, wheel packaging omission fix for ilc_core.value_action, verification output, and 00b frontier.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0422-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0422_local_build_complete_GAP_PACKAGE_0422_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:genesis_value_certificate_produced_GAP_GENESIS_VALUE_CERT_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:genesis_wallet_transfer_bridge_committed_GAP_GENESIS_WALLET_TRANSFER_BRIDGE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0422_00a_walkthrough.md"
     }
   ],
   "boundary": {

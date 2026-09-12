@@ -1,0 +1,92 @@
+{
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-0422-00a",
+  "generated_at_utc": "2026-09-12T00:00:00Z",
+  "release_id": "ilc-core-0.4.22",
+  "predecessor_release_id": "ilc-core-0.4.21",
+  "source_runtime_fix_commit": "e421427b671d09cf6fba8c6b2bfaded0ce911941",
+  "code_health_hygiene_commit": "4849e50bb",
+  "version_updates": {
+    "pyproject_toml": "0.4.22",
+    "ilc_core___init__": "0.4.22",
+    "tools_install_sh_retained_release_id": "ilc-core-0.4.21"
+  },
+  "packaging_corrections": {
+    "ilc_core_value_action_added_to_pyproject_packages": true,
+    "reason": "EPOCH-00d transfer smoke depends on ilc_core.value_action.ilc_transfer_ledger from the installed wheel."
+  },
+  "artifacts": {
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.22-py3-none-any.whl",
+      "sha256": "07c59b68b8d0b2447f499ddb60fcc6dd62c9a6425021fbd612aa8b6367c776b3",
+      "size_bytes": 1495190,
+      "signed_preimage_sha256": "4edc5e9aa0c334b31d36cb4ae621be0646714856470c3629f0f2445bd4eb546f",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0422@phase-1628"
+    },
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.22.tar.gz",
+      "sha256": "666993088db25df7c9743bbb6de227983423a2dd2d340bcd5448d7a639751efd",
+      "size_bytes": 1221128,
+      "signed_preimage_sha256": "c29edd3ff2b7ed66d61040d22a460ee94f57d29ab9bc1b8dd588a6cb3ae2d916",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0422@phase-1628"
+    }
+  },
+  "artifact_content_checks": {
+    "ilc_core/genesis/invite_enforcement.py": true,
+    "ilc_core/genesis/genesis_value_action_guard.py": true,
+    "ilc_core/storage/lmdb_public_runtime.py": true,
+    "ilc_core/value_action/ilc_transfer_ledger.py": true,
+    "ilc_core/crypto/cose_sign1.py": true,
+    "ilc_core/protocol/ilc_cluster_a_ingest.py": true,
+    "ilc_core/cli/canon_bundle_validate.py": true
+  },
+  "verification": {
+    "build": "Successfully built ilc_core-0.4.22.tar.gz and ilc_core-0.4.22-py3-none-any.whl",
+    "twine_check": "PASSED for wheel and sdist",
+    "wheel_compileall": "passed",
+    "clean_outside_repo_venv_smoke": {
+      "status": "passed",
+      "loaded_from_site_packages": true,
+      "ilc_core_version": "0.4.22",
+      "invite_enforcement_enabled": true,
+      "register_if_new_in_require_invite_for_enrollment": true,
+      "load_and_verify_certificate_importable": true,
+      "lmdb_runtime_cache_hardened": true,
+      "ilc_transfer_ledger_importable": true,
+      "ilc_transfer_ledger_epoch_spend_guard": true,
+      "cose_signature_guard_hardened": true,
+      "PUBLIC_P2P_ENABLED": true,
+      "PUBLIC_FETCH_SERVING_ENABLED": true,
+      "NON_LOOPBACK_SIDECAR_PROJECTION_ENABLED": true,
+      "RUST_P2P_BRIDGE_NOT_ACTIVATED": false,
+      "CDL_094_ADMISSION_WIRE_NOT_ACTIVATED": false,
+      "CONNECTIVITY_ADVERTISEMENT_NOT_ACTIVATED": false,
+      "VALIDATOR_ADMISSION_NOT_ACTIVATED": true
+    },
+    "code_health": "4 passed in 5.70s",
+    "focused_package_regression_slice": "175 passed in 32.75s"
+  },
+  "output_token": "package_0422_local_build_complete_GAP_PACKAGE_0422_00A",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_tools_install_sh_retarget_to_0422",
+    "no_linux_helper_tarball_publication",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ]
+}
