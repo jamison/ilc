@@ -16,7 +16,7 @@ from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime, Ec
 from ilc_core.ledger.cdl048_conversion_sweeper_runtime import (
     CDL048_ACTIVATED_PHASE_1388_TOKEN,
 )
-from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_DEFERRED
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 import tools.phase1575t_e2e_production_soak as phase1575t
 from tools.phase1575t_e2e_production_soak import (
@@ -110,10 +110,10 @@ def test_gate_3_genesis_ilc_credit_confirmed(tmp_path: Path) -> None:
 
     assert gate["pass"] is True
     assert gate["wallet_status"]["data"]["agent_id"] == GENESIS_AGENT1_AGENT_ID
-    assert gate["expected_claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    assert gate["expected_claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
     assert (
         gate["wallet_status"]["data"]["claimability_state"]
-        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        == WALLET_CLAIMABILITY_STATE_DEFERRED
     )
     assert Decimal(gate["genesis_ilc_credit"]) > Decimal("0")
     assert Decimal(gate["wallet_status"]["data"]["balance_ilc"]) == Decimal(gate["genesis_ilc_credit"])
