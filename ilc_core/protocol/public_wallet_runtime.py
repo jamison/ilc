@@ -8,6 +8,7 @@ import json
 import re
 from typing import Any
 
+from ilc_core.epoch.protocol_account_boundary import is_reserved_protocol_account
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
 from ilc_core.ledger.exact_numeric import ZERO, decimal_to_canonical_string, to_decimal
 from ilc_core.protocol.harness_interfaces import PublicWalletStore
@@ -17,7 +18,6 @@ PUBLIC_WALLET_RUNTIME_VERSION = "public_wallet_runtime_653.v0.1"
 WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED = "proof_claimability_authorized"
 WALLET_CLAIMABILITY_STATE_DEFERRED = "deferred"
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
-_PROTOCOL_ACCOUNT_PREFIXES = ("pool:", "reserve:")
 
 
 class PublicWalletRuntimeError(ValueError):
@@ -202,7 +202,7 @@ class PublicWalletRuntime:
 def _require_agent_id(agent_id: str) -> str:
     if not isinstance(agent_id, str) or not agent_id.strip():
         raise PublicWalletRuntimeError("wallet_agent_id_required", "agent_id must be a non-empty string")
-    if agent_id.startswith(_PROTOCOL_ACCOUNT_PREFIXES):
+    if is_reserved_protocol_account(agent_id):
         raise PublicWalletRuntimeError(
             "wallet_protocol_account_not_user_wallet",
             "protocol pool/reserve accounts are not public user wallets",

@@ -100108,6 +100108,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_wallet_claimability_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_protocol_account_separation_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-PROTOCOL-ACCOUNT-SEPARATION-00 added a canonical boundary module for reserved pool and reserve protocol accounts.",
+      "manual_read_summary": "Protocol-account boundary module centralizes reserved pool:/reserve: IDs and prefix checks so wallet and transfer surfaces reject protocol accounts as user or agent principals.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PROTOCOL-ACCOUNT-SEPARATION-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/protocol_account_boundary.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_protocol_account_separation_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-PROTOCOL-ACCOUNT-SEPARATION-00 added tests for protocol-account rejection across wallet and ILC transfer surfaces.",
+      "manual_read_summary": "Tests cover shared boundary exports, known and unknown protocol accounts, public wallet rejection, transfer sender and recipient rejection, and transfer ledger balance/seed rejection.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PROTOCOL-ACCOUNT-SEPARATION-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/protocol_account_boundary.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_protocol_account_separation_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_protocol_account_separation_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-PROTOCOL-ACCOUNT-SEPARATION-00 walkthrough records direct-read findings, boundary tokens, verification output, token, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive reserved protocol-account boundary phase and its wallet/transfer verification evidence.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PROTOCOL-ACCOUNT-SEPARATION-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tests/test_gap_protocol_account_separation_00.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_protocol_account_separation_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
