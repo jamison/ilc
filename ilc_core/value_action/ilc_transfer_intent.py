@@ -12,6 +12,7 @@ from decimal import Decimal
 from enum import Enum
 
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
+from ilc_core.epoch.protocol_account_boundary import require_not_reserved_protocol_account
 from ilc_core.genesis.genesis_value_action_guard import (
     GenesisValueActionPolicyCertificate,
     enforce_genesis_value_guard,
@@ -54,9 +55,10 @@ class AgentActionEnvelope:
     signed_at_epoch: int | None = None
 
 
-def _require_agent_id(value: str, token: str) -> None:
+def _require_agent_id(value: str, token: str, *, protocol_token: str | None = None) -> None:
     if not isinstance(value, str):
         raise ValueError(token)
+    require_not_reserved_protocol_account(value, protocol_token or token)
     if len(value) != _AGENT_ID_HEX_LENGTH:
         raise ValueError(token)
     if _AGENT_ID_RE.fullmatch(value) is None:
@@ -91,8 +93,16 @@ def validate_envelope(env: AgentActionEnvelope) -> None:
     if env.action_type != ActionType.ILC_TRANSFER:
         raise ValueError("invalid_envelope_action_type")
 
-    _require_agent_id(env.sender_agent_id, "invalid_envelope_sender_agent_id")
-    _require_agent_id(env.recipient_agent_id, "invalid_envelope_recipient_agent_id")
+    _require_agent_id(
+        env.sender_agent_id,
+        "invalid_envelope_sender_agent_id",
+        protocol_token="invalid_envelope_sender_protocol_account",
+    )
+    _require_agent_id(
+        env.recipient_agent_id,
+        "invalid_envelope_recipient_agent_id",
+        protocol_token="invalid_envelope_recipient_protocol_account",
+    )
     if env.sender_agent_id == env.recipient_agent_id:
         raise ValueError("invalid_envelope_self_transfer")
 

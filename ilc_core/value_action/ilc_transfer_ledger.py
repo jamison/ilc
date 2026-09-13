@@ -117,7 +117,11 @@ class ILCTransferLedger:
 
     def get_balance(self, agent_id: str) -> Decimal:
         """Return current settled transfer balance for an AgentID."""
-        transfer_intent._require_agent_id(agent_id, "invalid_ilc_transfer_agent_id")
+        transfer_intent._require_agent_id(
+            agent_id,
+            "invalid_ilc_transfer_agent_id",
+            protocol_token="invalid_ilc_transfer_protocol_account",
+        )
         with self._env.begin(db=self._balances_db) as txn:
             return _decode_balance(txn.get(_key(agent_id)))
 
@@ -125,7 +129,11 @@ class ILCTransferLedger:
         """Seed LMDB balance for deterministic tests only, never production flow."""
         if os.environ.get("ILC_TEST_BALANCE_SEED_AUTHORIZED") != "1":
             raise ValueError("test_balance_seed_not_authorized")
-        transfer_intent._require_agent_id(agent_id, "invalid_ilc_transfer_agent_id")
+        transfer_intent._require_agent_id(
+            agent_id,
+            "invalid_ilc_transfer_agent_id",
+            protocol_token="invalid_ilc_transfer_protocol_account",
+        )
         with self._env.begin(write=True, db=self._balances_db) as txn:
             txn.put(_key(agent_id), _encode_balance(amount_ilc))
 
