@@ -138,6 +138,7 @@ class ILCTransferLedger:
         signer_authority: EnvelopeSignerAuthority | None = None,
         sender_public_key_bytes: bytes | None = None,
         external_aad: bytes = b"",
+        current_epoch: int | None = None,
     ) -> ILCTransferLedgerEntry:
         """Atomically debit sender, credit recipient, consume nonce, and record."""
         if transfer_intent.ILC_TRANSFER_ENABLED is not True:
@@ -150,6 +151,7 @@ class ILCTransferLedger:
             env,
             genesis_value_certificate=self._genesis_value_certificate,
             current_epoch_spent_micro_ilc=0,
+            current_epoch=current_epoch,
         )
         _verify_transfer_signature(
             env,
@@ -173,6 +175,7 @@ class ILCTransferLedger:
                     env,
                     genesis_value_certificate=self._genesis_value_certificate,
                     current_epoch_spent_micro_ilc=current_epoch_spent,
+                    current_epoch=current_epoch,
                 )
             sender_before = _decode_balance(txn.get(sender_key, db=self._balances_db))
             recipient_before = _decode_balance(

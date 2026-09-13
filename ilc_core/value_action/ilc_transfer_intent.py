@@ -136,6 +136,7 @@ def enforce_genesis_envelope_guard(
     *,
     genesis_value_certificate: GenesisValueActionPolicyCertificate | None,
     current_epoch_spent_micro_ilc: int | None,
+    current_epoch: int | None = None,
 ) -> None:
     """Apply the CDL-110 Genesis source-agent guard to ILC transfer envelopes.
 
@@ -145,12 +146,17 @@ def enforce_genesis_envelope_guard(
     """
     if env.sender_agent_id != GENESIS_AGENT1_AGENT_ID:
         return
+    if current_epoch is None:
+        raise ValueError("genesis_transfer_current_epoch_required")
+    _require_epoch(current_epoch, "genesis_transfer_current_epoch_invalid")
+    if current_epoch != env.epoch:
+        raise ValueError("genesis_transfer_epoch_mismatch")
     enforce_genesis_value_guard(
         source_agent_id=env.sender_agent_id,
         certificate=genesis_value_certificate,
         action_class=GENESIS_ILC_ACTION_CLASS,
         amount_micro_unit=_amount_ilc_to_micro_ilc(env.amount_ilc),
-        current_epoch=env.epoch,
+        current_epoch=current_epoch,
         recipient_agent_id=env.recipient_agent_id,
         graph_context_anchor=env.graph_context_anchor,
         consent_or_agreement_reference=env.memo,
@@ -202,6 +208,16 @@ class ILCTransferIntent:
         return env
 
 
+# Public aliases for the byte-size caps so tests can import them symbolically.
+MAX_MEMO_BYTES = _MEMO_MAX_BYTES
+MAX_NONCE_BYTES = _NONCE_MAX_BYTES
+MAX_GRAPH_CONTEXT_ANCHOR_BYTES = _GRAPH_CONTEXT_ANCHOR_MAX_BYTES
+MAX_COSE_SIGNATURE_BYTES = _COSE_SIGNATURE_MAX_BYTES
+
+# Backward-compatible aliases retained for older tests; caps are byte-based.
+MAX_NONCE_CHARS = _NONCE_MAX_BYTES
+MAX_GRAPH_CONTEXT_ANCHOR_CHARS = _GRAPH_CONTEXT_ANCHOR_MAX_BYTES
+
 __all__ = [
     "ActionType",
     "AgentActionEnvelope",
@@ -218,13 +234,3 @@ __all__ = [
     "enforce_genesis_envelope_guard",
     "validate_envelope",
 ]
-
-# Public aliases for the byte-size caps so tests can import them symbolically.
-MAX_MEMO_BYTES = _MEMO_MAX_BYTES
-MAX_NONCE_BYTES = _NONCE_MAX_BYTES
-MAX_GRAPH_CONTEXT_ANCHOR_BYTES = _GRAPH_CONTEXT_ANCHOR_MAX_BYTES
-MAX_COSE_SIGNATURE_BYTES = _COSE_SIGNATURE_MAX_BYTES
-
-# Backward-compatible aliases retained for older tests; caps are byte-based.
-MAX_NONCE_CHARS = _NONCE_MAX_BYTES
-MAX_GRAPH_CONTEXT_ANCHOR_CHARS = _GRAPH_CONTEXT_ANCHOR_MAX_BYTES

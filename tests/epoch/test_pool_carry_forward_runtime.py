@@ -120,8 +120,9 @@ def test_account_id_must_match_pool_role() -> None:
 @pytest.mark.parametrize(
     ("source_epoch", "target_epoch", "token"),
     [
-        (1, 1, "carry_forward_target_epoch_must_follow_source_epoch"),
-        (2, 1, "carry_forward_target_epoch_must_follow_source_epoch"),
+        (1, 1, "carry_forward_target_epoch_must_be_next_epoch"),
+        (2, 1, "carry_forward_target_epoch_must_be_next_epoch"),
+        (1, 3, "carry_forward_target_epoch_must_be_next_epoch"),
         (-1, 2, "source_epoch_must_be_non_negative_int"),
         (1, -2, "target_epoch_must_be_non_negative_int"),
         (True, 2, "source_epoch_must_be_non_negative_int"),
@@ -150,11 +151,16 @@ def test_consumption_requires_carry_forward_record(record: object) -> None:
         mark_carry_forward_consumed(record, consumed_at_epoch=2)  # type: ignore[arg-type]
 
 
-def test_consumed_epoch_must_reach_target_epoch() -> None:
-    record = _valid_record(source_epoch=1, target_epoch=5)
+def test_target_epoch_must_be_exact_next_epoch() -> None:
+    with pytest.raises(ValueError, match="carry_forward_target_epoch_must_be_next_epoch"):
+        _valid_record(source_epoch=1, target_epoch=5)
 
-    with pytest.raises(ValueError, match="carry_forward_consumed_epoch_must_reach_target_epoch"):
-        mark_carry_forward_consumed(record, consumed_at_epoch=4)
+
+def test_consumed_epoch_must_follow_source_epoch() -> None:
+    record = _valid_record(source_epoch=1, target_epoch=2)
+
+    with pytest.raises(ValueError, match="carry_forward_consumed_epoch_must_follow_source_epoch"):
+        mark_carry_forward_consumed(record, consumed_at_epoch=1)
 
 
 def test_double_consumption_raises_token() -> None:
@@ -232,7 +238,7 @@ def test_direct_constructor_runs_full_validation() -> None:
 
 
 def test_direct_constructor_rejects_consumed_before_target() -> None:
-    with pytest.raises(ValueError, match="carry_forward_consumed_epoch_must_reach_target_epoch"):
+    with pytest.raises(ValueError, match="carry_forward_target_epoch_must_be_next_epoch"):
         PoolCarryForwardRecord(
             source_epoch=1,
             target_epoch=5,

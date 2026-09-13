@@ -8,6 +8,7 @@ from ilc_core.ledger.canon_bundle_utils import derive_key_fingerprint, derive_ke
 from ilc_core.ledger.settlement_verification import hash_inputs
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.public_wallet_runtime import (
+    WALLET_CLAIMABILITY_STATE_DEFERRED,
     WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
     PublicWalletRuntime,
 )
@@ -201,8 +202,9 @@ def test_public_wallet_display_reconciles_proof_claimability_without_lifecycle_a
     wallet_source = PUBLIC_WALLET_RUNTIME_PATH.read_text(encoding="utf-8")
 
     assert '"claimability_state": "deferred"' in lifecycle_source
-    assert '"claimability_state": "deferred"' not in wallet_source
+    assert "WALLET_CLAIMABILITY_STATE_DEFERRED" in wallet_source
     assert "WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED" in wallet_source
+    assert WALLET_CLAIMABILITY_STATE_DEFERRED == "deferred"
     assert WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED == "proof_claimability_authorized"
 
     public_methods = {

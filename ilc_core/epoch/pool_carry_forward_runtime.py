@@ -156,8 +156,8 @@ def _require_source_settlement_root(value: str) -> str:
 def _validate_record(record: PoolCarryForwardRecord) -> None:
     source_epoch = _require_epoch(record.source_epoch, "source_epoch")
     target_epoch = _require_epoch(record.target_epoch, "target_epoch")
-    if target_epoch <= source_epoch:
-        raise ValueError("carry_forward_target_epoch_must_follow_source_epoch")
+    if target_epoch != source_epoch + 1:
+        raise ValueError("carry_forward_target_epoch_must_be_next_epoch")
     _require_pool_role(record.pool_role)
     _require_amount(record.amount_ilc)
     _require_account_matches_role(record.account_id, record.pool_role)

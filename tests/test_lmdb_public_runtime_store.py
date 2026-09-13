@@ -11,6 +11,7 @@ from ilc_core.ledger.lmdb_backend import LmdbLedgerBackend
 from ilc_core.ledger.stake_snapshot import StakeSnapshot
 from ilc_core.protocol.event_log import ProtocolEvent
 from ilc_core.storage.lmdb_public_runtime import (
+    _LmdbRuntimeBase,
     LmdbGraphStore,
     LmdbPublicReceiptStore,
     LmdbWalletStore,
@@ -88,6 +89,24 @@ def test_lmdb_runtime_cached_env_rejects_larger_late_map_size(tmp_path: Path) ->
             LmdbWalletStore(store_root, map_size=2 * 1024 * 1024)
     finally:
         wallet_store.close()
+
+
+def test_lmdb_runtime_cached_env_rejects_larger_late_max_dbs(tmp_path: Path) -> None:
+    class OneDbStore(_LmdbRuntimeBase):
+        def __init__(self, root: Path) -> None:
+            super().__init__(root, db_names=tuple(f"db{i}".encode("ascii") for i in range(16)))
+
+    class TooManyDbStore(_LmdbRuntimeBase):
+        def __init__(self, root: Path) -> None:
+            super().__init__(root, db_names=tuple(f"db{i}".encode("ascii") for i in range(17)))
+
+    store_root = tmp_path / "runtime-store"
+    first = OneDbStore(store_root)
+    try:
+        with pytest.raises(ValueError, match="lmdb_runtime_cached_env_max_dbs_too_small"):
+            TooManyDbStore(store_root)
+    finally:
+        first.close()
 
 
 def test_public_receipt_kind_epoch_index_does_not_collide_on_delimiter(tmp_path: Path) -> None:

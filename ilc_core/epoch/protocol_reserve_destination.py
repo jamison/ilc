@@ -122,8 +122,6 @@ def verify_protocol_reserve_destination_record(record: dict[str, Any]) -> None:
         raise ValueError(PROTOCOL_RESERVE_DISTINCT_FROM_GENESIS_AGENT_TOKEN)
     if record.get("distinct_from_treasury") is not True:
         raise ValueError(PROTOCOL_RESERVE_DISTINCT_FROM_TREASURY_TOKEN)
-    if "treasury" in record["account_id"]:
-        raise ValueError("protocol_reserve_account_id_must_not_be_treasury")
 
 
 __all__ = [

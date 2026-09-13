@@ -24,6 +24,7 @@ from ilc_core.epoch.epoch_maturity_gate import (
 
 
 ROOT_HEX = "c" * 64
+AGENT_ID = "a" * 96
 
 
 def _output(issuance_epoch: int = 1):
@@ -43,7 +44,7 @@ def _output(issuance_epoch: int = 1):
             issuance_epoch=issuance_epoch,
             total_epoch_fees_ilc=Decimal("100"),
             genesis_cumulative_accrual_ilc=Decimal("0"),
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_ID: Decimal("1")},
             prior_carry_forward_records=[],
             source_settlement_root_hex=ROOT_HEX,
             monthly_maturity_proof=proof,

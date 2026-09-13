@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from typing import Any
 
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
@@ -14,6 +15,9 @@ from ilc_core.protocol.harness_interfaces import PublicWalletStore
 
 PUBLIC_WALLET_RUNTIME_VERSION = "public_wallet_runtime_653.v0.1"
 WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED = "proof_claimability_authorized"
+WALLET_CLAIMABILITY_STATE_DEFERRED = "deferred"
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+_PROTOCOL_ACCOUNT_PREFIXES = ("pool:", "reserve:")
 
 
 class PublicWalletRuntimeError(ValueError):
@@ -56,7 +60,7 @@ class PublicWalletRuntime:
                 "history_digest": status_data.get("history_digest"),
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+                "claimability_state": status_data["claimability_state"],
             },
         }
 
@@ -77,7 +81,7 @@ class PublicWalletRuntime:
                 "history_digest": history_data.get("history_digest"),
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+                "claimability_state": status_data["claimability_state"],
                 "wallet_store_kind": "lmdb_wallet_store",
             },
         }
@@ -104,7 +108,7 @@ class PublicWalletRuntime:
                 "history_digest": snapshot["history_digest"],
                 "latest_balance_receipt_ref": status_data.get("latest_balance_receipt_ref"),
                 "settled_runtime_root_ref": status_data["settled_runtime_root_ref"],
-                "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+                "claimability_state": status_data["claimability_state"],
                 "wallet_store_kind": "lmdb_wallet_store",
             },
         }
@@ -124,11 +128,12 @@ class PublicWalletRuntime:
             prefix="balance_receipt_sha256",
             payload=latest_balance_receipt,
         )
+        claimability_state = _claimability_state(lifecycle_data)
         status = {
             "agent_id": agent_id,
             "balance_ilc": lifecycle_data["balance_ilc"],
             "ecu_accrual": lifecycle_data["balance_ecu"],
-            "claimability_state": WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
+            "claimability_state": claimability_state,
             "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
             "history_digest": lifecycle_data.get("history_digest"),
             "latest_balance_receipt": latest_balance_receipt,
@@ -197,7 +202,27 @@ class PublicWalletRuntime:
 def _require_agent_id(agent_id: str) -> str:
     if not isinstance(agent_id, str) or not agent_id.strip():
         raise PublicWalletRuntimeError("wallet_agent_id_required", "agent_id must be a non-empty string")
+    if agent_id.startswith(_PROTOCOL_ACCOUNT_PREFIXES):
+        raise PublicWalletRuntimeError(
+            "wallet_protocol_account_not_user_wallet",
+            "protocol pool/reserve accounts are not public user wallets",
+        )
+    if _AGENT_ID_RE.fullmatch(agent_id) is None:
+        raise PublicWalletRuntimeError(
+            "wallet_agent_id_must_be_96_hex",
+            "agent_id must be a 96-character lowercase hex AgentID",
+        )
     return agent_id
+
+
+def _claimability_state(lifecycle_data: dict[str, Any]) -> str:
+    value = lifecycle_data.get("claimability_state", WALLET_CLAIMABILITY_STATE_DEFERRED)
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise PublicWalletRuntimeError(
+            "wallet_claimability_state_invalid",
+            "claimability_state must be a non-empty string",
+        )
+    return value
 
 
 def _payload_ref(*, prefix: str, payload: Any) -> str | None:
@@ -210,12 +235,14 @@ def _payload_ref(*, prefix: str, payload: Any) -> str | None:
 
 
 def _epoch_sort_key(epoch_id: str) -> tuple[int, int | str]:
+    if len(epoch_id) == 10 and epoch_id.isdecimal():
+        return (0, int(epoch_id))
     prefix = "epoch_"
     if epoch_id.startswith(prefix):
         suffix = epoch_id[len(prefix):]
         if suffix.isdigit():
-            return (0, int(suffix))
-    return (1, epoch_id)
+            return (1, int(suffix))
+    return (2, epoch_id)
 
 
 __all__ = [
@@ -223,4 +250,5 @@ __all__ = [
     "PublicWalletRuntime",
     "PublicWalletRuntimeError",
     "WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED",
+    "WALLET_CLAIMABILITY_STATE_DEFERRED",
 ]

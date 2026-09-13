@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import json
 import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -15,7 +18,7 @@ LMDB_PUBLIC_RUNTIME_VERSION = "lmdb_public_runtime_v0.1"
 DEFAULT_MAP_SIZE_BYTES = 256 * 1024 * 1024
 DEFAULT_MAX_NAMED_DBS = 16
 MAX_PUBLIC_RECEIPT_INDEX_IDS = 10_000
-_ENV_CACHE: dict[str, tuple[lmdb.Environment, int, int]] = {}
+_ENV_CACHE: dict[str, tuple[lmdb.Environment, int, int, int]] = {}
 _ENV_CACHE_LOCK = threading.Lock()
 
 
@@ -65,12 +68,19 @@ class _LmdbRuntimeBase:
                     map_size=map_size,
                     lock=True,
                 )
-                _ENV_CACHE[self._root_key] = (self.env, 1, map_size)
+                _ENV_CACHE[self._root_key] = (self.env, 1, map_size, requested_max_dbs)
             else:
-                self.env, refcount, cached_map_size = cached
+                self.env, refcount, cached_map_size, cached_max_dbs = cached
                 if map_size > cached_map_size:
                     raise ValueError("lmdb_runtime_cached_env_map_size_too_small")
-                _ENV_CACHE[self._root_key] = (self.env, refcount + 1, cached_map_size)
+                if requested_max_dbs > cached_max_dbs:
+                    raise ValueError("lmdb_runtime_cached_env_max_dbs_too_small")
+                _ENV_CACHE[self._root_key] = (
+                    self.env,
+                    refcount + 1,
+                    cached_map_size,
+                    cached_max_dbs,
+                )
             self._dbs = {name: self.env.open_db(name) for name in db_names}
         self._closed = False
 
@@ -85,7 +95,7 @@ class _LmdbRuntimeBase:
     def _iter_json(self, db_name: bytes) -> list[Any]:
         rows: list[Any] = []
         with self.env.begin(db=self._dbs[db_name]) as txn:
-            cursor = txn.cursor()
+            cursor = txn.cursor(db=self._dbs[db_name])
             for _, value in cursor:
                 rows.append(_decode_json(value))
         return rows
@@ -102,13 +112,53 @@ class _LmdbRuntimeBase:
             if cached is None:
                 self.env.close()
             else:
-                env, refcount, map_size = cached
+                env, refcount, map_size, max_dbs = cached
                 if refcount <= 1:
                     env.close()
                     _ENV_CACHE.pop(self._root_key, None)
                 else:
-                    _ENV_CACHE[self._root_key] = (env, refcount - 1, map_size)
+                    _ENV_CACHE[self._root_key] = (env, refcount - 1, map_size, max_dbs)
             self._closed = True
+
+
+@dataclass(frozen=True)
+class WalletBatchRow:
+    wallet: dict[str, Any]
+    history: dict[str, Any]
+
+
+class WalletBatchTransaction:
+    """Public atomic wallet/history transaction facade for lifecycle writers."""
+
+    def __init__(self, txn: lmdb.Transaction, wallets_db: object, history_db: object) -> None:
+        self._txn = txn
+        self._wallets_db = wallets_db
+        self._history_db = history_db
+
+    def iter_wallet_rows(self) -> Iterator[tuple[str, dict[str, Any]]]:
+        cursor = self._txn.cursor(db=self._wallets_db)
+        for key, value in cursor:
+            payload = _decode_json(value)
+            if isinstance(payload, dict):
+                yield key.decode("utf-8"), payload
+
+    def get_wallet_pair(self, agent_id: str) -> WalletBatchRow:
+        wallet = _decode_json(self._txn.get(_encode_key(agent_id), db=self._wallets_db))
+        history = _decode_json(self._txn.get(_encode_key(agent_id), db=self._history_db))
+        return WalletBatchRow(
+            wallet=wallet if isinstance(wallet, dict) else {},
+            history=history if isinstance(history, dict) else {},
+        )
+
+    def put_wallet_pair(
+        self,
+        agent_id: str,
+        *,
+        wallet_payload: dict[str, Any],
+        history_payload: dict[str, Any],
+    ) -> None:
+        self._txn.put(_encode_key(agent_id), _encode_json(wallet_payload), db=self._wallets_db)
+        self._txn.put(_encode_key(agent_id), _encode_json(history_payload), db=self._history_db)
 
 
 class LmdbGraphStore(_LmdbRuntimeBase):
@@ -157,7 +207,11 @@ class LmdbGraphStore(_LmdbRuntimeBase):
 
 class LmdbWalletStore(_LmdbRuntimeBase):
     def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
-        super().__init__(root, db_names=(b"wallets", b"wallet_history"), map_size=map_size)
+        super().__init__(
+            root,
+            db_names=(b"wallets", b"wallet_history", b"epoch_commit_markers"),
+            map_size=map_size,
+        )
 
     def put_wallet(self, agent_id: str, payload: dict[str, Any]) -> None:
         self._put_json(b"wallets", agent_id, payload)
@@ -169,12 +223,21 @@ class LmdbWalletStore(_LmdbRuntimeBase):
     def iter_wallets(self) -> dict[str, dict[str, Any]]:
         rows: dict[str, dict[str, Any]] = {}
         with self.env.begin(db=self._dbs[b"wallets"]) as txn:
-            cursor = txn.cursor()
+            cursor = txn.cursor(db=self._dbs[b"wallets"])
             for key, value in cursor:
                 payload = _decode_json(value)
                 if isinstance(payload, dict):
                     rows[key.decode("utf-8")] = payload
         return dict(sorted(rows.items()))
+
+    @contextmanager
+    def wallet_batch_transaction(self) -> Iterator[WalletBatchTransaction]:
+        with self.env.begin(write=True) as txn:
+            yield WalletBatchTransaction(
+                txn=txn,
+                wallets_db=self._dbs[b"wallets"],
+                history_db=self._dbs[b"wallet_history"],
+            )
 
     def put_wallet_history(self, agent_id: str, payload: dict[str, Any]) -> None:
         self._put_json(b"wallet_history", agent_id, payload)
@@ -203,6 +266,13 @@ class LmdbWalletStore(_LmdbRuntimeBase):
 
     def delete_wallet_history(self, agent_id: str) -> None:
         self._delete(b"wallet_history", agent_id)
+
+    def put_epoch_commit_marker(self, epoch_id: str, payload: dict[str, Any]) -> None:
+        self._put_json(b"epoch_commit_markers", epoch_id, payload)
+
+    def get_epoch_commit_marker(self, epoch_id: str) -> dict[str, Any] | None:
+        payload = self._get_json(b"epoch_commit_markers", epoch_id)
+        return payload if isinstance(payload, dict) else None
 
 
 class LmdbPublicReceiptStore(_LmdbRuntimeBase):

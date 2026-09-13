@@ -6,6 +6,7 @@ from pathlib import Path
 
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
 from ilc_core.protocol.public_wallet_runtime import (
+    WALLET_CLAIMABILITY_STATE_DEFERRED,
     WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
     PublicWalletRuntime,
 )
@@ -48,6 +49,15 @@ class _WalletStore:
         return self.histories.get(agent_id)
 
     def put_wallet_history(self, agent_id: str, history: dict[str, object]) -> None:
+        self.histories[agent_id] = history
+
+    def put_wallet_and_history(
+        self,
+        agent_id: str,
+        wallet: dict[str, object],
+        history: dict[str, object],
+    ) -> None:
+        self.wallets[agent_id] = wallet
         self.histories[agent_id] = history
 
 
@@ -100,13 +110,14 @@ def test_phase_1270_records_broad_discovery_and_source_expansion() -> None:
 
 
 def test_phase_1270_lifecycle_remains_deferred_public_wallet_display_is_authorized() -> None:
+    agent_id = "a" * 96
     wallet_store = _WalletStore()
     lifecycle = EcuIlcLifecycleRuntime(
         wallet_store=wallet_store,
         ecu_runtime=_EcuRuntime(),
     )
     commit = lifecycle.commit_settled_epoch(
-        agent_id="agent:alpha",
+        agent_id=agent_id,
         epoch_id="epoch:0004",
         reward_delta_ilc=Decimal("1.25"),
     )
@@ -117,20 +128,20 @@ def test_phase_1270_lifecycle_remains_deferred_public_wallet_display_is_authoriz
 
     assert commit["data"]["claimability_state"] == "deferred"
     assert (
-        wallet_runtime.wallet_status(agent_id="agent:alpha")["data"]["claimability_state"]
-        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        wallet_runtime.wallet_status(agent_id=agent_id)["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_DEFERRED
     )
     assert (
-        wallet_runtime.wallet_history(agent_id="agent:alpha")["data"]["claimability_state"]
-        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        wallet_runtime.wallet_history(agent_id=agent_id)["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_DEFERRED
     )
     assert (
-        wallet_runtime.wallet_export(agent_id="agent:alpha")["data"]["claimability_state"]
-        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        wallet_runtime.wallet_export(agent_id=agent_id)["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_DEFERRED
     )
     assert (
-        wallet_runtime.ledger_summary(agent_id="agent:alpha")["data"]["claimability_state"]
-        == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        wallet_runtime.ledger_summary(agent_id=agent_id)["data"]["claimability_state"]
+        == WALLET_CLAIMABILITY_STATE_DEFERRED
     )
 
     source = _read(PUBLIC_WALLET_RUNTIME_PATH)
@@ -231,13 +242,14 @@ def test_phase_1270_graph_delta_is_recorded() -> None:
 
 
 def test_phase_1270_canonical_json_export_still_deterministic_for_wallet_refs() -> None:
+    agent_id = "a" * 96
     wallet_store = _WalletStore()
     lifecycle = EcuIlcLifecycleRuntime(
         wallet_store=wallet_store,
         ecu_runtime=_EcuRuntime(),
     )
     lifecycle.commit_settled_epoch(
-        agent_id="agent:alpha",
+        agent_id=agent_id,
         epoch_id="epoch:0004",
         reward_delta_ilc="1.25",
     )
@@ -245,7 +257,7 @@ def test_phase_1270_canonical_json_export_still_deterministic_for_wallet_refs() 
         wallet_store=wallet_store,
         lifecycle_runtime=lifecycle,
     )
-    exported = wallet_runtime.wallet_export(agent_id="agent:alpha")
+    exported = wallet_runtime.wallet_export(agent_id=agent_id)
     encoded = json.dumps(exported, allow_nan=False, separators=(",", ":"), sort_keys=True)
 
     assert json.loads(encoded) == exported
