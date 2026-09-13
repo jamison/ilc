@@ -100323,6 +100323,83 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_modified",
       "repo_path": "docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.2.json"
+    },
+    {
+      "annotation_batch": "manual_batch_agent_chat_delta_archive_methodology_2026_09_13",
+      "chronology_note": "2026-09-13 post-rehydration hygiene records the reusable methodology for preserving Codex/Claude JSONL deltas as private Tier-D historical context.",
+      "manual_read_summary": "Private methodology spec defines line-exclusive JSONL delta extraction, raw gzip preservation, redacted Markdown extraction, index/manifest outputs, permissions, non-claims, and MemPalace Tier-D integration boundaries.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:agent_chat_delta_archive_methodology_recorded_2026_09_13"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:Z_Past_Chats/2026_09_13_Codex_Claude_Raw_Chat_Archive/README.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_agent_chat_delta_archive_methodology_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_agent_chat_delta_archive_methodology_2026_09_13",
+      "chronology_note": "2026-09-13 post-rehydration hygiene adds a deterministic extractor for private Codex/Claude JSONL chat deltas.",
+      "manual_read_summary": "Tool archives line-exclusive JSONL deltas into deterministic raw gzip files, redacted Markdown extracts, per-source indexes, README summaries, and a machine-readable archive_manifest.json receipt.",
+      "node_kind": "tool",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "artifact:docs/specs/ilc_agent_chat_delta_archive_methodology_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/archive_agent_chat_deltas.py"
+    },
+    {
+      "annotation_batch": "manual_batch_agent_chat_delta_archive_methodology_2026_09_13",
+      "chronology_note": "2026-09-13 post-rehydration hygiene adds regression coverage for the reusable chat-delta archive extractor.",
+      "manual_read_summary": "Tests cover raw delta preservation, Codex and Claude JSONL extraction, encrypted-reasoning placeholders, thinking/tool blocks, secret redaction, overwrite refusal, private file modes, and CLI validation.",
+      "node_kind": "test_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:tools/archive_agent_chat_deltas.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_archive_agent_chat_deltas.py"
     }
   ],
   "phase": "1545p-Fix38",
