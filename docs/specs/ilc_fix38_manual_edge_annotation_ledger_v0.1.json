@@ -79431,6 +79431,221 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0422_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_maturity_gate_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-EPOCH-MATURITY-GATE-00 adds the monthly issuance maturity proof runtime required before nonzero post-epoch-zero ILC settlement.",
+      "manual_read_summary": "Runtime module defining MonthlyIssuanceMaturityProof, proof schema constants, validation-epoch span lower bound, and fail-closed proof validation tokens.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/epoch_maturity_gate.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_maturity_gate_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-EPOCH-MATURITY-GATE-00 wires monthly maturity proof validation into compute_epoch_distribution and commit_verified_epoch_distribution.",
+      "manual_read_summary": "Epoch distribution writer now carries source_settlement_root_hex and monthly_maturity_proof and rejects nonzero post-epoch-zero scheduled emission or settlement commit without a validated monthly issuance close proof.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/epoch_distribution_writer.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_maturity_gate_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-EPOCH-MATURITY-GATE-00 exports the maturity gate symbols through ilc_core.epoch.",
+      "manual_read_summary": "Epoch package exports MonthlyIssuanceMaturityProof and maturity-gate constants for downstream gate and smoke phases.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/epoch/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_maturity_gate_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-EPOCH-MATURITY-GATE-00 adds focused tests for proof-required, malformed proof, validation-epoch-only rejection, source-root binding, and zero-value epoch-zero boundaries.",
+      "manual_read_summary": "Test file pins maturity-gate fail-closed behavior and proves validation epoch 0-to-1 is not accepted as monthly issuance maturity.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_epoch_maturity_gate_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_epoch_maturity_gate_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-EPOCH-MATURITY-GATE-00 walkthrough records direct reads, boundary table, verification commands, non-claims, and package/mirror carry-forward.",
+      "manual_read_summary": "Phase walkthrough for the monthly issuance maturity gate implementation and verification evidence.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-EPOCH-MATURITY-GATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "cdl:027"
+        },
+        {
+          "edge_type": "CONSTRAINS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "GOVERNS",
+        "CONSTRAINS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_epoch_maturity_gate_00_walkthrough.md"
     }
   ],
   "boundary": {

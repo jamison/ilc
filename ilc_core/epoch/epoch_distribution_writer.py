@@ -31,6 +31,11 @@ from ilc_core.epoch.epoch_emission_runtime import (
     EpochEmissionQuote,
     build_epoch_emission_quote,
 )
+from ilc_core.epoch.epoch_maturity_gate import (
+    EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN,
+    MonthlyIssuanceMaturityProof,
+    require_monthly_issuance_maturity_proof,
+)
 from ilc_core.epoch.fee_burn_split_runtime import (
     EpochFeeBurnSplitQuote,
     build_fee_burn_split_quote,
@@ -124,6 +129,7 @@ class EpochDistributionInput:
     eligible_auditor_agents: Mapping[str, Decimal | int | str] | None = None
     source_settlement_root_hex: str = DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX
     allow_default_source_settlement_root: bool = True
+    monthly_maturity_proof: MonthlyIssuanceMaturityProof | Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -189,6 +195,8 @@ class EpochDistributionOutput:
     conservation_record: EpochDistributionConservationRecord
     conservation_verified: bool
     decision_tokens: tuple[str, ...]
+    source_settlement_root_hex: str
+    monthly_maturity_proof: MonthlyIssuanceMaturityProof | None
 
 
 def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistributionOutput:
@@ -209,6 +217,12 @@ def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistribut
             cumulative_issued_before_epoch,
         )
         current_emission = emission_quote.capped_epoch_budget_ilc
+    monthly_maturity_proof = _validate_monthly_maturity_for_compute(
+        proof=inputs.monthly_maturity_proof,
+        issuance_epoch=issuance_epoch,
+        source_settlement_root=source_settlement_root,
+        current_emission=current_emission,
+    )
 
     remaining_allowance = _genesis_remaining_allowance(genesis_accrual)
     allocatable_current_value = current_emission + fee_burn_quote.remaining_fee_pool_ilc
@@ -295,6 +309,8 @@ def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistribut
             EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN,
             VALIDATOR_REWARD_DISTRIBUTION_NOT_ACTIVATED_TOKEN,
         ),
+        source_settlement_root_hex=source_settlement_root,
+        monthly_maturity_proof=monthly_maturity_proof,
     )
 
 
@@ -315,6 +331,14 @@ def commit_verified_epoch_distribution(
     verify_epoch_conservation_before_commit(output)
 
     settlements = _settlement_deltas_for_commit(output)
+    if settlements and output.issuance_epoch == 0:
+        raise ValueError(EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN)
+    if settlements:
+        require_monthly_issuance_maturity_proof(
+            output.monthly_maturity_proof,
+            distribution_issuance_epoch=output.issuance_epoch,
+            source_settlement_root_hex=output.source_settlement_root_hex,
+        )
     if settlements:
         _commit_settled_epoch_batch(
             lifecycle_runtime=lifecycle_runtime,
@@ -372,6 +396,28 @@ def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
             allow_default_source_settlement_root=allow_default_source_settlement_root,
         ),
     }
+
+
+def _validate_monthly_maturity_for_compute(
+    *,
+    proof: MonthlyIssuanceMaturityProof | Mapping[str, Any] | None,
+    issuance_epoch: int,
+    source_settlement_root: str,
+    current_emission: Decimal,
+) -> MonthlyIssuanceMaturityProof | None:
+    if current_emission > ZERO:
+        return require_monthly_issuance_maturity_proof(
+            proof,
+            distribution_issuance_epoch=issuance_epoch,
+            source_settlement_root_hex=source_settlement_root,
+        )
+    if proof is not None:
+        return require_monthly_issuance_maturity_proof(
+            proof,
+            distribution_issuance_epoch=issuance_epoch,
+            source_settlement_root_hex=source_settlement_root,
+        )
+    return None
 
 
 def _require_epoch(value: object, field_name: str) -> int:

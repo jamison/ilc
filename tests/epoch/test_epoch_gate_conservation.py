@@ -17,12 +17,27 @@ from ilc_core.epoch.epoch_distribution_writer import (
     EpochDistributionInput,
     compute_epoch_distribution,
 )
+from ilc_core.epoch.epoch_maturity_gate import (
+    MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
+    MonthlyIssuanceMaturityProof,
+)
 
 
 ROOT_HEX = "c" * 64
 
 
 def _output(issuance_epoch: int = 1):
+    proof = None
+    if issuance_epoch > 0:
+        proof = MonthlyIssuanceMaturityProof(
+            matured_issuance_epoch=issuance_epoch - 1,
+            distribution_issuance_epoch=issuance_epoch,
+            source_settlement_root_hex=ROOT_HEX,
+            opening_validation_epoch=0,
+            closing_validation_epoch=MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
+            validator_quorum_certificate_ref=f"validator_quorum_sha256:{'a' * 64}",
+            evidence_ref=f"monthly_close_evidence_sha256:{'b' * 64}",
+        )
     return compute_epoch_distribution(
         EpochDistributionInput(
             issuance_epoch=issuance_epoch,
@@ -31,6 +46,7 @@ def _output(issuance_epoch: int = 1):
             eligible_agents={"agent:a": Decimal("1")},
             prior_carry_forward_records=[],
             source_settlement_root_hex=ROOT_HEX,
+            monthly_maturity_proof=proof,
         )
     )
 

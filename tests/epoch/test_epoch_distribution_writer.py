@@ -7,6 +7,11 @@ import pytest
 
 from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
 from ilc_core.epoch.epoch_emission_runtime import raw_epoch_emission_budget
+from ilc_core.epoch.epoch_maturity_gate import (
+    EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN,
+    MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
+    MonthlyIssuanceMaturityProof,
+)
 from ilc_core.epoch.epoch_distribution_writer import (
     DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX,
     EPOCH_ID_FORMAT,
@@ -96,7 +101,50 @@ def _inputs(**overrides: object) -> EpochDistributionInput:
         "source_settlement_root_hex": ROOT_HEX,
     }
     values.update(overrides)
+    if "monthly_maturity_proof" not in overrides:
+        issuance_epoch = values.get("issuance_epoch")
+        source_root = values.get("source_settlement_root_hex")
+        if (
+            isinstance(issuance_epoch, int)
+            and not isinstance(issuance_epoch, bool)
+            and issuance_epoch > 0
+            and isinstance(source_root, str)
+            and _looks_valid_root(source_root)
+        ):
+            values["monthly_maturity_proof"] = _maturity_proof(
+                distribution_issuance_epoch=issuance_epoch,
+                source_settlement_root_hex=source_root,
+            )
     return EpochDistributionInput(**values)  # type: ignore[arg-type]
+
+
+def _looks_valid_root(value: str) -> bool:
+    return (
+        len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    ) or (
+        len(value) == 72
+        and value.startswith("01711220")
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
+def _maturity_proof(
+    *,
+    distribution_issuance_epoch: int = 1,
+    source_settlement_root_hex: str = ROOT_HEX,
+) -> MonthlyIssuanceMaturityProof:
+    opening_epoch = (distribution_issuance_epoch - 1) * MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
+    closing_epoch = distribution_issuance_epoch * MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
+    return MonthlyIssuanceMaturityProof(
+        matured_issuance_epoch=distribution_issuance_epoch - 1,
+        distribution_issuance_epoch=distribution_issuance_epoch,
+        source_settlement_root_hex=source_settlement_root_hex,
+        opening_validation_epoch=opening_epoch,
+        closing_validation_epoch=closing_epoch,
+        validator_quorum_certificate_ref=f"validator_quorum_sha256:{'a' * 64}",
+        evidence_ref=f"monthly_close_evidence_sha256:{'b' * 64}",
+    )
 
 
 def _prior_record(
@@ -162,7 +210,7 @@ def test_nonzero_fee_with_agents_settles_performer_and_auditor_pools() -> None:
     assert output.genesis_settled_delta == Decimal("4.500000000")
 
 
-def test_epoch_one_scheduled_emission_is_distributed_without_fees() -> None:
+def test_epoch_one_scheduled_emission_is_distributed_after_monthly_maturity() -> None:
     output = compute_epoch_distribution(
         _inputs(issuance_epoch=1, eligible_agents={"agent:a": Decimal("1")})
     )
@@ -173,6 +221,8 @@ def test_epoch_one_scheduled_emission_is_distributed_without_fees() -> None:
     assert output.genesis_settled_delta > Decimal("0")
     assert output.agent_settled_balance_deltas["agent:a"] > Decimal("0")
     assert output.protocol_reserve_delta == Decimal("0E-9")
+    assert output.monthly_maturity_proof is not None
+    assert output.monthly_maturity_proof.matured_issuance_epoch == 0
 
 
 def test_epoch_one_accepts_rust_cidv1_source_settlement_root() -> None:
@@ -472,6 +522,7 @@ def test_commit_skips_zero_weight_agents_and_zero_delta_recipients() -> None:
 
     output = commit_epoch_distribution(
         _inputs(
+            issuance_epoch=1,
             total_epoch_fees_ilc=Decimal("100"),
             eligible_agents={"agent:a": Decimal("1"), "agent:zero": Decimal("0")},
         ),
@@ -495,13 +546,16 @@ def test_epoch_id_zero_padding_format_is_locked() -> None:
 
 def test_commit_requires_atomic_batch_writer_for_unknown_lifecycle() -> None:
     with pytest.raises(ValueError, match="atomic_lifecycle_batch_writer_required"):
-        commit_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("1")), object())  # type: ignore[arg-type]
+        commit_epoch_distribution(
+            _inputs(issuance_epoch=1, total_epoch_fees_ilc=Decimal("1")),
+            object(),  # type: ignore[arg-type]
+        )
 
 
 def test_commit_rejects_unmarked_duck_typed_batch_writer() -> None:
     with pytest.raises(ValueError, match="atomic_lifecycle_batch_writer_required"):
         commit_epoch_distribution(
-            _inputs(total_epoch_fees_ilc=Decimal("1")),
+            _inputs(issuance_epoch=1, total_epoch_fees_ilc=Decimal("1")),
             UnmarkedDuckBatchLifecycle(),  # type: ignore[arg-type]
         )
 
@@ -545,7 +599,9 @@ def test_commit_verified_epoch_distribution_commits_supplied_output_without_reco
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     lifecycle = RecordingBatchLifecycle()
-    output = compute_epoch_distribution(_inputs(total_epoch_fees_ilc=Decimal("100")))
+    output = compute_epoch_distribution(
+        _inputs(issuance_epoch=1, total_epoch_fees_ilc=Decimal("100"))
+    )
 
     def _fail_recompute(_inputs: object) -> object:
         raise AssertionError("must not recompute already verified output")
@@ -567,16 +623,36 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
         wallet_store=wallet_store,
         ecu_runtime=EcuActiveLayerRuntime(),
     )
-    inputs = _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")})
+    inputs = _inputs(
+        issuance_epoch=1,
+        total_epoch_fees_ilc=Decimal("100"),
+        eligible_agents={"agent:a": Decimal("1")},
+    )
 
     first = commit_epoch_distribution(inputs, lifecycle)
     second = commit_epoch_distribution(inputs, lifecycle)
 
     assert first.conservation_verified is True
     assert second.conservation_verified is True
-    assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000000"  # type: ignore[index]
+    assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
     assert wallet_store.get_wallet(PROTOCOL_RESERVE_ACCOUNT_ID)["balance_ilc"] == "10"  # type: ignore[index]
-    assert wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"] == "4.5"  # type: ignore[index]
+    assert Decimal(wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"]) > Decimal("4.5")  # type: ignore[index]
+
+
+def test_real_lmdb_rejects_epoch_zero_nonzero_settlement_as_immature(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    with pytest.raises(ValueError, match=EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN):
+        commit_epoch_distribution(
+            _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+            lifecycle,
+        )
+
+    assert wallet_store.get_wallet("agent:a") is None
 
 
 def test_real_lmdb_allows_first_nonzero_public_rc_settlement_epoch_one(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -625,14 +701,18 @@ def test_real_lmdb_rejects_out_of_order_epoch_gap(tmp_path) -> None:  # type: ig
     )
 
     commit_epoch_distribution(
-        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+        _inputs(
+            issuance_epoch=1,
+            total_epoch_fees_ilc=Decimal("100"),
+            eligible_agents={"agent:a": Decimal("1")},
+        ),
         lifecycle,
     )
 
     with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
         commit_epoch_distribution(
             _inputs(
-                issuance_epoch=2,
+                issuance_epoch=3,
                 eligible_agents={"agent:a": Decimal("1")},
             ),
             lifecycle,
@@ -649,13 +729,21 @@ def test_real_lmdb_rejects_same_epoch_recipient_extension(tmp_path) -> None:  # 
     )
 
     commit_epoch_distribution(
-        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+        _inputs(
+            issuance_epoch=1,
+            total_epoch_fees_ilc=Decimal("100"),
+            eligible_agents={"agent:a": Decimal("1")},
+        ),
         lifecycle,
     )
 
     with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
         commit_epoch_distribution(
-            _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:b": Decimal("1")}),
+            _inputs(
+                issuance_epoch=1,
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={"agent:b": Decimal("1")},
+            ),
             lifecycle,
         )
 
@@ -670,22 +758,24 @@ def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> N
     )
 
     first = commit_epoch_distribution(
-        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={}),
+        _inputs(issuance_epoch=1, total_epoch_fees_ilc=Decimal("100"), eligible_agents={}),
         lifecycle,
     )
-    assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "72"  # type: ignore[index]
-    assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "13.5"  # type: ignore[index]
+    assert Decimal(wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"]) > Decimal("72")  # type: ignore[index]
+    assert Decimal(wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"]) > Decimal("13.5")  # type: ignore[index]
 
     second = commit_epoch_distribution(
         _inputs(
-            issuance_epoch=1,
+            issuance_epoch=2,
             eligible_agents={"agent:a": Decimal("1")},
             prior_carry_forward_records=first.carry_forward_out_records,
         ),
         lifecycle,
     )
 
-    assert second.conservation_record.distribution_carry_forward_in_ilc == Decimal("85.5")
+    assert second.conservation_record.distribution_carry_forward_in_ilc == sum(
+        record.amount_ilc for record in first.carry_forward_out_records
+    )
     assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
     assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
     agent_wallet = wallet_store.get_wallet("agent:a")
