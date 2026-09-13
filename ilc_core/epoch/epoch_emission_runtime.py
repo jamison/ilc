@@ -8,6 +8,7 @@ from decimal import Decimal, InvalidOperation, ROUND_DOWN, localcontext
 from typing import Any
 
 from ilc_core.economic_constants import C_MAX_ILC
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 EPOCH_EMISSION_RUNTIME_VERSION = "epoch_emission_runtime_1345.v0.1"
 CDL_025_EMISSION_SCHEDULE_RUNTIME_TOKEN = "cdl_025_emission_schedule_runtime_phase_1345.v0.1"
@@ -102,7 +103,7 @@ def _quantize_ilc(value: Decimal) -> Decimal:
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    return format(value.normalize(), "f")
+    return decimal_to_canonical_string(value)
 
 
 def halving_decay_ratio() -> Decimal:

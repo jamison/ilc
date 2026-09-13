@@ -17,6 +17,7 @@ recipients. Negative deltas are rejected for every other account class.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
 from typing import Any, Mapping, Protocol, runtime_checkable
@@ -61,9 +62,7 @@ from ilc_core.ledger.exact_numeric import (
     to_decimal,
 )
 from ilc_core.storage.lmdb_public_runtime import (
-    _decode_json,
-    _encode_json,
-    _encode_key,
+    LmdbWalletStore,
 )
 
 
@@ -95,6 +94,7 @@ MAX_ELIGIBLE_AGENTS = 65_536
 MAX_PRIOR_CARRY_FORWARD_RECORDS = 65_536
 DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX = "0" * 64
 CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX = "01711220"
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _PROTOCOL_ACCOUNT_IDS = frozenset(
     {
         PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
@@ -103,6 +103,13 @@ _PROTOCOL_ACCOUNT_IDS = frozenset(
         PROTOCOL_RESERVE_ACCOUNT_ID,
     }
 )
+_CARRY_FORWARD_ACCOUNT_IDS = frozenset(
+    {
+        PERFORMER_CARRY_FORWARD_ACCOUNT_ID,
+        AUDITOR_CARRY_FORWARD_ACCOUNT_ID,
+    }
+)
+_PROTOCOL_ACCOUNT_PREFIXES = ("pool:", "reserve:")
 
 
 @runtime_checkable
@@ -339,12 +346,11 @@ def commit_verified_epoch_distribution(
             distribution_issuance_epoch=output.issuance_epoch,
             source_settlement_root_hex=output.source_settlement_root_hex,
         )
-    if settlements:
-        _commit_settled_epoch_batch(
-            lifecycle_runtime=lifecycle_runtime,
-            settlements=settlements,
-            epoch_id=output.epoch_id,
-        )
+    _commit_settled_epoch_batch(
+        lifecycle_runtime=lifecycle_runtime,
+        settlements=settlements,
+        epoch_id=output.epoch_id,
+    )
     return output
 
 
@@ -479,8 +485,18 @@ def _require_non_negative_weight(value: object, field_name: str) -> Decimal:
 def _require_agent_id(value: object) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError("eligible_agent_id_required")
+    if value.startswith(_PROTOCOL_ACCOUNT_PREFIXES):
+        return _require_known_protocol_account_id(value)
+    if _AGENT_ID_RE.fullmatch(value) is None:
+        raise ValueError("eligible_agent_id_must_be_96_hex")
     if len(value.encode("utf-8")) > MAX_AGENT_ID_BYTES:
         raise ValueError("eligible_agent_id_exceeds_max_bytes")
+    return value
+
+
+def _require_known_protocol_account_id(value: str) -> str:
+    if value not in _PROTOCOL_ACCOUNT_IDS:
+        raise ValueError("unknown_protocol_account_id")
     return value
 
 
@@ -772,17 +788,14 @@ def _commit_lmdb_lifecycle_batch(
         _epoch_history_sort_key,
         _stable_digest,
     )
-    from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
-
     wallet_store = lifecycle_runtime.wallet_store
     if not isinstance(wallet_store, LmdbWalletStore):
         raise ValueError("atomic_lmdb_wallet_store_required")
     epoch_number = _require_epoch_id_format(epoch_id)
     results: list[dict[str, Any]] = []
-    wallets_db = wallet_store._dbs[b"wallets"]
-    history_db = wallet_store._dbs[b"wallet_history"]
-    with wallet_store.env.begin(write=True) as txn:
-        current_epoch_number = _current_lmdb_epoch_number(txn, wallets_db)
+    zero_settlement_marker: dict[str, Any] | None = None
+    with wallet_store.wallet_batch_transaction() as batch:
+        current_epoch_number = _current_lmdb_epoch_number(batch)
         if current_epoch_number is None:
             if epoch_number not in {0, 1}:
                 raise EcuIlcLifecycleRuntimeError(
@@ -802,8 +815,9 @@ def _commit_lmdb_lifecycle_batch(
             settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
             if settlement_delta == ZERO:
                 continue
-            wallet_row = _decode_json(txn.get(_encode_key(agent_id), db=wallets_db)) or {}
-            wallet_history = _decode_json(txn.get(_encode_key(agent_id), db=history_db)) or {}
+            batch_row = batch.get_wallet_pair(agent_id)
+            wallet_row = batch_row.wallet
+            wallet_history = batch_row.history
             if not isinstance(wallet_row, dict) or not isinstance(wallet_history, dict):
                 raise EcuIlcLifecycleRuntimeError(
                     "lifecycle_wallet_row_invalid",
@@ -899,8 +913,11 @@ def _commit_lmdb_lifecycle_batch(
                 "balance_history": merged_balance_history,
                 "history_digest": history_digest,
             }
-            txn.put(_encode_key(agent_id), _encode_json(next_wallet_row), db=wallets_db)
-            txn.put(_encode_key(agent_id), _encode_json(next_wallet_history), db=history_db)
+            batch.put_wallet_pair(
+                agent_id,
+                wallet_payload=next_wallet_row,
+                history_payload=next_wallet_history,
+            )
             results.append(
                 {
                     "ok": True,
@@ -908,6 +925,14 @@ def _commit_lmdb_lifecycle_batch(
                     "data": next_wallet_row,
                 }
             )
+        if not settlements:
+            zero_settlement_marker = {
+                "epoch_id": epoch_id,
+                "settlement_count": 0,
+                "settlement_status": "verified_zero_value_epoch_committed",
+            }
+    if zero_settlement_marker is not None:
+        wallet_store.put_epoch_commit_marker(epoch_id, zero_settlement_marker)
     return results
 
 
@@ -922,13 +947,9 @@ def _require_epoch_id_format(epoch_id: str) -> int:
     return int(epoch_id)
 
 
-def _current_lmdb_epoch_number(txn: Any, wallets_db: Any) -> int | None:
+def _current_lmdb_epoch_number(batch: Any) -> int | None:
     current: int | None = None
-    cursor = txn.cursor(db=wallets_db)
-    for _, raw_wallet in cursor:
-        wallet_row = _decode_json(raw_wallet)
-        if not isinstance(wallet_row, dict):
-            continue
+    for _, wallet_row in batch.iter_wallet_rows():
         last_epoch = wallet_row.get("last_settled_epoch_id")
         if not isinstance(last_epoch, str) or len(last_epoch) != 10 or not last_epoch.isdecimal():
             continue
@@ -943,7 +964,12 @@ def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decim
         LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
     )
 
-    if agent_id in {PERFORMER_CARRY_FORWARD_ACCOUNT_ID, AUDITOR_CARRY_FORWARD_ACCOUNT_ID}:
+    if agent_id.startswith(_PROTOCOL_ACCOUNT_PREFIXES) and agent_id not in _PROTOCOL_ACCOUNT_IDS:
+        raise EcuIlcLifecycleRuntimeError(
+            "unknown_protocol_account_id",
+            "protocol account id must be explicitly registered before settlement",
+        )
+    if agent_id in _CARRY_FORWARD_ACCOUNT_IDS:
         try:
             settlement_delta = to_decimal(
                 amount,

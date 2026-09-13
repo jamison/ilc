@@ -47,6 +47,12 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 ROOT_HEX = "b" * 64
 CIDV1_ROOT_HEX = "01711220" + "b" * 64
+AGENT_A = "a" * 96
+AGENT_B = "b" * 96
+AGENT_C = "c" * 96
+AGENT_ZERO = "d" * 96
+PERFORMER_AGENT = "e" * 96
+AUDITOR_AGENT = "f" * 96
 
 
 class RecordingBatchLifecycle:
@@ -201,10 +207,10 @@ def test_nonzero_fee_no_agents_routes_to_carry_forward_genesis_and_reserve() -> 
 
 def test_nonzero_fee_with_agents_settles_performer_and_auditor_pools() -> None:
     output = compute_epoch_distribution(
-        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")})
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={AGENT_A: Decimal("1")})
     )
 
-    assert output.agent_settled_balance_deltas == {"agent:a": Decimal("85.500000000")}
+    assert output.agent_settled_balance_deltas == {AGENT_A: Decimal("85.500000000")}
     assert output.carry_forward_out_records == ()
     assert output.protocol_reserve_delta == Decimal("10.000000000")
     assert output.genesis_settled_delta == Decimal("4.500000000")
@@ -212,14 +218,14 @@ def test_nonzero_fee_with_agents_settles_performer_and_auditor_pools() -> None:
 
 def test_epoch_one_scheduled_emission_is_distributed_after_monthly_maturity() -> None:
     output = compute_epoch_distribution(
-        _inputs(issuance_epoch=1, eligible_agents={"agent:a": Decimal("1")})
+        _inputs(issuance_epoch=1, eligible_agents={AGENT_A: Decimal("1")})
     )
     expected_emission = raw_epoch_emission_budget(0)
 
     assert output.conservation_record.current_emission_ilc == expected_emission
     assert output.conservation_record.gross_epoch_value_ilc == expected_emission
     assert output.genesis_settled_delta > Decimal("0")
-    assert output.agent_settled_balance_deltas["agent:a"] > Decimal("0")
+    assert output.agent_settled_balance_deltas[AGENT_A] > Decimal("0")
     assert output.protocol_reserve_delta == Decimal("0E-9")
     assert output.monthly_maturity_proof is not None
     assert output.monthly_maturity_proof.matured_issuance_epoch == 0
@@ -245,13 +251,13 @@ def test_auditor_agents_can_be_distinct_from_performer_agents() -> None:
     output = compute_epoch_distribution(
         _inputs(
             total_epoch_fees_ilc=Decimal("100"),
-            eligible_agents={"performer:a": Decimal("1")},
-            eligible_auditor_agents={"auditor:a": Decimal("1")},
+            eligible_agents={PERFORMER_AGENT: Decimal("1")},
+            eligible_auditor_agents={AUDITOR_AGENT: Decimal("1")},
         )
     )
 
-    assert output.agent_settled_balance_deltas["performer:a"] == Decimal("72.000000000")
-    assert output.agent_settled_balance_deltas["auditor:a"] == Decimal("13.500000000")
+    assert output.agent_settled_balance_deltas[PERFORMER_AGENT] == Decimal("72.000000000")
+    assert output.agent_settled_balance_deltas[AUDITOR_AGENT] == Decimal("13.500000000")
 
 
 def test_partial_genesis_cap_routes_excess_to_performer_pool() -> None:
@@ -259,13 +265,13 @@ def test_partial_genesis_cap_routes_excess_to_performer_pool() -> None:
         _inputs(
             total_epoch_fees_ilc=Decimal("100"),
             genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC - Decimal("1"),
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
         )
     )
 
     assert output.genesis_overhead_remaining_allowance_ilc == Decimal("1.000000000")
     assert output.genesis_settled_delta == Decimal("1.000000000")
-    assert output.agent_settled_balance_deltas["agent:a"] == Decimal("89.000000000")
+    assert output.agent_settled_balance_deltas[AGENT_A] == Decimal("89.000000000")
 
 
 def test_saturated_genesis_cap_routes_zero_to_genesis_without_losing_allocation() -> None:
@@ -273,13 +279,13 @@ def test_saturated_genesis_cap_routes_zero_to_genesis_without_losing_allocation(
         _inputs(
             total_epoch_fees_ilc=Decimal("100"),
             genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
         )
     )
 
     assert output.genesis_overhead_remaining_allowance_ilc == Decimal("0E-9")
     assert output.genesis_settled_delta == Decimal("0E-9")
-    assert output.agent_settled_balance_deltas["agent:a"] == Decimal("90.000000000")
+    assert output.agent_settled_balance_deltas[AGENT_A] == Decimal("90.000000000")
 
 
 def test_prior_carry_forward_is_consumed_into_agent_distribution() -> None:
@@ -287,14 +293,14 @@ def test_prior_carry_forward_is_consumed_into_agent_distribution() -> None:
     output = compute_epoch_distribution(
         _inputs(
             issuance_epoch=2,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
             prior_carry_forward_records=[prior],
         )
     )
 
     assert output.consumed_carry_forward_records[0].status == CONSUMED_STATUS
     assert output.consumed_carry_forward_records[0].consumed_at_epoch == 2
-    assert output.agent_settled_balance_deltas["agent:a"] > Decimal("10")
+    assert output.agent_settled_balance_deltas[AGENT_A] > Decimal("10")
     assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("10")
 
 
@@ -326,7 +332,7 @@ def test_duplicate_prior_carry_forward_is_rejected() -> None:
 
 
 def test_future_target_prior_carry_forward_is_rejected() -> None:
-    prior = _prior_record(amount=Decimal("10"), target_epoch=4)
+    prior = _prior_record(amount=Decimal("10"), source_epoch=2, target_epoch=3)
 
     with pytest.raises(ValueError, match="prior_carry_forward_target_epoch_not_reached"):
         compute_epoch_distribution(_inputs(issuance_epoch=2, prior_carry_forward_records=[prior]))
@@ -477,6 +483,26 @@ def test_reserved_protocol_accounts_cannot_be_performer_eligible_agents(
         )
 
 
+def test_malformed_eligible_agent_id_is_rejected() -> None:
+    with pytest.raises(ValueError, match="eligible_agent_id_must_be_96_hex"):
+        compute_epoch_distribution(
+            _inputs(
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={"agent:a": Decimal("1")},
+            )
+        )
+
+
+def test_unknown_protocol_account_id_is_rejected() -> None:
+    with pytest.raises(Exception) as exc_info:
+        _require_lifecycle_settlement_delta(
+            "pool:cdl029:future_unregistered_account",
+            Decimal("-1"),
+        )
+
+    assert getattr(exc_info.value, "token", None) == "unknown_protocol_account_id"
+
+
 @pytest.mark.parametrize(
     "reserved_account_id",
     [
@@ -493,7 +519,7 @@ def test_reserved_protocol_accounts_cannot_be_auditor_eligible_agents(
         compute_epoch_distribution(
             _inputs(
                 total_epoch_fees_ilc=Decimal("100"),
-                eligible_agents={"performer:a": Decimal("1")},
+                eligible_agents={PERFORMER_AGENT: Decimal("1")},
                 eligible_auditor_agents={reserved_account_id: Decimal("1")},
             )
         )
@@ -503,17 +529,17 @@ def test_dust_assignment_order_is_lexicographic_by_agent_id() -> None:
     allocations, residual = _allocate_pool_to_agents(
         Decimal("0.000000005"),
         {
-            "agent:c": Decimal("1"),
-            "agent:b": Decimal("1"),
-            "agent:a": Decimal("1"),
+            AGENT_C: Decimal("1"),
+            AGENT_B: Decimal("1"),
+            AGENT_A: Decimal("1"),
         },
     )
 
     assert residual == Decimal("0E-9")
     assert allocations == {
-        "agent:a": Decimal("0.000000002"),
-        "agent:b": Decimal("0.000000002"),
-        "agent:c": Decimal("0.000000001"),
+        AGENT_A: Decimal("0.000000002"),
+        AGENT_B: Decimal("0.000000002"),
+        AGENT_C: Decimal("0.000000001"),
     }
 
 
@@ -524,15 +550,15 @@ def test_commit_skips_zero_weight_agents_and_zero_delta_recipients() -> None:
         _inputs(
             issuance_epoch=1,
             total_epoch_fees_ilc=Decimal("100"),
-            eligible_agents={"agent:a": Decimal("1"), "agent:zero": Decimal("0")},
+            eligible_agents={AGENT_A: Decimal("1"), AGENT_ZERO: Decimal("0")},
         ),
         lifecycle,
     )
 
     settlements = lifecycle.calls[0]["settlements"]
     assert isinstance(settlements, dict)
-    assert "agent:zero" not in settlements
-    assert settlements["agent:a"] == output.agent_settled_balance_deltas["agent:a"]
+    assert AGENT_ZERO not in settlements
+    assert settlements[AGENT_A] == output.agent_settled_balance_deltas[AGENT_A]
 
 
 def test_epoch_id_zero_padding_format_is_locked() -> None:
@@ -626,7 +652,7 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
     inputs = _inputs(
         issuance_epoch=1,
         total_epoch_fees_ilc=Decimal("100"),
-        eligible_agents={"agent:a": Decimal("1")},
+        eligible_agents={AGENT_A: Decimal("1")},
     )
 
     first = commit_epoch_distribution(inputs, lifecycle)
@@ -634,9 +660,26 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
 
     assert first.conservation_verified is True
     assert second.conservation_verified is True
-    assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
+    assert wallet_store.get_wallet(AGENT_A)["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
     assert wallet_store.get_wallet(PROTOCOL_RESERVE_ACCOUNT_ID)["balance_ilc"] == "10"  # type: ignore[index]
     assert Decimal(wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"]) > Decimal("4.5")  # type: ignore[index]
+
+
+def test_real_lmdb_zero_value_epoch_commit_records_marker(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    output = commit_epoch_distribution(_inputs(), lifecycle)
+
+    assert output.epoch_id == "0000000000"
+    assert wallet_store.get_epoch_commit_marker("0000000000") == {
+        "epoch_id": "0000000000",
+        "settlement_count": 0,
+        "settlement_status": "verified_zero_value_epoch_committed",
+    }
 
 
 def test_real_lmdb_rejects_epoch_zero_nonzero_settlement_as_immature(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -648,11 +691,11 @@ def test_real_lmdb_rejects_epoch_zero_nonzero_settlement_as_immature(tmp_path) -
 
     with pytest.raises(ValueError, match=EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN):
         commit_epoch_distribution(
-            _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")}),
+            _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={AGENT_A: Decimal("1")}),
             lifecycle,
         )
 
-    assert wallet_store.get_wallet("agent:a") is None
+    assert wallet_store.get_wallet(AGENT_A) is None
 
 
 def test_real_lmdb_allows_first_nonzero_public_rc_settlement_epoch_one(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -665,13 +708,13 @@ def test_real_lmdb_allows_first_nonzero_public_rc_settlement_epoch_one(tmp_path)
     output = commit_epoch_distribution(
         _inputs(
             issuance_epoch=1,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
         ),
         lifecycle,
     )
 
     assert output.issuance_epoch == 1
-    assert wallet_store.get_wallet("agent:a")["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
+    assert wallet_store.get_wallet(AGENT_A)["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
 
 
 def test_real_lmdb_rejects_initial_epoch_gap(tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -685,7 +728,7 @@ def test_real_lmdb_rejects_initial_epoch_gap(tmp_path) -> None:  # type: ignore[
         commit_epoch_distribution(
             _inputs(
                 issuance_epoch=2,
-                eligible_agents={"agent:a": Decimal("1")},
+                eligible_agents={AGENT_A: Decimal("1")},
             ),
             lifecycle,
         )
@@ -704,7 +747,7 @@ def test_real_lmdb_rejects_out_of_order_epoch_gap(tmp_path) -> None:  # type: ig
         _inputs(
             issuance_epoch=1,
             total_epoch_fees_ilc=Decimal("100"),
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
         ),
         lifecycle,
     )
@@ -713,7 +756,7 @@ def test_real_lmdb_rejects_out_of_order_epoch_gap(tmp_path) -> None:  # type: ig
         commit_epoch_distribution(
             _inputs(
                 issuance_epoch=3,
-                eligible_agents={"agent:a": Decimal("1")},
+                eligible_agents={AGENT_A: Decimal("1")},
             ),
             lifecycle,
         )
@@ -732,7 +775,7 @@ def test_real_lmdb_rejects_same_epoch_recipient_extension(tmp_path) -> None:  # 
         _inputs(
             issuance_epoch=1,
             total_epoch_fees_ilc=Decimal("100"),
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
         ),
         lifecycle,
     )
@@ -742,7 +785,7 @@ def test_real_lmdb_rejects_same_epoch_recipient_extension(tmp_path) -> None:  # 
             _inputs(
                 issuance_epoch=1,
                 total_epoch_fees_ilc=Decimal("100"),
-                eligible_agents={"agent:b": Decimal("1")},
+                eligible_agents={AGENT_B: Decimal("1")},
             ),
             lifecycle,
         )
@@ -767,7 +810,7 @@ def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> N
     second = commit_epoch_distribution(
         _inputs(
             issuance_epoch=2,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
             prior_carry_forward_records=first.carry_forward_out_records,
         ),
         lifecycle,
@@ -778,7 +821,7 @@ def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> N
     )
     assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
     assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
-    agent_wallet = wallet_store.get_wallet("agent:a")
+    agent_wallet = wallet_store.get_wallet(AGENT_A)
     assert agent_wallet is not None
     assert Decimal(agent_wallet["balance_ilc"]) > Decimal("85.5")
 
@@ -791,13 +834,13 @@ def test_saturated_genesis_cap_with_fees_and_prior_carry_forward_conserves() -> 
             issuance_epoch=1,
             total_epoch_fees_ilc=Decimal("100"),
             genesis_cumulative_accrual_ilc=GENESIS_FIXED_TRANCHE_ILC,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
             prior_carry_forward_records=[prior],
         )
     )
 
     assert output.genesis_settled_delta == Decimal("0E-9")
-    assert output.agent_settled_balance_deltas["agent:a"] > Decimal("10")
+    assert output.agent_settled_balance_deltas[AGENT_A] > Decimal("10")
     assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("10")
     assert output.conservation_record.difference_ilc == Decimal("0E-9")
 
@@ -812,7 +855,7 @@ def test_float_and_missing_genesis_accrual_are_rejected() -> None:
 @pytest.mark.parametrize("bad_weight", [Decimal("NaN"), Decimal("Infinity")])
 def test_non_finite_eligible_agent_weights_are_rejected(bad_weight: Decimal) -> None:
     with pytest.raises(ValueError, match="eligible_agents_weight_must_be_finite"):
-        compute_epoch_distribution(_inputs(eligible_agents={"agent:a": bad_weight}))
+        compute_epoch_distribution(_inputs(eligible_agents={AGENT_A: bad_weight}))
 
 
 @pytest.mark.parametrize("bad_weight", [Decimal("NaN"), Decimal("Infinity")])
@@ -821,14 +864,14 @@ def test_non_finite_eligible_auditor_weights_are_rejected(bad_weight: Decimal) -
         compute_epoch_distribution(
             _inputs(
                 eligible_agents={},
-                eligible_auditor_agents={"auditor:a": bad_weight},
+                eligible_auditor_agents={AUDITOR_AGENT: bad_weight},
             )
         )
 
 
 def test_conservation_record_canonical_serialization_uses_decimal_strings() -> None:
     output = compute_epoch_distribution(
-        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={"agent:a": Decimal("1")})
+        _inputs(total_epoch_fees_ilc=Decimal("100"), eligible_agents={AGENT_A: Decimal("1")})
     )
 
     canonical = output.conservation_record.to_canonical_record()
@@ -844,7 +887,7 @@ def test_conservation_record_canonical_serialization_uses_decimal_strings() -> N
 
 def test_lifecycle_regular_agent_delta_must_align_to_ilc_quantum() -> None:
     with pytest.raises(Exception) as exc_info:
-        _require_lifecycle_settlement_delta("agent:a", Decimal("1.0000000001"))
+        _require_lifecycle_settlement_delta(AGENT_A, Decimal("1.0000000001"))
 
     assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_invalid"
 
@@ -872,7 +915,7 @@ def test_prior_carry_forward_dedup_allows_different_settlement_roots() -> None:
     output = compute_epoch_distribution(
         _inputs(
             issuance_epoch=2,
-            eligible_agents={"agent:a": Decimal("1")},
+            eligible_agents={AGENT_A: Decimal("1")},
             prior_carry_forward_records=[first, second],
         )
     )

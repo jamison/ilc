@@ -21,6 +21,7 @@ from ilc_core.epoch.epoch_maturity_gate import (
 
 ROOT_HEX = "d" * 64
 CIDV1_ROOT_HEX = "01711220" + "d" * 64
+AGENT_ID = "a" * 96
 
 
 class RecordingBatchLifecycle:
@@ -50,7 +51,7 @@ def _input(
         issuance_epoch=issuance_epoch,
         total_epoch_fees_ilc=total_epoch_fees_ilc,
         genesis_cumulative_accrual_ilc=Decimal("0"),
-        eligible_agents={"agent:a": Decimal("1")},
+        eligible_agents={AGENT_ID: Decimal("1")},
         prior_carry_forward_records=[],
         source_settlement_root_hex=source_settlement_root_hex,
         allow_default_source_settlement_root=False,
@@ -176,7 +177,7 @@ def test_zero_epoch_zero_value_bookkeeping_needs_no_maturity_proof() -> None:
 
     assert output.issuance_epoch == 0
     assert output.conservation_record.total_debit_ilc == Decimal("0")
-    assert lifecycle.calls == []
+    assert lifecycle.calls == [{"settlements": {}, "epoch_id": "0000000000"}]
 
 
 def test_epoch_zero_explicit_maturity_proof_is_rejected() -> None:

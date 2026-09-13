@@ -69,7 +69,7 @@ class EcuIlcLifecycleRuntime:
                 "reward_status": wallet_row.get("reward_status", "not_rewarded"),
                 "history_digest": wallet_history.get("history_digest"),
                 "latest_balance_receipt": latest_balance_receipt,
-                "claimability_state": "deferred",
+                "claimability_state": _claimability_state(wallet_row),
             },
         }
 
@@ -253,6 +253,16 @@ def _wallet_decimal_string(value: object) -> str:
     return decimal_to_canonical_string(
         to_decimal(value if value is not None else "0", token="lifecycle_wallet_balance_invalid")
     )
+
+
+def _claimability_state(wallet_row: dict[str, Any]) -> str:
+    value = wallet_row.get("claimability_state", "deferred")
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_claimability_state_invalid",
+            "claimability_state must be a non-empty string",
+        )
+    return value
 
 
 def _require_lifecycle_id(value: object, *, token: str, max_bytes: int, label: str) -> str:

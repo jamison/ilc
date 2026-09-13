@@ -10,6 +10,7 @@ import pytest
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
 from ilc_core.protocol.public_wallet_runtime import (
+    WALLET_CLAIMABILITY_STATE_DEFERRED,
     WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED,
     PublicWalletRuntime,
 )
@@ -23,7 +24,7 @@ from ilc_core.sidecars.wallet_action_semantics_preflight import (
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
 
-AGENT_ID = "agent-1578f-proof-claimability"
+AGENT_ID = "a" * 96
 
 
 def _runtime(tmp_path: Path) -> PublicWalletRuntime:
@@ -43,7 +44,7 @@ def _runtime(tmp_path: Path) -> PublicWalletRuntime:
     )
 
 
-def test_wallet_display_surfaces_use_proof_claimability_authorized_state(tmp_path: Path) -> None:
+def test_wallet_display_surfaces_use_persisted_lifecycle_claimability_state(tmp_path: Path) -> None:
     runtime = _runtime(tmp_path)
 
     status = runtime.wallet_status(agent_id=AGENT_ID)["data"]
@@ -51,10 +52,10 @@ def test_wallet_display_surfaces_use_proof_claimability_authorized_state(tmp_pat
     export = runtime.wallet_export(agent_id=AGENT_ID)["data"]
     summary = runtime.ledger_summary(agent_id=AGENT_ID)["data"]
 
-    assert status["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
-    assert history["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
-    assert export["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
-    assert summary["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+    assert status["claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
+    assert history["claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
+    assert export["claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
+    assert summary["claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
     assert WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED == "proof_claimability_authorized"
 
 
@@ -66,7 +67,6 @@ def test_public_wallet_runtime_uses_named_claimability_state_constant_only() -> 
         in source
     )
     assert source.count('"proof_claimability_authorized"') == 1
-    assert '"claimability_state": "deferred"' not in source
     assert "public_claimability_activated" not in source
 
 

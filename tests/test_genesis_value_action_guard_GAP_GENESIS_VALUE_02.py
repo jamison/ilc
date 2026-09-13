@@ -740,7 +740,7 @@ def test_ilc_verifier_genesis_sender_without_certificate_rejected(
 
     with patch("ilc_core.value_action.ilc_transfer_intent.ILC_TRANSFER_ENABLED", True):
         with pytest.raises(ValueError, match="genesis_value_certificate_required"):
-            ledger.execute_transfer(_sign(_ilc_env(), key_uri), nonce_store)
+            ledger.execute_transfer(_sign(_ilc_env(), key_uri), nonce_store, current_epoch=1)
 
     assert nonce_store.peek_counter(GENESIS_AGENT1_AGENT_ID) == 0
     assert ledger.get_balance(GENESIS_AGENT1_AGENT_ID) == Decimal("0")
@@ -764,6 +764,7 @@ def test_ilc_verifier_genesis_sender_with_valid_certificate_passes(
             signature_verifier=provider,
             signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
             sender_public_key_bytes=public_key_bytes,
+            current_epoch=1,
         )
 
     assert entry.sender_agent_id == GENESIS_AGENT1_AGENT_ID
@@ -815,6 +816,7 @@ def test_ilc_genesis_per_epoch_cap_rejects_second_transfer_without_mutation(
             signature_verifier=provider,
             signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
             sender_public_key_bytes=public_key_bytes,
+            current_epoch=1,
         )
         with pytest.raises(ValueError, match="genesis_value_per_epoch_cap_exceeded"):
             ledger.execute_transfer(
@@ -823,6 +825,7 @@ def test_ilc_genesis_per_epoch_cap_rejects_second_transfer_without_mutation(
                 signature_verifier=provider,
                 signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
                 sender_public_key_bytes=public_key_bytes,
+                current_epoch=1,
             )
 
     assert nonce_store.peek_counter(GENESIS_AGENT1_AGENT_ID) == 1
@@ -853,11 +856,59 @@ def test_ilc_genesis_contribution_only_cert_rejects_payment_class(
                 signature_verifier=provider,
                 signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
                 sender_public_key_bytes=public_key_bytes,
+                current_epoch=1,
             )
 
     assert ilc_transfer_intent.GENESIS_ILC_ACTION_CLASS == "PAYMENT"
     assert nonce_store.peek_counter(GENESIS_AGENT1_AGENT_ID) == 0
     assert ledger.get_balance(GENESIS_AGENT1_AGENT_ID) == Decimal("20")
+    assert ledger.get_balance(RECIPIENT_AGENT_ID) == Decimal("0")
+
+
+def test_ilc_genesis_transfer_requires_caller_current_epoch(
+    lmdb_env,
+    key_uri: str,
+    private_key,
+) -> None:
+    ledger = ILCTransferLedger(lmdb_env, genesis_value_certificate=_cert())
+    nonce_store = ActionNonceStore(lmdb_env)
+    provider = LocalEd25519SigningProvider()
+    public_key_bytes = private_key.public_key().public_bytes_raw()
+
+    with patch("ilc_core.value_action.ilc_transfer_intent.ILC_TRANSFER_ENABLED", True):
+        with pytest.raises(ValueError, match="genesis_transfer_current_epoch_required"):
+            ledger.execute_transfer(
+                _sign(_ilc_env(), key_uri),
+                nonce_store,
+                signature_verifier=provider,
+                signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
+                sender_public_key_bytes=public_key_bytes,
+            )
+
+
+def test_ilc_genesis_transfer_rejects_envelope_epoch_mismatch(
+    lmdb_env,
+    key_uri: str,
+    private_key,
+) -> None:
+    ledger = ILCTransferLedger(lmdb_env, genesis_value_certificate=_cert())
+    nonce_store = ActionNonceStore(lmdb_env)
+    provider = LocalEd25519SigningProvider()
+    public_key_bytes = private_key.public_key().public_bytes_raw()
+
+    with patch("ilc_core.value_action.ilc_transfer_intent.ILC_TRANSFER_ENABLED", True):
+        with pytest.raises(ValueError, match="genesis_transfer_epoch_mismatch"):
+            ledger.execute_transfer(
+                _sign(_ilc_env(), key_uri),
+                nonce_store,
+                signature_verifier=provider,
+                signer_authority=_SignerAuthority(GENESIS_AGENT1_AGENT_ID, public_key_bytes),
+                sender_public_key_bytes=public_key_bytes,
+                current_epoch=2,
+            )
+
+    assert nonce_store.peek_counter(GENESIS_AGENT1_AGENT_ID) == 0
+    assert ledger.get_balance(GENESIS_AGENT1_AGENT_ID) == Decimal("0")
     assert ledger.get_balance(RECIPIENT_AGENT_ID) == Decimal("0")
 
 

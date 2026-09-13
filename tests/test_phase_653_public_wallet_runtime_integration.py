@@ -6,7 +6,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+from ilc_core.protocol.public_wallet_runtime import WALLET_CLAIMABILITY_STATE_DEFERRED
+from ilc_core.epoch.pool_carry_forward_runtime import PERFORMER_CARRY_FORWARD_ACCOUNT_ID
+from ilc_core.epoch.protocol_reserve_destination import PROTOCOL_RESERVE_ACCOUNT_ID
 from ilc_core.server import create_app
 
 DOC_PATH = Path("docs/specs/ilc_public_wallet_runtime_integration_653_v0.1.md")
@@ -111,7 +113,7 @@ def _require_commit_or_skip(subject_tokens: tuple[str, ...]) -> None:
         pytest.skip(f"commit_not_yet_present:{subject_tokens}")
 
 
-def _seed_wallet_runtime(client: TestClient, *, agent_id: str = "agent-alpha") -> dict[str, str]:
+def _seed_wallet_runtime(client: TestClient, *, agent_id: str = "a" * 96) -> dict[str, str]:
     state = client.app.state
     state.ecu_active_layer_runtime.set_accrued_ecu(agent_id, "8.5")
     state.public_lifecycle_runtime.commit_settled_epoch(
@@ -161,7 +163,7 @@ def test_wallet_status_history_export_and_ledger_summary_are_read_only_and_accou
 
         assert status["balance_ilc"] == "3"
         assert status["ecu_accrual"] == "8.5"
-        assert status["claimability_state"] == WALLET_CLAIMABILITY_STATE_PROOF_AUTHORIZED
+        assert status["claimability_state"] == WALLET_CLAIMABILITY_STATE_DEFERRED
         assert history["record_count"] == 1
         assert history["records"][0]["epoch_id"] == "epoch-001"
         assert history["records"][0]["settled_amount_ilc"] == "3"
@@ -207,6 +209,46 @@ def test_settled_runtime_root_ref_changes_when_settled_state_changes() -> None:
         )
         second_status = runtime.wallet_status(agent_id=agent_id)["data"]
         assert second_status["settled_runtime_root_ref"] != first_ref
+
+
+def test_wallet_runtime_rejects_protocol_pool_and_reserve_accounts() -> None:
+    with TestClient(create_app()) as client:
+        runtime = client.app.state.public_wallet_runtime
+        for account_id in (PERFORMER_CARRY_FORWARD_ACCOUNT_ID, PROTOCOL_RESERVE_ACCOUNT_ID):
+            with pytest.raises(Exception) as exc_info:
+                runtime.wallet_status(agent_id=account_id)
+            assert getattr(exc_info.value, "token", None) == "wallet_protocol_account_not_user_wallet"
+
+
+def test_wallet_runtime_reports_persisted_claimability_state() -> None:
+    with TestClient(create_app()) as client:
+        agent_id = _seed_wallet_runtime(client)["agent_id"]
+        store = client.app.state.public_lifecycle_runtime.wallet_store
+        row = store.get_wallet(agent_id)
+        assert row is not None
+        row["claimability_state"] = "proof_claimability_authorized"
+        history = store.get_wallet_history(agent_id)
+        assert history is not None
+        store.put_wallet_and_history(agent_id, row, history)
+
+        status = client.app.state.public_wallet_runtime.wallet_status(agent_id=agent_id)["data"]
+        assert status["claimability_state"] == "proof_claimability_authorized"
+
+
+def test_wallet_runtime_rejects_noncanonical_persisted_claimability_state() -> None:
+    with TestClient(create_app()) as client:
+        agent_id = _seed_wallet_runtime(client)["agent_id"]
+        store = client.app.state.public_lifecycle_runtime.wallet_store
+        row = store.get_wallet(agent_id)
+        assert row is not None
+        row["claimability_state"] = " deferred "
+        history = store.get_wallet_history(agent_id)
+        assert history is not None
+        store.put_wallet_and_history(agent_id, row, history)
+
+        with pytest.raises(Exception) as exc_info:
+            client.app.state.public_wallet_runtime.wallet_status(agent_id=agent_id)
+        assert getattr(exc_info.value, "token", None) == "lifecycle_claimability_state_invalid"
 
 
 def test_ledger_summary_uses_one_lifecycle_snapshot_read(monkeypatch: pytest.MonkeyPatch) -> None:
