@@ -12,6 +12,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from ilc_core.epoch.epoch_distribution_writer import EpochDistributionOutput
+from ilc_core.epoch.epoch_maturity_gate import require_monthly_issuance_maturity_proof
 
 
 EPOCH_CONSERVATION_GATE_VERSION = (
@@ -84,6 +85,12 @@ def verify_epoch_conservation_before_commit(output: EpochDistributionOutput) -> 
         raise ValueError(NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN)
     if values["difference_ilc"] != _ZERO:
         raise ValueError(NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN)
+    if output.issuance_epoch > 0 and values["current_emission_ilc"] > _ZERO:
+        require_monthly_issuance_maturity_proof(
+            output.monthly_maturity_proof,
+            distribution_issuance_epoch=output.issuance_epoch,
+            source_settlement_root_hex=output.source_settlement_root_hex,
+        )
     return None
 
 

@@ -19,6 +19,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
 )
 from ilc_core.epoch.epoch_maturity_gate import (
     MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
+    MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN,
     MonthlyIssuanceMaturityProof,
 )
 
@@ -129,6 +130,19 @@ def test_gate_is_idempotent_for_verified_balanced_output() -> None:
 
     assert verify_epoch_conservation_before_commit(output) is None
     assert verify_epoch_conservation_before_commit(output) is None
+
+
+def test_gate_rejects_forged_nonzero_emission_output_missing_maturity_proof() -> None:
+    forged_output = _output()
+    object.__setattr__(forged_output, "monthly_maturity_proof", None)
+
+    with pytest.raises(ValueError, match=MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN):
+        verify_epoch_conservation_before_commit(forged_output)
+
+
+def test_distribution_output_rejects_nonzero_emission_without_maturity_proof() -> None:
+    with pytest.raises(ValueError, match=MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN):
+        replace(_output(), monthly_maturity_proof=None)
 
 
 def test_gate_rejects_wrong_type() -> None:
