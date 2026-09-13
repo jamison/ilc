@@ -100195,6 +100195,134 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_protocol_account_separation_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mempalace_rehydrate_20260912_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-MEMPALACE-REHYDRATE-20260912 added a private correction capsule so MemPalace retrieval ranks the corrected economic canon above stale prelaunch settlement interpretations.",
+      "manual_read_summary": "Capsule states that public launch opens issuance interval 0, no nonzero ILC is launch-valid before first monthly close, protocol pools are not user wallets, and local LMDB is not on-chain.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MEMPALACE-REHYDRATE-20260912"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_mempalace_economic_canon_rehydration_capsule_20260912_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mempalace_rehydrate_20260912_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-MEMPALACE-REHYDRATE-20260912 receipt records transcript archive deltas, active working-set counts, mining evidence, retrieval checks, privacy boundary, and non-claims.",
+      "manual_read_summary": "Receipt records redacted Codex and Claude/Sonnet transcript delta extraction since the 2026-08-21 backup, bounded transcript index creation, final MemPalace staged counts, and sentinel retrieval success.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MEMPALACE-REHYDRATE-20260912"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_mempalace_economic_canon_rehydration_capsule_20260912_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_mempalace_rehydrate_20260912_receipt_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mempalace_rehydrate_20260912_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-MEMPALACE-REHYDRATE-20260912 walkthrough records prompt validation, token audit, transcript archive extraction, rebuild outputs, sentinel queries, and non-claims.",
+      "manual_read_summary": "Walkthrough is the phase execution evidence for the sensitive context rehydration run and explicitly records that no runtime, value, VPS, package, mirror, or epoch mutation occurred.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MEMPALACE-REHYDRATE-20260912"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_mempalace_rehydrate_20260912_receipt_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_mempalace_rehydrate_20260912_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_mempalace_rehydrate_20260912_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-MEMPALACE-REHYDRATE-20260912 updated the current frontier MemPalace manifest with the correction capsule, correction-lane evidence, retargeted prompts, and bounded transcript index entries.",
+      "manual_read_summary": "Manifest v0.2 now stages the current economic correction lane and 2026-09-13 Codex/Claude private archive indexes while preserving Tier D as lower-authority historical material.",
+      "node_kind": "mempalace_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MEMPALACE-REHYDRATE-20260912"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_mempalace_economic_canon_rehydration_capsule_20260912_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.2.json"
     }
   ],
   "phase": "1545p-Fix38",
