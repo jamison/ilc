@@ -6,7 +6,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from ilc_core.epoch.epoch_emission_runtime import ISSUANCE_EPOCH_DURATION
+from ilc_core.epoch.epoch_emission_runtime import ISSUANCE_EPOCH_DURATION, VALIDATION_EPOCH_SECONDS
 
 
 EPOCH_MATURITY_GATE_VERSION = "epoch_maturity_gate_GAP_EPOCH_MATURITY_GATE_00.v0.1"
@@ -28,8 +28,29 @@ EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN = (
 
 CDL_027_REF = "CDL-027"
 CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX = "01711220"
-MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN = 28 * 24 * 60
+_MIN_MONTHLY_ISSUANCE_SECONDS = 28 * 24 * 60 * 60
+if _MIN_MONTHLY_ISSUANCE_SECONDS % VALIDATION_EPOCH_SECONDS != 0:
+    raise RuntimeError("monthly_maturity_validation_epoch_span_non_integral")
+MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN = (
+    _MIN_MONTHLY_ISSUANCE_SECONDS // VALIDATION_EPOCH_SECONDS
+)
 MAX_MATURITY_REF_BYTES = 512
+_PROOF_CONSTRUCTOR_KEYS = frozenset(
+    {
+        "matured_issuance_epoch",
+        "distribution_issuance_epoch",
+        "source_settlement_root_hex",
+        "opening_validation_epoch",
+        "closing_validation_epoch",
+        "validator_quorum_certificate_ref",
+        "evidence_ref",
+        "schema_version",
+        "maturity_status",
+        "cdl_ref",
+        "issuance_epoch_duration",
+        "maturity_evidence_kind",
+    }
+)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -108,6 +129,7 @@ class MonthlyIssuanceMaturityProof:
             "closing_validation_epoch": self.closing_validation_epoch,
             "distribution_issuance_epoch": self.distribution_issuance_epoch,
             "evidence_ref": self.evidence_ref,
+            "gate_version": EPOCH_MATURITY_GATE_VERSION,
             "issuance_epoch_duration": self.issuance_epoch_duration,
             "matured_issuance_epoch": self.matured_issuance_epoch,
             "maturity_evidence_kind": self.maturity_evidence_kind,
@@ -139,8 +161,6 @@ def require_monthly_issuance_maturity_proof(
     if normalized.distribution_issuance_epoch != expected_distribution_epoch:
         raise ValueError("monthly_maturity_proof_distribution_epoch_mismatch")
     expected_matured_epoch = expected_distribution_epoch - 1
-    if expected_matured_epoch < 0:
-        raise ValueError("monthly_maturity_proof_not_defined_for_epoch_zero")
     if normalized.matured_issuance_epoch != expected_matured_epoch:
         raise ValueError("monthly_maturity_proof_matured_epoch_mismatch")
     if normalized.source_settlement_root_hex != expected_root:
@@ -151,20 +171,40 @@ def require_monthly_issuance_maturity_proof(
 def _coerce_maturity_proof(
     proof: MonthlyIssuanceMaturityProof | Mapping[str, Any],
 ) -> MonthlyIssuanceMaturityProof:
+    """Coerce proof mappings while preserving field-level validation tokens."""
     if isinstance(proof, MonthlyIssuanceMaturityProof):
         return proof
     if not isinstance(proof, Mapping):
         raise ValueError("monthly_maturity_proof_required")
+    record = dict(proof)
+    gate_version = record.pop("gate_version", EPOCH_MATURITY_GATE_VERSION)
+    _require_exact_str(
+        gate_version,
+        EPOCH_MATURITY_GATE_VERSION,
+        "monthly_maturity_proof_gate_version_invalid",
+    )
+    extra_keys = set(record) - _PROOF_CONSTRUCTOR_KEYS
+    missing_keys = {
+        "matured_issuance_epoch",
+        "distribution_issuance_epoch",
+        "source_settlement_root_hex",
+        "opening_validation_epoch",
+        "closing_validation_epoch",
+        "validator_quorum_certificate_ref",
+        "evidence_ref",
+    } - set(record)
+    if extra_keys or missing_keys:
+        raise ValueError("monthly_maturity_proof_fields_invalid")
     try:
-        return MonthlyIssuanceMaturityProof(**dict(proof))
+        return MonthlyIssuanceMaturityProof(**record)
     except TypeError as exc:
         raise ValueError("monthly_maturity_proof_fields_invalid") from exc
 
 
 def _require_exact_str(value: object, expected: str, token: str) -> str:
-    if value != expected:
+    if not isinstance(value, str) or value != expected:
         raise ValueError(token)
-    return expected
+    return value
 
 
 def _require_non_negative_int(value: object, token: str) -> int:

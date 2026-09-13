@@ -33,7 +33,9 @@ from ilc_core.epoch.epoch_emission_runtime import (
     build_epoch_emission_quote,
 )
 from ilc_core.epoch.epoch_maturity_gate import (
+    CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX,
     EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN,
+    MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN,
     MonthlyIssuanceMaturityProof,
     require_monthly_issuance_maturity_proof,
 )
@@ -93,7 +95,6 @@ MAX_AGENT_ID_BYTES = 256
 MAX_ELIGIBLE_AGENTS = 65_536
 MAX_PRIOR_CARRY_FORWARD_RECORDS = 65_536
 DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX = "0" * 64
-CIDV1_DAG_CBOR_SHA2_256_ROOT_PREFIX_HEX = "01711220"
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _PROTOCOL_ACCOUNT_IDS = frozenset(
     {
@@ -204,6 +205,19 @@ class EpochDistributionOutput:
     decision_tokens: tuple[str, ...]
     source_settlement_root_hex: str
     monthly_maturity_proof: MonthlyIssuanceMaturityProof | None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.conservation_record, EpochDistributionConservationRecord):
+            return
+        if self.monthly_maturity_proof is not None:
+            require_monthly_issuance_maturity_proof(
+                self.monthly_maturity_proof,
+                distribution_issuance_epoch=self.issuance_epoch,
+                source_settlement_root_hex=self.source_settlement_root_hex,
+            )
+            return
+        if self.issuance_epoch > 0 and self.conservation_record.current_emission_ilc > ZERO:
+            raise ValueError(MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN)
 
 
 def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistributionOutput:
@@ -338,14 +352,7 @@ def commit_verified_epoch_distribution(
     verify_epoch_conservation_before_commit(output)
 
     settlements = _settlement_deltas_for_commit(output)
-    if settlements and output.issuance_epoch == 0:
-        raise ValueError(EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN)
-    if settlements:
-        require_monthly_issuance_maturity_proof(
-            output.monthly_maturity_proof,
-            distribution_issuance_epoch=output.issuance_epoch,
-            source_settlement_root_hex=output.source_settlement_root_hex,
-        )
+    _require_maturity_before_settlement_commit(output, settlements)
     _commit_settled_epoch_batch(
         lifecycle_runtime=lifecycle_runtime,
         settlements=settlements,
@@ -424,6 +431,21 @@ def _validate_monthly_maturity_for_compute(
             source_settlement_root_hex=source_settlement_root,
         )
     return None
+
+
+def _require_maturity_before_settlement_commit(
+    output: EpochDistributionOutput,
+    settlements: Mapping[str, Decimal],
+) -> None:
+    if not settlements:
+        return
+    if output.issuance_epoch == 0:
+        raise ValueError(EPOCH_ZERO_NONZERO_SETTLEMENT_NOT_MATURE_TOKEN)
+    require_monthly_issuance_maturity_proof(
+        output.monthly_maturity_proof,
+        distribution_issuance_epoch=output.issuance_epoch,
+        source_settlement_root_hex=output.source_settlement_root_hex,
+    )
 
 
 def _require_epoch(value: object, field_name: str) -> int:

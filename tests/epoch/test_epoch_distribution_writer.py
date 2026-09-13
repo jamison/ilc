@@ -231,6 +231,27 @@ def test_epoch_one_scheduled_emission_is_distributed_after_monthly_maturity() ->
     assert output.monthly_maturity_proof.matured_issuance_epoch == 0
 
 
+def test_epoch_one_nonzero_emission_with_no_eligible_agents_still_requires_maturity() -> None:
+    with pytest.raises(ValueError, match="monthly_issuance_maturity_proof_required"):
+        compute_epoch_distribution(
+            EpochDistributionInput(
+                issuance_epoch=1,
+                total_epoch_fees_ilc=Decimal("0"),
+                genesis_cumulative_accrual_ilc=Decimal("0"),
+                eligible_agents={},
+                prior_carry_forward_records=[],
+                source_settlement_root_hex=ROOT_HEX,
+                monthly_maturity_proof=None,
+            )
+        )
+
+    output = compute_epoch_distribution(_inputs(issuance_epoch=1, eligible_agents={}))
+    assert output.monthly_maturity_proof is not None
+    assert output.agent_settled_balance_deltas == {}
+    assert output.genesis_settled_delta > Decimal("0")
+    assert output.carry_forward_out_records
+
+
 def test_epoch_one_accepts_rust_cidv1_source_settlement_root() -> None:
     output = compute_epoch_distribution(
         _inputs(

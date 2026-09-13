@@ -9,6 +9,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
     commit_epoch_distribution,
     compute_epoch_distribution,
 )
+from ilc_core.epoch.epoch_emission_runtime import VALIDATION_EPOCH_SECONDS
 from ilc_core.epoch.epoch_maturity_gate import (
     EPOCH_MATURITY_GATE_VERSION,
     MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
@@ -16,6 +17,7 @@ from ilc_core.epoch.epoch_maturity_gate import (
     MONTHLY_ISSUANCE_MATURITY_PROOF_SCHEMA_VERSION,
     VALIDATION_EPOCH_TRANSITION_NOT_MONTHLY_MATURITY_TOKEN,
     MonthlyIssuanceMaturityProof,
+    require_monthly_issuance_maturity_proof,
 )
 
 
@@ -83,6 +85,9 @@ def test_maturity_gate_exports_version_and_schema() -> None:
         MONTHLY_ISSUANCE_MATURITY_PROOF_SCHEMA_VERSION
         == "monthly_issuance_maturity_proof_GAP_EPOCH_MATURITY_GATE_00.v0.1"
     )
+    assert MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN == (
+        28 * 24 * 60 * 60 // VALIDATION_EPOCH_SECONDS
+    )
 
 
 def test_epoch_one_nonzero_emission_requires_monthly_maturity_proof() -> None:
@@ -93,6 +98,11 @@ def test_epoch_one_nonzero_emission_requires_monthly_maturity_proof() -> None:
 def test_validation_epoch_zero_to_one_is_not_monthly_maturity() -> None:
     with pytest.raises(ValueError, match=VALIDATION_EPOCH_TRANSITION_NOT_MONTHLY_MATURITY_TOKEN):
         _proof(closing_validation_epoch=1)
+
+
+def test_validation_epoch_one_before_minimum_span_is_not_monthly_maturity() -> None:
+    with pytest.raises(ValueError, match=VALIDATION_EPOCH_TRANSITION_NOT_MONTHLY_MATURITY_TOKEN):
+        _proof(closing_validation_epoch=MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN - 1)
 
 
 def test_matured_monthly_proof_allows_epoch_one_distribution() -> None:
@@ -140,6 +150,44 @@ def test_malformed_proof_mapping_rejected() -> None:
         compute_epoch_distribution(_input(proof=bad_proof))
 
 
+def test_maturity_proof_canonical_record_includes_gate_version_and_round_trips() -> None:
+    proof = _proof()
+    record = proof.to_canonical_record()
+
+    assert record["gate_version"] == EPOCH_MATURITY_GATE_VERSION
+    normalized = require_monthly_issuance_maturity_proof(
+        record,
+        distribution_issuance_epoch=1,
+        source_settlement_root_hex=ROOT_HEX,
+    )
+
+    assert normalized == proof
+
+
+def test_maturity_proof_mapping_rejects_wrong_gate_version() -> None:
+    bad_proof = _proof().to_canonical_record()
+    bad_proof["gate_version"] = "epoch_maturity_gate_v0.mismatch"
+
+    with pytest.raises(ValueError, match="monthly_maturity_proof_gate_version_invalid"):
+        require_monthly_issuance_maturity_proof(
+            bad_proof,
+            distribution_issuance_epoch=1,
+            source_settlement_root_hex=ROOT_HEX,
+        )
+
+
+def test_maturity_proof_mapping_rejects_extra_keys() -> None:
+    bad_proof = _proof().to_canonical_record()
+    bad_proof["unexpected"] = "field"
+
+    with pytest.raises(ValueError, match="monthly_maturity_proof_fields_invalid"):
+        require_monthly_issuance_maturity_proof(
+            bad_proof,
+            distribution_issuance_epoch=1,
+            source_settlement_root_hex=ROOT_HEX,
+        )
+
+
 def test_commit_epoch_one_nonzero_settlement_without_proof_writes_nothing() -> None:
     lifecycle = RecordingBatchLifecycle()
 
@@ -155,6 +203,10 @@ def test_commit_epoch_one_with_maturity_proof_writes_after_gate() -> None:
     output = commit_epoch_distribution(_input(proof=_proof()), lifecycle)
 
     assert output.issuance_epoch == 1
+    assert output.monthly_maturity_proof is not None
+    assert output.monthly_maturity_proof.to_canonical_record()["gate_version"] == (
+        EPOCH_MATURITY_GATE_VERSION
+    )
     assert len(lifecycle.calls) == 1
     assert lifecycle.calls[0]["epoch_id"] == "0000000001"
 
