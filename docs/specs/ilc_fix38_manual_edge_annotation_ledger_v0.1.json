@@ -100021,6 +100021,93 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_economic_state_reconcile_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_wallet_claimability_fix1_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-WALLET-CLAIMABILITY-FIX1-00 completed the launch-canon correction from hardcoded proof-authorized wallet display to stored lifecycle claimability state.",
+      "manual_read_summary": "Public wallet claimability runtime and active Phase 1575t prelaunch soak gate now report and expect stored deferred state unless proof-authorized state is explicitly present in the lifecycle row.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-WALLET-CLAIMABILITY-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/protocol/public_wallet_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_wallet_claimability_fix1_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-WALLET-CLAIMABILITY-FIX1-00 added phase-specific regression coverage for default deferred claimability and Phase 1575t prelaunch gate expectations.",
+      "manual_read_summary": "Tests cover stored lifecycle claimability passthrough, invalid noncanonical state rejection, and historical prelaunch soak evidence remaining deferred rather than proof-authorized.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-WALLET-CLAIMABILITY-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/protocol/public_wallet_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_wallet_claimability_fix1_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_wallet_claimability_fix1_00_2026_09_13",
+      "chronology_note": "2026-09-13 GAP-WALLET-CLAIMABILITY-FIX1-00 walkthrough records direct-read findings, patch scope, verification output, token, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive wallet claimability consistency phase, including the correction of active Phase 1575t gate expectations to deferred claimability.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-WALLET-CLAIMABILITY-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tests/test_gap_wallet_claimability_fix1_00.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_wallet_claimability_fix1_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
