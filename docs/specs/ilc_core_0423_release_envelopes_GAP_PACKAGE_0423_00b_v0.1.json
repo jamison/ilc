@@ -1,0 +1,38 @@
+{
+  "envelopes": {
+    "ilc-artifact:ilc-core-python-sdist-0423@phase-1628": {
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0423@phase-1628",
+      "artifact_sha256": "1933b5d1e1ebfd0b1e54944a60044b7a0f1deb768731f2ad329b5b331bafab5e",
+      "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+      "prior_release_envelope_ref": "none:first-public-rc-release",
+      "release_id": "ilc-core-0.4.23",
+      "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+      "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
+      "signature_hex": "7113899cbc92297a814771236600c8473bf63ee665ff918064fb3ff918107193291120f161ba041b275229f384adb87d0af44c2c8981060949497b7af4c5b101",
+      "signed_at": "1970-01-01T00:00:00Z",
+      "signed_preimage_algorithm": "sha256_of_canonical_json",
+      "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+      "signed_preimage_sha256": "071b85a7fd738ae678c83faf9295af09e1f55c5633738c6d6c73c77dfade6dc3",
+      "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "signing_algorithm": "Ed25519"
+    },
+    "ilc-artifact:ilc-core-python-wheel-0423@phase-1628": {
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0423@phase-1628",
+      "artifact_sha256": "446b6e61c5474d20e0fd3db83afd4ce985ba5d94b3772ac9a05ee414503d9c6d",
+      "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+      "prior_release_envelope_ref": "none:first-public-rc-release",
+      "release_id": "ilc-core-0.4.23",
+      "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+      "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
+      "signature_hex": "77fd63df61c5fa6453f6d1fe4d3363e9588baca77c3c29d4568c54d02fd00d43137af88eb514459dd7a88bc95e65979a4aadd6d69e3f93a4420424c0b0946203",
+      "signed_at": "1970-01-01T00:00:00Z",
+      "signed_preimage_algorithm": "sha256_of_canonical_json",
+      "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+      "signed_preimage_sha256": "b94fd8b1fa767962d687d8986cf54e8a5d4b8bb62f051a84577be7105c1f25cf",
+      "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "signing_algorithm": "Ed25519"
+    }
+  },
+  "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
+  "version": "0.4.23"
+}
