@@ -80298,6 +80298,24 @@
       ],
       "recommended_graph_action": "graph_delta=support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_issuance_close_orchestrator_00a_g10_pre_launch_machinery.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0423_00_prompt_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-VALIDATOR-PACKAGE-SYNC-0423-00 prompt drafted and validated VALID.",
+      "manual_read_summary": "Antigravity phase prompt for syncing all four public-RC validator service-user venvs from ilc-core 0.4.21 to 0.4.23 with six correction-lane guard checks per slot.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_package_sync_0423_00_g10_validator_venv_sync_0423.md"
     }
   ],
   "boundary": {
