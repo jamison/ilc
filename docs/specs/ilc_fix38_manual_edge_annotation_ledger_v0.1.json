@@ -101124,6 +101124,129 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_archive_agent_chat_deltas.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a adds local monthly issuance close proof and dry-run settlement orchestration machinery.",
+      "manual_read_summary": "Runtime module builds MonthlyIssuanceMaturityProof objects from injected epoch records, builds EpochDistributionInput from validated ECU accrual evidence, and verifies distribution conservation without committing wallet state.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_machinery_complete_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/epoch_maturity_gate.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/epoch_distribution_writer.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/monthly_close_orchestrator.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a adds durable JSON ECU accrual evidence helpers for the monthly close machinery.",
+      "manual_read_summary": "Runtime module validates bounded ECU accrual evidence, rejects protocol accounts and malformed AgentIDs, hashes canonical payloads excluding evidence_sha256, and writes evidence atomically without LMDB mutation.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_machinery_complete_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/protocol_account_boundary.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/ledger/ecu_active_layer_runtime.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/ecu_accrual_evidence.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a adds regression coverage for the monthly close machinery.",
+      "manual_read_summary": "Tests cover proof construction, maturity-span rejection, epoch-zero rejection, state-root encoding, evidence hash integrity, atomic write, replay safety, settlement input assembly, dry-run conservation, bounded parsing, reserved account rejection, duplicate JSON key rejection, noncanonical decimals, missing epoch records, and oversized aggregate signatures.",
+      "node_kind": "test_module",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_core/epoch/ecu_accrual_evidence.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:monthly_close_orchestrator_machinery_complete_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_gap_monthly_close_orchestrator_00a.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a walkthrough records source reads, local-only boundaries, test outputs, prompt hardening, non-claims, and carry-forward package/mirror staleness.",
+      "manual_read_summary": "Walkthrough is the execution evidence for the non-sensitive monthly close machinery implementation phase and records that no live consensus, LMDB wallet, package, mirror, VPS, settlement, minting, or epoch mutation occurred.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_machinery_complete_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_monthly_close_orchestrator_00a/verification_output.txt"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_monthly_close_orchestrator_00a_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
