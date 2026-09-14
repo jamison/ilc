@@ -186,6 +186,170 @@ The whitepaper is not the protocol's constitution. It is a high-level orientatio
 
 ---
 
+## 0b. The Genesis-Rooted Directed Hypergraph: Design Rationale and Mathematical Foundations
+
+The philosophical conclusions of Sections 0 and 0a — that every justification chain must end at an explicit axiom, and that governance rules must live inside the graph as first-class nodes — have precise structural consequences for the design of the data model. This section traces the historic reasoning and mathematical foundations for each architectural choice, from the selection of hypergraphs over ordinary graphs, through the Genesis axiom stop, the morphism chain, the dual epoch commitment, the BLS threshold security model, the closed truth primitive algebra, and the canonical identity contract.
+
+### Why a Directed Hypergraph
+
+A standard directed graph models pairwise relations: edge (u, v) connects exactly two vertices. Real epistemic events — observations, validations, refutations, jury verdicts — are **polyadic**: they involve a signing agent, one or more content artifacts, an epoch timestamp, and a provenance chain simultaneously. Modeling these with pairwise edges requires either lossy reduction (flattening a complex relation into a pair) or artificial intermediate nodes that have no epistemic meaning.
+
+A **directed hyperedge** connects an ordered tuple of vertices simultaneously:
+
+```
+e = (v_1, v_2, …, v_k)   for any k ≥ 1
+```
+
+A jury verdict is one hyperedge connecting the jury agent set, the claim node, the evidence nodes, the verdict artifact, and the epoch boundary in a single committed object. No information is lost to structural compression. The formal hypergraph at epoch t is:
+
+```
+G(t) = (V(t), E(t), W(t))
+```
+
+where V(t) is the vertex set (all content-addressed nodes), E(t) is the hyperedge set (all committed epistemic relations), and W(t) : E → ℝ is the weight function (epistemic standing, reuse frequency, and decay).
+
+### Content Addressing as Structural Identity
+
+Every vertex has an identity derived from its content:
+
+```
+id(v) = SHA-256(canonical_encoding(content(v)))
+```
+
+Under collision resistance of SHA-256, no two distinct content objects share an identifier. An adversary wishing to substitute a different claim under an existing identifier must invert SHA-256 — computationally infeasible at 2^{128} operations under best-known attacks. This property propagates: any hyperedge referencing a set of vertex identifiers commits to exactly those vertices, not to semantically similar variants. The entire epistemic graph is therefore reconstructible from the Genesis root and an ordered log of accepted epoch deltas — no trusted database required.
+
+### The Genesis Axiom Stop
+
+Agrippa's trilemma (Section 0) applies to the protocol's own foundational state. Every justification chain must regress infinitely, loop, or stop at an axiom. ILC stops explicitly:
+
+```
+G(0) = { Node 0 = SHA-384(genesis_seed ∥ context) }
+
+where context = "ILC_GENESIS_ROOT_ENVELOPE_V1"
+```
+
+This single hash is the unfalsifiable cryptographic anchor from which every subsequent state is derived. It is declared once, cannot be revised by any subsequent protocol operation (including by the Genesis Agent), and is the foundation against which every morphism chain composition is verified.
+
+### The Morphism Chain and Irreversibility
+
+The epoch transition morphism is:
+
+```
+φ_{t,t+1} : G(t) → G(t+1)
+
+φ_{t,t+1}  :=   +Σ_o δ_o(t)                   [accepted observer deltas]
+               + CDL-V1 weight decay            [w(e,t) → w(e,t+1)]
+               + pruning below ecu_score_floor
+               + commit.epoch C_t = (M(t), S(t))
+```
+
+**The inverse φ_{t+1,t} does not exist.** Once committed, G(t) cannot be recalled. This irreversibility is the protocol's primary tamper-resistance property: no agent and no quorum can reverse the causal arrow of the morphogenetic trajectory.
+
+The complete state at any epoch is deterministically reconstructible:
+
+```
+G(t) = φ_{t-1,t} ∘ φ_{t-2,t-1} ∘ … ∘ φ_{0,1}(G(0))
+```
+
+*Categorical note:* The morphism chain forms a category in which G(0) is the initial object. The absence of inverse morphisms means this category is not a groupoid — the structure is fundamentally asymmetric (past → future). Causal asymmetry is a security property, not a limitation.
+
+### Merkle-Laplacian Dual Commitment
+
+Each epoch boundary produces:
+
+```
+C(t) = (M(t), S(t))
+
+M(t) = MerkleRoot({ SHA-256(canonical(v)) | v ∈ V(t) })
+S(t) = SHA-256(sort(top-k eigenvalues(Δ_norm(t))))
+```
+
+where Δ_norm(t) is the normalized hypergraph Laplacian.
+
+M(t) is the **content commitment**: any content substitution, addition, or removal changes M(t). S(t) is the **structural commitment**: the same vertex set with different connection patterns produces a different S(t). The pair (M(t), S(t)) is a dual certificate: a Byzantine shadow chain accumulating fraudulent epistemic standing through intra-cluster validation diverges on S(t) even when M(t) appears valid — because its connection topology differs from the honest graph.
+
+The most interpretable eigenvalue is **λ₂ (Fiedler value)** — the second-smallest eigenvalue of Δ_norm(t). λ₂ = 0 means the graph is disconnected. λ₂ large means the graph is well-integrated. A Byzantine shadow chain tends to produce rising M(t) (appearing productive) while λ₂ stagnates or falls — a detectable divergence pattern. The temporal trajectory {λ₂(t)} is the morphogenetic vital sign of the epistemic network.
+
+| Δλ₂ | ΔΔλ₂ | Interpretation |
+|---|---|---|
+| + | + | Accelerating integration — healthy growth |
+| + | − | Decelerating — approaching cluster saturation |
+| − | + | Recovering from fragmentation |
+| − | − | Accelerating fragmentation — possible Byzantine activity |
+| sudden + spike | — | New bridge claim connects isolated subgraphs |
+| sudden − drop | — | Critical bridge refuted or key node pruned |
+
+*(Note: M(t) and Laplacian observability are live in public RC. Full C(t) = (M(t), S(t)) as a protocol-level input is a design target for future ratification.)*
+
+### BLS 2f+1 Threshold Security
+
+Each epoch commitment requires an aggregate BLS signature from ≥ 2f+1 validators (N total, f < N/3):
+
+```
+σ_agg(t) = BLS_Aggregate({ σ_i(t) | i ∈ Quorum(t), |Quorum(t)| ≥ 2f+1 })
+```
+
+Forging σ_agg(t) without the private keys of ≥ 2f+1 validators requires breaking BLS under the co-CDH assumption — infeasible at current security parameters. Crucially, the security guarantee **strengthens with distance from Genesis**: a commitment at epoch t has been signed by ≥ 2f+1 validators, accumulated through the irreversible morphism chain, and content-addressed at every vertex. An adversary substituting a fraudulent G(t) must simultaneously compromise ≥ f+1 validators, find a SHA-256 collision, and construct a fraudulent morphism chain consistent with all prior epoch commitments. The composition of these three requirements makes the graph more secure over time, not less.
+
+### Six Truth Primitives: Closed Epistemic Algebra
+
+ILC defines six agent-submittable truth primitives forming a **closed typed algebra** over epistemic events:
+
+| Primitive | Operation |
+|---|---|
+| `assert.truth` | Agent claims vertex v is a valid epistemic contribution |
+| `validate.claim` | Agent endorses a prior assertion |
+| `contradict.assert` | Agent challenges a prior assertion; triggers jury formation |
+| `refute.claim` | Agent provides counter-evidence formally negating a prior claim (CDL-V7 gate) |
+| `revise.assert` | Agent submits updated version with provenance linkage to original |
+| `link.claim` | Agent establishes a typed semantic relation between two claims |
+
+"Closed" means every epistemic event expressible in any information system is composable from these six: credentials (assert + validate chain), retractions (revise with empty content), governance amendments (assert on CDL node + ratification quorum validate), market predictions (assert + resolve via validate/refute), identity attestations (assert on identity binding + validate chain). The Popperian falsifiability gate (CDL-V7) in `refute.claim` is the primary defence against spurious refutations: a refutation is only accepted if the original claim stated its falsification conditions and the evidence satisfies them.
+
+### Homoiconicity: Governance as Graph Nodes
+
+Partition V(t):
+
+```
+V(t) = V_content(t) ∪ V_gov(t)
+
+V_content(t):  epistemic artifacts
+V_gov(t):      governance artifacts — CDLs, ADRs, type definitions, activation certs
+```
+
+The **homoiconicity condition** is that no query path can reach V_content(t) but not V_gov(t). CDLs and ADRs are content-addressed graph nodes with CIDs, provenance chains back to Genesis, and open refutation surfaces during ratification. Governance cannot hide behind a privileged layer the graph machinery cannot see.
+
+The governance update rule is a bootstrapped ratchet:
+
+```
+Γ(t+1) = Γ(t) + δ_cdl(t)    iff  δ_cdl satisfies ratification rules in Γ(t)
+```
+
+The system can evolve its own constitution — but only forward, only through the graph, and only by processes the prior constitution authorized. There is no external override path. There is no hard fork without a CDL chain traceable to Genesis. Homoiconicity holds for all t > 0; the single Genesis bootstrap (G(0) established before any CDL ratification machinery exists) is the minimal application of Agrippa's axiom stop.
+
+### ADR-0037: Canonical Identity and the Fork Boundary
+
+ADR-0037 defines when two diverged chains remain the same canonical protocol versus when they have become distinct identities. Canonical ILC identity requires maintaining all eight structural slices simultaneously:
+
+| Slice | Invariant |
+|---|---|
+| 1. Genesis anchor | G(0) matches the published Genesis root |
+| 2. Morphism integrity | Each G(t) is reconstructible from G(0) with no gap |
+| 3. BLS quorum continuity | Each epoch has a valid σ_agg from ≥ 2f+1 validators in the continuous set |
+| 4. CDL chain continuity | Governance CDL chain traceable to CDL-001 without break |
+| 5. Content-address integrity | All node identifiers remain id(v) = SHA-256(canonical(v)) |
+| 6. Six-primitive closure | Six truth primitives remain the complete, closed operation set |
+| 7. Epoch commitment cadence | Commitments occur within CDL-027 timing parameters |
+| 8. Founder sunset compliance | Genesis authority transition follows CDL-encoded timeline |
+
+Loss of any slice constitutes loss of canonical ILC identity. A fork preserving all eight slices is a compatible implementation. A fork diverging on any slice is a distinct protocol. This is the protocol's constitutional identity test.
+
+### The Synthesis
+
+The directed hypergraph architecture — Genesis-rooted via explicit axiom stop, content-addressed, irreversible morphism chain, Merkle-Laplacian dual commitment, BLS 2f+1 epoch signatures, homoiconic governance, closed truth primitive algebra, ADR-0037 canonical identity — is the minimal architecture satisfying all of: decentralized reconstruction, tamper evidence, adversarial robustness, epistemic completeness, self-governance without external authority, and canonical identity under adversarial pressure. Each element was added to solve a specific structural problem that the simpler alternative could not solve. The result is a system in which the act of knowing — asserting, validating, refuting, revising, and building upon — is itself an economic and cryptographic act, permanently attributed, immutably recorded, and rewarded in proportion to its durable contribution to a shared commons that no party can unilaterally control.
+
+---
+
 ## 1. Introduction
 
 The problem of rewarding intellectual labor is, at its core, an epistemic problem. Before value can flow to a knowledge-worker, someone must determine that the work is true, complete, or useful. Every existing mechanism for making this determination — peer review, institutional accreditation, algorithmic ranking, market pricing — delegates that judgment to a centralized authority. The authority is not incidental to these systems; it is their load-bearing structure. Remove it and the system has no way to distinguish genuine knowledge from noise.
