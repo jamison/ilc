@@ -79646,6 +79646,150 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_epoch_maturity_gate_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0423_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PACKAGE-0423-00a prompt created and hardened for local ilc-core 0.4.23 build carrying correction-lane runtime changes.",
+      "manual_read_summary": "Phase prompt defining the non-sensitive 0.4.23 local build workflow, token audit, correction-lane wheel content checks, clean-venv smoke, and strict non-claims before sensitive publish/sign/mirror work.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0423-00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0423_00a_g10_local_build_correction_lane.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0423_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PACKAGE-0423-00a produced local ilc-core 0.4.23 build artifacts for the economic correction lane package refresh.",
+      "manual_read_summary": "Local package build receipt for ilc-core 0.4.23 recording version bump, wheel/sdist SHA-256 values and sizes, signing preimages, correction-lane content checks, clean-venv smoke, focused tests, and non-claims.",
+      "node_kind": "receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0423-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0423_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0423_00a_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PACKAGE-0423-00a recorded the local 0.4.23 build execution and verification evidence.",
+      "manual_read_summary": "Walkthrough recording worktree hygiene, prompt hardening, token audit, version bump, wheel/sdist build, artifact hashes, clean-venv smoke, test output, signing preimages, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0423-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0422_published_GAP_PACKAGE_0422_00B"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:epoch_maturity_gate_committed_GAP_EPOCH_MATURITY_GATE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:wallet_claimability_state_consistent_GAP_WALLET_CLAIMABILITY_FIX1_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:protocol_account_wallet_boundary_committed_GAP_PROTOCOL_ACCOUNT_SEPARATION_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:mempalace_rehydrated_20260912_GAP_MEMPALACE_REHYDRATE_20260912"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0423_00a_walkthrough.md"
     }
   ],
   "boundary": {

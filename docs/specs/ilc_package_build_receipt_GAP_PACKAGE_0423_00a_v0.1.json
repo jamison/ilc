@@ -1,0 +1,93 @@
+{
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-0423-00a",
+  "generated_at_utc": "2026-09-14T00:00:00Z",
+  "release_id": "ilc-core-0.4.23",
+  "predecessor_release_id": "ilc-core-0.4.22",
+  "source_private_commit_before_version_bump": "0127643fdcf49428a546888b49552b5e43548ab3",
+  "prompt_commit": "4f2c82a75",
+  "carry_forward_planning_commit": "0127643fd",
+  "prompt_hardening": {
+    "initial_validator_result": "INVALID: missing_section:scope, missing_section:inputs",
+    "fix_applied": "Added exact Scope and Inputs to read first sections before version edits.",
+    "final_validator_result": "VALID"
+  },
+  "version_updates": {
+    "pyproject_toml": "0.4.23",
+    "ilc_core___init__": "0.4.23",
+    "tools_install_sh_retained_release_id": "ilc-core-0.4.22"
+  },
+  "correction_lane_modules": {
+    "ilc_core/epoch/epoch_maturity_gate.py": true,
+    "ilc_core/protocol/public_wallet_runtime.py": true,
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": true,
+    "ilc_core/epoch/protocol_account_boundary.py": true
+  },
+  "artifacts": {
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.23-py3-none-any.whl",
+      "sha256": "446b6e61c5474d20e0fd3db83afd4ce985ba5d94b3772ac9a05ee414503d9c6d",
+      "size_bytes": 1500481,
+      "signed_preimage_sha256": "b94fd8b1fa767962d687d8986cf54e8a5d4b8bb62f051a84577be7105c1f25cf",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0423@phase-1628"
+    },
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.23.tar.gz",
+      "sha256": "1933b5d1e1ebfd0b1e54944a60044b7a0f1deb768731f2ad329b5b331bafab5e",
+      "size_bytes": 1225833,
+      "signed_preimage_sha256": "071b85a7fd738ae678c83faf9295af09e1f55c5633738c6d6c73c77dfade6dc3",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0423@phase-1628"
+    }
+  },
+  "artifact_content_checks": {
+    "ilc_core/epoch/epoch_maturity_gate.py": true,
+    "ilc_core/protocol/public_wallet_runtime.py": true,
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": true,
+    "ilc_core/epoch/protocol_account_boundary.py": true
+  },
+  "verification": {
+    "dependency_floor": "1 passed, 12 deselected in 0.66s",
+    "build": "Successfully built ilc_core-0.4.23.tar.gz and ilc_core-0.4.23-py3-none-any.whl",
+    "twine_check": "PASSED for wheel and sdist",
+    "wheel_compileall": "passed",
+    "clean_outside_repo_venv_smoke": {
+      "status": "passed",
+      "ilc_core_version": "0.4.23",
+      "MonthlyIssuanceMaturityProof_import": true,
+      "MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN_import": true,
+      "wallet_claimability_state_deferred": "deferred",
+      "protocol_account_pool_reserved": true,
+      "protocol_account_reserve_reserved": true,
+      "normal_agent_prefix_reserved": false,
+      "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
+      "INVITE_ENFORCEMENT_ENABLED": true
+    },
+    "focused_correction_lane_tests": "36 passed, 1 warning in 4.86s",
+    "broader_regression_slice": "476 passed, 50 skipped, 16711 deselected, 1 warning in 131.02s (0:02:11)",
+    "prompt_validator": "VALID"
+  },
+  "output_token": "package_0423_local_build_complete_GAP_PACKAGE_0423_00A",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_tools_install_sh_retarget_to_0423",
+    "no_linux_helper_tarball_publication",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_launch_00_execution",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ]
+}
