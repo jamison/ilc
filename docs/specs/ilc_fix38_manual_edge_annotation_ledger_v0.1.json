@@ -80316,6 +80316,60 @@
       ],
       "recommended_graph_action": "graph_delta=support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_package_sync_0423_00_g10_validator_venv_sync_0423.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0423_00_receipt_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-VALIDATOR-PACKAGE-SYNC-0423-00 completed after Genesis GO phrase.",
+      "manual_read_summary": "Receipt for live public-RC validator service-user venv sync from ilc-core 0.4.21 to 0.4.23 across validator_1 through validator_4, including per-slot correction-lane guard checks and Rust binary unchanged evidence.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES_COMPLETION_OF",
+          "target": "GAP-VALIDATOR-PACKAGE-SYNC-0423-00"
+        },
+        {
+          "edge_type": "EVIDENCES_TOKEN",
+          "target": "vps_validators_synced_to_0423_GAP_VALIDATOR_PACKAGE_SYNC_0423_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PHASE_EVIDENCE"
+      ],
+      "recommended_graph_action": "graph_delta=support_only",
+      "repo_path": "out/gap_validator_package_sync_0423_00/sync_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_package_sync_0423_00_walkthrough_2026_09_14",
+      "chronology_note": "2026-09-14 walkthrough produced after successful sequential validator venv sync to ilc-core 0.4.23.",
+      "manual_read_summary": "Walkthrough for GAP-VALIDATOR-PACKAGE-SYNC-0423-00, recording GO receipt, partial-resume handling, per-slot upgrade outputs, correction-lane installed-wheel checks, Rust binary unchanged checks, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "WALKTHROUGH_FOR",
+          "target": "GAP-VALIDATOR-PACKAGE-SYNC-0423-00"
+        },
+        {
+          "edge_type": "EVIDENCES_TOKEN",
+          "target": "vps_validators_synced_to_0423_GAP_VALIDATOR_PACKAGE_SYNC_0423_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PHASE_WALKTHROUGH"
+      ],
+      "recommended_graph_action": "graph_delta=support_only",
+      "repo_path": "docs/phases/phase_gap_validator_package_sync_0423_00_walkthrough.md"
     }
   ],
   "boundary": {
