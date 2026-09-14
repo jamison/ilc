@@ -80271,6 +80271,33 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0423_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00a_prompt_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00a prompt drafted and validated VALID.",
+      "manual_read_summary": "Antigravity phase prompt for ORCHESTRATOR-00a: implements monthly_close_orchestrator.py, ecu_accrual_evidence.py, and 12-test suite locally with no live validator mutation.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS_IMPLEMENTATION_OF",
+          "target": "ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "GOVERNS_IMPLEMENTATION_OF",
+          "target": "ilc_core/epoch/ecu_accrual_evidence.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS_IMPLEMENTATION_OF"
+      ],
+      "recommended_graph_action": "graph_delta=support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_issuance_close_orchestrator_00a_g10_pre_launch_machinery.md"
     }
   ],
   "boundary": {
