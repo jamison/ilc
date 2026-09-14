@@ -80101,6 +80101,28 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_prelaunch_economic_lmdb_clean_reset_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_NNN_phase_GAP-PACKAGE-0423-00b_publish-sign-mirror",
+      "chronology_note": "2026-09-14 GAP-PACKAGE-0423-00b: prompt for 0.4.23 PyPI publish, Ed25519 signing ceremony, helper tarball, mirror refresh",
+      "manual_read_summary": "SENSITIVE phase prompt for publishing ilc-core 0.4.23 to PyPI, signing with Phase 1335 Ed25519 key, updating installer, and refreshing public mirror.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS_PHASE",
+          "target": "phase:GAP-PACKAGE-0423-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS_PHASE"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0423_00b_g10_pypi_upload_sign_mirror.md"
     }
   ],
   "boundary": {
