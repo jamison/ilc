@@ -20,6 +20,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
     MAX_PRIOR_CARRY_FORWARD_RECORDS,
     EpochDistributionInput,
     _allocate_pool_to_agents,
+    _process_agent_settlement,
     _require_lifecycle_settlement_delta,
     compute_epoch_distribution,
     commit_epoch_distribution,
@@ -684,6 +685,41 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
     assert wallet_store.get_wallet(AGENT_A)["last_settled_epoch_id"] == "0000000001"  # type: ignore[index]
     assert wallet_store.get_wallet(PROTOCOL_RESERVE_ACCOUNT_ID)["balance_ilc"] == "10"  # type: ignore[index]
     assert Decimal(wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"]) > Decimal("4.5")  # type: ignore[index]
+
+
+def test_lmdb_idempotent_replay_preserves_empty_wallet_row(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    epoch_id = "0000000001"
+    existing_receipt = {
+        "epoch_id": epoch_id,
+        "reward_delta_ilc": "1",
+        "balance_after_ilc": "1",
+        "settlement_status": "applied",
+    }
+    wallet_store.put_wallet_history(
+        AGENT_A,
+        {
+            "agent_id": AGENT_A,
+            "balance_history": [existing_receipt],
+            "history_digest": "history-digest",
+        },
+    )
+
+    with wallet_store.wallet_batch_transaction() as batch:
+        result = _process_agent_settlement(
+            batch=batch,
+            agent_id=AGENT_A,
+            settlement_delta=Decimal("1"),
+            epoch_id=epoch_id,
+            replay_epoch=False,
+        )
+
+    assert result == {
+        "ok": True,
+        "token": "lifecycle_epoch_commit_idempotent_replay",
+        "data": {},
+    }
+    assert wallet_store.get_wallet(AGENT_A) is None
 
 
 def test_real_lmdb_zero_value_epoch_commit_records_marker(tmp_path) -> None:  # type: ignore[no-untyped-def]

@@ -101247,6 +101247,64 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_monthly_close_orchestrator_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_code_health_commit_lmdb_batch_fix1_00_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-CODE-HEALTH-COMMIT-LMDB-BATCH-FIX1-00 prompt defines the non-sensitive code-health and replay-safety cleanup for _commit_lmdb_lifecycle_batch.",
+      "manual_read_summary": "Prompt scopes helper extraction, single-pass balance_history indexing, explicit wallet_row None handling, prompt validation, code-health verification, and non-sensitive boundaries.",
+      "node_kind": "antigravity_phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CODE-HEALTH-COMMIT-LMDB-BATCH-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:code_health_commit_lmdb_batch_fix1_complete_GAP_CODE_HEALTH_COMMIT_LMDB_BATCH_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/epoch_distribution_writer.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_code_health_commit_lmdb_batch_fix1_00_g10_function_size.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_code_health_commit_lmdb_batch_fix1_00_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-CODE-HEALTH-COMMIT-LMDB-BATCH-FIX1-00 walkthrough records prompt hardening, source reads, implementation diff, verification results, output token, non-claims, and package/mirror staleness.",
+      "manual_read_summary": "Walkthrough is the phase execution evidence for the function-size cleanup and empty-wallet-row replay-safety regression.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CODE-HEALTH-COMMIT-LMDB-BATCH-FIX1-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:code_health_commit_lmdb_batch_fix1_complete_GAP_CODE_HEALTH_COMMIT_LMDB_BATCH_FIX1_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_code_health_commit_lmdb_batch_fix1_00/verification_output.txt"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_code_health_commit_lmdb_batch_fix1_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

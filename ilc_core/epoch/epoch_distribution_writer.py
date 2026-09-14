@@ -69,6 +69,13 @@ from ilc_core.ledger.exact_numeric import (
     parse_non_negative_decimal,
     to_decimal,
 )
+from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+    EcuIlcLifecycleRuntime,
+    EcuIlcLifecycleRuntimeError,
+    LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
+    _epoch_history_sort_key,
+    _stable_digest,
+)
 from ilc_core.storage.lmdb_public_runtime import (
     LmdbWalletStore,
 )
@@ -764,8 +771,6 @@ def _commit_settled_epoch_batch(
     settlements: Mapping[str, Decimal],
     epoch_id: str,
 ) -> list[dict[str, Any]]:
-    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
-
     if isinstance(lifecycle_runtime, EcuIlcLifecycleRuntime):
         return _commit_lmdb_lifecycle_batch(
             lifecycle_runtime=lifecycle_runtime,
@@ -786,163 +791,183 @@ def _commit_settled_epoch_batch(
     raise ValueError("atomic_lifecycle_batch_writer_required")
 
 
+def _require_lmdb_wallet_store(lifecycle_runtime: EcuIlcLifecycleRuntime) -> LmdbWalletStore:
+    wallet_store = lifecycle_runtime.wallet_store
+    if not isinstance(wallet_store, LmdbWalletStore):
+        raise ValueError("atomic_lmdb_wallet_store_required")
+    return wallet_store
+
+
+def _validate_epoch_sequence(batch: Any, epoch_number: int) -> bool:
+    current_epoch_number = _current_lmdb_epoch_number(batch)
+    if current_epoch_number is None:
+        if epoch_number not in {0, 1}:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_epoch_sequence_gap",
+                "first lifecycle settlement epoch must be 0000000000 or 0000000001",
+            )
+        return False
+    if epoch_number not in {current_epoch_number, current_epoch_number + 1}:
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_epoch_sequence_gap",
+            "lifecycle settlement epoch must be current epoch or next sequential epoch",
+        )
+    return epoch_number == current_epoch_number
+
+
+def _build_zero_settlement_marker(epoch_id: str) -> dict[str, Any]:
+    return {
+        "epoch_id": epoch_id,
+        "settlement_count": 0,
+        "settlement_status": "verified_zero_value_epoch_committed",
+    }
+
+
+def _process_agent_settlement(
+    *,
+    batch: Any,
+    agent_id: str,
+    settlement_delta: Decimal,
+    epoch_id: str,
+    replay_epoch: bool,
+) -> dict[str, Any]:
+    batch_row = batch.get_wallet_pair(agent_id)
+    wallet_row = batch_row.wallet
+    wallet_history = batch_row.history
+    if not isinstance(wallet_row, dict) or not isinstance(wallet_history, dict):
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_wallet_row_invalid",
+            "wallet and history rows must be JSON objects",
+        )
+    balance_history = wallet_history.get("balance_history")
+    if not isinstance(balance_history, list):
+        balance_history = []
+
+    history_by_epoch = _balance_history_by_epoch(balance_history)
+    existing_entry = history_by_epoch.get(epoch_id)
+    if existing_entry is not None:
+        existing_delta = decimal_to_canonical_string(
+            to_decimal(
+                existing_entry.get("reward_delta_ilc", "0"),
+                token="lifecycle_reward_delta_invalid",
+            )
+        )
+        requested_delta = decimal_to_canonical_string(settlement_delta)
+        if existing_delta != requested_delta:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_epoch_replay_conflict",
+                "epoch_id replay conflicts with existing reward delta",
+            )
+        current_wallet_row = (
+            wallet_row
+            if wallet_row is not None
+            else {
+                "agent_id": agent_id,
+                "balance_ilc": "0",
+                "last_settled_epoch_id": epoch_id,
+                "reward_status": "not_rewarded",
+                "history_digest": wallet_history.get("history_digest"),
+                "latest_balance_receipt": existing_entry,
+                "claimability_state": "deferred",
+            }
+        )
+        return {
+            "ok": True,
+            "token": "lifecycle_epoch_commit_idempotent_replay",
+            "data": current_wallet_row,
+        }
+
+    if replay_epoch:
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_epoch_replay_recipient_extension",
+            "same-epoch replay cannot add new settlement recipients",
+        )
+
+    prior_balance = to_decimal(
+        wallet_row.get("balance_ilc", "0"),
+        token="lifecycle_wallet_balance_invalid",
+    )
+    balance_after = prior_balance + settlement_delta
+    if balance_after < ZERO:
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_wallet_balance_underflow",
+            "wallet balance cannot become negative",
+        )
+    if balance_after > C_MAX_ILC:
+        raise EcuIlcLifecycleRuntimeError(
+            LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
+            "wallet balance cannot exceed the constitutional C_MAX_ILC ceiling",
+        )
+    latest_balance_receipt = {
+        "epoch_id": epoch_id,
+        "reward_delta_ilc": decimal_to_canonical_string(settlement_delta),
+        "balance_after_ilc": decimal_to_canonical_string(balance_after),
+        "settlement_status": "applied",
+    }
+    history_by_epoch[epoch_id] = latest_balance_receipt
+    merged_balance_history = sorted(history_by_epoch.values(), key=_epoch_history_sort_key)
+    history_digest = _stable_digest({"balance_history": merged_balance_history})
+    next_wallet_row = {
+        "agent_id": agent_id,
+        "balance_ilc": decimal_to_canonical_string(balance_after),
+        "last_settled_epoch_id": epoch_id,
+        "reward_status": "rewarded" if balance_after > ZERO else "not_rewarded",
+        "history_digest": history_digest,
+        "latest_balance_receipt": latest_balance_receipt,
+        "claimability_state": "deferred",
+    }
+    next_wallet_history = {
+        "agent_id": agent_id,
+        "balance_history": merged_balance_history,
+        "history_digest": history_digest,
+    }
+    batch.put_wallet_pair(
+        agent_id,
+        wallet_payload=next_wallet_row,
+        history_payload=next_wallet_history,
+    )
+    return {
+        "ok": True,
+        "token": "lifecycle_epoch_commit_applied",
+        "data": next_wallet_row,
+    }
+
+
+def _balance_history_by_epoch(balance_history: list[Any]) -> dict[str, dict[str, Any]]:
+    return {
+        item["epoch_id"]: item
+        for item in balance_history
+        if isinstance(item, dict) and "epoch_id" in item
+    }
+
+
 def _commit_lmdb_lifecycle_batch(
     *,
     lifecycle_runtime: EcuIlcLifecycleRuntime,
     settlements: Mapping[str, Decimal],
     epoch_id: str,
 ) -> list[dict[str, Any]]:
-    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
-        EcuIlcLifecycleRuntimeError,
-        LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
-        _epoch_history_sort_key,
-        _stable_digest,
-    )
-    wallet_store = lifecycle_runtime.wallet_store
-    if not isinstance(wallet_store, LmdbWalletStore):
-        raise ValueError("atomic_lmdb_wallet_store_required")
+    wallet_store = _require_lmdb_wallet_store(lifecycle_runtime)
     epoch_number = _require_epoch_id_format(epoch_id)
     results: list[dict[str, Any]] = []
-    zero_settlement_marker: dict[str, Any] | None = None
     with wallet_store.wallet_batch_transaction() as batch:
-        current_epoch_number = _current_lmdb_epoch_number(batch)
-        if current_epoch_number is None:
-            if epoch_number not in {0, 1}:
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_epoch_sequence_gap",
-                    "first lifecycle settlement epoch must be 0000000000 or 0000000001",
-                )
-            replay_epoch = False
-        else:
-            replay_epoch = epoch_number == current_epoch_number
-            if epoch_number not in {current_epoch_number, current_epoch_number + 1}:
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_epoch_sequence_gap",
-                    "lifecycle settlement epoch must be current epoch or next sequential epoch",
-                )
+        replay_epoch = _validate_epoch_sequence(batch, epoch_number)
         for agent_id, amount in sorted(settlements.items()):
             _require_agent_id(agent_id)
             settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
             if settlement_delta == ZERO:
                 continue
-            batch_row = batch.get_wallet_pair(agent_id)
-            wallet_row = batch_row.wallet
-            wallet_history = batch_row.history
-            if not isinstance(wallet_row, dict) or not isinstance(wallet_history, dict):
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_wallet_row_invalid",
-                    "wallet and history rows must be JSON objects",
-                )
-            balance_history = wallet_history.get("balance_history")
-            if not isinstance(balance_history, list):
-                balance_history = []
-            existing_entry = next(
-                (
-                    item
-                    for item in balance_history
-                    if isinstance(item, dict) and item.get("epoch_id") == epoch_id
-                ),
-                None,
-            )
-            if existing_entry is not None:
-                existing_delta = decimal_to_canonical_string(
-                    to_decimal(
-                        existing_entry.get("reward_delta_ilc", "0"),
-                        token="lifecycle_reward_delta_invalid",
-                    )
-                )
-                requested_delta = decimal_to_canonical_string(settlement_delta)
-                if existing_delta != requested_delta:
-                    raise EcuIlcLifecycleRuntimeError(
-                        "lifecycle_epoch_replay_conflict",
-                        "epoch_id replay conflicts with existing reward delta",
-                    )
-                current_wallet_row = wallet_row or {
-                    "agent_id": agent_id,
-                    "balance_ilc": "0",
-                    "last_settled_epoch_id": epoch_id,
-                    "reward_status": "not_rewarded",
-                    "history_digest": wallet_history.get("history_digest"),
-                    "latest_balance_receipt": existing_entry,
-                    "claimability_state": "deferred",
-                }
-                results.append(
-                    {
-                        "ok": True,
-                        "token": "lifecycle_epoch_commit_idempotent_replay",
-                        "data": current_wallet_row,
-                    }
-                )
-                continue
-            if replay_epoch:
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_epoch_replay_recipient_extension",
-                    "same-epoch replay cannot add new settlement recipients",
-                )
-
-            prior_balance = to_decimal(
-                wallet_row.get("balance_ilc", "0"),
-                token="lifecycle_wallet_balance_invalid",
-            )
-            balance_after = prior_balance + settlement_delta
-            if balance_after < ZERO:
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_wallet_balance_underflow",
-                    "wallet balance cannot become negative",
-                )
-            if balance_after > C_MAX_ILC:
-                raise EcuIlcLifecycleRuntimeError(
-                    LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
-                    "wallet balance cannot exceed the constitutional C_MAX_ILC ceiling",
-                )
-            latest_balance_receipt = {
-                "epoch_id": epoch_id,
-                "reward_delta_ilc": decimal_to_canonical_string(settlement_delta),
-                "balance_after_ilc": decimal_to_canonical_string(balance_after),
-                "settlement_status": "applied",
-            }
-            merged_balance_history = [
-                item
-                for item in balance_history
-                if isinstance(item, dict) and item.get("epoch_id") != epoch_id
-            ]
-            merged_balance_history.append(latest_balance_receipt)
-            merged_balance_history.sort(key=_epoch_history_sort_key)
-            history_digest = _stable_digest({"balance_history": merged_balance_history})
-            next_wallet_row = {
-                "agent_id": agent_id,
-                "balance_ilc": decimal_to_canonical_string(balance_after),
-                "last_settled_epoch_id": epoch_id,
-                "reward_status": "rewarded" if balance_after > ZERO else "not_rewarded",
-                "history_digest": history_digest,
-                "latest_balance_receipt": latest_balance_receipt,
-                "claimability_state": "deferred",
-            }
-            next_wallet_history = {
-                "agent_id": agent_id,
-                "balance_history": merged_balance_history,
-                "history_digest": history_digest,
-            }
-            batch.put_wallet_pair(
-                agent_id,
-                wallet_payload=next_wallet_row,
-                history_payload=next_wallet_history,
-            )
             results.append(
-                {
-                    "ok": True,
-                    "token": "lifecycle_epoch_commit_applied",
-                    "data": next_wallet_row,
-                }
+                _process_agent_settlement(
+                    batch=batch,
+                    agent_id=agent_id,
+                    settlement_delta=settlement_delta,
+                    epoch_id=epoch_id,
+                    replay_epoch=replay_epoch,
+                )
             )
-        if not settlements:
-            zero_settlement_marker = {
-                "epoch_id": epoch_id,
-                "settlement_count": 0,
-                "settlement_status": "verified_zero_value_epoch_committed",
-            }
-    if zero_settlement_marker is not None:
-        wallet_store.put_epoch_commit_marker(epoch_id, zero_settlement_marker)
+    if not settlements:
+        wallet_store.put_epoch_commit_marker(epoch_id, _build_zero_settlement_marker(epoch_id))
     return results
 
 
