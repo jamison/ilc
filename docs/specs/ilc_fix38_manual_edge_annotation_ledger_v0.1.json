@@ -79917,6 +79917,190 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_prelaunch_economic_lmdb_clean_reset_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_prelaunch_economic_lmdb_clean_reset_00b_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b live execution cleaned superseded prelaunch Python economic LMDB state before public-RC launch packaging.",
+      "manual_read_summary": "00b execute implementation added for double-gated deletion and empty provisioning of the prelaunch Python economic wallet LMDB; named economic counters, JIT lsof, and atomic receipts enforced.",
+      "node_kind": "tooling_source_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_complete_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_tool_ready_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_updated",
+      "repo_path": "tools/testbed/gap_prelaunch_economic_lmdb_clean_reset.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_prelaunch_economic_lmdb_clean_reset_00b_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b live execution cleaned superseded prelaunch Python economic LMDB state before public-RC launch packaging.",
+      "manual_read_summary": "Public-safe receipt for 00b clean reset; records contaminated_before true, contaminated_after false, canonical empty-state commitment, and non-claims without row keys or balances.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_complete_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_tool_ready_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_prelaunch_economic_lmdb_clean_reset_00/clean_reset_receipt_public_safe.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_prelaunch_economic_lmdb_clean_reset_00b_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b live execution cleaned superseded prelaunch Python economic LMDB state before public-RC launch packaging.",
+      "manual_read_summary": "Public-safe VPS discovery receipt; records active validator service units checked and no Python wallet paths discovered from systemd environment variables; Rust consensus LMDB not scanned or touched.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_complete_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_tool_ready_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_prelaunch_economic_lmdb_clean_reset_00/vps_wallet_discovery_public_safe.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_prelaunch_economic_lmdb_clean_reset_00b_2026_09_14",
+      "chronology_note": "2026-09-14 GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b live execution cleaned superseded prelaunch Python economic LMDB state before public-RC launch packaging.",
+      "manual_read_summary": "Walkthrough for sensitive 00b live execution: GO evidence, token audit, MemPalace/search findings, tool diff, JIT lsof, deletion/provisioning receipts, named-counter verification, VPS discovery, Rust LMDB non-claim, and output token.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PRELAUNCH-ECONOMIC-LMDB-CLEAN-RESET-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_complete_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_economic_lmdb_clean_reset_tool_ready_GAP_PRELAUNCH_ECONOMIC_LMDB_CLEAN_RESET_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:package_0423_local_build_complete_GAP_PACKAGE_0423_00A"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:public_rc_economic_state_reconciled_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:prelaunch_ilc_settlement_superseded_GAP_PUBLIC_RC_ECONOMIC_STATE_RECONCILE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_prelaunch_economic_lmdb_clean_reset_00b_walkthrough.md"
     }
   ],
   "boundary": {

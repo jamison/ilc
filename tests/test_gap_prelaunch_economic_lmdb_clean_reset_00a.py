@@ -117,9 +117,55 @@ def test_plan_mode_identifies_deletion_targets(tmp_path: Path) -> None:
     assert (wallet / "lock.mdb").exists()
 
 
-def test_execute_mode_raises_not_implemented() -> None:
-    with pytest.raises(NotImplementedError, match="reserved for 00b"):
-        reset_tool.execute_wallet_lmdb_cleanup()
+def test_execute_cleanup_requires_existing_targets(tmp_path: Path) -> None:
+    wallet = tmp_path / "wallet"
+    receipts = tmp_path / "receipts"
+    wallet.mkdir()
+    with pytest.raises(
+        ValueError,
+        match="prelaunch_economic_lmdb_deletion_targets_missing",
+    ):
+        reset_tool.execute_wallet_lmdb_cleanup(wallet, receipt_dir=receipts)
+
+
+def test_execute_cleanup_deletes_and_reprovisions_empty_lmdb(tmp_path: Path) -> None:
+    wallet = tmp_path / "wallet"
+    receipts = tmp_path / "receipts"
+    _make_lmdb(wallet, contaminated=True)
+    result = reset_tool.execute_wallet_lmdb_cleanup(wallet, receipt_dir=receipts)
+
+    assert result["contaminated_before"] is True
+    assert result["contaminated_after"] is False
+    assert result["actual_matches_canonical"] is True
+    assert (wallet / "data.mdb").exists()
+    assert (wallet / "lock.mdb").exists()
+
+    post = reset_tool.inspect_wallet_lmdb(wallet, receipt_dir=receipts, write_receipts=False)
+    counts = post["public_receipt"]["counts"]
+    assert counts["wallet_rows"] == 0
+    assert counts["protocol_account_wallet_rows"] == 0
+    assert counts["transfer_balance_rows"] == 0
+    assert counts["transfer_record_rows"] == 0
+    assert (receipts / "pre_deletion_receipt_private.json").exists()
+    assert (receipts / "clean_reset_receipt_private.json").exists()
+    assert (receipts / "clean_reset_receipt_public_safe.json").exists()
+
+
+def test_cli_execute_without_double_gate_rejected(tmp_path: Path) -> None:
+    wallet = tmp_path / "wallet"
+    receipts = tmp_path / "receipts"
+    _make_lmdb(wallet, contaminated=True)
+    rc = reset_tool._run(
+        [
+            "--wallet-path",
+            str(wallet),
+            "--receipt-dir",
+            str(receipts),
+            "execute",
+        ]
+    )
+    assert rc == 2
+    assert (wallet / "data.mdb").exists()
 
 
 def test_lsof_check_invocation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -140,4 +186,3 @@ def test_lsof_check_invocation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) 
     result = reset_tool._check_open_handles(wallet)
     assert result["status"] == "open_handles_found"
     assert result["lmdb_open_by_pid"] == [123]
-
