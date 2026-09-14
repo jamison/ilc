@@ -306,6 +306,22 @@ ILC defines six agent-submittable truth primitives forming a **closed typed alge
 
 "Closed" means every epistemic event expressible in any information system is composable from these six: credentials (assert + validate chain), retractions (revise with empty content), governance amendments (assert on CDL node + ratification quorum validate), market predictions (assert + resolve via validate/refute), identity attestations (assert on identity binding + validate chain). The Popperian falsifiability gate (CDL-V7) in `refute.claim` is the primary defence against spurious refutations: a refutation is only accepted if the original claim stated its falsification conditions and the evidence satisfies them.
 
+### commit.epoch: The Arrow of Time
+
+The six agent-submittable primitives operate on the graph's content. A seventh operation — `commit.epoch` — is **protocol-internal** and operates on time itself. It is not submitted by agents; it is produced by the validator quorum at each epoch boundary:
+
+```
+commit.epoch(t):
+  Pre:  BLS quorum of ≥ 2f+1 validators agrees on accepted delta set Σ_o δ_o(t)
+  Post: C(t) = (M(t), S(t)) committed and σ_agg(t) appended to the epoch chain
+        φ_{t,t+1} applied — G(t) transitions to G(t+1), irreversibly
+        ECU attribution for accepted deltas settled into BalanceStore
+```
+
+`commit.epoch` is what transforms the six agent primitives from a static algebra into a **directed process in time**. Without it, the truth primitives describe a set of possible operations. With it, those operations acquire an ordering: claim C₁ was asserted before refutation R₁, which was itself accepted before revision V₁. The epoch sequence number t is the protocol's canonical clock — independent of wall-clock time, resistant to clock-skew attacks, and shared identically by all participants who hold the same epoch chain.
+
+This gives the morphogenetic trajectory {G(t)} its arrow. The sequence of `commit.epoch` boundaries is not merely a bookkeeping device; it is the epistemic order relation. Two claims with the same content but submitted in different epochs are different epistemic events — the later one has access to the refutation history of the earlier one; the earlier one does not. Standing, reuse, and economic reward are all measured relative to this ordering. The `commit.epoch` operation is therefore the primitive that makes the protocol's knowledge graph a *history* rather than merely a *state*.
+
 ### Homoiconicity: Governance as Graph Nodes
 
 Partition V(t):
