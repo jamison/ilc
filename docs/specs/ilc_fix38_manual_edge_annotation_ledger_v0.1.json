@@ -80525,6 +80525,113 @@
       ],
       "recommended_graph_action": "graph_delta=support_only:synthetic_fixture_not_launch_valid",
       "repo_path": "out/gap_monthly_close_orchestrator_00b/ecu_accrual_evidence_synthetic_interval_0000.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_grpc_mtls_trust_root_fix_00_execution_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00 receipt records sensitive live validator CA trust-root deployment, sequential restarts, epoch unchanged checks, successful ORCHESTRATOR-00b live proof, output tokens, and non-claims.",
+      "manual_read_summary": "Receipt confirms existing ca.cert.pem PEM and DER hashes, slots deployed and restarted, epoch pre/post all 1, live proof passed, and no ilc_core, LMDB, settlement, epoch, package, or mirror mutation.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:validator_grpc_mtls_trust_root_deployed_GAP_VALIDATOR_GRPC_MTLS_TRUST_ROOT_FIX_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:config/public_rc_validators/pki/ca/ca.cert.pem"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_monthly_close_orchestrator_00b/close_readiness_report.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only:vps_ops_phase_no_new_ilc_core_modules",
+      "repo_path": "out/gap_validator_grpc_mtls_trust_root_fix_00/fix_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_grpc_mtls_trust_root_fix_00_execution_2026_09_15",
+      "chronology_note": "2026-09-15 ORCHESTRATOR-00b close readiness report updated after validator mTLS trust-root repair.",
+      "manual_read_summary": "Readiness report records graph_binding_checked=true, live_epoch_record_found=true, live_current_epoch_seq=1, maturity_metadata_available=false, synthetic_conservation_verified=true, synthetic_fixture_not_launch_valid=true, and wiring_ready=true.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/monthly_close/run_monthly_close.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only:orchestrator_readiness_evidence_no_settlement",
+      "repo_path": "out/gap_monthly_close_orchestrator_00b/close_readiness_report.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_grpc_mtls_trust_root_fix_00_execution_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00 walkthrough records GO receipt, prompt/source/MemPalace checks, cert verification, SSH deployment, sequential restarts, epoch stability, live proof retry, output tokens, and non-claims.",
+      "manual_read_summary": "Walkthrough is the execution narrative for the sensitive live VPS trust-root fix and ORCHESTRATOR-00b closure.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:validator_grpc_mtls_trust_root_deployed_GAP_VALIDATOR_GRPC_MTLS_TRUST_ROOT_FIX_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_validator_grpc_mtls_trust_root_fix_00/fix_receipt.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_monthly_close_orchestrator_00b/close_readiness_report.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only:vps_ops_phase_no_new_ilc_core_modules",
+      "repo_path": "docs/phases/phase_gap_validator_grpc_mtls_trust_root_fix_00_walkthrough.md"
     }
   ],
   "boundary": {
