@@ -80370,6 +80370,161 @@
       ],
       "recommended_graph_action": "graph_delta=support_only",
       "repo_path": "docs/phases/phase_gap_validator_package_sync_0423_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_blocked_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b added a dry-run-only monthly close control-host script; live gRPC proof blocked on validator mTLS trust-root mismatch before completion token emission.",
+      "manual_read_summary": "Tool script reads ECU accrual evidence, uses ILCConsensusGrpcReadAdapter for live epoch readback, requires graph-binding args when the validator cert graph-binding guard is active, writes an atomic readiness report only on success, and has no settlement commit path.",
+      "node_kind": "tool_script",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "claim:monthly_close_orchestrator_machinery_complete_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/consensus/production_bridge.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/ecu_accrual_evidence.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools_and_tests_no_new_ilc_core_modules",
+      "repo_path": "tools/monthly_close/run_monthly_close.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_blocked_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b added integration and boundary tests for the dry-run organic close script.",
+      "manual_read_summary": "Tests cover synthetic mature fixture conservation, insufficient maturity span rejection, epoch-zero distribution rejection, invalid epoch records, empty aggregate signature rejection, no commit path, non-finite argument rejection, graph-binding startup failure, and live-report path separation from maturity proof construction.",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:tools/monthly_close/run_monthly_close.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "artifact:ilc_core/epoch/epoch_maturity_gate.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TESTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:tools_and_tests_no_new_ilc_core_modules",
+      "repo_path": "tests/epoch/test_gap_monthly_close_orchestrator_00b.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_blocked_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b walkthrough records local verification pass and live gRPC mTLS trust-root blocker.",
+      "manual_read_summary": "Walkthrough records GO receipt, source reads, no-commit/no-ilc_core checks, test outputs, live TLS probe failures, missing ca.cert.pem in deployed validator peer_cert_dir, non-claims, and required follow-up before completion token emission.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_monthly_close_orchestrator_00b/blocker_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:blocker_evidence",
+      "repo_path": "docs/phases/phase_gap_monthly_close_orchestrator_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_blocked_2026_09_15",
+      "chronology_note": "2026-09-15 blocker receipt for GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b live gRPC read proof.",
+      "manual_read_summary": "Receipt records local tooling readiness, passing local tests, graph-binding guard active, validator_1 endpoint, server cert fingerprint, failed mTLS client-auth probes, missing ca.cert.pem in peer_cert_dir, withheld completion token, and required follow-up.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS_BLOCKER",
+          "target": "claim:validator_grpc_mtls_client_auth_trust_roots_missing_ca_cert_pem"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS",
+        "DOCUMENTS_BLOCKER"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:blocker_evidence",
+      "repo_path": "out/gap_monthly_close_orchestrator_00b/blocker_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_blocked_2026_09_15",
+      "chronology_note": "2026-09-15 synthetic ECU accrual evidence fixture generated for GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b local dry-run conservation verification.",
+      "manual_read_summary": "Synthetic fixture records one validator AgentID with ECU weight 1 for issuance_interval_id=0 and accrual_close_validation_epoch=40320. It is explicitly not launch-valid monthly close evidence.",
+      "node_kind": "test_fixture",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TEST_FIXTURE_FOR",
+          "target": "artifact:tools/monthly_close/run_monthly_close.py"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:launch_valid_monthly_close_evidence"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "TEST_FIXTURE_FOR",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "graph_delta=support_only:synthetic_fixture_not_launch_valid",
+      "repo_path": "out/gap_monthly_close_orchestrator_00b/ecu_accrual_evidence_synthetic_interval_0000.json"
     }
   ],
   "boundary": {
