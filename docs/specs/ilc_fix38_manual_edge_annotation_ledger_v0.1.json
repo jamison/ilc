@@ -80771,6 +80771,44 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_monthly_close_graph_binding_lmdb_fix1_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_graph_binding_lmdb_fix1_00b_execution_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00b walkthrough records the sensitive live dry-run proof rerun against the canonical endpoint assertions LMDB Atlas through a read-only adapter.",
+      "manual_read_summary": "Walkthrough records GO authorization, writable LmdbGraphStore preflight metadata mutation detection/restoration, ReadOnlyLmdbGraphStore hardening, LMDB-backed live proof output, report verification, prior JSON-backed report supersession, endpoint-assertions LMDB unchanged check from the final read-only run, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_graph_binding_lmdb_fix1_lmdb_proof_complete_GAP_MONTHLY_CLOSE_GRAPH_BINDING_LMDB_FIX1_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "out/gap_monthly_close_graph_binding_lmdb_fix1_00b/close_readiness_report.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "out/gap_monthly_close_graph_binding_lmdb_fix1_00b/fix_receipt.json"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:canonical_close_readiness_graph_binding_uses_lmdb_atlas"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_monthly_close_graph_binding_lmdb_fix1_00b_walkthrough.md"
     }
   ],
   "boundary": {

@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import lmdb
 import pytest
 
 from ilc_core.consensus.validator_endpoint_assertion import (
@@ -61,6 +63,25 @@ def _write_assertion(path: Path, *, revised_by: str | None = None) -> None:
         store.close()
 
 
+def _write_minimal_nodes_only_lmdb(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    env = lmdb.open(str(path), subdir=True, max_dbs=4, map_size=1024 * 1024)
+    try:
+        nodes_db = env.open_db(b"nodes")
+        with env.begin(write=True, db=nodes_db) as txn:
+            txn.put(
+                validator_assertion_candidate_id(AGENT_ID).encode("utf-8"),
+                json.dumps(
+                    _minimal_node(),
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8"),
+            )
+    finally:
+        env.close()
+
+
 def test_graph_binding_atlas_loader_accepts_lmdb_directory(tmp_path):
     module = _load_script_module()
     lmdb_path = tmp_path / "assertions_lmdb"
@@ -68,7 +89,7 @@ def test_graph_binding_atlas_loader_accepts_lmdb_directory(tmp_path):
 
     store = module._load_graph_binding_atlas(lmdb_path)
     try:
-        assert isinstance(store, LmdbGraphStore)
+        assert isinstance(store, module.ReadOnlyLmdbGraphStore)
         assertion = load_from_atlas(store, AGENT_ID)
         assert isinstance(assertion, ValidatorEndpointAssertion)
         assert assertion.validator_agent_id == AGENT_ID
@@ -116,11 +137,43 @@ def test_graph_binding_atlas_loader_rejects_missing_path(tmp_path):
 def test_graph_binding_atlas_loader_rejects_empty_lmdb(tmp_path):
     module = _load_script_module()
     lmdb_path = tmp_path / "empty_lmdb"
-    store = LmdbGraphStore(lmdb_path)
-    store.close()
+    _write_minimal_nodes_only_lmdb(lmdb_path)
+    env = lmdb.open(str(lmdb_path), max_dbs=4)
+    try:
+        with env.begin(write=True, db=env.open_db(b"nodes")) as txn:
+            cursor = txn.cursor()
+            for key, _ in list(cursor):
+                txn.delete(key)
+    finally:
+        env.close()
 
     with pytest.raises(ValueError, match="graph_binding_atlas_lmdb_no_nodes_found"):
         module._load_graph_binding_atlas(lmdb_path)
+
+
+def test_graph_binding_atlas_loader_does_not_create_missing_named_dbs(tmp_path):
+    module = _load_script_module()
+    lmdb_path = tmp_path / "nodes_only_lmdb"
+    _write_minimal_nodes_only_lmdb(lmdb_path)
+    before = {
+        path.name: path.read_bytes()
+        for path in sorted(lmdb_path.iterdir())
+        if path.name in {"data.mdb", "lock.mdb"}
+    }
+
+    store = module._load_graph_binding_atlas(lmdb_path)
+    try:
+        assert load_from_atlas(store, AGENT_ID).validator_agent_id == AGENT_ID
+        assert store.iter_edges() == []
+    finally:
+        store.close()
+
+    after = {
+        path.name: path.read_bytes()
+        for path in sorted(lmdb_path.iterdir())
+        if path.name in {"data.mdb", "lock.mdb"}
+    }
+    assert after == before
 
 
 def test_graph_binding_supersession_preserved_through_lmdb_store(tmp_path):

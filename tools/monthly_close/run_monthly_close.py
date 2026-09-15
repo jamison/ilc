@@ -20,6 +20,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable, Mapping, Sequence
 
+import lmdb
+
 from ilc_core.consensus.production_bridge import (
     ILCConsensusGrpcReadAdapter,
     ConsensusBridgeConfig,
@@ -42,7 +44,6 @@ from ilc_core.ledger.exact_numeric import (
     decimal_to_canonical_string,
     parse_non_negative_decimal,
 )
-from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
 
 
 PHASE = "GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
@@ -50,6 +51,8 @@ OUTPUT_TOKEN = "monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLO
 MATURITY_NOT_CONSTRUCTED_REASON = "closing_validation_epoch_not_available_from_get_epoch"
 MAX_REPORT_BYTES = 1_048_576
 MAX_PATH_BYTES = 4096
+MAX_READ_ONLY_LMDB_NODES = 10_000
+MAX_READ_ONLY_LMDB_LINKS = 10_000
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -262,10 +265,70 @@ def _require_graph_binding_args_if_active(args: argparse.Namespace) -> None:
         )
 
 
-def _load_graph_binding_atlas(path: Path) -> LmdbGraphStore:
+class ReadOnlyLmdbGraphStore:
+    """Read-only Atlas subset for validator endpoint assertion lookup."""
+
+    def __init__(self, root: Path) -> None:
+        self.root = root
+        self.env = lmdb.open(
+            str(root.resolve()),
+            readonly=True,
+            lock=False,
+            subdir=True,
+            create=False,
+            max_dbs=16,
+        )
+        self._nodes_db = self.env.open_db(b"nodes", create=False)
+        try:
+            self._links_db = self.env.open_db(b"links", create=False)
+        except lmdb.NotFoundError:
+            self._links_db = None
+
+    def get_node(self, node_id: str) -> dict[str, Any] | None:
+        with self.env.begin(db=self._nodes_db) as txn:
+            raw = txn.get(node_id.encode("utf-8"))
+        if raw is None:
+            return None
+        payload = json.loads(raw.decode("utf-8"))
+        return payload if isinstance(payload, dict) else None
+
+    def iter_nodes(self) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        with self.env.begin(db=self._nodes_db) as txn:
+            cursor = txn.cursor(db=self._nodes_db)
+            for index, (_, raw) in enumerate(cursor, start=1):
+                if index > MAX_READ_ONLY_LMDB_NODES:
+                    raise ValueError("graph_binding_atlas_lmdb_node_scan_limit_exceeded")
+                payload = json.loads(raw.decode("utf-8"))
+                if isinstance(payload, dict):
+                    rows.append(payload)
+        return sorted(rows, key=lambda row: str(row.get("id", "")))
+
+    def iter_edges(self) -> list[dict[str, Any]]:
+        if self._links_db is None:
+            return []
+        rows: list[dict[str, Any]] = []
+        with self.env.begin(db=self._links_db) as txn:
+            cursor = txn.cursor(db=self._links_db)
+            for index, (_, raw) in enumerate(cursor, start=1):
+                if index > MAX_READ_ONLY_LMDB_LINKS:
+                    raise ValueError("graph_binding_atlas_lmdb_link_scan_limit_exceeded")
+                payload = json.loads(raw.decode("utf-8"))
+                if isinstance(payload, dict):
+                    rows.append(payload)
+        return rows
+
+    def close(self) -> None:
+        self.env.close()
+
+
+def _load_graph_binding_atlas(path: Path) -> ReadOnlyLmdbGraphStore:
     if not path.is_dir():
         raise ValueError("graph_binding_atlas_path_not_an_lmdb_directory")
-    store = LmdbGraphStore(path)
+    try:
+        store = ReadOnlyLmdbGraphStore(path)
+    except lmdb.NotFoundError as exc:
+        raise ValueError("graph_binding_atlas_lmdb_nodes_db_not_found") from exc
     if not store.iter_nodes():
         store.close()
         raise ValueError("graph_binding_atlas_lmdb_no_nodes_found")
