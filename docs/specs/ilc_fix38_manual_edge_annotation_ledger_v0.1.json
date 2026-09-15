@@ -101460,6 +101460,47 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_code_health_commit_lmdb_batch_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_grpc_mtls_trust_root_fix_00_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00 prompt defines the sensitive live validator gRPC trust-root repair required after ORCHESTRATOR-00b blocked on mTLS client-auth trust roots.",
+      "manual_read_summary": "Prompt scopes local CA/leaf verification, CA PEM and DER hash checks, per-slot secure ca.cert.pem deployment to validator peer_cert_dir, sequential service restart, strict epoch pre/post unchanged checks, ORCHESTRATOR-00b live proof retry with public-rc graph binding, and non-claims excluding settlement, LMDB writes, epoch advance, package publish, mirror push, cert generation, and private-key movement.",
+      "node_kind": "antigravity_phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-GRPC-MTLS-TRUST-ROOT-FIX-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:validator_grpc_mtls_trust_root_deployed_GAP_VALIDATOR_GRPC_MTLS_TRUST_ROOT_FIX_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:config/public_rc_validators/pki/ca/ca.cert.pem"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_monthly_close_orchestrator_00b/blocker_receipt.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/monthly_close/run_monthly_close.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_grpc_mtls_trust_root_fix_00_g10_ca_cert_deploy.md"
     }
   ],
   "phase": "1545p-Fix38",
