@@ -80814,7 +80814,6 @@
       "annotation_batch": "manual_batch_gap_package_0424_00a_prompt_2026_09_15",
       "chronology_note": "2026-09-15 GAP-PACKAGE-0424-00a \u2014 local build prompt for ilc-core 0.4.24 orchestrator+health lane",
       "manual_read_summary": "Phase prompt directing local build of ilc-core==0.4.24 carrying ecu_accrual_evidence.py, monthly_close_orchestrator.py, and epoch_distribution_writer.py refactor; tools/ changes explicitly excluded from wheel.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00a_g10_local_build_orchestrator_and_health.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -80825,13 +80824,13 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00a_g10_local_build_orchestrator_and_health.md"
     },
     {
       "annotation_batch": "manual_batch_gap_package_0424_00b_prompt_2026_09_15",
       "chronology_note": "2026-09-15 GAP-PACKAGE-0424-00b \u2014 PyPI publish/sign/mirror prompt for ilc-core 0.4.24",
       "manual_read_summary": "SENSITIVE phase prompt for PyPI upload, Ed25519 signing, predecessor yank, and public mirror refresh of ilc-core 0.4.24; uses 00a receipt for hashes at runtime.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -80842,18 +80841,18 @@
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md"
     },
     {
       "annotation_batch": "manual_batch_gap_validator_sync_0424_00_prompt_2026_09_15",
       "chronology_note": "2026-09-15 GAP-VALIDATOR-SYNC-0424-00 phase prompt \u2014 validator venv sync to ilc-core 0.4.24",
       "manual_read_summary": "Phase prompt for sensitive VPS validator venv sync from 0.4.23 to 0.4.24 on all four public-RC validator slots; includes orchestrator import check for EcuAccrualEvidence and MONTHLY_CLOSE_ORCHESTRATOR_VERSION.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0424_00_g10_validator_venv_sync_0424.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_public_release_workflow_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -80871,7 +80870,86 @@
         "REFERENCES_AUTHORITY",
         "PHASE_PROMPT_FOR"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0424_00_g10_validator_venv_sync_0424.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00a_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00a local build closure on 2026-09-15 before sensitive 00b publish/sign/mirror phase.",
+      "manual_read_summary": "Records local ilc-core 0.4.24 wheel/sdist build hashes, byte sizes, signing preimages, wheel content checks, clean outside-repo venv smoke, and non-claims for GAP-PACKAGE-0424-00a.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00a_g10_local_build_orchestrator_and_health.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00a"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_local_build_complete_GAP_PACKAGE_0424_00a"
+        },
+        {
+          "edge_type": "REFERENCES_BUILD_ARTIFACT",
+          "target": "dist/ilc_core-0.4.24-py3-none-any.whl"
+        },
+        {
+          "edge_type": "REFERENCES_BUILD_ARTIFACT",
+          "target": "dist/ilc_core-0.4.24.tar.gz"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0424_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00a_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00a local build closure on 2026-09-15 before sensitive 00b publish/sign/mirror phase.",
+      "manual_read_summary": "Walkthrough for GAP-PACKAGE-0424-00a local build, including prompt hardening, token audit, source checks, artifact checks, clean venv smoke, tests, preimages, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00a_g10_local_build_orchestrator_and_health.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00a"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_local_build_complete_GAP_PACKAGE_0424_00a"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0424_00a_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0424_00a_walkthrough.md"
     }
   ],
   "boundary": {

@@ -1,0 +1,122 @@
+{
+  "artifact_content_checks": {
+    "ilc_core/epoch/ecu_accrual_evidence.py": true,
+    "ilc_core/epoch/epoch_distribution_writer.py": true,
+    "ilc_core/epoch/epoch_maturity_gate.py": true,
+    "ilc_core/epoch/monthly_close_orchestrator.py": true,
+    "ilc_core/epoch/protocol_account_boundary.py": true,
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": true,
+    "ilc_core/protocol/public_wallet_runtime.py": true,
+    "tools/monthly_close/run_monthly_close.py_not_in_wheel": true
+  },
+  "artifacts": {
+    "python_sdist": {
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0424@phase-1628",
+      "path": "dist/ilc_core-0.4.24.tar.gz",
+      "sha256": "d47f40575c2e55273e45efb78d60e37fc90d3d5cdcc2e8b03f1e78739b11778e",
+      "signed_preimage_sha256": "1d3b1c23373f0ef09b33b7a28db5dfd6d8b9128084c7669474882f8e85b09e9d",
+      "size_bytes": 1229588
+    },
+    "python_wheel": {
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0424@phase-1628",
+      "path": "dist/ilc_core-0.4.24-py3-none-any.whl",
+      "sha256": "134f5e97cba2493c2ca2c7b6ced85b9fb9950bf60e4a2f1e0b7b766065643ef4",
+      "signed_preimage_sha256": "c95008a10bb87120db9fe3059e0123dd375fa1dfafeb8472e9d9e6e31f32ae76",
+      "size_bytes": 1505126
+    }
+  },
+  "generated_at_utc": "2026-09-15T12:05:05Z",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_tools_install_sh_retarget_to_0424",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_launch_00_execution",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ],
+  "orchestrator_lane_modules": {
+    "ilc_core/epoch/ecu_accrual_evidence.py": true,
+    "ilc_core/epoch/epoch_distribution_writer.py": true,
+    "ilc_core/epoch/monthly_close_orchestrator.py": true
+  },
+  "output_token": "package_0424_local_build_complete_GAP_PACKAGE_0424_00a",
+  "phase": "GAP-PACKAGE-0424-00a",
+  "predecessor_release_id": "ilc-core-0.4.23",
+  "prompt_commits": {
+    "00a_prompt": "8ee9544f4",
+    "00b_prompt": "05135105c",
+    "validator_sync_0424_prompt": "1acf5e70b"
+  },
+  "prompt_hardening": {
+    "final_validator_result": "VALID",
+    "fixes_applied": [
+      "Replaced Linux-only sha256sum with shasum -a 256 in verification command.",
+      "Corrected invite enforcement import path to ilc_core.genesis.invite_enforcement.",
+      "Corrected version sentinel line references to pyproject.toml:7 and ilc_core/__init__.py:4.",
+      "Corrected Genesis value guard import to ilc_core.genesis.genesis_value_action_guard.",
+      "Corrected 0424 release artifact IDs to verifier-accepted @phase-1628 form and recorded computed preimage SHA-256 values."
+    ]
+  },
+  "release_id": "ilc-core-0.4.24",
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "source_private_commit_before_version_bump": "1acf5e70b85a54eebd01ea70e74c59d1a43a10f8",
+  "tools_not_in_wheel": {
+    "tools/monthly_close/run_monthly_close.py": "lmdb_read_only_adapter_hardening_not_packaged; included in source mirror during 00b"
+  },
+  "verification": {
+    "broader_epoch_regression_slice": "154 passed, 17140 deselected, 1 warning in 22.42s",
+    "build": "Successfully built ilc_core-0.4.24.tar.gz and ilc_core-0.4.24-py3-none-any.whl",
+    "clean_outside_repo_venv_smoke": {
+      "EPOCH_DISTRIBUTION_WRITER_VERSION_import": true,
+      "EcuAccrualEvidence_import": true,
+      "GENESIS_VALUE_GUARD_VERSION": "genesis_value_action_guard_GAP_GENESIS_VALUE_02_v0_1",
+      "INVITE_ENFORCEMENT_ENABLED": true,
+      "MONTHLY_CLOSE_ORCHESTRATOR_VERSION": "monthly_close_orchestrator_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a.v0.1",
+      "MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN_import": true,
+      "MonthlyIssuanceMaturityProof_import": true,
+      "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
+      "WALLET_CLAIMABILITY_STATE_DEFERRED": "deferred",
+      "ilc_core_version": "0.4.24",
+      "load_and_verify_certificate_import": true,
+      "normal_agent_prefix_reserved": false,
+      "protocol_account_pool_reserved": true,
+      "protocol_account_reserve_reserved": true,
+      "status": "passed"
+    },
+    "dependency_floor": "1 passed, 12 deselected in 0.64s",
+    "focused_orchestrator_lmdb_fix1_tests": "42 passed in 1.96s",
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b_after_hardening": "VALID",
+    "twine_check": "Checking dist/ilc_core-0.4.24-py3-none-any.whl: PASSED; Checking dist/ilc_core-0.4.24.tar.gz: PASSED",
+    "wheel_compileall": "passed",
+    "wheel_content_inspection": {
+      "ilc_core/epoch/ecu_accrual_evidence.py": "PRESENT",
+      "ilc_core/epoch/epoch_distribution_writer.py": "PRESENT",
+      "ilc_core/epoch/epoch_maturity_gate.py": "PRESENT",
+      "ilc_core/epoch/monthly_close_orchestrator.py": "PRESENT",
+      "ilc_core/epoch/protocol_account_boundary.py": "PRESENT",
+      "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": "PRESENT",
+      "ilc_core/protocol/public_wallet_runtime.py": "PRESENT",
+      "run_monthly_close_not_in_wheel": true
+    }
+  },
+  "version_updates": {
+    "ilc_core___init__": "0.4.24",
+    "pyproject_toml": "0.4.24",
+    "tools_install_sh_retained_release_id": "ilc-core-0.4.23"
+  }
+}
