@@ -80632,6 +80632,74 @@
       ],
       "recommended_graph_action": "support_only:vps_ops_phase_no_new_ilc_core_modules",
       "repo_path": "docs/phases/phase_gap_validator_grpc_mtls_trust_root_fix_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_orchestrator_00b_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 phase GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b \u2014 organic close wiring readiness phase prompt, drafted and revised through Rev 57 corrections",
+      "manual_read_summary": "Phase prompt for ORCHESTRATOR-00b: specifies the dry-run-only organic close wiring readiness script, 8 integration tests, live gRPC connectivity proof (records live_current_epoch_seq; no live MonthlyIssuanceMaturityProof construction), graph-binding startup check, and readiness report schema.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "ilc_core/consensus/production_bridge.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS",
+          "target": "docs/phases/phase_gap_monthly_close_orchestrator_00b_walkthrough.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "DOCUMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_issuance_close_orchestrator_00b_g10_organic_close_wiring.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_lmdb_fix1_00a_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 phase GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00a \u2014 prompt for patching run_monthly_close.py JSON atlas loader to use LmdbGraphStore",
+      "manual_read_summary": "Phase prompt directing Codex to replace the JSON-file-based _load_graph_binding_atlas() in run_monthly_close.py with a LmdbGraphStore opener, removing dead JSON helpers and adding 4 test scenarios.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_close_graph_binding_lmdb_fix1_00a_g10_lmdb_atlas_loader.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_lmdb_fix1_00b_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 phase GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00b \u2014 SENSITIVE prompt to rerun close readiness proof with LMDB atlas",
+      "manual_read_summary": "SENSITIVE phase prompt directing Codex to rerun the ORCHESTRATOR-00b live dry-run-only gRPC readiness proof using the canonical LMDB endpoint assertions store instead of the JSON manifest.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_close_graph_binding_lmdb_fix1_00b_g10_lmdb_proof_rerun.md"
     }
   ],
   "boundary": {
