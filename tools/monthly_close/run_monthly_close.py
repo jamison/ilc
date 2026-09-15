@@ -28,7 +28,6 @@ from ilc_core.consensus.production_bridge import (
 from ilc_core.consensus.validator_endpoint_assertion import (
     BlsVerifier,
     VALIDATOR_ENDPOINT_ASSERTION_BLS_COMMAND_ENV,
-    validator_assertion_candidate_id,
 )
 from ilc_core.epoch.ecu_accrual_evidence import read_ecu_accrual_evidence
 from ilc_core.epoch.epoch_maturity_gate import (
@@ -43,12 +42,12 @@ from ilc_core.ledger.exact_numeric import (
     decimal_to_canonical_string,
     parse_non_negative_decimal,
 )
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
 
 
 PHASE = "GAP-MONTHLY-ISSUANCE-CLOSE-ORCHESTRATOR-00b"
 OUTPUT_TOKEN = "monthly_close_orchestrator_wiring_ready_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00b"
 MATURITY_NOT_CONSTRUCTED_REASON = "closing_validation_epoch_not_available_from_get_epoch"
-MAX_ATLAS_JSON_BYTES = 1_048_576
 MAX_REPORT_BYTES = 1_048_576
 MAX_PATH_BYTES = 4096
 
@@ -151,7 +150,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     parser.add_argument("--graph-binding-validator-agent-id")
     parser.add_argument("--graph-binding-bls-key-hex")
     parser.add_argument("--graph-binding-network-id")
-    parser.add_argument("--graph-binding-atlas-path", type=Path)
+    parser.add_argument(
+        "--graph-binding-atlas-path",
+        type=Path,
+        help="LMDB graph directory containing validator endpoint assertion nodes.",
+    )
     parser.add_argument(
         "--synthetic-total-epoch-fees-ilc",
         required=True,
@@ -222,7 +225,7 @@ def _validate_paths(args: argparse.Namespace) -> None:
         path = getattr(args, path_attr)
         _require_existing_file(path, path_attr)
     if args.graph_binding_atlas_path is not None:
-        _require_existing_file(args.graph_binding_atlas_path, "graph_binding_atlas_path")
+        _require_existing_dir(args.graph_binding_atlas_path, "graph_binding_atlas_path")
     args.out.mkdir(parents=True, exist_ok=True)
 
 
@@ -231,6 +234,14 @@ def _require_existing_file(path: Path, token: str) -> Path:
         raise ValueError(f"{token}_path_exceeds_max_bytes")
     if not path.is_file():
         raise ValueError(f"{token}_file_not_found")
+    return path
+
+
+def _require_existing_dir(path: Path, token: str) -> Path:
+    if len(str(path).encode("utf-8")) > MAX_PATH_BYTES:
+        raise ValueError(f"{token}_path_exceeds_max_bytes")
+    if not path.is_dir():
+        raise ValueError(f"{token}_dir_not_found")
     return path
 
 
@@ -251,50 +262,14 @@ def _require_graph_binding_args_if_active(args: argparse.Namespace) -> None:
         )
 
 
-def _load_graph_binding_atlas(path: Path) -> dict[str, Mapping[str, Any]]:
-    payload = _read_json_mapping(path, MAX_ATLAS_JSON_BYTES, "graph_binding_atlas")
-    nodes: list[Mapping[str, Any]] = []
-    assertions = payload.get("assertions")
-    if isinstance(assertions, list):
-        nodes.extend(node for node in assertions if isinstance(node, Mapping))
-    if payload.get("node_kind") == "validator_grpc_endpoint_assertion":
-        nodes.append(payload)
-
-    atlas: dict[str, Mapping[str, Any]] = {}
-    for node in nodes:
-        agent_id = node.get("validator_agent_id")
-        if not isinstance(agent_id, str):
-            continue
-        atlas[agent_id] = node
-        atlas[validator_assertion_candidate_id(agent_id)] = node
-    if not atlas:
-        raise ValueError("graph_binding_atlas_assertions_not_found")
-    return atlas
-
-
-def _read_json_mapping(path: Path, max_bytes: int, token: str) -> Mapping[str, Any]:
-    size = path.stat().st_size
-    if size > max_bytes:
-        raise ValueError(f"{token}_exceeds_max_bytes")
-    try:
-        payload = json.loads(
-            path.read_text(encoding="utf-8"),
-            object_pairs_hook=_reject_duplicate_json_keys,
-        )
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"{token}_json_invalid") from exc
-    if not isinstance(payload, Mapping):
-        raise ValueError(f"{token}_json_object_required")
-    return payload
-
-
-def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    record: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in record:
-            raise ValueError("duplicate_json_key")
-        record[key] = value
-    return record
+def _load_graph_binding_atlas(path: Path) -> LmdbGraphStore:
+    if not path.is_dir():
+        raise ValueError("graph_binding_atlas_path_not_an_lmdb_directory")
+    store = LmdbGraphStore(path)
+    if not store.iter_nodes():
+        store.close()
+        raise ValueError("graph_binding_atlas_lmdb_no_nodes_found")
+    return store
 
 
 def _build_remote_server_cert_der_provider(

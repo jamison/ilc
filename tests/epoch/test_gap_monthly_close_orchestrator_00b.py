@@ -4,13 +4,17 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 import os
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+from ilc_core.consensus.validator_endpoint_assertion import (
+    VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+    VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+    validator_assertion_candidate_id,
+)
 from ilc_core.epoch.ecu_accrual_evidence import (
     EcuAccrualEvidence,
     write_ecu_accrual_evidence,
@@ -26,6 +30,7 @@ from ilc_core.epoch.monthly_close_orchestrator import (
     build_settlement_input_from_ecu_accrual,
     verify_close_dry_run,
 )
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
 
 
 SCRIPT_PATH = Path("tools/monthly_close/run_monthly_close.py")
@@ -63,6 +68,33 @@ def _evidence() -> EcuAccrualEvidence:
         agent_ecu_weights={AGENT_ID: "1"},
         accrual_close_validation_epoch=MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN,
     )
+
+
+def _minimal_assertion_node() -> dict[str, object]:
+    return {
+        "asserted_at_epoch": 0,
+        "bls_public_key_hex": AGENT_ID,
+        "bls_signature_hex": "c" * 192,
+        "genesis_witness": True,
+        "grpc_endpoint": "127.0.0.1:50151",
+        "node_kind": VALIDATOR_ENDPOINT_ASSERTION_NODE_KIND,
+        "schema_version": VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
+        "tls_cert_not_after_utc": None,
+        "tls_cert_not_before_utc": "2026-01-01T00:00:00Z",
+        "tls_cert_sha256_fingerprint": "f" * 64,
+        "validator_agent_id": AGENT_ID,
+    }
+
+
+def _write_assertion_lmdb(path: Path) -> None:
+    store = LmdbGraphStore(path)
+    try:
+        store.put_node(
+            validator_assertion_candidate_id(AGENT_ID),
+            _minimal_assertion_node(),
+        )
+    finally:
+        store.close()
 
 
 def test_organic_path_dry_run_synthetic_maturity():
@@ -201,20 +233,8 @@ def test_live_report_path_does_not_construct_live_maturity_proof(tmp_path, monke
     module = _load_script_module()
     evidence_path = tmp_path / "evidence.json"
     write_ecu_accrual_evidence(_evidence(), evidence_path)
-    atlas_path = tmp_path / "atlas.json"
-    atlas_path.write_text(
-        json.dumps(
-            {
-                "assertions": [
-                    {
-                        "validator_agent_id": AGENT_ID,
-                        "node_kind": "validator_grpc_endpoint_assertion",
-                    }
-                ]
-            }
-        ),
-        encoding="utf-8",
-    )
+    atlas_path = tmp_path / "assertions_lmdb"
+    _write_assertion_lmdb(atlas_path)
 
     class FakeAdapter:
         def __init__(self, config, **kwargs):

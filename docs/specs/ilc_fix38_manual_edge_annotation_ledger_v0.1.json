@@ -80700,6 +80700,77 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_monthly_close_graph_binding_lmdb_fix1_00b_g10_lmdb_proof_rerun.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_graph_binding_lmdb_fix1_00a_execution_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00a test file verifies the monthly-close graph-binding loader now consumes an LMDB Atlas directory instead of a JSON endpoint-assertion snapshot.",
+      "manual_read_summary": "Covers LmdbGraphStore success, JSON-file rejection, path validation rejection, missing-path rejection, empty-LMDB fail-closed behavior, and inline supersession preservation through load_from_atlas().",
+      "node_kind": "test_file",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_graph_binding_lmdb_fix1_complete_GAP_MONTHLY_CLOSE_GRAPH_BINDING_LMDB_FIX1_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/monthly_close/run_monthly_close.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core.storage.lmdb_public_runtime.LmdbGraphStore"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:graph_binding_atlas_path_is_lmdb_directory_not_json_file"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/epoch/test_gap_monthly_close_graph_binding_lmdb_fix1_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_monthly_close_graph_binding_lmdb_fix1_00a_execution_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00a walkthrough records source reads, implementation scope, verification results, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough is the execution evidence for the non-sensitive LMDB graph-binding loader fix and carries forward the SENSITIVE 00b live proof rerun gate.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-MONTHLY-CLOSE-GRAPH-BINDING-LMDB-FIX1-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:monthly_close_graph_binding_lmdb_fix1_complete_GAP_MONTHLY_CLOSE_GRAPH_BINDING_LMDB_FIX1_00a"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "out/gap_monthly_close_graph_binding_lmdb_fix1_00a/fix_receipt.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "tests/epoch/test_gap_monthly_close_graph_binding_lmdb_fix1_00.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_monthly_close_graph_binding_lmdb_fix1_00a_walkthrough.md"
     }
   ],
   "boundary": {
