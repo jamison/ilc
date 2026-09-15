@@ -80950,6 +80950,64 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0424_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a \u2014 Fix38 backlog dry-run classification prompt",
+      "manual_read_summary": "NON-SENSITIVE phase prompt directing a dry-run classification of all Fix38 ledger entries not yet registered in the Genesis Atlas LMDB; no LMDB writes; produces backlog_classification_report.json.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_g10_fix38_backlog_classification.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PHASE_PROMPT_FOR",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PHASE_PROMPT_FOR"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00b_prompt_2026_09_15",
+      "chronology_note": "2026-09-15 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b \u2014 Fix38 backlog atlas LMDB registration prompt (SENSITIVE)",
+      "manual_read_summary": "SENSITIVE phase prompt directing registration of the Fix38 backlog into the Genesis Atlas LMDB under CDL-098 authority; uses atlas register-phase-files --write; GO required.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00b_g10_fix38_backlog_registration.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PHASE_PROMPT_FOR",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PHASE_PROMPT_FOR"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
