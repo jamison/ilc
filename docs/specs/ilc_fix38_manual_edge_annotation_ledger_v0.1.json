@@ -80955,12 +80955,11 @@
       "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_prompt_2026_09_15",
       "chronology_note": "2026-09-15 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a \u2014 Fix38 backlog dry-run classification prompt",
       "manual_read_summary": "NON-SENSITIVE phase prompt directing a dry-run classification of all Fix38 ledger entries not yet registered in the Genesis Atlas LMDB; no LMDB writes; produces backlog_classification_report.json.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_g10_fix38_backlog_classification.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -80978,18 +80977,18 @@
         "REFERENCES_AUTHORITY",
         "PHASE_PROMPT_FOR"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_g10_fix38_backlog_classification.md"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00b_prompt_2026_09_15",
       "chronology_note": "2026-09-15 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b \u2014 Fix38 backlog atlas LMDB registration prompt (SENSITIVE)",
       "manual_read_summary": "SENSITIVE phase prompt directing registration of the Fix38 backlog into the Genesis Atlas LMDB under CDL-098 authority; uses atlas register-phase-files --write; GO required.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00b_g10_fix38_backlog_registration.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_098_genesis_graph_update_authority_ratification_evidence_1573a_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -81007,7 +81006,172 @@
         "REFERENCES_AUTHORITY",
         "PHASE_PROMPT_FOR"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00b_g10_fix38_backlog_registration.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00b_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00b sensitive publish/sign/mirror closure on 2026-09-15.",
+      "manual_read_summary": "Ed25519 release signature envelope set for ilc-core 0.4.24 wheel and sdist, bound to the Phase 1335 release signing public key.",
+      "node_kind": "release_signature_envelope_set",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00b"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_published_GAP_PACKAGE_0424_00B"
+        },
+        {
+          "edge_type": "SIGNS_RELEASE_ARTIFACT",
+          "target": "dist/ilc_core-0.4.24-py3-none-any.whl"
+        },
+        {
+          "edge_type": "SIGNS_RELEASE_ARTIFACT",
+          "target": "dist/ilc_core-0.4.24.tar.gz"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1335_release_signing_key"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00b_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00b sensitive publish/sign/mirror closure on 2026-09-15.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.24, including PyPI wheel/sdist artifacts, the unsigned SHA-256/size-bound helper tarball, and public release envelope reference.",
+      "node_kind": "installable_release_manifest",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00b"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_published_GAP_PACKAGE_0424_00B"
+        },
+        {
+          "edge_type": "REFERENCES_RELEASE_ENVELOPE_SET",
+          "target": "docs/specs/ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+        },
+        {
+          "edge_type": "REFERENCES_BUILD_ARTIFACT",
+          "target": "dist/ilc-consensus-linux-x86_64-v0.4.24.tar.gz"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0424_GAP_PACKAGE_0424_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00b_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00b sensitive publish/sign/mirror closure on 2026-09-15.",
+      "manual_read_summary": "PyPI upload, fetchback, release signing, helper binary, installer, predecessor-yank, and mirror receipt for GAP-PACKAGE-0424-00b.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00b"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_published_GAP_PACKAGE_0424_00B"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_installable_release_manifest_ilc_core_0424_GAP_PACKAGE_0424_00b_v0.1.json"
+        },
+        {
+          "edge_type": "REFERENCES_RELEASE_ENVELOPE_SET",
+          "target": "docs/specs/ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0424_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0424_00b_execution_2026_09_15",
+      "chronology_note": "Created during GAP-PACKAGE-0424-00b sensitive publish/sign/mirror closure on 2026-09-15.",
+      "manual_read_summary": "Walkthrough for GAP-PACKAGE-0424-00b publish/sign/mirror closure, including token audit, signing verification, PyPI fetchback, installer sync, tests, mirror evidence, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0424_00b_g10_pypi_upload_sign_mirror.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0424-00b"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:package_0424_published_GAP_PACKAGE_0424_00B"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0424_00b_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0424_00b_walkthrough.md"
     }
   ],
   "boundary": {

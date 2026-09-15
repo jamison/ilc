@@ -121,6 +121,13 @@ MANIFEST_0423 = (
 ENVELOPES_0423 = (
     ROOT / "docs/specs/ilc_core_0423_release_envelopes_GAP_PACKAGE_0423_00b_v0.1.json"
 )
+MANIFEST_0424 = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0424_GAP_PACKAGE_0424_00b_v0.1.json"
+)
+ENVELOPES_0424 = (
+    ROOT / "docs/specs/ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+)
 MANIFEST_020 = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_020_GAP_PUBLIC_INSTALL_01_v0.1.json"
@@ -548,6 +555,38 @@ def test_manifest_0423_release_envelopes_cover_signed_artifacts() -> None:
     assert set(envelopes["envelopes"]) == signed_artifact_ids
 
 
+def test_manifest_0424_validates_and_targets_ilc_core_0424() -> None:
+    manifest = _load_json(MANIFEST_0424)
+
+    validate_installable_release_manifest(manifest)
+
+    assert manifest["release_id"] == "ilc-core-0.4.24"
+    assert manifest["channel"] == "rc"
+    assert manifest["release_envelope_ref"] == (
+        "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
+        "ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+    )
+    assert {artifact["artifact_type"] for artifact in manifest["artifacts"]} == {
+        "cli_binary",
+        "python_sdist",
+        "python_wheel",
+    }
+
+
+def test_manifest_0424_release_envelopes_cover_signed_artifacts() -> None:
+    manifest = _load_json(MANIFEST_0424)
+    envelopes = _load_json(ENVELOPES_0424)
+
+    validate_envelope_set(envelopes, manifest=manifest)
+
+    signed_artifact_ids = {
+        artifact["artifact_id"]
+        for artifact in manifest["artifacts"]
+        if artifact["signing_status"] == "signed"
+    }
+    assert set(envelopes["envelopes"]) == signed_artifact_ids
+
+
 def test_manifest_040_remains_valid_after_041_supersession() -> None:
     validate_installable_release_manifest(_load_json(MANIFEST_040))
 
@@ -556,8 +595,8 @@ def test_manifest_041_remains_valid_after_042_supersession() -> None:
     validate_installable_release_manifest(_load_json(MANIFEST_041))
 
 
-def test_install_sh_is_synced_to_current_0423_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0423)
+def test_install_sh_is_synced_to_current_0424_manifest() -> None:
+    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0424)
 
 
 def test_old_manifest_still_valid_and_unmodified_by_supersession() -> None:
