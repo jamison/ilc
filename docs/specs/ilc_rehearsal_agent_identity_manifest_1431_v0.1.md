@@ -2,7 +2,7 @@
 
 **Status:** Ceremony complete — public fields only
 **Phase:** 1431
-**Date:** 2026-09-15
+**Date:** 2026-09-07
 **Scope:** Private soft-RC rehearsal only
 
 ```text
@@ -73,7 +73,7 @@ pubkey_record_ref:        docs/genesis/genesis_agent1_pubkey_record_838a.txt
 machine:                  M1
 role:                     Reviewer
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -93,7 +93,7 @@ recovery_commitment:      b0a75d49f01932842e31a7900cbd9363a2ed9260130e2534456c9b
 machine:                  M1
 role:                     Reviewer
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -113,7 +113,7 @@ recovery_commitment:      c82dacead8305ec864743ee34c6fa582f4d2ddf02235f6b662c7aa
 machine:                  M2 (ilc-node-2)
 role:                     Validator-A
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -133,7 +133,7 @@ recovery_commitment:      8d2104266484de558d495de6bc09f6ff429b9cf1a3632d322c3907
 machine:                  M2 (ilc-node-2)
 role:                     Validator-A
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -153,7 +153,7 @@ recovery_commitment:      ecfef18a21c55f3abb58c722c92f43db0b368f2074fb26ceebe80a
 machine:                  M3 (ilc-node-3)
 role:                     Validator-B
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
@@ -173,7 +173,7 @@ recovery_commitment:      a150446be521386d7e3cb49d89043d3346cf8894efec5419ac651d
 machine:                  M3 (ilc-node-3)
 role:                     Validator-B
 ceremony_phase:           1431
-ceremony_date:            2026-09-15
+ceremony_date:            2026-09-07
 ceremony_tool:            pq_keygen_838a.v0.1
 ceremony_mode:            interactive
 agent_id_derivation_ref:  CDL-042 / CDL-069 sha384("ilc-agent-id-v1:" || identity_seed)
