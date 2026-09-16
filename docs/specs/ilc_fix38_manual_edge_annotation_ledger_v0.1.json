@@ -81209,6 +81209,86 @@
           "target": "nonclaim:no_lmdb_mutation_no_epoch_advance_no_rust_binary_change"
         }
       ]
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_2026_09_16",
+      "chronology_note": "2026-09-16 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a added read-only Fix38 backlog classifier tooling.",
+      "manual_read_summary": "Read-only classifier tool compares Fix38 ledger repo_path entries against the Genesis Atlas LMDB source-path index and writes an atomic dry-run backlog report without LMDB mutation.",
+      "node_kind": "tool_script",
+      "repo_path": "tools/materialize/classify_fix38_backlog.py",
+      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-098",
+          "review_status": "candidate_cdl_098_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_atlas_lmdb_write_no_genesis_signing"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "DERIVED_FROM",
+        "CLASSIFIED_BY",
+        "NEGATIVE_ASSERTS"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_2026_09_16",
+      "chronology_note": "2026-09-16 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a walkthrough records dry-run classification evidence and non-claims.",
+      "manual_read_summary": "Walkthrough records token audit, source reads, verification outputs, backlog counts, unchanged Atlas LMDB hash evidence, output token, carry-forward, and non-claims for the CDL-098 00a dry-run classification phase.",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00a_walkthrough.md",
+      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:CDL-098",
+          "review_status": "candidate_cdl_098_trace"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:cdl098_backlog_classification_complete_GAP_CDL098_GENESIS_GRAPH_MATERIALIZATION_0424_00a"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_atlas_lmdb_write_no_genesis_signing_no_public_rc_activation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ]
     }
   ],
   "boundary": {
