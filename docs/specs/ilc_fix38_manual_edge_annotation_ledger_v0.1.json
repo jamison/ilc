@@ -81172,6 +81172,43 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0424_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_sync_0424_00_execution_2026_09_16",
+      "chronology_note": "Created during GAP-VALIDATOR-SYNC-0424-00 sensitive validator venv sync closure on 2026-09-16.",
+      "manual_read_summary": "Walkthrough for sensitive validator service-user venv sync to ilc-core 0.4.24 across validators 1-4, including corrected resume for validator_1, alternate installed-source wallet claimability guard, per-slot guard checks, epoch/state-root stability, Rust binary unchanged evidence, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_validator_sync_0424_00_walkthrough.md",
+      "recommended_graph_action": "support_only",
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0424_00_g10_validator_venv_sync_0424.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-SYNC-0424-00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:vps_validators_synced_to_0424_GAP_VALIDATOR_SYNC_0424_00"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/gap_validator_sync_0424_00/sync_receipt.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_mutation_no_epoch_advance_no_rust_binary_change"
+        }
+      ]
     }
   ],
   "boundary": {
