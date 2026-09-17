@@ -81178,13 +81178,6 @@
       "chronology_note": "Created during GAP-VALIDATOR-SYNC-0424-00 sensitive validator venv sync closure on 2026-09-16.",
       "manual_read_summary": "Walkthrough for sensitive validator service-user venv sync to ilc-core 0.4.24 across validators 1-4, including corrected resume for validator_1, alternate installed-source wallet claimability guard, per-slot guard checks, epoch/state-root stability, Rust binary unchanged evidence, and non-claims.",
       "node_kind": "phase_walkthrough",
-      "repo_path": "docs/phases/phase_gap_validator_sync_0424_00_walkthrough.md",
-      "recommended_graph_action": "support_only",
-      "proposed_trace_roles": [
-        "EVIDENCES",
-        "REGRESSES",
-        "SOURCE_TREE_MEMBER"
-      ],
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
@@ -81208,20 +81201,25 @@
           "edge_type": "NEGATIVE_ASSERTS",
           "target": "nonclaim:no_lmdb_mutation_no_epoch_advance_no_rust_binary_change"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_validator_sync_0424_00_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_2026_09_16",
       "chronology_note": "2026-09-16 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a added read-only Fix38 backlog classifier tooling.",
       "manual_read_summary": "Read-only classifier tool compares Fix38 ledger repo_path entries against the Genesis Atlas LMDB source-path index and writes an atomic dry-run backlog report without LMDB mutation.",
       "node_kind": "tool_script",
-      "repo_path": "tools/materialize/classify_fix38_backlog.py",
-      "recommended_graph_action": "support_only",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-098",
-          "review_status": "candidate_cdl_098_trace"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         }
       ],
       "proposed_semantic_edges": [
@@ -81248,20 +81246,20 @@
         "DERIVED_FROM",
         "CLASSIFIED_BY",
         "NEGATIVE_ASSERTS"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/materialize/classify_fix38_backlog.py"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00a_2026_09_16",
       "chronology_note": "2026-09-16 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a walkthrough records dry-run classification evidence and non-claims.",
       "manual_read_summary": "Walkthrough records token audit, source reads, verification outputs, backlog counts, unchanged Atlas LMDB hash evidence, output token, carry-forward, and non-claims for the CDL-098 00a dry-run classification phase.",
       "node_kind": "phase_walkthrough",
-      "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00a_walkthrough.md",
-      "recommended_graph_action": "support_only",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "cdl:CDL-098",
-          "review_status": "candidate_cdl_098_trace"
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
         }
       ],
       "proposed_semantic_edges": [
@@ -81288,7 +81286,9 @@
         "ATTESTATION",
         "EVIDENCES",
         "NEGATIVE_ASSERTS"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00a_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_fix1_2026_09_17",
@@ -81836,17 +81836,10 @@
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0425_00b_g10_pypi_upload_sign_mirror.md"
     },
     {
-      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0425_00b.partial.json",
-      "node_kind": "spec_doc",
       "annotation_batch": "manual_batch_gap_package_0425_00b_blocked_2026_09_17",
       "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b registered partial upload receipt after PyPI 0.4.25 upload and helper tarball publication blocked on clean dependency install.",
       "manual_read_summary": "Partial receipt records GO, signature verification, helper tarball v0.4.25 publication, PyPI 0.4.25 upload and hash/size fetchback, cbor2 source-build failure blocker, current external state, non-claims, and output-token non-emission.",
-      "recommended_graph_action": "support_only",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "EVIDENCES",
-        "NEGATIVE_ASSERTS"
-      ],
+      "node_kind": "spec_doc",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -81865,20 +81858,20 @@
           "edge_type": "NEGATIVE_ASSERTS",
           "target": "nonclaim:no_0424_yank_no_installer_retarget_no_public_mirror_push"
         }
-      ]
-    },
-    {
-      "repo_path": "docs/phases/phase_gap_package_0425_00b_blocked_walkthrough.md",
-      "node_kind": "phase_walkthrough",
-      "annotation_batch": "manual_batch_gap_package_0425_00b_blocked_2026_09_17",
-      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b registered blocked walkthrough after prompt-required clean dependency install hard stop.",
-      "manual_read_summary": "Blocked walkthrough records GO, token audit, artifact checks, signature verification, helper tarball publication, PyPI upload/fetchback, cbor2 source-build failure, current external state, not-completed deliverables, and non-claims.",
-      "recommended_graph_action": "support_only",
+      ],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "EVIDENCES",
         "NEGATIVE_ASSERTS"
       ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0425_00b.partial.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0425_00b_blocked_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b registered blocked walkthrough after prompt-required clean dependency install hard stop.",
+      "manual_read_summary": "Blocked walkthrough records GO, token audit, artifact checks, signature verification, helper tarball publication, PyPI upload/fetchback, cbor2 source-build failure, current external state, not-completed deliverables, and non-claims.",
+      "node_kind": "phase_walkthrough",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -81897,7 +81890,140 @@
           "edge_type": "NEGATIVE_ASSERTS",
           "target": "nonclaim:no_epoch_00d_no_launch_no_mainnet"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0425_00b_blocked_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00a registered the non-sensitive local-build prompt for ilc-core 0.4.26 cbor2 pin hardening.",
+      "manual_read_summary": "Non-sensitive local-build prompt for ilc-core 0.4.26. It narrows cbor2 to >=5.9.0,<6, keeps cryptography unpinned below 50 due OSV advisories on 48.0.1, requires local build/twine/hash/wheel-content/dry-run/no-deps wheel-boundary smoke/focused tests, and forbids PyPI upload, signing, installer retarget, and mirror work.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-0426-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:GAP-PACKAGE-0426-00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_release_signing_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0426_00a_g10_local_build_cbor2_pin.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00b registered the sensitive publish/sign/mirror prompt drafted from the completed 0.4.26 local build receipt.",
+      "manual_read_summary": "Sensitive publish prompt for ilc-core 0.4.26. It requires exact GO phrase, 00a hash/size verification, Phase 1335 signing preimage assertions, PyPI upload/fetchback, yanking 0.4.24 and 0.4.25, installer retarget, helper tarball re-tag, public mirror refresh/push, and hard-stop on full clean fetchback failure.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-0426-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:GAP-PACKAGE-0426-00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:sensitive_go_required_before_publish_sign_yank_mirror"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "GOVERNS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0426_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00a registered the 0.4.26 local package build receipt.",
+      "manual_read_summary": "Build receipt for local ilc-core 0.4.26 wheel and sdist with cbor2>=5.9.0,<6, artifact hashes/sizes, 00b signing preimages, cbor2 dry-run proof, cryptography risk observation, verification summary, output token, and non-claims.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PACKAGE-0426-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0426-00a"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:package_0426_local_build_complete_GAP_PACKAGE_0426_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_release_signing_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0426_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00a registered the local build walkthrough.",
+      "manual_read_summary": "Walkthrough records token audit, source patch, artifact hashes/sizes, twine check, wheel content inspection, cbor2 dry-run proof, no-deps wheel-boundary smoke, focused tests, cryptography carry-forward risk, output token, and non-claims for GAP-PACKAGE-0426-00a.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-0426-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0426-00a"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:package_0426_local_build_complete_GAP_PACKAGE_0426_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_release_signing_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0426_00a_walkthrough.md"
     }
   ],
   "boundary": {
