@@ -3,15 +3,27 @@
   "phase": "GAP-PACKAGE-0425-00b",
   "completion_status": "blocked_after_upload",
   "blocked_at_utc": "2026-09-17T16:03:58Z",
+  "resume_blocker_confirmed_at_utc": "2026-09-17T16:21:04Z",
   "blocker": {
     "step": "fetchback_clean_dependency_install",
     "token": "pypi_fetchback_dependency_install_failed_cbor2_source_build_no_rust",
-    "summary": "Clean PyPI install of ilc-core==0.4.25 from a fresh venv outside the repo attempted to build cbor2 from source on Python 3.14 and failed because no Rust compiler is available. The phase prompt requires a hard stop rather than bypassing dependency resolution with --no-deps.",
+    "summary": "Clean PyPI install of ilc-core==0.4.25 from a fresh venv outside the repo attempted to build cbor2 from source and failed because no Rust compiler is available. The original attempt used the repo python3/Python 3.14. The corrected resume attempt used /usr/local/bin/python3.12 as directed, from a clean cwd, but pip still selected the cbor2==6.1.4 source distribution on this macOS x86_64 host and failed at the same Rust-compiler gate. The phase prompt requires a hard stop rather than bypassing dependency resolution with --no-deps.",
     "pip_failure_excerpt": [
       "Building wheel for cbor2 (pyproject.toml): finished with status 'error'",
       "error: can't find Rust compiler",
       "ERROR: Failed building wheel for cbor2"
     ],
+    "resume_attempt": {
+      "python_path": "/usr/local/bin/python3.12",
+      "python_version": "Python 3.12.13",
+      "pip_version": "pip 26.0",
+      "fetchback_cwd": "fresh /tmp/ilc-0425-fetchback-cwd.* directory",
+      "repo_path_injection": false,
+      "result": "blocked",
+      "failure": "pip selected cbor2-6.1.4.tar.gz and failed because no Rust compiler is available",
+      "binary_only_resolver_check": "python3.12 -m pip download --only-binary=:all: --no-deps cbor2==6.1.4 reported no matching binary distribution for this host",
+      "compatible_tag_sample": "cp312-cp312-macosx_15_0_x86_64"
+    },
     "follow_on_build_interrupted": "After the cbor2 hard stop was observed, pip moved on to a long cryptography source build. Codex interrupted the remaining build attempt because the phase hard stop had already fired."
   },
   "go_phrase": "GO Phase GAP-PACKAGE-0425-00b PUBLISH-AUTHORIZED",
