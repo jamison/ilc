@@ -1,0 +1,90 @@
+{
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-0425-00a",
+  "generated_at_utc": "2026-09-17T14:31:49.895088Z",
+  "release_id": "ilc-core-0.4.25",
+  "predecessor_release_id": "ilc-core-0.4.24",
+  "source_private_commit_before_version_bump": "5325c53350f84e862ad531e4d8f7ee7d3ab539f4",
+  "version_updates": {
+    "pyproject_toml": "0.4.25",
+    "ilc_core___init__": "0.4.25",
+    "tools_install_sh_retained_release_id": "ilc-core-0.4.24"
+  },
+  "preflight_fix1_modules": {
+    "ilc_core/economic_constants.py": "ILC_QUANTUM added to __all__",
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": "import source changed from epoch_emission_runtime to economic_constants"
+  },
+  "artifacts": {
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.25-py3-none-any.whl",
+      "sha256": "14157d8293612512ec3047f542501212fe5ba5c9adf25b2dee765c5e7d67b8ea",
+      "size_bytes": 1505169
+    },
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.25.tar.gz",
+      "sha256": "2189adf0136c01d6b18f9b585949cff980c2d82cbb2d15a8ce9a6e6bd602d5fe",
+      "size_bytes": 1229602
+    }
+  },
+  "artifact_content_checks": {
+    "ilc_core/economic_constants.py": true,
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": true,
+    "ilc_core/epoch/ecu_accrual_evidence.py": true,
+    "ilc_core/epoch/monthly_close_orchestrator.py": true,
+    "ilc_core/epoch/epoch_distribution_writer.py": true,
+    "ilc_core/epoch/epoch_maturity_gate.py": true,
+    "ilc_core/epoch/protocol_account_boundary.py": true,
+    "ilc_core/protocol/public_wallet_runtime.py": true
+  },
+  "verification": {
+    "dependency_floor": ".                                                                        [100%]\n1 passed, 12 deselected in 0.62s",
+    "build_tail": "adding 'ilc_core/value_action/local_signing_provider.py'\nadding 'ilc_core/work/task_queue.py'\nadding 'ilc_core-0.4.25.dist-info/licenses/LICENSE'\nadding 'ilc_core-0.4.25.dist-info/METADATA'\nadding 'ilc_core-0.4.25.dist-info/WHEEL'\nadding 'ilc_core-0.4.25.dist-info/entry_points.txt'\nadding 'ilc_core-0.4.25.dist-info/top_level.txt'\nadding 'ilc_core-0.4.25.dist-info/RECORD'\nremoving build/bdist.macosx-15.0-x86_64/wheel\nSuccessfully built ilc_core-0.4.25.tar.gz and ilc_core-0.4.25-py3-none-any.whl",
+    "twine_check": "Checking dist/ilc_core-0.4.25-py3-none-any.whl: PASSED\nChecking dist/ilc_core-0.4.25.tar.gz: PASSED",
+    "clean_outside_repo_venv_smoke": {
+      "status": "passed",
+      "tmpdir": "/tmp/ilc_0425_smoke_final.NQ351H",
+      "ilc_core_version": "0.4.25",
+      "ILC_QUANTUM": "0.000000001",
+      "C_MAX_ILC": "25920000",
+      "circular_import_fresh_process_cases_passed": 4,
+      "LIFECYCLE_C_MAX_ILC": "25920000",
+      "MONTHLY_CLOSE_ORCHESTRATOR_VERSION_import": true,
+      "MONTHLY_ISSUANCE_MATURITY_PROOF_REQUIRED_TOKEN_import": true,
+      "MonthlyIssuanceMaturityProof_import": true,
+      "protocol_account_boundary_pool_cdl029_genesis": true,
+      "WALLET_CLAIMABILITY_STATE_DEFERRED": "deferred",
+      "GENESIS_VALUE_GUARD_VERSION_import": true,
+      "load_and_verify_certificate_import": true,
+      "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
+      "INVITE_ENFORCEMENT_ENABLED": true
+    },
+    "circular_import_regression_test": "1 passed in 4.75s",
+    "correction_lane_tests": "43 passed, 1 warning in 3.10s",
+    "broader_regression_slice": "1 failed, 421 passed, 73 skipped, 16813 deselected, 2 warnings in 203.54s (0:03:23)",
+    "broader_regression_slice_known_stale_failure": "tests/test_phase_1560_preflight_blocker.py::test_status_and_planning_index_frontier_advanced_to_live_ceremony asserts a historical PLANNING_INDEX current-frontier marker that is absent in HEAD before this package phase; not introduced by 0.4.25 build changes.",
+    "prompt_validator": "VALID"
+  },
+  "output_token": "package_0425_local_build_complete_GAP_PACKAGE_0425_00a",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_manifest_signing",
+    "no_tools_install_sh_retarget_to_0425",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_launch_00_execution",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ]
+}

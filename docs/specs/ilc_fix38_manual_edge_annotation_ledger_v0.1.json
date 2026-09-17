@@ -81722,6 +81722,72 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0425_00a_g10_local_build_circular_import_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0425_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00a registered docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0425_00a_v0.1.json as package-build completion evidence.",
+      "manual_read_summary": "Build receipt for local ilc-core 0.4.25 wheel and sdist carrying PREFLIGHT-FIX1 circular-import fix, with hashes, sizes, smoke evidence, and non-claims.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00a"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:package_0425_local_build_complete_GAP_PACKAGE_0425_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_release_signing_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0425_00a_v0.1.json -> phase:GAP-PACKAGE-0425-00a",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0425_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0425_00a_completion_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00a registered docs/phases/phase_gap_package_0425_00a_walkthrough.md as package-build completion evidence.",
+      "manual_read_summary": "Walkthrough records token audit, MemPalace/repo search, version bump, local build, twine check, artifact hashes, outside-repo venv smoke, test results, output token, and non-claims for GAP-PACKAGE-0425-00a.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00a"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:package_0425_local_build_complete_GAP_PACKAGE_0425_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_public_mirror_push_no_epoch_smoke"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0425_00a_walkthrough.md"
     }
   ],
   "boundary": {
