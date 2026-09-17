@@ -1,0 +1,180 @@
+{
+  "artifacts": {
+    "cli_binary": {
+      "fetchback_verification": "pending_post_mirror_push",
+      "filename": "ilc-consensus-linux-x86_64-v0.4.26.tar.gz",
+      "github_release_tag": "v0.4.26",
+      "members": [
+        "bls_verify_digest",
+        "ilc_p2p_bridge",
+        "invite_pop_bls",
+        "keygen",
+        "validator_endpoint_assertion_bls",
+        "validator_harness"
+      ],
+      "reuse_decision": "re_tag_v0.4.24_v0.4.23_payload_no_rust_source_changes",
+      "sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+      "signing_status": "unsigned_sha256_size_bound_in_manifest_and_install_sh",
+      "size_bytes": 4560519,
+      "url": "https://github.com/jamison/ilc/releases/download/v0.4.26/ilc-consensus-linux-x86_64-v0.4.26.tar.gz"
+    },
+    "sdist": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/46/e5/f6ec2928b46795da5eefc74280c7617c38c7f94039c1ee5f58b57cc60a84/ilc_core-0.4.26.tar.gz",
+      "fetchback_sha256": "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446",
+      "fetchback_size_bytes": 1229923,
+      "filename": "ilc_core-0.4.26.tar.gz",
+      "local_sha256": "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446",
+      "local_size_bytes": 1229923,
+      "pypi_yanked": false
+    },
+    "wheel": {
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/a7/99/bfdf65106eceb62baa470e5785563d4196e904453547f76a97e7be88541f/ilc_core-0.4.26-py3-none-any.whl",
+      "fetchback_sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+      "fetchback_size_bytes": 1505486,
+      "filename": "ilc_core-0.4.26-py3-none-any.whl",
+      "local_sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+      "local_size_bytes": 1505486,
+      "pypi_yanked": false
+    }
+  },
+  "completion_status": "pending_public_mirror_and_helper_release_closure",
+  "generated_at_utc": "2026-09-17T19:44:54Z",
+  "github_helper_release": {
+    "status": "pending_step_20b_after_public_mirror_push"
+  },
+  "go_phrase": "GO Phase GAP-PACKAGE-0426-00b PUBLISH-AUTHORIZED",
+  "install_sh": {
+    "consensus_bin_sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+    "consensus_bin_size": "4560519",
+    "consensus_bin_url": "https://github.com/jamison/ilc/releases/download/v0.4.26/ilc-consensus-linux-x86_64-v0.4.26.tar.gz",
+    "installer_version": "GAP-PACKAGE-0426-00b",
+    "rc_release_envelope_ref": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json",
+    "rc_release_id": "ilc-core-0.4.26",
+    "rc_wheel_sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+    "rc_wheel_size": "1505486",
+    "rc_wheel_url": "https://files.pythonhosted.org/packages/a7/99/bfdf65106eceb62baa470e5785563d4196e904453547f76a97e7be88541f/ilc_core-0.4.26-py3-none-any.whl",
+    "tools_install_sh": "tools/install.sh"
+  },
+  "installable_release_manifest_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0426_GAP_PACKAGE_0426_00b_v0.1.json",
+  "local_artifact_verification": {
+    "00a_receipt": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0426_00a_v0.1.json",
+    "sdist_sha256": "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446",
+    "sdist_signed_preimage_sha256": "7720d52f9959dde74af5f3adba3521b85d30018df9aa9e215e65d6bdf92df798",
+    "sdist_size_bytes": 1229923,
+    "twine_check": "pass",
+    "wheel_sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+    "wheel_signed_preimage_sha256": "8939d00aa3cd5ec154384015fade780fc221d46004532582f44cdfdcf06e6279",
+    "wheel_size_bytes": 1505486
+  },
+  "non_claims": [
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_epoch_00d_retry",
+    "cli_binary_not_ed25519_signed_sha256_size_verified_instead",
+    "no_cdl098_materialization",
+    "no_mainnet_claim"
+  ],
+  "output_token": "package_0426_published_GAP_PACKAGE_0426_00b",
+  "output_token_emitted": false,
+  "phase": "GAP-PACKAGE-0426-00b",
+  "phase_yank_verification": {
+    "all_yanked": true,
+    "versions": {
+      "0.4.24": [
+        {
+          "filename": "ilc_core-0.4.24-py3-none-any.whl",
+          "sha256": "134f5e97cba2493c2ca2c7b6ced85b9fb9950bf60e4a2f1e0b7b766065643ef4",
+          "size": 1505126,
+          "url": "https://files.pythonhosted.org/packages/94/07/2d39e619b5fdb6ad181633c8b020cbda5c7ea9f0526dc5b731bbb6b52cb8/ilc_core-0.4.24-py3-none-any.whl",
+          "yanked": true,
+          "yanked_reason": "superseded by 0.4.26 which fixes cbor2<6 dependency pin and circular import between ecu_ilc_lifecycle_runtime, epoch __init__, and epoch_distribution_writer"
+        },
+        {
+          "filename": "ilc_core-0.4.24.tar.gz",
+          "sha256": "d47f40575c2e55273e45efb78d60e37fc90d3d5cdcc2e8b03f1e78739b11778e",
+          "size": 1229588,
+          "url": "https://files.pythonhosted.org/packages/0f/30/b8b09416a641bb07faf39d499b12e9a5dca9dc91178c72803694c1d71b6e/ilc_core-0.4.24.tar.gz",
+          "yanked": true,
+          "yanked_reason": "superseded by 0.4.26 which fixes cbor2<6 dependency pin and circular import between ecu_ilc_lifecycle_runtime, epoch __init__, and epoch_distribution_writer"
+        }
+      ],
+      "0.4.25": [
+        {
+          "filename": "ilc_core-0.4.25-py3-none-any.whl",
+          "sha256": "64b0cf48170787e317a38438a7800a6520b4098ed5c5103120bfc059d69caaf8",
+          "size": 1505495,
+          "url": "https://files.pythonhosted.org/packages/d4/ae/6eaff8aed61f9b5a61230f76067a76e8d2e1b9ef6f4cc418706a17519097/ilc_core-0.4.25-py3-none-any.whl",
+          "yanked": true,
+          "yanked_reason": "superseded by 0.4.26; 0.4.25 was uploaded to PyPI but never fetchback-verified due to cbor2 6.x build failure; 0.4.26 replaces it with the cbor2<6 pin ensuring cbor2 installability on all platforms"
+        },
+        {
+          "filename": "ilc_core-0.4.25.tar.gz",
+          "sha256": "f5e82067aec9b2a815d96b978745190db379a8cfad24e16c77b85e1919b05912",
+          "size": 1229868,
+          "url": "https://files.pythonhosted.org/packages/14/0a/6637da3531f8240f7d6ddc692d3a9439f398381cfab476a1aa62c0d54180/ilc_core-0.4.25.tar.gz",
+          "yanked": true,
+          "yanked_reason": "superseded by 0.4.26; 0.4.25 was uploaded to PyPI but never fetchback-verified due to cbor2 6.x build failure; 0.4.26 replaces it with the cbor2<6 pin ensuring cbor2 installability on all platforms"
+        }
+      ]
+    }
+  },
+  "predecessor_versions": [
+    "0.4.24",
+    "0.4.25"
+  ],
+  "public_mirror": {
+    "status": "pending_post_source_commit_and_mirror_push"
+  },
+  "pypi_fetchback": {
+    "cbor2_round_trip": "pass",
+    "cbor2_version": "5.9.0",
+    "clean_python312_install": "pass",
+    "cryptography_source_build_observed": "cryptography-50.0.1 built successfully from sdist in clean Python 3.12 fetchback venv",
+    "files": [
+      {
+        "filename": "ilc_core-0.4.26-py3-none-any.whl",
+        "sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+        "size": 1505486,
+        "url": "https://files.pythonhosted.org/packages/a7/99/bfdf65106eceb62baa470e5785563d4196e904453547f76a97e7be88541f/ilc_core-0.4.26-py3-none-any.whl",
+        "yanked": false,
+        "yanked_reason": null
+      },
+      {
+        "filename": "ilc_core-0.4.26.tar.gz",
+        "sha256": "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446",
+        "size": 1229923,
+        "url": "https://files.pythonhosted.org/packages/46/e5/f6ec2928b46795da5eefc74280c7617c38c7f94039c1ee5f58b57cc60a84/ilc_core-0.4.26.tar.gz",
+        "yanked": false,
+        "yanked_reason": null
+      }
+    ],
+    "fresh_process_imports": [
+      "from ilc_core.ledger import ecu_ilc_lifecycle_runtime",
+      "import ilc_core.ledger.ecu_ilc_lifecycle_runtime",
+      "from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntime",
+      "import ilc_core.epoch.epoch_distribution_writer"
+    ],
+    "hash_size_verification": "pass",
+    "version": "0.4.26"
+  },
+  "release_id": "ilc-core-0.4.26",
+  "release_signing": {
+    "release_envelope_set_path": "docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json",
+    "schema_version": "GAP_RELEASE_SIGN_00b_v0.2",
+    "sdist_signature_hex": "73309d80bc459b95b69fd247c622c44687bc7ea80e941101d28e5830b5ff4e84f5a196b275a2cc2ba84edcde721c93eefef6a438d3ae6210c51b272996962c00",
+    "signature_algorithm": "Ed25519",
+    "signed_preimage_algorithm": "sha256_of_canonical_json",
+    "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+    "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "verification": "pass",
+    "wheel_signature_hex": "3b573cbc7d99256f348979b85cabe8bc9c3ef32fac463d1c31100a49a154809915ce244b2c94ccd09ec67e1b1521fdafb7d6a5cea0d3c2fdef76823b4dd2920c"
+  },
+  "schema_version": "ilc_pypi_upload_receipt_GAP_PACKAGE_0426_00b.v0.1",
+  "source_private_commit": "pending_post_source_commit",
+  "source_private_commit_before_source_artifact_commit": "87c84d32ea8da1ad54a5c27bbb435b42c3d077a8"
+}
