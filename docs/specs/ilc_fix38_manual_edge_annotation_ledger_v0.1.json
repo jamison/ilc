@@ -81328,6 +81328,50 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_fix1_reconcile.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a-FIX1 walkthrough records classifier patch, corrected report counts, unchanged Atlas hash evidence, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough is the phase execution evidence for deduplicating the 00a Fix38 backlog classification report without writing the Atlas LMDB or performing Genesis signing.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a-FIX1"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/gap_cdl098_genesis_graph_materialization_0424_00a/backlog_classification_report.json"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:cdl098_classification_reconciled_GAP_CDL098_GENESIS_GRAPH_MATERIALIZATION_0424_00a_FIX1"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_atlas_lmdb_write_no_genesis_signing_no_public_rc_activation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUMMARIZES",
+        "ATTESTATION",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00a_fix1_walkthrough.md"
     }
   ],
   "boundary": {
