@@ -81372,6 +81372,44 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00a_fix1_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a-FIX1 audit hardening added focused classifier regression tests for duplicate metadata merging and LMDB source-path index validation.",
+      "manual_read_summary": "Focused tests cover raw versus unique bucket counts, merged duplicate edge metadata in not_registered_unique_entries, FIX1 reconciliation token presence, malformed source-path index rejection, and dangling source-path index rejection.",
+      "node_kind": "test_evidence_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/materialize/classify_fix38_backlog.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:cdl098_fix1_unique_backlog_metadata_not_first_duplicate_only"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:cdl098_fix1_source_path_index_malformed_rows_fail_closed"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_classify_fix38_backlog_fix1.py"
     }
   ],
   "boundary": {
