@@ -490,7 +490,10 @@ manifest = {
     "release_id": release_id,
 }
 envelope_set = read_envelope_set(envelope_ref)
-if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != "0.4.24":
+expected_version = release_id.removeprefix("ilc-core-")
+if expected_version == release_id or not expected_version:
+    fail("release_envelope_release_id_invalid")
+if envelope_set.get("schema_version") != SCHEMA_VERSION or envelope_set.get("version") != expected_version:
     fail("release_envelope_set_schema_version_invalid")
 expected_artifact_ids = {item["artifact_id"] for item in manifest["artifacts"]}
 if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
@@ -520,7 +523,7 @@ if [[ "${OS_NAME}" == "Linux" && ( "${ARCH_NAME}" == "x86_64" || "${ARCH_NAME}" 
   if [[ "${CONSENSUS_BIN_INSTALL_DIR}" == "/.ilc/bin" ]]; then
     die 1 "install_sh_consensus_binary_home_missing"
   fi
-  CONSENSUS_TARBALL="${TMP_DIR}/ilc-consensus-linux-x86_64-v0.4.24.tar.gz"
+  CONSENSUS_TARBALL="${TMP_DIR}/${CONSENSUS_BIN_URL##*/}"
   CONSENSUS_BIN_SIZE_CAP="$(( (CONSENSUS_BIN_SIZE * 11 + 9) / 10 ))"
   python3 - "${CONSENSUS_BIN_URL}" "${CONSENSUS_TARBALL}" "${CONSENSUS_BIN_SIZE_CAP}" <<'PY'
 import sys

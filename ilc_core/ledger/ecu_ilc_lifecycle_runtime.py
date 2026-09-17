@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from decimal import Decimal
 from typing import Any
 
@@ -24,6 +25,7 @@ LIFECYCLE_C_MAX_ILC = C_MAX_ILC
 LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN = "lifecycle_balance_exceeds_c_max"
 LIFECYCLE_MAX_AGENT_ID_BYTES = 256
 LIFECYCLE_MAX_EPOCH_ID_BYTES = 64
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 
 
 class EcuIlcLifecycleRuntimeError(ValueError):
@@ -80,11 +82,10 @@ class EcuIlcLifecycleRuntime:
         epoch_id: str,
         reward_delta_ilc: int | str | Decimal,
     ) -> dict[str, Any]:
-        _require_lifecycle_id(
+        _require_lifecycle_agent_id(
             agent_id,
             token="agent_id_required",
             max_bytes=LIFECYCLE_MAX_AGENT_ID_BYTES,
-            label="agent_id",
         )
         _require_lifecycle_id(
             epoch_id,
@@ -266,11 +267,23 @@ def _claimability_state(wallet_row: dict[str, Any]) -> str:
 
 
 def _require_lifecycle_id(value: object, *, token: str, max_bytes: int, label: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
         raise EcuIlcLifecycleRuntimeError(token, f"{label} must be a non-empty string")
     if len(value.encode("utf-8")) > max_bytes:
         raise EcuIlcLifecycleRuntimeError(token, f"{label} exceeds maximum byte length")
     return value
+
+
+def _require_lifecycle_agent_id(value: object, *, token: str, max_bytes: int) -> str:
+    agent_id = _require_lifecycle_id(
+        value,
+        token=token,
+        max_bytes=max_bytes,
+        label="agent_id",
+    )
+    if _AGENT_ID_RE.fullmatch(agent_id) is None:
+        raise EcuIlcLifecycleRuntimeError(token, "agent_id must be 96 lowercase hex")
+    return agent_id
 
 
 __all__ = [

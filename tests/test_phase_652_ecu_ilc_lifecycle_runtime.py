@@ -25,6 +25,7 @@ STATUS_PATH = Path("docs/phases/STATUS.md")
 DECISION_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 PHASE_652_SUBJECT_TOKEN = "phase 652 ecu/ilc lifecycle runtime"
 PHASE_652_BACKFILL_SUBJECT_TOKEN = "phase 652 walkthrough and status backfill"
+AGENT_ID = "a" * 96
 ALLOWED_MAIN_PREFIXES = {
     str(DOC_PATH),
     str(TEST_PATH),
@@ -101,8 +102,8 @@ def test_runtime_doc_contains_required_tokens() -> None:
 def test_visible_ecu_surface_is_read_only() -> None:
     app = create_app()
     with TestClient(app):
-        app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "10.5")
-        payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
+        app.state.ecu_active_layer_runtime.set_accrued_ecu(AGENT_ID, "10.5")
+        payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id=AGENT_ID)["data"]
         assert payload["balance_ecu"] == "10.5"
         assert payload["balance_ilc"] == "0"
         for forbidden_field in (
@@ -117,20 +118,20 @@ def test_visible_ecu_surface_is_read_only() -> None:
 def test_delayed_visible_ilc_appears_only_after_epoch_commit() -> None:
     app = create_app()
     with TestClient(app):
-        app.state.ecu_active_layer_runtime.set_accrued_ecu("agent-a", "4")
-        before_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
+        app.state.ecu_active_layer_runtime.set_accrued_ecu(AGENT_ID, "4")
+        before_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id=AGENT_ID)["data"]
         assert before_payload["balance_ilc"] == "0"
         assert before_payload["last_settled_epoch_id"] is None
         assert before_payload["latest_balance_receipt"] is None
 
         commit_result = app.state.public_lifecycle_runtime.commit_settled_epoch(
-            agent_id="agent-a",
+            agent_id=AGENT_ID,
             epoch_id="epoch-001",
             reward_delta_ilc="3.25",
         )
         assert commit_result["token"] == "lifecycle_epoch_commit_applied"
 
-        after_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")["data"]
+        after_payload = app.state.public_lifecycle_runtime.lifecycle_status(agent_id=AGENT_ID)["data"]
         assert after_payload["balance_ilc"] == "3.25"
         assert after_payload["last_settled_epoch_id"] == "epoch-001"
         assert after_payload["latest_balance_receipt"]["settlement_status"] == "applied"
@@ -140,14 +141,14 @@ def test_same_epoch_same_delta_is_idempotent_and_conflicting_replay_fails_closed
     app = create_app()
     with TestClient(app):
         first = app.state.public_lifecycle_runtime.commit_settled_epoch(
-            agent_id="agent-a",
+            agent_id=AGENT_ID,
             epoch_id="epoch-001",
             reward_delta_ilc="3.25",
         )
         assert first["token"] == "lifecycle_epoch_commit_applied"
 
         replay = app.state.public_lifecycle_runtime.commit_settled_epoch(
-            agent_id="agent-a",
+            agent_id=AGENT_ID,
             epoch_id="epoch-001",
             reward_delta_ilc="3.25",
         )
@@ -156,13 +157,13 @@ def test_same_epoch_same_delta_is_idempotent_and_conflicting_replay_fails_closed
 
         with pytest.raises(Exception) as exc_info:
             app.state.public_lifecycle_runtime.commit_settled_epoch(
-                agent_id="agent-a",
+                agent_id=AGENT_ID,
                 epoch_id="epoch-001",
                 reward_delta_ilc="4.00",
             )
         assert getattr(exc_info.value, "token", None) == "lifecycle_epoch_replay_conflict"
 
-        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")
+        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id=AGENT_ID)
         assert status["data"]["balance_ilc"] == "3.25"
 
 
@@ -170,11 +171,11 @@ def test_numeric_epoch_history_sorts_numerically_not_lexicographically() -> None
     app = create_app()
     with TestClient(app):
         runtime = app.state.public_lifecycle_runtime
-        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="10", reward_delta_ilc="1")
-        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="2", reward_delta_ilc="1")
-        runtime.commit_settled_epoch(agent_id="agent-a", epoch_id="1", reward_delta_ilc="1")
+        runtime.commit_settled_epoch(agent_id=AGENT_ID, epoch_id="10", reward_delta_ilc="1")
+        runtime.commit_settled_epoch(agent_id=AGENT_ID, epoch_id="2", reward_delta_ilc="1")
+        runtime.commit_settled_epoch(agent_id=AGENT_ID, epoch_id="1", reward_delta_ilc="1")
 
-        history = runtime.lifecycle_snapshot(agent_id="agent-a")["wallet_history"]["balance_history"]
+        history = runtime.lifecycle_snapshot(agent_id=AGENT_ID)["wallet_history"]["balance_history"]
         assert [entry["epoch_id"] for entry in history] == ["1", "2", "10"]
 
 
@@ -183,7 +184,7 @@ def test_lifecycle_rejects_balance_above_cmax() -> None:
     with TestClient(app):
         with pytest.raises(Exception) as exc_info:
             app.state.public_lifecycle_runtime.commit_settled_epoch(
-                agent_id="agent-a",
+                agent_id=AGENT_ID,
                 epoch_id="epoch-001",
                 reward_delta_ilc="25920000.000000001",
             )
@@ -195,7 +196,7 @@ def test_lifecycle_rejects_subquantum_reward_delta() -> None:
     with TestClient(app):
         with pytest.raises(Exception) as exc_info:
             app.state.public_lifecycle_runtime.commit_settled_epoch(
-                agent_id="agent-a",
+                agent_id=AGENT_ID,
                 epoch_id="epoch-001",
                 reward_delta_ilc="0.0000000001",
             )
@@ -215,11 +216,43 @@ def test_lifecycle_rejects_oversized_agent_and_epoch_ids() -> None:
 
         with pytest.raises(Exception) as epoch_exc:
             app.state.public_lifecycle_runtime.commit_settled_epoch(
-                agent_id="agent-a",
+                agent_id=AGENT_ID,
                 epoch_id="e" * (LIFECYCLE_MAX_EPOCH_ID_BYTES + 1),
                 reward_delta_ilc="1",
             )
         assert getattr(epoch_exc.value, "token", None) == "epoch_id_required"
+
+
+def test_lifecycle_rejects_whitespace_padded_ids() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as agent_exc:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id=f" {AGENT_ID} ",
+                epoch_id="epoch-001",
+                reward_delta_ilc="1",
+            )
+        assert getattr(agent_exc.value, "token", None) == "agent_id_required"
+
+        with pytest.raises(Exception) as epoch_exc:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id=AGENT_ID,
+                epoch_id=" epoch-001 ",
+                reward_delta_ilc="1",
+            )
+        assert getattr(epoch_exc.value, "token", None) == "epoch_id_required"
+
+
+def test_lifecycle_rejects_non_canonical_agent_id_format() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id="agent-a",
+                epoch_id="epoch-001",
+                reward_delta_ilc="1",
+            )
+        assert getattr(exc_info.value, "token", None) == "agent_id_required"
 
 
 def test_lifecycle_cmax_imports_epoch_emission_cmax() -> None:
@@ -275,11 +308,11 @@ def test_phase_1378_closes_public_lifecycle_http_routes() -> None:
 def test_claimability_remains_deferred_and_non_finite_inputs_fail_closed() -> None:
     app = create_app()
     with TestClient(app):
-        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id="agent-a")
+        status = app.state.public_lifecycle_runtime.lifecycle_status(agent_id=AGENT_ID)
         assert status["data"]["claimability_state"] == "deferred"
         with pytest.raises(Exception) as exc_info:
             app.state.public_lifecycle_runtime.commit_settled_epoch(
-                agent_id="agent-a",
+                agent_id=AGENT_ID,
                 epoch_id="epoch-001",
                 reward_delta_ilc="Infinity",
             )

@@ -12,18 +12,20 @@
   },
   "preflight_fix1_modules": {
     "ilc_core/economic_constants.py": "ILC_QUANTUM added to __all__",
-    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": "import source changed from epoch_emission_runtime to economic_constants"
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py": "import source changed from epoch_emission_runtime to economic_constants and direct commit AgentID validation now requires 96 lowercase hex",
+    "ilc_core/epoch/epoch_emission_runtime.py": "ILC_QUANTUM re-export now imports the canonical economic_constants object",
+    "ilc_core/value_action/action_nonce_store.py": "next_nonce now advances from max issued-or-consumed counter"
   },
   "artifacts": {
     "python_wheel": {
       "path": "dist/ilc_core-0.4.25-py3-none-any.whl",
-      "sha256": "14157d8293612512ec3047f542501212fe5ba5c9adf25b2dee765c5e7d67b8ea",
-      "size_bytes": 1505169
+      "sha256": "64b0cf48170787e317a38438a7800a6520b4098ed5c5103120bfc059d69caaf8",
+      "size_bytes": 1505495
     },
     "python_sdist": {
       "path": "dist/ilc_core-0.4.25.tar.gz",
-      "sha256": "2189adf0136c01d6b18f9b585949cff980c2d82cbb2d15a8ce9a6e6bd602d5fe",
-      "size_bytes": 1229602
+      "sha256": "f5e82067aec9b2a815d96b978745190db379a8cfad24e16c77b85e1919b05912",
+      "size_bytes": 1229868
     }
   },
   "artifact_content_checks": {
@@ -57,6 +59,21 @@
       "load_and_verify_certificate_import": true,
       "VALIDATOR_ADMISSION_NOT_ACTIVATED": true,
       "INVITE_ENFORCEMENT_ENABLED": true
+    },
+    "post_audit_rebuild": {
+      "reason": "Audit hardening completed ILC_QUANTUM single-source cleanup, lifecycle AgentID validation, and nonce issuance hardening after the first 00a build; local 0.4.25 artifacts were rebuilt so 00b cannot publish the stale wheel.",
+      "twine_check": "Checking dist/ilc_core-0.4.25-py3-none-any.whl: PASSED\nChecking dist/ilc_core-0.4.25.tar.gz: PASSED",
+      "wheel_imports_canonical_quantum": true,
+      "wheel_duplicate_quantum_assignment": false,
+      "wheel_lifecycle_agent_id_regex_present": true,
+      "wheel_nonce_uses_max_issued_or_consumed_counter": true,
+      "rebuilt_wheel_import_smoke": {
+        "status": "passed",
+        "ilc_core_path": "/private/tmp/ilc-0425-final-wheel-venv.d88a1l/lib/python3.14/site-packages/ilc_core/__init__.py",
+        "dependency_source": "project venv dependencies added after temp wheel site-packages; ilc_core itself resolved from rebuilt wheel",
+        "fresh_process_circular_import_cases_passed": 4
+      },
+      "full_dependency_reinstall_note": "Full temp-venv dependency install on local python3/python3.12 attempted to build cbor2 from source and failed without Rust; 00b fetchback remains required to install with dependencies from PyPI and must hard-stop on any dependency install failure."
     },
     "circular_import_regression_test": "1 passed in 4.75s",
     "correction_lane_tests": "43 passed, 1 warning in 3.10s",

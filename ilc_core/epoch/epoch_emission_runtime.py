@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, localcontext
 from typing import Any
 
-from ilc_core.economic_constants import C_MAX_ILC
+from ilc_core.economic_constants import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 EPOCH_EMISSION_RUNTIME_VERSION = "epoch_emission_runtime_1345.v0.1"
@@ -26,7 +26,6 @@ VALIDATION_EPOCH_SECONDS = 60
 # The 480-epoch value remains the disclosed quote horizon. B0 normalization uses
 # the exact infinite geometric series so the monthly tail does not over-issue.
 ISSUANCE_SCHEDULE_HORIZON_EPOCHS = 480
-ILC_QUANTUM = Decimal("0.000000001")
 DECIMAL_PRECISION = 80
 
 PRODUCTION_MINTING_NOT_ACTIVATED_TOKEN = "production_minting_not_activated_phase_1345"

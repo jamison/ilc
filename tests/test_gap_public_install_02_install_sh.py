@@ -29,6 +29,18 @@ EXPECTED_URL = (
 )
 EXPECTED_SHA256 = "134f5e97cba2493c2ca2c7b6ced85b9fb9950bf60e4a2f1e0b7b766065643ef4"
 EXPECTED_SIZE = "1505126"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.24"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0424@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0424@phase-1628"
+EXPECTED_SDIST_SHA256 = "d47f40575c2e55273e45efb78d60e37fc90d3d5cdcc2e8b03f1e78739b11778e"
+EXPECTED_SDIST_SIZE = "1229588"
+EXPECTED_RELEASE_ENVELOPE_REF = (
+    "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
+    "ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+)
+EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
+    "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
+)
 EXPECTED_CONSENSUS_URL = (
     "https://github.com/jamison/ilc/releases/download/v0.4.24/"
     "ilc-consensus-linux-x86_64-v0.4.24.tar.gz"
@@ -356,6 +368,29 @@ def test_install_sh_manifest_sync_fails_on_tmp_wheel_mismatch(tmp_path: Path) ->
         },
     )
     with pytest.raises(ValueError, match="TMP_WHEEL"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "token"),
+    [
+        (EXPECTED_RELEASE_ID, "ilc-core-9.9.9", "RC_RELEASE_ID"),
+        (EXPECTED_WHEEL_ARTIFACT_ID, "ilc-artifact:ilc-core-python-wheel-9999@phase-1628", "RC_WHEEL_ARTIFACT_ID"),
+        (EXPECTED_SDIST_ARTIFACT_ID, "ilc-artifact:ilc-core-python-sdist-9999@phase-1628", "RC_SDIST_ARTIFACT_ID"),
+        (EXPECTED_SDIST_SHA256, "0" * 64, "RC_SDIST_SHA256"),
+        (f'RC_SDIST_SIZE="{EXPECTED_SDIST_SIZE}"', 'RC_SDIST_SIZE="1"', "RC_SDIST_SIZE"),
+        (EXPECTED_RELEASE_ENVELOPE_REF, "https://example.invalid/envelopes.json", "DEFAULT_RC_RELEASE_ENVELOPE_REF"),
+        (EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX, "0" * 64, "RC_RELEASE_SIGNER_PUBLIC_KEY_HEX"),
+    ],
+)
+def test_install_sh_manifest_sync_validates_signature_fields(
+    tmp_path: Path,
+    old: str,
+    new: str,
+    token: str,
+) -> None:
+    bad_script = _copy_script(tmp_path, replacements={old: new})
+    with pytest.raises(ValueError, match=token):
         verify_install_sh_manifest_sync(bad_script, MANIFEST)
 
 

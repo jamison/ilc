@@ -16,6 +16,13 @@ _SYNCED_ASSIGNMENT_NAMES = frozenset(
         "RC_WHEEL_URL",
         "RC_WHEEL_SHA256",
         "RC_WHEEL_SIZE",
+        "RC_RELEASE_ID",
+        "RC_WHEEL_ARTIFACT_ID",
+        "RC_SDIST_ARTIFACT_ID",
+        "RC_SDIST_SHA256",
+        "RC_SDIST_SIZE",
+        "DEFAULT_RC_RELEASE_ENVELOPE_REF",
+        "RC_RELEASE_SIGNER_PUBLIC_KEY_HEX",
         "RC_MIN_PYTHON_MINOR",
         "TMP_WHEEL",
         "CONSENSUS_BIN_URL",
@@ -59,6 +66,13 @@ def _cli_binary_record(manifest: dict[str, Any]) -> dict[str, Any]:
         if record.get("channel") == "rc" and record.get("artifact_type") == "cli_binary":
             return record
     raise ValueError("install_sh_manifest_sync_failed:cli_binary_record_missing")
+
+
+def _sdist_record(manifest: dict[str, Any]) -> dict[str, Any]:
+    for record in manifest.get("artifacts", []):
+        if record.get("channel") == "rc" and record.get("artifact_type") == "python_sdist":
+            return record
+    raise ValueError("install_sh_manifest_sync_failed:python_sdist_record_missing")
 
 
 def _require_sync(
@@ -106,6 +120,10 @@ def verify_install_sh_manifest_sync(
     canonical_hash = record["canonical_hash"]
     if not canonical_hash.startswith("sha256:"):
         raise ValueError("install_sh_manifest_sync_failed:canonical_hash_prefix")
+    sdist = _sdist_record(manifest)
+    sdist_hash = sdist["canonical_hash"]
+    if not sdist_hash.startswith("sha256:"):
+        raise ValueError("install_sh_manifest_sync_failed:sdist_canonical_hash_prefix")
     cli_binary = _cli_binary_record(manifest)
     cli_binary_hash = cli_binary["canonical_hash"]
     if not cli_binary_hash.startswith("sha256:"):
@@ -125,6 +143,41 @@ def verify_install_sh_manifest_sync(
         assignments,
         shell_field="RC_WHEEL_SIZE",
         expected=str(record["size_bytes"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_RELEASE_ID",
+        expected=str(manifest["release_id"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_WHEEL_ARTIFACT_ID",
+        expected=str(record["artifact_id"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_SDIST_ARTIFACT_ID",
+        expected=str(sdist["artifact_id"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_SDIST_SHA256",
+        expected=sdist_hash.removeprefix("sha256:"),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_SDIST_SIZE",
+        expected=str(sdist["size_bytes"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="DEFAULT_RC_RELEASE_ENVELOPE_REF",
+        expected=str(manifest["release_envelope_ref"]),
+    )
+    _require_sync(
+        assignments,
+        shell_field="RC_RELEASE_SIGNER_PUBLIC_KEY_HEX",
+        expected=str(manifest["signer_public_key_hex"]),
     )
     min_python_version = str(record["min_python_version"])
     _require_sync(

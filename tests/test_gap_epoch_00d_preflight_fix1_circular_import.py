@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from decimal import Decimal
 
 
 CASES = [
@@ -26,3 +27,11 @@ def test_fresh_process_imports_succeed() -> None:
             f"Fresh-process import failed for: {statement!r}\n"
             f"stderr: {result.stderr}"
         )
+
+
+def test_ilc_quantum_single_source_matches_epoch_export() -> None:
+    from ilc_core.economic_constants import ILC_QUANTUM as economic_quantum
+    from ilc_core.epoch.epoch_emission_runtime import ILC_QUANTUM as epoch_quantum
+
+    assert economic_quantum == Decimal("0.000000001")
+    assert epoch_quantum is economic_quantum
