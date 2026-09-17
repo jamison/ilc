@@ -81410,6 +81410,84 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "tests/test_classify_fix38_backlog_fix1.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00b_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b added the local Atlas materialization helper for the FIX1-reconciled Fix38 backlog.",
+      "manual_read_summary": "Tool validates the FIX1 report token and ledger count, groups unique backlog entries for safe-writer registration, skips absent/out paths, materializes only writer-accepted proposed edges with existing targets, records skipped edge reasons, validates Atlas invariants, and emits the phase materialization receipt.",
+      "node_kind": "tooling_source_file_node",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "out/gap_cdl098_genesis_graph_materialization_0424_00a/backlog_classification_report.json"
+        },
+        {
+          "edge_type": "EMITS",
+          "target": "out/gap_cdl098_genesis_graph_materialization_0424_00b/materialization_receipt.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "DEPENDS_ON",
+        "EMITS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/materialize/register_fix38_backlog.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_00b_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b walkthrough records the sensitive Atlas LMDB materialization evidence and non-claims.",
+      "manual_read_summary": "Walkthrough records the exact GO, token audit, preflight counts, pre/post Atlas hashes, safe-writer registration output, sanitized proposed-edge skip accounting, invariant validation, receipt verification, STATUS output token, and public-launch non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00b"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/gap_cdl098_genesis_graph_materialization_0424_00b/materialization_receipt.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_genesis_signing_no_public_rc_activation_no_settlement_no_epoch_advance"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "SUMMARIZES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00b_walkthrough.md"
     }
   ],
   "boundary": {
