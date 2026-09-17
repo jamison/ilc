@@ -81788,6 +81788,52 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0425_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0425_00b_prompt_hardening_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b prompt drafted and hardened for sensitive 0.4.25 publish, release signing, 0.4.24 yank, installer retarget, helper tarball re-tag, and public mirror refresh.",
+      "manual_read_summary": "Sensitive publish prompt for ilc-core 0.4.25. It requires exact Genesis GO, canonical @phase-1628 artifact IDs, offline Phase 1335 Ed25519 signature verification, local artifact verification against the 00a receipt, PyPI live-state checks, 0.4.24 yank verification, no local private-key search/use unless Genesis explicitly supplies ceremony material, helper tarball re-tag evidence, installer retargeting, public mirror preflight, denylist/PUBLIC_RC_EXCLUDE scans, and public raw-GitHub fetchback before output token emission.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0425_local_build_complete_GAP_PACKAGE_0425_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0424_published_GAP_PACKAGE_0424_00B"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:epoch_00d_preflight_fix1_complete_GAP_PUBLIC_RC_EPOCH_00d_PREFLIGHT_FIX1"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:PUBLIC_RC_EXCLUDE"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_epoch_00d_no_launch_no_vps_mutation_no_value_path_mutation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "CLASSIFIED_BY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0425_00b_g10_pypi_upload_sign_mirror.md"
     }
   ],
   "boundary": {
