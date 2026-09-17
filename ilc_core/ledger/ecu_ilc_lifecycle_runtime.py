@@ -8,7 +8,7 @@ import json
 from decimal import Decimal
 from typing import Any
 
-from ilc_core.epoch.epoch_emission_runtime import C_MAX_ILC, ILC_QUANTUM
+from ilc_core.economic_constants import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.exact_numeric import (
     ZERO,

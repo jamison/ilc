@@ -81488,6 +81488,202 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_cdl098_genesis_graph_materialization_0424_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_preflight_fix1_g10_circular_import_fix.md as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "Non-sensitive phase prompt for breaking the EPOCH-00d circular import by moving lifecycle runtime constants imports to economic_constants and adding fresh-process import regression coverage.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:PUBLIC_RC_EXCLUDE"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_write_no_epoch_smoke_no_public_mirror_push"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "CLASSIFIED_BY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_preflight_fix1_g10_circular_import_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "EPOCH-00d sensitive smoke prompt hardened to require the PREFLIGHT-FIX1 completion token and corrected validator AgentID / Track 3 evidence semantics.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:epoch_00d_preflight_fix1_complete_GAP_PUBLIC_RC_EPOCH_00d_PREFLIGHT_FIX1"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:PUBLIC_RC_EXCLUDE"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_preflight_token_no_value_path_execution"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "DEPENDS_ON",
+        "CLASSIFIED_BY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered ilc_core/economic_constants.py as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "Dependency-light economic constants module now exports ILC_QUANTUM alongside C_MAX_ILC so ledger lifecycle runtime no longer imports epoch package at module load time.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:dependency_light_cmax_ilc_quantum_constants"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_economic_value_change"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REGRESSES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed:ilc_core/economic_constants.py -> phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1",
+      "repo_path": "ilc_core/economic_constants.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered ilc_core/ledger/ecu_ilc_lifecycle_runtime.py as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "ECU/ILC lifecycle runtime import source changed from epoch_emission_runtime to economic_constants to break the fresh-process circular import while preserving C_MAX_ILC and ILC_QUANTUM values.",
+      "node_kind": "runtime_module",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:ecu_ilc_lifecycle_runtime_no_top_level_ilc_core_epoch_import"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed:ilc_core/ledger/ecu_ilc_lifecycle_runtime.py -> phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1",
+      "repo_path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered tests/test_gap_epoch_00d_preflight_fix1_circular_import.py as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "Fresh-process import regression test covering lifecycle runtime imports, PublicWalletRuntime import, and epoch_distribution_writer import after the circular-import fix.",
+      "node_kind": "test_evidence_node",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/protocol/public_wallet_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:fresh_process_imports_no_circular_import"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_epoch_00d_preflight_fix1_circular_import.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_preflight_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1 registered docs/phases/phase_gap_public_rc_epoch_00d_preflight_fix1_walkthrough.md as part of the circular-import preflight fix before EPOCH-00d.",
+      "manual_read_summary": "Walkthrough records PREFLIGHT-FIX1 execution, verification output, output token, non-claims, and package-cycle carry-forward before EPOCH-00d.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d-PREFLIGHT-FIX1"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "token:epoch_00d_preflight_fix1_complete_GAP_PUBLIC_RC_EPOCH_00d_PREFLIGHT_FIX1"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_write_no_public_mirror_push_no_epoch_smoke"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "ATTESTATION",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00d_preflight_fix1_walkthrough.md"
     }
   ],
   "boundary": {

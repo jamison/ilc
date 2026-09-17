@@ -6,5 +6,6 @@ from __future__ import annotations
 from decimal import Decimal
 
 C_MAX_ILC = Decimal("25920000")
+ILC_QUANTUM = Decimal("0.000000001")
 
-__all__ = ["C_MAX_ILC"]
+__all__ = ["C_MAX_ILC", "ILC_QUANTUM"]
