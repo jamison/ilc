@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """ILC Protocol Core package metadata."""
 
-__version__ = "0.4.25"
+__version__ = "0.4.26"
 
 __all__ = ["__version__"]

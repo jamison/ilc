@@ -1,0 +1,92 @@
+{
+  "artifacts": {
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.26.tar.gz",
+      "sha256": "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446",
+      "size_bytes": 1229923
+    },
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.26-py3-none-any.whl",
+      "sha256": "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a",
+      "size_bytes": 1505486
+    }
+  },
+  "cbor2_dep_resolution_proof": {
+    "dry_run_cbor2_lines": [
+      "Collecting cbor2<6,>=5.9.0 (from ilc-core==0.4.26)",
+      "Downloading cbor2-5.9.0-py3-none-any.whl.metadata (5.5 kB)",
+      "Would install ... cbor2-5.9.0 ... ilc-core-0.4.26 ..."
+    ],
+    "resolved_version": "cbor2-5.9.0",
+    "source_build_required_for_cbor2": false,
+    "wheel_type": "py3-none-any"
+  },
+  "changes_from_0425": [
+    "pyproject.toml: version 0.4.25 -> 0.4.26",
+    "pyproject.toml: all six cbor2>=5.0.0 constraints narrowed to cbor2>=5.9.0,<6",
+    "ilc_core/__init__.py: __version__ 0.4.25 -> 0.4.26"
+  ],
+  "dependency_risk_observation": {
+    "cryptography_constraint_left_unchanged": "cryptography>=48.0.0",
+    "dry_run_observed": "cryptography-50.0.1.tar.gz metadata preparation occurred during dry-run",
+    "not_pinned_below_50_reason": "OSV reports active advisories affecting cryptography 48.0.1; downgrading to the wheel-backed 48.x line would be a security regression.",
+    "osv_ids_for_48_0_1": [
+      "GHSA-g6cj-pr64-35w5",
+      "GHSA-jwv3-5hgf-82ww",
+      "GHSA-m2h6-j472-rp4c",
+      "PYSEC-2026-3552",
+      "PYSEC-2026-3553",
+      "PYSEC-2026-3554"
+    ],
+    "publication_instruction": "GAP-PACKAGE-0426-00b full fetchback must hard-stop if cryptography source-build failure prevents a clean public install."
+  },
+  "generated_at_utc": "2026-09-17T17:36:43Z",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_tools_install_sh_retarget",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_launch_00_execution",
+    "no_validator_admission_activation",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_full_dependency_install_claim"
+  ],
+  "output_token": "package_0426_local_build_complete_GAP_PACKAGE_0426_00a",
+  "phase": "GAP-PACKAGE-0426-00a",
+  "phase_completion_commit": "recorded by this completion commit",
+  "predecessor_00b_suspended": "GAP-PACKAGE-0425-00b suspended/superseded; ilc-core==0.4.25 remains on PyPI and must be yanked in GAP-PACKAGE-0426-00b alongside 0.4.24 after 0.4.26 publication succeeds.",
+  "predecessor_release_id": "ilc-core-0.4.25",
+  "reason": "cbor2>=5.0.0 without upper bound resolves cbor2==6.1.4 which has no binary wheel for Intel macOS Python 3.12 and fails to source-build without a compiler; tools/install.sh resolves cbor2 as a dependency so this is a user-facing install failure; 5.9.0 floor chosen as CVE-patched baseline per CVE-2024-26134/CVE-2026-26209 advisories.",
+  "release_id": "ilc-core-0.4.26",
+  "release_signing_preimages_for_00b": {
+    "sdist_artifact_id": "ilc-artifact:ilc-core-python-sdist-0426@phase-1628",
+    "sdist_signed_preimage_sha256": "7720d52f9959dde74af5f3adba3521b85d30018df9aa9e215e65d6bdf92df798",
+    "wheel_artifact_id": "ilc-artifact:ilc-core-python-wheel-0426@phase-1628",
+    "wheel_signed_preimage_sha256": "8939d00aa3cd5ec154384015fade780fc221d46004532582f44cdfdcf06e6279"
+  },
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "source_private_commit_before_version_bump": "3654cb2d7b98ceb1c47b135b60f9a8b4a17cd6f1",
+  "verification": {
+    "cbor2_dry_run_proof": "cbor2-5.9.0 resolved; no cbor2 6.x; no cbor2 source build",
+    "focused_tests": "108 passed, 1 warning in 30.31s",
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b": "VALID",
+    "twine_check": "PASSED",
+    "wheel_boundary_smoke_no_deps": {
+      "dependency_install_claim": false,
+      "ilc_core_version": "0.4.26",
+      "status": "passed"
+    },
+    "wheel_content_inspection": "PASSED"
+  }
+}
