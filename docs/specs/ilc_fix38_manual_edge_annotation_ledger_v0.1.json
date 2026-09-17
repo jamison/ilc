@@ -81684,6 +81684,44 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_epoch_00d_preflight_fix1_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0425_00a_prompt_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00a prompt drafted to build ilc-core 0.4.25 locally after PREFLIGHT-FIX1 circular-import fix.",
+      "manual_read_summary": "Non-sensitive local build prompt for bumping ilc-core from 0.4.24 to 0.4.25, building wheel/sdist, running twine check, outside-repo clean-venv smoke, focused regression tests, and recording package build evidence without PyPI upload or public mirror push.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:epoch_00d_preflight_fix1_complete_GAP_PUBLIC_RC_EPOCH_00d_PREFLIGHT_FIX1"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:PUBLIC_RC_EXCLUDE"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_pypi_upload_no_public_mirror_push_no_vps_mutation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "DEPENDS_ON",
+        "CLASSIFIED_BY",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0425_00a_g10_local_build_circular_import_fix.md"
     }
   ],
   "boundary": {
