@@ -1,0 +1,119 @@
+{
+  "schema_version": "ilc_pypi_upload_receipt_GAP_PACKAGE_0425_00b.partial.v0.1",
+  "phase": "GAP-PACKAGE-0425-00b",
+  "completion_status": "blocked_after_upload",
+  "blocked_at_utc": "2026-09-17T16:03:58Z",
+  "blocker": {
+    "step": "fetchback_clean_dependency_install",
+    "token": "pypi_fetchback_dependency_install_failed_cbor2_source_build_no_rust",
+    "summary": "Clean PyPI install of ilc-core==0.4.25 from a fresh venv outside the repo attempted to build cbor2 from source on Python 3.14 and failed because no Rust compiler is available. The phase prompt requires a hard stop rather than bypassing dependency resolution with --no-deps.",
+    "pip_failure_excerpt": [
+      "Building wheel for cbor2 (pyproject.toml): finished with status 'error'",
+      "error: can't find Rust compiler",
+      "ERROR: Failed building wheel for cbor2"
+    ],
+    "follow_on_build_interrupted": "After the cbor2 hard stop was observed, pip moved on to a long cryptography source build. Codex interrupted the remaining build attempt because the phase hard stop had already fired."
+  },
+  "go_phrase": "GO Phase GAP-PACKAGE-0425-00b PUBLISH-AUTHORIZED",
+  "source_private_commits": {
+    "hardening_commit": "eee7ca711e7dcb6e9bfa7a6b434fd6ac404fc0b3",
+    "go_receipt_commit": "2369b61e5"
+  },
+  "local_artifact_verification": {
+    "00a_receipt": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0425_00a_v0.1.json",
+    "twine_check": "pass",
+    "wheel": {
+      "path": "dist/ilc_core-0.4.25-py3-none-any.whl",
+      "sha256": "64b0cf48170787e317a38438a7800a6520b4098ed5c5103120bfc059d69caaf8",
+      "size_bytes": 1505495
+    },
+    "sdist": {
+      "path": "dist/ilc_core-0.4.25.tar.gz",
+      "sha256": "f5e82067aec9b2a815d96b978745190db379a8cfad24e16c77b85e1919b05912",
+      "size_bytes": 1229868
+    }
+  },
+  "release_signing": {
+    "verification": "pass",
+    "signature_algorithm": "Ed25519",
+    "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "wheel_signed_preimage_sha256": "4c9b746d4945955eacde9e8ebd9cabf7d24f3cc964a4a056111e46013fea24ce",
+    "sdist_signed_preimage_sha256": "88b1921a97771428000d4ccacd65218af838122be74236a49c35fc9cefc82202",
+    "wheel_signature_hex": "7f750899385c3f8caa8af09ef9c5db9038df2cf2c1caed39d0c61e5bcf7784986a7a624758e453b134a1e636913e2f87afafde16c7bd8df813f82791be544b05",
+    "sdist_signature_hex": "31685e91ebcbfd1ef8f41f92fe32164d24c2c7a2b03eb6ad5dabe74d2bb69895f46a691e053d7e02368d30346f5b8f4f91ab72cf1edfa399d68f5997fe8b9600"
+  },
+  "helper_tarball": {
+    "status": "published",
+    "reuse_decision": "re_tag_v0.4.24_payload_no_rust_source_changes",
+    "github_release_tag": "v0.4.25",
+    "release_url": "https://github.com/jamison/ilc/releases/tag/v0.4.25",
+    "asset_url": "https://github.com/jamison/ilc/releases/download/v0.4.25/ilc-consensus-linux-x86_64-v0.4.25.tar.gz",
+    "sha256": "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+    "size_bytes": 4560519,
+    "members": [
+      "bls_verify_digest",
+      "ilc_p2p_bridge",
+      "invite_pop_bls",
+      "keygen",
+      "validator_endpoint_assertion_bls",
+      "validator_harness"
+    ]
+  },
+  "pypi_upload": {
+    "status": "uploaded_and_hash_size_verified",
+    "project_url": "https://pypi.org/project/ilc-core/0.4.25/",
+    "wheel": {
+      "filename": "ilc_core-0.4.25-py3-none-any.whl",
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/d4/ae/6eaff8aed61f9b5a61230f76067a76e8d2e1b9ef6f4cc418706a17519097/ilc_core-0.4.25-py3-none-any.whl",
+      "fetchback_sha256": "64b0cf48170787e317a38438a7800a6520b4098ed5c5103120bfc059d69caaf8",
+      "fetchback_size_bytes": 1505495,
+      "pypi_yanked": false
+    },
+    "sdist": {
+      "filename": "ilc_core-0.4.25.tar.gz",
+      "canonical_pypi_url": "https://files.pythonhosted.org/packages/14/0a/6637da3531f8240f7d6ddc692d3a9439f398381cfab476a1aa62c0d54180/ilc_core-0.4.25.tar.gz",
+      "fetchback_sha256": "f5e82067aec9b2a815d96b978745190db379a8cfad24e16c77b85e1919b05912",
+      "fetchback_size_bytes": 1229868,
+      "pypi_yanked": false
+    }
+  },
+  "predecessor_0424_state_after_blocker": {
+    "status": "not_yanked",
+    "wheel_yanked": false,
+    "sdist_yanked": false
+  },
+  "not_completed": [
+    "clean dependency install smoke",
+    "0.4.24 predecessor yank",
+    "0.4.25 release envelope file commit",
+    "0.4.25 installable manifest commit",
+    "tools/install.sh retarget to 0.4.25",
+    "public mirror regeneration",
+    "public mirror push",
+    "public raw-GitHub fetchback",
+    "STATUS completion output token"
+  ],
+  "output_token": "package_0425_published_GAP_PACKAGE_0425_00b",
+  "output_token_emitted": false,
+  "non_claims": [
+    "no_0424_yank",
+    "no_tools_install_sh_retarget_to_0425",
+    "no_release_envelope_file_committed",
+    "no_installable_manifest_file_committed",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_public_raw_github_fetchback_for_0425",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_00d_retry",
+    "no_launch_00_execution",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ]
+}

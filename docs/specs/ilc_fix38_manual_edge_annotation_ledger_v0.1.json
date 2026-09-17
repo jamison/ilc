@@ -81834,6 +81834,70 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0425_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0425_00b.partial.json",
+      "node_kind": "spec_doc",
+      "annotation_batch": "manual_batch_gap_package_0425_00b_blocked_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b registered partial upload receipt after PyPI 0.4.25 upload and helper tarball publication blocked on clean dependency install.",
+      "manual_read_summary": "Partial receipt records GO, signature verification, helper tarball v0.4.25 publication, PyPI 0.4.25 upload and hash/size fetchback, cbor2 source-build failure blocker, current external state, non-claims, and output-token non-emission.",
+      "recommended_graph_action": "support_only",
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:package_0425_published_GAP_PACKAGE_0425_00b_not_emitted"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_0424_yank_no_installer_retarget_no_public_mirror_push"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/phases/phase_gap_package_0425_00b_blocked_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "annotation_batch": "manual_batch_gap_package_0425_00b_blocked_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0425-00b registered blocked walkthrough after prompt-required clean dependency install hard stop.",
+      "manual_read_summary": "Blocked walkthrough records GO, token audit, artifact checks, signature verification, helper tarball publication, PyPI upload/fetchback, cbor2 source-build failure, current external state, not-completed deliverables, and non-claims.",
+      "recommended_graph_action": "support_only",
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0425-00b"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:package_0425_published_GAP_PACKAGE_0425_00b_not_emitted"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_epoch_00d_no_launch_no_mainnet"
+        }
+      ]
     }
   ],
   "boundary": {
