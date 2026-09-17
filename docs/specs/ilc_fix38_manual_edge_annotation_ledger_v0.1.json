@@ -82024,6 +82024,105 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0426_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00b_release_artifacts_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00b publishes the cbor2<6 package fix and supersedes yanked 0.4.24 and 0.4.25 package surfaces.",
+      "manual_read_summary": "Release envelope set for ilc-core 0.4.26 binding the wheel and sdist artifact hashes to Genesis/operator-supplied Phase 1335 Ed25519 signatures.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0426-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0426_published_GAP_PACKAGE_0426_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:dist/ilc_core-0.4.26-py3-none-any.whl"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:dist/ilc_core-0.4.26.tar.gz"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00b_release_artifacts_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00b retargets tools/install.sh and public install metadata to the verified 0.4.26 PyPI artifacts.",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.26 covering the signed wheel/sdist and unchanged Linux x86_64 helper tarball re-tag.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0426-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0426_published_GAP_PACKAGE_0426_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/install.sh"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0426_GAP_PACKAGE_0426_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0426_00b_release_artifacts_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-PACKAGE-0426-00b receipt records verified 0.4.26 PyPI upload, clean Python 3.12 fetchback, cbor2 5.9.0 dependency proof, and predecessor yanks.",
+      "manual_read_summary": "PyPI upload/yank/fetchback receipt for ilc-core 0.4.26 with source-commit and public-mirror evidence updated during final closure.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0426-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0426_published_GAP_PACKAGE_0426_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_installable_release_manifest_ilc_core_0426_GAP_PACKAGE_0426_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0426_00b_v0.1.json"
     }
   ],
   "boundary": {

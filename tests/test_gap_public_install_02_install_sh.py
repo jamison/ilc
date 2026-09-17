@@ -20,30 +20,30 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0424_GAP_PACKAGE_0424_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0426_GAP_PACKAGE_0426_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/94/07/"
-    "2d39e619b5fdb6ad181633c8b020cbda5c7ea9f0526dc5b731bbb6b52cb8/"
-    "ilc_core-0.4.24-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/a7/99/"
+    "bfdf65106eceb62baa470e5785563d4196e904453547f76a97e7be88541f/"
+    "ilc_core-0.4.26-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "134f5e97cba2493c2ca2c7b6ced85b9fb9950bf60e4a2f1e0b7b766065643ef4"
-EXPECTED_SIZE = "1505126"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.24"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0424@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0424@phase-1628"
-EXPECTED_SDIST_SHA256 = "d47f40575c2e55273e45efb78d60e37fc90d3d5cdcc2e8b03f1e78739b11778e"
-EXPECTED_SDIST_SIZE = "1229588"
+EXPECTED_SHA256 = "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a"
+EXPECTED_SIZE = "1505486"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.26"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0426@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0426@phase-1628"
+EXPECTED_SDIST_SHA256 = "b8238857434b84e7d75fa32d76b7518c206ba00473440f63e814cece875f8446"
+EXPECTED_SDIST_SIZE = "1229923"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0424_release_envelopes_GAP_PACKAGE_0424_00b_v0.1.json"
+    "ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 )
 EXPECTED_CONSENSUS_URL = (
-    "https://github.com/jamison/ilc/releases/download/v0.4.24/"
-    "ilc-consensus-linux-x86_64-v0.4.24.tar.gz"
+    "https://github.com/jamison/ilc/releases/download/v0.4.26/"
+    "ilc-consensus-linux-x86_64-v0.4.26.tar.gz"
 )
 EXPECTED_CONSENSUS_SHA256 = "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9"
 EXPECTED_CONSENSUS_SIZE = "4560519"
