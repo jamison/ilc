@@ -81289,6 +81289,45 @@
         "EVIDENCES",
         "NEGATIVE_ASSERTS"
       ]
+    },
+    {
+      "annotation_batch": "manual_batch_gap_cdl098_materialization_0424_fix1_2026_09_17",
+      "chronology_note": "2026-09-17 GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a-FIX1 added by Sonnet planning session to reconcile backlog classification counts.",
+      "manual_read_summary": "Non-sensitive reconciliation prompt that patches classify_fix38_backlog.py to emit deduplicated counts and re-runs the classifier against the current ledger tip; no LMDB writes or Genesis signing.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_098_trace",
+          "target": "cdl:CDL-098"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CDL098-GENESIS-GRAPH-MATERIALIZATION-0424-00a-FIX1"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_g10_fix38_backlog_classification.md"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "DERIVED_FROM",
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl098_genesis_graph_materialization_0424_00a_fix1_reconcile.md"
     }
   ],
   "boundary": {
