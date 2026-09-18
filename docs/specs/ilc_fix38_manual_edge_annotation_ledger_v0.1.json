@@ -82272,6 +82272,127 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_validator_sync_0426_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_execution_2026_09_18",
+      "chronology_note": "Created during GAP-PUBLIC-RC-EPOCH-00d-ECU-SMOKE closure on 2026-09-18.",
+      "manual_read_summary": "Machine-readable evidence for retargeted EPOCH-00d three-track smoke: Genesis ECU zero-balance skip, ILC maturity rejection tokens, Genesis deferred claimability, bootstrap validator absent-row wallet API checks, ECU accrual evidence reference, wallet LMDB unchanged hashes, and explicit non-claims.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:first_earned_ecu_smoke_pass_GAP_PUBLIC_RC_EPOCH_00d"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:ilc_maturity_guard_rejection_confirmed_GAP_PUBLIC_RC_EPOCH_00d"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:ecu_and_ilc_maturity_guard_smoke_pass_GAP_PUBLIC_RC_EPOCH_00d"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_nonzero_ilc_distribution_no_monthly_close_no_claimability_activation"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00d/ecu_and_maturity_guard_smoke_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_execution_2026_09_18",
+      "chronology_note": "Created during GAP-PUBLIC-RC-EPOCH-00d-ECU-SMOKE closure on 2026-09-18.",
+      "manual_read_summary": "Durable ECU accrual evidence snapshot for the four bootstrap validator AgentIDs during issuance_interval_id=0, proving the accounting evidence path round-trips without writing validator ILC wallet rows or triggering settlement.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:bootstrap_validator_ecu_accrual_evidence_roundtrip_without_ilc_settlement"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:out/gap_vps_validator_reprovision_00/reprovision_receipt.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_validator_wallet_rows_written_no_validator_ilc_settlement_triggered"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_00d/bootstrap_validator_ecu_accrual_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_epoch_00d_execution_2026_09_18",
+      "chronology_note": "Created during GAP-PUBLIC-RC-EPOCH-00d-ECU-SMOKE closure on 2026-09-18.",
+      "manual_read_summary": "Walkthrough for the retargeted EPOCH-00d smoke, including exact GO, evidence hashes, Genesis ECU zero-balance skip, maturity rejection exception texts, Genesis and validator wallet status results, ECU accrual evidence, verification command output, non-claims, and sequencing carry-forward.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-00d",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_00d_g10_first_earned_ecu_and_ilc_smoke.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/gap_public_rc_epoch_00d/ecu_and_maturity_guard_smoke_evidence.json"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:ecu_and_ilc_maturity_guard_smoke_pass_GAP_PUBLIC_RC_EPOCH_00d"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_nonzero_ilc_distribution_no_public_rc_launch_ceremony_complete_token"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_00d_ecu_smoke_walkthrough.md"
     }
   ],
   "boundary": {
