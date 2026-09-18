@@ -82161,6 +82161,117 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_package_0426_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_sync_0426_00_prompt_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-VALIDATOR-SYNC-0426-00 phase prompt — validator venv sync to ilc-core 0.4.26 before EPOCH-00d.",
+      "manual_read_summary": "Phase prompt for sensitive VPS validator venv sync from 0.4.24 to 0.4.26 on all four public-RC validator slots; includes cbor2 5.x resolver guard, fresh-process circular-import regression, restored direct wallet-claimability import, service active checks, epoch/root stability, and Rust binary unchanged evidence.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PHASE_PROMPT_FOR",
+          "target": "phase:GAP-VALIDATOR-SYNC-0426-00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0426_published_GAP_PACKAGE_0426_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:vps_validators_synced_to_0424_GAP_VALIDATOR_SYNC_0424_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "PHASE_PROMPT_FOR",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0426_00_g10_validator_venv_sync_0426.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_sync_0426_00_execution_2026_09_18",
+      "chronology_note": "Created during GAP-VALIDATOR-SYNC-0426-00 sensitive validator venv sync closure on 2026-09-18.",
+      "manual_read_summary": "Machine-readable receipt for live validator service-user venv sync to ilc-core 0.4.26 across validators 1-4, recording per-slot stop/install/guard/start commands, cbor2 5.9.0 resolution, circular-import regression success, wallet claimability direct-import success, epoch/state-root stability, Rust binary unchanged evidence, and non-claims.",
+      "node_kind": "phase_receipt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0426_00_g10_validator_venv_sync_0426.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-SYNC-0426-00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:vps_validators_synced_to_0426_GAP_VALIDATOR_SYNC_0426_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_mutation_no_epoch_advance_no_rust_binary_change"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_validator_sync_0426_00/sync_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_validator_sync_0426_00_execution_2026_09_18",
+      "chronology_note": "Created during GAP-VALIDATOR-SYNC-0426-00 sensitive validator venv sync closure on 2026-09-18.",
+      "manual_read_summary": "Walkthrough for sensitive validator service-user venv sync to ilc-core 0.4.26 across validators 1-4, including exact GO record, per-slot 17-step evidence, cbor2 and circular-import guard outputs, service active checks, epoch/state-root stability, Rust binary unchanged evidence, verification commands, output token, and explicit non-claims.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_sync_0426_00_g10_validator_venv_sync_0426.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-VALIDATOR-SYNC-0426-00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:vps_validators_synced_to_0426_GAP_VALIDATOR_SYNC_0426_00"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/gap_validator_sync_0426_00/sync_receipt.json"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_lmdb_mutation_no_epoch_advance_no_rust_binary_change"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER",
+        "SUMMARIZES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_validator_sync_0426_00_walkthrough.md"
     }
   ],
   "boundary": {
