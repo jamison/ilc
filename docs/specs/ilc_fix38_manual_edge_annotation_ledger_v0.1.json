@@ -82768,6 +82768,168 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_pipeline_template_00_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-RELEASE-PIPELINE-TEMPLATE-00 prompt hardened the reusable release-pipeline template phase after 0.4.26 publication lessons.",
+      "manual_read_summary": "Prompt requires a documentation-only release template that preserves Track A local build/preflight, Track B sensitive publish/sign/mirror, Python 3.12 clean fetchback, cbor2 5.x dry-run proof, post-mirror GitHub Release creation, bounded helper upload, predecessor yanks, and Fix38-vs-CDL098 boundaries.",
+      "node_kind": "antigravity_phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0426_00a_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_pipeline_template_00_g10_release_spec_template.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_pipeline_template_00_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-RELEASE-PIPELINE-TEMPLATE-00 produced the reusable release pipeline template after 0.4.26 release-path hardening.",
+      "manual_read_summary": "Template maps the public release workflow into Track A non-sensitive build/preflight, Track B sensitive publish/sign/mirror, and post-publish conditional gates, including Python 3.12 clean fetchback, cbor2 5.x dry-run proof, signing preimage discipline, helper release sequencing, yanks, installer retarget, public mirror scans, and Fix38 ledger duties.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "tools/install.sh"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "tools/scripts/generate_public_mirror.sh"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/release/installable_release_signature.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_pipeline_template_00_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-RELEASE-PIPELINE-TEMPLATE-00 walkthrough records source reads, MemPalace advisory searches, deliverable summary, verification evidence, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough is the phase execution evidence for the documentation-only reusable release pipeline template.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_pipeline_template_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_pipeline_template_00_2026_09_18",
+      "chronology_note": "2026-09-18 PLANNING_INDEX Rev 91 records GAP-RELEASE-PIPELINE-TEMPLATE-00 complete and moves the frontier to GAP-PACKAGE-0427-00a.",
+      "manual_read_summary": "Planning index update preserves current frontier, output token, release-template summary, and non-claims.",
+      "node_kind": "planning_index",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_release_pipeline_template_00_2026_09_18",
+      "chronology_note": "2026-09-18 STATUS records GAP-RELEASE-PIPELINE-TEMPLATE-00 complete, output token emitted, and GAP-PACKAGE-0427-00a as the next non-sensitive frontier.",
+      "manual_read_summary": "Phase status entry provides completion claim, token emission, carry-forward, and non-claims for the reusable release pipeline template.",
+      "node_kind": "phase_status",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
