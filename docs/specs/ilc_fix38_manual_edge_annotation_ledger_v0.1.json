@@ -82626,6 +82626,148 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_first_issuance_disposition_policy_00_2026_09_18",
+      "chronology_note": "Created during GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00 documentation-only closure on 2026-09-18.",
+      "manual_read_summary": "Policy document confirming the already-implemented zero-user first monthly close disposition, non-evaporation conservation gate, carry-forward accounts, and launch-zero validator reward behavior.",
+      "node_kind": "policy_spec",
+      "phase_ref": "GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_issuance_disposition_policy_00_g10_zero_user_policy_doc.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:non_evaporation_invariant_confirmed_implemented"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "ilc_core/epoch/epoch_conservation_gate.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_first_issuance_disposition_policy_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_first_issuance_disposition_policy_00_2026_09_18",
+      "chronology_note": "Created during GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00 documentation-only closure on 2026-09-18.",
+      "manual_read_summary": "Walkthrough recording token audit, MemPalace searches, direct reads, local zero-user computation output, focused test output, non-claims, and output tokens for the first issuance disposition policy phase.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_issuance_disposition_policy_00_g10_zero_user_policy_doc.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_first_issuance_disposition_policy_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00_v0.1.md"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:first_issuance_disposition_policy_committed_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:non_evaporation_invariant_documented_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_first_issuance_disposition_policy_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_first_issuance_disposition_policy_00_2026_09_18",
+      "chronology_note": "Created during GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00 documentation-only closure on 2026-09-18.",
+      "manual_read_summary": "Planning index updated to record GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00 completion and move the frontier to GAP-RELEASE-PIPELINE-TEMPLATE-00.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_issuance_disposition_policy_00_g10_zero_user_policy_doc.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-RELEASE-PIPELINE-TEMPLATE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_first_issuance_disposition_policy_00_2026_09_18",
+      "chronology_note": "Created during GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00 documentation-only closure on 2026-09-18.",
+      "manual_read_summary": "Phase status log updated with first issuance disposition policy completion output tokens and documentation-only non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_issuance_disposition_policy_00_g10_zero_user_policy_doc.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:first_issuance_disposition_policy_committed_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:non_evaporation_invariant_documented_GAP_FIRST_ISSUANCE_DISPOSITION_POLICY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {
