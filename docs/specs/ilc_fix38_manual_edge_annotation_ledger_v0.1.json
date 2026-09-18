@@ -104138,6 +104138,89 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_validator_grpc_mtls_trust_root_fix_00_g10_ca_cert_deploy.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00b_release_artifacts_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00b receipt records verified 0.4.27 PyPI upload, clean Python 3.12 fetchback inherited from partial receipt, predecessor yank, release envelopes, installable manifest, public mirror regeneration, GitHub helper release, raw-GitHub fetchback, output token, and non-claims.",
+      "manual_read_summary": "PyPI upload/yank/fetchback receipt for ilc-core 0.4.27 with signed release-envelope, installer, public-mirror, and helper-release evidence updated during final closure.",
+      "node_kind": "spec_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0427_published_GAP_PACKAGE_0427_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_installable_release_manifest_ilc_core_0427_GAP_PACKAGE_0427_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_core_0427_release_envelopes_GAP_PACKAGE_0427_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/install.sh"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/scripts/generate_public_mirror.sh"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0427_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00b_release_artifacts_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00b walkthrough records final PyPI, yanks, public mirror, helper release, raw-GitHub fetchback, verification, output token, and non-claims.",
+      "manual_read_summary": "Walkthrough for the completed ilc-core 0.4.27 publish/sign/mirror phase, including full filtered public mirror regeneration and v0.4.27 helper tarball release evidence.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-0427-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0427_published_GAP_PACKAGE_0427_00b"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0427_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_installable_release_manifest_ilc_core_0427_GAP_PACKAGE_0427_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:docs/specs/ilc_core_0427_release_envelopes_GAP_PACKAGE_0427_00b_v0.1.json"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:tools/scripts/generate_public_mirror.sh"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "DEPENDS_ON"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0427_00b_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
