@@ -83162,6 +83162,198 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PUBLIC-RC-HELLO-WORLD-00a prompt hardened before execution.",
+      "manual_read_summary": "Hardened phase prompt for the post-LAUNCH-00 hello-world node spec; locks anchor file-hash semantics, real submit CLI payload flags, verification commands, and no-live-submission boundary.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0427_published_GAP_PACKAGE_0427_00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:public_rc_launch_announced_GAP_PUBLIC_RC_LAUNCH_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ROUTES_TO",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_hello_world_00a_g10_node_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PUBLIC-RC-HELLO-WORLD-00a load-bearing node spec added.",
+      "manual_read_summary": "Specifies artifact:hello_world node identity, verbatim Phase 1424 content, Genesis AgentID author, LAUNCH-00 anchor-file canonical_external_id, assert.truth submission mechanism, and expected CDL-075 node_id derivation boundary.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "out/gap_public_rc_launch_00/public_rc_issuance_epoch_0_opening_anchor.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "artifact:hello_world"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_spec_committed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_submission_mechanism_confirmed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SPECIFIES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_hello_world_node_spec_GAP_PUBLIC_RC_HELLO_WORLD_00a_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PUBLIC-RC-HELLO-WORLD-00a walkthrough records completion evidence.",
+      "manual_read_summary": "Walkthrough records token audit, prompt hardening, direct source reads, verification command outputs, runtime payload validation, focused tests, artifacts, tokens, and non-claims for hello-world 00a.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_hello_world_00a_g10_node_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_hello_world_node_spec_GAP_PUBLIC_RC_HELLO_WORLD_00a_v0.1.md"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_spec_committed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_submission_mechanism_confirmed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_hello_world_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 PLANNING_INDEX frontier advanced to GAP-PUBLIC-RC-HELLO-WORLD-00b.",
+      "manual_read_summary": "PLANNING_INDEX Rev 95 records GAP-PUBLIC-RC-HELLO-WORLD-00a completion and routes frontier to sensitive HELLO-WORLD-00b.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 STATUS emits hello-world 00a output tokens.",
+      "manual_read_summary": "STATUS records GAP-PUBLIC-RC-HELLO-WORLD-00a completion, output tokens, carry-forward GO phrase, and non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_spec_committed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_submission_mechanism_confirmed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00a_2026_09_18",
+      "chronology_note": "2026-09-18 forward plan Rev 95 inserted.",
+      "manual_read_summary": "Reconciled forward plan Rev 95 records hello-world 00a completion and moves table arrow to HELLO-WORLD-00b.",
+      "node_kind": "forward_plan",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00a"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     }
   ],
   "boundary": {
