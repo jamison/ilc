@@ -42,7 +42,7 @@ def _decode_json(payload: bytes | None) -> Any:
 
 
 def _compound_index_key(*parts: str) -> str:
-    return json.dumps(list(parts), sort_keys=False, separators=(",", ":"), allow_nan=False)
+    return json.dumps(list(parts), sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 class _LmdbRuntimeBase:
