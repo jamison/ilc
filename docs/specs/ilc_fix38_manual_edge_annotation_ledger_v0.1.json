@@ -82393,6 +82393,239 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_epoch_00d_ecu_smoke_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Internal phase prompt authorizing the non-sensitive 96-character AgentID submit CLI fix and stale PASSIVE_ECU comment correction, with token checks, verification commands, and non-claims.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:GAP-SUBMIT-CLI-AGENT-ID-FIX1-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Walkthrough for GAP-SUBMIT-CLI-AGENT-ID-FIX1-00, recording token audit, live source-path correction, regex/comment verification, focused pytest output, Fix38 coverage audit, non-claims, and emitted output tokens.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-SUBMIT-CLI-AGENT-ID-FIX1-00"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:submit_cli_agent_id_fix_committed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:passive_ecu_stale_comment_fixed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_submit_cli_agent_id_fix1_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Submit CLI runtime module whose graph-submit AgentID regex was upgraded from legacy 64-character hex to CDL-017 96-character lowercase BLS public-key hex format.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "claim:submit_cli_agent_id_regex_96_hex"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:public_rc_users_can_submit_with_real_agent_id"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:agent_id_is_96_char_lowercase_hex_bls_pubkey"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SUPPORTS",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/d2e_submit_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Attribution settlement runtime documentation/comment surface corrected so PASSIVE_ECU_WIRING_NOT_ACTIVATED is not described as True when the live flag is False; zero passive ECU remains attributed to empty centrality state.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "CLARIFIES",
+          "target": "claim:passive_ecu_wiring_flag_cleared"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_passive_ecu_guard_flip"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:passive_ecu_stale_comment_fixed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "CLARIFIES",
+        "NEGATIVE_ASSERTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/economics/epoch_attribution_settle_runtime.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Focused submit CLI regression tests updated to use GENESIS_AGENT1_AGENT_ID as a real 96-character lowercase hex AgentID fixture instead of the legacy placeholder agent-abc.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:submit_cli_accepts_real_96_hex_agent_id"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:submit_cli_agent_id_fix_committed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "REGRESSES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_874_d2e_submit_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Planning index updated to record GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 completion and move the frontier to GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-SUBMIT-CLI-AGENT-ID-FIX1-00"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-FIRST-ISSUANCE-DISPOSITION-POLICY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_submit_cli_agent_id_fix1_00_2026_09_18",
+      "chronology_note": "Created during GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 non-sensitive submit CLI AgentID regex completion on 2026-09-18.",
+      "manual_read_summary": "Phase status log updated with the two GAP-SUBMIT-CLI-AGENT-ID-FIX1-00 completion output tokens and non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-SUBMIT-CLI-AGENT-ID-FIX1-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_submit_cli_agent_id_fix1_00_g10_agent_id_regex_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-SUBMIT-CLI-AGENT-ID-FIX1-00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:submit_cli_agent_id_fix_committed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "token:passive_ecu_stale_comment_fixed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REGRESSES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {

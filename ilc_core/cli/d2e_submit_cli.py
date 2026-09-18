@@ -41,7 +41,7 @@ CDL_074_DEPENDENCY = RUNTIME_CDL_074_DEPENDENCY
 CDL_075_DEPENDENCY = "cdl_075_truth_primitive_graph_persistence.v0.1"
 CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
 _MAX_SUBMIT_PAYLOAD_BYTES = 256 * 1024
-_GRAPH_SUBMIT_AGENT_ID_RE = re.compile(r"^[0-9a-f]{64}$")
+_GRAPH_SUBMIT_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MAX_REFUTATION_CRITERION_BYTES = 500
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":

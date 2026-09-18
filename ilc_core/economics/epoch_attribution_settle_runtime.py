@@ -566,8 +566,9 @@ def settle_attribution_batch(
             (e.g. cdl_081_zero_member_commons_transition) are appended here.
         epoch_node_mint_count: Count of node-mint events in the epoch. Used by
             CDL-085 φ-bound enforcement for PROVENANCE payout suppression.
-        passive_ecu_centrality_state: Optional CDL-060 centrality state. Ignored
-            while PASSIVE_ECU_WIRING_NOT_ACTIVATED remains True.
+        passive_ecu_centrality_state: Optional CDL-060 centrality state. The
+            wiring flag is currently cleared; a zero passive ECU result can
+            still occur when centrality state is empty.
         passive_ecu_quality_scores: Optional node_id -> q_i Decimal map. Missing
             nodes use the neutral quality score while the passive lane is active.
 

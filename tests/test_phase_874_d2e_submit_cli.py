@@ -25,11 +25,13 @@ from ilc_core.cli.d2e_submit_cli import (
     SubmitCommandError,
     handle_submit,
 )
+from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 
 PHASE_874_COMMIT_SUBJECT = "feat(g8): phase 873-874 submit cli wiring"
 MAIN_PY_PATH = Path("ilc_core/cli/main.py")
 CLI_MODULE_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+VALID_AGENT_ID = GENESIS_AGENT1_AGENT_ID
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +190,7 @@ def test_cdl_074_dependency_token_correct() -> None:
 
 
 def test_handle_submit_assert_truth_returns_contract() -> None:
-    ns = _ns(primitive="assert.truth", payload_json=_ASSERT_TRUTH_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="assert.truth", payload_json=_ASSERT_TRUTH_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["subcommand"] == "submit"
     assert result["primitive"] == "assert.truth"
@@ -202,7 +204,7 @@ def test_handle_submit_assert_truth_returns_contract() -> None:
 
 
 def test_handle_submit_validate_claim_returns_contract() -> None:
-    ns = _ns(primitive="validate.claim", payload_json=_VALIDATE_CLAIM_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="validate.claim", payload_json=_VALIDATE_CLAIM_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["primitive"] == "validate.claim"
     assert result["creates_node"] is False
@@ -212,7 +214,7 @@ def test_handle_submit_validate_claim_returns_contract() -> None:
 
 
 def test_handle_submit_contradict_assert_returns_contract() -> None:
-    ns = _ns(primitive="contradict.assert", payload_json=_CONTRADICT_ASSERT_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="contradict.assert", payload_json=_CONTRADICT_ASSERT_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["primitive"] == "contradict.assert"
     assert result["creates_node"] is False
@@ -221,7 +223,7 @@ def test_handle_submit_contradict_assert_returns_contract() -> None:
 
 
 def test_handle_submit_link_claim_returns_contract() -> None:
-    ns = _ns(primitive="link.claim", payload_json=_LINK_CLAIM_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="link.claim", payload_json=_LINK_CLAIM_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["primitive"] == "link.claim"
     assert result["creates_node"] is False
@@ -230,7 +232,7 @@ def test_handle_submit_link_claim_returns_contract() -> None:
 
 
 def test_handle_submit_refute_claim_returns_contract() -> None:
-    ns = _ns(primitive="refute.claim", payload_json=_REFUTE_CLAIM_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="refute.claim", payload_json=_REFUTE_CLAIM_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["primitive"] == "refute.claim"
     assert result["creates_node"] is False
@@ -240,7 +242,7 @@ def test_handle_submit_refute_claim_returns_contract() -> None:
 
 
 def test_handle_submit_revise_assert_returns_contract() -> None:
-    ns = _ns(primitive="revise.assert", payload_json=_REVISE_ASSERT_PAYLOAD, agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive="revise.assert", payload_json=_REVISE_ASSERT_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=1)
     result = handle_submit(ns)
     assert result["primitive"] == "revise.assert"
     assert result["creates_node"] is True
@@ -260,7 +262,7 @@ def test_handle_submit_commit_epoch_rejected() -> None:
     ns = _ns(
         primitive="commit.epoch",
         payload_json=json.dumps({"epoch_id": "epoch-1"}),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError) as exc_info:
@@ -277,7 +279,7 @@ def test_handle_submit_unknown_primitive_rejected() -> None:
     ns = _ns(
         primitive="nonexistent.primitive",
         payload_json=json.dumps({}),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError):
@@ -285,7 +287,7 @@ def test_handle_submit_unknown_primitive_rejected() -> None:
 
 
 def test_handle_submit_missing_primitive_raises() -> None:
-    ns = _ns(primitive=None, payload_json=json.dumps({}), agent_id="agent-abc", epoch=1)
+    ns = _ns(primitive=None, payload_json=json.dumps({}), agent_id=VALID_AGENT_ID, epoch=1)
     with pytest.raises(SubmitCommandError) as exc_info:
         handle_submit(ns)
     assert exc_info.value.token == "submit_primitive_missing"
@@ -299,7 +301,7 @@ def test_handle_submit_missing_agent_id_raises() -> None:
 
 
 def test_handle_submit_invalid_epoch_raises() -> None:
-    ns = _ns(primitive="assert.truth", payload_json=_ASSERT_TRUTH_PAYLOAD, agent_id="agent-abc", epoch=-1)
+    ns = _ns(primitive="assert.truth", payload_json=_ASSERT_TRUTH_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=-1)
     with pytest.raises(SubmitCommandError) as exc_info:
         handle_submit(ns)
     assert exc_info.value.token == "submit_epoch_invalid"
@@ -312,7 +314,7 @@ def test_handle_submit_payload_ambiguous_raises(tmp_path: Path) -> None:
         primitive="assert.truth",
         payload_json=_ASSERT_TRUTH_PAYLOAD,
         payload_file=str(payload_file),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError) as exc_info:
@@ -324,7 +326,7 @@ def test_handle_submit_payload_file_not_found_raises() -> None:
     ns = _ns(
         primitive="assert.truth",
         payload_file="/tmp/nonexistent_ilc_payload_file_874.json",
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError) as exc_info:
@@ -338,7 +340,7 @@ def test_handle_submit_payload_file_valid_path(tmp_path: Path) -> None:
     ns = _ns(
         primitive="validate.claim",
         payload_file=str(payload_file),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=2,
     )
     result = handle_submit(ns)
@@ -353,7 +355,7 @@ def test_handle_submit_rejects_non_finite_json_constants() -> None:
             '{"content":{"body":NaN},"epistemic_type":"objective",'
             '"parent_node_ids":[],"primitive_type":"observation"}'
         ),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError) as exc_info:
@@ -373,7 +375,7 @@ def test_handle_submit_rejects_oversized_payload() -> None:
                 "primitive_type": "observation",
             }
         ),
-        agent_id="agent-abc",
+        agent_id=VALID_AGENT_ID,
         epoch=1,
     )
     with pytest.raises(SubmitCommandError) as exc_info:
