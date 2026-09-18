@@ -32,23 +32,23 @@ ENVELOPE_PATH = (
 )
 CURRENT_MANIFEST_PATH = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0426_GAP_PACKAGE_0426_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0427_GAP_PACKAGE_0427_00b_v0.1.json"
 )
 CURRENT_ENVELOPE_PATH = (
-    ROOT / "docs/specs/ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
+    ROOT / "docs/specs/ilc_core_0427_release_envelopes_GAP_PACKAGE_0427_00b_v0.1.json"
 )
 INSTALL_SH = ROOT / "tools/install.sh"
 VERIFIER_PATH = ROOT / "ilc_core/release/update_signature_verifier.py"
 CURRENT_RC_WHEEL_URL = (
-    "https://files.pythonhosted.org/packages/a7/99/"
-    "bfdf65106eceb62baa470e5785563d4196e904453547f76a97e7be88541f/"
-    "ilc_core-0.4.26-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/42/01/"
+    "4494d20708acf96f34bfc17b0db3ca6e1c159fcbb944db6b163127b79cb1/"
+    "ilc_core-0.4.27-py3-none-any.whl"
 )
-CURRENT_RC_WHEEL_SHA256 = "94d6843467b6fb89e54c7eed4178cbae0b9586bd8146b47027b08b36fa27201a"
-CURRENT_RC_WHEEL_SIZE = "1505486"
+CURRENT_RC_WHEEL_SHA256 = "358fadb54cfac73243517c00d7bb6db08b6429220bdbc5ab0b888b4199cbf823"
+CURRENT_RC_WHEEL_SIZE = "1505829"
 CURRENT_DEFAULT_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0426_release_envelopes_GAP_PACKAGE_0426_00b_v0.1.json"
+    "ilc_core_0427_release_envelopes_GAP_PACKAGE_0427_00b_v0.1.json"
 )
 
 
@@ -379,7 +379,7 @@ def test_install_sh_inline_manifest_uses_current_artifact_metadata() -> None:
 
 
 def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.26-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.27-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
@@ -455,7 +455,7 @@ def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Pat
 def test_install_sh_verify_signature_fails_closed_for_stale_envelope_set(
     tmp_path: Path,
 ) -> None:
-    payload = tmp_path / "ilc_core-0.4.26-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.27-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
